@@ -1,5 +1,5 @@
 // SRTLA is a bonding protocol on top of SRT.
-// Designed by rationalsa for the BELABOX projecct.
+// Designed by rationalsa for the BELABOX project.
 // https://github.com/BELABOX/srtla
 
 import Foundation
@@ -26,6 +26,7 @@ private let windowIncrement = 30
 
 protocol RemoteConnectionDelegate: AnyObject {
     func remoteConnectionOnSocketConnected(connection: RemoteConnection)
+    func remoteConnectionOnRegNgp(connection: RemoteConnection)
     func remoteConnectionOnReg2(groupId: Data)
     func remoteConnectionOnRegistered()
     func remoteConnectionPacketHandler(packet: Data)
@@ -193,11 +194,17 @@ class RemoteConnection {
         }
     }
 
+    func probe() {
+        groupId = Data.random(length: 256)
+        sendSrtlaReg2()
+    }
+
     func register(groupId: Data) {
         self.groupId = groupId
         hasFullGroupId = true
         if state == .shouldSendRegisterRequest {
             sendSrtlaReg2()
+            state = .waitForRegisterResponse
         }
     }
 
@@ -241,7 +248,7 @@ class RemoteConnection {
         numberOfNullPacketsSent = 0
         numberOfNonNullPacketsSent = 0
         if type == nil {
-            logger.debug("srtla: \(typeString): Overhead: \(overhead) %")
+            logger.debug("srtla: \(typeString): Overhead: \(overhead)%")
         } else {
             logger
                 .debug(
@@ -311,6 +318,7 @@ class RemoteConnection {
                 connectTimer.stop()
             } else if self.state == .shouldSendRegisterRequest || hasFullGroupId {
                 sendSrtlaReg2()
+                self.state = .waitForRegisterResponse
             } else {
                 self.state = .shouldSendRegisterRequest
             }
@@ -395,7 +403,6 @@ class RemoteConnection {
         var packet = createSrtlaPacket(type: .reg2, length: srtControlTypeSize + groupId.count)
         packet[srtControlTypeSize...] = groupId
         sendPacket(packet: packet)
-        state = .waitForRegisterResponse
     }
 
     private func sendSrtlaKeepalive() {
@@ -478,6 +485,7 @@ class RemoteConnection {
 
     private func handleSrtlaRegNgp() {
         logger.debug("srtla: \(typeString): Register no group")
+        delegate?.remoteConnectionOnRegNgp(connection: self)
     }
 
     private func handleSrtlaRegNak() {

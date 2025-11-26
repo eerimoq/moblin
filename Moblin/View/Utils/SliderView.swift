@@ -15,6 +15,9 @@ struct SliderView: View {
                 value: $value,
                 in: minimum ... maximum,
                 step: step,
+                label: {
+                    EmptyView()
+                },
                 onEditingChanged: { begin in
                     guard !begin else {
                         return

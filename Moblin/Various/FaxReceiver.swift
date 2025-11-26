@@ -21,24 +21,4 @@ class FaxReceiver {
         }
         .resume()
     }
-
-    func add(prompt _: String, url _: URL?) {
-        guard #available(iOS 18.4, *) else {
-            return
-        }
-        // Task {
-        //     do {
-        //         let creator = try await ImageCreator()
-        //         var concepts: [ImagePlaygroundConcept] = [.extracted(from: prompt, title: nil)]
-        //         if let url, let image = ImagePlaygroundConcept.image(url) {
-        //             concepts.append(image)
-        //         }
-        //         for try await image in creator.images(for: concepts, style: .animation, limit: 1) {
-        //             self.delegate?.faxReceiverPrint(image: CIImage(cgImage: image.cgImage))
-        //         }
-        //     } catch {
-        //         logger.info("fax-receiver: Error: \(error.localizedDescription)")
-        //     }
-        // }
-    }
 }

@@ -39,13 +39,9 @@ private struct TeslaSettingsConfigurationView: View {
                 Text("Scroll down in your Tesla app and copy it.")
             }
             Section {
-                Button {
+                TextButtonView("Generate new key") {
                     database.tesla.privateKey = teslaGeneratePrivateKey().pemRepresentation
                     model.reloadTeslaVehicle()
-                } label: {
-                    HCenter {
-                        Text("Generate new key")
-                    }
                 }
             } footer: {
                 Text("""
@@ -54,12 +50,8 @@ private struct TeslaSettingsConfigurationView: View {
                 """)
             }
             Section {
-                Button {
+                TextButtonView("Add key to vehicle") {
                     model.teslaAddKeyToVehicle()
-                } label: {
-                    HCenter {
-                        Text("Add key to vehicle")
-                    }
                 }
                 .disabled(database.tesla.vin.isEmpty || database.tesla.privateKey.isEmpty || tesla
                     .vehicleState != .connected)
@@ -86,7 +78,7 @@ struct TeslaSettingsView: View {
             }
             Section {
                 Toggle(isOn: Binding(get: {
-                    model.database.tesla.enabled!
+                    model.database.tesla.enabled
                 }, set: {
                     model.database.tesla.enabled = $0
                     model.reloadTeslaVehicle()
@@ -105,72 +97,44 @@ struct TeslaSettingsView: View {
                 }
             }
             Section {
-                Button {
+                TextButtonView("Flash lights") {
                     model.teslaFlashLights()
-                } label: {
-                    HCenter {
-                        Text("Flash lights")
-                    }
                 }
                 .disabled(!tesla.vehicleInfotainmentConnected)
             }
             Section {
-                Button {
+                TextButtonView("Honk") {
                     model.teslaHonk()
-                } label: {
-                    HCenter {
-                        Text("Honk")
-                    }
                 }
                 .disabled(!tesla.vehicleInfotainmentConnected)
             }
             Section {
-                Button {
+                TextButtonView("Open trunk") {
                     model.teslaOpenTrunk()
-                } label: {
-                    HCenter {
-                        Text("Open trunk")
-                    }
                 }
                 .disabled(!tesla.vehicleVehicleSecurityConnected)
             }
             Section {
-                Button {
+                TextButtonView("Close trunk") {
                     model.teslaCloseTrunk()
-                } label: {
-                    HCenter {
-                        Text("Close trunk")
-                    }
                 }
                 .disabled(!tesla.vehicleVehicleSecurityConnected)
             }
             Section {
-                Button {
+                TextButtonView("Next media track") {
                     model.mediaNextTrack()
-                } label: {
-                    HCenter {
-                        Text("Next media track")
-                    }
                 }
                 .disabled(!tesla.vehicleInfotainmentConnected)
             }
             Section {
-                Button {
+                TextButtonView("Previous media track") {
                     model.mediaPreviousTrack()
-                } label: {
-                    HCenter {
-                        Text("Previous media  track")
-                    }
                 }
                 .disabled(!tesla.vehicleInfotainmentConnected)
             }
             Section {
-                Button {
+                TextButtonView("Toggle media playback") {
                     model.mediaTogglePlayback()
-                } label: {
-                    HCenter {
-                        Text("Toggle media playback")
-                    }
                 }
                 .disabled(!tesla.vehicleInfotainmentConnected)
             }

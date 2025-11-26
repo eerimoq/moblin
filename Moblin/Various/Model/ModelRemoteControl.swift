@@ -12,6 +12,8 @@ class RemoteControl: ObservableObject {
     @Published var mic = ""
     @Published var bitrate = UUID()
     @Published var zoom = ""
+    @Published var zoomPresets: [RemoteControlZoomPreset] = []
+    @Published var zoomPreset = UUID()
     @Published var debugLogging = false
     @Published var assistantShowPreview = true
     @Published var assistantShowPreviewFullScreen = false
@@ -96,8 +98,8 @@ extension Model {
     }
 
     func isRemoteControlStreamerConfigured() -> Bool {
-        let server = database.remoteControl.streamer
-        return server.enabled && !server.url.isEmpty && !database.remoteControl.password.isEmpty
+        let streamer = database.remoteControl.streamer
+        return streamer.enabled && !streamer.url.isEmpty && !database.remoteControl.password.isEmpty
     }
 
     func isRemoteControlStreamerConnected() -> Bool {
@@ -117,9 +119,7 @@ extension Model {
         remoteControlAssistant = RemoteControlAssistant(
             port: database.remoteControl.assistant.port,
             password: database.remoteControl.password,
-            delegate: self,
-            httpProxy: httpProxy(),
-            urlSession: urlSession
+            delegate: self
         )
         remoteControlAssistant!.start()
     }
@@ -146,8 +146,8 @@ extension Model {
     }
 
     func isRemoteControlAssistantConfigured() -> Bool {
-        let client = database.remoteControl.assistant
-        return client.enabled && client.port > 0 && !database.remoteControl.password.isEmpty
+        let assistant = database.remoteControl.assistant
+        return assistant.enabled && assistant.port > 0 && !database.remoteControl.password.isEmpty
     }
 
     func remoteControlAssistantSetRemoteSceneSettings() {
@@ -228,11 +228,11 @@ extension Model {
     }
 
     func remoteControlAssistantSetZoom(x: Float) {
-        remoteControlAssistant?.setZoom(x: x) {
-            DispatchQueue.main.async {
-                self.updateRemoteControlAssistantStatus()
-            }
-        }
+        remoteControlAssistant?.setZoom(x: x) {}
+    }
+
+    func remoteControlAssistantSetZoomPreset(id: UUID) {
+        remoteControlAssistant?.setZoomPreset(id: id) {}
     }
 
     func remoteControlAssistantSetBitratePreset(id: UUID) {
@@ -395,7 +395,7 @@ extension Model {
         } else {
             topRight.audioInfo!.audioLevel = .value(audio.level.level)
         }
-        if isServersConfigured() {
+        if isIngestsConfigured() {
             topRight.rtmpServer = RemoteControlStatusItem(message: ingests.speedAndTotal)
         }
         if isAnyRemoteControlConfigured() {
@@ -433,6 +433,9 @@ extension Model {
         }
         if !statusTopRight.djiDevicesStatus.isEmpty {
             topRight.djiDevices = RemoteControlStatusItem(message: statusTopRight.djiDevicesStatus)
+        }
+        if database.show.systemMonitor {
+            topRight.systemMonitor = RemoteControlStatusItem(message: systemMonitor.format())
         }
         return topRight
     }
@@ -477,6 +480,16 @@ extension Model: RemoteControlStreamerDelegate {
         if let preset = getBitratePresetByBitrate(bitrate: stream.bitrate) {
             state.bitrate = preset.id
         }
+        switch cameraPosition {
+        case .front:
+            state.zoomPresets = zoom.frontZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
+            state.zoomPreset = zoom.frontPresetId
+        case .back:
+            state.zoomPresets = zoom.backZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
+            state.zoomPreset = zoom.backPresetId
+        default:
+            state.zoomPresets = []
+        }
         state.zoom = zoom.x
         state.debugLogging = database.debug.logLevel == .debug
         state.streaming = isLive
@@ -515,16 +528,16 @@ extension Model: RemoteControlStreamerDelegate {
         let bitratePresets = database.bitratePresets.map {
             RemoteControlSettingsBitratePreset(id: $0.id, bitrate: $0.bitrate)
         }
-        let connectionPriorities = stream.srt.connectionPriorities!.priorities
+        let connectionPriorities = stream.srt.connectionPriorities.priorities
             .map {
                 RemoteControlSettingsSrtConnectionPriority(
                     id: $0.id,
                     name: $0.name,
                     priority: $0.priority,
-                    enabled: $0.enabled!
+                    enabled: $0.enabled
                 )
             }
-        let connectionPrioritiesEnabled = stream.srt.connectionPriorities!.enabled
+        let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
         return RemoteControlSettings(
             scenes: scenes,
             autoSceneSwitchers: autoSceneSwitchers,
@@ -585,6 +598,10 @@ extension Model: RemoteControlStreamerDelegate {
         setZoomX(x: x, rate: database.zoom.speed)
     }
 
+    func remoteControlStreamerSetZoomPreset(id: UUID) {
+        setZoomPreset(id: id)
+    }
+
     func remoteControlStreamerSetMute(on: Bool) {
         setMuteOn(value: on)
     }
@@ -601,7 +618,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: Bool) {
-        stream.srt.connectionPriorities!.enabled = enabled
+        stream.srt.connectionPriorities.enabled = enabled
         updateSrtlaPriorities()
     }
 
@@ -610,7 +627,7 @@ extension Model: RemoteControlStreamerDelegate {
         priority: Int,
         enabled: Bool
     ) {
-        if let entry = stream.srt.connectionPriorities!.priorities.first(where: { $0.id == id }) {
+        if let entry = stream.srt.connectionPriorities.priorities.first(where: { $0.id == id }) {
             entry.priority = clampConnectionPriority(value: priority)
             entry.enabled = enabled
             updateSrtlaPriorities()
@@ -633,6 +650,7 @@ extension Model: RemoteControlStreamerDelegate {
         for message in messages where message.id > remoteControlStreamerLatestReceivedChatMessageId {
             appendChatMessage(platform: message.platform,
                               messageId: message.messageId,
+                              displayName: message.displayName,
                               user: message.user,
                               userId: message.userId,
                               userColor: message.userColor,
@@ -749,6 +767,14 @@ extension Model: RemoteControlAssistantDelegate {
         if let bitrate = state.bitrate {
             remoteControlState.bitrate = bitrate
             remoteControl.bitrate = bitrate
+        }
+        if let zoomPresets = state.zoomPresets {
+            remoteControlState.zoomPresets = zoomPresets
+            remoteControl.zoomPresets = zoomPresets
+        }
+        if let zoomPreset = state.zoomPreset {
+            remoteControlState.zoomPreset = zoomPreset
+            remoteControl.zoomPreset = zoomPreset
         }
         if let zoom = state.zoom {
             remoteControlState.zoom = zoom

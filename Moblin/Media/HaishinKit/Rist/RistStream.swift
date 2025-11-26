@@ -227,7 +227,7 @@ class RistStream {
         guard let url = URL(string: url), let host = url.host(), let port = url.port else {
             return
         }
-        ristDelegate?.ristStreamRelayDestinationAddress(address: host, port: UInt16(port))
+        ristDelegate?.ristStreamRelayDestinationAddress(address: host, port: UInt16(clamping: port))
     }
 
     private func stopInner() {
@@ -282,7 +282,7 @@ class RistStream {
         guard bonding else {
             return
         }
-        let interfaces = path.availableInterfaces
+        let interfaces = path.uniqueAvailableInterfaces()
         var removedInterfaceNames: [String] = []
         for peer in peers where peer.relayEndpoint == nil {
             if interfaces.map({ $0.name }).contains(peer.interfaceName) {

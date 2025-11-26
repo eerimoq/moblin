@@ -6,28 +6,28 @@ all:
 	$(MAKE) lint
 
 style:
-	swiftformat $(FORMAT_ARGS) Common
-	swiftformat $(FORMAT_ARGS) Moblin
+	swiftformat $(FORMAT_ARGS) "Common"
+	swiftformat $(FORMAT_ARGS) "Moblin"
 	swiftformat $(FORMAT_ARGS) "Moblin Watch"
 	swiftformat $(FORMAT_ARGS) "Moblin Widget"
 	swiftformat $(FORMAT_ARGS) "Moblin Screen Recording"
+	swiftformat $(FORMAT_ARGS) "MoblinTests"
 
 style-check:
-	swiftformat $(FORMAT_ARGS) --lint Common
-	swiftformat $(FORMAT_ARGS) --lint Moblin
+	swiftformat $(FORMAT_ARGS) --lint "Common"
+	swiftformat $(FORMAT_ARGS) --lint "Moblin"
 	swiftformat $(FORMAT_ARGS) --lint "Moblin Watch"
 	swiftformat $(FORMAT_ARGS) --lint "Moblin Widget"
 	swiftformat $(FORMAT_ARGS) --lint "Moblin Screen Recording"
+	swiftformat $(FORMAT_ARGS) --lint "MoblinTests"
 
 lint:
-	swiftlint lint $(LINT_ARGS) Common
-	swiftlint lint $(LINT_ARGS) Moblin
+	swiftlint lint $(LINT_ARGS) "Common"
+	swiftlint lint $(LINT_ARGS) "Moblin"
 	swiftlint lint $(LINT_ARGS) "Moblin Watch"
 	swiftlint lint $(LINT_ARGS) "Moblin Widget"
 	swiftlint lint $(LINT_ARGS) "Moblin Screen Recording"
-
-periphery:
-	periphery scan --report-exclude Moblin/Integrations/Tesla/Protobuf/**
+	swiftlint lint $(LINT_ARGS) "MoblinTests"
 
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings

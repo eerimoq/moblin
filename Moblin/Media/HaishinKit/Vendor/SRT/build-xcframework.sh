@@ -49,9 +49,16 @@ rm -f build/OS/libsrt-lipo.a
 lipo -create build/OS/arm64/libsrt.a -output build/OS/libsrt-lipo.a
 libtool -static -o build/OS/libsrt.a build/OS/libsrt-lipo.a OpenSSL/iphoneos/lib/libcrypto.a OpenSSL/iphoneos/lib/libssl.a
 
-# Copies too many files
-cp srt/srtcore/*.h Includes
+rm -rf Includes
+mkdir -p Includes
+cp srt/srtcore/{logging_api,platform_sys,srt}.h Includes
 cp build/OS/arm64/version.h Includes/version.h
+cat <<EOF > Includes/module.modulemap
+module libsrt {
+    header "srt.h"
+    export *
+}
+EOF
 
 echo "#define ENABLE_MAXREXMITBW 1" >> Includes/platform_sys.h
 

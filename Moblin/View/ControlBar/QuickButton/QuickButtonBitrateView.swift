@@ -10,23 +10,25 @@ private struct BitratePresetView: View {
 }
 
 struct QuickButtonBitrateView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Form {
-            Section {
-                Picker("", selection: $stream.bitrate) {
-                    ForEach(database.bitratePresets) { preset in
-                        BitratePresetView(preset: preset)
+            if stream !== fallbackStream {
+                Section {
+                    Picker("", selection: $stream.bitrate) {
+                        ForEach(database.bitratePresets) { preset in
+                            BitratePresetView(preset: preset)
+                        }
                     }
+                    .onChange(of: stream.bitrate) { bitrate in
+                        model.setBitrate(bitrate: bitrate)
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
                 }
-                .onChange(of: stream.bitrate) { bitrate in
-                    model.setBitrate(bitrate: bitrate)
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
             }
             Section {
                 NavigationLink {

@@ -5,6 +5,15 @@ private func localize(_ languageCode: String) -> String {
     return NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
 }
 
+private func getVoice(appleVoices: [AVSpeechSynthesisVoice],
+                      languageCode: String,
+                      identifier: String) -> AVSpeechSynthesisVoice?
+{
+    return appleVoices.first(where: {
+        $0.language.prefix(2) == languageCode && $0.identifier == identifier
+    })
+}
+
 private let testMessageByLanguage = [
     "ar": "هذا ما يتحدث عنه جمهورك! استمع بعناية!",
     "bg": "Това говорят вашите зрители! Слушайте внимателно!",
@@ -44,45 +53,185 @@ private let testMessageByLanguage = [
     "zh": "這是觀眾的發言！仔細聽！",
 ]
 
-private struct LanguageView: View {
+private func getTestMessage(_ languageCode: String) -> String {
+    return testMessageByLanguage[languageCode] ?? ""
+}
+
+private enum Voice {
+    case apple(name: String, identifier: String)
+    case ttsMonster(name: String, voiceId: String)
+
+    init(voice: SettingsVoice) {
+        switch voice.type {
+        case .apple:
+            self = .apple(name: "", identifier: voice.apple.voice)
+        case .ttsMonster:
+            self = .ttsMonster(name: voice.ttsMonster.name, voiceId: voice.ttsMonster.voiceId)
+        }
+    }
+}
+
+private struct VoicePickerItem: Identifiable, Equatable, Hashable {
+    var id: String {
+        switch voice {
+        case let .apple(_, identifier):
+            return "apple:\(identifier)"
+        case let .ttsMonster(_, voice_id):
+            return "tts-monster:\(voice_id)"
+        }
+    }
+
+    let flagEmoji: String
+    let voice: Voice
+
+    static func == (lhs: VoicePickerItem, rhs: VoicePickerItem) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    func toSettings() -> SettingsVoice {
+        let settings = SettingsVoice()
+        switch voice {
+        case let .apple(_, identifier):
+            settings.type = .apple
+            settings.apple.voice = identifier
+        case let .ttsMonster(name, voiceId):
+            settings.type = .ttsMonster
+            settings.ttsMonster.name = name
+            settings.ttsMonster.voiceId = voiceId
+        }
+        return settings
+    }
+}
+
+private struct VoiceView: View {
+    let voiceItem: VoicePickerItem
+    let appleVoices: [AVSpeechSynthesisVoice]
     let languageCode: String
-    @State var voice: String
-    let onVoiceChange: (String, String) -> Void
+    let synthesizer: AVSpeechSynthesizer
+    @State var audioPlayer: AVAudioPlayer?
+    @Binding var rate: Float
+    @Binding var volume: Float
+    let ttsMonsterApiToken: String
+    @State private var fetching: Bool = false
+
+    private func playAppleTestMessage(languageCode: String, identifier: String) {
+        let utterance = AVSpeechUtterance(string: getTestMessage(languageCode))
+        utterance.rate = rate
+        utterance.pitchMultiplier = 0.8
+        utterance.volume = volume
+        utterance.voice = getVoice(appleVoices: appleVoices,
+                                   languageCode: languageCode,
+                                   identifier: identifier)
+        synthesizer.speak(utterance)
+    }
+
+    private func playTtsMonsterTestMessage(voiceId: String) {
+        Task { @MainActor in
+            guard !ttsMonsterApiToken.isEmpty else {
+                return
+            }
+            fetching = true
+            defer {
+                fetching = false
+            }
+            let ttsMonster = TtsMonster(apiToken: ttsMonsterApiToken)
+            let message = getTestMessage(languageCode)
+            guard let data = await ttsMonster.generateTts(voiceId: voiceId, message: message) else {
+                return
+            }
+            audioPlayer = try? AVAudioPlayer(data: data)
+            audioPlayer?.play()
+        }
+    }
+
+    var body: some View {
+        HStack {
+            switch voiceItem.voice {
+            case let .apple(name: name, identifier: identifier):
+                Image(systemName: "apple.logo")
+                    .frame(width: 15)
+                Text("\(voiceItem.flagEmoji) \(name)")
+                Spacer()
+                Button {
+                    playAppleTestMessage(languageCode: languageCode, identifier: identifier)
+                } label: {
+                    Image(systemName: "play.fill")
+                }
+            case let .ttsMonster(name: name, voiceId: voiceId):
+                Image("TtsMonster")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 15)
+                Text("\(voiceItem.flagEmoji) \(name)")
+                Spacer()
+                Button {
+                    playTtsMonsterTestMessage(voiceId: voiceId)
+                } label: {
+                    if fetching {
+                        ProgressView()
+                    } else {
+                        Image(systemName: "play.fill")
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct LanguageView: View {
+    let appleVoices: [AVSpeechSynthesisVoice]
+    let ttsMonsterVoices: TtsMonsterVoicesResponse?
+    let languageCode: String
+    @State var selectedVoice: VoicePickerItem?
+    let onVoiceChange: (String, SettingsVoice) -> Void
     let synthesizer: AVSpeechSynthesizer
     @Binding var rate: Float
     @Binding var volume: Float
+    let ttsMonsterApiToken: String
 
-    private func voices(language: String) -> [AVSpeechSynthesisVoice] {
-        return AVSpeechSynthesisVoice.speechVoices().filter { $0.language.prefix(2) == language }
+    private func voices(languageCode: String) -> [VoicePickerItem] {
+        var voices: [VoicePickerItem] = []
+        for voice in appleVoices where voice.language.prefix(2) == languageCode {
+            let flagEmoji = emojiFlag(countryCode: Locale(identifier: voice.language).region?.identifier)
+            voices.append(VoicePickerItem(flagEmoji: flagEmoji,
+                                          voice: .apple(name: voice.name, identifier: voice.identifier)))
+        }
+        for voice in ttsMonsterVoices?.allVoices() ?? [] where voice.languageCode() == languageCode {
+            let flagEmoji = emojiFlag(countryCode: voice.countryCode())
+            voices.append(VoicePickerItem(flagEmoji: flagEmoji,
+                                          voice: .ttsMonster(name: voice.name, voiceId: voice.voice_id)))
+        }
+        return voices
     }
 
     var body: some View {
         Form {
             Section {
-                Picker("", selection: $voice) {
-                    ForEach(voices(language: languageCode), id: \.identifier) { voice in
-                        let emote = emojiFlag(country: Locale(identifier: voice.language).region?.identifier ?? "")
-                        HStack {
-                            Text("\(emote) \(voice.name)")
-                                .tag(voice.identifier)
-                            Spacer()
-                            Button {
-                                let utterance = AVSpeechUtterance(string: testMessageByLanguage[languageCode] ?? "")
-                                utterance.rate = rate
-                                utterance.pitchMultiplier = 0.8
-                                utterance.volume = volume
-                                utterance.voice = voice
-                                synthesizer.speak(utterance)
-                            } label: {
-                                Image(systemName: "play.fill")
-                            }
-                        }
+                Picker("", selection: $selectedVoice) {
+                    ForEach(voices(languageCode: languageCode)) { voiceItem in
+                        VoiceView(
+                            voiceItem: voiceItem,
+                            appleVoices: appleVoices,
+                            languageCode: languageCode,
+                            synthesizer: synthesizer,
+                            rate: $rate,
+                            volume: $volume,
+                            ttsMonsterApiToken: ttsMonsterApiToken
+                        )
+                        .tag(voiceItem as VoicePickerItem?)
                     }
                 }
                 .pickerStyle(.inline)
                 .labelsHidden()
-                .onChange(of: voice) { _ in
-                    onVoiceChange(languageCode, voice)
+                .onChange(of: selectedVoice) { _ in
+                    guard let selectedVoice else {
+                        return
+                    }
+                    onVoiceChange(languageCode, selectedVoice.toSettings())
                 }
             }
             Section {
@@ -99,35 +248,40 @@ private struct LanguageView: View {
 private struct Language {
     let name: String
     let code: String
-    let selectedVoiceIdentifier: String
-    let selectedVoiceName: String
+    let selectedVoice: SettingsVoice?
 }
 
 struct VoicesView: View {
-    @Binding var textToSpeechLanguageVoices: [String: String]
-    let onVoiceChange: (String, String) -> Void
+    @Binding var textToSpeechLanguageVoices: [String: SettingsVoice]
+    let onVoiceChange: (String, SettingsVoice) -> Void
     private let synthesizer = createSpeechSynthesizer()
     @Binding var rate: Float
     @Binding var volume: Float
+    @State private var appleVoices: [AVSpeechSynthesisVoice] = []
+    @State private var ttsMonsterVoices: TtsMonsterVoicesResponse?
+    let ttsMonsterApiToken: String
 
     private func languages() -> [Language] {
         var languages: [Language] = []
         var seen: Set<String> = []
-        let voices = AVSpeechSynthesisVoice.speechVoices()
-        for voice in voices {
+        for voice in appleVoices {
             let code = String(voice.language.prefix(2))
             guard !seen.contains(code) else {
                 continue
             }
-            let selectedVoiceIdentifier = textToSpeechLanguageVoices[code] ?? ""
-            let selectedVoiceName = voices.first(where: { $0.identifier == selectedVoiceIdentifier })?.name ?? ""
-            languages.append(.init(name: localize(voice.language),
-                                   code: code,
-                                   selectedVoiceIdentifier: selectedVoiceIdentifier,
-                                   selectedVoiceName: selectedVoiceName))
+            languages.append(Language(name: localize(voice.language),
+                                      code: code,
+                                      selectedVoice: textToSpeechLanguageVoices[code]))
             seen.insert(code)
         }
         return languages
+    }
+
+    private func selectedVoice(language: Language) -> VoicePickerItem? {
+        guard let selectedVoice = language.selectedVoice else {
+            return nil
+        }
+        return VoicePickerItem(flagEmoji: emojiFlag(countryCode: language.code), voice: Voice(voice: selectedVoice))
     }
 
     var body: some View {
@@ -135,22 +289,50 @@ struct VoicesView: View {
             ForEach(languages(), id: \.code) { language in
                 NavigationLink {
                     LanguageView(
+                        appleVoices: appleVoices,
+                        ttsMonsterVoices: ttsMonsterVoices,
                         languageCode: language.code,
-                        voice: language.selectedVoiceIdentifier,
+                        selectedVoice: selectedVoice(language: language),
                         onVoiceChange: onVoiceChange,
                         synthesizer: synthesizer,
                         rate: $rate,
-                        volume: $volume
+                        volume: $volume,
+                        ttsMonsterApiToken: ttsMonsterApiToken
                     )
                 } label: {
                     HStack {
                         Text(language.name)
                         Spacer()
-                        Text(language.selectedVoiceName)
+                        if let selectedVoice = language.selectedVoice {
+                            switch selectedVoice.type {
+                            case .apple:
+                                Image(systemName: "apple.logo")
+                                    .frame(width: 15)
+                                Text(getVoice(appleVoices: appleVoices,
+                                              languageCode: language.code,
+                                              identifier: selectedVoice.apple.voice)?
+                                        .name ?? String(localized: "Unknown"))
+                            case .ttsMonster:
+                                Image("TtsMonster")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 15)
+                                Text(selectedVoice.ttsMonster.name)
+                            }
+                        }
                     }
                 }
             }
         }
         .navigationTitle("Voices")
+        .onAppear {
+            appleVoices = AVSpeechSynthesisVoice.speechVoices()
+        }
+        .task {
+            if ttsMonsterVoices == nil, !ttsMonsterApiToken.isEmpty {
+                let ttsMonster = TtsMonster(apiToken: ttsMonsterApiToken)
+                ttsMonsterVoices = await ttsMonster.getVoices()
+            }
+        }
     }
 }

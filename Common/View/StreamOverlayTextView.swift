@@ -5,7 +5,7 @@ struct StreamOverlayTextView: View {
 
     var body: some View {
         Text(text)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .padding([.leading, .trailing], 2)
             .background(backgroundColor)
             .cornerRadius(5)

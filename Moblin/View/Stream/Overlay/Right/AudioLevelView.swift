@@ -42,31 +42,31 @@ private struct AudioBarView: View {
     var body: some View {
         if level.level.isNaN {
             Text("Muted")
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
         } else if level.level == .infinity {
             Text("Unknown")
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
         } else {
             HStack(spacing: 0) {
                 if let width = clippingBar() {
                     Rectangle()
                         .frame(width: width, height: barHeight)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                 } else {
                     if let width = redBar() {
                         Rectangle()
                             .frame(width: width, height: barHeight)
-                            .foregroundColor(.red)
+                            .foregroundStyle(.red)
                     }
                     if let width = yellowBar() {
                         Rectangle()
                             .frame(width: width, height: barHeight)
-                            .foregroundColor(.yellow)
+                            .foregroundStyle(.yellow)
                     }
                     if let width = greenBar() {
                         Rectangle()
                             .frame(width: width, height: barHeight)
-                            .foregroundColor(.green)
+                            .foregroundStyle(.green)
                     }
                 }
             }
@@ -81,7 +81,7 @@ private struct ChannelsView: View {
     var body: some View {
         if audio.numberOfChannels != 1 {
             Text(formatAudioLevelChannels(channels: audio.numberOfChannels))
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
         }
     }
 }
@@ -92,7 +92,7 @@ private struct SampleRateView: View {
     var body: some View {
         if audio.sampleRate != 48000 {
             Text(formatAudioLevelSampleRate(sampleRate: audio.sampleRate))
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
         }
     }
 }
@@ -115,7 +115,7 @@ struct AudioLevelView: View {
                 .frame(width: 17, height: 17)
                 .font(smallFont)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .background(backgroundColor)
                 .cornerRadius(5)
         }

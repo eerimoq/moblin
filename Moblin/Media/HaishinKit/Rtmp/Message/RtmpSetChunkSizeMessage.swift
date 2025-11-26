@@ -12,10 +12,6 @@ final class RtmpSetChunkSizeMessage: RtmpMessage {
         self.size = size
     }
 
-    override func execute(_ connection: RtmpConnection) {
-        connection.socket.maximumChunkSizeFromServer = Int(size)
-    }
-
     override var encoded: Data {
         get {
             guard super.encoded.isEmpty else {

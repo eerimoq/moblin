@@ -57,22 +57,18 @@ struct LocationSettingsView: View {
             }
             Section {
                 Toggle("Reset when going live", isOn: $location.resetWhenGoingLive)
-                Button {
+                TextButtonView("Reset") {
                     model.resetLocationData()
-                } label: {
-                    HCenter {
-                        Text("Reset")
-                    }
                 }
             } header: {
                 Text("Location data")
             } footer: {
                 Text("Resets distance, average speed and slope.")
             }
-            if database.showAllSettings {
+            if database.showAllSettings, stream !== fallbackStream {
                 Section {
                     NavigationLink {
-                        StreamRealtimeIrlSettingsView(stream: model.stream)
+                        StreamRealtimeIrlSettingsView(stream: stream)
                     } label: {
                         Toggle(isOn: $stream.realtimeIrlEnabled) {
                             Label("RealtimeIRL", systemImage: "dot.radiowaves.left.and.right")

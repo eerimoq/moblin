@@ -1,11 +1,16 @@
 import AVFoundation
-import MetalPetal
+import CoreImage
 import Vision
 
 struct ShapeEffectSettings {
     var cornerRadius: Float = 0
     var borderWidth: Double = 1.0
     var borderColor: CIColor = .black
+    var cropEnabled: Bool = false
+    var cropX: Double = 0.25
+    var cropY: Double = 0.0
+    var cropWidth: Double = 0.5
+    var cropHeight: Double = 1.0
 
     func borderWidthAndScale(_ image: CGRect) -> (Double, Double, Double) {
         let borderWidth = 0.025 * borderWidth * min(image.height, image.width)
@@ -54,8 +59,8 @@ final class ShapeEffect: VideoEffect {
         _ size: CGSize,
         _ mirror: Bool
     ) -> (Double, Double) {
-        var scaleX = toPixels(sceneWidget.width, size.width) / videoSourceImage.extent.size.width
-        let scaleY = toPixels(sceneWidget.height, size.height) / videoSourceImage.extent.size.height
+        var scaleX = toPixels(sceneWidget.layout.size, size.width) / videoSourceImage.extent.size.width
+        let scaleY = toPixels(sceneWidget.layout.size, size.height) / videoSourceImage.extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
             scaleX = -1 * scale
@@ -73,11 +78,11 @@ final class ShapeEffect: VideoEffect {
         _ scaleY: Double,
         _ mirror: Bool
     ) -> CGAffineTransform {
-        var x = toPixels(sceneWidget.x, size.width)
+        var x = toPixels(sceneWidget.layout.x, size.width)
         if mirror {
             x -= videoSourceImage.extent.width * scaleX
         }
-        let y = size.height - toPixels(sceneWidget.y, size.height) - videoSourceImage.extent.height * scaleY
+        let y = size.height - toPixels(sceneWidget.layout.y, size.height) - videoSourceImage.extent.height * scaleY
         return CGAffineTransform(translationX: x, y: y)
     }
 
@@ -85,10 +90,11 @@ final class ShapeEffect: VideoEffect {
         if settings.borderWidth == 0 {
             return image
         } else {
-            let (width, scaleX, scaleY) = settings.borderWidthAndScale(image.extent)
-            let borderImage = CIImage(color: settings.borderColor).cropped(to: image.extent)
-                .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-                .transformed(by: CGAffineTransform(translationX: -1 * width, y: -width))
+            let (borderWidth, scaleX, scaleY) = settings.borderWidthAndScale(image.extent)
+            let borderImage = CIImage(color: settings.borderColor)
+                .cropped(to: image.extent)
+                .scaled(x: scaleX, y: scaleY)
+                .translated(x: -borderWidth, y: -borderWidth)
             return image.composited(over: borderImage)
         }
     }
@@ -100,10 +106,11 @@ final class ShapeEffect: VideoEffect {
             roundedCornersBlender.maskImage = makeRoundedRectangleMask(image, settings.cornerRadius)
             return roundedCornersBlender.outputImage ?? image
         } else {
-            let (width, scaleX, scaleY) = settings.borderWidthAndScale(image.extent)
-            let borderImage = CIImage(color: settings.borderColor).cropped(to: image.extent)
-                .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-                .transformed(by: CGAffineTransform(translationX: -1.0 * width, y: -width))
+            let (borderWidth, scaleX, scaleY) = settings.borderWidthAndScale(image.extent)
+            let borderImage = CIImage(color: settings.borderColor)
+                .cropped(to: image.extent)
+                .scaled(x: scaleX, y: scaleY)
+                .translated(x: -borderWidth, y: -borderWidth)
             let roundedCornersBlender = CIFilter.blendWithMask()
             roundedCornersBlender.inputImage = borderImage
             roundedCornersBlender.maskImage = makeRoundedRectangleMask(borderImage, settings.cornerRadius)
@@ -116,6 +123,29 @@ final class ShapeEffect: VideoEffect {
                 return image
             }
             return widgetImage.composited(over: roundedBorderImage)
+        }
+    }
+
+    private func crop(_ image: CIImage) -> CIImage {
+        let cropX = toPixels(100 * settings.cropX, image.extent.width)
+        let cropY = toPixels(100 * settings.cropY, image.extent.height)
+        let cropWidth = toPixels(100 * settings.cropWidth, image.extent.width)
+        let cropHeight = toPixels(100 * settings.cropHeight, image.extent.height)
+        return image
+            .cropped(to: .init(
+                x: cropX,
+                y: image.extent.height - cropY - cropHeight,
+                width: cropWidth,
+                height: cropHeight
+            ))
+            .translated(x: -cropX, y: -(image.extent.height - cropY - cropHeight))
+    }
+
+    override func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+        if settings.cropEnabled {
+            return crop(image)
+        } else {
+            return image
         }
     }
 

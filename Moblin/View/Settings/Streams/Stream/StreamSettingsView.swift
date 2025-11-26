@@ -3,6 +3,7 @@ import SwiftUI
 struct PlatformLogoAndNameView: View {
     let logo: String
     let name: String
+    var channel: String = ""
 
     var body: some View {
         HStack {
@@ -10,62 +11,137 @@ struct PlatformLogoAndNameView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 30, height: 25)
-            Text(name)
+            if channel.isEmpty {
+                Text(name)
+            } else {
+                Text(String("\(name) (\(channel))"))
+            }
         }
     }
 }
 
 struct TwitchLogoAndNameView: View {
+    var channel: String = ""
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "TwitchLogo", name: String(localized: "Twitch"))
+        PlatformLogoAndNameView(logo: "TwitchLogo", name: String(localized: "Twitch"), channel: channel)
     }
 }
 
 struct KickLogoAndNameView: View {
+    var channel: String = ""
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "KickLogo", name: String(localized: "Kick"))
+        PlatformLogoAndNameView(logo: "KickLogo", name: String(localized: "Kick"), channel: channel)
     }
 }
 
 struct YouTubeLogoAndNameView: View {
+    var handle: String = ""
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "YouTubeLogo", name: String(localized: "YouTube"))
+        PlatformLogoAndNameView(logo: "YouTubeLogo", name: String(localized: "YouTube"), channel: handle)
+    }
+}
+
+struct DLiveLogoAndNameView: View {
+    var username: String = ""
+
+    var body: some View {
+        PlatformLogoAndNameView(logo: "DLiveLogo", name: String(localized: "DLive"), channel: username)
+    }
+}
+
+struct OpenStreamingPlatformLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "OpenStreamingPlatform", name: String(localized: "Open Streaming Platform"))
+    }
+}
+
+struct SoopLogoAndNameView: View {
+    var channel: String = ""
+
+    var body: some View {
+        PlatformLogoAndNameView(logo: "SoopLogo", name: String(localized: "SOOP"), channel: channel)
+    }
+}
+
+struct ObsLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "ObsLogo", name: String(localized: "OBS"))
+    }
+}
+
+struct DiscordLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "DiscordLogo", name: String(localized: "Discord"))
+    }
+}
+
+struct TtsMonsterLogoAndNameView: View {
+    var body: some View {
+        PlatformLogoAndNameView(logo: "TtsMonster", name: String(localized: "TTS.Monster"))
     }
 }
 
 struct StreamPlatformsSettingsView: View {
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
 
     var body: some View {
         NavigationLink {
             StreamTwitchSettingsView(stream: stream, loggedIn: stream.twitchLoggedIn)
         } label: {
-            TwitchLogoAndNameView()
+            HStack {
+                TwitchLogoAndNameView()
+                Spacer()
+                Text(stream.twitchChannelName)
+                    .foregroundStyle(.gray)
+            }
         }
         NavigationLink {
             StreamKickSettingsView(stream: stream)
         } label: {
-            KickLogoAndNameView()
+            HStack {
+                KickLogoAndNameView()
+                Spacer()
+                Text(stream.kickChannelName)
+                    .foregroundStyle(.gray)
+            }
         }
         NavigationLink {
             StreamYouTubeSettingsView(stream: stream)
         } label: {
-            YouTubeLogoAndNameView()
+            HStack {
+                YouTubeLogoAndNameView()
+                Spacer()
+                Text(stream.youTubeHandle)
+                    .foregroundStyle(.gray)
+            }
         }
         NavigationLink {
-            StreamAfreecaTvSettingsView(stream: stream)
+            StreamDLiveSettingsView(stream: stream)
         } label: {
-            Text("AfreecaTV")
+            HStack {
+                DLiveLogoAndNameView()
+                Spacer()
+                Text(stream.dLiveUsername)
+                    .foregroundStyle(.gray)
+            }
+        }
+        NavigationLink {
+            StreamSoopSettingsView(stream: stream)
+        } label: {
+            HStack {
+                SoopLogoAndNameView()
+                Spacer()
+                Text(stream.soopChannelName)
+                    .foregroundStyle(.gray)
+            }
         }
         NavigationLink {
             StreamOpenStreamingPlatformSettingsView(stream: stream)
         } label: {
-            Text("Open Streaming Platform")
-        }
-        NavigationLink {
-            StreamEmotesSettingsView(stream: stream)
-        } label: {
-            Text("Emotes")
+            OpenStreamingPlatformLogoAndNameView()
         }
     }
 }
@@ -84,7 +160,7 @@ struct StreamSettingsView: View {
                 NavigationLink {
                     StreamUrlSettingsView(stream: stream)
                 } label: {
-                    TextItemView(name: String(localized: "URL"), value: schemeAndAddress(url: stream.url))
+                    TextItemView(name: String(localized: "URL"), value: stream.url, sensitive: true)
                 }
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink {
@@ -104,17 +180,19 @@ struct StreamSettingsView: View {
                     NavigationLink {
                         StreamRecordingSettingsView(stream: stream, recording: stream.recording)
                     } label: {
-                        Text("Recording")
+                        IconAndTextSettingView(image: "record.circle", text: "Recording")
                     }
-                    NavigationLink {
-                        StreamReplaySettingsView(stream: stream, replay: stream.replay)
-                    } label: {
-                        Text("Replay")
-                    }
+                }
+                NavigationLink {
+                    StreamReplaySettingsView(stream: stream, replay: stream.replay)
+                } label: {
+                    IconAndTextSettingView(image: "play", text: "Replay")
+                }
+                if database.showAllSettings {
                     NavigationLink {
                         StreamSnapshotSettingsView(stream: stream, recording: stream.recording)
                     } label: {
-                        Text("Snapshot")
+                        IconAndTextSettingView(image: "camera.aperture", text: "Snapshot")
                     }
                 }
                 if isPhone() || isPad() {
@@ -138,7 +216,7 @@ struct StreamSettingsView: View {
                             StreamSrtSettingsView(
                                 debug: database.debug,
                                 stream: stream,
-                                dnsLookupStrategy: stream.srt.dnsLookupStrategy!.rawValue
+                                dnsLookupStrategy: stream.srt.dnsLookupStrategy.rawValue
                             )
                         } label: {
                             Text("SRT(LA)")
@@ -195,6 +273,11 @@ struct StreamSettingsView: View {
                             }
                         }))
                     }
+                }
+                NavigationLink {
+                    StreamEmotesSettingsView(stream: stream)
+                } label: {
+                    Text("Emotes")
                 }
             }
             if database.showAllSettings {

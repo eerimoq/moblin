@@ -27,6 +27,7 @@ struct StreamOpenStreamingPlatformSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
                     value: stream.openStreamingPlatformUrl,
+                    onChange: isValidWebSocketUrl,
                     onSubmit: submitUrl,
                     placeholder: "ws://foo.org:5443/ws"
                 )

@@ -11,7 +11,7 @@ struct TextItemView: View {
             Text(name)
             Spacer()
             Text(replaceSensitive(value: value, sensitive: sensitive))
-                .foregroundColor(color)
+                .foregroundStyle(color)
                 .lineLimit(1)
         }
     }

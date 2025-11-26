@@ -184,7 +184,8 @@ extension Model {
             }
             let (status, _) = formatDeviceStatus(
                 name: device.name,
-                batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage()
+                batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage(),
+                thermalState: nil
             )
             statuses.append(status)
         }

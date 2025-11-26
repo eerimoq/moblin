@@ -40,7 +40,7 @@ struct StreamSnapshotSettingsView: View {
                 )
                 Toggle("Only when live", isOn: $stream.discordSnapshotWebhookOnlyWhenLive)
             } header: {
-                Text("Discord")
+                DiscordLogoAndNameView()
             } footer: {
                 VStack(alignment: .leading) {
                     Text("""

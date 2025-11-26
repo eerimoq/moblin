@@ -1,7 +1,6 @@
 import AVFoundation
 import Collections
 import CoreImage
-import MetalPetal
 import UIKit
 import VideoToolbox
 import Vision
@@ -24,6 +23,7 @@ struct VideoUnitAttachParams {
     let isVideoMirrored: Bool
     let ignoreFramesAfterAttachSeconds: Double
     let fillFrame: Bool
+    let isLandscapeStreamAndPortraitUi: Bool
 }
 
 enum SceneSwitchTransition {
@@ -43,25 +43,26 @@ struct CaptureDevices {
 }
 
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-var ioVideoUnitMetalPetal = false
 var allowVideoRangePixelFormat = false
 private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections", attributes: .concurrent)
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
 
 private func setOrientation(
     device: AVCaptureDevice?,
+    isLandscapeStreamAndPortraitUi: Bool,
     connection: AVCaptureConnection,
     orientation: AVCaptureVideoOrientation
 ) {
     if #available(iOS 17.0, *), device?.deviceType == .external {
         connection.videoOrientation = .landscapeRight
+    } else if #available(iOS 26, *), isLandscapeStreamAndPortraitUi, device?.dynamicAspectRatio == .ratio9x16 {
+        connection.videoOrientation = .portrait
     } else {
         connection.videoOrientation = orientation
     }
 }
 
 private class FaceDetectionsCompletion {
-    // periphery:ignore
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
@@ -105,14 +106,13 @@ final class VideoUnit: NSObject {
     private var device: AVCaptureDevice?
     private var captureSessionDevices: [CaptureSessionDevice] = []
     private let context = CIContext()
-    private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
     private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
     private var captureSize = CGSize(width: 1920, height: 1080)
-    private var outputSize = CGSize(width: 1920, height: 1080)
+    var canvasSize = CGSize(width: 1920, height: 1080)
     private var fillFrame = true
     let session = makeCaptureSession()
     let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
@@ -168,6 +168,10 @@ final class VideoUnit: NSObject {
     private var blackImage: CIImage?
     private var outputCounter: Int64 = -1
     private var startPresentationTimeStamp: CMTime = .zero
+    private var isLandscapeStreamAndPortraitUi = false
+    private var framesCounter = 0
+    private var latestReportedFps = -1
+    private var nextFpsReportTime: Double = 0.0
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
@@ -177,7 +181,10 @@ final class VideoUnit: NSObject {
             session.beginConfiguration()
             for device in captureSessionDevices {
                 for connection in device.output.connections.filter({ $0.isVideoOrientationSupported }) {
-                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                    setOrientation(device: device.device,
+                                   isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
+                                   connection: connection,
+                                   orientation: videoOrientation)
                 }
             }
             session.commitConfiguration()
@@ -197,11 +204,6 @@ final class VideoUnit: NSObject {
     }
 
     override init() {
-        if let metalDevice = MTLCreateSystemDefaultDevice() {
-            metalPetalContext = try? MTIContext(device: metalDevice)
-        } else {
-            metalPetalContext = nil
-        }
         videoUnitBuiltinDevice = nil
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
@@ -363,23 +365,25 @@ final class VideoUnit: NSObject {
 
     func startEncoding(_ delegate: any VideoEncoderDelegate) {
         encoder.delegate = delegate
+        encoder.controlDelegate = self
         encoder.startRunning()
     }
 
     func stopEncoding() {
         encoder.stopRunning()
-        encoder.delegate = nil
+        processor?.delegate?.streamVideoEncoderResolution(resolution: canvasSize)
     }
 
-    func setSize(capture: CGSize, output: CGSize) {
+    func setSize(capture: CGSize, canvas: CGSize) {
         captureSize = capture
-        outputSize = output
+        canvasSize = canvas
         updateDevicesFormat()
         processorPipelineQueue.async {
             self.blackImage = nil
             self.pool = nil
             self.bufferedPool = nil
         }
+        processor?.delegate?.streamVideoEncoderResolution(resolution: canvasSize)
     }
 
     func getCiImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
@@ -428,6 +432,7 @@ final class VideoUnit: NSObject {
                 self.unregisterEffectInner(effect)
             }
         }
+        isLandscapeStreamAndPortraitUi = params.isLandscapeStreamAndPortraitUi
         for device in params.devices.devices {
             setDeviceFormat(
                 device: device.device,
@@ -458,7 +463,10 @@ final class VideoUnit: NSObject {
                     connection.isVideoMirrored = params.isVideoMirrored
                 }
                 if connection.isVideoOrientationSupported {
-                    setOrientation(device: device.device, connection: connection, orientation: videoOrientation)
+                    setOrientation(device: device.device,
+                                   isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
+                                   connection: connection,
+                                   orientation: videoOrientation)
                 }
                 if connection.isVideoStabilizationSupported {
                     connection.preferredVideoStabilizationMode = params.preferredVideoStabilizationMode
@@ -681,8 +689,8 @@ final class VideoUnit: NSObject {
             kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
             kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
             kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
-            kCVPixelBufferWidthKey: NSNumber(value: outputSize.width),
-            kCVPixelBufferHeightKey: NSNumber(value: outputSize.height),
+            kCVPixelBufferWidthKey: NSNumber(value: canvasSize.width),
+            kCVPixelBufferHeightKey: NSNumber(value: canvasSize.height),
         ]
         poolColorSpace = nil
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
@@ -755,8 +763,8 @@ final class VideoUnit: NSObject {
         attributes[kCVPixelBufferPixelFormatTypeKey] = NSNumber(value: pixelFormatType)
         attributes[kCVPixelBufferIOSurfacePropertiesKey] = NSDictionary()
         attributes[kCVPixelBufferMetalCompatibilityKey] = kCFBooleanTrue
-        attributes[kCVPixelBufferWidthKey] = NSNumber(value: outputSize.width)
-        attributes[kCVPixelBufferHeightKey] = NSNumber(value: outputSize.height)
+        attributes[kCVPixelBufferWidthKey] = NSNumber(value: canvasSize.width)
+        attributes[kCVPixelBufferHeightKey] = NSNumber(value: canvasSize.height)
         bufferedPoolColorSpace = nil
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
         if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
@@ -825,28 +833,12 @@ final class VideoUnit: NSObject {
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             videoUnit: self
         )
-        if #available(iOS 17.2, *), colorSpace == .appleLog {
-            return applyEffectsCoreImage(
-                imageBuffer,
-                sampleBuffer,
-                isSceneSwitchTransition,
-                info
-            )
-        } else if ioVideoUnitMetalPetal {
-            return applyEffectsMetalPetal(
-                imageBuffer,
-                sampleBuffer,
-                isSceneSwitchTransition,
-                info
-            )
-        } else {
-            return applyEffectsCoreImage(
-                imageBuffer,
-                sampleBuffer,
-                isSceneSwitchTransition,
-                info
-            )
-        }
+        return applyEffectsCoreImage(
+            imageBuffer,
+            sampleBuffer,
+            isSceneSwitchTransition,
+            info
+        )
     }
 
     private func removeEffects() {
@@ -868,26 +860,26 @@ final class VideoUnit: NSObject {
 
     private func scaleImage(_ image: CIImage) -> CIImage {
         let imageRatio = image.extent.height / image.extent.width
-        let outputRatio = outputSize.height / outputSize.width
+        let canvasRatio = canvasSize.height / canvasSize.width
         var scaleFactor: Double
         var x: Double
         var y: Double
-        if (fillFrame && (outputRatio < imageRatio)) || (!fillFrame && (outputRatio > imageRatio)) {
-            scaleFactor = Double(outputSize.width) / image.extent.width
+        if (fillFrame && (canvasRatio < imageRatio)) || (!fillFrame && (canvasRatio > imageRatio)) {
+            scaleFactor = Double(canvasSize.width) / image.extent.width
             x = 0
-            y = (Double(outputSize.height) - image.extent.height * scaleFactor) / 2
+            y = (Double(canvasSize.height) - image.extent.height * scaleFactor) / 2
         } else {
-            scaleFactor = Double(outputSize.height) / image.extent.height
-            x = (Double(outputSize.width) - image.extent.width * scaleFactor) / 2
+            scaleFactor = Double(canvasSize.height) / image.extent.height
+            x = (Double(canvasSize.width) - image.extent.width * scaleFactor) / 2
             y = 0
         }
         return image
-            .transformed(by: CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
-            .transformed(by: CGAffineTransform(translationX: x, y: y))
-            .cropped(to: CGRect(x: 0, y: 0, width: outputSize.width, height: outputSize.height))
+            .scaled(x: scaleFactor, y: scaleFactor)
+            .translated(x: x, y: y)
+            .cropped(to: CGRect(x: 0, y: 0, width: canvasSize.width, height: canvasSize.height))
             .composited(over: getBlackImage(
-                width: Double(outputSize.width),
-                height: Double(outputSize.height)
+                width: Double(canvasSize.width),
+                height: Double(canvasSize.height)
             ))
     }
 
@@ -914,7 +906,7 @@ final class VideoUnit: NSObject {
             image = image.oriented(.left)
         }
         image = rotateCoreImage(image, rotation)
-        if image.extent.size != outputSize {
+        if image.extent.size != canvasSize {
             image = scaleImage(image)
         }
         let extent = image.extent
@@ -922,12 +914,12 @@ final class VideoUnit: NSObject {
         if isSceneSwitchTransition {
             image = applySceneSwitchTransition(image)
         }
-        for effect in effects {
+        for effect in effects where effect.isEnabled() {
             let effectOutputImage = effect.execute(image, info)
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
             } else {
-                failedEffect = "\(effect.getName()) (wrong size)"
+                failedEffect = "\(effect.getName()) (wrong size \(effectOutputImage.extent)"
             }
         }
         processor?.delegate?.streamVideo(failedEffect: failedEffect)
@@ -954,28 +946,6 @@ final class VideoUnit: NSObject {
         return (outputImageBuffer, outputSampleBuffer)
     }
 
-    private func scaleImageMetalPetal(_ image: MTIImage?) -> MTIImage? {
-        guard let image = image?.resized(
-            to: CGSize(width: Double(outputSize.width), height: Double(outputSize.height)),
-            resizingMode: .aspect
-        ) else {
-            return image
-        }
-        let filter = MTIMultilayerCompositingFilter()
-        filter.inputBackgroundImage = MTIImage(
-            color: .black,
-            sRGB: false,
-            size: .init(width: CGFloat(outputSize.width), height: CGFloat(outputSize.height))
-        )
-        filter.layers = [
-            .init(
-                content: image,
-                position: .init(x: CGFloat(outputSize.width / 2), y: CGFloat(outputSize.height / 2))
-            ),
-        ]
-        return filter.outputImage
-    }
-
     private func calcBlurRadius() -> Float {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
@@ -996,69 +966,6 @@ final class VideoUnit: NSObject {
         } else {
             return 0.75
         }
-    }
-
-    private func applySceneSwitchTransitionMetalPetal(_ image: MTIImage?) -> MTIImage? {
-        guard let image else {
-            return nil
-        }
-        let filter = MTIMPSGaussianBlurFilter()
-        filter.inputImage = image
-        filter.radius = calcBlurRadius() * Float(image.extent.size.maximum() / 1920)
-        return filter.outputImage
-    }
-
-    private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
-                                        _ sampleBuffer: CMSampleBuffer,
-                                        _ isSceneSwitchTransition: Bool,
-                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
-    {
-        var image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
-        let originalImage = image
-        var failedEffect: String?
-        if imageBuffer.isPortrait() {
-            image = image?.oriented(.left)
-        }
-        if let imageToScale = image, imageToScale.size != outputSize {
-            image = scaleImageMetalPetal(image)
-        }
-        if isSceneSwitchTransition {
-            image = applySceneSwitchTransitionMetalPetal(image)
-        }
-        for effect in effects {
-            let effectOutputImage = effect.executeMetalPetal(image, info)
-            if effectOutputImage != nil {
-                image = effectOutputImage
-            } else {
-                failedEffect = "\(effect.getName()) (wrong size)"
-            }
-        }
-        processor?.delegate?.streamVideo(failedEffect: failedEffect)
-        guard originalImage != image, let image else {
-            return (nil, nil)
-        }
-        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
-            return (nil, nil)
-        }
-        do {
-            try metalPetalContext?.render(image, to: outputImageBuffer)
-        } catch {
-            logger.info("Metal petal error: \(error)")
-            return (nil, nil)
-        }
-        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
-        else {
-            return (nil, nil)
-        }
-        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
-                                                             formatDescription,
-                                                             sampleBuffer.duration,
-                                                             sampleBuffer.presentationTimeStamp,
-                                                             sampleBuffer.decodeTimeStamp)
-        else {
-            return (nil, nil)
-        }
-        return (outputImageBuffer, outputSampleBuffer)
     }
 
     private func applySceneSwitchTransition(_ image: CIImage) -> CIImage {
@@ -1084,8 +991,8 @@ final class VideoUnit: NSObject {
             let smallOffsetY = (height - smallHeight) / 2
             return filter.outputImage?
                 .cropped(to: CGRect(x: smallOffsetX, y: smallOffsetY, width: smallWidth, height: smallHeight))
-                .transformed(by: CGAffineTransform(translationX: -smallOffsetX, y: -smallOffsetY))
-                .transformed(by: CGAffineTransform(scaleX: scaleUpFactor, y: scaleUpFactor))
+                .translated(x: -smallOffsetX, y: -smallOffsetY)
+                .scaled(x: scaleUpFactor, y: scaleUpFactor)
                 .cropped(to: image.extent) ?? image
         }
     }
@@ -1158,8 +1065,8 @@ final class VideoUnit: NSObject {
         decodeTimeStamp: CMTime
     ) -> CMSampleBuffer? {
         if blackImageBuffer == nil || blackFormatDescription == nil {
-            let width = outputSize.width
-            let height = outputSize.height
+            let width = canvasSize.width
+            let height = canvasSize.height
             let pixelBufferAttributes: [NSString: AnyObject] = [
                 kCVPixelBufferPixelFormatTypeKey: NSNumber(value: pixelFormatType),
                 kCVPixelBufferIOSurfacePropertiesKey: NSDictionary(),
@@ -1212,7 +1119,7 @@ final class VideoUnit: NSObject {
         }
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
-        processor?.delegate?.streamVideo(presentationTimestamp: presentationTimeStamp)
+        updateFps(presentationTimeStamp)
         let faceDetectionVideoSourceIds = needsFaceDetections(presentationTimeStamp)
         let faceDetectionJobs = prepareFaceDetectionJobs(
             faceDetectionVideoSourceIds,
@@ -1241,7 +1148,7 @@ final class VideoUnit: NSObject {
                             // Only use 5 biggest to limit processing.
                             if let results = (request as? VNDetectFaceLandmarksRequest)?
                                 .results?
-                                .sorted(by: { a, b in a.boundingBox.height > b.boundingBox.height })
+                                .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
                                 .prefix(5)
                             {
                                 completion.faceDetections[faceDetectionJob.videoSourceId] = Array(results)
@@ -1267,14 +1174,32 @@ final class VideoUnit: NSObject {
         return true
     }
 
+    private func updateFps(_ presentationTimeStamp: Double) {
+        if nextFpsReportTime == 0 {
+            reportAndResetFps(fps: Int(fps), presentationTimeStamp)
+        } else {
+            framesCounter += 1
+            if presentationTimeStamp > nextFpsReportTime {
+                reportAndResetFps(fps: framesCounter / 2, presentationTimeStamp)
+            }
+        }
+    }
+
+    private func reportAndResetFps(fps: Int, _ presentationTimeStamp: Double) {
+        if fps != latestReportedFps {
+            processor?.delegate?.streamVideoFps(fps: fps)
+            latestReportedFps = fps
+        }
+        framesCounter = 0
+        nextFpsReportTime = presentationTimeStamp + 2
+    }
+
     private func faceDetectionsComplete(_ completion: FaceDetectionsCompletion) {
         guard completion.faceDetections.count == completion.faceDetectionJobs.count else {
             return
         }
         completedFaceDetections[completion.sequenceNumber] = completion
-        while let completion = completedFaceDetections
-            .removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber)
-        {
+        while let completion = completedFaceDetections.removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber) {
             appendSampleBufferWithFaceDetections(
                 completion.sampleBuffer,
                 completion.isFirstAfterAttach,
@@ -1284,6 +1209,13 @@ final class VideoUnit: NSObject {
             )
             nextCompletedFaceDetectionsSequenceNumber += 1
         }
+    }
+
+    private func isAnyEffectEnabled() -> Bool {
+        for effect in effects where effect.isEnabled() {
+            return true
+        }
+        return false
     }
 
     private func appendSampleBufferWithFaceDetections(
@@ -1301,7 +1233,11 @@ final class VideoUnit: NSObject {
         if isFirstAfterAttach {
             usePendingAfterAttachEffectsInner()
         }
-        if !effects.isEmpty || isSceneSwitchTransition || imageBuffer.size != outputSize || rotation != 0.0 {
+        if isAnyEffectEnabled()
+            || isSceneSwitchTransition
+            || imageBuffer.size != canvasSize
+            || rotation != 0.0
+        {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
                 sampleBuffer,
@@ -1314,8 +1250,6 @@ final class VideoUnit: NSObject {
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
-        // Recordings seems to randomly fail if moved after live stream encoding. Maybe because the
-        // sample buffer is copied in appendVideo()
         if cleanRecordings {
             processor?.recorder.appendVideo(sampleBuffer)
         } else {
@@ -1362,7 +1296,7 @@ final class VideoUnit: NSObject {
     private func createLowFpsImage(imageBuffer: CVImageBuffer) {
         var ciImage = CIImage(cvPixelBuffer: imageBuffer)
         let scale = 400.0 / Double(imageBuffer.width)
-        ciImage = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        ciImage = ciImage.scaled(x: scale, y: scale)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)
         processor?.delegate?.streamVideo(
@@ -1572,8 +1506,9 @@ final class VideoUnit: NSObject {
         fps: Float64,
         preferAutoFrameRate: Bool,
         colorSpace: AVCaptureColorSpace
-    ) -> (AVCaptureDevice.Format?, Bool, String?) {
+    ) -> (AVCaptureDevice.Format?, Bool, Bool, String?) {
         var useAutoFrameRate = false
+        var useLandscapeInPortrait = false
         var formats = device.formats
         formats = formats.filter { $0.isFrameRateSupported(fps) }
         if #available(iOS 18, *), preferAutoFrameRate {
@@ -1584,14 +1519,29 @@ final class VideoUnit: NSObject {
             }
         }
         formats = formats.filter { $0.formatDescription.dimensions.width == width }
-        formats = formats.filter { $0.formatDescription.dimensions.height == height }
+        if #available(iOS 26, *), isLandscapeStreamAndPortraitUi {
+            let formatsWithRatio9x16 = formats.filter { $0.supportedDynamicAspectRatios.contains(.ratio9x16) }
+            if !formatsWithRatio9x16.isEmpty {
+                formats = formatsWithRatio9x16
+                useLandscapeInPortrait = true
+            } else {
+                formats = formats.filter { $0.formatDescription.dimensions.height == height }
+            }
+        } else {
+            formats = formats.filter { $0.formatDescription.dimensions.height == height }
+        }
         formats = formats.filter { $0.supportedColorSpaces.contains(colorSpace) }
         if formats.isEmpty {
-            return (nil, useAutoFrameRate, "No video format found matching \(height)p\(Int(fps)), \(colorSpace)")
+            return (
+                nil,
+                useAutoFrameRate,
+                useLandscapeInPortrait,
+                "No video format found matching \(height)p\(Int(fps)), \(colorSpace)"
+            )
         }
         formats = formats.filter { !$0.isVideoBinned }
         if formats.isEmpty {
-            return (nil, useAutoFrameRate, "No unbinned video format found")
+            return (nil, useAutoFrameRate, useLandscapeInPortrait, "No unbinned video format found")
         }
         // 420v does not work with OA4.
         formats = formats.filter {
@@ -1599,9 +1549,9 @@ final class VideoUnit: NSObject {
                 || allowVideoRangePixelFormat
         }
         if formats.isEmpty {
-            return (nil, useAutoFrameRate, "Unsupported video pixel format")
+            return (nil, useAutoFrameRate, useLandscapeInPortrait, "Unsupported video pixel format")
         }
-        return (formats.first, useAutoFrameRate, nil)
+        return (formats.first, useAutoFrameRate, useLandscapeInPortrait, nil)
     }
 
     private func reportFormatNotFound(_ device: AVCaptureDevice, _ error: String) {
@@ -1630,7 +1580,7 @@ final class VideoUnit: NSObject {
         guard let device else {
             return
         }
-        let (format, useAutoFrameRate, error) = findVideoFormat(
+        let (format, useAutoFrameRate, useLandscapeInPortrait, error) = findVideoFormat(
             device: device,
             width: Int32(captureSize.width),
             height: Int32(captureSize.height),
@@ -1654,10 +1604,15 @@ final class VideoUnit: NSObject {
             device.activeColorSpace = colorSpace
             if useAutoFrameRate {
                 device.setAutoFps()
-                processor?.delegate?.streamSelectedFps(fps: fps, auto: true)
+                processor?.delegate?.streamSelectedFps(auto: true)
             } else {
                 device.setFps(frameRate: fps)
-                processor?.delegate?.streamSelectedFps(fps: fps, auto: false)
+                processor?.delegate?.streamSelectedFps(auto: false)
+            }
+            if #available(iOS 26, *), useLandscapeInPortrait {
+                if format.supportedDynamicAspectRatios.contains(.ratio9x16) {
+                    device.setDynamicAspectRatio(.ratio9x16)
+                }
             }
             device.unlockForConfiguration()
         } catch {
@@ -1833,7 +1788,7 @@ final class VideoUnit: NSObject {
             return nil
         }
         var sampleBufferCopy: CMSampleBuffer
-        if bufferedVideo.latency > 0.07 || bufferedVideo.numberOfBuffers() > 4 {
+        if bufferedVideo.numberOfBuffers() > 4 {
             sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) ?? sampleBuffer
         } else {
             sampleBufferCopy = sampleBuffer
@@ -1902,4 +1857,10 @@ extension VideoUnit: AVCaptureSessionControlsDelegate {
     func sessionControlsWillExitFullscreenAppearance(_: AVCaptureSession) {}
 
     func sessionControlsDidBecomeInactive(_: AVCaptureSession) {}
+}
+
+extension VideoUnit: VideoEncoderControlDelegate {
+    func videoEncoderControlResolutionChanged(_: VideoEncoder, resolution: CGSize) {
+        processor?.delegate?.streamVideoEncoderResolution(resolution: resolution)
+    }
 }

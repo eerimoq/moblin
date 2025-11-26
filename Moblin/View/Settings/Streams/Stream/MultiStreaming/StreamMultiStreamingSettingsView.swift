@@ -16,19 +16,14 @@ private struct DestinationView: View {
                         StreamMultiStreamingUrlView(stream: stream, destination: destination)
                             .disabled(stream.enabled && (model.isLive || model.isRecording))
                     } label: {
-                        TextItemView(name: String(localized: "URL"), value: schemeAndAddress(url: destination.url))
+                        TextItemView(name: String(localized: "URL"), value: destination.url, sensitive: true)
                     }
                 }
             }
             .navigationTitle("Destination")
         } label: {
             Toggle(isOn: $destination.enabled) {
-                HStack {
-                    Text("Destination")
-                    Spacer()
-                    Text(destination.name)
-                        .foregroundColor(.gray)
-                }
+                Text(destination.name)
             }
             .onChange(of: destination.enabled) { _ in
                 model.reloadStreamIfEnabled(stream: stream)
@@ -91,7 +86,7 @@ struct StreamMultiStreamingSettingsView: View {
                 Text("Multi streaming")
                 Spacer()
                 Text(numberOfEnabledDestinations())
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

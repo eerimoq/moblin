@@ -1,52 +1,57 @@
 import SwiftUI
 
-private struct RecordingsSettingsSummaryView: View {
-    @ObservedObject var database: RecordingsDatabase
+private struct RecordingsLocationView: View {
+    let model: Model
+    let text: Text
+    let path: URL
 
-    var body: some View {
-        HStack {
-            Spacer()
-            VStack {
-                Text(database.numberOfRecordingsString())
-                    .font(.title2)
-                Text("Total recordings")
-                    .font(.subheadline)
-            }
-            Spacer()
-            VStack {
-                Text(database.totalSizeString())
-                    .font(.title2)
-                Text("Total size")
-                    .font(.subheadline)
-            }
-            Spacer()
+    private func makeSharedUrl(path: URL) -> URL? {
+        guard let sharedUrl = URL(string: "shareddocuments://\(path.path())") else {
+            return nil
+        }
+        if UIApplication.shared.canOpenURL(sharedUrl) {
+            return sharedUrl
+        } else {
+            return nil
         }
     }
-}
 
-private struct RecordingsSettingsRecordingsView: View {
-    let model: Model
-    let recordingsStorage: RecordingsStorage
-    @ObservedObject var database: RecordingsDatabase
+    private func openInFilesApp(sharedUrl: URL) {
+        UIApplication.shared.open(sharedUrl)
+    }
+
+    private func copyPathToClipboard(path: URL) {
+        UIPasteboard.general.string = path.path()
+        let subTitle: String?
+        if isMac() {
+            subTitle = String(localized: "Open it in Finder app → Go → Go to Folder...")
+        } else {
+            subTitle = nil
+        }
+        model.makeToast(title: String(localized: "Directory copied to clipboard"), subTitle: subTitle)
+    }
 
     var body: some View {
-        Form {
-            Section {
-                List {
-                    ForEach(database.recordings) { recording in
-                        RecordingsRecordingSettingsView(model: model, recording: recording)
+        Section {
+            HStack {
+                text
+                Spacer()
+                if let sharedUrl = makeSharedUrl(path: path) {
+                    Button {
+                        openInFilesApp(sharedUrl: sharedUrl)
+                    } label: {
+                        Image(systemName: "arrow.turn.up.right")
                     }
-                    .onDelete { indexSet in
-                        for index in indexSet {
-                            database.recordings[index].url()?.remove()
-                        }
-                        database.recordings.remove(atOffsets: indexSet)
-                        recordingsStorage.store()
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.blue)
+                } else {
+                    Button {
+                        copyPathToClipboard(path: path)
+                    } label: {
+                        Image(systemName: "document.on.document")
                     }
-                }
-            } footer: {
-                if !database.recordings.isEmpty {
-                    SwipeLeftToDeleteHelpView(kind: String(localized: "a recording"))
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.blue)
                 }
             }
         }
@@ -57,11 +62,22 @@ struct RecordingsSettingsView: View {
     let model: Model
 
     var body: some View {
-        VStack {
-            RecordingsSettingsSummaryView(database: model.recordingsStorage.database)
-            RecordingsSettingsRecordingsView(model: model,
-                                             recordingsStorage: model.recordingsStorage,
-                                             database: model.recordingsStorage.database)
+        Form {
+            RecordingsLocationView(model: model,
+                                   text: Text("Default recordings directory"),
+                                   path: model.recordingsStorage.defaultStorageDirectory())
+            if let path = model.stream.recording.recordingPath {
+                if let path = makeRecordingPath(recordingPath: path) {
+                    RecordingsLocationView(model: model,
+                                           text: Text("Current recordings directory"),
+                                           path: path)
+                } else {
+                    Text("Current recordings directory unavailable")
+                }
+            }
+            RecordingsLocationView(model: model,
+                                   text: Text("Replays directory"),
+                                   path: model.replaysStorage.defaultStorageDirectory())
         }
         .navigationTitle("Recordings")
     }

@@ -13,7 +13,7 @@ struct ChatInfo: View {
                 HStack {
                     Text(message)
                         .bold()
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
                 .padding([.top, .bottom], 5)
                 .padding([.leading, .trailing], 10)
@@ -44,6 +44,7 @@ struct ChatOverlayView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     @ObservedObject var orientation: Orientation
+    @ObservedObject var quickButtons: SettingsQuickButtons
     let fullSize: Bool
 
     var body: some View {
@@ -55,13 +56,13 @@ struct ChatOverlayView: View {
                 }
                 if !fullSize {
                     Rectangle()
-                        .foregroundColor(.clear)
+                        .foregroundStyle(.clear)
                         .frame(height: 85)
                 } else {
                     Divider()
                         .background(.gray)
                     Rectangle()
-                        .foregroundColor(.clear)
+                        .foregroundStyle(.clear)
                         .frame(height: controlBarWidthDefault)
                 }
             }
@@ -85,7 +86,7 @@ struct ChatOverlayView: View {
                     }
                     if !fullSize {
                         Rectangle()
-                            .foregroundColor(.clear)
+                            .foregroundStyle(.clear)
                             .frame(height: chatSettings.bottomPoints)
                     }
                 }
@@ -93,8 +94,8 @@ struct ChatOverlayView: View {
                     Divider()
                         .background(.gray)
                     Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(width: controlBarWidthDefault)
+                        .foregroundStyle(.clear)
+                        .frame(width: controlBarWidth(quickButtons: quickButtons))
                 }
             }
             .allowsHitTesting(chat.interactiveChat)
@@ -110,7 +111,7 @@ private struct FrontTorchView: View {
         if orientation.isPortrait {
             VStack(spacing: 0) {
                 Rectangle()
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 Rectangle()
                     .fill(
@@ -122,7 +123,7 @@ private struct FrontTorchView: View {
                     )
                     .aspectRatio(1, contentMode: .fill)
                 Rectangle()
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -130,7 +131,7 @@ private struct FrontTorchView: View {
         } else {
             HStack(spacing: 0) {
                 Rectangle()
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 Rectangle()
                     .fill(
@@ -142,7 +143,7 @@ private struct FrontTorchView: View {
                     )
                     .aspectRatio(1, contentMode: .fill)
                 Rectangle()
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -177,6 +178,7 @@ struct StreamOverlayView: View {
                     ChatOverlayView(chatSettings: chatSettings,
                                     chat: model.chat,
                                     orientation: orientation,
+                                    quickButtons: model.database.quickButtonsGeneral,
                                     fullSize: false)
                         .opacity(chatSettings.enabled ? 1 : 0)
                 }
@@ -197,7 +199,7 @@ struct StreamOverlayView: View {
                     RightOverlayTopView(model: model, database: model.database)
                 }
                 HStack {
-                    StreamDebugOverlayView(debugOverlay: model.debugOverlay)
+                    StreamOverlayDebugView(debugOverlay: model.debugOverlay)
                         .padding([.leading], leadingPadding())
                     Spacer()
                 }

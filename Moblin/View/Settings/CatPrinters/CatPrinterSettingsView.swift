@@ -21,7 +21,7 @@ struct CatPrinterSettingsView: View {
     @ObservedObject var device: SettingsCatPrinter
     @ObservedObject var status: StatusTopRight
 
-    func state() -> String {
+    private func state() -> String {
         return formatCatPrinterState(state: status.catPrinterState)
     }
 
@@ -53,7 +53,7 @@ struct CatPrinterSettingsView: View {
                     )
                 } label: {
                     Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                         .lineLimit(1)
                 }
                 .disabled(model.isCatPrinterEnabled(device: device))
@@ -77,10 +77,27 @@ struct CatPrinterSettingsView: View {
                 Toggle(isOn: $device.printChat) {
                     Text("Print chat")
                 }
-            }
-            Section {
                 Toggle(isOn: $device.printSnapshots) {
                     Text("Print snapshots")
+                }
+                NavigationLink {
+                    Form {
+                        NavigationLink {
+                            TwitchAlertsSettingsView(title: String(localized: "Twitch"), alerts: device.printTwitch)
+                        } label: {
+                            TwitchLogoAndNameView()
+                        }
+                        NavigationLink {
+                            KickAlertsSettingsView(title: String(localized: "Kick"),
+                                                   alerts: device.printKick,
+                                                   showBans: false)
+                        } label: {
+                            KickLogoAndNameView()
+                        }
+                    }
+                    .navigationTitle("Print alerts")
+                } label: {
+                    Text("Print alerts")
                 }
             }
             Section {
@@ -98,12 +115,8 @@ struct CatPrinterSettingsView: View {
                     }
                 }
                 Section {
-                    Button {
+                    TextButtonView("Test") {
                         model.catPrinterPrintTestImage(device: device)
-                    } label: {
-                        HCenter {
-                            Text("Test")
-                        }
                     }
                 }
             }

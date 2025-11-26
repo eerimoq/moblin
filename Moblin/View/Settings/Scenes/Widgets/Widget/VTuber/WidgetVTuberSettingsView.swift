@@ -15,17 +15,39 @@ private struct PickerView: UIViewControllerRepresentable {
     func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
 }
 
-struct WidgetVTuberSettingsView: View {
-    @EnvironmentObject var model: Model
-    let widget: SettingsWidget
+struct WidgetVTuberPickerView: View {
+    let model: Model
     @ObservedObject var vTuber: SettingsWidgetVTuber
+    var onSelected: (() -> Void)?
     @State var showPicker = false
 
     private func onUrl(url: URL) {
         vTuber.modelName = url.lastPathComponent
         model.vTuberStorage.add(id: vTuber.id, url: url)
-        model.resetSelectedScene(changeScene: false)
+        onSelected?()
     }
+
+    var body: some View {
+        Section {
+            TextButtonView(title: vTuber.modelName.isEmpty ? String(localized: "Select model") : vTuber.modelName) {
+                showPicker = true
+                model.onDocumentPickerUrl = onUrl
+            }
+            .sheet(isPresented: $showPicker) {
+                PickerView()
+            }
+        } header: {
+            Text("Model")
+        } footer: {
+            Text("Most VRM 0.0 files are supported.")
+        }
+    }
+}
+
+struct WidgetVTuberSettingsView: View {
+    @EnvironmentObject var model: Model
+    let widget: SettingsWidget
+    @ObservedObject var vTuber: SettingsWidgetVTuber
 
     private func onCameraChange(cameraId: String) {
         vTuber.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
@@ -57,27 +79,13 @@ struct WidgetVTuberSettingsView: View {
                     Text("Video source")
                     Spacer()
                     Text(model.getCameraPositionName(vTuberWidget: vTuber))
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                         .lineLimit(1)
                 }
             }
         }
-        Section {
-            Button {
-                showPicker = true
-                model.onDocumentPickerUrl = onUrl
-            } label: {
-                HCenter {
-                    Text(vTuber.modelName.isEmpty ? String(localized: "Select model") : vTuber.modelName)
-                }
-            }
-            .sheet(isPresented: $showPicker) {
-                PickerView()
-            }
-        } header: {
-            Text("Model")
-        } footer: {
-            Text("Most VRM 0.0 files are supported.")
+        WidgetVTuberPickerView(model: model, vTuber: vTuber) {
+            model.resetSelectedScene(changeScene: false)
         }
         Section {
             HStack {

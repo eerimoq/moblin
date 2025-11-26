@@ -8,7 +8,7 @@ struct StreamOverlayRightPixellateView: View {
         VStack(alignment: .trailing, spacing: 1) {
             Text("PIXELLATE STRENGTH")
                 .font(.footnote)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding([.trailing], 7)
             HStack {
                 Slider(

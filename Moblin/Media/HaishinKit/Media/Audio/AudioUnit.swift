@@ -1,8 +1,6 @@
 import AVFoundation
 import Collections
 
-var audioUnitRemoveWindNoise = false
-
 struct AudioUnitAttachParams {
     let device: AVCaptureDevice?
     let builtinDelay: Double
@@ -73,14 +71,13 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func startEncoding(_ delegate: any AudioCodecDelegate) {
+    func startEncoding(_ delegate: any AudioEncoderDelegate) {
         encoder.delegate = delegate
         encoder.startRunning()
     }
 
     func stopEncoding() {
         encoder.stopRunning()
-        encoder.delegate = nil
         processorPipelineQueue.async {
             self.inputSourceFormat = nil
         }
@@ -104,19 +101,6 @@ final class AudioUnit: NSObject {
             session.removeOutput(output)
         }
         input = try AVCaptureDeviceInput(device: device)
-        if audioUnitRemoveWindNoise {
-            if #available(iOS 18.0, *) {
-                if input!.isWindNoiseRemovalSupported {
-                    input!.multichannelAudioMode = .stereo
-                    input!.isWindNoiseRemovalEnabled = true
-                    logger.info("audio-unit: Wind noise removal enabled is \(input!.isWindNoiseRemovalEnabled)")
-                } else {
-                    logger.info("audio-unit: Wind noise removal is not supported on this device")
-                }
-            } else {
-                logger.info("audio-unit: Wind noise removal needs iOS 18+")
-            }
-        }
         if session.canAddInput(input!) {
             session.addInput(input!)
         }
@@ -204,14 +188,17 @@ final class AudioUnit: NSObject {
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
                                             _ presentationTimeStamp: CMTime) -> BufferedAudio?
     {
-        guard let bufferedBuiltinAudio,
-              bufferedBuiltinAudio.latency > 0,
-              let sampleBuffer = sampleBuffer.deepCopyAudioSampleBuffer()
-        else {
+        guard let bufferedBuiltinAudio, bufferedBuiltinAudio.latency > 0 else {
             return nil
         }
+        var sampleBufferCopy: CMSampleBuffer
+        if bufferedBuiltinAudio.numberOfBuffers() > 4 {
+            sampleBufferCopy = sampleBuffer.deepCopyAudioSampleBuffer() ?? sampleBuffer
+        } else {
+            sampleBufferCopy = sampleBuffer
+        }
         let presentationTimeStamp = presentationTimeStamp + CMTime(seconds: bufferedBuiltinAudio.latency)
-        guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
+        guard let sampleBuffer = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) else {
             return nil
         }
         bufferedBuiltinAudio.appendSampleBuffer(sampleBuffer)
@@ -226,6 +213,13 @@ final class AudioUnit: NSObject {
         } else {
             return false
         }
+    }
+
+    private func updateAudioLevel(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
+        let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
+        processor?.delegate?.stream(audioLevel: audioLevel,
+                                    numberOfAudioChannels: numberOfAudioChannels,
+                                    sampleRate: sampleRate)
     }
 }
 
@@ -256,10 +250,9 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
             } else {
                 audioLevel = 0.0
             }
-            let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
-            processor.delegate?.stream(audioLevel: audioLevel,
-                                       numberOfAudioChannels: connection.audioChannels.count,
-                                       sampleRate: sampleRate)
+            updateAudioLevel(sampleBuffer: sampleBuffer,
+                             audioLevel: audioLevel,
+                             numberOfAudioChannels: connection.audioChannels.count)
         }
         appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
     }
@@ -272,10 +265,9 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
         }
         if shouldUpdateAudioLevel(sampleBuffer) {
             let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-            let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
-            processor.delegate?.stream(audioLevel: .infinity,
-                                       numberOfAudioChannels: numberOfAudioChannels,
-                                       sampleRate: sampleRate)
+            updateAudioLevel(sampleBuffer: sampleBuffer,
+                             audioLevel: .infinity,
+                             numberOfAudioChannels: numberOfAudioChannels)
         }
         appendNewSampleBuffer(processor, sampleBuffer, sampleBuffer.presentationTimeStamp)
     }

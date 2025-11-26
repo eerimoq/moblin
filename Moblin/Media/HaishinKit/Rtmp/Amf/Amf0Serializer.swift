@@ -31,75 +31,71 @@ final class Amf0Serializer: ByteWriter {
     func serialize(_ value: Any?) {
         switch value {
         case let value as Int:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as UInt:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as Int8:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as UInt8:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as Int16:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as UInt16:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as Int32:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as UInt32:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as Float:
-            serialize(Double(value))
+            serializeDouble(Double(value))
         case let value as Double:
-            serialize(Double(value))
+            serializeDouble(value)
         case let value as Date:
-            serialize(value)
+            serializeDate(value)
         case let value as String:
-            serialize(value)
+            serializeString(value)
         case let value as Bool:
-            serialize(value)
+            serializeBool(value)
         case let value as AsArray:
-            serialize(value)
+            serializeAsArray(value)
         case let value as AsObject:
-            serialize(value)
+            serializeAsObject(value)
         case nil:
-            writeUInt8(Amf0Type.null.rawValue)
+            writeAmf0Type(value: .null)
         default:
-            writeUInt8(Amf0Type.undefined.rawValue)
+            writeAmf0Type(value: .undefined)
         }
     }
 
-    func serialize(_ value: Double) {
-        writeUInt8(Amf0Type.number.rawValue)
+    private func serializeDouble(_ value: Double) {
+        writeAmf0Type(value: .number)
         writeDouble(value)
     }
 
-    func serialize(_ value: Int) {
-        serialize(Double(value))
-    }
-
-    func serialize(_ value: Bool) {
+    private func serializeBool(_ value: Bool) {
         writeBytes(Data([Amf0Type.bool.rawValue, value ? 0x01 : 0x00]))
     }
 
-    func serialize(_ value: String) {
+    private func serializeString(_ value: String) {
         let isLong: Bool = UInt32(UInt16.max) < UInt32(value.count)
-        writeUInt8(isLong ? Amf0Type.longString.rawValue : Amf0Type.string.rawValue)
+        writeAmf0Type(value: isLong ? .longString : .string)
         serializeUTF8(value, isLong)
     }
 
-    func serialize(_ value: AsObject) {
-        writeUInt8(Amf0Type.object.rawValue)
+    private func serializeAsObject(_ value: AsObject) {
+        writeAmf0Type(value: .object)
         for (key, data) in value {
             serializeUTF8(key, false)
             serialize(data)
         }
         serializeUTF8("", false)
-        writeUInt8(Amf0Type.objectEnd.rawValue)
+        writeAmf0Type(value: .objectEnd)
     }
 
-    func serialize(_: AsArray) {}
+    private func serializeAsArray(_: AsArray) {}
 
-    func serialize(_ value: Date) {
-        writeUInt8(Amf0Type.date.rawValue)
+    private func serializeDate(_ value: Date) {
+        writeAmf0Type(value: .date)
         writeDouble(value.timeIntervalSince1970 * 1000)
         writeUInt16(0)
     }
@@ -113,23 +109,25 @@ final class Amf0Serializer: ByteWriter {
         }
         writeBytes(utf8)
     }
+
+    private func writeAmf0Type(value: Amf0Type) {
+        writeUInt8(value.rawValue)
+    }
 }
 
 final class Amf0Deserializer: ByteReader {
     func deserialize() throws -> Any? {
-        guard let type = try Amf0Type(rawValue: readUInt8()) else {
-            return nil
-        }
+        let type = try readAmf0Type()
         position -= 1
         switch type {
         case .number:
-            return try deserialize() as Double
+            return try deserializeDouble()
         case .bool:
-            return try deserialize() as Bool
+            return try deserializeBool()
         case .string:
-            return try deserialize() as String
+            return try deserializeString()
         case .object:
-            return try deserialize() as AsObject
+            return try deserializeAsObject()
         case .null:
             position += 1
             return nil
@@ -137,68 +135,63 @@ final class Amf0Deserializer: ByteReader {
             position += 1
             return kASUndefined
         case .reference:
-            assertionFailure("TODO")
             return nil
         case .ecmaArray:
-            return try deserialize() as AsArray
+            return try deserializeAsArray()
         case .objectEnd:
-            assertionFailure()
             return nil
         case .strictArray:
-            return try deserialize() as [Any?]
+            return try deserializeAnyArray()
         case .date:
-            return try deserialize() as Date
+            return try deserializeDate()
         case .longString:
-            return try deserialize() as String
+            return try deserializeString()
         case .unsupported:
-            assertionFailure("Unsupported")
             return nil
         case .xmlDocument:
-            return try deserialize() as AsXmlDocument
+            return try deserializeAsXmlDocument()
         case .typedObject:
-            return try deserialize() as Any
+            return try deserializeAny()
         case .avmplush:
-            assertionFailure("TODO")
             return nil
         }
     }
 
-    func deserialize() throws -> Double {
-        guard try readUInt8() == Amf0Type.number.rawValue else {
+    private func deserializeDouble() throws -> Double {
+        guard try readAmf0Type() == .number else {
             throw AmfSerializerError.deserialize
         }
         return try readDouble()
     }
 
-    func deserialize() throws -> Int {
-        try Int(deserialize() as Double)
+    func deserializeInt() throws -> Int {
+        try Int(deserializeDouble())
     }
 
-    func deserialize() throws -> Bool {
-        guard try readUInt8() == Amf0Type.bool.rawValue else {
+    private func deserializeBool() throws -> Bool {
+        guard try readAmf0Type() == .bool else {
             throw AmfSerializerError.deserialize
         }
         return try readUInt8() == 0x01
     }
 
-    func deserialize() throws -> String {
-        switch try readUInt8() {
-        case Amf0Type.string.rawValue:
+    func deserializeString() throws -> String {
+        switch try readAmf0Type() {
+        case .string:
             return try deserializeUTF8(false)
-        case Amf0Type.longString.rawValue:
+        case .longString:
             return try deserializeUTF8(true)
         default:
-            assertionFailure()
             return ""
         }
     }
 
-    func deserialize() throws -> AsObject {
+    func deserializeAsObject() throws -> AsObject {
         var result = AsObject()
-        switch try readUInt8() {
-        case Amf0Type.null.rawValue:
+        switch try readAmf0Type() {
+        case .null:
             return result
-        case Amf0Type.object.rawValue:
+        case .object:
             break
         default:
             throw AmfSerializerError.deserialize
@@ -214,18 +207,18 @@ final class Amf0Deserializer: ByteReader {
         return result
     }
 
-    func deserialize() throws -> AsArray {
-        switch try readUInt8() {
-        case Amf0Type.null.rawValue:
+    private func deserializeAsArray() throws -> AsArray {
+        switch try readAmf0Type() {
+        case .null:
             return AsArray()
-        case Amf0Type.ecmaArray.rawValue:
+        case .ecmaArray:
             break
         default:
             throw AmfSerializerError.deserialize
         }
         var result = try AsArray(count: Int(readUInt32()))
         while true {
-            let key: String = try deserializeUTF8(false)
+            let key = try deserializeUTF8(false)
             guard !key.isEmpty else {
                 position += 1
                 break
@@ -235,8 +228,8 @@ final class Amf0Deserializer: ByteReader {
         return result
     }
 
-    func deserialize() throws -> [Any?] {
-        guard try readUInt8() == Amf0Type.strictArray.rawValue else {
+    private func deserializeAnyArray() throws -> [Any?] {
+        guard try readAmf0Type() == .strictArray else {
             throw AmfSerializerError.deserialize
         }
         var result: [Any?] = []
@@ -247,8 +240,8 @@ final class Amf0Deserializer: ByteReader {
         return result
     }
 
-    func deserialize() throws -> Date {
-        guard try readUInt8() == Amf0Type.date.rawValue else {
+    private func deserializeDate() throws -> Date {
+        guard try readAmf0Type() == .date else {
             throw AmfSerializerError.deserialize
         }
         let date = try Date(timeIntervalSince1970: readDouble() / 1000)
@@ -256,15 +249,15 @@ final class Amf0Deserializer: ByteReader {
         return date
     }
 
-    func deserialize() throws -> AsXmlDocument {
-        guard try readUInt8() == Amf0Type.xmlDocument.rawValue else {
+    private func deserializeAsXmlDocument() throws -> AsXmlDocument {
+        guard try readAmf0Type() == .xmlDocument else {
             throw AmfSerializerError.deserialize
         }
         return try AsXmlDocument(data: deserializeUTF8(true))
     }
 
-    func deserialize() throws -> Any {
-        guard try readUInt8() == Amf0Type.typedObject.rawValue else {
+    private func deserializeAny() throws -> Any {
+        guard try readAmf0Type() == .typedObject else {
             throw AmfSerializerError.deserialize
         }
         let typeName = try deserializeUTF8(false)
@@ -281,7 +274,14 @@ final class Amf0Deserializer: ByteReader {
     }
 
     private func deserializeUTF8(_ isLong: Bool) throws -> String {
-        let length: Int = try isLong ? Int(readUInt32()) : Int(readUInt16())
+        let length = try isLong ? Int(readUInt32()) : Int(readUInt16())
         return try readUTF8Bytes(length)
+    }
+
+    private func readAmf0Type() throws -> Amf0Type {
+        guard let value = try Amf0Type(rawValue: readUInt8()) else {
+            throw AmfSerializerError.deserialize
+        }
+        return value
     }
 }

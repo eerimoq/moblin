@@ -14,6 +14,7 @@ enum RemoteControlRequest: Codable {
     case setRecord(on: Bool)
     case setStream(on: Bool)
     case setZoom(x: Float)
+    case setZoomPreset(id: UUID)
     case setMute(on: Bool)
     case setTorch(on: Bool)
     case setDebugLogging(on: Bool)
@@ -58,6 +59,7 @@ struct RemoteControlChatMessage: Codable {
     var id: Int
     var platform: Platform
     var messageId: String?
+    var displayName: String?
     var user: String?
     var userId: String?
     var userColor: RgbColor?
@@ -116,23 +118,20 @@ struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
     var id: UUID
     var x: Double
     var y: Double
-    var width: Double
-    var height: Double
+    var size: Double
 
     init(widget: SettingsSceneWidget) {
         id = widget.widgetId
-        x = widget.x
-        y = widget.y
-        width = widget.width
-        height = widget.height
+        x = widget.layout.x
+        y = widget.layout.y
+        size = widget.layout.size
     }
 
     func toSettings() -> SettingsSceneWidget {
         let widget = SettingsSceneWidget(widgetId: id)
-        widget.x = x
-        widget.y = y
-        widget.width = width
-        widget.height = height
+        widget.layout.x = x
+        widget.layout.y = y
+        widget.layout.size = size
         return widget
     }
 }
@@ -152,8 +151,6 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             return nil
         case .text:
             type = .text(data: RemoteControlRemoteSceneSettingsWidgetTypeText(text: widget.text))
-        case .videoEffect:
-            return nil
         case .crop:
             return nil
         case .map:
@@ -173,6 +170,8 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
         case .pngTuber:
             return nil
         case .snapshot:
+            return nil
+        case .chat:
             return nil
         }
     }
@@ -211,7 +210,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
     var width: Int
     var height: Int
     var audioOnly: Bool
-    var scaleToFitVideo: Bool
     var fps: Float
     var styleSheet: String
 
@@ -220,7 +218,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
         width = browser.width
         height = browser.height
         audioOnly = browser.audioOnly
-        scaleToFitVideo = browser.scaleToFitVideo
         fps = browser.fps
         styleSheet = browser.styleSheet
     }
@@ -231,7 +228,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
         browser.width = width
         browser.height = height
         browser.audioOnly = audioOnly
-        browser.scaleToFitVideo = scaleToFitVideo
         browser.fps = fps
         browser.styleSheet = styleSheet
         return browser
@@ -249,7 +245,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
     var fontWeight: SettingsFontWeight
     var fontMonospacedDigits: Bool
     var horizontalAlignment: RemoteControlRemoteSceneSettingsHorizontalAlignment
-    var verticalAlignment: RemoteControlRemoteSceneSettingsVerticalAlignment
     var delay: Double
 
     init(text: SettingsWidgetText) {
@@ -263,7 +258,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
         fontWeight = text.fontWeight
         fontMonospacedDigits = text.fontMonospacedDigits
         horizontalAlignment = .init(alignment: text.horizontalAlignment)
-        verticalAlignment = .init(alignment: text.verticalAlignment)
         delay = text.delay
     }
 
@@ -279,7 +273,6 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
         text.fontWeight = fontWeight
         text.fontMonospacedDigits = fontMonospacedDigits
         text.horizontalAlignment = horizontalAlignment.toSettings()
-        text.verticalAlignment = verticalAlignment.toSettings()
         text.delay = delay
         return text
     }
@@ -308,34 +301,11 @@ enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
     }
 }
 
-enum RemoteControlRemoteSceneSettingsVerticalAlignment: Codable {
-    case top
-    case bottom
-
-    init(alignment: SettingsVerticalAlignment) {
-        switch alignment {
-        case .top:
-            self = .top
-        case .bottom:
-            self = .bottom
-        }
-    }
-
-    func toSettings() -> SettingsVerticalAlignment {
-        switch self {
-        case .top:
-            return .top
-        case .bottom:
-            return .bottom
-        }
-    }
-}
-
 struct RemoteControlRemoteSceneSettingsWidgetTypeMap: Codable {
     var northUp: Bool
 
     init(map: SettingsWidgetMap) {
-        northUp = map.northUp!
+        northUp = map.northUp
     }
 
     func toSettings() -> SettingsWidgetMap {
@@ -367,6 +337,8 @@ struct RemoteControlRemoteSceneData: Codable {
 struct RemoteControlRemoteSceneDataTextStats: Codable {
     var bitrate: String
     var bitrateAndTotal: String
+    var resolution: String?
+    var fps: Int?
     var date: Date
     var debugOverlayLines: [String]
     var speed: String
@@ -397,6 +369,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     init(stats: TextEffectStats) {
         bitrate = stats.bitrate
         bitrateAndTotal = stats.bitrateAndTotal
+        resolution = stats.resolution
+        fps = stats.fps
         date = stats.date
         debugOverlayLines = stats.debugOverlayLines
         speed = stats.speed
@@ -428,6 +402,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         return TextEffectStats(timestamp: .now,
                                bitrate: bitrate,
                                bitrateAndTotal: bitrateAndTotal,
+                               resolution: resolution,
+                               fps: fps,
                                date: date,
                                debugOverlayLines: debugOverlayLines,
                                speed: speed,
@@ -552,6 +528,7 @@ struct RemoteControlStatusTopRight: Codable {
     var browserWidgets: RemoteControlStatusItem?
     var moblink: RemoteControlStatusItem?
     var djiDevices: RemoteControlStatusItem?
+    var systemMonitor: RemoteControlStatusItem?
 }
 
 struct RemoteControlSettingsScene: Codable, Identifiable {
@@ -598,12 +575,19 @@ struct RemoteControlStateAutoSceneSwitcher: Codable {
     var id: UUID?
 }
 
+struct RemoteControlZoomPreset: Codable, Identifiable {
+    var id: UUID
+    var name: String
+}
+
 struct RemoteControlState: Codable {
     var scene: UUID?
     var autoSceneSwitcher: RemoteControlStateAutoSceneSwitcher?
     var mic: String?
     var bitrate: UUID?
     var zoom: Float?
+    var zoomPresets: [RemoteControlZoomPreset]?
+    var zoomPreset: UUID?
     var debugLogging: Bool?
     var streaming: Bool?
     var recording: Bool?

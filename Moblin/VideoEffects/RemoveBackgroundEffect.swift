@@ -1,6 +1,5 @@
 import AVFoundation
 import CoreImage
-import MetalPetal
 import Vision
 
 private func makeFilter(fromHue: CGFloat, toHue: CGFloat) -> CIColorCubeWithColorSpace {
@@ -66,7 +65,7 @@ final class RemoveBackgroundEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "remove background filter"
+        return "Remove background filter"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

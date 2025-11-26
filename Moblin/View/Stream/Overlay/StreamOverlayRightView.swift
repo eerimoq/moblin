@@ -11,7 +11,7 @@ private struct CollapsedBondingView: View {
                 .frame(width: 17, height: 17)
                 .font(smallFont)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(color)
+                .foregroundStyle(color)
             if #available(iOS 17.0, *) {
                 if !bonding.pieChartPercentages.isEmpty {
                     Chart(bonding.pieChartPercentages.reversed()) { item in
@@ -94,7 +94,7 @@ private struct CollapsedHypeTrainView: View {
             let train = Image(systemName: "train.side.front.car")
                 .frame(width: 17, height: 17)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(color)
+                .foregroundStyle(color)
             if #available(iOS 18.0, *) {
                 train
                     .symbolEffect(
@@ -105,7 +105,7 @@ private struct CollapsedHypeTrainView: View {
                 train
             }
             Text(status)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding([.leading, .trailing], 2)
         }
         .font(smallFont)
@@ -125,9 +125,9 @@ private struct CollapsedAdsRemainingTimerView: View {
             Image(systemName: "cup.and.saucer")
                 .frame(width: 17, height: 17)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
             Text(status.adsRemainingTimerStatus)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding([.leading, .trailing], 2)
         }
         .font(smallFont)
@@ -167,11 +167,11 @@ private struct CollapsedBitrateView: View {
             Image(systemName: "speedometer")
                 .frame(width: 17, height: 17)
                 .padding([.leading], 2)
-                .foregroundColor(bitrate.statusColor)
+                .foregroundStyle(bitrate.statusColor)
                 .background(bitrate.statusIconColor ?? .clear)
             if !bitrate.speedMbpsOneDecimal.isEmpty {
                 Text(bitrate.speedMbpsOneDecimal)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .padding([.trailing], 2)
             }
         }
@@ -238,6 +238,41 @@ private struct StreamUptimeStatusView: View {
                 textPlacement: textPlacement,
                 color: netStreamColor(model: model)
             )
+        }
+    }
+}
+
+private struct CpuStatusView: View {
+    let model: Model
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var systemMonitor: SystemMonitor
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    var body: some View {
+        if model.isShowingStatusCpu() {
+            if textPlacement == .hide {
+                HStack(spacing: 1) {
+                    Image(systemName: "cpu")
+                        .frame(width: 17, height: 17)
+                        .padding([.leading], 2)
+                        .foregroundStyle(.white)
+                    Text(systemMonitor.formatShort())
+                        .foregroundStyle(.white)
+                        .padding([.trailing], 2)
+                }
+                .font(smallFont)
+                .background(backgroundColor)
+                .cornerRadius(5)
+                .padding(20)
+                .contentShape(Rectangle())
+                .padding(-20)
+            } else {
+                StreamOverlayIconAndTextView(
+                    icon: "cpu",
+                    text: systemMonitor.format(),
+                    textPlacement: textPlacement
+                )
+            }
         }
     }
 }
@@ -376,7 +411,7 @@ private struct IngestsStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     var body: some View {
-        if model.isShowingStatusServers() {
+        if model.isShowingStatusIngests() {
             StreamOverlayIconAndTextView(
                 icon: "server.rack",
                 text: ingests.speedAndTotal,
@@ -683,6 +718,10 @@ private struct StatusesView: View {
             autoSceneSwitchers: model.database.autoSceneSwitchers,
             textPlacement: textPlacement
         )
+        CpuStatusView(model: model,
+                      show: model.database.show,
+                      systemMonitor: model.systemMonitor,
+                      textPlacement: textPlacement)
         if show.audioLevel, textPlacement == .hide {
             CompactAudioBarView(level: model.audio.level)
         }
@@ -739,7 +778,7 @@ struct RightOverlayBottomView: View {
             Spacer()
             if !(model.showDrawOnStream || model.showFace) {
                 if streamOverlay.showingReplay {
-                    StreamOverlayRightReplayView(replay: model.replay)
+                    StreamOverlayRightReplayView(replay: model.replay, orientation: model.orientation)
                 } else {
                     if streamOverlay.showMediaPlayerControls {
                         StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
@@ -757,9 +796,8 @@ struct RightOverlayBottomView: View {
                             StreamOverlayRightCameraSettingsControlView(model: model, show: model.show)
                         }
                         if show.zoomPresets && zoom.hasZoom {
-                            StreamOverlayRightZoomPresetSelctorView(database: model.database,
+                            StreamOverlayRightZoomPresetSelctorView(model: model,
                                                                     zoom: model.zoom,
-                                                                    zoomSettings: model.database.zoom,
                                                                     width: width)
                         }
                     }

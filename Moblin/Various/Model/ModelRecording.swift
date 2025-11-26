@@ -8,13 +8,7 @@ class RecordingProvider: ObservableObject {
 extension Model {
     func startRecording() {
         setIsRecording(value: true)
-        var subTitle: String?
-        if recordingsStorage.database.isFull() {
-            subTitle = String(localized: "Too many recordings. Deleting oldest recording.")
-        }
-        if resumeRecording() {
-            makeToast(title: String(localized: "Recording started"), subTitle: subTitle)
-        } else {
+        if !resumeRecording() {
             if stream.recording.isDefaultRecordingPath() {
                 makeErrorToast(title: String(localized: "Failed to start recording"))
             } else {
@@ -25,20 +19,20 @@ extension Model {
         }
     }
 
-    func stopRecording(showToast: Bool = true, toastTitle: String? = nil, toastSubTitle: String? = nil) {
+    func stopRecording(toastTitle: String? = nil, toastSubTitle: String? = nil) {
         guard isRecording else {
             return
         }
         setIsRecording(value: false)
-        if showToast {
-            makeToast(title: toastTitle ?? String(localized: "Recording stopped"), subTitle: toastSubTitle)
+        if let toastTitle {
+            makeToast(title: toastTitle, subTitle: toastSubTitle)
         }
         media.setRecordUrl(url: nil)
         suspendRecording()
     }
 
     func resumeRecording() -> Bool {
-        currentRecording = recordingsStorage.createRecording(settings: stream.clone())
+        currentRecording = recordingsStorage.createRecording(recording: stream.recording.clone())
         if currentRecording == nil {
             return false
         }
@@ -49,10 +43,6 @@ extension Model {
 
     func suspendRecording() {
         stopRecorderIfNeeded()
-        if let currentRecording {
-            recordingsStorage.append(recording: currentRecording)
-            recordingsStorage.store()
-        }
         updateRecordingLength(now: Date())
         currentRecording = nil
     }

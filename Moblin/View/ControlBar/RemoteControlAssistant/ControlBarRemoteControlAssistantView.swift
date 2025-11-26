@@ -1,3 +1,4 @@
+import Collections
 import SwiftUI
 
 private struct StatusItemView: View {
@@ -8,7 +9,7 @@ private struct StatusItemView: View {
         if let status {
             HStack {
                 Image(systemName: icon)
-                    .foregroundColor(status.ok ? .primary : .red)
+                    .foregroundStyle(status.ok ? .primary : Color.red)
                     .frame(width: 20)
                 Text(status.message)
             }
@@ -51,6 +52,9 @@ private struct RemoteControlSrtConnectionPriorityView: View {
                     value: $prio,
                     in: Float(minimumSrtConnectionPriority) ... Float(maximumSrtConnectionPriority),
                     step: 1,
+                    label: {
+                        EmptyView()
+                    },
                     onEditingChanged: { begin in
                         guard !begin else {
                             return
@@ -167,14 +171,14 @@ private struct RemoteControlAudioLevelView: View {
                     HStack(spacing: 0) {
                         if isClipping() {
                             Text(clippingText())
-                                .foregroundColor(.red)
+                                .foregroundStyle(.red)
                         } else {
                             Text(redText())
-                                .foregroundColor(.red)
+                                .foregroundStyle(.red)
                             Text(yellowText())
-                                .foregroundColor(.yellow)
+                                .foregroundStyle(.yellow)
                             Text(greenText())
-                                .foregroundColor(.green)
+                                .foregroundStyle(.green)
                         }
                     }
                     .padding([.bottom], 3)
@@ -240,13 +244,9 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                     Text("No preview received yet.")
                 }
             } else {
-                Button {
+                TextButtonView("Show") {
                     model.remoteControlAssistantStartPreview(user: .panel)
                     remoteControl.assistantShowPreview = true
-                } label: {
-                    HCenter {
-                        Text("Show")
-                    }
                 }
             }
         } header: {
@@ -305,6 +305,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                         // Backwards compatibility. Remove later.
                         StatusItemView(icon: "waveform", status: status.audioLevel)
                     }
+                    StatusItemView(icon: "cpu", status: status.systemMonitor)
                     StatusItemView(icon: "server.rack", status: status.rtmpServer)
                     StatusItemView(icon: "app.connected.to.app.below.fill", status: status.moblink)
                     StatusItemView(icon: "appletvremote.gen1", status: status.remoteControl)
@@ -344,7 +345,7 @@ private struct LiveView: View {
             Text("Live")
         }
         .confirmationDialog("", isPresented: $isPresentingConfirm) {
-            Button(pendingValue ? String(localized: "Go Live") : String(localized: "End")) {
+            Button(pendingValue ? "Go Live" : "End") {
                 model.remoteControlAssistantSetStream(on: pendingValue)
             }
         }
@@ -367,7 +368,7 @@ private struct RecordingView: View {
             Text("Recording")
         }
         .confirmationDialog("", isPresented: $isPresentingConfirm) {
-            Button(pendingValue ? String(localized: "Start") : String(localized: "Stop")) {
+            Button(pendingValue ? "Start recording" : "Stop recording") {
                 model.remoteControlAssistantSetRecord(on: pendingValue)
             }
         }
@@ -420,6 +421,18 @@ private struct ZoomView: View {
                     submitZoom(value: remoteControl.zoom)
                 }
         }
+        Picker("", selection: $remoteControl.zoomPreset) {
+            ForEach(remoteControl.zoomPresets) { preset in
+                Text(preset.name)
+            }
+            .onChange(of: remoteControl.zoomPreset) { _ in
+                guard remoteControl.zoomPreset != model.remoteControlState.zoomPreset else {
+                    return
+                }
+                model.remoteControlAssistantSetZoomPreset(id: remoteControl.zoomPreset)
+            }
+        }
+        .pickerStyle(.segmented)
     }
 }
 
@@ -555,6 +568,8 @@ private struct DebugLoggingView: View {
 private struct ControlBarRemoteControlAssistantControlView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
+    @State var presentingLog: Bool = false
+    @State var log: Deque<LogEntry> = []
 
     var body: some View {
         Section {
@@ -578,45 +593,29 @@ private struct ControlBarRemoteControlAssistantControlView: View {
             Text("Control")
         }
         Section {
-            Button {
+            TextButtonView("Reload browser widgets") {
                 model.remoteControlAssistantReloadBrowserWidgets()
-            } label: {
-                HStack {
-                    Text("")
-                    Spacer()
-                    Text("Reload browser widgets")
-                    Spacer()
-                }
             }
-            Section {
-                Button {
-                    model.updateRemoteControlAssistantStatus()
-                } label: {
-                    HStack {
-                        Text("")
-                        Spacer()
-                        Text("Refresh status")
-                        Spacer()
-                    }
-                }
+            TextButtonView("Refresh status") {
+                model.updateRemoteControlAssistantStatus()
             }
-        }
-        Section {
-            NavigationLink {
-                DebugLogSettingsView(
-                    log: model.remoteControlAssistantLog,
-                    clearLog: {
-                        model.clearRemoteControlAssistantLog()
+            TextButtonView("Log") {
+                presentingLog = true
+            }
+            .fullScreenCover(isPresented: $presentingLog) {
+                DebugLogSettingsView(model: model,
+                                     log: $log,
+                                     presentingLog: $presentingLog,
+                                     clearLog: { model.clearRemoteControlAssistantLog() })
+                    .task {
+                        log = model.remoteControlAssistantLog
                     }
-                )
-            } label: {
-                Text("Log")
             }
         }
     }
 }
 
-private struct StreamerSelectionView: View {
+private struct StreamerSelectionButtonView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
 
@@ -624,14 +623,23 @@ private struct StreamerSelectionView: View {
         Button {
             remoteControl.assistantShowStreamers = true
         } label: {
-            Image(systemName: "person")
-                .frame(width: 30, height: 30)
-                .overlay(
-                    Circle()
-                        .stroke(.gray)
-                )
-                .foregroundColor(.gray)
-                .padding(7)
+            if #available(iOS 26, *) {
+                Image(systemName: "person")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding(2)
+            } else {
+                Image(systemName: "person")
+                    .frame(width: 30, height: 30)
+                    .overlay(
+                        Circle()
+                            .stroke(.gray)
+                    )
+                    .foregroundStyle(.gray)
+                    .padding(7)
+            }
         }
     }
 }
@@ -644,7 +652,7 @@ private struct ButtonsView: View {
             Spacer()
             VStack(alignment: .trailing) {
                 HStack(spacing: 0) {
-                    StreamerSelectionView(remoteControl: model.remoteControl)
+                    StreamerSelectionButtonView(remoteControl: model.remoteControl)
                     CloseButtonView {
                         model.showingRemoteControl = false
                         model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
@@ -662,14 +670,24 @@ private struct StreamersToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Button {
-                    remoteControl.assistantShowStreamers = false
-                } label: {
-                    Text("Close")
-                }
+            Button {
+                remoteControl.assistantShowStreamers = false
+            } label: {
+                Image(systemName: "xmark")
             }
         }
+    }
+}
+
+private struct StreamerNotConfiguredView: View {
+    var body: some View {
+        Text("No streamer selected.")
+    }
+}
+
+private struct WaitingForStreamerView: View {
+    var body: some View {
+        Text("Waiting for the remote control streamer to connect...")
     }
 }
 
@@ -682,16 +700,18 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
 
     private func title() -> String {
         if let streamerName = remoteControlSettings.getSelectedStreamerName() {
-            return "Remote control assistant (\(streamerName))"
+            return String(localized: "Remote control assistant") + " (\(streamerName))"
         } else {
-            return "Remote control assistant"
+            return String(localized: "Remote control assistant")
         }
     }
 
     var body: some View {
         ZStack {
             if remoteControl.assistantShowPreviewFullScreen {
-                if model.isRemoteControlAssistantConnected() {
+                if !model.isRemoteControlAssistantConfigured() {
+                    StreamerNotConfiguredView()
+                } else if model.isRemoteControlAssistantConnected() {
                     if let preview = remoteControl.preview {
                         Image(uiImage: preview)
                             .resizable()
@@ -704,13 +724,17 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                         Text("No preview received yet.")
                     }
                 } else {
-                    Text("Waiting for the remote control streamer to connect...")
+                    WaitingForStreamerView()
                 }
             } else {
                 HStack(spacing: 0) {
-                    if !model.isRemoteControlAssistantConnected() {
+                    if !model.isRemoteControlAssistantConfigured() {
                         Form {
-                            Text("Waiting for the remote control streamer to connect...")
+                            StreamerNotConfiguredView()
+                        }
+                    } else if !model.isRemoteControlAssistantConnected() {
+                        Form {
+                            WaitingForStreamerView()
                         }
                     } else if orientation.isPortrait {
                         Form {

@@ -161,7 +161,7 @@ struct ChatFiltersSettingsView: View {
                 Text("Filters")
                 Spacer()
                 Text(String(chat.filters.count))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

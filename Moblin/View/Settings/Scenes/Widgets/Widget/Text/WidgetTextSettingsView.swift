@@ -1,9 +1,10 @@
 import PhotosUI
 import SwiftUI
+import Translation
 
 private struct Suggestion: Identifiable {
     let id: Int
-    let name: String
+    let name: LocalizedStringKey
     let text: String
 }
 
@@ -30,29 +31,29 @@ private let suggestions = createSuggestions()
 
 private func createSuggestions() -> [Suggestion] {
     var suggestions = [
-        Suggestion(id: 0, name: String(localized: "Travel"), text: suggestionTravel),
-        Suggestion(id: 1, name: String(localized: "Weather"), text: suggestionWeather),
-        Suggestion(id: 2, name: String(localized: "Time"), text: suggestionTime),
-        Suggestion(id: 3, name: String(localized: "Date"), text: suggestionDate),
-        Suggestion(id: 4, name: String(localized: "Full date"), text: suggestionFullDate),
-        Suggestion(id: 5, name: String(localized: "Timer"), text: suggestionTimer),
-        Suggestion(id: 6, name: String(localized: "Stopwatch"), text: suggestionStopwatch),
-        Suggestion(id: 7, name: String(localized: "City"), text: suggestionCity),
-        Suggestion(id: 8, name: String(localized: "Country"), text: suggestionCountry),
-        Suggestion(id: 9, name: String(localized: "Movement"), text: suggestionMovement),
+        Suggestion(id: 0, name: "Travel", text: suggestionTravel),
+        Suggestion(id: 1, name: "Weather", text: suggestionWeather),
+        Suggestion(id: 2, name: "Time", text: suggestionTime),
+        Suggestion(id: 3, name: "Date", text: suggestionDate),
+        Suggestion(id: 4, name: "Full date", text: suggestionFullDate),
+        Suggestion(id: 5, name: "Timer", text: suggestionTimer),
+        Suggestion(id: 6, name: "Stopwatch", text: suggestionStopwatch),
+        Suggestion(id: 7, name: "City", text: suggestionCity),
+        Suggestion(id: 8, name: "Country", text: suggestionCountry),
+        Suggestion(id: 9, name: "Movement", text: suggestionMovement),
     ]
     if isPhone() {
         suggestions += [
-            Suggestion(id: 10, name: String(localized: "Heart rate"), text: suggestionHeartRate),
+            Suggestion(id: 10, name: "Heart rate", text: suggestionHeartRate),
         ]
     }
     suggestions += [
-        Suggestion(id: 11, name: String(localized: "Subtitles"), text: suggestionSubtitles),
-        Suggestion(id: 12, name: String(localized: "Muted"), text: suggestionMuted),
-        Suggestion(id: 13, name: String(localized: "Debug"), text: suggestionDebug),
-        Suggestion(id: 14, name: String(localized: "Workout test"), text: suggestionWorkoutTest),
-        Suggestion(id: 15, name: String(localized: "Tesla"), text: suggestionTesla),
-        Suggestion(id: 16, name: String(localized: "Racing"), text: suggestionRacing),
+        Suggestion(id: 11, name: "Subtitles", text: suggestionSubtitles),
+        Suggestion(id: 12, name: "Muted", text: suggestionMuted),
+        Suggestion(id: 13, name: "Debug", text: suggestionDebug),
+        Suggestion(id: 14, name: "Workout test", text: suggestionWorkoutTest),
+        Suggestion(id: 15, name: "Tesla", text: suggestionTesla),
+        Suggestion(id: 16, name: "Racing", text: suggestionRacing),
     ]
     return suggestions
 }
@@ -61,20 +62,28 @@ private struct SuggestionView: View {
     let suggestion: Suggestion
     @Binding var text: String
     let dismiss: () -> Void
-    @State var isPresentingConfirmation = false
+    @State private var isPresentingConfirmation = false
+
+    private func submit() {
+        text = suggestion.text
+        dismiss()
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
             Button {
-                isPresentingConfirmation = true
+                if text.isEmpty {
+                    submit()
+                } else {
+                    isPresentingConfirmation = true
+                }
             } label: {
                 Text(suggestion.name)
                     .font(.title3)
             }
             .confirmationDialog("", isPresented: $isPresentingConfirmation) {
                 Button("Yes", role: .destructive) {
-                    text = suggestion.text
-                    dismiss()
+                    submit()
                 }
             } message: {
                 Text("Are you sure you want to replace the content of the current text widget?")
@@ -84,7 +93,7 @@ private struct SuggestionView: View {
     }
 }
 
-private struct SuggestionsView: View {
+private struct TextWidgetSuggestionsInnerView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var text: String
 
@@ -103,7 +112,19 @@ private struct SuggestionsView: View {
     }
 }
 
-private struct FormatView: View {
+struct TextWidgetSuggestionsView: View {
+    @Binding var text: String
+
+    var body: some View {
+        NavigationLink {
+            TextWidgetSuggestionsInnerView(text: $text)
+        } label: {
+            Text("Suggestions")
+        }
+    }
+}
+
+private struct VariableView: View {
     @EnvironmentObject var model: Model
     let title: String
     let description: String
@@ -123,254 +144,266 @@ private struct FormatView: View {
     }
 }
 
-private struct TextSelectionView: View {
+@available(iOS 26, *)
+private struct Language: Identifiable {
+    var id: String {
+        identifier
+    }
+
+    var identifier: String
+    var name: String
+    var status: LanguageAvailability.Status
+}
+
+private struct SubtitlesWithLanguageToolbar: ToolbarContent {
+    @Binding var presentingLanguagePicker: Bool
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Button {
+                presentingLanguagePicker = false
+            } label: {
+                Image(systemName: "xmark")
+            }
+        }
+    }
+}
+
+@available(iOS 26, *)
+private struct SubtitlesWithLanguageView: View {
     @EnvironmentObject var model: Model
-    @Environment(\.dismiss) var dismiss
-    let widget: SettingsWidget
-    @State var value: String
-    @State var suggestion: Int = 0
-
-    private func updateTimers(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfTimers = parts.filter { value in
-            switch value {
-            case .timer:
-                return true
-            default:
-                return false
-            }
-        }.count
-        for index in 0 ..< numberOfTimers where index >= widget.text.timers.count {
-            widget.text.timers.append(.init())
-        }
-        while widget.text.timers.count > numberOfTimers {
-            widget.text.timers.removeLast()
-        }
-        textEffect?.setTimersEndTime(endTimes: widget.text.timers.map {
-            .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
-        })
-    }
-
-    private func updateStopwatches(_: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfStopwatches = parts.filter { value in
-            switch value {
-            case .stopwatch:
-                return true
-            default:
-                return false
-            }
-        }.count
-        for index in 0 ..< numberOfStopwatches where index >= widget.text.stopwatches.count {
-            widget.text.stopwatches.append(.init())
-        }
-        while widget.text.stopwatches.count > numberOfStopwatches {
-            widget.text.stopwatches.removeLast()
-        }
-        // textEffect?.setTimersEndTime(endTimes: widget.text.timers.map {
-        //     .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
-        // })
-    }
-
-    private func updateCheckboxes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfCheckboxes = parts.filter { value in
-            switch value {
-            case .checkbox:
-                return true
-            default:
-                return false
-            }
-        }.count
-        for index in 0 ..< numberOfCheckboxes where index >= widget.text.checkboxes.count {
-            widget.text.checkboxes.append(.init())
-        }
-        while widget.text.checkboxes.count > numberOfCheckboxes {
-            widget.text.checkboxes.removeLast()
-        }
-        textEffect?.setCheckboxes(checkboxes: widget.text.checkboxes.map { $0.checked })
-    }
-
-    private func updateRatings(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfRatings = parts.filter { value in
-            switch value {
-            case .rating:
-                return true
-            default:
-                return false
-            }
-        }.count
-        for index in 0 ..< numberOfRatings where index >= widget.text.ratings.count {
-            widget.text.ratings.append(.init())
-        }
-        while widget.text.ratings.count > numberOfRatings {
-            widget.text.ratings.removeLast()
-        }
-        textEffect?.setRatings(ratings: widget.text.ratings.map { $0.rating })
-    }
-
-    private func updateLapTimes(_ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfLapTimes = parts.filter { value in
-            switch value {
-            case .lapTimes:
-                return true
-            default:
-                return false
-            }
-        }.count
-        for index in 0 ..< numberOfLapTimes where index >= widget.text.lapTimes.count {
-            widget.text.lapTimes.append(.init())
-        }
-        while widget.text.lapTimes.count > numberOfLapTimes {
-            widget.text.lapTimes.removeLast()
-        }
-        textEffect?.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
-    }
-
-    private func updateNeedsWeather(_ parts: [TextFormatPart]) {
-        widget.text.needsWeather = !parts.filter { value in
-            switch value {
-            case .conditions:
-                return true
-            case .temperature:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.startWeatherManager()
-    }
-
-    private func updateNeedsGeography(_ parts: [TextFormatPart]) {
-        widget.text.needsGeography = !parts.filter { value in
-            switch value {
-            case .country:
-                return true
-            case .countryFlag:
-                return true
-            case .state:
-                return true
-            case .city:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.startGeographyManager()
-    }
-
-    private func updateNeedsGForce(_ parts: [TextFormatPart]) {
-        widget.text.needsGForce = !parts.filter { value in
-            switch value {
-            case .gForce:
-                return true
-            case .gForceRecentMax:
-                return true
-            case .gForceMax:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.startGForceManager()
-    }
-
-    private func updateNeedsSubtitles(_ parts: [TextFormatPart]) {
-        widget.text.needsSubtitles = !parts.filter { value in
-            switch value {
-            case .subtitles:
-                return true
-            default:
-                return false
-            }
-        }.isEmpty
-        model.reloadSpeechToText()
-    }
-
-    private func update() {
-        widget.text.formatString = value
-        let textEffect = model.getTextEffect(id: widget.id)
-        textEffect?.setFormat(format: value)
-        let parts = loadTextFormat(format: value)
-        updateTimers(textEffect, parts)
-        updateStopwatches(textEffect, parts)
-        updateCheckboxes(textEffect, parts)
-        updateRatings(textEffect, parts)
-        updateLapTimes(textEffect, parts)
-        updateNeedsWeather(parts)
-        updateNeedsGeography(parts)
-        updateNeedsSubtitles(parts)
-        updateNeedsGForce(parts)
-        model.sceneUpdated()
-    }
+    @Binding var text: String
+    @State private var languages: [Language] = []
+    @State private var presentingLanguagePicker: Bool = false
 
     var body: some View {
-        Form {
-            Section {
-                MultiLineTextFieldView(value: $value)
-                    .keyboardType(.default)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
+        VStack(alignment: .leading) {
+            Button {
+                presentingLanguagePicker = true
+            } label: {
+                Text("{subtitles:<language-identifier>}")
+                    .font(.title3)
             }
-            Section {
-                NavigationLink {
-                    SuggestionsView(text: $value)
-                } label: {
-                    Text("Suggestions")
+            Text("Show subtitles in given language")
+        }
+        .sheet(isPresented: $presentingLanguagePicker) {
+            NavigationStack {
+                Form {
+                    Section {
+                        Text("Download languages in iOS Settings → Apps → Translate → Languages.")
+                    }
+                    Section {
+                        ForEach(languages) { language in
+                            switch language.status {
+                            case .installed:
+                                Button {
+                                    let value = "{subtitles:\(language.identifier)}"
+                                    text += value
+                                    model.makeToast(title: "Appended \(value) to widget text")
+                                    presentingLanguagePicker = false
+                                } label: {
+                                    Text(language.name)
+                                }
+                            case .supported:
+                                HStack {
+                                    Text(language.name)
+                                    Spacer()
+                                    Text("Not downloaded")
+                                }
+                            default:
+                                EmptyView()
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Subtitles language")
+                .toolbar {
+                    SubtitlesWithLanguageToolbar(presentingLanguagePicker: $presentingLanguagePicker)
+                }
+                .task {
+                    let availability = LanguageAvailability()
+                    let supportedLanguages = await availability.supportedLanguages
+                    languages = []
+                    for language in supportedLanguages {
+                        let status = await availability.status(from: Locale.current.language, to: language)
+                        languages.append(Language(identifier: language.minimalIdentifier,
+                                                  name: language.name(),
+                                                  status: status))
+                    }
+                    languages = languages.sorted(by: { $0.id < $1.id })
                 }
             }
-            Section {
-                Text("Tap on items below to append them to the widget text.")
-            }
-            Section {
-                FormatView(title: "{time}", description: String(localized: "Show time as HH:MM:SS"), text: $value)
-                FormatView(title: "{shortTime}", description: String(localized: "Show time as HH:MM"), text: $value)
-                FormatView(title: "{date}", description: String(localized: "Show date"), text: $value)
-                FormatView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
-                FormatView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
-                FormatView(title: "{stopwatch}", description: String(localized: "Show a stopwatch"), text: $value)
-                FormatView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
-                FormatView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
-                FormatView(title: "{subtitles}", description: String(localized: "Show subtitles"), text: $value)
-                FormatView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
-                FormatView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
-                FormatView(title: "{browserTitle}", description: String(localized: "Show browser title"), text: $value)
-            } header: {
-                Text("General")
-            }
-            Section {
-                FormatView(title: "{country}", description: String(localized: "Show country"), text: $value)
-                FormatView(title: "{countryFlag}", description: String(localized: "Show country flag"), text: $value)
-                FormatView(title: "{state}", description: String(localized: "Show state"), text: $value)
-                FormatView(title: "{city}", description: String(localized: "Show city"), text: $value)
-                FormatView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
-                FormatView(title: "{averageSpeed}", description: String(localized: "Show average speed"), text: $value)
-                FormatView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
-                FormatView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
-                FormatView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
-                FormatView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
-                FormatView(
+        }
+    }
+}
+
+private struct GeneralVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
+                VariableView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
+                VariableView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
+                VariableView(
+                    title: "{browserTitle}",
+                    description: String(localized: "Show browser title"),
+                    text: $value
+                )
+                VariableView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
+                VariableView(
                     title: "{gForceRecentMax}",
                     description: String(localized: "Show recent max G-force"),
                     text: $value
                 )
-                FormatView(title: "{gForceMax}", description: String(localized: "Show max G-force"), text: $value)
-            } header: {
-                Text("Location (if Settings -> Location is enabled)")
+                VariableView(
+                    title: "{gForceMax}",
+                    description: String(localized: "Show max G-force"),
+                    text: $value
+                )
             }
-            Section {
-                FormatView(title: "{conditions}", description: String(localized: "Show conditions"), text: $value)
-                FormatView(title: "{temperature}", description: String(localized: "Show temperature"), text: $value)
-            } header: {
-                Text("Weather (if Settings -> Location is enabled)")
+            .navigationTitle("General")
+        } label: {
+            Text("General")
+        }
+    }
+}
+
+private struct TimeVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(
+                    title: "{time}",
+                    description: String(localized: "Show time as HH:MM:SS"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{shortTime}",
+                    description: String(localized: "Show time as HH:MM"),
+                    text: $value
+                )
+                VariableView(title: "{date}", description: String(localized: "Show date"), text: $value)
+                VariableView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
+                VariableView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
+                VariableView(
+                    title: "{stopwatch}",
+                    description: String(localized: "Show a stopwatch"),
+                    text: $value
+                )
+                VariableView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
             }
-            Section {
+            .navigationTitle("Time")
+        } label: {
+            Text("Time")
+        }
+    }
+}
+
+private struct LocationVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(title: "{country}", description: String(localized: "Show country"), text: $value)
+                VariableView(
+                    title: "{countryFlag}",
+                    description: String(localized: "Show country flag"),
+                    text: $value
+                )
+                VariableView(title: "{state}", description: String(localized: "Show state"), text: $value)
+                VariableView(title: "{city}", description: String(localized: "Show city"), text: $value)
+                VariableView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
+                VariableView(
+                    title: "{averageSpeed}",
+                    description: String(localized: "Show average speed"),
+                    text: $value
+                )
+                VariableView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
+                VariableView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
+                VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
+            }
+            .navigationTitle("Location")
+        } label: {
+            Text("Location")
+        }
+    }
+}
+
+private struct WeatherVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    VariableView(
+                        title: "{conditions}",
+                        description: String(localized: "Show conditions"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{temperature}",
+                        description: String(localized: "Show temperature"),
+                        text: $value
+                    )
+                } footer: {
+                    let image = Image(systemName: "apple.logo")
+                    Text("""
+                    Weather data is provided by \(image) Weather. \
+                    [Legal information](https://weatherkit.apple.com/legal-attribution.html).
+                    """)
+                }
+            }
+            .navigationTitle("Weather")
+        } label: {
+            Text("Weather")
+        }
+    }
+}
+
+private struct LanguageVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(
+                    title: "{subtitles}",
+                    description: String(localized: "Show subtitles in app language"),
+                    text: $value
+                )
+                if #available(iOS 26, *) {
+                    SubtitlesWithLanguageView(text: $value)
+                }
+            }
+            .navigationTitle("Language")
+        } label: {
+            Text("Language")
+        }
+    }
+}
+
+private struct WorkoutVariablesView: View {
+    let model: Model
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
                 if isPhone() {
-                    FormatView(
+                    VariableView(
                         title: "{heartRate}",
                         description: String(localized: "Show Apple Watch heart rate"),
                         text: $value
                     )
                 }
                 ForEach(model.database.heartRateDevices.devices) { device in
-                    FormatView(
+                    VariableView(
                         title: "{heartRate:\(device.name)}",
                         description: String(
                             localized: "Show heart rate for heart rate device called \"\(device.name)\""
@@ -378,60 +411,162 @@ private struct TextSelectionView: View {
                         text: $value
                     )
                 }
-            } header: {
-                Text("Workout")
             }
-            Section {
-                FormatView(
+            .navigationTitle("Workout")
+        } label: {
+            Text("Workout")
+        }
+    }
+}
+
+private struct TeslaVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(
                     title: "{teslaBatteryLevel}",
                     description: String(localized: "Show Tesla battery level"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{teslaDrive}",
                     description: String(localized: "Show Tesla drive information"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{teslaMedia}",
                     description: String(localized: "Show Tesla media information"),
                     text: $value
                 )
-            } header: {
-                Text("Tesla (requires a Tesla)")
             }
-            Section {
-                FormatView(title: "{cyclingPower}", description: String(localized: "Show cycling power"), text: $value)
-                FormatView(
+            .navigationTitle("Tesla")
+        } label: {
+            Text("Tesla")
+        }
+    }
+}
+
+private struct CyclingVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(
+                    title: "{cyclingPower}",
+                    description: String(localized: "Show cycling power"),
+                    text: $value
+                )
+                VariableView(
                     title: "{cyclingCadence}",
                     description: String(localized: "Show cycling cadence"),
                     text: $value
                 )
-            } header: {
-                Text("Cycling (requires a compatible bike)")
             }
-            Section {
-                FormatView(
+            .navigationTitle("Cycling")
+        } label: {
+            Text("Cycling")
+        }
+    }
+}
+
+private struct DebugVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(
                     title: "{bitrate}",
                     description: String(localized: "Show bitrate"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
                     title: "{bitrateAndTotal}",
                     description: String(localized: "Show bitrate and total number of bytes sent"),
                     text: $value
                 )
-                FormatView(
+                VariableView(
+                    title: "{resolution}",
+                    description: String(localized: "Show resolution"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{fps}",
+                    description: String(localized: "Show FPS"),
+                    text: $value
+                )
+                VariableView(
                     title: "{debugOverlay}",
                     description: String(localized: "Show debug overlay (if enabled)"),
                     text: $value
                 )
+            }
+            .navigationTitle("Debug")
+        } label: {
+            Text("Debug")
+        }
+    }
+}
+
+struct TextWidgetTextView: View {
+    @Binding var value: String
+    @FocusState var editingText: Bool
+
+    var body: some View {
+        Section {
+            MultiLineTextFieldView(value: $value)
+                .keyboardType(.default)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .focused($editingText)
+        } footer: {
+            if isPhone() {
+                HStack {
+                    Spacer()
+                    Button("Done") {
+                        editingText = false
+                    }
+                }
+                .disabled(!editingText)
+            }
+        }
+    }
+}
+
+private struct TextSelectionView: View {
+    @EnvironmentObject var model: Model
+    @Environment(\.dismiss) var dismiss
+    let widget: SettingsWidget
+    @State var value: String
+    @State var suggestion: Int = 0
+    @FocusState var editingText: Bool
+
+    var body: some View {
+        Form {
+            TextWidgetTextView(value: $value)
+            Section {
+                TextWidgetSuggestionsView(text: $value)
+            }
+            Section {
+                GeneralVariablesView(value: $value)
+                TimeVariablesView(value: $value)
+                LocationVariablesView(value: $value)
+                WeatherVariablesView(value: $value)
+                LanguageVariablesView(value: $value)
+                WorkoutVariablesView(model: model, value: $value)
+                TeslaVariablesView(value: $value)
+                CyclingVariablesView(value: $value)
+                DebugVariablesView(value: $value)
             } header: {
-                Text("Debug")
+                Text("Variables")
             }
         }
         .onChange(of: value) { _ in
-            update()
+            widget.text.formatString = value
+            model.textWidgetTextChanged(widget: widget)
         }
         .navigationTitle("Text")
     }
@@ -570,45 +705,37 @@ struct WidgetTextSettingsView: View {
                     value: $text.fontSizeFloat,
                     in: 10 ... 200,
                     step: 5,
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        text.fontSize = Int(text.fontSizeFloat)
-                        model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(text.fontSizeFloat))
-                        model.remoteSceneSettingsUpdated()
+                    label: {
+                        EmptyView()
                     }
                 )
+                .onChange(of: text.fontSizeFloat) { _ in
+                    text.fontSize = Int(text.fontSizeFloat)
+                    model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(text.fontSizeFloat))
+                    model.remoteSceneSettingsUpdated()
+                }
                 Text(String(Int(text.fontSizeFloat)))
                     .frame(width: 35)
             }
-            HStack {
-                Text("Design")
-                Spacer()
-                Picker("", selection: $text.fontDesign) {
-                    ForEach(SettingsFontDesign.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
-                }
-                .onChange(of: text.fontDesign) { _ in
-                    model.getTextEffect(id: widget.id)?.setFontDesign(design: text.fontDesign.toSystem())
-                    model.remoteSceneSettingsUpdated()
+            Picker("Design", selection: $text.fontDesign) {
+                ForEach(SettingsFontDesign.allCases, id: \.self) {
+                    Text($0.toString())
+                        .tag($0)
                 }
             }
-            HStack {
-                Text("Weight")
-                Spacer()
-                Picker("", selection: $text.fontWeight) {
-                    ForEach(SettingsFontWeight.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
+            .onChange(of: text.fontDesign) { _ in
+                model.getTextEffect(id: widget.id)?.setFontDesign(design: text.fontDesign.toSystem())
+                model.remoteSceneSettingsUpdated()
+            }
+            Picker("Weight", selection: $text.fontWeight) {
+                ForEach(SettingsFontWeight.allCases, id: \.self) {
+                    Text($0.toString())
+                        .tag($0)
                 }
-                .onChange(of: text.fontWeight) { _ in
-                    model.getTextEffect(id: widget.id)?.setFontWeight(weight: text.fontWeight.toSystem())
-                    model.remoteSceneSettingsUpdated()
-                }
+            }
+            .onChange(of: text.fontWeight) { _ in
+                model.getTextEffect(id: widget.id)?.setFontWeight(weight: text.fontWeight.toSystem())
+                model.remoteSceneSettingsUpdated()
             }
             Toggle("Monospaced digits", isOn: $text.fontMonospacedDigits)
                 .onChange(of: text.fontMonospacedDigits) { _ in
@@ -619,38 +746,17 @@ struct WidgetTextSettingsView: View {
             Text("Font")
         }
         Section {
-            HStack {
-                Text("Horizontal")
-                Spacer()
-                Picker("", selection: $text.horizontalAlignment) {
-                    ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
-                }
-                .onChange(of: text.horizontalAlignment) { _ in
-                    model.getTextEffect(id: widget.id)?
-                        .setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
-                    model.remoteSceneSettingsUpdated()
+            Picker("Alignment", selection: $text.horizontalAlignment) {
+                ForEach(SettingsHorizontalAlignment.allCases, id: \.self) {
+                    Text($0.toString())
+                        .tag($0)
                 }
             }
-            HStack {
-                Text("Vertical")
-                Spacer()
-                Picker("", selection: $text.verticalAlignment) {
-                    ForEach(SettingsVerticalAlignment.allCases, id: \.self) {
-                        Text($0.toString())
-                            .tag($0)
-                    }
-                }
-                .onChange(of: text.verticalAlignment) { _ in
-                    model.getTextEffect(id: widget.id)?
-                        .setVerticalAlignment(alignment: text.verticalAlignment.toSystem())
-                    model.remoteSceneSettingsUpdated()
-                }
+            .onChange(of: text.horizontalAlignment) { _ in
+                model.getTextEffect(id: widget.id)?
+                    .setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
+                model.remoteSceneSettingsUpdated()
             }
-        } header: {
-            Text("Alignment")
         }
         Section {
             HStack {
@@ -658,6 +764,9 @@ struct WidgetTextSettingsView: View {
                     value: $text.delay,
                     in: 0 ... 10,
                     step: 0.5,
+                    label: {
+                        EmptyView()
+                    },
                     onEditingChanged: { begin in
                         guard !begin else {
                             return

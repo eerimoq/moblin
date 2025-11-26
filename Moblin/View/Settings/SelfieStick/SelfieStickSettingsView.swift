@@ -12,7 +12,6 @@ struct SelfieStickDoesNotWorkView: View {
 }
 
 struct SelfieStickSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var selfieStick: SettingsSelfieStick
 

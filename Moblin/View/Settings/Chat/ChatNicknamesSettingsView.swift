@@ -8,22 +8,22 @@ private struct NicknameView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(title: "User", value: nickname.user) { value in
-                        nickname.user = value
-                        model.reloadChatMessages()
-                    }
-                    TextEditNavigationView(title: "Nickname", value: nickname.nickname) { value in
-                        nickname.nickname = value
-                        model.reloadChatMessages()
-                    }
+                    TextEditNavigationView(title: "User",
+                                           value: nickname.user,
+                                           onSubmit: { value in
+                                               nickname.user = value
+                                               model.reloadChatMessages()
+                                           })
+                    TextEditNavigationView(title: "Nickname",
+                                           value: nickname.nickname,
+                                           onSubmit: { value in
+                                               nickname.nickname = value
+                                               model.reloadChatMessages()
+                                           })
                 }
                 Section {
-                    Button {
+                    TextButtonView("Test") {
                         model.previewTextToSpeech(username: nickname.nickname, message: "This is a test message")
-                    } label: {
-                        HCenter {
-                            Text("Test")
-                        }
                     }
                     .disabled(nickname.nickname.isEmpty)
                 }
@@ -35,7 +35,7 @@ private struct NicknameView: View {
                 Text(nickname.user)
                 Spacer()
                 Text(nickname.nickname)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }
@@ -74,7 +74,7 @@ struct ChatNicknamesSettingsView: View {
                 Text("Nicknames")
                 Spacer()
                 Text(String(nicknames.nicknames.count))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
         }
     }

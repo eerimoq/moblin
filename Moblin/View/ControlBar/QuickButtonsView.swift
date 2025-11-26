@@ -12,9 +12,9 @@ private struct QuickButtonImage: View {
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
-            return state.button.systemImageNameOn
+            return state.button.imageOn
         } else {
-            return state.button.systemImageNameOff
+            return state.button.imageOff
         }
     }
 
@@ -34,7 +34,7 @@ private struct QuickButtonImage: View {
         let image = Image(systemName: getImage(state: state))
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .background(backgroundColor)
             .clipShape(Circle())
         ZStack {
@@ -58,7 +58,7 @@ private struct QuickButtonImage: View {
 }
 
 private struct InstantReplayView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var replay: ReplayProvider
     let state: ButtonState
     let size: CGFloat
@@ -68,7 +68,7 @@ private struct InstantReplayView: View {
             Text(String(replay.timeLeft))
                 .font(.system(size: 25))
                 .frame(width: size, height: size)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .background(state.button.backgroundColor.color())
                 .clipShape(Circle())
                 .onTapGesture {
@@ -103,17 +103,9 @@ struct QuickButtonPlaceholderImage: View {
     var body: some View {
         Image(systemName: "pawprint")
             .frame(width: size, height: size)
-            .foregroundColor(.black)
+            .foregroundStyle(.black)
             .opacity(0.0)
             .padding(0)
-    }
-}
-
-private func startStopText(button: ButtonState) -> String {
-    if button.isOn {
-        return String(localized: "Stop")
-    } else {
-        return String(localized: "Start")
     }
 }
 
@@ -125,13 +117,13 @@ private struct ButtonTextOverlayView: View {
             .rotationEffect(.degrees(-90))
             .offset(CGSize(width: 10, height: 0))
             .font(.system(size: 8))
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .frame(width: controlBarButtonSize, height: controlBarButtonSize)
     }
 }
 
 struct QuickButtonsInnerView: View {
-    let model: Model
+    @EnvironmentObject var model: Model
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var orientation: Orientation
@@ -249,18 +241,6 @@ struct QuickButtonsInnerView: View {
     }
 
     private func obsAction() {
-        guard model.isObsRemoteControlConfigured() else {
-            model.makeErrorToast(
-                title: String(localized: "OBS remote control is not configured"),
-                subTitle: String(
-                    localized: """
-                    Configure it in Settings → Streams → \(model.stream.name) → \
-                    OBS remote control.
-                    """
-                )
-            )
-            return
-        }
         model.toggleShowingPanel(type: .obs, panel: .obs)
     }
 
@@ -286,6 +266,13 @@ struct QuickButtonsInnerView: View {
         model.setGlobalButtonState(type: .browser, isOn: state.button.isOn)
         model.updateQuickButtonStates()
         model.toggleBrowser()
+    }
+
+    private func navigationAction() {
+        state.button.isOn.toggle()
+        model.setGlobalButtonState(type: .navigation, isOn: state.button.isOn)
+        model.updateQuickButtonStates()
+        model.toggleNavigation()
     }
 
     private func cameraPreviewAction() {
@@ -365,8 +352,7 @@ struct QuickButtonsInnerView: View {
 
     private func portraitAction() {
         model.setDisplayPortrait(portrait: !model.database.portrait)
-        // To update main view.
-        model.sceneSettingsPanelSceneId += 1
+        model.reattachCamera()
     }
 
     private func goProAction() {
@@ -378,6 +364,10 @@ struct QuickButtonsInnerView: View {
         state.button.isOn.toggle()
         model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
         model.updateQuickButtonStates()
+    }
+
+    private func liveAction() {
+        model.toggleShowingPanel(type: .live, panel: .live)
     }
 
     private func connectionPrioritiesAction() {
@@ -479,7 +469,7 @@ struct QuickButtonsInnerView: View {
                     }
                 }
                 .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
-                    Button(startStopText(button: state)) {
+                    Button(state.isOn ? "Stop recording" : "Start recording") {
                         recordAction()
                     }
                 }
@@ -791,7 +781,7 @@ struct QuickButtonsInnerView: View {
                     replayAction(state: state)
                 }
             case .instantReplay:
-                InstantReplayView(replay: model.replay, state: state, size: size)
+                InstantReplayView(model: model, replay: model.replay, state: state, size: size)
             case .connectionPriorities:
                 QuickButtonImage(model: model,
                                  quickButtonsSettings: quickButtonsSettings,
@@ -832,13 +822,29 @@ struct QuickButtonsInnerView: View {
                 {
                     pauseTtsAction()
                 }
+            case .live:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    liveAction()
+                }
+            case .navigation:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    navigationAction()
+                }
             }
             if quickButtonsSettings.showName && !orientation.isPortrait {
                 Text(state.button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)
                     .frame(width: nameWidth, alignment: .center)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .lineLimit(2)
                     .minimumScaleFactor(0.5)
                     .font(.system(size: nameSize))

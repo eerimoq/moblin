@@ -77,9 +77,7 @@ extension TwitchAuth: WKNavigationDelegate {
         guard let urlComponents = URLComponents(string: "foo:///?\(fragment)") else {
             return
         }
-        guard let token = urlComponents.queryItems?.first(where: { item in
-            item.name == "access_token"
-        }) else {
+        guard let token = urlComponents.queryItems?.first(where: { $0.name == "access_token" }) else {
             return
         }
         guard let accessToken = token.value else {

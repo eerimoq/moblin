@@ -8,7 +8,7 @@ private struct StreamButtonText: View {
         Text(text)
             .lineLimit(1)
             .minimumScaleFactor(0.5)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .frame(minWidth: 60)
             .padding(5)
             .background(database.streamButtonColorColor)

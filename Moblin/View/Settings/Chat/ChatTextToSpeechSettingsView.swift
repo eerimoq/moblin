@@ -1,11 +1,34 @@
 import AVFAudio
 import SwiftUI
 
+struct TtsMonsterSettingsView: View {
+    @ObservedObject var ttsMonster: SettingsTtsMonster
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    TextEditNavigationView(title: String(localized: "API token"),
+                                           value: ttsMonster.apiToken,
+                                           onSubmit: { value in
+                                               ttsMonster.apiToken = value
+                                           },
+                                           sensitive: true)
+                }
+            }
+            .navigationTitle("TTS.Monster")
+        } label: {
+            TtsMonsterLogoAndNameView()
+        }
+    }
+}
+
 struct ChatTextToSpeechSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chat: SettingsChat
+    @ObservedObject var ttsMonster: SettingsTtsMonster
 
-    private func onVoiceChange(languageCode: String, voice: String) {
+    private func onVoiceChange(languageCode: String, voice: SettingsVoice) {
         chat.textToSpeechLanguageVoices[languageCode] = voice
         model.chatTextToSpeech.setVoices(voices: chat.textToSpeechLanguageVoices)
     }
@@ -18,7 +41,8 @@ struct ChatTextToSpeechSettingsView: View {
                         textToSpeechLanguageVoices: $chat.textToSpeechLanguageVoices,
                         onVoiceChange: onVoiceChange,
                         rate: $chat.textToSpeechRate,
-                        volume: $chat.textToSpeechSayVolume
+                        volume: $chat.textToSpeechSayVolume,
+                        ttsMonsterApiToken: ttsMonster.apiToken
                     )
                 } label: {
                     Text("Voices")
@@ -53,6 +77,10 @@ struct ChatTextToSpeechSettingsView: View {
                     )
                     Image(systemName: "hare.fill")
                 }
+                TtsMonsterSettingsView(ttsMonster: chat.ttsMonster)
+                    .onChange(of: ttsMonster.apiToken) { _ in
+                        model.chatTextToSpeech.setTtsMonsterApiToken(apiToken: ttsMonster.apiToken)
+                    }
             } header: {
                 Text("Voice")
             }
@@ -62,6 +90,9 @@ struct ChatTextToSpeechSettingsView: View {
                         value: $chat.textToSpeechPauseBetweenMessages,
                         in: 0.5 ... 15.0,
                         step: 0.5,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return

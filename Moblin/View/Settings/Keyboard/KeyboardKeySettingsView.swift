@@ -30,9 +30,11 @@ struct KeyboardKeySettingsView: View {
         NavigationLink {
             Form {
                 Section {
-                    TextEditNavigationView(title: String(localized: "Key"), value: key.key) {
-                        key.key = $0
-                    }
+                    TextEditNavigationView(title: String(localized: "Key"),
+                                           value: key.key,
+                                           onSubmit: {
+                                               key.key = $0
+                                           })
                 }
                 Section {
                     NavigationLink {
@@ -81,10 +83,15 @@ struct KeyboardKeySettingsView: View {
             .navigationTitle("Keyboard key")
         } label: {
             HStack {
-                Text(key.key)
+                if key.key.isEmpty {
+                    Text("No key set")
+                        .foregroundStyle(.gray)
+                } else {
+                    Text(key.key)
+                }
                 Spacer()
                 Text(keyText())
-                    .foregroundColor(keyColor())
+                    .foregroundStyle(keyColor())
             }
         }
     }

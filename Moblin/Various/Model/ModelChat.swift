@@ -6,75 +6,10 @@ import WrappingHStack
 let maximumNumberOfChatMessages = 50
 let maximumNumberOfInteractiveChatMessages = 100
 
-class ChatProvider: ObservableObject {
-    var newPosts: Deque<ChatPost> = []
-    var pausedPosts: Deque<ChatPost> = []
-    @Published var posts: Deque<ChatPost> = []
-    @Published var pausedPostsCount: Int = 0
-    @Published var paused = false
-    private let maximumNumberOfMessages: Int
-    @Published var moreThanOneStreamingPlatform = false
-    @Published var interactiveChat = false
-    @Published var triggerScrollToBottom = false
-    init(maximumNumberOfMessages: Int) {
-        self.maximumNumberOfMessages = maximumNumberOfMessages
-    }
-
-    func reset() {
-        posts = []
-        pausedPosts = []
-        newPosts = []
-    }
-
-    func appendMessage(post: ChatPost) {
-        if paused {
-            if pausedPosts.count < 2 * maximumNumberOfMessages {
-                pausedPosts.append(post)
-            }
-        } else {
-            newPosts.append(post)
-        }
-    }
-
-    func deleteMessage(messageId: String) {
-        for post in newPosts where post.messageId == messageId {
-            post.state.deleted = true
-        }
-        for post in pausedPosts where post.messageId == messageId {
-            post.state.deleted = true
-        }
-        for post in posts where post.messageId == messageId {
-            post.state.deleted = true
-        }
-    }
-
-    func deleteUser(userId: String) {
-        for post in newPosts where post.userId == userId {
-            post.state.deleted = true
-        }
-        for post in pausedPosts where post.userId == userId {
-            post.state.deleted = true
-        }
-        for post in posts where post.userId == userId {
-            post.state.deleted = true
-        }
-    }
-
-    func update() {
-        if paused {
-            let count = max(pausedPosts.count - 1, 0)
-            if count != pausedPostsCount {
-                pausedPostsCount = count
-            }
-        } else {
-            while let post = newPosts.popFirst() {
-                if posts.count > maximumNumberOfMessages - 1 {
-                    posts.removeLast()
-                }
-                posts.prepend(post)
-            }
-        }
-    }
+enum ChatPlatformSelection: CaseIterable {
+    case all
+    case twitch
+    case kick
 }
 
 extension Model {
@@ -119,6 +54,7 @@ extension Model {
         return ChatPost(
             id: chatPostId,
             messageId: nil,
+            displayName: nil,
             user: nil,
             userColor: .init(red: 0, green: 0, blue: 0),
             userBadges: [],
@@ -243,10 +179,7 @@ extension Model {
             externalDisplayChat.update()
         }
         if quickButtonChatState.chatAlertsPaused {
-            quickButtonChatState.pausedChatAlertsPostsCount = max(
-                pausedQuickButtonChatAlertsPosts.count - 1,
-                0
-            )
+            quickButtonChatState.pausedChatAlertsPostsCount = max(pausedQuickButtonChatAlertsPosts.count - 1, 0)
         } else {
             while let post = newQuickButtonChatAlertsPosts.popFirst() {
                 if quickButtonChatState.chatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {
@@ -255,6 +188,7 @@ extension Model {
                 quickButtonChatState.chatAlertsPosts.prepend(post)
             }
         }
+        chatWidgetChat.update()
     }
 
     func isAlertMessage(post: ChatPost) -> Bool {
@@ -271,8 +205,9 @@ extension Model {
     func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
+        reloadDLiveChat()
         reloadYouTubeLiveChat()
-        reloadAfreecaTvChat()
+        reloadSoopChat()
         reloadOpenStreamingPlatformChat()
     }
 
@@ -281,6 +216,7 @@ extension Model {
         chat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+        chatWidgetChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
     }
 
     private func isMoreThanOneChatConfigured() -> Bool {
@@ -291,10 +227,13 @@ extension Model {
         if isKickPusherConfigured() {
             numberOfChats += 1
         }
+        if isDLiveChatConfigured() {
+            numberOfChats += 1
+        }
         if isYouTubeLiveChatConfigured() {
             numberOfChats += 1
         }
-        if isAfreecaTvChatConfigured() {
+        if isSoopChatConfigured() {
             numberOfChats += 1
         }
         if isOpenStreamingPlatformChatConfigured() {
@@ -305,8 +244,8 @@ extension Model {
 
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
-            isYouTubeLiveChatConfigured() || isAfreecaTvChatConfigured() ||
-            isOpenStreamingPlatformChatConfigured()
+            isYouTubeLiveChatConfigured() || isSoopChatConfigured() ||
+            isDLiveChatConfigured() || isOpenStreamingPlatformChatConfigured()
     }
 
     func isChatRemoteControl() -> Bool {
@@ -323,10 +262,13 @@ extension Model {
         if isYouTubeLiveChatConfigured() && !isYouTubeLiveChatConnected() {
             return false
         }
-        if isAfreecaTvChatConfigured() && !isAfreecaTvChatConnected() {
+        if isSoopChatConfigured() && !isSoopChatConnected() {
             return false
         }
         if isOpenStreamingPlatformChatConfigured() && !isOpenStreamingPlatformChatConnected() {
+            return false
+        }
+        if isDLiveChatConfigured() && !isDLiveChatConnected() {
             return false
         }
         return true
@@ -336,8 +278,9 @@ extension Model {
         return hasTwitchChatEmotes()
             || hasKickPusherEmotes()
             || hasYouTubeLiveChatEmotes()
-            || hasAfreecaTvChatEmotes()
+            || hasSoopChatEmotes()
             || hasOpenStreamingPlatformChatEmotes()
+            || hasDLiveChatEmotes()
     }
 
     func resetChat() {
@@ -345,11 +288,23 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        if stream.twitchSendMessagesTo {
+        var messageSent = false
+        if stream.twitchSendMessagesTo, stream.twitchLoggedIn {
             sendTwitchChatMessage(message: message)
+            messageSent = true
         }
-        if stream.kickSendMessagesTo {
+        if stream.kickSendMessagesTo, stream.kickLoggedIn {
             sendKickChatMessage(message: message)
+            messageSent = true
+        }
+        if !messageSent {
+            if stream.twitchSendMessagesTo, stream.kickSendMessagesTo {
+                makeErrorToast(title: String(localized: "Please login to a streaming platform"))
+            } else if stream.twitchSendMessagesTo, !stream.twitchLoggedIn {
+                makeNotLoggedInToTwitchToast()
+            } else if stream.kickSendMessagesTo, !stream.kickLoggedIn {
+                makeNotLoggedInToKickToast()
+            }
         }
     }
 
@@ -360,6 +315,7 @@ extension Model {
     func appendChatMessage(
         platform: Platform,
         messageId: String?,
+        displayName: String?,
         user: String?,
         userId: String?,
         userColor: RgbColor?,
@@ -397,6 +353,7 @@ extension Model {
         let post = ChatPost(
             id: chatPostId,
             messageId: messageId,
+            displayName: displayName,
             user: user,
             userId: userId,
             userColor: userColor?.makeReadableOnDarkBackground() ?? database.chat.usernameColor,
@@ -450,12 +407,16 @@ extension Model {
                 }
             }
         }
+        if !enabledChatEffects.isEmpty {
+            chatWidgetChat.appendMessage(post: post)
+        }
     }
 
     func reloadChatMessages() {
         chat.posts = newPostIds(posts: chat.posts)
         quickButtonChat.posts = newPostIds(posts: quickButtonChat.posts)
         externalDisplayChat.posts = newPostIds(posts: externalDisplayChat.posts)
+        chatWidgetChat.posts = newPostIds(posts: chatWidgetChat.posts)
         quickButtonChatState.chatAlertsPosts = newPostIds(posts: quickButtonChatState.chatAlertsPosts)
     }
 
@@ -503,7 +464,8 @@ extension Model {
                     verticalSpacing: 0,
                     fitContentWidth: true
                 ) {
-                    Text(post.displayName(nicknames: self.database.chat.nicknames))
+                    let chat = self.database.chat
+                    Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
                         .lineLimit(1)
                         .padding([.trailing], 0)
                     if post.isRedemption() {
@@ -530,7 +492,7 @@ extension Model {
                         }
                     }
                 }
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
                 .font(.system(size: CGFloat(30), weight: .bold, design: .default))
                 Spacer()
             }
@@ -607,6 +569,7 @@ extension Model {
         chat.deleteMessage(messageId: messageId)
         quickButtonChat.deleteMessage(messageId: messageId)
         externalDisplayChat.deleteMessage(messageId: messageId)
+        chatWidgetChat.deleteMessage(messageId: messageId)
         chatTextToSpeech.delete(messageId: messageId)
     }
 
@@ -614,6 +577,7 @@ extension Model {
         chat.deleteUser(userId: userId)
         quickButtonChat.deleteUser(userId: userId)
         externalDisplayChat.deleteUser(userId: userId)
+        chatWidgetChat.deleteUser(userId: userId)
         chatTextToSpeech.delete(userId: userId)
     }
 }

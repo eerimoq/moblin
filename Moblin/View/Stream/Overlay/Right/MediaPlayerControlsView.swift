@@ -15,7 +15,7 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             Text(mediaPlayer.fileName)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding([.trailing], 8)
             HStack {
                 Text(mediaPlayer.time)
@@ -62,7 +62,7 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
             }
             .padding(8)
             .background(backgroundColor)
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .cornerRadius(8)
         }
     }

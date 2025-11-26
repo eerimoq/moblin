@@ -5,12 +5,12 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     let stream: SettingsStream
 
     private var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate {
-        stream.srt.adaptiveBitrate!
+        stream.srt.adaptiveBitrate
     }
 
     private func handleAlgorithmChange(value: SettingsStreamSrtAdaptiveBitrateAlgorithm) {
         adaptiveBitrate.algorithm = value
-        if stream.srt.adaptiveBitrateEnabled! {
+        if stream.srt.adaptiveBitrateEnabled {
             model.setAdaptiveBitrateSrtAlgorithm(stream: stream)
         }
         model.updateAdaptiveBitrateSrt(stream: stream)
@@ -18,12 +18,12 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func submitFastIrlPacketsInFlight(value: Float) {
-        adaptiveBitrate.fastIrlSettings!.packetsInFlight = Int32(value)
+        adaptiveBitrate.fastIrlSettings.packetsInFlight = Int32(value)
         model.updateAdaptiveBitrateSrt(stream: stream)
     }
 
     private func submitFastMinimumBitrate(value: Float) {
-        adaptiveBitrate.fastIrlSettings!.minimumBitrate = value / 1000
+        adaptiveBitrate.fastIrlSettings.minimumBitrate = value / 1000
         model.updateAdaptiveBitrateSrt(stream: stream)
     }
 
@@ -82,23 +82,19 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func submitBelaboxMinimumBitrate(value: Float) {
-        adaptiveBitrate.belaboxSettings!.minimumBitrate = value / 1000
+        adaptiveBitrate.belaboxSettings.minimumBitrate = value / 1000
         model.updateAdaptiveBitrateSrt(stream: stream)
     }
 
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Text("Algorithm")
-                    Spacer()
-                    Picker("", selection: Binding(get: {
-                        adaptiveBitrate.algorithm
-                    }, set: handleAlgorithmChange)) {
-                        ForEach(SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases, id: \.self) {
-                            Text($0.toString())
-                                .tag($0)
-                        }
+                Picker("Algorithm", selection: Binding(get: {
+                    adaptiveBitrate.algorithm
+                }, set: handleAlgorithmChange)) {
+                    ForEach(SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases, id: \.self) {
+                        Text($0.toString())
+                            .tag($0)
                     }
                 }
             } footer: {
@@ -106,7 +102,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
             }
             if adaptiveBitrate.algorithm == .fastIrl {
                 Section {
-                    SliderView(value: Float(adaptiveBitrate.fastIrlSettings!.packetsInFlight),
+                    SliderView(value: Float(adaptiveBitrate.fastIrlSettings.packetsInFlight),
                                minimum: 200,
                                maximum: 700,
                                step: 10,
@@ -125,7 +121,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     }
                 }
                 Section {
-                    SliderView(value: 1000 * adaptiveBitrate.fastIrlSettings!.minimumBitrate!,
+                    SliderView(value: 1000 * adaptiveBitrate.fastIrlSettings.minimumBitrate,
                                minimum: 50000,
                                maximum: 2_000_000,
                                step: 50000,
@@ -216,7 +212,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     Text("The maximum allowed RTT spike before decreasing the bitrate")
                 }
                 Section {
-                    SliderView(value: 1000 * adaptiveBitrate.customSettings.minimumBitrate!,
+                    SliderView(value: 1000 * adaptiveBitrate.customSettings.minimumBitrate,
                                minimum: 50000,
                                maximum: 2_000_000,
                                step: 50000,
@@ -230,7 +226,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                 }
             } else if adaptiveBitrate.algorithm == .belabox {
                 Section {
-                    SliderView(value: 1000 * adaptiveBitrate.belaboxSettings!.minimumBitrate,
+                    SliderView(value: 1000 * adaptiveBitrate.belaboxSettings.minimumBitrate,
                                minimum: 50000,
                                maximum: 2_000_000,
                                step: 50000,

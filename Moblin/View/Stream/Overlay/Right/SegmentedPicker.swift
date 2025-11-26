@@ -45,7 +45,7 @@ struct SegmentedPicker<T: Equatable, Content: View>: View {
                 ZStack {
                     Rectangle()
                         .overlay(self.overlay(for: self.items[index]))
-                        .foregroundColor(.black.opacity(0.1))
+                        .foregroundStyle(.black.opacity(0.1))
                     self.content(self.items[index])
                         .contentShape(Rectangle())
                 }

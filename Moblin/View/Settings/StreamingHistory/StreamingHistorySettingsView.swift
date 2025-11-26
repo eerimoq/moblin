@@ -50,10 +50,10 @@ private struct StreamingHistorySettingsStreamsView: View {
                             HStack {
                                 if stream.isSuccessful() {
                                     Image(systemName: "checkmark.circle")
-                                        .foregroundColor(.green)
+                                        .foregroundStyle(.green)
                                 } else {
                                     Image(systemName: "exclamationmark.circle")
-                                        .foregroundColor(.red)
+                                        .foregroundStyle(.red)
                                 }
                                 VStack(alignment: .leading) {
                                     Text(formatStreamTitle(stream: stream))

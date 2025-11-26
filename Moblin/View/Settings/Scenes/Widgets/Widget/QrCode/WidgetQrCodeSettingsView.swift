@@ -18,5 +18,6 @@ struct WidgetQrCodeSettingsView: View {
                 onSubmit: submitMessage
             )
         }
+        WidgetEffectsView(widget: widget)
     }
 }

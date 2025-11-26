@@ -23,6 +23,7 @@ private let iconsProductIds = [
     "AppIconGoblin",
     "AppIconGoblina",
     "AppIconTetris",
+    "AppIconHappy",
     "AppIconMillionaire",
     "AppIconBillionaire",
     "AppIconTrillionaire",
@@ -153,9 +154,7 @@ extension Model {
     }
 
     private func isInMyIcons(id: String) -> Bool {
-        return cosmetics.myIcons.contains(where: { icon in
-            icon.id == id
-        })
+        return cosmetics.myIcons.contains(where: { $0.id == id })
     }
 
     func updateIconImageFromDatabase() {

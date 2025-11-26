@@ -21,23 +21,21 @@ struct ImportSettingsView: View {
     }
 
     var body: some View {
-        HCenter {
-            Button("Import from clipboard") {
-                if let message = model.settings.importFromClipboard() {
-                    if let url = URL(string: UIPasteboard.general.string ?? "") {
-                        if let message = model.handleSettingsUrl(url: url) {
-                            failed(message: message)
-                        } else {
-                            succeeded()
-                        }
-                    } else {
+        TextButtonView("Import from clipboard") {
+            if let message = model.settings.importFromClipboard() {
+                if let url = URL(string: UIPasteboard.general.string ?? "") {
+                    if let message = model.handleSettingsUrl(url: url) {
                         failed(message: message)
+                    } else {
+                        succeeded()
                     }
                 } else {
-                    succeeded()
+                    failed(message: message)
                 }
+            } else {
+                succeeded()
             }
-            .disabled(model.isLive || model.isRecording)
         }
+        .disabled(model.isLive || model.isRecording)
     }
 }

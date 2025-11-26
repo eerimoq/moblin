@@ -61,13 +61,9 @@ private struct CameraSettingsCubeLutsView: View {
                     model.removeLutCube(offsets: offsets)
                 }
             }
-            Button {
+            TextButtonView("Add") {
                 showPicker = true
                 model.onDocumentPickerUrl = onUrl
-            } label: {
-                HCenter {
-                    Text("Add")
-                }
             }
             .sheet(isPresented: $showPicker) {
                 AlertPickerView(type: .item)
@@ -120,7 +116,7 @@ private struct CameraSettingsPngLutsView: View {
     }
 }
 
-private struct CameraSettingsLutsView: View {
+struct CameraSettingsLutsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var color: SettingsColor
     @State var selectedImageItem: PhotosPickerItem?
@@ -181,18 +177,21 @@ private struct CameraSettingsAppleLogLutView: View {
 struct CameraSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var stream: SettingsStream
     @ObservedObject var color: SettingsColor
 
     var body: some View {
         Form {
-            Section {
-                NavigationLink {
-                    StreamVideoSettingsView(database: database, stream: model.stream)
-                } label: {
-                    Label("Video", systemImage: "dot.radiowaves.left.and.right")
+            if stream !== fallbackStream {
+                Section {
+                    NavigationLink {
+                        StreamVideoSettingsView(database: database, stream: stream)
+                    } label: {
+                        Label("Video", systemImage: "dot.radiowaves.left.and.right")
+                    }
+                } header: {
+                    Text("Shortcut")
                 }
-            } header: {
-                Text("Shortcut")
             }
             Section {
                 if database.showAllSettings {
@@ -204,12 +203,24 @@ struct CameraSettingsView: View {
                 }
                 VideoStabilizationSettingsView(mode: database.videoStabilizationMode)
                 if database.showAllSettings {
-                    TapScreenToFocusSettingsView(model: model, database: database)
                     FixedHorizonView(database: database)
-                    CameraControlsView(database: database)
                 }
                 MirrorFrontCameraOnStreamView(model: model, database: database)
                 SelfieStickDoesNotWorkView(database: database, selfieStick: database.selfieStick)
+            }
+            if database.showAllSettings {
+                Section {
+                    TapScreenToFocusSettingsView(model: model, database: database)
+                } footer: {
+                    Text("⚠️ Does not work well when interactive chat is enabled.")
+                }
+            }
+            if database.showAllSettings {
+                Section {
+                    CameraControlsView(database: database)
+                } footer: {
+                    Text("⚠️ Hijacks volume buttons. You can only change volume in Control Center when enabled.")
+                }
             }
             if database.showAllSettings {
                 if model.supportsAppleLog {

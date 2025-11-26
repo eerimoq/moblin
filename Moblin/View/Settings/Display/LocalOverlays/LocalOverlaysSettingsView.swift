@@ -55,12 +55,17 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "waveform")
                 }
                 Label {
+                    Toggle("System monitor", isOn: $show.systemMonitor)
+                } icon: {
+                    Image(systemName: "cpu")
+                }
+                Label {
                     Toggle("Location", isOn: $show.location)
                 } icon: {
                     Image(systemName: "location")
                 }
                 Label {
-                    Toggle("RTMP server", isOn: $show.rtmpSpeed)
+                    Toggle("Ingests", isOn: $show.rtmpSpeed)
                 } icon: {
                     Image(systemName: "server.rack")
                 }

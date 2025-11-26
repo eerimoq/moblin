@@ -342,26 +342,15 @@ struct CarServer_PreconditionSchedule: Sendable {
 fileprivate let _protobuf_package = "CarServer"
 
 extension CarServer_Invalid: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "INVALID"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0INVALID\0")
 }
 
 extension CarServer_MediaPlaybackStatus: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "Stopped"),
-    1: .same(proto: "Playing"),
-    2: .same(proto: "Paused"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0Stopped\0\u{1}Playing\0\u{1}Paused\0")
 }
 
 extension CarServer_StwHeatLevel: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "StwHeatLevel_Unknown"),
-    1: .same(proto: "StwHeatLevel_Off"),
-    2: .same(proto: "StwHeatLevel_Low"),
-    3: .same(proto: "StwHeatLevel_High"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0StwHeatLevel_Unknown\0\u{1}StwHeatLevel_Off\0\u{1}StwHeatLevel_Low\0\u{1}StwHeatLevel_High\0")
 }
 
 extension CarServer_Void: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -385,10 +374,7 @@ extension CarServer_Void: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
 
 extension CarServer_LatLong: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".LatLong"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "latitude"),
-    2: .same(proto: "longitude"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}latitude\0\u{1}longitude\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -423,12 +409,7 @@ extension CarServer_LatLong: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
 
 extension CarServer_ChargePortLatchState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargePortLatchState"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "SNA"),
-    2: .same(proto: "Disengaged"),
-    3: .same(proto: "Engaged"),
-    4: .same(proto: "Blocking"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}SNA\0\u{1}Disengaged\0\u{1}Engaged\0\u{1}Blocking\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -529,10 +510,7 @@ extension CarServer_ChargePortLatchState: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension CarServer_PreconditioningTimes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PreconditioningTimes"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "all_week"),
-    2: .same(proto: "weekdays"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}all_week\0\u{1}weekdays\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -599,10 +577,7 @@ extension CarServer_PreconditioningTimes: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension CarServer_OffPeakChargingTimes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".OffPeakChargingTimes"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "all_week"),
-    2: .same(proto: "weekdays"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}all_week\0\u{1}weekdays\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -669,19 +644,7 @@ extension CarServer_OffPeakChargingTimes: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension CarServer_ChargeSchedule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargeSchedule"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    2: .same(proto: "name"),
-    3: .standard(proto: "days_of_week"),
-    4: .standard(proto: "start_enabled"),
-    5: .standard(proto: "start_time"),
-    6: .standard(proto: "end_enabled"),
-    7: .standard(proto: "end_time"),
-    8: .standard(proto: "one_time"),
-    9: .same(proto: "enabled"),
-    10: .same(proto: "latitude"),
-    11: .same(proto: "longitude"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{3}days_of_week\0\u{3}start_enabled\0\u{3}start_time\0\u{3}end_enabled\0\u{3}end_time\0\u{3}one_time\0\u{1}enabled\0\u{1}latitude\0\u{1}longitude\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -761,16 +724,7 @@ extension CarServer_ChargeSchedule: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension CarServer_PreconditionSchedule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PreconditionSchedule"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    2: .same(proto: "name"),
-    3: .standard(proto: "days_of_week"),
-    4: .standard(proto: "precondition_time"),
-    5: .standard(proto: "one_time"),
-    6: .same(proto: "enabled"),
-    7: .same(proto: "latitude"),
-    8: .same(proto: "longitude"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{3}days_of_week\0\u{3}precondition_time\0\u{3}one_time\0\u{1}enabled\0\u{1}latitude\0\u{1}longitude\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

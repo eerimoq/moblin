@@ -22,22 +22,19 @@ private struct SceneItemView: View {
             }
         }
         .swipeActions(edge: .trailing) {
-            Button {
+            Button(role: .destructive) {
                 let deletedCurrentScene = model.getSelectedScene() === scene
                 database.scenes.removeAll { $0 == scene }
                 if deletedCurrentScene {
                     model.resetSelectedScene()
                 }
             } label: {
-                Text("Delete")
+                Label("Delete", systemImage: "trash")
             }
-            .tint(.red)
-        }
-        .swipeActions(edge: .trailing) {
             Button {
                 database.scenes.append(scene.clone())
             } label: {
-                Text("Duplicate")
+                Label("Duplicate", systemImage: "plus.square.on.square")
             }
             .tint(.blue)
         }
@@ -66,31 +63,49 @@ private struct ScenesListView: View {
         } header: {
             Text("Scenes")
         } footer: {
-            SwipeLeftToDeleteHelpView(kind: String(localized: "a scene"))
+            SwipeLeftToDuplicateOrDeleteHelpView(kind: String(localized: "a scene"))
         }
     }
 }
 
-private struct ScenesSwitchTransition: View {
+private struct SceneSwitching: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var debug: SettingsDebug
 
     var body: some View {
-        Section {
-            Picker("Scene switch transition", selection: $database.sceneSwitchTransition) {
-                ForEach(SettingsSceneSwitchTransition.allCases, id: \.self) {
-                    Text($0.toString())
+        NavigationLink {
+            Form {
+                Section {
+                    Picker("Transition", selection: $database.sceneSwitchTransition) {
+                        ForEach(SettingsSceneSwitchTransition.allCases, id: \.self) {
+                            Text($0.toString())
+                        }
+                    }
+                    .onChange(of: database.sceneSwitchTransition) { _ in
+                        model.setSceneSwitchTransition()
+                    }
+                    Toggle("Force transition", isOn: $database.forceSceneSwitchTransition)
+                    HStack {
+                        Text("Video blackish")
+                        Slider(
+                            value: $debug.cameraSwitchRemoveBlackish,
+                            in: 0.0 ... 1.0,
+                            step: 0.1
+                        )
+                        Text("\(formatOneDecimal(debug.cameraSwitchRemoveBlackish)) s")
+                            .frame(width: 40)
+                    }
+                } footer: {
+                    Text("""
+                    RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
+                    to, but if you want consistency you can force scene switch transitions to these as well.
+                    """)
                 }
             }
-            .onChange(of: database.sceneSwitchTransition) { _ in
-                model.setSceneSwitchTransition()
-            }
-            Toggle("Force scene switch transition", isOn: $database.forceSceneSwitchTransition)
-        } footer: {
-            Text("""
-            RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
-            to, but if you want consistency you can force scene switch transitions to these as well.
-            """)
+            .navigationTitle("Scene switching")
+        } label: {
+            Text("Scene switching")
         }
     }
 }
@@ -124,22 +139,6 @@ private struct RemoteSceneView: View {
     }
 }
 
-private struct ReloadBrowserSources: View {
-    @EnvironmentObject var model: Model
-
-    var body: some View {
-        Section {
-            Button {
-                model.reloadBrowserWidgets()
-            } label: {
-                HCenter {
-                    Text("Reload browser widgets")
-                }
-            }
-        }
-    }
-}
-
 struct ScenesSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -147,12 +146,13 @@ struct ScenesSettingsView: View {
         Form {
             ScenesListView(database: model.database)
             WidgetsSettingsView(database: model.database)
-            AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers, showSelector: true)
-            DisconnectProtectionSettingsView(database: model.database,
-                                             disconnectProtection: model.database.disconnectProtection)
-            ScenesSwitchTransition(database: model.database)
-            RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
-            ReloadBrowserSources()
+            if model.database.showAllSettings {
+                SceneSwitching(database: model.database, debug: model.database.debug)
+                AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers, showSelector: true)
+                DisconnectProtectionSettingsView(database: model.database,
+                                                 disconnectProtection: model.database.disconnectProtection)
+                RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
+            }
         }
         .navigationTitle("Scenes")
     }

@@ -5,31 +5,36 @@ struct DisconnectProtectionSettingsView: View {
     @ObservedObject var disconnectProtection: SettingsDisconnectProtection
 
     var body: some View {
-        Section {
-            Picker(selection: $disconnectProtection.liveSceneId) {
-                Text("-- None --")
-                    .tag(nil as UUID?)
-                ForEach(database.scenes) { scene in
-                    Text(scene.name)
-                        .tag(scene.id as UUID?)
+        NavigationLink {
+            Form {
+                Section {
+                    Picker(selection: $disconnectProtection.liveSceneId) {
+                        Text("-- None --")
+                            .tag(nil as UUID?)
+                        ForEach(database.scenes) { scene in
+                            Text(scene.name)
+                                .tag(scene.id as UUID?)
+                        }
+                    } label: {
+                        Text("Live scene")
+                    }
+                    Picker(selection: $disconnectProtection.fallbackSceneId) {
+                        Text("-- None --")
+                            .tag(nil as UUID?)
+                        ForEach(database.scenes) { scene in
+                            Text(scene.name)
+                                .tag(scene.id as UUID?)
+                        }
+                    } label: {
+                        Text("Fallback scene")
+                    }
+                } footer: {
+                    Text("Can be used when using Moblin as a server at home with stable internet connection.")
                 }
-            } label: {
-                Text("Live scene")
             }
-            Picker(selection: $disconnectProtection.fallbackSceneId) {
-                Text("-- None --")
-                    .tag(nil as UUID?)
-                ForEach(database.scenes) { scene in
-                    Text(scene.name)
-                        .tag(scene.id as UUID?)
-                }
-            } label: {
-                Text("Fallback scene")
-            }
-        } header: {
+            .navigationTitle("Disconnect protection")
+        } label: {
             Text("Disconnect protection")
-        } footer: {
-            Text("Can be used when using Moblin as a server at home with stable internet connection.")
         }
     }
 }

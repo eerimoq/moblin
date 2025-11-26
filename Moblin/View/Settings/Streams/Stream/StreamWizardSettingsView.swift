@@ -4,7 +4,7 @@ struct WizardNextButtonView: View {
     var body: some View {
         HCenter {
             Text("Next")
-                .foregroundColor(.accentColor)
+                .foregroundStyle(Color.accentColor)
         }
     }
 }
@@ -13,7 +13,7 @@ struct WizardSkipButtonView: View {
     var body: some View {
         HCenter {
             Text("Skip")
-                .foregroundColor(.accentColor)
+                .foregroundStyle(Color.accentColor)
         }
     }
 }
@@ -23,13 +23,11 @@ struct CreateStreamWizardToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Button {
-                    createStreamWizard.isPresenting = false
-                    createStreamWizard.isPresentingSetup = false
-                } label: {
-                    Text("Close")
-                }
+            Button {
+                createStreamWizard.isPresenting = false
+                createStreamWizard.isPresentingSetup = false
+            } label: {
+                Image(systemName: "xmark")
             }
         }
     }
@@ -58,14 +56,14 @@ struct StreamWizardSettingsView: View {
                     YouTubeLogoAndNameView()
                 }
                 NavigationLink {
-                    StreamWizardAfreecaTvSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardSoopSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("AfreecaTV")
+                    SoopLogoAndNameView()
                 }
                 NavigationLink {
                     StreamWizardObsSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
-                    Text("OBS")
+                    ObsLogoAndNameView()
                 }
             } header: {
                 Text("Platform to stream to")

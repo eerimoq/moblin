@@ -46,6 +46,12 @@
             "state" : "translated",
             "value" : "Moblin"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
         }
       }
     },
@@ -90,6 +96,12 @@
           }
         },
         "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
+        "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin"
@@ -147,6 +159,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin 使用藍芽與 DJI 設備進行連線"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 需使用藍牙與 DJI 相機進行通訊。"
           }
         }
       }
@@ -214,6 +232,12 @@
             "state" : "translated",
             "value" : "Moblin 串流影像來自相機。"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 實況畫面來自相機。"
+          }
         }
       }
     },
@@ -261,6 +285,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin 可以把你的心率顯示在實況上"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以在實況時顯示您的心率。"
           }
         }
       }
@@ -310,6 +340,12 @@
             "state" : "translated",
             "value" : "Moblin 可以把你的心率顯示在實況上"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以在實況時顯示您的心率。"
+          }
         }
       }
     },
@@ -357,6 +393,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin 可以把你的心率顯示在實況上"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以在實況時顯示您的心率。"
           }
         }
       }
@@ -424,6 +466,12 @@
             "state" : "translated",
             "value" : "Moblin 使用本地端作為 SRT 函式庫的輸入與輸出。"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 使用本機作為輸入與輸出，連接到 SRT 函式庫。\nMoblin 將使用本機進行影音串流傳輸。"
+          }
         }
       }
     },
@@ -477,6 +525,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin 可以顯示你的位置、時速等資訊於實況畫面上。"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以在實況及畫面上顯示您的定位和移動速度。"
           }
         }
       }
@@ -610,6 +664,12 @@
             "state" : "translated",
             "value" : "Moblin 顯示所選圖片為圖層。"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 將選定圖片用懸浮顯示。"
+          }
         }
       }
     },
@@ -676,6 +736,12 @@
             "state" : "translated",
             "value" : "Moblin 顯示所選圖片為圖層。"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 將選定圖片用懸浮顯示。"
+          }
         }
       }
     },
@@ -723,6 +789,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin 可以增加轉場到實況中"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以將語音自動轉成文字顯示於實況。"
           }
         }
       }

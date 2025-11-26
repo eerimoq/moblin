@@ -35,7 +35,6 @@ private struct QuickButtonsView: View {
                     VStack(alignment: .leading) {
                         if let second = pair.second {
                             QuickButtonsInnerView(
-                                model: model,
                                 quickButtons: quickButtons,
                                 quickButtonsSettings: quickButtonsSettings,
                                 orientation: model.orientation,
@@ -48,7 +47,6 @@ private struct QuickButtonsView: View {
                             QuickButtonPlaceholderImage(size: buttonSize())
                         }
                         QuickButtonsInnerView(
-                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
@@ -61,7 +59,6 @@ private struct QuickButtonsView: View {
                 } else {
                     if let second = pair.second {
                         QuickButtonsInnerView(
-                            model: model,
                             quickButtons: quickButtons,
                             quickButtonsSettings: quickButtonsSettings,
                             orientation: model.orientation,
@@ -75,7 +72,6 @@ private struct QuickButtonsView: View {
                         EmptyView()
                     }
                     QuickButtonsInnerView(
-                        model: model,
                         quickButtons: quickButtons,
                         quickButtonsSettings: quickButtonsSettings,
                         orientation: model.orientation,
@@ -121,6 +117,7 @@ private struct IconAndSettingsView: View {
                 model.toggleShowingPanel(type: nil, panel: .cosmetics)
             } label: {
                 Image("\(cosmetics.iconImage)NoBackground")
+                    .interpolation(.high)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding([.bottom], 4)
@@ -136,7 +133,7 @@ private struct IconAndSettingsView: View {
                         Circle()
                             .stroke(.secondary)
                     )
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
             }
             .padding([.leading], 10)
         }
@@ -150,6 +147,7 @@ private struct MainPageView: View {
     let quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var status: StatusOther
     var height: Double
+    @State var presentingThermalState: Bool = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -163,10 +161,15 @@ private struct MainPageView: View {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
-                    ThermalStateView(thermalState: status.thermalState)
+                    Button {
+                        presentingThermalState.toggle()
+                    } label: {
+                        ThermalStateView(thermalState: status.thermalState)
+                    }
                     Spacer(minLength: 0)
                 }
-                .padding([.bottom, .trailing], 5)
+                .padding([.top], 3)
+                .padding([.trailing], 5)
                 .padding([.leading], 0)
                 IconAndSettingsView(cosmetics: model.cosmetics)
                 StreamButton()
@@ -174,7 +177,10 @@ private struct MainPageView: View {
                     .padding([.leading, .trailing], 5)
             }
             .padding([.leading], 0)
-            .frame(width: height)
+            .frame(width: controlBarWidthDefault)
+            .sheet(isPresented: $presentingThermalState) {
+                ThermalStateSheetView(presenting: $presentingThermalState)
+            }
         }
     }
 }
@@ -229,23 +235,18 @@ private struct PagesView: View {
 
 struct ControlBarPortraitView: View {
     @EnvironmentObject var model: Model
-    @Environment(\.accessibilityShowButtonShapes)
-    private var accessibilityShowButtonShapes
+    @ObservedObject var quickButtons: SettingsQuickButtons
 
     private func controlBarHeight() -> CGFloat {
-        if accessibilityShowButtonShapes {
-            return controlBarWidthAccessibility
-        } else {
-            return controlBarWidthDefault
-        }
+        return controlBarWidthDefault
     }
 
     var body: some View {
         PagesView(model: model,
                   quickButtons: model.quickButtons,
                   quickButtonsSettings: model.database.quickButtonsGeneral,
-                  height: controlBarHeight())
-            .frame(height: controlBarHeight())
+                  height: controlBarWidth(quickButtons: quickButtons))
+            .frame(height: controlBarWidth(quickButtons: quickButtons))
             .background(.black)
     }
 }

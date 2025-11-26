@@ -12,13 +12,9 @@ struct StreamAudioSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Text("Codec")
-                    Spacer()
-                    Picker("", selection: $stream.audioCodec) {
-                        ForEach(SettingsStreamAudioCodec.allCases, id: \.self) {
-                            Text($0.toString())
-                        }
+                Picker("Codec", selection: $stream.audioCodec) {
+                    ForEach(SettingsStreamAudioCodec.allCases, id: \.self) {
+                        Text($0.toString())
                     }
                 }
                 .onChange(of: stream.audioCodec) { _ in
@@ -32,6 +28,9 @@ struct StreamAudioSettingsView: View {
                         value: $bitrate,
                         in: 32 ... 320,
                         step: 32,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return

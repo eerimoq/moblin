@@ -11,13 +11,16 @@ private var drawing = false
 
 private struct DrawOnStreamCanvasView: View {
     let model: Model
+    @ObservedObject var stream: SettingsStream
     @ObservedObject var drawOnStream: DrawOnStream
 
     var body: some View {
         HStack {
             Spacer(minLength: 0)
             VStack {
-                Spacer(minLength: 0)
+                if !stream.portrait {
+                    Spacer(minLength: 0)
+                }
                 Canvas { context, size in
                     for line in drawOnStream.lines {
                         let width = line.width
@@ -61,9 +64,10 @@ private struct DrawOnStreamCanvasView: View {
                             drawing = false
                         }
                 )
-                .aspectRatio(16 / 9, contentMode: .fit)
+                .aspectRatio(stream.dimensions().aspectRatio(), contentMode: .fit)
                 Spacer(minLength: 0)
             }
+            Spacer(minLength: 0)
         }
         .ignoresSafeArea()
         .edgesIgnoringSafeArea(.all)
@@ -93,7 +97,7 @@ private struct DrawOnStreamControlsView: View {
                     } label: {
                         Image(systemName: "trash.fill")
                             .font(.title)
-                            .foregroundColor(buttonColor())
+                            .foregroundStyle(buttonColor())
                     }
                     .disabled(drawOnStream.lines.isEmpty)
                     Button {
@@ -101,7 +105,7 @@ private struct DrawOnStreamControlsView: View {
                     } label: {
                         Image(systemName: "arrow.uturn.backward")
                             .font(.title)
-                            .foregroundColor(buttonColor())
+                            .foregroundStyle(buttonColor())
                     }
                     .disabled(drawOnStream.lines.isEmpty)
                     ColorPicker("Color", selection: $drawOnStream.selectedColor)
@@ -124,7 +128,9 @@ struct DrawOnStreamView: View {
 
     var body: some View {
         ZStack {
-            DrawOnStreamCanvasView(model: model, drawOnStream: model.drawOnStream)
+            DrawOnStreamCanvasView(model: model,
+                                   stream: model.stream,
+                                   drawOnStream: model.drawOnStream)
             DrawOnStreamControlsView(model: model, drawOnStream: model.drawOnStream)
         }
     }

@@ -3,21 +3,15 @@ import Collections
 import UIKit
 import Vision
 
-protocol SnapshotEffectDelegate: AnyObject {
-    func snapshotEffectRegisterVideoEffect(effect: VideoEffect)
-}
-
 final class SnapshotEffect: VideoEffect {
     private var snapshots: Deque<CIImage> = []
     private var sceneWidget: SettingsSceneWidget?
     private var currentSnapshot: CIImage?
     private var hideSnapshotTime: Double?
     private var showtime: Double
-    private weak var delegate: SnapshotEffectDelegate?
 
-    init(showtime: Int, delegate: SnapshotEffectDelegate) {
+    init(showtime: Int) {
         self.showtime = Double(showtime)
-        self.delegate = delegate
         super.init()
     }
 
@@ -46,7 +40,7 @@ final class SnapshotEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "snapshot widget"
+        return "Snapshot widget"
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
@@ -63,14 +57,12 @@ final class SnapshotEffect: VideoEffect {
         guard let currentSnapshot else {
             return image
         }
-        return applyEffects(currentSnapshot, info)
-            .resizeMoveMirror(sceneWidget, image.extent.size, false)
-            .cropped(to: image.extent)
+        return applyEffectsResizeMirrorMove(currentSnapshot, sceneWidget, false, image.extent, info)
             .composited(over: image)
     }
 
-    override func shouldRemove() -> Bool {
-        return currentSnapshot == nil
+    override func isEnabled() -> Bool {
+        return currentSnapshot != nil
     }
 
     private func appendSnapshotInner(image: CIImage) {
@@ -80,7 +72,6 @@ final class SnapshotEffect: VideoEffect {
         }
         currentSnapshot = snapshots.popFirst()
         hideSnapshotTime = nil
-        delegate?.snapshotEffectRegisterVideoEffect(effect: self)
     }
 
     private func removeSnapshotsInner() {

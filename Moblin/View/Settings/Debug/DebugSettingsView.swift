@@ -1,25 +1,50 @@
+import Collections
 import SwiftUI
 import WebKit
 
 struct DebugSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var debug: SettingsDebug
+    @State var presentingLog: Bool = false
+    @State var log: Deque<LogEntry> = []
+
+    private func changeLogLines(value: String) -> String? {
+        guard let lines = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard lines >= 1 else {
+            return String(localized: "Too small")
+        }
+        guard lines <= 100_000 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
 
     private func submitLogLines(value: String) {
         guard let lines = Int(value) else {
             return
         }
-        debug.maximumLogLines = min(max(1, lines), 100_000)
+        debug.maximumLogLines = lines
     }
 
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    DebugLogSettingsView(log: model.log, clearLog: { model.clearLog() })
-                } label: {
-                    Text("Log")
+                TextButtonView("Log") {
+                    presentingLog = true
                 }
+                .fullScreenCover(isPresented: $presentingLog) {
+                    DebugLogSettingsView(model: model,
+                                         log: $log,
+                                         presentingLog: $presentingLog,
+                                         clearLog: { model.clearLog() })
+                        .task {
+                            log = model.log
+                        }
+                }
+            }
+            Section {
                 Toggle(isOn: Binding(get: {
                     debug.logLevel == .debug
                 }, set: { value in
@@ -30,6 +55,7 @@ struct DebugSettingsView: View {
                 TextEditNavigationView(
                     title: "Maximum log lines",
                     value: String(debug.maximumLogLines),
+                    onChange: changeLogLines,
                     onSubmit: submitLogLines
                 )
                 Toggle("Debug overlay", isOn: $debug.debugOverlay)
@@ -39,24 +65,9 @@ struct DebugSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    DebugAudioSettingsView(debug: debug)
-                } label: {
-                    Text("Audio")
-                }
-                NavigationLink {
                     DebugVideoSettingsView(debug: debug)
                 } label: {
                     Text("Video")
-                }
-                HStack {
-                    Text("Video blackish")
-                    Slider(
-                        value: $debug.cameraSwitchRemoveBlackish,
-                        in: 0.0 ... 1.0,
-                        step: 0.1
-                    )
-                    Text("\(formatOneDecimal(debug.cameraSwitchRemoveBlackish)) s")
-                        .frame(width: 40)
                 }
                 Toggle("Bitrate drop fix", isOn: $debug.bitrateDropFix)
                     .onChange(of: debug.bitrateDropFix) { _ in
@@ -68,6 +79,9 @@ struct DebugSettingsView: View {
                         value: $debug.dataRateLimitFactor,
                         in: 1.2 ... 2.5,
                         step: 0.1,
+                        label: {
+                            EmptyView()
+                        },
                         onEditingChanged: { begin in
                             guard !begin else {
                                 return
@@ -79,21 +93,7 @@ struct DebugSettingsView: View {
                         .frame(width: 40)
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: $debug.relaxedBitrate)
-                Toggle("Global tone mapping", isOn: Binding(get: {
-                    model.getGlobalToneMappingOn()
-                }, set: { value in
-                    model.setGlobalToneMapping(on: value)
-                }))
-                Toggle("MetalPetal filters", isOn: $debug.metalPetalFilters)
-                    .onChange(of: debug.metalPetalFilters) { _ in
-                        model.setMetalPetalFilters()
-                    }
                 Toggle("Twitch rewards", isOn: $debug.twitchRewards)
-                NavigationLink {
-                    DebugHttpProxySettingsView()
-                } label: {
-                    Text("HTTP proxy")
-                }
                 Toggle("Reliable chat", isOn: $debug.reliableChat)
                 VStack(alignment: .leading) {
                     Text("Builtin audio and video delay")
@@ -116,20 +116,6 @@ struct DebugSettingsView: View {
             } header: {
                 Text("Experimental")
             }
-            #if canImport(DeviceDiscoveryUI)
-                if #available(iOS 26.0, *) {
-                    Section {
-                        HCenter {
-                            WiFiAwarePublisherView()
-                        }
-                    }
-                    Section {
-                        HCenter {
-                            WiFiAwareSubscriberView()
-                        }
-                    }
-                }
-            #endif
         }
         .navigationTitle("Debug")
     }

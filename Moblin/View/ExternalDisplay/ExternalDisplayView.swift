@@ -21,7 +21,7 @@ private struct HighlightMessageView: View {
             Text(" ")
             Text(highlight.titleNoEmotes())
         }
-        .foregroundColor(highlight.messageColor())
+        .foregroundStyle(highlight.messageColor())
         .padding([.leading], 5)
         .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
     }
@@ -51,7 +51,7 @@ private struct LineView: View {
         ) {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
             }
             if chat.platform, platform, let image = post.platform?.imageName() {
                 Image(image)
@@ -76,7 +76,7 @@ private struct LineView: View {
                 }
             }
             Text(post.user!)
-                .foregroundColor(postState.deleted ? .gray : usernameColor)
+                .foregroundStyle(postState.deleted ? .gray : usernameColor)
                 .strikethrough(postState.deleted)
                 .lineLimit(1)
                 .padding([.trailing], 0)
@@ -86,10 +86,10 @@ private struct LineView: View {
             } else {
                 Text(": ")
             }
-            ForEach(post.segments, id: \.id) { segment in
+            ForEach(post.segments) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(postState.deleted ? .gray : .white)
+                        .foregroundStyle(postState.deleted ? .gray : .white)
                         .strikethrough(postState.deleted)
                         .italic(post.isAction)
                 }
@@ -121,7 +121,6 @@ private struct LineView: View {
 }
 
 private struct PostView: View {
-    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let post: ChatPost
@@ -137,7 +136,7 @@ private struct PostView: View {
                     HStack(spacing: 0) {
                         Rectangle()
                             .frame(width: 3)
-                            .foregroundColor(highlight.barColor)
+                            .foregroundStyle(highlight.barColor)
                         VStack(alignment: .leading, spacing: 1) {
                             HighlightMessageView(chat: chatSettings, highlight: highlight)
                             LineView(postState: post.state,
@@ -182,8 +181,7 @@ private struct MessagesView: View {
                 VStack {
                     LazyVStack(alignment: .leading, spacing: 1) {
                         ForEach(chat.posts) { post in
-                            PostView(model: model,
-                                     chatSettings: chatSettings,
+                            PostView(chatSettings: chatSettings,
                                      chat: chat,
                                      post: post,
                                      state: post.state,
@@ -196,7 +194,7 @@ private struct MessagesView: View {
                 }
                 .frame(minHeight: metrics.size.height)
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .rotationEffect(Angle(degrees: rotation))
             .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
         }

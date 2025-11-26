@@ -1,10 +1,27 @@
 import Foundation
 
+enum RtmpCommandName: String {
+    case connect
+    case close
+    case result = "_result"
+    case error = "_error"
+    case publish
+    case createStream
+    case releaseStream
+    case fcPublish = "FCPublish"
+    case fcUnpublish = "FCUnpublish"
+    case deleteStream
+    case closeStream
+    case onStatus
+    case onFcPublish = "onFCPublish"
+    case unknown
+}
+
 final class RtmpCommandMessage: RtmpMessage {
-    var commandName: String = ""
-    var transactionId: Int = 0
-    var commandObject: AsObject?
-    var arguments: [Any?] = []
+    private(set) var commandName: RtmpCommandName = .close
+    private(set) var transactionId: Int = 0
+    private var commandObject: AsObject?
+    private(set) var arguments: [Any?] = []
 
     init(commandType: RtmpMessageType) {
         super.init(type: commandType)
@@ -14,7 +31,7 @@ final class RtmpCommandMessage: RtmpMessage {
         streamId: UInt32,
         transactionId: Int,
         commandType: RtmpMessageType,
-        commandName: String,
+        commandName: RtmpCommandName,
         commandObject: AsObject?,
         arguments: [Any?]
     ) {
@@ -26,29 +43,6 @@ final class RtmpCommandMessage: RtmpMessage {
         self.streamId = streamId
     }
 
-    override func execute(_ connection: RtmpConnection) {
-        guard let responder = connection.callCompletions.removeValue(forKey: transactionId) else {
-            switch commandName {
-            case "close":
-                connection.disconnect()
-            default:
-                if let data = arguments.first as? AsObject?, let data {
-                    connection.gotCommand(data: data)
-                }
-            }
-            return
-        }
-        switch commandName {
-        case "_result":
-            responder(arguments)
-        case "_error":
-            // Should probably do something.
-            break
-        default:
-            break
-        }
-    }
-
     override var encoded: Data {
         get {
             guard super.encoded.isEmpty else {
@@ -58,7 +52,7 @@ final class RtmpCommandMessage: RtmpMessage {
             if type == .amf3Command {
                 serializer.writeUInt8(0)
             }
-            serializer.serialize(commandName)
+            serializer.serialize(commandName.rawValue)
             serializer.serialize(transactionId)
             serializer.serialize(commandObject)
             for argument in arguments {
@@ -74,15 +68,15 @@ final class RtmpCommandMessage: RtmpMessage {
                     if type == .amf3Command {
                         deserializer.position = 1
                     }
-                    commandName = try deserializer.deserialize()
-                    transactionId = try deserializer.deserialize()
-                    commandObject = try deserializer.deserialize()
+                    commandName = try RtmpCommandName(rawValue: deserializer.deserializeString()) ?? .unknown
+                    transactionId = try deserializer.deserializeInt()
+                    commandObject = try deserializer.deserializeAsObject()
                     arguments.removeAll()
                     if deserializer.bytesAvailable > 0 {
                         try arguments.append(deserializer.deserialize())
                     }
                 } catch {
-                    logger.error("\(deserializer)")
+                    logger.error("rtmp: \(error)")
                 }
             }
             super.encoded = newValue

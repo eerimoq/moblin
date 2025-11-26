@@ -87,7 +87,7 @@ extension Model {
     func makeReplayIsNotEnabledToast() {
         makeToast(
             title: String(localized: "Replay is not enabled"),
-            subTitle: String(localized: "Tap this toast to enable it.")
+            subTitle: String(localized: "Tap here to enable it.")
         ) {
             self.stream.replay.enabled = true
             self.streamReplayEnabledUpdated()
@@ -110,13 +110,28 @@ extension Model {
         guard let replayVideo, let replaySettings else {
             return false
         }
+        let replay = stream.replay
+        let transitionMode: ReplayEffectTransitionMode
+        switch replay.transitionType {
+        case .none:
+            transitionMode = .none
+        case .fade:
+            transitionMode = .fade
+        case .stingers:
+            let inPath = replayTransitionsStorage.makePath(filename: replay.inStinger.makeFilename() ?? "")
+            let outPath = replayTransitionsStorage.makePath(filename: replay.outStinger.makeFilename() ?? "")
+            transitionMode = .stingers(inPath: inPath,
+                                       inTransitionPoint: replay.inStinger.transitionPoint,
+                                       outPath: outPath,
+                                       outTransitionPoint: replay.outStinger.transitionPoint)
+        }
         replayEffect = ReplayEffect(
             video: replayVideo,
             start: replaySettings.startFromVideoStart(),
             stop: replaySettings.stopFromVideoStart(),
             speed: database.replay.speed.toNumber(),
             size: stream.dimensions(),
-            fade: stream.replay.fade,
+            transitionMode: transitionMode,
             delegate: self
         )
         media.registerEffectBack(replayEffect!)
@@ -168,5 +183,9 @@ extension Model: ReplayEffectDelegate {
         DispatchQueue.main.async {
             self.replay.isPlaying = false
         }
+    }
+
+    func replayEffectError(message: String) {
+        makeErrorToastMain(title: message)
     }
 }

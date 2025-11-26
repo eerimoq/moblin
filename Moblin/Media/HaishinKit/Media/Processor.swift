@@ -3,7 +3,6 @@ import UIKit
 
 protocol ProcessorDelegate: AnyObject {
     func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
-    func streamVideo(presentationTimestamp: Double)
     func streamVideo(failedEffect: String?)
     func streamVideo(lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideo(findVideoFormatError: String, activeFormat: String)
@@ -11,6 +10,8 @@ protocol ProcessorDelegate: AnyObject {
     func streamVideoCaptureSessionError(_ message: String)
     func streamVideoBufferedVideoReady(cameraId: UUID)
     func streamVideoBufferedVideoRemoved(cameraId: UUID)
+    func streamVideoFps(fps: Int)
+    func streamVideoEncoderResolution(resolution: CGSize)
     func streamRecorderInitSegment(data: Data)
     func streamRecorderDataSegment(segment: RecorderDataSegment)
     func streamRecorderFinished()
@@ -18,16 +19,16 @@ protocol ProcessorDelegate: AnyObject {
     func streamNoTorch()
     func streamSetZoomX(x: Float)
     func streamSetExposureBias(bias: Float)
-    func streamSelectedFps(fps: Double, auto: Bool)
+    func streamSelectedFps(auto: Bool)
 }
 
 let processorControlQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Control")
 let processorPipelineQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Pipeline", qos: .userInteractive)
 
 private class Stream {
-    weak var delegate: (any AudioCodecDelegate & VideoEncoderDelegate)?
+    weak var delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)?
 
-    init(delegate: (any AudioCodecDelegate & VideoEncoderDelegate)? = nil) {
+    init(delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
         self.delegate = delegate
     }
 }
@@ -72,9 +73,9 @@ final class Processor {
         }
     }
 
-    func setVideoSize(capture: CGSize, output: CGSize) {
+    func setVideoSize(capture: CGSize, canvas: CGSize) {
         processorControlQueue.async {
-            self.video.setSize(capture: capture, output: output)
+            self.video.setSize(capture: capture, canvas: canvas)
         }
     }
 
@@ -244,14 +245,14 @@ final class Processor {
         }
     }
 
-    func startEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
+    func startEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         streams.append(Stream(delegate: delegate))
         logger.info("processor: Starting encoding")
         video.startEncoding(self)
         audio.startEncoding(self)
     }
 
-    func stopEncoding(_ delegate: any AudioCodecDelegate & VideoEncoderDelegate) {
+    func stopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         streams.removeAll(where: { $0.delegate === delegate })
         if streams.isEmpty {
             logger.info("processor: Stopping encoding")
@@ -303,16 +304,16 @@ final class Processor {
     }
 }
 
-extension Processor: AudioCodecDelegate {
-    func audioCodecOutputFormat(_ format: AVAudioFormat) {
+extension Processor: AudioEncoderDelegate {
+    func audioEncoderOutputFormat(_ format: AVAudioFormat) {
         for stream in streams {
-            stream.delegate?.audioCodecOutputFormat(format)
+            stream.delegate?.audioEncoderOutputFormat(format)
         }
     }
 
-    func audioCodecOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
+    func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         for stream in streams {
-            stream.delegate?.audioCodecOutputBuffer(buffer, presentationTimeStamp)
+            stream.delegate?.audioEncoderOutputBuffer(buffer, presentationTimeStamp)
         }
     }
 }

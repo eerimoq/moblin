@@ -7,7 +7,7 @@ struct HelpAndSupportSettingsView: View {
                 Button {
                     openUrl(url: "https://discord.gg/kh3KMng4JV")
                 } label: {
-                    Text("Discord")
+                    DiscordLogoAndNameView()
                 }
                 Button {
                     openUrl(url: "https://github.com/eerimoq/moblin")

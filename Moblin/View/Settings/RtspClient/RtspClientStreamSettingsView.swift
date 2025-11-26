@@ -26,16 +26,26 @@ struct RtspClientStreamSettingsView: View {
                                            placeholder: "rtsp://foo:bar@1.2.3.4/stream")
                 }
                 Section {
-                    TextEditBindingNavigationView(
+                    TextEditNavigationView(
                         title: String(localized: "Latency"),
-                        value: $stream.latencyString,
+                        value: String(stream.latency),
+                        onChange: {
+                            guard let latency = Int32($0) else {
+                                return String(localized: "Not a number")
+                            }
+                            guard latency >= 250 else {
+                                return String(localized: "Too small")
+                            }
+                            guard latency <= 10000 else {
+                                return String(localized: "Too big")
+                            }
+                            return nil
+                        },
                         onSubmit: {
                             guard let latency = Int32($0) else {
-                                stream.latencyString = String(stream.latency)
                                 return
                             }
-                            stream.latency = latency.clamped(to: 250 ... 10000)
-                            stream.latencyString = String(stream.latency)
+                            stream.latency = latency
                             model.reloadRtspClient()
                         },
                         footers: [String(localized: "250 or more milliseconds. 2000 ms by default.")],

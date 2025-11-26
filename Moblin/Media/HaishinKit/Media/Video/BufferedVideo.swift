@@ -49,47 +49,27 @@ class BufferedVideo {
         var sampleBuffer: CMSampleBuffer?
         var numberOfBuffersConsumed = 0
         let drift = driftTracker.getDrift()
-        while let inputSampleBuffer = sampleBuffers.first {
+        while let nextSampleBuffer = sampleBuffers.first {
             if currentSampleBuffer == nil {
-                currentSampleBuffer = inputSampleBuffer
+                currentSampleBuffer = nextSampleBuffer
             }
             if sampleBuffers.count > 200 {
-                sampleBuffer = inputSampleBuffer
-                sampleBuffers.removeFirst()
-                numberOfBuffersConsumed += 1
+                sampleBuffer = nextSampleBuffer
+                consumeBuffer(numberOfBuffersConsumed: &numberOfBuffersConsumed)
                 continue
             }
-            let inputPresentationTimeStamp = inputSampleBuffer.presentationTimeStamp.seconds + drift
-            let inputOutputDelta = inputPresentationTimeStamp - outputPresentationTimeStamp
-            // Break on first frame that is ahead in time.
-            if inputOutputDelta > 0, sampleBuffer != nil || abs(inputOutputDelta) > 0.01 {
+            if hasBestBuffer(nextSampleBuffer, sampleBuffer, outputPresentationTimeStamp, drift) {
                 break
             }
-            sampleBuffer = inputSampleBuffer
-            sampleBuffers.removeFirst()
-            numberOfBuffersConsumed += 1
+            sampleBuffer = nextSampleBuffer
+            consumeBuffer(numberOfBuffersConsumed: &numberOfBuffersConsumed)
             markInitialBufferingComplete()
         }
         if !isInitialBuffering {
-            if numberOfBuffersConsumed == 0 {
-                stats.incrementDuplicated()
-            } else if numberOfBuffersConsumed > 1 {
-                stats.incrementDropped(count: numberOfBuffersConsumed - 1)
-            }
-            if logger.debugEnabled, let (duplicated, dropped) = stats.getStats(outputPresentationTimeStamp) {
-                let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
-                let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
-                let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
-                logger.debug("""
-                buffered-video: \(name): \(duplicated) duplicated and \(dropped) dropped buffers. \
-                Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
-                Current \(formatThreeDecimals(currentSampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
-                \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
-                \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
-                (\(formatThreeDecimals(fillLevel))), \
-                Buffers \(sampleBuffers.count)
-                """)
-            }
+            updateStatsAndLog(outputPresentationTimeStamp,
+                              sampleBuffer,
+                              drift,
+                              numberOfBuffersConsumed)
         }
         if sampleBuffer != nil {
             currentSampleBuffer = sampleBuffer
@@ -100,6 +80,54 @@ class BufferedVideo {
                 processor?.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
             }
         }
+    }
+
+    private func consumeBuffer(numberOfBuffersConsumed: inout Int) {
+        sampleBuffers.removeFirst()
+        numberOfBuffersConsumed += 1
+    }
+
+    private func updateStatsAndLog(_ outputPresentationTimeStamp: Double,
+                                   _: CMSampleBuffer?,
+                                   _ drift: Double,
+                                   _ numberOfBuffersConsumed: Int)
+    {
+        if numberOfBuffersConsumed == 0 {
+            stats.incrementDuplicated()
+        } else if numberOfBuffersConsumed > 1 {
+            stats.incrementDropped(count: numberOfBuffersConsumed - 1)
+        }
+        if logger.debugEnabled, let (duplicated, dropped) = stats.getStats(outputPresentationTimeStamp) {
+            let lastPresentationTimeStamp = sampleBuffers.last?.presentationTimeStamp.seconds ?? 0.0
+            let firstPresentationTimeStamp = sampleBuffers.first?.presentationTimeStamp.seconds ?? 0.0
+            let fillLevel = lastPresentationTimeStamp - firstPresentationTimeStamp
+            logger.debug("""
+            buffered-video: \(name): \(duplicated) duplicated and \(dropped) dropped buffers. \
+            Output \(formatThreeDecimals(outputPresentationTimeStamp)), \
+            Current \(formatThreeDecimals(currentSampleBuffer?.presentationTimeStamp.seconds ?? 0.0)), \
+            \(formatThreeDecimals(firstPresentationTimeStamp + drift))..\
+            \(formatThreeDecimals(lastPresentationTimeStamp + drift)) \
+            (\(formatThreeDecimals(fillLevel))), \
+            Buffers \(sampleBuffers.count)
+            """)
+        }
+    }
+
+    // Break on first frame that is ahead in time.
+    private func hasBestBuffer(_ nextSampleBuffer: CMSampleBuffer,
+                               _ candidateSampleBuffer: CMSampleBuffer?,
+                               _ outputPresentationTimeStamp: Double,
+                               _ drift: Double) -> Bool
+    {
+        let nextPresentationTimeStamp = nextSampleBuffer.presentationTimeStamp.seconds + drift
+        let delta = nextPresentationTimeStamp - outputPresentationTimeStamp
+        guard delta > 0 else {
+            return false
+        }
+        if candidateSampleBuffer != nil || abs(delta) > 0.01 {
+            return true
+        }
+        return false
     }
 
     private func markInitialBufferingComplete() {

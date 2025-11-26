@@ -5,13 +5,9 @@ private struct CosmeticsSettingsRestoreView: View {
 
     var body: some View {
         Section {
-            Button {
+            TextButtonView("Restore purchases") {
                 Task {
                     await model.updateProductFromAppStore()
-                }
-            } label: {
-                HCenter {
-                    Text("Restore purchases")
                 }
             }
         }
@@ -24,7 +20,7 @@ private struct CosmeticsSettingsBoughtEverythingView: View {
             HStack {
                 Text("You already bought everything!")
                 Image(systemName: "heart.fill")
-                    .foregroundColor(.red)
+                    .foregroundStyle(.red)
             }
         } header: {
             Text("Icons in store")
@@ -46,6 +42,7 @@ private struct CosmeticsSettingsIconsInStoreView: View {
                     HStack {
                         Text("")
                         Image(icon.imageNoBackground())
+                            .interpolation(.high)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: controlBarButtonSize, height: controlBarButtonSize)
@@ -110,6 +107,7 @@ private struct CosmeticsSettingsMyIconsView: View {
                     HStack {
                         Text("")
                         Image(icon.imageNoBackground())
+                            .interpolation(.high)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: controlBarButtonSize, height: controlBarButtonSize)
@@ -144,7 +142,7 @@ struct CosmeticsSettingsView: View {
                 HStack {
                     Text("Support Moblin developers by buying icons.")
                     Image(systemName: "heart.fill")
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                 }
             }
             CosmeticsSettingsMyIconsView(cosmetics: cosmetics)

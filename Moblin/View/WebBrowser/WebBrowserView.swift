@@ -79,12 +79,10 @@ private struct BookmarksToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            HStack {
-                Button {
-                    showingBookmarks = false
-                } label: {
-                    Text("Close")
-                }
+            Button {
+                showingBookmarks = false
+            } label: {
+                Image(systemName: "xmark")
             }
         }
     }
@@ -122,14 +120,10 @@ private struct BookmarksView: View {
                     SwipeLeftToDeleteHelpView(kind: String(localized: "a bookmark"))
                 }
                 Section {
-                    Button {
+                    TextButtonView("Create bookmark") {
                         let bookmark = WebBrowserBookmarkSettings()
                         bookmark.url = model.webBrowserUrl
                         webBrowser.bookmarks.append(bookmark)
-                    } label: {
-                        HCenter {
-                            Text("Create bookmark")
-                        }
                     }
                 }
             }

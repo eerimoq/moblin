@@ -42,9 +42,7 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
         guard let deviceId = UUID(uuidString: value) else {
             return
         }
-        guard let djiDevice = djiScanner.discoveredDevices
-            .first(where: { $0.peripheral.identifier == deviceId })
-        else {
+        guard let djiDevice = djiScanner.discoveredDevices.first(where: { $0.peripheral.identifier == deviceId }) else {
             return
         }
         device.bluetoothPeripheralName = djiDevice.peripheral.name
@@ -63,7 +61,7 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
                 )
             } label: {
                 Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .lineLimit(1)
             }
             .disabled(device.isStarted)
@@ -192,8 +190,8 @@ private struct DjiDeviceRtmpSettingsView: View {
                 TextEditNavigationView(
                     title: String(localized: "URL"),
                     value: device.customRtmpUrl,
-                    onSubmit: { value in
-                        device.customRtmpUrl = value
+                    onSubmit: {
+                        device.customRtmpUrl = $0
                     }
                 )
                 .disabled(device.isStarted)
@@ -219,11 +217,7 @@ private struct DjiDeviceRtmpSettingsView: View {
             }
         }
         Section {
-            NavigationLink {
-                RtmpServerSettingsView(rtmpServer: rtmpServer)
-            } label: {
-                Text("RTMP server")
-            }
+            RtmpServerSettingsView(rtmpServer: rtmpServer)
         } header: {
             Text("Shortcut")
         }
@@ -248,7 +242,7 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
             }
             .disabled(device.isStarted)
-            if device.model == .osmoAction4 || device.model == .osmoAction5Pro {
+            if device.model == .osmoAction4 || device.model == .osmoAction5Pro || device.model == .osmoAction6 {
                 Picker("Image stabilization", selection: $device.imageStabilization) {
                     ForEach(SettingsDjiDeviceImageStabilization.allCases, id: \.self) {
                         Text($0.toString())
@@ -294,30 +288,18 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
     var body: some View {
         if !device.isStarted {
             Section {
-                Button {
+                TextButtonView("Start live stream") {
                     model.startDjiDeviceLiveStream(device: device)
-                } label: {
-                    HCenter {
-                        Text("Start live stream")
-                    }
                 }
             }
-            .listRowBackground(RoundedRectangle(cornerRadius: 10)
-                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                .overlay(RoundedRectangle(cornerRadius: 10)
-                    .stroke(.blue, lineWidth: 2)))
             .disabled(!device.canStartLive())
         } else {
             Section {
-                HCenter {
-                    Button {
-                        model.stopDjiDeviceLiveStream(device: device)
-                    } label: {
-                        Text("Stop live stream")
-                    }
+                TextButtonView("Stop live stream") {
+                    model.stopDjiDeviceLiveStream(device: device)
                 }
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .listRowBackground(Color.blue)
         }
     }

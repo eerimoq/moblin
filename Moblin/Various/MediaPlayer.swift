@@ -62,10 +62,6 @@ class MediaPlayer {
         }
     }
 
-    func updateSettingsInner(settings: SettingsMediaPlayer) {
-        self.settings = settings
-    }
-
     func play() {
         mediaPlayerQueue.async {
             self.playing = true
@@ -103,6 +99,10 @@ class MediaPlayer {
         mediaPlayerQueue.async {
             self.seeking = on
         }
+    }
+
+    private func updateSettingsInner(settings: SettingsMediaPlayer) {
+        self.settings = settings
     }
 
     private func activateInner() {
@@ -177,7 +177,7 @@ class MediaPlayer {
         } catch {
             logger.info("media-player: Failed to create reader with error: \(error)")
         }
-        assetDuration = max(asset.duration.seconds, 1)
+        assetDuration = max(asset.duration(), 1)
         asset.loadTracks(withMediaType: .video) { tracks, error in
             mediaPlayerQueue.async {
                 self.loadVideoTrackCompletion(tracks: tracks, error: error)

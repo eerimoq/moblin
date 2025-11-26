@@ -7,26 +7,70 @@ func toPixels(_ percentage: Double, _ total: Double) -> Double {
 }
 
 extension CIImage {
-    func resizeMoveMirror(_ sceneWidget: SettingsSceneWidget,
-                          _ streamSize: CGSize,
-                          _ mirror: Bool) -> CIImage
+    func resizeMirror(_ layout: SettingsWidgetLayout,
+                      _ streamSize: CGSize,
+                      _ mirror: Bool,
+                      _ resize: Bool = true) -> CIImage
     {
-        var scaleX = toPixels(sceneWidget.width, streamSize.width) / extent.size.width
-        var scaleY = toPixels(sceneWidget.height, streamSize.height) / extent.size.height
+        guard resize else {
+            return self
+        }
+        var scaleX = toPixels(layout.size, streamSize.width) / extent.size.width
+        var scaleY = toPixels(layout.size, streamSize.height) / extent.size.height
         let scale = min(scaleX, scaleY)
         if mirror {
-            scaleX = -1 * scale
+            scaleX = -scale
         } else {
             scaleX = scale
         }
         scaleY = scale
-        var x = toPixels(sceneWidget.x, streamSize.width)
+        let scaledImage = scaled(x: scaleX, y: scaleY)
         if mirror {
-            x -= extent.width * scaleX
+            return scaledImage.translated(x: scaledImage.extent.width, y: 0)
+        } else {
+            return scaledImage
         }
-        let y = streamSize.height - toPixels(sceneWidget.y, streamSize.height) - extent.height * scaleY
-        return transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
-            .transformed(by: CGAffineTransform(translationX: x, y: y))
+    }
+
+    func move(_ layout: SettingsWidgetLayout, _ streamSize: CGSize) -> CIImage {
+        let x: Double
+        let y: Double
+        if layout.alignment.isLeft() {
+            x = toPixels(layout.x, streamSize.width) - extent.minX
+        } else {
+            x = streamSize.width - toPixels(layout.x, streamSize.width) - extent.width - extent.minX
+        }
+        if layout.alignment.isTop() {
+            y = streamSize.height - toPixels(layout.y, streamSize.height) - extent.height - extent.minY
+        } else {
+            y = toPixels(layout.y, streamSize.height) - extent.minY
+        }
+        return translated(x: x, y: y)
+    }
+
+    func translated(x: Double, y: Double) -> CIImage {
+        return transformed(by: CGAffineTransform(translationX: x, y: y))
+    }
+
+    func scaled(x: Double, y: Double) -> CIImage {
+        return transformed(by: CGAffineTransform(scaleX: x, y: y))
+    }
+
+    func scaledTo(size: CGSize) -> CIImage {
+        let scaleX = size.width / extent.width
+        let scaleY = size.height / extent.height
+        let scale = min(scaleX, scaleY)
+        return scaled(x: scale, y: scale)
+    }
+
+    func centered(size: CGSize) -> CIImage {
+        let targetCenterX = size.width / 2
+        let targetCenterY = size.height / 2
+        let currentCenterX = extent.width / 2
+        let currentCenterY = extent.height / 2
+        let x = targetCenterX - currentCenterX
+        let y = targetCenterY - currentCenterY
+        return translated(x: x, y: y)
     }
 }
 

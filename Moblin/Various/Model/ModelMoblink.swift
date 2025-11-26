@@ -163,8 +163,10 @@ extension Model {
         }
         var statuses: [String] = []
         var ok = true
-        for (name, batteryPercentage) in streamer.getStatuses() {
-            let (status, deviceOk) = formatDeviceStatus(name: name, batteryPercentage: batteryPercentage)
+        for (name, batteryPercentage, thermalState) in streamer.getStatuses() {
+            let (status, deviceOk) = formatDeviceStatus(name: name,
+                                                        batteryPercentage: batteryPercentage,
+                                                        thermalState: thermalState)
             if !deviceOk {
                 ok = false
             }
@@ -176,7 +178,7 @@ extension Model {
 
 extension Model: MoblinkStreamerDelegate {
     func moblinkStreamerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
-        let connectionPriorities = stream.srt.connectionPriorities!
+        let connectionPriorities = stream.srt.connectionPriorities
         if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
             priority.name = relayName
         } else {
@@ -197,8 +199,19 @@ extension Model: MoblinkRelayDelegate {
         moblink.relayState = state
     }
 
-    func moblinkRelayGetBatteryPercentage() -> Int {
-        return Int(100 * battery.level)
+    func moblinkRelayGetStatus() -> (Int?, MoblinkThermalState?) {
+        let thermalState: MoblinkThermalState?
+        switch statusOther.thermalState {
+        case .nominal, .fair:
+            thermalState = .white
+        case .serious:
+            thermalState = .yellow
+        case .critical:
+            thermalState = .red
+        @unknown default:
+            thermalState = nil
+        }
+        return (Int(100 * battery.level), thermalState)
     }
 }
 

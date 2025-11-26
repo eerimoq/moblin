@@ -8,7 +8,7 @@ struct StreamOverlayRightWhirlpoolView: View {
         VStack(alignment: .trailing, spacing: 1) {
             Text("WHIRLPOOL ANGLE")
                 .font(.footnote)
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding([.trailing], 7)
             HStack {
                 Slider(

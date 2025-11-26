@@ -93,7 +93,6 @@ extension Model {
         guard !stream.discordSnapshotWebhookOnlyWhenLive || isLive, let url = getDiscordWebhookUrl(isChatBot) else {
             return
         }
-        logger.debug("Uploading snapshot to Discord of \(image).")
         uploadImage(
             url: url,
             paramName: "snapshot",
@@ -113,11 +112,5 @@ extension Model {
 
     func setCleanSnapshots() {
         media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
-    }
-}
-
-extension Model: SnapshotEffectDelegate {
-    func snapshotEffectRegisterVideoEffect(effect: VideoEffect) {
-        media.registerEffectBack(effect)
     }
 }

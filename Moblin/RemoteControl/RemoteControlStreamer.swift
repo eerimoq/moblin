@@ -15,6 +15,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetStream(on: Bool)
     func remoteControlStreamerSetDebugLogging(on: Bool)
     func remoteControlStreamerSetZoom(x: Float)
+    func remoteControlStreamerSetZoomPreset(id: UUID)
     func remoteControlStreamerSetMute(on: Bool)
     func remoteControlStreamerSetTorch(on: Bool)
     func remoteControlStreamerReloadBrowserWidgets()
@@ -223,6 +224,9 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setZoom(x: x):
             delegate.remoteControlStreamerSetZoom(x: x)
+            sendEmptyOkResponse(id: id)
+        case let .setZoomPreset(id: presetId):
+            delegate.remoteControlStreamerSetZoomPreset(id: presetId)
             sendEmptyOkResponse(id: id)
         case let .setMute(on: on):
             delegate.remoteControlStreamerSetMute(on: on)

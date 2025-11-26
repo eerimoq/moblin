@@ -5,6 +5,7 @@ enum EmotesPlatform {
     case twitch
     case kick
     case youtube
+    case dlive
 }
 
 class Emote {
@@ -34,7 +35,7 @@ class Emotes {
         let settings = settings.clone()
         ready = false
         emotes.removeAll()
-        task = Task.init {
+        task = Task {
             var firstRetry = true
             var retryTime = 30
             while !self.ready {

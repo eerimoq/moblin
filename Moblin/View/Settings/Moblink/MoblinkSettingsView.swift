@@ -89,18 +89,14 @@ private struct PasswordView: View {
             } footer: {
                 if let message {
                     Text(message)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                         .bold()
                 }
             }
             Section {
-                Button {
+                TextButtonView("Reset to default") {
                     value = "1234"
                     submit()
-                } label: {
-                    HCenter {
-                        Text("Reset to default")
-                    }
                 }
                 .disabled(model.isLive)
             }
@@ -175,6 +171,7 @@ private struct RelayStreamerUrlView: View {
 private struct RelayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var relay: SettingsMoblinkRelay
+    @State var relayId = ""
 
     var body: some View {
         Section {
@@ -200,13 +197,27 @@ private struct RelayView: View {
                     TextItemView(name: String(localized: "Streamer URL"), value: relay.url)
                 }
             }
+            TextButtonView("Reset id") {
+                moblinkRelayResetId()
+                model.reloadMoblinkRelay()
+                relayId = getMoblinkRelayId()
+            }
         } header: {
             Text("Relay")
         } footer: {
-            Text("""
-            Enable this on the device you want to use as the extra bonding connection. The device \
-            must have cellular data enabled.
-            """)
+            VStack(alignment: .leading) {
+                Text("""
+                Enable this on the device you want to use as the extra bonding connection. The device \
+                must have cellular data enabled.
+                """)
+                Text("")
+                Text("ID: \(relayId)")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+        }
+        .onAppear {
+            relayId = getMoblinkRelayId()
         }
     }
 }
@@ -216,7 +227,7 @@ private struct StreamerView: View {
     @ObservedObject var streamer: SettingsMoblinkStreamer
 
     private func submitPort(value: String) {
-        guard let port = UInt16(value.trim()), port > 0 else {
+        guard let port = UInt16(value.trim()) else {
             model.makePortErrorToast(port: value)
             return
         }
@@ -236,6 +247,7 @@ private struct StreamerView: View {
             TextEditNavigationView(
                 title: String(localized: "Server port"),
                 value: String(streamer.port),
+                onChange: isValidPort,
                 onSubmit: submitPort,
                 keyboardType: .numbersAndPunctuation,
                 placeholder: "7777"

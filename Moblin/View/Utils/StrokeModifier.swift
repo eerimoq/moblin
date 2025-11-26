@@ -13,18 +13,18 @@ private struct StrokeModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         if strokeSize > 0 {
-            appliedStrokeBackground(content: content)
+            applyStrokeBackground(content: content)
         } else {
             content
         }
     }
 
-    private func appliedStrokeBackground(content: Content) -> some View {
+    private func applyStrokeBackground(content: Content) -> some View {
         content
-            .padding(strokeSize * 2)
+            // .padding(strokeSize * 2)
             .background(
                 Rectangle()
-                    .foregroundColor(strokeColor)
+                    .foregroundStyle(strokeColor)
                     .mask(alignment: .center) {
                         mask(content: content)
                     }

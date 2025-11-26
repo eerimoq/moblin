@@ -38,14 +38,10 @@ protocol SampleBufferReceiverDelegate: AnyObject {
 private var lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.SampleBufferReceiver")
 
 class SampleBufferReceiver {
-    private var listenerFd: Int32
+    private var listenerFd: Int32 = -1
     weak var delegate: (any SampleBufferReceiverDelegate)?
     private var formatDescription: CMVideoFormatDescription?
     private var videoDecoder: VideoDecoder?
-
-    init() {
-        listenerFd = -1
-    }
 
     func start(appGroup: String) {
         do {
@@ -100,12 +96,9 @@ class SampleBufferReceiver {
 
     private func handleVideoBuffer(_ senderFd: Int32, _ header: SampleBufferHeader) throws {
         let data = try read(senderFd, header.size)
-        let timestamp = CMTime(
-            seconds: header.presentationTimeStamp + screenRecordingLatency,
-            preferredTimescale: 1000
-        )
+        let timestamp = CMTime(seconds: header.presentationTimeStamp + screenRecordingLatency)
         var timing = CMSampleTimingInfo(
-            duration: CMTimeMake(value: 30, timescale: 1000),
+            duration: .invalid,
             presentationTimeStamp: timestamp,
             decodeTimeStamp: timestamp
         )
@@ -128,7 +121,7 @@ class SampleBufferReceiver {
         ) == noErr, let sampleBuffer else {
             return
         }
-        sampleBuffer.isSync = header.isSync
+        sampleBuffer.setIsSync(header.isSync)
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 

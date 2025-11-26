@@ -71,7 +71,7 @@ struct TextEditBindingView: View {
                     if let errorMessage {
                         Text(errorMessage)
                             .bold()
-                            .foregroundColor(.red)
+                            .foregroundStyle(.red)
                         Text("")
                     }
                     ForEach(footers, id: \.self) { footer in

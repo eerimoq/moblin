@@ -29,6 +29,7 @@ enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
   case fm // = 4
   case vehicleMonitor // = 5
   case chargingManager // = 6
+  case guest // = 8
   case UNRECOGNIZED(Int)
 
   init() {
@@ -44,6 +45,7 @@ enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
     case 4: self = .fm
     case 5: self = .vehicleMonitor
     case 6: self = .chargingManager
+    case 8: self = .guest
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -57,6 +59,7 @@ enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
     case .fm: return 4
     case .vehicleMonitor: return 5
     case .chargingManager: return 6
+    case .guest: return 8
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -70,6 +73,7 @@ enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
     .fm,
     .vehicleMonitor,
     .chargingManager,
+    .guest,
   ]
 
 }
@@ -77,13 +81,5 @@ enum Keys_Role: SwiftProtobuf.Enum, Swift.CaseIterable {
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 extension Keys_Role: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ROLE_NONE"),
-    1: .same(proto: "ROLE_SERVICE"),
-    2: .same(proto: "ROLE_OWNER"),
-    3: .same(proto: "ROLE_DRIVER"),
-    4: .same(proto: "ROLE_FM"),
-    5: .same(proto: "ROLE_VEHICLE_MONITOR"),
-    6: .same(proto: "ROLE_CHARGING_MANAGER"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ROLE_NONE\0\u{1}ROLE_SERVICE\0\u{1}ROLE_OWNER\0\u{1}ROLE_DRIVER\0\u{1}ROLE_FM\0\u{1}ROLE_VEHICLE_MONITOR\0\u{1}ROLE_CHARGING_MANAGER\0\u{2}\u{2}ROLE_GUEST\0")
 }

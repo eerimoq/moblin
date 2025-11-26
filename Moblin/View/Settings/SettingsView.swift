@@ -12,7 +12,7 @@ struct SettingsView: View {
                 Section {
                     HStack {
                         Image(systemName: "info.circle.fill")
-                            .foregroundColor(.blue)
+                            .foregroundStyle(.blue)
                         Text("Settings that would stop the stream are disabled when live.")
                     }
                 }
@@ -29,7 +29,7 @@ struct SettingsView: View {
                     Label("Scenes", systemImage: "photo.on.rectangle")
                 }
                 NavigationLink {
-                    ChatSettingsView(chat: database.chat)
+                    ChatSettingsView(chat: database.chat, stream: model.stream)
                 } label: {
                     Label("Chat", systemImage: "message")
                 }
@@ -39,19 +39,22 @@ struct SettingsView: View {
                     Label("Display", systemImage: "rectangle.inset.topright.fill")
                 }
                 NavigationLink {
-                    CameraSettingsView(database: database, color: database.color)
+                    CameraSettingsView(database: database, stream: model.stream, color: database.color)
                 } label: {
                     Label("Camera", systemImage: "camera")
                 }
                 if database.showAllSettings {
                     NavigationLink {
-                        AudioSettingsView(database: database, mic: model.mic)
+                        AudioSettingsView(database: database,
+                                          stream: model.stream,
+                                          mic: model.mic,
+                                          debug: database.debug)
                     } label: {
                         Label("Audio", systemImage: "waveform")
                     }
                 }
                 NavigationLink {
-                    LocationSettingsView(database: model.database, location: database.location, stream: $model.stream)
+                    LocationSettingsView(database: database, location: database.location, stream: $model.stream)
                 } label: {
                     Label("Location", systemImage: "location")
                 }
@@ -117,7 +120,7 @@ struct SettingsView: View {
                         Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                     NavigationLink {
-                        CatPrintersSettingsView(catPrinters: model.database.catPrinters)
+                        CatPrintersSettingsView(catPrinters: database.catPrinters)
                     } label: {
                         Label("Cat printers", systemImage: "pawprint")
                     }
@@ -127,12 +130,12 @@ struct SettingsView: View {
                         Label("Tesla", systemImage: "car.side")
                     }
                     NavigationLink {
-                        CyclingPowerDevicesSettingsView(cyclingPowerDevices: model.database.cyclingPowerDevices)
+                        CyclingPowerDevicesSettingsView(cyclingPowerDevices: database.cyclingPowerDevices)
                     } label: {
                         Label("Cycling power devices", systemImage: "bicycle")
                     }
                     NavigationLink {
-                        HeartRateDevicesSettingsView(heartRateDevices: model.database.heartRateDevices)
+                        HeartRateDevicesSettingsView(heartRateDevices: database.heartRateDevices)
                     } label: {
                         Label("Heart rate devices", systemImage: "heart")
                     }
@@ -151,7 +154,7 @@ struct SettingsView: View {
                         Text("Cosmetics")
                     } icon: {
                         Image(systemName: "heart.fill")
-                            .foregroundColor(.red)
+                            .foregroundStyle(.red)
                     }
                 }
             }
@@ -205,7 +208,7 @@ struct SettingsView: View {
                         Label("Import and export settings", systemImage: "gearshape")
                     }
                     NavigationLink {
-                        DeepLinkCreatorSettingsView(deepLinkCreator: model.database.deepLinkCreator)
+                        DeepLinkCreatorSettingsView(deepLinkCreator: database.deepLinkCreator)
                     } label: {
                         Label("Deep link creator", systemImage: "link.badge.plus")
                     }

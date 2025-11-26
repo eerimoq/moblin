@@ -354,8 +354,8 @@ class MpegTsWriter {
     }
 }
 
-extension MpegTsWriter: AudioCodecDelegate {
-    func audioCodecOutputFormat(_ format: AVAudioFormat) {
+extension MpegTsWriter: AudioEncoderDelegate {
+    func audioEncoderOutputFormat(_ format: AVAudioFormat) {
         logger.info("ts-writer: Audio setup \(format)")
         var data = ElementaryStreamSpecificData()
         switch format.formatDescription.audioStreamBasicDescription?.mFormatID {
@@ -375,7 +375,7 @@ extension MpegTsWriter: AudioCodecDelegate {
         setAudioConfig(MpegTsAudioConfig(formatDescription: format.formatDescription))
     }
 
-    func audioCodecOutputBuffer(_ audioBuffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
+    func audioEncoderOutputBuffer(_ audioBuffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
         guard canWriteFor(), let audioConfig else {
             return
         }
@@ -431,7 +431,7 @@ extension MpegTsWriter: VideoEncoderDelegate {
             return
         }
         let decodeTimeStamp = CMTimeSubtract(sampleBuffer.decodeTimeStamp, decodeTimeStampOffset)
-        let randomAccessIndicator = sampleBuffer.isSync
+        let randomAccessIndicator = sampleBuffer.getIsSync()
         let bytes = UnsafeMutableRawPointer(buffer).bindMemory(to: UInt8.self, capacity: length)
         updateTimecodeReference()
         let timecode = makeTimecode(sampleBuffer.presentationTimeStamp, decodeTimeStamp)

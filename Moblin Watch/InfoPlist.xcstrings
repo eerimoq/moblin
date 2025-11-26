@@ -29,6 +29,12 @@
             "value" : "Moblin"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
@@ -63,6 +69,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "確定"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }
@@ -100,6 +112,12 @@
             "state" : "translated",
             "value" : "Moblin 可以把你的心率顯示在實況上"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以在實況時顯示您的心率。"
+          }
         }
       }
     },
@@ -135,6 +153,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin 可以把你的心率顯示在實況上"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以在實況時顯示您的心率。"
           }
         }
       }
@@ -172,6 +196,12 @@
             "state" : "translated",
             "value" : "Moblin 可以把你的心率顯示在實況上"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以在實況時顯示您的心率。"
+          }
         }
       }
     },
@@ -195,6 +225,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "確定"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }
@@ -220,6 +256,12 @@
             "state" : "translated",
             "value" : "確定"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
         }
       }
     },
@@ -243,6 +285,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "確定"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }

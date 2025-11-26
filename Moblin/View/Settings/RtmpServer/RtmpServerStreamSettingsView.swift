@@ -30,6 +30,13 @@ struct RtmpServerStreamSettingsView: View {
     @ObservedObject var rtmpServer: SettingsRtmpServer
     @ObservedObject var stream: SettingsRtmpServerStream
 
+    private func changeStreamKey(value: String) -> String? {
+        if model.getRtmpStream(streamKey: value.trim()) == nil {
+            return nil
+        }
+        return String(localized: "Already in use")
+    }
+
     private func submitStreamKey(value: String) {
         let streamKey = value.trim()
         if model.getRtmpStream(streamKey: streamKey) != nil {
@@ -38,13 +45,24 @@ struct RtmpServerStreamSettingsView: View {
         stream.streamKey = streamKey
     }
 
-    func submitLatency(value: String) {
+    private func changeLatency(value: String) -> String? {
         guard let latency = Int32(value) else {
-            stream.latencyString = String(stream.latency)
+            return String(localized: "Not a number")
+        }
+        guard latency >= 250 else {
+            return String(localized: "Too small")
+        }
+        guard latency <= 10000 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
+    private func submitLatency(value: String) {
+        guard let latency = Int32(value) else {
             return
         }
-        stream.latency = latency.clamped(to: 250 ... 10000)
-        stream.latencyString = String(stream.latency)
+        stream.latency = latency
     }
 
     var body: some View {
@@ -56,6 +74,7 @@ struct RtmpServerStreamSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Stream key"),
                         value: stream.streamKey,
+                        onChange: changeStreamKey,
                         onSubmit: submitStreamKey
                     )
                     .disabled(model.rtmpServerEnabled())
@@ -63,9 +82,10 @@ struct RtmpServerStreamSettingsView: View {
                     Text("The stream name is shown in the list of cameras in scene settings.")
                 }
                 Section {
-                    TextEditBindingNavigationView(
+                    TextEditNavigationView(
                         title: String(localized: "Latency"),
-                        value: $stream.latencyString,
+                        value: String(stream.latency),
+                        onChange: changeLatency,
                         onSubmit: submitLatency,
                         footers: [String(localized: "250 or more milliseconds. 2000 ms by default.")],
                         keyboardType: .numbersAndPunctuation,

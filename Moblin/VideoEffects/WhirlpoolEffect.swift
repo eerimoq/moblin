@@ -14,7 +14,7 @@ final class WhirlpoolEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "whirlpool"
+        return "Whirlpool"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

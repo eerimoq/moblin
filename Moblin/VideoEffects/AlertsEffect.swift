@@ -1,13 +1,10 @@
 import AVFoundation
 import Collections
 import ImagePlayground
-import MetalPetal
 import SDWebImage
 import SwiftUI
 import Vision
 import WrappingHStack
-
-private let lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.Alerts")
 
 private let backgroundFaceImageWidth = 130.0
 private let backgroundFaceImageHeight = 160.0
@@ -75,12 +72,17 @@ enum AlertsEffectAlert {
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
-    case chatBotCommand(String, String, String)
+    case kickSubscription(event: KickPusherSubscriptionEvent)
+    case kickGiftedSubscriptions(event: KickPusherGiftedSubscriptionsEvent)
+    case kickHost(event: KickPusherStreamHostEvent)
+    case kickReward(event: KickPusherRewardRedeemedEvent)
+    case kickKicks(event: KickPusherKicksGiftedEvent)
+    case chatBotCommand(String, String)
     case speechToTextString(UUID)
 }
 
 protocol AlertsEffectDelegate: AnyObject {
-    func alertsPlayerRegisterVideoEffect(effect: VideoEffect)
+    func alertsMakeErrorToast(title: String)
 }
 
 private enum MediaItem {
@@ -126,7 +128,7 @@ private class Medias: @unchecked Sendable {
             case let .image(image):
                 images = self.loadImages(image: image, loopCount: loopCount)
             }
-            lockQueue.sync {
+            processorPipelineQueue.async {
                 self.images = images
             }
         }
@@ -183,7 +185,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var synthesizer = createSpeechSynthesizer()
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
     private weak var delegate: (any AlertsEffectDelegate)?
-    private var toBeRemoved: Bool = true
+    private var enabled: Bool = false
     private var isPlaying: Bool = false
     private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts
@@ -194,11 +196,17 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var twitchSubscribe = Medias()
     private var twitchRaid = Medias()
     private var twitchCheers: [Medias] = []
+    private var kickSubscription = Medias()
+    private var kickGiftedSubscriptions = Medias()
+    private var kickHost = Medias()
+    private var kickReward = Medias()
+    private var kickGifts: [Medias] = []
     private var chatBotCommands: [Medias] = []
     private var speechToTextStrings: [Medias] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
     private var landmarkSettings: LandmarkSettings?
+    private var aiBaseUrl: URL?
 
     init(
         settings: SettingsWidgetAlerts,
@@ -212,9 +220,69 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.mediaStorage = mediaStorage
         self.bundledImages = bundledImages
         self.bundledSounds = bundledSounds
-        audioPlayer = nil
         super.init()
         setSettings(settings: settings)
+    }
+
+    override func getName() -> String {
+        return "Alert widget"
+    }
+
+    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+        return (landmarkSettings != nil, nil, nil)
+    }
+
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        let (alertImage, messageImage, x, y, landmarkSettings) = getNext(info.presentationTimeStamp.seconds)
+        guard let alertImage, let messageImage else {
+            return image
+        }
+        if let landmarkSettings {
+            return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
+        } else {
+            return executePositionScene(image, alertImage, messageImage, x, y)
+        }
+    }
+
+    override func isEnabled() -> Bool {
+        return enabled
+    }
+
+    func setSettings(settings: SettingsWidgetAlerts) {
+        setTwitchSettings(twitch: settings.twitch)
+        setKickSettings(kick: settings.kick)
+        setChatBotSettings(settings: settings)
+        setSpeechToTextSettings(settings: settings)
+        aiBaseUrl = URL(string: settings.ai.baseUrl)
+        self.settings = settings
+    }
+
+    func getSettings() -> SettingsWidgetAlerts {
+        return settings
+    }
+
+    func setPosition(x: Double, y: Double) {
+        processorPipelineQueue.async {
+            self.x = x
+            self.y = y
+        }
+    }
+
+    @MainActor
+    func play(alert: AlertsEffectAlert) {
+        alertsQueue.append(alert)
+        tryPlayNextAlert()
+    }
+
+    private func setChatBotSettings(settings: SettingsWidgetAlerts) {
+        chatBotCommands = []
+        for command in settings.chatBot.commands {
+            let (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
+            let medias = Medias()
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            chatBotCommands.append(medias)
+        }
     }
 
     private func getMediaItems(alert: SettingsWidgetAlertsAlert) -> (MediaItem, Int, MediaItem) {
@@ -233,63 +301,15 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return (image, alert.imageLoopCount, sound)
     }
 
-    func setSettings(settings: SettingsWidgetAlerts) {
-        let twitch = settings.twitch!
-        var (image, imageLoopCount, sound) = getMediaItems(alert: twitch.follows)
-        twitchFollow.updateImages(image: image, loopCount: imageLoopCount)
-        twitchFollow.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
-        twitchSubscribe.updateImages(image: image, loopCount: imageLoopCount)
-        twitchSubscribe.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids!)
-        twitchRaid.updateImages(image: image, loopCount: imageLoopCount)
-        twitchRaid.updateSoundUrl(sound: sound)
-        twitchCheers = []
-        for cheerBits in twitch.cheerBits! {
-            (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
-            let medias = Medias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            twitchCheers.append(medias)
-        }
-        chatBotCommands = []
-        for command in settings.chatBot!.commands {
-            (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
-            let medias = Medias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            chatBotCommands.append(medias)
-        }
+    private func setSpeechToTextSettings(settings: SettingsWidgetAlerts) {
         speechToTextStrings = []
-        for string in settings.speechToText!.strings {
-            (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
+        for string in settings.speechToText.strings {
+            let (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
             let medias = Medias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             speechToTextStrings.append(medias)
         }
-        self.settings = settings
-    }
-
-    func getSettings() -> SettingsWidgetAlerts {
-        return settings
-    }
-
-    func setPosition(x: Double, y: Double) {
-        lockQueue.sync {
-            self.x = x
-            self.y = y
-        }
-    }
-
-    @MainActor
-    func play(alert: AlertsEffectAlert) {
-        alertsQueue.append(alert)
-        tryPlayNextAlert()
-    }
-
-    func shouldRegisterEffect() -> Bool {
-        return lockQueue.sync { !toBeRemoved }
     }
 
     @MainActor
@@ -313,113 +333,26 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchRaid(event: event)
         case let .twitchCheer(event):
             playTwitchCheer(event: event)
-        case let .chatBotCommand(command, name, prompt):
-            playChatBotCommand(command: command, name: name, prompt: prompt)
+        case let .kickSubscription(event):
+            playKickSubscription(event: event)
+        case let .kickGiftedSubscriptions(event):
+            playKickGiftedSubscriptions(event: event)
+        case let .kickHost(event):
+            playKickHost(event: event)
+        case let .kickReward(event):
+            playKickReward(event: event)
+        case let .kickKicks(event):
+            playKickKicks(event: event)
+        case let .chatBotCommand(command, name):
+            playChatBotCommand(command: command, name: name)
         case let .speechToTextString(id):
             playSpeechToTextString(id: id)
         }
     }
 
     @MainActor
-    private func playTwitchFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
-        guard settings.twitch!.follows.enabled else {
-            return
-        }
-        play(
-            medias: twitchFollow,
-            username: event.user_name,
-            message: String(localized: "just followed!"),
-            settings: settings.twitch!.follows
-        )
-    }
-
-    @MainActor
-    private func playTwitchSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
-        guard settings.twitch!.subscriptions.enabled else {
-            return
-        }
-        play(
-            medias: twitchSubscribe,
-            username: event.user_name,
-            message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
-            settings: settings.twitch!.subscriptions
-        )
-    }
-
-    @MainActor
-    private func playTwitchSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
-        guard settings.twitch!.subscriptions.enabled else {
-            return
-        }
-        play(
-            medias: twitchSubscribe,
-            username: event.user_name ?? "Anomymous",
-            message: String(
-                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
-            ),
-            settings: settings.twitch!.subscriptions
-        )
-    }
-
-    @MainActor
-    private func playTwitchResubscribe(event: TwitchEventSubNotificationChannelSubscriptionMessageEvent) {
-        guard settings.twitch!.subscriptions.enabled else {
-            return
-        }
-        play(
-            medias: twitchSubscribe,
-            username: event.user_name,
-            message: String(localized: """
-            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
-            months! \(event.message.text)
-            """),
-            settings: settings.twitch!.subscriptions
-        )
-    }
-
-    @MainActor
-    private func playTwitchRaid(event: TwitchEventSubChannelRaidEvent) {
-        guard settings.twitch!.raids!.enabled else {
-            return
-        }
-        play(
-            medias: twitchRaid,
-            username: event.from_broadcaster_user_name,
-            message: String(localized: "raided with a party of \(event.viewers)!"),
-            settings: settings.twitch!.raids!
-        )
-    }
-
-    @MainActor
-    private func playTwitchCheer(event: TwitchEventSubChannelCheerEvent) {
-        for (index, cheerBit) in settings.twitch!.cheerBits!.enumerated() where cheerBit.alert.enabled {
-            switch cheerBit.comparisonOperator {
-            case .equal:
-                guard event.bits == cheerBit.bits else {
-                    continue
-                }
-            case .greaterEqual:
-                guard event.bits >= cheerBit.bits else {
-                    continue
-                }
-            }
-            guard index < twitchCheers.count else {
-                return
-            }
-            let bits = countFormatter.format(event.bits)
-            play(
-                medias: twitchCheers[index],
-                username: event.user_name ?? "Anonymous",
-                message: String(localized: "cheered \(bits) bits! \(event.message)"),
-                settings: cheerBit.alert
-            )
-            break
-        }
-    }
-
-    @MainActor
-    private func playChatBotCommand(command: String, name: String, prompt: String) {
-        guard let commandIndex = settings.chatBot!.commands
+    private func playChatBotCommand(command: String, name: String) {
+        guard let commandIndex = settings.chatBot.commands
             .firstIndex(where: { command == $0.name && $0.alert.enabled })
         else {
             return
@@ -428,8 +361,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             return
         }
         let medias = chatBotCommands[commandIndex]
-        let settings = settings.chatBot!.commands[commandIndex]
-        switch settings.imageType! {
+        let settings = settings.chatBot.commands[commandIndex]
+        switch settings.imageType {
         case .file:
             play(
                 medias: medias,
@@ -437,62 +370,12 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                 message: command,
                 settings: settings.alert
             )
-        case .imagePlayground:
-            createImagePlaygroundImage(soundUrl: medias.soundUrl, settings: settings, name: name, prompt: prompt)
-        }
-    }
-
-    private func createImagePlaygroundImage(
-        soundUrl: URL?,
-        settings: SettingsWidgetAlertsChatBotCommand,
-        name: String,
-        prompt: String
-    ) {
-        guard #available(iOS 18.4, *) else {
-            return
-        }
-        let imageUrl = mediaStorage.makePath(id: settings.imagePlaygroundImageId!)
-        DispatchQueue.global().async {
-            Task {
-                do {
-                    let creator = try await ImageCreator()
-                    var concepts: [ImagePlaygroundConcept] = [.extracted(from: prompt, title: nil)]
-                    if (try? imageUrl.checkResourceIsReachable()) == true {
-                        if let image = ImagePlaygroundConcept.image(imageUrl) {
-                            concepts.append(image)
-                        }
-                    }
-                    for try await image in creator.images(for: concepts, style: .animation, limit: 1) {
-                        let medias = Medias()
-                        let factor = 0.35
-                        var image = CIImage(cgImage: image.cgImage).transformed(by: CGAffineTransform(
-                            scaleX: factor,
-                            y: factor
-                        ))
-                        if settings.alert.positionType == .face {
-                            image = makeCircle(image)
-                        }
-                        medias.updateImages(image: .image(image), loopCount: 10)
-                        medias.soundUrl = soundUrl
-                        DispatchQueue.main.async {
-                            self.play(
-                                medias: medias,
-                                username: name,
-                                message: String(localized: "created \(prompt)"),
-                                settings: settings.alert
-                            )
-                        }
-                    }
-                } catch {
-                    logger.info("alert: Image playground error: \(error.localizedDescription)")
-                }
-            }
         }
     }
 
     @MainActor
     private func playSpeechToTextString(id: UUID) {
-        guard let stringIndex = settings.speechToText!.strings.firstIndex(where: { $0.id == id && $0.alert.enabled })
+        guard let stringIndex = settings.speechToText.strings.firstIndex(where: { $0.id == id && $0.alert.enabled })
         else {
             return
         }
@@ -503,7 +386,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             medias: speechToTextStrings[stringIndex],
             username: "",
             message: "",
-            settings: settings.speechToText!.strings[stringIndex].alert,
+            settings: settings.speechToText.strings[stringIndex].alert,
             delayAfterPlaying: 0.0
         )
     }
@@ -520,15 +403,55 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.delayAfterPlaying = delayAfterPlaying
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
-        lockQueue.sync {
-            self.images = medias.images
+        let images = medias.images
+        let soundUrl = medias.soundUrl
+        let ai = self.settings.ai
+        if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
+            OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
+                .ask(message, model: ai.model, role: ai.personality) { answer in
+                    DispatchQueue.main.async {
+                        var message = message
+                        if let answer {
+                            message += ". " + answer
+                        } else {
+                            self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
+                        }
+                        self.play(images: images,
+                                  soundUrl: soundUrl,
+                                  username: username,
+                                  message: message,
+                                  messageImage: messageImage,
+                                  landmarkSettings: landmarkSettings,
+                                  settings: settings)
+                    }
+                }
+        } else {
+            play(images: images,
+                 soundUrl: soundUrl,
+                 username: username,
+                 message: message,
+                 messageImage: messageImage,
+                 landmarkSettings: landmarkSettings,
+                 settings: settings)
+        }
+    }
+
+    private func play(images: Deque<GifImage>,
+                      soundUrl: URL?,
+                      username: String,
+                      message: String,
+                      messageImage: CIImage?,
+                      landmarkSettings: LandmarkSettings?,
+                      settings: SettingsWidgetAlertsAlert)
+    {
+        processorPipelineQueue.async {
+            self.images = images
             self.basePresentationTimeStamp = nil
             self.messageImage = messageImage
-            toBeRemoved = false
+            self.enabled = true
             self.landmarkSettings = landmarkSettings
         }
-        delegate?.alertsPlayerRegisterVideoEffect(effect: self)
-        if let soundUrl = medias.soundUrl {
+        if let soundUrl {
             audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
         }
@@ -555,7 +478,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         guard let language = Locale.current.language.languageCode?.identifier else {
             return nil
         }
-        if let voiceIdentifier = settings.textToSpeechLanguageVoices[language] {
+        if let voiceIdentifier = settings.textToSpeechLanguageVoices[language]?.apple.voice {
             return AVSpeechSynthesisVoice(identifier: voiceIdentifier)
         } else if let voice = AVSpeechSynthesisVoice.speechVoices()
             .filter({ $0.language.starts(with: language) }).first
@@ -578,10 +501,10 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             fitContentWidth: true
         ) {
             Text("\(username) ")
-                .foregroundColor(settings.accentColor.color())
+                .foregroundStyle(settings.accentColor.color())
             ForEach(words) { word in
                 Text("\(word.text) ")
-                    .foregroundColor(settings.textColor.color())
+                    .foregroundStyle(settings.textColor.color())
             }
         }
         .font(.system(
@@ -642,17 +565,15 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    override func getName() -> String {
-        return "Alert widget"
-    }
-
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
-        return (landmarkSettings != nil, nil, nil)
-    }
-
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {
         defer {
-            toBeRemoved = images.isEmpty
+            enabled = !images.isEmpty
+            if !enabled {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
+                    self.isPlaying = false
+                    self.tryPlayNextAlert()
+                }
+            }
         }
         if basePresentationTimeStamp == nil {
             basePresentationTimeStamp = presentationTimeStamp
@@ -734,17 +655,15 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                 centerY = boundingBox.minY - landmarkSettings.centerY * boundingBox.height
             }
             let moblinImage = alertImage
-                .transformed(by: CGAffineTransform(
-                    scaleX: alertImageHeight / alertImage.extent.height,
-                    y: alertImageHeight / alertImage.extent.height
-                ))
+                .scaled(x: alertImageHeight / alertImage.extent.height,
+                        y: alertImageHeight / alertImage.extent.height)
             let centerPoint = rotatePoint(
                 point: .init(x: centerX - moblinImage.extent.midX, y: centerY - moblinImage.extent.midY),
                 alpha: rotationAngle
             )
             outputImage = moblinImage
                 .transformed(by: CGAffineTransform(rotationAngle: rotationAngle))
-                .transformed(by: CGAffineTransform(translationX: centerPoint.x, y: centerPoint.y))
+                .translated(x: centerPoint.x, y: centerPoint.y)
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
@@ -760,48 +679,12 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         let xPos = toPixels(x, image.extent.width)
         let yPos = image.extent.height - toPixels(y, image.extent.height) - alertImage.extent.height
         return messageImage
-            .transformed(by: CGAffineTransform(
-                translationX: -(messageImage.extent.width - alertImage.extent.width) / 2,
-                y: -messageImage.extent.height
-            ))
+            .translated(x: -(messageImage.extent.width - alertImage.extent.width) / 2,
+                        y: -messageImage.extent.height)
             .composited(over: alertImage)
-            .transformed(by: CGAffineTransform(translationX: xPos, y: yPos))
+            .translated(x: xPos, y: yPos)
             .composited(over: image)
             .cropped(to: image.extent)
-    }
-
-    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let (alertImage, messageImage, x, y, landmarkSettings) = lockQueue.sync {
-            getNext(info.presentationTimeStamp.seconds)
-        }
-        guard let alertImage, let messageImage else {
-            return image
-        }
-        if let landmarkSettings {
-            return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
-        } else {
-            return executePositionScene(image, alertImage, messageImage, x, y)
-        }
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        return lockQueue.sync {
-            self.toBeRemoved = true
-            return image
-        }
-    }
-
-    override func shouldRemove() -> Bool {
-        return toBeRemoved
-    }
-
-    override func removed() {
-        DispatchQueue.main.async {
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.delayAfterPlaying) {
-                self.isPlaying = false
-                self.tryPlayNextAlert()
-            }
-        }
     }
 }
 
@@ -827,4 +710,232 @@ private func makeCircle(_ image: CIImage) -> CIImage {
     roundedCornersBlender.inputImage = image
     roundedCornersBlender.maskImage = makeRoundedRectangleMask(image)
     return roundedCornersBlender.outputImage ?? image
+}
+
+extension AlertsEffect {
+    private func setTwitchSettings(twitch: SettingsWidgetAlertsTwitch) {
+        var (image, imageLoopCount, sound) = getMediaItems(alert: twitch.follows)
+        twitchFollow.updateImages(image: image, loopCount: imageLoopCount)
+        twitchFollow.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
+        twitchSubscribe.updateImages(image: image, loopCount: imageLoopCount)
+        twitchSubscribe.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids)
+        twitchRaid.updateImages(image: image, loopCount: imageLoopCount)
+        twitchRaid.updateSoundUrl(sound: sound)
+        twitchCheers = []
+        for cheerBits in twitch.cheerBits {
+            (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
+            let medias = Medias()
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            twitchCheers.append(medias)
+        }
+    }
+
+    @MainActor
+    private func playTwitchFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
+        guard settings.twitch.follows.enabled else {
+            return
+        }
+        play(
+            medias: twitchFollow,
+            username: event.user_name,
+            message: String(localized: "just followed!"),
+            settings: settings.twitch.follows
+        )
+    }
+
+    @MainActor
+    private func playTwitchSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: twitchSubscribe,
+            username: event.user_name,
+            message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: twitchSubscribe,
+            username: event.user_name ?? "Anomymous",
+            message: String(
+                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
+            ),
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchResubscribe(event: TwitchEventSubNotificationChannelSubscriptionMessageEvent) {
+        guard settings.twitch.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: twitchSubscribe,
+            username: event.user_name,
+            message: String(localized: """
+            just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
+            months! \(event.message.text)
+            """),
+            settings: settings.twitch.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playTwitchRaid(event: TwitchEventSubChannelRaidEvent) {
+        guard settings.twitch.raids.enabled else {
+            return
+        }
+        play(
+            medias: twitchRaid,
+            username: event.from_broadcaster_user_name,
+            message: String(localized: "raided with a party of \(event.viewers)!"),
+            settings: settings.twitch.raids
+        )
+    }
+
+    @MainActor
+    private func playTwitchCheer(event: TwitchEventSubChannelCheerEvent) {
+        for (index, cheerBit) in settings.twitch.cheerBits.enumerated() where cheerBit.alert.enabled {
+            switch cheerBit.comparisonOperator {
+            case .equal:
+                guard event.bits == cheerBit.bits else {
+                    continue
+                }
+            case .greaterEqual:
+                guard event.bits >= cheerBit.bits else {
+                    continue
+                }
+            }
+            guard index < twitchCheers.count else {
+                return
+            }
+            let bits = countFormatter.format(event.bits)
+            play(
+                medias: twitchCheers[index],
+                username: event.user_name ?? "Anonymous",
+                message: String(localized: "cheered \(bits) bits! \(event.message)"),
+                settings: cheerBit.alert
+            )
+            break
+        }
+    }
+}
+
+extension AlertsEffect {
+    private func setKickSettings(kick: SettingsWidgetAlertsKick) {
+        var (image, imageLoopCount, sound) = getMediaItems(alert: kick.subscriptions)
+        kickSubscription.updateImages(image: image, loopCount: imageLoopCount)
+        kickSubscription.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.giftedSubscriptions)
+        kickGiftedSubscriptions.updateImages(image: image, loopCount: imageLoopCount)
+        kickGiftedSubscriptions.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.hosts)
+        kickHost.updateImages(image: image, loopCount: imageLoopCount)
+        kickHost.updateSoundUrl(sound: sound)
+        (image, imageLoopCount, sound) = getMediaItems(alert: kick.rewards)
+        kickReward.updateImages(image: image, loopCount: imageLoopCount)
+        kickReward.updateSoundUrl(sound: sound)
+        kickGifts = []
+        for kickGift in kick.kickGifts {
+            (image, imageLoopCount, sound) = getMediaItems(alert: kickGift.alert)
+            let medias = Medias()
+            medias.updateImages(image: image, loopCount: imageLoopCount)
+            medias.updateSoundUrl(sound: sound)
+            kickGifts.append(medias)
+        }
+    }
+
+    @MainActor
+    private func playKickSubscription(event: KickPusherSubscriptionEvent) {
+        guard settings.kick.subscriptions.enabled else {
+            return
+        }
+        play(
+            medias: kickSubscription,
+            username: event.username,
+            message: String(localized: "just subscribed! They've been subscribed for \(event.months) months!"),
+            settings: settings.kick.subscriptions
+        )
+    }
+
+    @MainActor
+    private func playKickGiftedSubscriptions(event: KickPusherGiftedSubscriptionsEvent) {
+        guard settings.kick.giftedSubscriptions.enabled else {
+            return
+        }
+        play(
+            medias: kickGiftedSubscriptions,
+            username: event.gifter_username,
+            message: String(localized: """
+            just gifted \(event.gifted_usernames.count) subscription(s)! They've \
+            gifted \(event.gifter_total) in total!
+            """),
+            settings: settings.kick.giftedSubscriptions
+        )
+    }
+
+    @MainActor
+    private func playKickHost(event: KickPusherStreamHostEvent) {
+        guard settings.kick.hosts.enabled else {
+            return
+        }
+        play(
+            medias: kickHost,
+            username: event.host_username,
+            message: String(localized: "is now hosting with \(event.number_viewers) viewers!"),
+            settings: settings.kick.hosts
+        )
+    }
+
+    @MainActor
+    private func playKickReward(event: KickPusherRewardRedeemedEvent) {
+        guard settings.kick.rewards.enabled else {
+            return
+        }
+        let baseMessage = String(localized: "redeemed \(event.reward_title)")
+        let message = event.user_input.isEmpty ? baseMessage : "\(baseMessage): \(event.user_input)"
+        play(
+            medias: kickReward,
+            username: event.username,
+            message: message,
+            settings: settings.kick.rewards
+        )
+    }
+
+    @MainActor
+    private func playKickKicks(event: KickPusherKicksGiftedEvent) {
+        for (index, kickGift) in settings.kick.kickGifts.enumerated() {
+            let matches: Bool
+            switch kickGift.comparisonOperator {
+            case .equal:
+                matches = event.gift.amount == kickGift.amount
+            case .greaterEqual:
+                matches = event.gift.amount >= kickGift.amount
+            }
+            guard matches, kickGift.alert.enabled else {
+                continue
+            }
+            guard index < kickGifts.count else {
+                return
+            }
+            let formattedAmount = countFormatter.format(event.gift.amount)
+            play(
+                medias: kickGifts[index],
+                username: event.sender.username,
+                message: String(localized: "sent \(event.gift.name) \(formattedAmount) Kicks!"),
+                settings: kickGift.alert
+            )
+            break
+        }
+    }
 }

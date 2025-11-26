@@ -21,7 +21,7 @@ struct CyclingPowerDeviceSettingsView: View {
     @ObservedObject var status: StatusTopRight
     @ObservedObject private var scanner = cyclingPowerScanner
 
-    func state() -> String {
+    private func state() -> String {
         return formatCyclingPowerDeviceState(state: status.cyclingPowerDeviceState)
     }
 
@@ -54,7 +54,7 @@ struct CyclingPowerDeviceSettingsView: View {
                     )
                     } label: {
                         Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                            .foregroundColor(.gray)
+                            .foregroundStyle(.gray)
                             .lineLimit(1)
                     }
                     .disabled(model.isCyclingPowerDeviceEnabled(device: device))

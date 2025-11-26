@@ -1,6 +1,5 @@
 import AVFoundation
 import CoreMotion
-import MetalPetal
 import UIKit
 import Vision
 
@@ -68,7 +67,7 @@ final class FixedHorizonEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "fixed horizon"
+        return "Fixed horizon"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
@@ -89,14 +88,10 @@ final class FixedHorizonEffect: VideoEffect {
         )
         let scale = boundingSize.width / image.extent.width
         return image
-            .transformed(by: CGAffineTransform(translationX: -image.extent.width / 2, y: -image.extent.height / 2))
+            .translated(x: -image.extent.width / 2, y: -image.extent.height / 2)
             .transformed(by: CGAffineTransform(rotationAngle: currentAngle))
-            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-            .transformed(by: CGAffineTransform(translationX: image.extent.width / 2, y: image.extent.height / 2))
+            .scaled(x: scale, y: scale)
+            .translated(x: image.extent.width / 2, y: image.extent.height / 2)
             .cropped(to: image.extent)
-    }
-
-    override func executeMetalPetal(_ image: MTIImage?, _: VideoEffectInfo) -> MTIImage? {
-        return image
     }
 }

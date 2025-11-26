@@ -12,7 +12,7 @@ private struct HighlightMessageView: View {
 
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
-            return chat.backgroundColor.color().opacity(0.6)
+            return chat.backgroundColorColor.opacity(0.6)
         } else {
             return .clear
         }
@@ -20,7 +20,7 @@ private struct HighlightMessageView: View {
 
     private func shadowColor() -> Color {
         if chat.shadowColorEnabled {
-            return chat.shadowColor.color()
+            return chat.shadowColorColor
         } else {
             return .clear
         }
@@ -46,7 +46,7 @@ private struct HighlightMessageView: View {
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(highlight.messageColor(defaultColor: chat.messageColor.color()))
+                        .foregroundStyle(highlight.messageColor(defaultColor: chat.messageColorColor))
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
@@ -75,7 +75,7 @@ private struct HighlightMessageView: View {
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .cornerRadius(5)
     }
 }
@@ -94,13 +94,13 @@ private struct LineView: View {
         if post.isAction && chat.meInUsernameColor {
             return usernameColor
         } else {
-            return chat.messageColor.color()
+            return chat.messageColorColor
         }
     }
 
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
-            return chat.backgroundColor.color().opacity(0.6)
+            return chat.backgroundColorColor.opacity(0.6)
         } else {
             return .clear
         }
@@ -108,7 +108,7 @@ private struct LineView: View {
 
     private func shadowColor() -> Color {
         if chat.shadowColorEnabled {
-            return chat.shadowColor.color()
+            return chat.shadowColorColor
         } else {
             return .clear
         }
@@ -137,7 +137,7 @@ private struct LineView: View {
         ) {
             if chat.timestampColorEnabled {
                 Text("\(post.timestamp) ")
-                    .foregroundColor(chat.timestampColor.color())
+                    .foregroundStyle(chat.timestampColorColor)
             }
             if chat.platform, platform, let image = post.platform?.imageName() {
                 Image(image)
@@ -161,8 +161,8 @@ private struct LineView: View {
                     .opacity(imageOpacity())
                 }
             }
-            Text(post.displayName(nicknames: chat.nicknames))
-                .foregroundColor(postState.deleted ? .gray : usernameColor)
+            Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
+                .foregroundStyle(postState.deleted ? .gray : usernameColor)
                 .strikethrough(postState.deleted)
                 .lineLimit(1)
                 .padding([.trailing], 0)
@@ -172,10 +172,10 @@ private struct LineView: View {
             } else {
                 Text(": ")
             }
-            ForEach(post.segments, id: \.id) { segment in
+            ForEach(post.segments) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundColor(postState.deleted ? .gray : messageColor)
+                        .foregroundStyle(postState.deleted ? .gray : messageColor)
                         .strikethrough(postState.deleted)
                         .bold(chat.boldMessage)
                         .italic(post.isAction)
@@ -208,7 +208,7 @@ private struct LineView: View {
         .padding([.leading], 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .cornerRadius(5)
     }
 }
@@ -216,7 +216,6 @@ private struct LineView: View {
 private let startId = UUID()
 
 private struct PostView: View {
-    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     let fullSize: Bool
@@ -231,7 +230,7 @@ private struct PostView: View {
                     HStack(spacing: 0) {
                         Rectangle()
                             .frame(width: 3)
-                            .foregroundColor(highlight.barColor)
+                            .foregroundStyle(highlight.barColor)
                         VStack(alignment: .leading, spacing: 1) {
                             HighlightMessageView(postState: post.state,
                                                  chat: chatSettings,
@@ -312,7 +311,10 @@ struct StreamOverlayChatView: View {
                         LazyVStack(alignment: .leading, spacing: 1) {
                             Color.clear
                                 .onAppear {
-                                    tryUnpause()
+                                    // App hangs if not doing this async.
+                                    DispatchQueue.main.async {
+                                        tryUnpause()
+                                    }
                                 }
                                 .onDisappear {
                                     tryPause()
@@ -320,8 +322,7 @@ struct StreamOverlayChatView: View {
                                 .frame(height: 1)
                                 .id(startId)
                             ForEach(chat.posts) { post in
-                                PostView(model: model,
-                                         chatSettings: chatSettings,
+                                PostView(chatSettings: chatSettings,
                                          chat: chat,
                                          fullSize: fullSize,
                                          post: post,
@@ -333,7 +334,7 @@ struct StreamOverlayChatView: View {
                             Spacer(minLength: 0)
                         }
                     }
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .rotationEffect(Angle(degrees: rotation))
                     .scaleEffect(x: scaleX * chatSettings.isMirrored(), y: 1.0, anchor: .center)
                     .frame(width: metrics.size.width * widthFactor(),

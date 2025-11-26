@@ -386,10 +386,7 @@ private class RtpVideoProcessor: RtpProcessor {
             sampleSizeEntryCount: 1,
             sampleSizeArray: &sampleSize,
             sampleBufferOut: &sampleBuffer
-        ) == noErr else {
-            return
-        }
-        guard let sampleBuffer else {
+        ) == noErr, let sampleBuffer else {
             return
         }
         decoder.decodeSampleBuffer(sampleBuffer)
@@ -638,7 +635,7 @@ class RtspClient {
         }
         logger.debug("rtsp-client: Connecting to \(host):\(port)")
         connection = NWConnection(
-            to: .hostPort(host: .init(host), port: .init(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))),
+            to: .hostPort(host: .init(host), port: .init(integer: port)),
             using: .init(tls: nil)
         )
         connection?.stateUpdateHandler = rtspConnectionStateDidChange

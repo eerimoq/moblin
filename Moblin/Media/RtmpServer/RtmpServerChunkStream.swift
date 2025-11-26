@@ -102,14 +102,14 @@ class RtmpServerChunkStream {
             return
         }
         let amf0 = Amf0Deserializer(data: messageBody)
-        let commandName: String
+        let commandName: RtmpCommandName
         let transactionId: Int
         let commandObject: AsObject
         var arguments: [Any?]
         do {
-            commandName = try amf0.deserialize()
-            transactionId = try amf0.deserialize()
-            commandObject = try amf0.deserialize()
+            commandName = try RtmpCommandName(rawValue: amf0.deserializeString()) ?? .unknown
+            transactionId = try amf0.deserializeInt()
+            commandObject = try amf0.deserializeAsObject()
             arguments = []
             if amf0.bytesAvailable > 0 {
                 try arguments.append(amf0.deserialize())
@@ -119,17 +119,17 @@ class RtmpServerChunkStream {
             return
         }
         switch commandName {
-        case "connect":
+        case .connect:
             processMessageAmf0CommandConnect(transactionId: transactionId, commandObject: commandObject)
-        case "FCPublish":
+        case .fcPublish:
             processMessageAmf0CommandFCPublish(transactionId: transactionId)
-        case "FCUnpublish":
+        case .fcUnpublish:
             processMessageAmf0CommandFCUnpublish(transactionId: transactionId)
-        case "createStream":
+        case .createStream:
             processMessageAmf0CommandCreateStream(transactionId: transactionId)
-        case "deleteStream":
+        case .deleteStream:
             processMessageAmf0CommandDeleteStream(transactionId: transactionId)
-        case "publish":
+        case .publish:
             processMessageAmf0CommandPublish(transactionId: transactionId, arguments: arguments)
         default:
             logger.info("rtmp-server: client: Unsupported command \(commandName)")
@@ -178,7 +178,7 @@ class RtmpServerChunkStream {
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 commandType: .amf0Command,
-                commandName: "_result",
+                commandName: .result,
                 commandObject: nil,
                 arguments: [[
                     "level": "status",
@@ -201,7 +201,7 @@ class RtmpServerChunkStream {
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 commandType: .amf0Command,
-                commandName: "_result",
+                commandName: .result,
                 commandObject: nil,
                 arguments: [
                     1,
@@ -252,7 +252,7 @@ class RtmpServerChunkStream {
                 streamId: messageStreamId,
                 transactionId: transactionId,
                 commandType: .amf0Command,
-                commandName: "onStatus",
+                commandName: .onStatus,
                 commandObject: nil,
                 arguments: [
                     [
@@ -300,8 +300,7 @@ class RtmpServerChunkStream {
             return
         }
         let control = messageBody[0]
-        guard let codec = FlvAudioCodec(rawValue: control >> 4)
-        else {
+        guard let codec = FlvAudioCodec(rawValue: control >> 4) else {
             client.stopInternal(reason: "Failed to parse audio settings \(control)")
             return
         }
@@ -614,7 +613,7 @@ class RtmpServerChunkStream {
         ) == noErr else {
             return nil
         }
-        sampleBuffer?.isSync = isKeyFrame
+        sampleBuffer?.setIsSync(isKeyFrame)
         return sampleBuffer
     }
 

@@ -28,7 +28,7 @@ final class MapEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "map widget"
+        return "Map widget"
     }
 
     func zoomOutTemporarily() {
@@ -55,9 +55,27 @@ final class MapEffect: VideoEffect {
         }
     }
 
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        let size = image.extent.size
+        update(size: size)
+        guard let sceneWidget, let dot, let mapSnapshot else {
+            return image
+        }
+        let height = toPixels(sceneWidget.layout.size, size.height)
+        let width = toPixels(sceneWidget.layout.size, size.width)
+        let side = CGFloat(max(40, min(height, width)))
+        let mapWithDotImage = dot
+            .translated(x: (side - 30) / 2, y: (side - 30) / 2 - CGFloat(dotOffsetRatio * side / 2))
+            .composited(over: mapSnapshot
+                .scaled(x: side / CGFloat(mapSnapshot.extent.width),
+                        y: side / CGFloat(mapSnapshot.extent.width)))
+        return applyEffectsResizeMirrorMove(mapWithDotImage, sceneWidget, false, image.extent, info)
+            .composited(over: image)
+    }
+
     private func nextNewLocation() -> CLLocation {
         let now = Date()
-        let delay = widget.delay!
+        let delay = widget.delay
         return newLocations.last(where: { $0.timestamp.advanced(by: delay) <= now }) ?? newLocations.first!
     }
 
@@ -101,7 +119,7 @@ final class MapEffect: VideoEffect {
             self.zoomOutFactor = nil
         }
         let camera = MKMapCamera()
-        if !widget.northUp! {
+        if !widget.northUp {
             camera.heading = newLocation.course
         }
         camera.centerCoordinate = newLocation.coordinate
@@ -109,7 +127,7 @@ final class MapEffect: VideoEffect {
         var dotOffsetRatio = 0.0
         if newLocation.speed > 4, zoomOutFactor == nil {
             camera.centerCoordinateDistance += 150 * (newLocation.speed - 4)
-            if !widget.northUp! {
+            if !widget.northUp {
                 let halfMapSideLength = tan(.pi / 12) * camera.centerCoordinateDistance
                 let maxDotOffsetFromCenter = halfMapSideLength / 2
                 let maxDotSpeed = 20.0
@@ -118,7 +136,7 @@ final class MapEffect: VideoEffect {
                 if dotOffsetInMeters > maxDotOffsetFromCenter {
                     dotOffsetInMeters = maxDotOffsetFromCenter
                 }
-                let course = toRadians(degrees: max(newLocation.course, 0))
+                let course = max(newLocation.course, 0).toRadians()
                 let latitudeOffsetInMeters = cos(course) * dotOffsetInMeters
                 let longitudeOffsetInMeters = sin(course) * dotOffsetInMeters
                 camera.centerCoordinate = newLocation.coordinate.translateMeters(
@@ -138,31 +156,5 @@ final class MapEffect: VideoEffect {
         let options = MKMapSnapshotter.Options()
         options.camera = camera
         return (MKMapSnapshotter(options: options), dotOffsetRatio)
-    }
-
-    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let size = image.extent.size
-        update(size: size)
-        guard let sceneWidget, let dot, let mapSnapshot else {
-            return image
-        }
-        let height = toPixels(sceneWidget.height, size.height)
-        let width = toPixels(sceneWidget.width, size.width)
-        let side = max(40, min(height, width))
-        let x = toPixels(sceneWidget.x, size.width)
-        let y = size.height - toPixels(sceneWidget.y, size.height) - side
-        return dot
-            .transformed(by: CGAffineTransform(
-                translationX: CGFloat(side - 30) / 2,
-                y: CGFloat(side - 30) / 2 - CGFloat(dotOffsetRatio * CGFloat(side) / 2)
-            ))
-            .composited(over: applyEffects(mapSnapshot, info)
-                .transformed(by: CGAffineTransform(
-                    scaleX: CGFloat(side) / CGFloat(mapSnapshot.extent.width),
-                    y: CGFloat(side) / CGFloat(mapSnapshot.extent.width)
-                )))
-            .transformed(by: CGAffineTransform(translationX: x, y: y))
-            .cropped(to: image.extent)
-            .composited(over: image)
     }
 }

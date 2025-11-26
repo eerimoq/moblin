@@ -6,7 +6,6 @@ private struct PickerEntry: Identifiable {
 }
 
 private struct QuickButtonGoProLaunchLiveStreamView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var goProState: GoProState
     @ObservedObject var goPro: SettingsGoPro
     let height: Double
@@ -57,20 +56,14 @@ private struct QuickButtonGoProLaunchLiveStreamView: View {
 }
 
 private struct QuickButtonGoProWifiCredentialsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var goProState: GoProState
+    @ObservedObject var goPro: SettingsGoPro
     var height: Double
     @State var qrCode: UIImage?
     @State var entries: [PickerEntry] = []
 
-    private var goPro: SettingsGoPro {
-        return model.database.goPro
-    }
-
     private func generate() {
-        if let wifiCredentials = goPro.wifiCredentials
-            .first(where: { $0.id == goProState.wifiCredentialsSelection })
-        {
+        if let wifiCredentials = goPro.wifiCredentials.first(where: { $0.id == goProState.wifiCredentialsSelection }) {
             qrCode = GoPro.generateWifiCredentialsQrCode(
                 ssid: wifiCredentials.ssid,
                 password: wifiCredentials.password
@@ -113,15 +106,11 @@ private struct QuickButtonGoProWifiCredentialsView: View {
 }
 
 private struct QuickButtonGoProRtmpUrlView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var goProState: GoProState
+    @ObservedObject var goPro: SettingsGoPro
     var height: Double
     @State var qrCode: UIImage?
     @State var entries: [PickerEntry] = []
-
-    private var goPro: SettingsGoPro {
-        return model.database.goPro
-    }
 
     private func generate() {
         if let rtmpUrl = goPro.rtmpUrls.first(where: { $0.id == goProState.rtmpUrlSelection }) {
@@ -169,7 +158,8 @@ private struct QuickButtonGoProRtmpUrlView: View {
 }
 
 struct QuickButtonGoProView: View {
-    @EnvironmentObject var model: Model
+    let goProState: GoProState
+    let goPro: SettingsGoPro
     @State private var activeIndex: Int? = 0
 
     var body: some View {
@@ -181,17 +171,20 @@ struct QuickButtonGoProView: View {
                             HStack {
                                 Group {
                                     QuickButtonGoProLaunchLiveStreamView(
-                                        goProState: model.goPro,
-                                        goPro: model.database.goPro,
+                                        goProState: goProState,
+                                        goPro: goPro,
                                         height: metrics.size.height
                                     )
                                     .id(0)
                                     QuickButtonGoProWifiCredentialsView(
-                                        goProState: model.goPro,
+                                        goProState: goProState,
+                                        goPro: goPro,
                                         height: metrics.size.height
                                     )
                                     .id(1)
-                                    QuickButtonGoProRtmpUrlView(goProState: model.goPro, height: metrics.size.height)
+                                    QuickButtonGoProRtmpUrlView(goProState: goProState,
+                                                                goPro: goPro,
+                                                                height: metrics.size.height)
                                         .id(2)
                                 }
                                 .containerRelativeFrame(.horizontal, count: 1, spacing: 0)

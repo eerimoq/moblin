@@ -1,5 +1,3 @@
-import AVFoundation
-import CoreFoundation
 import UIKit
 import VideoToolbox
 
@@ -21,12 +19,11 @@ struct SampleBufferHeader: Codable {
 }
 
 func createContainerDir(appGroup: String) throws -> URL {
-    guard let containerDir = FileManager.default
-        .containerURL(forSecurityApplicationGroupIdentifier: appGroup)
-    else {
+    let fileManager = FileManager.default
+    guard let containerDir = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
         throw "Failed to create container directory"
     }
-    try FileManager.default.createDirectory(at: containerDir, withIntermediateDirectories: true)
+    try fileManager.createDirectory(at: containerDir, withIntermediateDirectories: true)
     return containerDir
 }
 
@@ -35,9 +32,7 @@ func createSocketPath(containerDir: URL) -> URL {
 }
 
 func removeFile(path: URL) {
-    do {
-        try FileManager.default.removeItem(at: path)
-    } catch {}
+    try? FileManager.default.removeItem(at: path)
 }
 
 func createAddr(path: URL) throws -> sockaddr_un {

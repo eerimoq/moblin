@@ -3,130 +3,71 @@ import SwiftUI
 private struct SceneSettings: Codable {
     let x: Double
     let y: Double
-    let width: Double
-    let height: Double
+    let size: Double
+    let alignment: SettingsAlignment
 }
 
-struct SceneWidgetSettingsView: View {
+private struct ExportImportView: View {
     @EnvironmentObject private var model: Model
-    @ObservedObject var sceneWidget: SettingsSceneWidget
+    @Binding var layout: SettingsWidgetLayout
     @ObservedObject var widget: SettingsWidget
-    @Binding var numericInput: Bool
-
-    private let widgetsWithPosition: [SettingsWidgetType] = [
-        .image, .browser, .text, .crop, .map, .qrCode, .alerts, .videoSource, .vTuber, .pngTuber, .snapshot,
-    ]
-
-    private func widgetHasPosition(id: UUID) -> Bool {
-        if let widget = model.findWidget(id: id) {
-            return widgetsWithPosition.contains(widget.type)
-        } else {
-            logger.error("Unable to find widget type")
-            return false
-        }
-    }
-
-    private let widgetsWithSize: [SettingsWidgetType] = [
-        .image, .qrCode, .map, .videoSource, .vTuber, .pngTuber, .snapshot,
-    ]
-
-    private func widgetHasSize(id: UUID) -> Bool {
-        if let widget = model.findWidget(id: id) {
-            return widgetsWithSize.contains(widget.type)
-        } else {
-            logger.error("Unable to find widget type")
-            return false
-        }
-    }
-
-    private func canWidgetExpand(widget: SettingsWidget) -> Bool {
-        return widgetHasPosition(id: widget.id) || widgetHasSize(id: widget.id)
-    }
 
     private func exportToClipboard() {
         let settings = SceneSettings(
-            x: sceneWidget.x,
-            y: sceneWidget.y,
-            width: sceneWidget.width,
-            height: sceneWidget.height
+            x: layout.x,
+            y: layout.y,
+            size: layout.size,
+            alignment: layout.alignment
         )
         if let data = try? String.fromUtf8(data: JSONEncoder().encode(settings)) {
             UIPasteboard.general.string = data
-            model.makeToast(title: "Settings exported")
         }
     }
 
     private func importFromClipboard() {
-        guard let settings = UIPasteboard.general.string else {
-            model.makeErrorToast(title: String(localized: "Empty clipboard"))
+        guard let settings = UIPasteboard.general.string,
+              let settings = try? JSONDecoder().decode(SceneSettings.self, from: settings.data(using: .utf8)!)
+        else {
             return
         }
-        guard let settings = try? JSONDecoder().decode(SceneSettings.self, from: settings.data(using: .utf8)!) else {
-            model.makeErrorToast(title: String(localized: "Malformed settings"))
-            return
-        }
-        sceneWidget.x = settings.x.clamped(to: 0 ... 100)
-        sceneWidget.xString = String(sceneWidget.x)
-        sceneWidget.y = settings.y.clamped(to: 0 ... 100)
-        sceneWidget.yString = String(sceneWidget.y)
-        sceneWidget.width = settings.width.clamped(to: 1 ... 100)
-        sceneWidget.widthString = String(sceneWidget.width)
-        sceneWidget.height = settings.height.clamped(to: 1 ... 100)
-        sceneWidget.heightString = String(sceneWidget.height)
+        layout.x = settings.x.clamped(to: 0 ... 100)
+        layout.updateXString()
+        layout.y = settings.y.clamped(to: 0 ... 100)
+        layout.updateYString()
+        layout.size = settings.size.clamped(to: 1 ... 100)
+        layout.updateSizeString()
+        layout.alignment = settings.alignment
         model.sceneUpdated(imageEffectChanged: true)
-        model.makeToast(title: String(localized: "Settings imported"))
     }
 
     var body: some View {
+        if widget.canExpand() {
+            Section {
+                TextButtonView("Export to clipboard") {
+                    exportToClipboard()
+                }
+            }
+            Section {
+                TextButtonView("Import from clipboard") {
+                    importFromClipboard()
+                }
+            }
+        }
+    }
+}
+
+struct SceneWidgetSettingsView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var sceneWidget: SettingsSceneWidget
+    let widget: SettingsWidget
+
+    var body: some View {
         Form {
-            if widgetHasPosition(id: widget.id) {
-                Section {
-                    PositionEditView(
-                        number: $sceneWidget.x,
-                        value: $sceneWidget.xString,
-                        onSubmit: { _ in
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput,
-                        incrementImageName: "arrow.forward.circle",
-                        decrementImageName: "arrow.backward.circle"
-                    )
-                    PositionEditView(
-                        number: $sceneWidget.y,
-                        value: $sceneWidget.yString,
-                        onSubmit: { _ in
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput,
-                        incrementImageName: "arrow.down.circle",
-                        decrementImageName: "arrow.up.circle"
-                    )
-                } header: {
-                    Text("Position")
-                }
-            }
-            if widgetHasSize(id: widget.id) {
-                Section {
-                    SizeEditView(
-                        number: $sceneWidget.width,
-                        value: $sceneWidget.widthString,
-                        onSubmit: { _ in
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput
-                    )
-                    SizeEditView(
-                        number: $sceneWidget.height,
-                        value: $sceneWidget.heightString,
-                        onSubmit: { _ in
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput
-                    )
-                } header: {
-                    Text("Size")
-                }
-            }
+            WidgetLayoutView(model: model,
+                             layout: $sceneWidget.layout,
+                             widget: widget,
+                             numericInput: $database.sceneNumericInput)
             Section {
                 NavigationLink {
                     WidgetSettingsView(database: model.database, widget: widget)
@@ -145,27 +86,11 @@ struct SceneWidgetSettingsView: View {
             } header: {
                 Text("Shortcut")
             }
-            if canWidgetExpand(widget: widget) {
+            if widget.canExpand() {
                 Section {
-                    Toggle("Numeric input", isOn: $numericInput)
-                        .onChange(of: numericInput) { value in
-                            model.database.sceneNumericInput = value
-                        }
+                    Toggle("Numeric input", isOn: $database.sceneNumericInput)
                 }
-                Section {
-                    HCenter {
-                        Button("Export to clipboard") {
-                            exportToClipboard()
-                        }
-                    }
-                }
-                Section {
-                    HCenter {
-                        Button("Import from clipboard") {
-                            importFromClipboard()
-                        }
-                    }
-                }
+                ExportImportView(layout: $sceneWidget.layout, widget: widget)
             }
         }
         .navigationTitle(widget.name)

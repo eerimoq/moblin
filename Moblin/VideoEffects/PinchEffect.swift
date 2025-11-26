@@ -1,4 +1,4 @@
-import UIKit
+import CoreImage
 
 final class PinchEffect: VideoEffect {
     private var scale: Float
@@ -14,7 +14,7 @@ final class PinchEffect: VideoEffect {
     }
 
     override func getName() -> String {
-        return "pinch"
+        return "Pinch"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

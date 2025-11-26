@@ -34,6 +34,6 @@ struct QuickButtonStreamView: View {
                 Text("Automatically goes live when switching stream.")
             }
         }
-        .navigationTitle("Stream")
+        .navigationTitle("Switch stream")
     }
 }

@@ -53,6 +53,7 @@ class RtmpServerClient {
     private var basePresentationTimeStamp: Double
     private var inputBuffer = Data()
     private var receiveSize: Int = 0
+    private var isProcessing = false
 
     init(server: RtmpServer, connection: NWConnection) {
         self.server = server
@@ -120,7 +121,7 @@ class RtmpServerClient {
         case .versionSent:
             break
         case .ackSent:
-            handleDataAckSent(data: data)
+            handleDataAckSent()
         case .handshakeDone:
             handleDataHandshakeDone(data: data)
         }
@@ -149,7 +150,7 @@ class RtmpServerClient {
         receiveData(size: 1536)
     }
 
-    private func handleDataAckSent(data _: Data) {
+    private func handleDataAckSent() {
         state = .handshakeDone
         receiveBasicHeaderFirstByte()
     }
@@ -312,8 +313,6 @@ class RtmpServerClient {
             stopInternal(reason: "Unexpected data")
         }
     }
-
-    private var isProcessing = false
 
     func receiveData(size: Int) {
         receiveSize = size

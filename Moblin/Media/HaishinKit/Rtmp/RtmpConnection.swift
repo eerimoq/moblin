@@ -1,7 +1,5 @@
 import AVFoundation
 
-private let supportedProtocols = ["rtmp", "rtmps", "rtmpt", "rtmpts"]
-
 private enum SupportVideo: UInt16 {
     case h264 = 0x0080
 }
@@ -35,26 +33,32 @@ class RtmpStreamWeak {
     }
 }
 
+private func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
+    var command = url.absoluteString
+    guard let index = description.firstIndex(of: "?") else {
+        return command
+    }
+    let query = String(description[description.index(index, offsetBy: 1)...])
+    let challenge = String(format: "%08x", UInt32.random(in: 0 ... UInt32.max))
+    let dictionary = URL(string: "http://localhost?" + query)!.dictionaryFromQuery()
+    var response = MD5.base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
+    if let opaque = dictionary["opaque"] {
+        command += "&opaque=\(opaque)"
+        response += opaque
+    } else if let challenge: String = dictionary["challenge"] {
+        response += challenge
+    }
+    response = MD5.base64("\(response)\(challenge)")
+    command += "&challenge=\(challenge)&response=\(response)"
+    return command
+}
+
 class RtmpConnection {
     private var uri: URL?
-    private(set) var connected = false
     private(set) var socket: RtmpSocket
     weak var stream: RtmpStream?
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
     var callCompletions: [Int: ([Any?]) -> Void] = [:]
-    var windowSizeFromServer: Int64 = 250_000 {
-        didSet {
-            guard socket.connected == true else {
-                return
-            }
-            _ = socket.write(chunk: RtmpChunk(
-                type: .zero,
-                chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
-                message: RtmpWindowAcknowledgementSizeMessage(100_000)
-            ))
-        }
-    }
-
     private var nextTransactionId = 0
     private var timer = SimpleTimer(queue: processorControlQueue)
     private var messages: [UInt16: RtmpMessage] = [:]
@@ -68,18 +72,13 @@ class RtmpConnection {
     }
 
     func connect(_ url: String) {
-        guard let uri = URL(string: url),
-              let scheme = uri.scheme,
-              let host = uri.host,
-              !connected,
-              supportedProtocols.contains(scheme)
-        else {
+        guard let uri = URL(string: url), let scheme = uri.scheme, let host = uri.host else {
             return
         }
         self.uri = uri
         socket = RtmpSocket(name: name)
         socket.delegate = self
-        if scheme.hasSuffix("s") {
+        if scheme == "rtmps" {
             socket.connect(host: host, port: uri.port ?? 443, tlsOptions: .init())
         } else {
             socket.connect(host: host, port: uri.port ?? 1935, tlsOptions: nil)
@@ -89,14 +88,11 @@ class RtmpConnection {
     func disconnect() {
         timer.stop()
         stream?.closeInternal()
-        socket.close()
+        socket.close(isDisconnected: false)
         socket = RtmpSocket(name: name)
     }
 
-    func call(_ commandName: String, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
-        guard connected else {
-            return
-        }
+    func call(_ commandName: RtmpCommandName, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
         let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: getNextTransactionId(),
@@ -115,39 +111,9 @@ class RtmpConnection {
         on(data: data)
     }
 
-    func createStream(_ stream: RtmpStream) {
-        call("createStream", arguments: []) { data in
-            guard let id = data[0] as? Double else {
-                return
-            }
-            stream.id = UInt32(id)
-            stream.setState(state: .open)
-        }
-    }
-
     func getNextTransactionId() -> Int {
         nextTransactionId += 1
         return nextTransactionId
-    }
-
-    private static func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
-        var command = url.absoluteString
-        guard let index = description.firstIndex(of: "?") else {
-            return command
-        }
-        let query = String(description[description.index(index, offsetBy: 1)...])
-        let challenge = String(format: "%08x", UInt32.random(in: 0 ... UInt32.max))
-        let dictionary = URL(string: "http://localhost?" + query)!.dictionaryFromQuery()
-        var response = MD5.base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
-        if let opaque = dictionary["opaque"] {
-            command += "&opaque=\(opaque)"
-            response += opaque
-        } else if let challenge: String = dictionary["challenge"] {
-            response += challenge
-        }
-        response = MD5.base64("\(response)\(challenge)")
-        command += "&challenge=\(challenge)&response=\(response)"
-        return command
     }
 
     private func on(data: AsObject) {
@@ -174,7 +140,6 @@ class RtmpConnection {
     }
 
     private func handleConnectSuccess() {
-        connected = true
         socket.maximumChunkSizeToServer = 1024 * 8
         _ = socket.write(chunk: RtmpChunk(
             type: .zero,
@@ -192,25 +157,19 @@ class RtmpConnection {
         else {
             return
         }
-        socket.close()
-        switch true {
-        case description.contains("reason=nosuchuser"):
-            break
-        case description.contains("reason=authfailed"):
-            break
-        case description.contains("reason=needauth"):
-            let command = Self.makeSanJoseAuthCommand(uri, description: description)
-            connect(command)
-        case description.contains("authmod=adobe"):
+        socket.close(isDisconnected: false)
+        if description.contains("reason=nosuchuser") {
+        } else if description.contains("reason=authfailed") {
+        } else if description.contains("reason=needauth") {
+            connect(makeSanJoseAuthCommand(uri, description: description))
+        } else if description.contains("authmod=adobe") {
             if user.isEmpty || password.isEmpty {
                 disconnect()
-                break
+            } else {
+                let query = uri.query ?? ""
+                let command = uri.absoluteString + (query.isEmpty ? "?" : "&") + "authmod=adobe&user=\(user)"
+                connect(command)
             }
-            let query = uri.query ?? ""
-            let command = uri.absoluteString + (query.isEmpty ? "?" : "&") + "authmod=adobe&user=\(user)"
-            connect(command)
-        default:
-            break
         }
     }
 
@@ -230,7 +189,7 @@ class RtmpConnection {
             streamId: 0,
             transactionId: getNextTransactionId(),
             commandType: .amf0Command,
-            commandName: "connect",
+            commandName: .connect,
             commandObject: [
                 "app": app,
                 "flashVer": "FMLE/3.0 (compatible; FMSc/1.0)",
@@ -264,12 +223,64 @@ class RtmpConnection {
     }
 
     private func handleClosed() {
-        connected = false
         currentChunk = nil
         nextTransactionId = 0
         messages.removeAll()
         callCompletions.removeAll()
         fragmentedChunks.removeAll()
+    }
+
+    private func processMessageSetChunkSize(message: RtmpSetChunkSizeMessage) {
+        socket.maximumChunkSizeFromServer = Int(message.size)
+    }
+
+    private func processMessageAcknowledgementMessage(message: RtmpAcknowledgementMessage) {
+        stream?.info.onAck(sequence: message.sequence)
+    }
+
+    func processMessageWindowAcknowledgementSize() {
+        _ = socket.write(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+            message: RtmpWindowAcknowledgementSizeMessage(100_000)
+        ))
+    }
+
+    private func processMessageUserControl(message: RtmpUserControlMessage) {
+        switch message.event {
+        case .ping:
+            _ = socket.write(chunk: RtmpChunk(
+                type: .zero,
+                chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+                message: RtmpUserControlMessage(event: .pong, value: message.value)
+            ))
+        default:
+            break
+        }
+    }
+
+    private func processMessageCommand(message: RtmpCommandMessage) {
+        guard let responder = callCompletions.removeValue(forKey: message.transactionId) else {
+            switch message.commandName {
+            case .close:
+                disconnect()
+            default:
+                if let data = message.arguments.first as? AsObject?, let data {
+                    gotCommand(data: data)
+                }
+            }
+            return
+        }
+        switch message.commandName {
+        case .result:
+            responder(message.arguments)
+        default:
+            break
+        }
+    }
+
+    private func processMessageData(message: RtmpDataMessage) {
+        stream?.info.byteCount.mutate { $0 += Int64(message.encoded.count) }
     }
 }
 
@@ -289,7 +300,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         stream?.info.onWritten(sequence: totalBytesSent)
     }
 
-    func socketDataReceived(_ socket: RtmpSocket, data: Data) -> Data {
+    func socketDataReceived(data: Data) -> Data {
         guard let chunk = currentChunk ?? RtmpChunk(data: data, size: socket.maximumChunkSizeFromServer) else {
             return data
         }
@@ -303,24 +314,35 @@ extension RtmpConnection: RtmpSocketDelegate {
         }
         if chunk.type == .two {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
-        }
-        if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
+        } else if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         }
-        if let message = chunk.message, chunk.ready() {
+        if chunk.ready() {
             switch chunk.type {
             case .zero:
-                chunkStreamIdToStreamId[chunk.chunkStreamId] = message.streamId
+                chunkStreamIdToStreamId[chunk.chunkStreamId] = chunk.message.streamId
             case .one:
                 if let streamId = chunkStreamIdToStreamId[chunk.chunkStreamId] {
-                    message.streamId = streamId
+                    chunk.message.streamId = streamId
                 }
             default:
                 break
             }
-            message.execute(self)
+            if let message = chunk.message as? RtmpSetChunkSizeMessage {
+                processMessageSetChunkSize(message: message)
+            } else if let message = chunk.message as? RtmpAcknowledgementMessage {
+                processMessageAcknowledgementMessage(message: message)
+            } else if let message = chunk.message as? RtmpUserControlMessage {
+                processMessageUserControl(message: message)
+            } else if chunk.message is RtmpWindowAcknowledgementSizeMessage {
+                processMessageWindowAcknowledgementSize()
+            } else if let message = chunk.message as? RtmpCommandMessage {
+                processMessageCommand(message: message)
+            } else if let message = chunk.message as? RtmpDataMessage {
+                processMessageData(message: message)
+            }
             currentChunk = nil
-            messages[chunk.chunkStreamId] = message
+            messages[chunk.chunkStreamId] = chunk.message
         } else {
             if chunk.fragmented {
                 fragmentedChunks[chunk.chunkStreamId] = chunk
@@ -331,7 +353,7 @@ extension RtmpConnection: RtmpSocketDelegate {
             }
         }
         if offset > 0 && offset < data.count {
-            return socketDataReceived(socket, data: data.advanced(by: offset))
+            return socketDataReceived(data: data.advanced(by: offset))
         }
         return Data()
     }

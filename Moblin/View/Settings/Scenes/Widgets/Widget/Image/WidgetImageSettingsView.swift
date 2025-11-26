@@ -1,29 +1,30 @@
 import PhotosUI
 import SwiftUI
 
-struct WidgetImageSettingsView: View {
-    @EnvironmentObject var model: Model
+struct WidgetImagePickerView: View {
+    let model: Model
     let widget: SettingsWidget
-    @State var selectedImageItem: PhotosPickerItem?
+    @Binding var image: UIImage?
+    let sizeScale: Double
+    @State private var selectedImageItem: PhotosPickerItem?
 
-    func loadImage() -> UIImage? {
+    func loadImage() {
         if let data = model.imageStorage.tryRead(id: widget.id) {
-            return UIImage(data: data)
+            image = UIImage(data: data)
         } else {
-            return nil
+            image = nil
         }
     }
 
     var body: some View {
         Section {
-            let image = loadImage()
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
                 if let image {
                     HCenter {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 1920 / 6, height: 1080 / 6)
+                            .frame(width: 1920 / sizeScale, height: 1080 / sizeScale)
                     }
                 } else {
                     HCenter {
@@ -37,8 +38,7 @@ struct WidgetImageSettingsView: View {
                     case let .success(data?):
                         model.imageStorage.write(id: widget.id, data: data)
                         DispatchQueue.main.async {
-                            model.sceneUpdated(imageEffectChanged: true)
-                            model.objectWillChange.send()
+                            loadImage()
                         }
                     case .success(nil):
                         logger.error("widget: image is nil")
@@ -47,18 +47,23 @@ struct WidgetImageSettingsView: View {
                     }
                 }
             }
-            if let image {
-                HStack {
-                    TextItemView(
-                        name: String(localized: "Dimensions"),
-                        value: "\(formatAsInt(image.size.width))x\(formatAsInt(image.size.height))"
-                    )
+            .onAppear {
+                model.checkPhotoLibraryAuthorization()
+                if image == nil {
+                    loadImage()
                 }
             }
         }
-        .onAppear {
-            model.checkPhotoLibraryAuthorization()
-        }
+    }
+}
+
+struct WidgetImageSettingsView: View {
+    @EnvironmentObject var model: Model
+    let widget: SettingsWidget
+    @State private var image: UIImage?
+
+    var body: some View {
+        WidgetImagePickerView(model: model, widget: widget, image: $image, sizeScale: 6)
         WidgetEffectsView(widget: widget)
     }
 }

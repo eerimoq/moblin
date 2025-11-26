@@ -91,7 +91,7 @@ class StreamingHistoryStream: Identifiable, Codable {
     }
 
     func lowestBatteryPercentageString() -> String {
-        return "\(Int(100 * lowestBatteryLevel!)) %"
+        return "\(Int(100 * lowestBatteryLevel!))%"
     }
 
     func duration() -> Duration {

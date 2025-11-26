@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct ReturnButtonView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     var body: some View {
         VStack {
@@ -12,7 +12,7 @@ private struct ReturnButtonView: View {
                 .font(.body)
         }
         .frame(width: stealthModeButtonSize, height: stealthModeButtonSize)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .background(.black)
         .clipShape(Circle())
         .onTapGesture { _ in
@@ -34,7 +34,7 @@ private struct ChatButtonView: View {
                 .font(.body)
         }
         .frame(width: stealthModeButtonSize, height: stealthModeButtonSize)
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .background(.black)
         .clipShape(Circle())
         .onTapGesture { _ in
@@ -45,7 +45,7 @@ private struct ChatButtonView: View {
 }
 
 struct StealthModeView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
     @ObservedObject var chat: ChatProvider
     @ObservedObject var stealthMode: StealthMode
@@ -105,7 +105,7 @@ struct StealthModeView: View {
                     HStack {
                         ChatButtonView(quickButtons: quickButtons, showButtons: showButtons)
                         Spacer()
-                        ReturnButtonView()
+                        ReturnButtonView(model: model)
                     }
                     .padding([.horizontal], 50)
                     .frame(height: controlBarWidthDefault)
@@ -116,11 +116,11 @@ struct StealthModeView: View {
                     VStack {
                         ChatButtonView(quickButtons: quickButtons, showButtons: showButtons)
                         Spacer()
-                        ReturnButtonView()
+                        ReturnButtonView(model: model)
                     }
                     .padding([.top], 50)
                     .padding([.bottom], 25)
-                    .frame(width: controlBarWidthDefault)
+                    .frame(width: controlBarWidth(quickButtons: quickButtons))
                 }
             }
         }
@@ -128,6 +128,7 @@ struct StealthModeView: View {
             ChatOverlayView(chatSettings: model.database.chat,
                             chat: model.chat,
                             orientation: orientation,
+                            quickButtons: quickButtons,
                             fullSize: true)
         }
     }

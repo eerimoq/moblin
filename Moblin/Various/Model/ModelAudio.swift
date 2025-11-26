@@ -52,7 +52,11 @@ extension Model {
                 if bluetoothOutputOnly {
                     bluetoothOption = .allowBluetoothA2DP
                 } else {
-                    bluetoothOption = .allowBluetooth
+                    if #available(iOS 26, *) {
+                        bluetoothOption = [.allowBluetoothHFP, .bluetoothHighQualityRecording]
+                    } else {
+                        bluetoothOption = .allowBluetoothHFP
+                    }
                 }
                 try session.setCategory(
                     .playAndRecord,
@@ -60,7 +64,8 @@ extension Model {
                 )
                 try session.setActive(true)
             } catch {
-                logger.error("app: Session error \(error)")
+                self.makeErrorToastMain(title: "Audio session setup failed",
+                                        subTitle: error.localizedDescription)
             }
             self.setAllowHapticsAndSystemSoundsDuringRecording()
         }

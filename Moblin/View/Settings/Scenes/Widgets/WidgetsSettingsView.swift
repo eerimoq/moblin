@@ -22,69 +22,6 @@ private struct SceneItemView: View {
     }
 }
 
-private struct WizardView: View {
-    @EnvironmentObject var model: Model
-    @State var manualName: Bool = false
-    @State var name: String = "Browser"
-    @State var type: SettingsWidgetType = .browser
-    @State var scenes: [SceneItem] = []
-
-    var body: some View {
-        Form {
-            Section {
-                Picker("Type", selection: $type) {
-                    ForEach(SettingsWidgetType.allCases, id: \.self) {
-                        Text($0.toString())
-                    }
-                }
-                .onChange(of: type) { _ in
-                    if !manualName || name.isEmpty {
-                        manualName = false
-                        name = type.toString()
-                    }
-                }
-            }
-            Section {
-                TextField("",
-                          text: $name,
-                          onEditingChanged: { _ in
-                              manualName = true
-                          })
-                          .disableAutocorrection(true)
-            } header: {
-                Text("Name")
-            }
-            Section {
-                ForEach($scenes) { scene in
-                    SceneItemView(scene: scene)
-                }
-            } header: {
-                Text("Scenes to add the widget to")
-            }
-            Section {
-                HCenter {
-                    Button {
-                        let widget = SettingsWidget(name: name)
-                        widget.type = type
-                        model.database.widgets.append(widget)
-                        for scene in scenes where scene.enabled {
-                            logger.info("xxx should add widget to scene \(scene.scene.name)")
-                        }
-                        model.fixAlertMedias()
-                        model.isPresentingWidgetWizard = false
-                    } label: {
-                        Text("Create")
-                    }
-                }
-            }
-        }
-        .navigationTitle("Create widget wizard")
-        .onAppear {
-            scenes = model.enabledScenes.map { .init(scene: $0) }
-        }
-    }
-}
-
 private struct WidgetsSettingsItemView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -98,7 +35,7 @@ private struct WidgetsSettingsItemView: View {
                 HStack {
                     DraggableItemPrefixView()
                     IconAndTextView(
-                        image: widgetImage(widget: widget),
+                        image: widget.image(),
                         text: widget.name,
                         longDivider: true
                     )
@@ -115,6 +52,7 @@ private struct WidgetsSettingsItemView: View {
 struct WidgetsSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @State var presentingCreateWizard: Bool = false
 
     var body: some View {
         Section {
@@ -130,15 +68,15 @@ struct WidgetsSettingsView: View {
                 model.resetSelectedScene()
             }
             CreateButtonView {
-                let name = makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
-                let widget = SettingsWidget(name: name)
-                database.widgets.append(widget)
-                model.fixAlertMedias()
-                // model.isPresentingWidgetWizard = true
+                presentingCreateWizard = true
+                model.createWidgetWizard.reset()
             }
-            .sheet(isPresented: $model.isPresentingWidgetWizard) {
+            .sheet(isPresented: $presentingCreateWizard) {
                 NavigationStack {
-                    WizardView()
+                    WidgetWizardSettingsView(model: model,
+                                             database: database,
+                                             createWidgetWizard: model.createWidgetWizard,
+                                             presentingCreateWizard: $presentingCreateWizard)
                 }
             }
         } header: {

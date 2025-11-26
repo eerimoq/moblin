@@ -95,23 +95,12 @@ struct Errors_NominalError: Sendable {
 fileprivate let _protobuf_package = "Errors"
 
 extension Errors_GenericError_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "GENERICERROR_NONE"),
-    1: .same(proto: "GENERICERROR_UNKNOWN"),
-    2: .same(proto: "GENERICERROR_CLOSURES_OPEN"),
-    3: .same(proto: "GENERICERROR_ALREADY_ON"),
-    4: .same(proto: "GENERICERROR_DISABLED_FOR_USER_COMMAND"),
-    5: .same(proto: "GENERICERROR_VEHICLE_NOT_IN_PARK"),
-    6: .same(proto: "GENERICERROR_UNAUTHORIZED"),
-    7: .same(proto: "GENERICERROR_NOT_ALLOWED_OVER_TRANSPORT"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0GENERICERROR_NONE\0\u{1}GENERICERROR_UNKNOWN\0\u{1}GENERICERROR_CLOSURES_OPEN\0\u{1}GENERICERROR_ALREADY_ON\0\u{1}GENERICERROR_DISABLED_FOR_USER_COMMAND\0\u{1}GENERICERROR_VEHICLE_NOT_IN_PARK\0\u{1}GENERICERROR_UNAUTHORIZED\0\u{1}GENERICERROR_NOT_ALLOWED_OVER_TRANSPORT\0")
 }
 
 extension Errors_NominalError: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".NominalError"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "genericError"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}genericError\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {

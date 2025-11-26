@@ -54,18 +54,14 @@ private struct PasswordView: View {
             } footer: {
                 if let message {
                     Text(message)
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                         .bold()
                 }
             }
             Section {
-                Button {
+                TextButtonView("Generate") {
                     value = randomGoodPassword()
                     submit()
-                } label: {
-                    HCenter {
-                        Text("Generate")
-                    }
                 }
             }
         }
@@ -103,6 +99,7 @@ private struct RemoteControlSettingsStreamerView: View {
             TextEditNavigationView(
                 title: String(localized: "Assistant URL"),
                 value: streamer.url,
+                onChange: isValidWebSocketUrl,
                 onSubmit: submitStreamerUrl,
                 footers: [
                     String(
@@ -196,8 +193,7 @@ private struct StreamerView: View {
     }
 
     private func submitAssistantPort(value: String) {
-        guard let port = UInt16(value.trim()), port > 0 else {
-            model.makePortErrorToast(port: value)
+        guard let port = UInt16(value) else {
             return
         }
         streamer.port = port
@@ -205,17 +201,18 @@ private struct StreamerView: View {
     }
 
     private func submitAssistantRelayUrl(value: String) {
-        guard isValidWebSocketUrl(url: value) == nil else {
-            return
-        }
         streamer.relay.baseUrl = value
         reloadIfEnabled()
     }
 
-    private func submitAssistantRelayBridgeId(value: String) {
+    private func changeAssistantRelayBridgeId(value: String) -> String? {
         guard !value.isEmpty else {
-            return
+            return String(localized: "Empty")
         }
+        return nil
+    }
+
+    private func submitAssistantRelayBridgeId(value: String) {
         streamer.relay.bridgeId = value
         reloadIfEnabled()
     }
@@ -234,6 +231,7 @@ private struct StreamerView: View {
                     TextEditNavigationView(
                         title: String(localized: "Server port"),
                         value: String(streamer.port),
+                        onChange: isValidPort,
                         onSubmit: submitAssistantPort,
                         keyboardType: .numbersAndPunctuation,
                         placeholder: "2345"
@@ -249,11 +247,13 @@ private struct StreamerView: View {
                     TextEditNavigationView(
                         title: String(localized: "Base URL"),
                         value: streamer.relay.baseUrl,
+                        onChange: isValidWebSocketUrl,
                         onSubmit: submitAssistantRelayUrl
                     )
                     TextEditNavigationView(
                         title: String(localized: "Bridge id"),
                         value: streamer.relay.bridgeId,
+                        onChange: changeAssistantRelayBridgeId,
                         onSubmit: submitAssistantRelayBridgeId,
                         sensitive: true
                     )
@@ -354,15 +354,13 @@ struct RemoteControlStreamersView: View {
                     remoteControlSettings.streamers.move(fromOffsets: froms, toOffset: to)
                 }
             }
-            Button {
+            TextButtonView("Create") {
                 let streamer = SettingsRemoteControlAssistant()
                 streamer.name = makeUniqueName(name: SettingsRemoteControlAssistant.baseName,
                                                existingNames: remoteControlSettings.streamers)
+                streamer.enabled = true
+                streamer.port = 2345
                 remoteControlSettings.streamers.append(streamer)
-            } label: {
-                HCenter {
-                    Text("Create")
-                }
             }
         } footer: {
             SwipeLeftToDeleteHelpView(kind: String(localized: "a streamer"))
@@ -388,19 +386,21 @@ struct RemoteControlSettingsView: View {
             Section {
                 Text("Control and monitor Moblin from another device.")
             }
-            Section {
-                NavigationLink {
-                    StreamObsRemoteControlSettingsView(stream: model.stream)
-                } label: {
-                    Toggle(isOn: $stream.obsWebSocketEnabled) {
-                        Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
+            if stream !== fallbackStream {
+                Section {
+                    NavigationLink {
+                        StreamObsRemoteControlSettingsView(stream: stream)
+                    } label: {
+                        Toggle(isOn: $stream.obsWebSocketEnabled) {
+                            Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
+                        }
+                        .onChange(of: stream.obsWebSocketEnabled) { _ in
+                            model.obsWebSocketEnabledUpdated()
+                        }
                     }
-                    .onChange(of: stream.obsWebSocketEnabled) { _ in
-                        model.obsWebSocketEnabledUpdated()
-                    }
+                } header: {
+                    Text("Shortcut")
                 }
-            } header: {
-                Text("Shortcut")
             }
             Section {
                 NavigationLink {

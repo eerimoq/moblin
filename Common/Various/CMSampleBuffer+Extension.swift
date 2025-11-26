@@ -45,13 +45,12 @@ extension CMSampleBuffer {
         return dataBuffer.makeSampleBuffer(presentationTimeStamp)
     }
 
-    var isSync: Bool {
-        get {
-            !(getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false)
-        }
-        set {
-            setAttachmentValue(for: kCMSampleAttachmentKey_NotSync, value: !newValue)
-        }
+    func setIsSync(_ value: Bool) {
+        setAttachmentValue(for: kCMSampleAttachmentKey_NotSync, value: !value)
+    }
+
+    func getIsSync() -> Bool {
+        return !(getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false)
     }
 
     func muted(_ muted: Bool) -> CMSampleBuffer? {
@@ -73,13 +72,12 @@ extension CMSampleBuffer {
         return self
     }
 
-    @inline(__always)
     private func getAttachmentValue(for key: CFString) -> Bool? {
         guard
-            let attachments = CMSampleBufferGetSampleAttachmentsArray(self,
-                                                                      createIfNecessary: false) as? [
-                [CFString: Any]
-            ],
+            let attachments = CMSampleBufferGetSampleAttachmentsArray(
+                self,
+                createIfNecessary: false
+            ) as? [[CFString: Any]],
             let value = attachments.first?[key] as? Bool
         else {
             return nil
@@ -91,7 +89,6 @@ extension CMSampleBuffer {
         setAttachmentValue(for: kCMSampleAttachmentKey_DisplayImmediately, value: true)
     }
 
-    @inline(__always)
     private func setAttachmentValue(for key: CFString, value: Bool) {
         guard
             let attachments = CMSampleBufferGetSampleAttachmentsArray(self, createIfNecessary: true),

@@ -31,14 +31,16 @@ protocol MediaDelegate: AnyObject {
     func mediaOnCaptureSessionError(_ message: String)
     func mediaOnBufferedVideoReady(cameraId: UUID)
     func mediaOnBufferedVideoRemoved(cameraId: UUID)
+    func mediaOnEncoderResolutionChanged(resolution: CGSize)
     func mediaOnRecorderInitSegment(data: Data)
     func mediaOnRecorderDataSegment(segment: RecorderDataSegment)
     func mediaOnRecorderFinished()
     func mediaOnNoTorch()
+    func mediaOnFps(fps: Int)
     func mediaStrlaRelayDestinationAddress(address: String, port: UInt16)
     func mediaSetZoomX(x: Float)
     func mediaSetExposureBias(bias: Float)
-    func mediaSelectedFps(fps: Double, auto: Bool)
+    func mediaSelectedFps(auto: Bool)
     func mediaError(error: Error)
 }
 
@@ -74,6 +76,7 @@ final class Media: NSObject {
     private var belaLinesAndActions: ([String], [String])?
     private var srtConnected = false
     private var newSrt: Bool = false
+    private var canvasSize: CGSize = .init(width: 1920, height: 1080)
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -477,8 +480,8 @@ final class Media: NSObject {
     }
 
     func streamSpeed() -> Int64 {
-        if rtmpStream != nil {
-            return Int64(8 * (rtmpStream?.info.currentBytesPerSecond ?? 0))
+        if let rtmpStream {
+            return Int64(8 * rtmpStream.info.currentBytesPerSecond.value)
         } else if isSrtStreamActive() {
             return 8 * srtSpeed
         } else if ristStream != nil {
@@ -561,17 +564,9 @@ final class Media: NSObject {
 
     func rtmpStopStream() {
         for rtmpStream in rtmpStreams {
-            rtmpStream.close()
             rtmpStream.disconnect()
         }
         adaptiveBitrate = nil
-    }
-
-    func rtmpMultiTrackStartStream(_ url: String, _ videoEncoderSettings: [VideoEncoderSettings]) {
-        logger.info("stream: Multi track URL \(url)")
-        for videoEncoderSetting in videoEncoderSettings {
-            logger.info("stream: Multi track video encoder config \(videoEncoderSetting)")
-        }
     }
 
     func ristStartStream(
@@ -655,21 +650,18 @@ final class Media: NSObject {
         processor?.setCleanExternalDisplay(enabled: enabled)
     }
 
-    func setVideoSize(capture: CGSize, output: CGSize) {
-        processor?.setVideoSize(capture: capture, output: output)
-        videoEncoderSettings.videoSize = .init(
-            width: Int32(output.width),
-            height: Int32(output.height)
-        )
+    func setVideoSize(capture: CGSize, canvas: CGSize, stream: CMVideoDimensions) {
+        processor?.setVideoSize(capture: capture, canvas: canvas)
+        videoEncoderSettings.videoSize = stream
         commitVideoEncoderSettings()
+        canvasSize = canvas
     }
 
-    func getVideoSize() -> CGSize {
-        let size = videoEncoderSettings.videoSize
-        return CGSize(width: CGFloat(size.width), height: CGFloat(size.height))
+    func getCanvasSize() -> CGSize {
+        return canvasSize
     }
 
-    func setStreamFps(fps: Int, preferAutoFps: Bool) {
+    func setFps(fps: Int, preferAutoFps: Bool) {
         processor?.setFps(value: Double(fps), preferAutoFps: preferAutoFps)
     }
 
@@ -693,13 +685,11 @@ final class Media: NSObject {
     }
 
     func getVideoStreamBitrate(bitrate: UInt32) -> UInt32 {
-        var bitRate: UInt32
         if let adaptiveBitrate {
-            bitRate = adaptiveBitrate.getCurrentBitrate()
+            return adaptiveBitrate.getCurrentBitrate()
         } else {
-            bitRate = bitrate
+            return bitrate
         }
-        return bitRate
     }
 
     func setVideoStreamBitrate(bitrate: UInt32) {
@@ -812,7 +802,8 @@ final class Media: NSObject {
         externalDisplayPreview: Bool,
         cameraId: UUID,
         ignoreFramesAfterAttachSeconds: Double,
-        fillFrame: Bool
+        fillFrame: Bool,
+        isLandscapeStreamAndPortraitUi: Bool
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
@@ -823,7 +814,8 @@ final class Media: NSObject {
                                            preferredVideoStabilizationMode: .off,
                                            isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
-                                           fillFrame: fillFrame)
+                                           fillFrame: fillFrame,
+                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi)
         processor?.attachCamera(params: params)
     }
 
@@ -971,8 +963,6 @@ extension Media: ProcessorDelegate {
         }
     }
 
-    func streamVideo(presentationTimestamp _: Double) {}
-
     func streamVideo(failedEffect: String?) {
         DispatchQueue.main.async {
             self.failedVideoEffect = failedEffect
@@ -1003,6 +993,10 @@ extension Media: ProcessorDelegate {
         delegate?.mediaOnBufferedVideoRemoved(cameraId: cameraId)
     }
 
+    func streamVideoEncoderResolution(resolution: CGSize) {
+        delegate?.mediaOnEncoderResolutionChanged(resolution: resolution)
+    }
+
     func streamAudio(sampleBuffer: CMSampleBuffer) {
         delegate?.mediaOnAudioBuffer(sampleBuffer)
     }
@@ -1023,6 +1017,10 @@ extension Media: ProcessorDelegate {
         delegate?.mediaOnNoTorch()
     }
 
+    func streamVideoFps(fps: Int) {
+        delegate?.mediaOnFps(fps: fps)
+    }
+
     func streamSetZoomX(x: Float) {
         delegate?.mediaSetZoomX(x: x)
     }
@@ -1031,8 +1029,8 @@ extension Media: ProcessorDelegate {
         delegate?.mediaSetExposureBias(bias: bias)
     }
 
-    func streamSelectedFps(fps: Double, auto: Bool) {
-        delegate?.mediaSelectedFps(fps: fps, auto: auto)
+    func streamSelectedFps(auto: Bool) {
+        delegate?.mediaSelectedFps(auto: auto)
     }
 }
 
@@ -1150,13 +1148,6 @@ extension Media: RtmpStreamDelegate {
     func rtmpStreamStatus(_ rtmpStream: RtmpStream, code: String) {
         DispatchQueue.main.async {
             switch RtmpConnectionCode(rawValue: code) {
-            case .connectSuccess:
-                rtmpStream.publish()
-                if rtmpStream === self.rtmpStream {
-                    self.delegate?.mediaOnRtmpConnected()
-                } else {
-                    self.delegate?.mediaOnRtmpDestinationConnected(rtmpStream.name)
-                }
             case .connectFailed, .connectClosed:
                 if rtmpStream === self.rtmpStream {
                     self.delegate?.mediaOnRtmpDisconnected("\(code)")
@@ -1166,6 +1157,16 @@ extension Media: RtmpStreamDelegate {
                 }
             default:
                 break
+            }
+        }
+    }
+
+    func rtmpStreamConnected(_ rtmpStream: RtmpStream) {
+        DispatchQueue.main.async {
+            if rtmpStream === self.rtmpStream {
+                self.delegate?.mediaOnRtmpConnected()
+            } else {
+                self.delegate?.mediaOnRtmpDestinationConnected(rtmpStream.name)
             }
         }
     }

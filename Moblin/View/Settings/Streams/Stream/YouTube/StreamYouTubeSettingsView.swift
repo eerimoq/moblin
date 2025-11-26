@@ -18,33 +18,29 @@ struct StreamYouTubeSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "Channel handle"),
-                    value: $stream.youTubeHandle,
+                    value: String(stream.youTubeHandle),
                     onSubmit: submitHandle,
                     placeholder: "@erimo144"
                 )
-                TextEditBindingNavigationView(
+                TextEditNavigationView(
                     title: String(localized: "Video id"),
-                    value: $stream.youTubeVideoId,
+                    value: String(stream.youTubeVideoId),
                     onSubmit: submitVideoId,
                     placeholder: "FekKCUN5W8U"
                 )
-                HCenter {
-                    Button {
-                        Task { @MainActor in
-                            do {
-                                let videoId = try await fetchYouTubeVideoId(handle: stream.youTubeHandle)
-                                submitVideoId(value: videoId)
-                            } catch {
-                                model.makeErrorToast(
-                                    title: String(localized: "Failed to fetch YouTube Video ID"),
-                                    subTitle: String(localized: "You must be live on YouTube for this to work.")
-                                )
-                            }
+                TextButtonView("Fetch Video ID") {
+                    Task { @MainActor in
+                        do {
+                            let videoId = try await fetchYouTubeVideoId(handle: stream.youTubeHandle)
+                            submitVideoId(value: videoId)
+                        } catch {
+                            model.makeErrorToast(
+                                title: String(localized: "Failed to fetch YouTube Video ID"),
+                                subTitle: String(localized: "You must be live on YouTube for this to work.")
+                            )
                         }
-                    } label: {
-                        Text("Fetch Video ID")
                     }
                 }
             } footer: {

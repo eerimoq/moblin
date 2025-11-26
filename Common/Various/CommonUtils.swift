@@ -6,8 +6,8 @@ import SwiftUI
 
 let iconWidth = 32.0
 let controlBarButtonSize = 40.0
-let controlBarWidthAccessibility = 150.0
 let controlBarWidthDefault = 100.0
+let controlBarWidthBigQuickButtons = 150.0
 let controlBarQuickButtonNameSize = 10.0
 let controlBarQuickButtonNameSingleColumnSize = 12.0
 let controlBarQuickButtonSingleQuickButtonSize = 60.0
@@ -37,22 +37,11 @@ extension Substring {
 }
 
 func makeRtmpUri(url: String) -> String {
-    guard var url = URL(string: url) else {
+    let parts = url.split(separator: "/", omittingEmptySubsequences: false)
+    if parts.isEmpty {
         return ""
     }
-    var components = url.pathComponents
-    if components.count < 2 {
-        return ""
-    }
-    components.removeFirst()
-    components.removeLast()
-    var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
-    let path = components.joined(separator: "/")
-    urlComponents.path = "/\(path)"
-    urlComponents.query = nil
-    urlComponents.fragment = nil
-    url = urlComponents.url!
-    return "\(url)"
+    return parts[..<(parts.count - 1)].joined(separator: "/")
 }
 
 func makeRtmpStreamKey(url: String) -> String {
@@ -61,46 +50,6 @@ func makeRtmpStreamKey(url: String) -> String {
         return ""
     }
     return String(parts[parts.count - 1])
-}
-
-func isValidRtmpUrl(url: String, rtmpStreamKeyRequired: Bool) -> String? {
-    if !rtmpStreamKeyRequired {
-        return nil
-    }
-    if makeRtmpUri(url: url) == "" {
-        return String(localized: "Malformed RTMP URL")
-    }
-    if makeRtmpStreamKey(url: url) == "" {
-        return String(localized: "RTMP stream key missing")
-    }
-    return nil
-}
-
-func isValidSrtUrl(url: String) -> String? {
-    guard let url = URL(string: url) else {
-        return String(localized: "Malformed SRT(LA) URL")
-    }
-    if url.port == nil {
-        return String(localized: "SRT(LA) port number missing")
-    }
-    return nil
-}
-
-func isValidRistUrl(url: String) -> String? {
-    guard let url = URL(string: url) else {
-        return String(localized: "Malformed RIST URL")
-    }
-    if url.port == nil {
-        return String(localized: "RIST port number missing")
-    }
-    return nil
-}
-
-private func isValidIrlUrl(url: String) -> String? {
-    guard URL(string: url) != nil else {
-        return String(localized: "Malformed IRL URL")
-    }
-    return nil
 }
 
 func cleanUrl(url value: String) -> String {
@@ -112,99 +61,9 @@ func cleanUrl(url value: String) -> String {
     return components.string!
 }
 
-func isValidUrl(url value: String, allowedSchemes: [String]? = nil,
-                rtmpStreamKeyRequired: Bool = true) -> String?
-{
-    guard let url = URL(string: value) else {
-        return String(localized: "Malformed URL")
-    }
-    if url.host() == nil {
-        return String(localized: "Host missing")
-    }
-    guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
-        return String(localized: "Malformed URL")
-    }
-    if let allowedSchemes, let scheme = url.scheme {
-        if !allowedSchemes.contains(scheme) {
-            return "Only \(allowedSchemes.joined(separator: " and ")) allowed, not \(scheme)"
-        }
-    }
-    switch url.scheme {
-    case "rtmp":
-        if let message = isValidRtmpUrl(url: value, rtmpStreamKeyRequired: rtmpStreamKeyRequired) {
-            return message
-        }
-    case "rtmps":
-        if let message = isValidRtmpUrl(url: value, rtmpStreamKeyRequired: rtmpStreamKeyRequired) {
-            return message
-        }
-    case "srt":
-        if let message = isValidSrtUrl(url: value) {
-            return message
-        }
-    case "srtla":
-        if let message = isValidSrtUrl(url: value) {
-            return message
-        }
-    case "rist":
-        if let message = isValidRistUrl(url: value) {
-            return message
-        }
-    case "irl":
-        if let message = isValidIrlUrl(url: value) {
-            return message
-        }
-    case nil:
-        return String(localized: "Scheme missing")
-    default:
-        return String(localized: "Unsupported scheme \(url.scheme!)")
-    }
-    return nil
-}
-
-func isValidWebSocketUrl(url value: String) -> String? {
-    if value.isEmpty {
-        return nil
-    }
-    guard let url = URL(string: value) else {
-        return String(localized: "Malformed URL")
-    }
-    if url.host() == nil {
-        return String(localized: "Host missing")
-    }
-    guard URLComponents(url: url, resolvingAgainstBaseURL: false) != nil else {
-        return String(localized: "Malformed URL")
-    }
-    switch url.scheme {
-    case "ws":
-        break
-    case "wss":
-        break
-    case nil:
-        return String(localized: "Scheme missing")
-    default:
-        return String(localized: "Unsupported scheme \(url.scheme!)")
-    }
-    return nil
-}
-
-func schemeAndAddress(url: String) -> String {
-    guard var url = URL(string: url) else {
-        return ""
-    }
-    guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-    else {
-        return ""
-    }
-    urlComponents.path = "/"
-    urlComponents.query = nil
-    url = urlComponents.url!
-    return "\(url)..."
-}
-
 func replaceSensitive(value: String, sensitive: Bool) -> String {
     if sensitive {
-        return value.replacing(/./, with: "*")
+        return value.replacing(/./, with: "•")
     } else {
         return value
     }
@@ -338,10 +197,6 @@ func appVersion() -> String {
     return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
 }
 
-func formatAsInt(_ value: CGFloat) -> String {
-    return String(format: "%d", Int(value))
-}
-
 func formatOneDecimal(_ value: Float) -> String {
     return String(format: "%.01f", value)
 }
@@ -368,12 +223,18 @@ func bitrateFromMbps(bitrate: Float) -> UInt32 {
     return UInt32(bitrate * 1_000_000)
 }
 
-func radiansToDegrees(_ number: Double) -> Int {
-    return Int(number * 180 / .pi)
+extension FloatingPoint {
+    func toRadians() -> Self {
+        return self * .pi / 180
+    }
+
+    func toDegrees() -> Self {
+        return self * 180 / .pi
+    }
 }
 
-func diffAngles(_ one: Double, _ two: Double) -> Int {
-    let diff = abs(radiansToDegrees(one - two))
+func diffAngles<T: FloatingPoint>(_ one: T, _ two: T) -> T {
+    let diff = abs((one - two).toDegrees())
     return min(diff, 360 - diff)
 }
 
@@ -412,6 +273,16 @@ func httpGet(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
         return (data, response)
     } else {
         throw "Not an HTTP response"
+    }
+}
+
+extension URLRequest {
+    mutating func setAuthorization(_ value: String) {
+        setValue(value, forHTTPHeaderField: "Authorization")
+    }
+
+    mutating func setContentType(_ value: String) {
+        setValue(value, forHTTPHeaderField: "Content-Type")
     }
 }
 
@@ -549,10 +420,7 @@ extension Data {
                 dataLength: length,
                 flags: 0,
                 blockBufferOut: &blockBuffer
-            ) == noErr else {
-                return nil
-            }
-            guard let blockBuffer else {
+            ) == noErr, let blockBuffer else {
                 return nil
             }
             guard CMBlockBufferReplaceDataBytes(
@@ -697,6 +565,8 @@ class RgbColor: Codable, Equatable {
         return lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue && lhs.opacity == rhs
             .opacity
     }
+
+    static let white = RgbColor(red: 255, green: 255, blue: 255)
 
     var red: Int = 0
     var green: Int = 0

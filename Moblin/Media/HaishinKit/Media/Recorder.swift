@@ -76,17 +76,9 @@ class Recorder: NSObject {
     }
 
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        appendAudioInner(sampleBuffer, presentationTimeStamp)
-    }
-
-    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
-        appendVideoInner(sampleBuffer)
-    }
-
-    private func appendAudioInner(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let writer,
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
-              let input = makeAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp),
+              let input = getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp),
               isReadyForStartWriting(writer: writer),
               input.isReadyForMoreMediaData,
               let sampleBuffer = sampleBuffer
@@ -103,14 +95,33 @@ class Recorder: NSObject {
         }
     }
 
+    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+        guard let writer,
+              let input = getVideoWriterInput(sampleBuffer: sampleBuffer),
+              isReadyForStartWriting(writer: writer),
+              input.isReadyForMoreMediaData,
+              let sampleBuffer = sampleBuffer
+              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+        else {
+            return
+        }
+        if !input.append(sampleBuffer) {
+            logger.info("""
+            recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
+            (status: \(writer.status))
+            """)
+            stopRunningInner()
+        }
+    }
+
     private func convertAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        return tryConvertAudio(sampleBuffer, presentationTimeStamp)
+        return tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: false)
             ?? tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: true)
     }
 
     private func tryConvertAudio(_ sampleBuffer: CMSampleBuffer,
                                  _ presentationTimeStamp: CMTime,
-                                 makeConverter: Bool = false) -> CMSampleBuffer?
+                                 makeConverter: Bool) -> CMSampleBuffer?
     {
         if makeConverter {
             makeAudioConverter(sampleBuffer.formatDescription)
@@ -142,25 +153,6 @@ class Recorder: NSObject {
         }
     }
 
-    private func appendVideoInner(_ sampleBuffer: CMSampleBuffer) {
-        guard let writer,
-              let input = makeVideoWriterInput(sampleBuffer: sampleBuffer),
-              isReadyForStartWriting(writer: writer),
-              input.isReadyForMoreMediaData,
-              let sampleBuffer = sampleBuffer
-              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
-        else {
-            return
-        }
-        if !input.append(sampleBuffer) {
-            logger.info("""
-            recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
-            (status: \(writer.status))
-            """)
-            stopRunningInner()
-        }
-    }
-
     private func createAudioWriterInput(sampleBuffer: CMSampleBuffer,
                                         _ presentationTimeStamp: CMTime) -> AVAssetWriterInput
     {
@@ -182,8 +174,8 @@ class Recorder: NSObject {
         return makeWriterInput(.audio, outputSettings, sampleBuffer, presentationTimeStamp)
     }
 
-    private func makeAudioWriterInput(sampleBuffer: CMSampleBuffer,
-                                      _ presentationTimeStamp: CMTime) -> AVAssetWriterInput?
+    private func getAudioWriterInput(sampleBuffer: CMSampleBuffer,
+                                     _ presentationTimeStamp: CMTime) -> AVAssetWriterInput?
     {
         if audioWriterInput == nil {
             audioWriterInput = createAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp)
@@ -209,7 +201,7 @@ class Recorder: NSObject {
         return makeWriterInput(.video, outputSettings, sampleBuffer, sampleBuffer.presentationTimeStamp)
     }
 
-    private func makeVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
+    private func getVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
         if videoWriterInput == nil {
             videoWriterInput = createVideoWriterInput(sampleBuffer: sampleBuffer)
         }
@@ -279,13 +271,12 @@ class Recorder: NSObject {
            kLinearPCMFormatFlagIsBigEndian ==
            (basicDescription.mFormatFlags & kLinearPCMFormatFlagIsBigEndian)
         {
-            logger.info("recorder: Big endian?")
             // ReplayKit audioApp.
             guard basicDescription.mBitsPerChannel == 16 else {
                 return nil
             }
             if let layout = makeChannelLayout(basicDescription.mChannelsPerFrame) {
-                return .init(
+                return AVAudioFormat(
                     commonFormat: .pcmFormatInt16,
                     sampleRate: basicDescription.mSampleRate,
                     interleaved: true,
@@ -300,9 +291,9 @@ class Recorder: NSObject {
             )
         }
         if let layout = makeChannelLayout(basicDescription.mChannelsPerFrame) {
-            return .init(streamDescription: &basicDescription, channelLayout: layout)
+            return AVAudioFormat(streamDescription: &basicDescription, channelLayout: layout)
         }
-        return .init(streamDescription: &basicDescription)
+        return AVAudioFormat(streamDescription: &basicDescription)
     }
 
     private func startRunningInner(

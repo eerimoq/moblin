@@ -18,7 +18,7 @@ private struct SceneNameView: View {
         Text(scene.name)
             .font(.subheadline)
             .frame(
-                width: min(sceneSegmentWidth, (width - 20) / CGFloat(model.enabledScenes.count)),
+                width: min(sceneSegmentWidth, max((width - 20) / CGFloat(model.enabledScenes.count), 1)),
                 height: height()
             )
     }
@@ -54,8 +54,8 @@ struct StreamOverlayRightSceneSelectorView: View {
             model.selectScene(id: model.enabledScenes[tag].id)
         }
         .background(pickerBackgroundColor)
-        .foregroundColor(.white)
-        .frame(width: min(sceneSegmentWidth * Double(model.enabledScenes.count), width - 20))
+        .foregroundStyle(.white)
+        .frame(width: min(sceneSegmentWidth * Double(model.enabledScenes.count), max(width - 20, 1)))
         .cornerRadius(7)
         .overlay(
             RoundedRectangle(cornerRadius: 7)

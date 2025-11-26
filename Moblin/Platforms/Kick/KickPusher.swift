@@ -2,6 +2,60 @@ import Foundation
 
 private struct Badge: Decodable {
     var type: String
+    var text: String?
+    var count: Int?
+}
+
+private enum BadgeType {
+    static let verified = "verified"
+    static let staff = "staff"
+    static let moderator = "moderator"
+    static let og = "og"
+    static let vip = "vip"
+    static let bot = "bot"
+    static let broadcaster = "broadcaster"
+    static let founder = "founder"
+    static let subscriber = "subscriber"
+    static let subGifter = "sub_gifter"
+}
+
+private let badgesBaseUrl = "https://raw.githubusercontent.com/id3adeye/kickicons/refs/heads/main"
+
+private struct KickBadge {
+    let months: Int
+    let url: URL
+}
+
+private class KickBadges {
+    private var subscriberBadges: [KickBadge] = []
+    private let staticBadges: [String: URL] = [
+        BadgeType.verified: URL(string: "\(badgesBaseUrl)/kick-verified.png")!,
+        BadgeType.staff: URL(string: "\(badgesBaseUrl)/kick-staff.png")!,
+        BadgeType.moderator: URL(string: "\(badgesBaseUrl)/kick-moderator.png")!,
+        BadgeType.og: URL(string: "\(badgesBaseUrl)/kick-og.png")!,
+        BadgeType.vip: URL(string: "\(badgesBaseUrl)/kick-vip.png")!,
+        BadgeType.bot: URL(string: "\(badgesBaseUrl)/kick-bot.png")!,
+        BadgeType.broadcaster: URL(string: "\(badgesBaseUrl)/kick-broadcaster.png")!,
+        BadgeType.founder: URL(string: "\(badgesBaseUrl)/kick-founder.png")!,
+        BadgeType.subGifter: URL(string: "\(badgesBaseUrl)/kick-sub_gifter.png")!,
+    ]
+
+    func setBadges(_ badges: [SubscriberBadge]) {
+        subscriberBadges.removeAll()
+        for badge in badges.sorted(by: { $0.months < $1.months }) {
+            if let url = URL(string: badge.badge_image.src) {
+                subscriberBadges.append(KickBadge(months: badge.months, url: url))
+            }
+        }
+    }
+
+    func getSubscriberBadgeUrl(months: Int) -> URL? {
+        return subscriberBadges.last(where: { months >= $0.months })?.url
+    }
+
+    func getStaticBadgeUrl(for badgeType: String) -> URL? {
+        return staticBadges[badgeType]
+    }
 }
 
 private struct Identity: Decodable {
@@ -36,11 +90,11 @@ private struct ChatMessageEvent: Decodable {
     var metadata: Metadata?
 
     func isModerator() -> Bool {
-        return sender.identity.badges.contains(where: { $0.type == "moderator" })
+        return sender.identity.badges.contains(where: { $0.type == BadgeType.moderator })
     }
 
     func isSubscriber() -> Bool {
-        return sender.identity.badges.contains(where: { $0.type == "subscriber" })
+        return sender.identity.badges.contains(where: { $0.type == BadgeType.subscriber })
     }
 }
 
@@ -64,37 +118,49 @@ struct Moderator: Decodable {
     var username: String
 }
 
-struct UserBannedEvent: Decodable {
+struct KickPusherUserBannedEvent: Decodable {
     var id: String
     var user: User
     var banned_by: Moderator
     var permanent: Bool
 }
 
-struct SubscriptionEvent: Decodable {
-    var chatroom_id: Int
+struct KickPusherSubscriptionEvent: Decodable {
     var username: String
     var months: Int
 }
 
-struct GiftedSubscriptionsEvent: Decodable {
-    var chatroom_id: Int
+struct KickPusherGiftedSubscriptionsEvent: Decodable {
     var gifted_usernames: [String]
     var gifter_username: String
     var gifter_total: Int
 }
 
-struct RewardRedeemedEvent: Decodable {
+struct KickPusherRewardRedeemedEvent: Decodable {
     var reward_title: String
-    var user_id: Int
-    var channel_id: Int
     var username: String
     var user_input: String
 }
 
-struct StreamHostEvent: Decodable {
+struct KickPusherStreamHostEvent: Decodable {
     var host_username: String
     var number_viewers: Int
+}
+
+struct KickPusherKickSender: Decodable {
+    var id: Int
+    var username: String
+}
+
+struct KickPusherKickGift: Decodable {
+    var name: String
+    var amount: Int
+}
+
+struct KickPusherKicksGiftedEvent: Decodable {
+    var message: String
+    var sender: KickPusherKickSender
+    var gift: KickPusherKickGift
 }
 
 private func decodeEvent(message: String) throws -> (String, String) {
@@ -115,52 +181,35 @@ private func decodeEvent(message: String) throws -> (String, String) {
 }
 
 private func decodeChatMessageEvent(data: String) throws -> ChatMessageEvent {
-    return try JSONDecoder().decode(
-        ChatMessageEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(ChatMessageEvent.self, from: data.utf8Data)
 }
 
 private func decodeMessageDeletedEvent(data: String) throws -> MessageDeletedEvent {
-    return try JSONDecoder().decode(
-        MessageDeletedEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+    return try JSONDecoder().decode(MessageDeletedEvent.self, from: data.utf8Data)
 }
 
-private func decodeUserBannedEvent(data: String) throws -> UserBannedEvent {
-    return try JSONDecoder().decode(
-        UserBannedEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+private func decodeUserBannedEvent(data: String) throws -> KickPusherUserBannedEvent {
+    return try JSONDecoder().decode(KickPusherUserBannedEvent.self, from: data.utf8Data)
 }
 
-private func decodeSubscriptionEvent(data: String) throws -> SubscriptionEvent {
-    return try JSONDecoder().decode(
-        SubscriptionEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+private func decodeSubscriptionEvent(data: String) throws -> KickPusherSubscriptionEvent {
+    return try JSONDecoder().decode(KickPusherSubscriptionEvent.self, from: data.utf8Data)
 }
 
-private func decodeGiftedSubscriptionsEvent(data: String) throws -> GiftedSubscriptionsEvent {
-    return try JSONDecoder().decode(
-        GiftedSubscriptionsEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+private func decodeGiftedSubscriptionsEvent(data: String) throws -> KickPusherGiftedSubscriptionsEvent {
+    return try JSONDecoder().decode(KickPusherGiftedSubscriptionsEvent.self, from: data.utf8Data)
 }
 
-private func decodeRewardRedeemedEvent(data: String) throws -> RewardRedeemedEvent {
-    return try JSONDecoder().decode(
-        RewardRedeemedEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+private func decodeRewardRedeemedEvent(data: String) throws -> KickPusherRewardRedeemedEvent {
+    return try JSONDecoder().decode(KickPusherRewardRedeemedEvent.self, from: data.utf8Data)
 }
 
-private func decodeStreamHostEvent(data: String) throws -> StreamHostEvent {
-    return try JSONDecoder().decode(
-        StreamHostEvent.self,
-        from: data.data(using: String.Encoding.utf8)!
-    )
+private func decodeStreamHostEvent(data: String) throws -> KickPusherStreamHostEvent {
+    return try JSONDecoder().decode(KickPusherStreamHostEvent.self, from: data.utf8Data)
+}
+
+private func decodeKicksGiftedEvent(data: String) throws -> KickPusherKicksGiftedEvent {
+    return try JSONDecoder().decode(KickPusherKicksGiftedEvent.self, from: data.utf8Data)
 }
 
 private var url =
@@ -168,13 +217,14 @@ private var url =
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
     )!
 
-protocol KickOusherDelegate: AnyObject {
+protocol KickPusherDelegate: AnyObject {
     func kickPusherMakeErrorToast(title: String, subTitle: String?)
     func kickPusherAppendMessage(
         messageId: String?,
         user: String,
         userId: String?,
         userColor: RgbColor?,
+        userBadges: [URL],
         segments: [ChatPostSegment],
         isSubscriber: Bool,
         isModerator: Bool,
@@ -182,62 +232,47 @@ protocol KickOusherDelegate: AnyObject {
     )
     func kickPusherDeleteMessage(messageId: String)
     func kickPusherDeleteUser(userId: String)
-    func kickPusherSubscription(event: SubscriptionEvent)
-    func kickPusherGiftedSubscription(event: GiftedSubscriptionsEvent)
-    func kickPusherRewardRedeemed(event: RewardRedeemedEvent)
-    func kickPusherStreamHost(event: StreamHostEvent)
-    func kickPusherUserBanned(event: UserBannedEvent)
+    func kickPusherSubscription(event: KickPusherSubscriptionEvent)
+    func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent)
+    func kickPusherRewardRedeemed(event: KickPusherRewardRedeemedEvent)
+    func kickPusherStreamHost(event: KickPusherStreamHostEvent)
+    func kickPusherUserBanned(event: KickPusherUserBannedEvent)
+    func kickPusherKicksGifted(event: KickPusherKicksGiftedEvent)
 }
 
 final class KickPusher: NSObject {
     private var channelName: String
     private var channelId: String
+    private var chatroomChannelId: String
     private var webSocket: WebSocketClient
     private var emotes: Emotes
+    private var badges: KickBadges
     private let settings: SettingsStreamChat
     private var gotInfo = false
-    private weak var delegate: (any KickOusherDelegate)?
+    private weak var delegate: (any KickPusherDelegate)?
 
-    init(delegate: KickOusherDelegate, channelId: String, channelName: String, settings: SettingsStreamChat) {
+    init(
+        delegate: KickPusherDelegate,
+        channelName: String,
+        channelId: String,
+        chatroomChannelId: String,
+        settings: SettingsStreamChat
+    ) {
         self.delegate = delegate
-        self.channelId = channelId
         self.channelName = channelName
+        self.channelId = channelId
+        self.chatroomChannelId = chatroomChannelId
         self.settings = settings.clone()
         emotes = Emotes()
+        badges = KickBadges()
         webSocket = .init(url: url)
     }
 
     func start() {
         logger.debug("kick: Start")
         stopInternal()
-        if channelName.isEmpty {
-            connect()
-        } else {
-            getInfoAndConnect()
-        }
-    }
-
-    private func getInfoAndConnect() {
-        logger.debug("kick: Get info and connect")
-        getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
-            guard let self else {
-                return
-            }
-            DispatchQueue.main.async {
-                guard !self.gotInfo else {
-                    return
-                }
-                guard let channelInfo else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        self.getInfoAndConnect()
-                    }
-                    return
-                }
-                self.gotInfo = true
-                self.channelId = String(channelInfo.chatroom.id)
-                self.connect()
-            }
-        }
+        connect()
+        fetchSubscriberBadges()
     }
 
     private func connect() {
@@ -273,6 +308,16 @@ final class KickPusher: NSObject {
         return emotes.isReady()
     }
 
+    private func fetchSubscriberBadges() {
+        getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
+            DispatchQueue.main.async {
+                if let subscriberBadges = channelInfo?.subscriber_badges {
+                    self?.badges.setBadges(subscriberBadges)
+                }
+            }
+        }
+    }
+
     private func handleError(title: String, subTitle: String) {
         DispatchQueue.main.async {
             self.delegate?.kickPusherMakeErrorToast(title: title, subTitle: subTitle)
@@ -288,8 +333,7 @@ final class KickPusher: NSObject {
     private func handleMessage(message: String) {
         do {
             let (type, data) = try decodeEvent(message: message)
-            // kickSub kickGift kickGifts kickIncomingRaid kickRewardRedeemed kickBan kickTO ???
-            // we can get without auth
+            // Handle supported Kick events (no auth required for these)
             switch type {
             case "App\\Events\\ChatMessageEvent":
                 try handleChatMessageEvent(data: data)
@@ -305,6 +349,8 @@ final class KickPusher: NSObject {
                 try handleRewardRedeemedEvent(data: data)
             case "App\\Events\\StreamHostEvent":
                 try handleStreamHostEvent(data: data)
+            case "KicksGifted":
+                try handleKicksGiftedEvent(data: data)
             default:
                 logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
             }
@@ -319,11 +365,22 @@ final class KickPusher: NSObject {
 
     private func handleChatMessageEvent(data: String) throws {
         let event = try decodeChatMessageEvent(data: data)
+        var badgeUrls: [URL] = []
+        for badge in event.sender.identity.badges {
+            if badge.type == BadgeType.subscriber, let months = badge.count {
+                if let badgeUrl = badges.getSubscriberBadgeUrl(months: months) {
+                    badgeUrls.append(badgeUrl)
+                }
+            } else if let badgeUrl = badges.getStaticBadgeUrl(for: badge.type) {
+                badgeUrls.append(badgeUrl)
+            }
+        }
         delegate?.kickPusherAppendMessage(
             messageId: event.id,
             user: event.sender.username,
             userId: event.sender.id != nil ? String(event.sender.id!) : nil,
             userColor: RgbColor.fromHex(string: event.sender.identity.color),
+            userBadges: badgeUrls,
             segments: makeChatPostSegments(content: event.content),
             isSubscriber: event.isSubscriber(),
             isModerator: event.isModerator(),
@@ -360,6 +417,11 @@ final class KickPusher: NSObject {
     private func handleStreamHostEvent(data: String) throws {
         let event = try decodeStreamHostEvent(data: data)
         delegate?.kickPusherStreamHost(event: event)
+    }
+
+    private func handleKicksGiftedEvent(data: String) throws {
+        let event = try decodeKicksGiftedEvent(data: data)
+        delegate?.kickPusherKicksGifted(event: event)
     }
 
     private func makeChatPostSegments(content: String) -> [ChatPostSegment] {
@@ -428,6 +490,7 @@ extension KickPusher: WebSocketClientDelegate {
         sendSubscribe(channel: "chatroom_\(channelId)")
         sendSubscribe(channel: "chatrooms.\(channelId)")
         sendSubscribe(channel: "predictions-channel-\(channelId)")
+        sendSubscribe(channel: "channel_\(chatroomChannelId)")
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {

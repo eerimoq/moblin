@@ -10,14 +10,38 @@ struct CloseButtonView: View {
         Button {
             onClose()
         } label: {
-            Image(systemName: "xmark")
-                .frame(width: 30, height: 30)
-                .overlay(
-                    Circle()
-                        .stroke(.gray)
-                )
-                .foregroundColor(.gray)
-                .padding(7)
+            if #available(iOS 26, *) {
+                Image(systemName: "xmark")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding(2)
+            } else {
+                Image(systemName: "xmark")
+                    .frame(width: 30, height: 30)
+                    .overlay(
+                        Circle()
+                            .stroke(.gray)
+                    )
+                    .foregroundStyle(.gray)
+                    .padding(7)
+            }
+        }
+    }
+}
+
+struct CloseButtonTopRightView: View {
+    let onClose: () -> Void
+
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack {
+                CloseButtonView(onClose: onClose)
+                    .padding()
+                Spacer()
+            }
         }
     }
 }
@@ -29,14 +53,23 @@ private struct HideShowButtonPanelView: View {
         Button {
             model.panelHidden.toggle()
         } label: {
-            Image(systemName: model.panelHidden ? "eye" : "eye.slash")
-                .frame(width: 30, height: 30)
-                .overlay(
-                    Circle()
-                        .stroke(.gray)
-                )
-                .foregroundColor(.gray)
-                .padding(7)
+            if #available(iOS 26, *) {
+                Image(systemName: model.panelHidden ? "eye" : "eye.slash")
+                    .foregroundStyle(.primary)
+                    .frame(width: 12, height: 12)
+                    .padding()
+                    .glassEffect()
+                    .padding(2)
+            } else {
+                Image(systemName: model.panelHidden ? "eye" : "eye.slash")
+                    .frame(width: 30, height: 30)
+                    .overlay(
+                        Circle()
+                            .stroke(.gray)
+                    )
+                    .foregroundStyle(.gray)
+                    .padding(7)
+            }
         }
     }
 }
@@ -45,22 +78,35 @@ private struct PanelButtonsView: View {
     @EnvironmentObject var model: Model
     let backgroundColor: Color
 
+    private func onClose() {
+        model.toggleShowingPanel(type: nil, panel: .none)
+        model.updateLutsButtonState()
+        model.updateAutoSceneSwitcherButtonState()
+    }
+
     var body: some View {
         HStack {
             Spacer()
             VStack(alignment: .trailing) {
-                HStack(spacing: 0) {
-                    HideShowButtonPanelView()
-                    CloseButtonView {
-                        model.toggleShowingPanel(type: nil, panel: .none)
-                        model.updateLutsButtonState()
-                        model.updateAutoSceneSwitcherButtonState()
+                if #available(iOS 26, *) {
+                    HStack(spacing: 0) {
+                        HideShowButtonPanelView()
+                        CloseButtonView {
+                            onClose()
+                        }
                     }
+                } else {
+                    HStack(spacing: 0) {
+                        HideShowButtonPanelView()
+                        CloseButtonView {
+                            onClose()
+                        }
+                    }
+                    .padding(-3)
+                    .background(backgroundColor)
+                    .cornerRadius(7)
+                    .padding(3)
                 }
-                .padding(-3)
-                .background(backgroundColor)
-                .cornerRadius(7)
-                .padding(3)
                 Spacer()
             }
         }
@@ -78,11 +124,11 @@ private struct MenuView: View {
             }
         case .bitrate:
             NavigationStack {
-                QuickButtonBitrateView(database: model.database, stream: model.stream)
+                QuickButtonBitrateView(model: model, database: model.database, stream: model.stream)
             }
         case .mic:
             NavigationStack {
-                QuickButtonMicView(mics: model.database.mics, modelMic: model.mic)
+                QuickButtonMicView(model: model, mics: model.database.mics, modelMic: model.mic)
             }
         case .streamSwitcher:
             NavigationStack {
@@ -90,15 +136,15 @@ private struct MenuView: View {
             }
         case .luts:
             NavigationStack {
-                QuickButtonLutsView()
+                QuickButtonLutsView(model: model, color: model.database.color)
             }
         case .obs:
             NavigationStack {
-                QuickButtonObsView(obsQuickButton: model.obsQuickButton)
+                QuickButtonObsView(stream: model.stream, obsQuickButton: model.obsQuickButton)
             }
         case .widgets:
             NavigationStack {
-                QuickButtonWidgetsView(model: model, sceneSelector: model.sceneSelector)
+                QuickButtonSceneWidgetsView(model: model, sceneSelector: model.sceneSelector)
             }
         case .recordings:
             NavigationStack {
@@ -110,11 +156,11 @@ private struct MenuView: View {
             }
         case .chat:
             NavigationStack {
-                QuickButtonChatView(quickButtonChat: model.quickButtonChatState)
+                QuickButtonChatView(model: model, quickButtonChat: model.quickButtonChatState)
             }
         case .djiDevices:
             NavigationStack {
-                QuickButtonDjiDevicesView(djiDevices: model.database.djiDevices)
+                QuickButtonDjiDevicesView(model: model, djiDevices: model.database.djiDevices)
             }
         case .sceneSettings:
             NavigationStack {
@@ -123,11 +169,11 @@ private struct MenuView: View {
             .id(model.sceneSettingsPanelSceneId)
         case .goPro:
             NavigationStack {
-                QuickButtonGoProView()
+                QuickButtonGoProView(goProState: model.goPro, goPro: model.database.goPro)
             }
         case .connectionPriorities:
             NavigationStack {
-                QuickButtonConnectionPrioritiesView()
+                StreamSrtConnectionPriorityView(stream: model.stream)
             }
         case .autoSceneSwitcher:
             NavigationStack {
@@ -147,6 +193,10 @@ private struct MenuView: View {
         case .streamingButtonSettings:
             NavigationStack {
                 StreamButtonsSettingsView(database: model.database)
+            }
+        case .live:
+            NavigationStack {
+                QuickButtonLiveView(model: model, database: model.database, stream: model.stream)
             }
         case .none:
             EmptyView()
@@ -176,7 +226,7 @@ private struct InstantReplayCountdownView: View {
                 Text(String(replay.instantReplayCountdown))
                     .font(.title)
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.white)
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: 200, alignment: .center)
             .padding(10)
@@ -243,18 +293,21 @@ struct MainView: View {
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var toast: Toast
     @ObservedObject var orientation: Orientation
+    @ObservedObject var quickButtons: SettingsQuickButtons
 
     init(webBrowserController: WebBrowserController,
          streamView: StreamView,
          createStreamWizard: CreateStreamWizard,
          toast: Toast,
-         orientation: Orientation)
+         orientation: Orientation,
+         quickButtons: SettingsQuickButtons)
     {
         self.webBrowserController = webBrowserController
         self.streamView = streamView
         self.createStreamWizard = createStreamWizard
         self.toast = toast
         self.orientation = orientation
+        self.quickButtons = quickButtons
         UITextField.appearance().clearButtonMode = .always
     }
 
@@ -292,16 +345,12 @@ struct MainView: View {
     private func face() -> some View {
         FaceView(database: model.database,
                  debug: model.database.debug,
-                 settings: model.database.debug.beautyFilterSettings,
+                 face: model.database.debug.face,
                  show: model.show)
     }
 
-    private func portraitAspectRatio() -> CGFloat {
-        if model.stream.portrait {
-            return 9 / 16
-        } else {
-            return 16 / 9
-        }
+    private func streamAspectRatio() -> CGFloat {
+        return model.stream.dimensions().aspectRatio()
     }
 
     private func portraitVideoOffset() -> Double {
@@ -334,14 +383,12 @@ struct MainView: View {
                                 height: portraitVideoOffset() * metrics.size.height * 2
                             ))
                         }
-                        .aspectRatio(portraitAspectRatio(), contentMode: .fit)
+                        .aspectRatio(streamAspectRatio(), contentMode: .fit)
                         Spacer(minLength: 0)
                     }
                     Spacer(minLength: 0)
                 }
-                .background(.black)
                 .ignoresSafeArea()
-                .edgesIgnoringSafeArea(.all)
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
@@ -350,11 +397,21 @@ struct MainView: View {
                                       height: metrics.size.height)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
+                if model.showDrawOnStream, model.stream.portrait {
+                    DrawOnStreamView(model: model)
+                }
                 if model.showFace && !model.showDrawOnStream {
                     face()
                 }
                 if model.showBrowser {
                     WebBrowserView(orientation: orientation)
+                }
+                if model.showNavigation {
+                    if #available(iOS 26, *) {
+                        StreamOverlayNavigationView(model: model,
+                                                    database: model.database,
+                                                    navigation: model.navigation())
+                    }
                 }
                 if model.showingRemoteControl {
                     ControlBarRemoteControlAssistantView()
@@ -377,7 +434,7 @@ struct MainView: View {
                         model.commitZoomX(amount: Float(amount))
                     }
             )
-            ControlBarPortraitView()
+            ControlBarPortraitView(quickButtons: quickButtons)
         }
     }
 
@@ -400,13 +457,12 @@ struct MainView: View {
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
                             }
                         }
-                        .aspectRatio(16 / 9, contentMode: .fit)
+                        .aspectRatio(streamAspectRatio(), contentMode: .fit)
                         Spacer(minLength: 0)
                     }
+                    Spacer(minLength: 0)
                 }
-                .background(.black)
                 .ignoresSafeArea()
-                .edgesIgnoringSafeArea(.all)
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
@@ -423,6 +479,13 @@ struct MainView: View {
                 }
                 if model.showBrowser {
                     WebBrowserView(orientation: orientation)
+                }
+                if model.showNavigation {
+                    if #available(iOS 26, *) {
+                        StreamOverlayNavigationView(model: model,
+                                                    database: model.database,
+                                                    navigation: model.navigation())
+                    }
                 }
                 if model.showingRemoteControl {
                     ControlBarRemoteControlAssistantView()
@@ -452,7 +515,27 @@ struct MainView: View {
                 }
                 .frame(width: model.panelHidden ? 1 : settingsHalfWidth)
             }
-            ControlBarLandscapeView(model: model)
+            ControlBarLandscapeView(model: model, quickButtons: quickButtons)
+        }
+    }
+
+    private func edgesToIgnore() -> Edge.Set {
+        if isPhone() {
+            if orientation.isPortrait {
+                if quickButtons.bigButtons && quickButtons.twoColumns {
+                    return [.bottom]
+                } else {
+                    return []
+                }
+            } else if quickButtons.bigButtons && quickButtons.twoColumns {
+                return [.top, .trailing]
+            } else {
+                return [.top]
+            }
+        } else if isMac() {
+            return [.top]
+        } else {
+            return []
         }
     }
 
@@ -468,17 +551,15 @@ struct MainView: View {
                     .opacity(webBrowserController.showAlert ? 1 : 0)
                 if model.showStealthMode {
                     StealthModeView(
-                        quickButtons: model.database.quickButtonsGeneral,
+                        model: model,
+                        quickButtons: quickButtons,
                         chat: model.chat,
                         stealthMode: model.stealthMode,
                         orientation: orientation
                     )
                 }
                 if model.lockScreen {
-                    LockScreenView()
-                }
-                if model.findFace {
-                    FindFaceView()
+                    LockScreenView(model: model)
                 }
                 SnapshotCountdownView(snapshot: model.snapshot)
                 InstantReplayCountdownView(replay: model.replay)
@@ -490,18 +571,13 @@ struct MainView: View {
                 model.setup()
             }
             .sheet(isPresented: $model.showTwitchAuth) {
-                VStack {
-                    HStack {
-                        Spacer()
-                        Button {
-                            model.showTwitchAuth = false
-                        } label: {
-                            Text("Close").padding()
-                        }
-                    }
+                ZStack {
                     ScrollView {
                         TwitchAuthView(twitchAuth: model.twitchAuth)
                             .frame(height: 2500)
+                    }
+                    CloseButtonTopRightView {
+                        model.showTwitchAuth = false
                     }
                 }
             }
@@ -568,8 +644,9 @@ struct MainView: View {
                 all
             }
             Rectangle()
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
                 .frame(height: isMac() ? 10 : 0)
         }
+        .ignoresSafeArea(.container, edges: edgesToIgnore())
     }
 }

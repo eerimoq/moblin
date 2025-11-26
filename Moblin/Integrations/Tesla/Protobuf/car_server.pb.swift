@@ -447,6 +447,22 @@ struct CarServer_VehicleAction: Sendable {
     set {vehicleActionMsg = .vehicleControlResetPinToDriveAction(newValue)}
   }
 
+  var drivingClearSpeedLimitPinAdminAction: CarServer_DrivingClearSpeedLimitPinAdminAction {
+    get {
+      if case .drivingClearSpeedLimitPinAdminAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_DrivingClearSpeedLimitPinAdminAction()
+    }
+    set {vehicleActionMsg = .drivingClearSpeedLimitPinAdminAction(newValue)}
+  }
+
+  var vehicleControlResetPinToDriveAdminAction: CarServer_VehicleControlResetPinToDriveAdminAction {
+    get {
+      if case .vehicleControlResetPinToDriveAdminAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_VehicleControlResetPinToDriveAdminAction()
+    }
+    set {vehicleActionMsg = .vehicleControlResetPinToDriveAdminAction(newValue)}
+  }
+
   var addChargeScheduleAction: CarServer_ChargeSchedule {
     get {
       if case .addChargeScheduleAction(let v)? = vehicleActionMsg {return v}
@@ -543,6 +559,8 @@ struct CarServer_VehicleAction: Sendable {
     case eraseUserDataAction(CarServer_EraseUserDataAction)
     case vehicleControlSetPinToDriveAction(CarServer_VehicleControlSetPinToDriveAction)
     case vehicleControlResetPinToDriveAction(CarServer_VehicleControlResetPinToDriveAction)
+    case drivingClearSpeedLimitPinAdminAction(CarServer_DrivingClearSpeedLimitPinAdminAction)
+    case vehicleControlResetPinToDriveAdminAction(CarServer_VehicleControlResetPinToDriveAdminAction)
     case addChargeScheduleAction(CarServer_ChargeSchedule)
     case removeChargeScheduleAction(CarServer_RemoveChargeScheduleAction)
     case addPreconditionScheduleAction(CarServer_PreconditionSchedule)
@@ -586,6 +604,15 @@ struct CarServer_GetVehicleData: Sendable {
   var hasGetDriveState: Bool {return self._getDriveState != nil}
   /// Clears the value of `getDriveState`. Subsequent reads from it will return its default value.
   mutating func clearGetDriveState() {self._getDriveState = nil}
+
+  var getLocationState: CarServer_GetLocationState {
+    get {return _getLocationState ?? CarServer_GetLocationState()}
+    set {_getLocationState = newValue}
+  }
+  /// Returns true if `getLocationState` has been explicitly set.
+  var hasGetLocationState: Bool {return self._getLocationState != nil}
+  /// Clears the value of `getLocationState`. Subsequent reads from it will return its default value.
+  mutating func clearGetLocationState() {self._getLocationState = nil}
 
   var getClosuresState: CarServer_GetClosuresState {
     get {return _getClosuresState ?? CarServer_GetClosuresState()}
@@ -666,6 +693,7 @@ struct CarServer_GetVehicleData: Sendable {
   fileprivate var _getChargeState: CarServer_GetChargeState? = nil
   fileprivate var _getClimateState: CarServer_GetClimateState? = nil
   fileprivate var _getDriveState: CarServer_GetDriveState? = nil
+  fileprivate var _getLocationState: CarServer_GetLocationState? = nil
   fileprivate var _getClosuresState: CarServer_GetClosuresState? = nil
   fileprivate var _getChargeScheduleState: CarServer_GetChargeScheduleState? = nil
   fileprivate var _getPreconditioningScheduleState: CarServer_GetPreconditioningScheduleState? = nil
@@ -737,6 +765,16 @@ struct CarServer_GetClimateState: Sendable {
 }
 
 struct CarServer_GetDriveState: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct CarServer_GetLocationState: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -909,7 +947,7 @@ struct CarServer_ResultReason: Sendable {
   init() {}
 }
 
-struct CarServer_EncryptedData: @unchecked Sendable {
+struct CarServer_EncryptedData: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -1004,6 +1042,16 @@ struct CarServer_DrivingClearSpeedLimitPinAction: Sendable {
   // methods supported on all messages.
 
   var pin: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct CarServer_DrivingClearSpeedLimitPinAdminAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2347,22 +2395,27 @@ struct CarServer_VehicleControlResetPinToDriveAction: Sendable {
   init() {}
 }
 
+struct CarServer_VehicleControlResetPinToDriveAdminAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "CarServer"
 
 extension CarServer_OperationStatus_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "OPERATIONSTATUS_OK"),
-    1: .same(proto: "OPERATIONSTATUS_ERROR"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OPERATIONSTATUS_OK\0\u{1}OPERATIONSTATUS_ERROR\0")
 }
 
 extension CarServer_Action: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Action"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "vehicleAction"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}vehicleAction\0\u{c}\u{3}\u{3}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2408,59 +2461,7 @@ extension CarServer_Action: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
 
 extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "getVehicleData"),
-    5: .same(proto: "chargingSetLimitAction"),
-    6: .same(proto: "chargingStartStopAction"),
-    7: .same(proto: "drivingClearSpeedLimitPinAction"),
-    8: .same(proto: "drivingSetSpeedLimitAction"),
-    9: .same(proto: "drivingSpeedLimitAction"),
-    10: .same(proto: "hvacAutoAction"),
-    12: .same(proto: "hvacSetPreconditioningMaxAction"),
-    13: .same(proto: "hvacSteeringWheelHeaterAction"),
-    14: .same(proto: "hvacTemperatureAdjustmentAction"),
-    15: .same(proto: "mediaPlayAction"),
-    16: .same(proto: "mediaUpdateVolume"),
-    17: .same(proto: "mediaNextFavorite"),
-    18: .same(proto: "mediaPreviousFavorite"),
-    19: .same(proto: "mediaNextTrack"),
-    20: .same(proto: "mediaPreviousTrack"),
-    23: .same(proto: "getNearbyChargingSites"),
-    25: .same(proto: "vehicleControlCancelSoftwareUpdateAction"),
-    26: .same(proto: "vehicleControlFlashLightsAction"),
-    27: .same(proto: "vehicleControlHonkHornAction"),
-    28: .same(proto: "vehicleControlResetValetPinAction"),
-    29: .same(proto: "vehicleControlScheduleSoftwareUpdateAction"),
-    30: .same(proto: "vehicleControlSetSentryModeAction"),
-    31: .same(proto: "vehicleControlSetValetModeAction"),
-    32: .same(proto: "vehicleControlSunroofOpenCloseAction"),
-    33: .same(proto: "vehicleControlTriggerHomelinkAction"),
-    34: .same(proto: "vehicleControlWindowAction"),
-    35: .same(proto: "hvacBioweaponModeAction"),
-    36: .same(proto: "hvacSeatHeaterActions"),
-    41: .same(proto: "scheduledChargingAction"),
-    42: .same(proto: "scheduledDepartureAction"),
-    43: .same(proto: "setChargingAmpsAction"),
-    44: .same(proto: "hvacClimateKeeperAction"),
-    46: .same(proto: "ping"),
-    48: .same(proto: "autoSeatClimateAction"),
-    49: .same(proto: "hvacSeatCoolerActions"),
-    50: .same(proto: "setCabinOverheatProtectionAction"),
-    54: .same(proto: "setVehicleNameAction"),
-    61: .same(proto: "chargePortDoorClose"),
-    62: .same(proto: "chargePortDoorOpen"),
-    65: .same(proto: "guestModeAction"),
-    66: .same(proto: "setCopTempAction"),
-    72: .same(proto: "eraseUserDataAction"),
-    77: .same(proto: "vehicleControlSetPinToDriveAction"),
-    78: .same(proto: "vehicleControlResetPinToDriveAction"),
-    97: .same(proto: "addChargeScheduleAction"),
-    98: .same(proto: "removeChargeScheduleAction"),
-    99: .same(proto: "addPreconditionScheduleAction"),
-    100: .same(proto: "removePreconditionScheduleAction"),
-    107: .same(proto: "batchRemovePreconditionSchedulesAction"),
-    108: .same(proto: "batchRemoveChargeSchedulesAction"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}getVehicleData\0\u{2}\u{4}chargingSetLimitAction\0\u{1}chargingStartStopAction\0\u{1}drivingClearSpeedLimitPinAction\0\u{1}drivingSetSpeedLimitAction\0\u{1}drivingSpeedLimitAction\0\u{1}hvacAutoAction\0\u{2}\u{2}hvacSetPreconditioningMaxAction\0\u{1}hvacSteeringWheelHeaterAction\0\u{1}hvacTemperatureAdjustmentAction\0\u{1}mediaPlayAction\0\u{1}mediaUpdateVolume\0\u{1}mediaNextFavorite\0\u{1}mediaPreviousFavorite\0\u{1}mediaNextTrack\0\u{1}mediaPreviousTrack\0\u{2}\u{3}getNearbyChargingSites\0\u{2}\u{2}vehicleControlCancelSoftwareUpdateAction\0\u{1}vehicleControlFlashLightsAction\0\u{1}vehicleControlHonkHornAction\0\u{1}vehicleControlResetValetPinAction\0\u{1}vehicleControlScheduleSoftwareUpdateAction\0\u{1}vehicleControlSetSentryModeAction\0\u{1}vehicleControlSetValetModeAction\0\u{1}vehicleControlSunroofOpenCloseAction\0\u{1}vehicleControlTriggerHomelinkAction\0\u{1}vehicleControlWindowAction\0\u{1}hvacBioweaponModeAction\0\u{1}hvacSeatHeaterActions\0\u{2}\u{5}scheduledChargingAction\0\u{1}scheduledDepartureAction\0\u{1}setChargingAmpsAction\0\u{1}hvacClimateKeeperAction\0\u{2}\u{2}ping\0\u{2}\u{2}autoSeatClimateAction\0\u{1}hvacSeatCoolerActions\0\u{1}setCabinOverheatProtectionAction\0\u{2}\u{4}setVehicleNameAction\0\u{2}\u{7}chargePortDoorClose\0\u{1}chargePortDoorOpen\0\u{2}\u{3}guestModeAction\0\u{1}setCopTempAction\0\u{2}\u{6}eraseUserDataAction\0\u{2}\u{5}vehicleControlSetPinToDriveAction\0\u{1}vehicleControlResetPinToDriveAction\0\u{1}drivingClearSpeedLimitPinAdminAction\0\u{2}\u{a}vehicleControlResetPinToDriveAdminAction\0\u{2}\u{8}addChargeScheduleAction\0\u{1}removeChargeScheduleAction\0\u{1}addPreconditionScheduleAction\0\u{1}removePreconditionScheduleAction\0\u{2}\u{7}batchRemovePreconditionSchedulesAction\0\u{1}batchRemoveChargeSchedulesAction\0\u{c}\u{b}\u{1}\u{c}<\u{1}\u{c}L\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3053,6 +3054,32 @@ extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.vehicleActionMsg = .vehicleControlResetPinToDriveAction(v)
         }
       }()
+      case 79: try {
+        var v: CarServer_DrivingClearSpeedLimitPinAdminAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .drivingClearSpeedLimitPinAdminAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .drivingClearSpeedLimitPinAdminAction(v)
+        }
+      }()
+      case 89: try {
+        var v: CarServer_VehicleControlResetPinToDriveAdminAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .vehicleControlResetPinToDriveAdminAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .vehicleControlResetPinToDriveAdminAction(v)
+        }
+      }()
       case 97: try {
         var v: CarServer_ChargeSchedule?
         var hadOneofValue = false
@@ -3322,6 +3349,14 @@ extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._Message
       guard case .vehicleControlResetPinToDriveAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 78)
     }()
+    case .drivingClearSpeedLimitPinAdminAction?: try {
+      guard case .drivingClearSpeedLimitPinAdminAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 79)
+    }()
+    case .vehicleControlResetPinToDriveAdminAction?: try {
+      guard case .vehicleControlResetPinToDriveAdminAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 89)
+    }()
     case .addChargeScheduleAction?: try {
       guard case .addChargeScheduleAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 97)
@@ -3360,19 +3395,7 @@ extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension CarServer_GetVehicleData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetVehicleData"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "getChargeState"),
-    3: .same(proto: "getClimateState"),
-    4: .same(proto: "getDriveState"),
-    8: .same(proto: "getClosuresState"),
-    10: .same(proto: "getChargeScheduleState"),
-    11: .same(proto: "getPreconditioningScheduleState"),
-    14: .same(proto: "getTirePressureState"),
-    15: .same(proto: "getMediaState"),
-    16: .same(proto: "getMediaDetailState"),
-    17: .same(proto: "getSoftwareUpdateState"),
-    19: .same(proto: "getParentalControlsState"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}getChargeState\0\u{1}getClimateState\0\u{1}getDriveState\0\u{2}\u{3}getLocationState\0\u{1}getClosuresState\0\u{2}\u{2}getChargeScheduleState\0\u{1}getPreconditioningScheduleState\0\u{2}\u{3}getTirePressureState\0\u{1}getMediaState\0\u{1}getMediaDetailState\0\u{1}getSoftwareUpdateState\0\u{2}\u{2}getParentalControlsState\0\u{c}\u{5}\u{1}\u{c}\u{6}\u{1}\u{c}\u{c}\u{1}\u{c}\u{d}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3383,6 +3406,7 @@ extension CarServer_GetVehicleData: SwiftProtobuf.Message, SwiftProtobuf._Messag
       case 2: try { try decoder.decodeSingularMessageField(value: &self._getChargeState) }()
       case 3: try { try decoder.decodeSingularMessageField(value: &self._getClimateState) }()
       case 4: try { try decoder.decodeSingularMessageField(value: &self._getDriveState) }()
+      case 7: try { try decoder.decodeSingularMessageField(value: &self._getLocationState) }()
       case 8: try { try decoder.decodeSingularMessageField(value: &self._getClosuresState) }()
       case 10: try { try decoder.decodeSingularMessageField(value: &self._getChargeScheduleState) }()
       case 11: try { try decoder.decodeSingularMessageField(value: &self._getPreconditioningScheduleState) }()
@@ -3409,6 +3433,9 @@ extension CarServer_GetVehicleData: SwiftProtobuf.Message, SwiftProtobuf._Messag
     } }()
     try { if let v = self._getDriveState {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._getLocationState {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     } }()
     try { if let v = self._getClosuresState {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
@@ -3441,6 +3468,7 @@ extension CarServer_GetVehicleData: SwiftProtobuf.Message, SwiftProtobuf._Messag
     if lhs._getChargeState != rhs._getChargeState {return false}
     if lhs._getClimateState != rhs._getClimateState {return false}
     if lhs._getDriveState != rhs._getDriveState {return false}
+    if lhs._getLocationState != rhs._getLocationState {return false}
     if lhs._getClosuresState != rhs._getClosuresState {return false}
     if lhs._getChargeScheduleState != rhs._getChargeScheduleState {return false}
     if lhs._getPreconditioningScheduleState != rhs._getPreconditioningScheduleState {return false}
@@ -3587,6 +3615,25 @@ extension CarServer_GetDriveState: SwiftProtobuf.Message, SwiftProtobuf._Message
   }
 }
 
+extension CarServer_GetLocationState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GetLocationState"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_GetLocationState, rhs: CarServer_GetLocationState) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension CarServer_GetClosuresState: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetClosuresState"
   static let _protobuf_nameMap = SwiftProtobuf._NameMap()
@@ -3665,9 +3712,7 @@ extension CarServer_GetParentalControlsState: SwiftProtobuf.Message, SwiftProtob
 
 extension CarServer_EraseUserDataAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".EraseUserDataAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "reason"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}reason\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3697,13 +3742,7 @@ extension CarServer_EraseUserDataAction: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension CarServer_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Response"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "actionStatus"),
-    2: .same(proto: "vehicleData"),
-    3: .same(proto: "getSessionInfoResponse"),
-    5: .same(proto: "getNearbyChargingSites"),
-    9: .same(proto: "ping"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}actionStatus\0\u{1}vehicleData\0\u{1}getSessionInfoResponse\0\u{2}\u{2}getNearbyChargingSites\0\u{2}\u{4}ping\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3809,10 +3848,7 @@ extension CarServer_Response: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
 
 extension CarServer_ActionStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ActionStatus"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "result"),
-    2: .standard(proto: "result_reason"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}result\0\u{3}result_reason\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3851,9 +3887,7 @@ extension CarServer_ActionStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
 extension CarServer_ResultReason: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ResultReason"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "plain_text"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}plain_text\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3894,11 +3928,7 @@ extension CarServer_ResultReason: SwiftProtobuf.Message, SwiftProtobuf._MessageI
 
 extension CarServer_EncryptedData: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".EncryptedData"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "field_number"),
-    2: .same(proto: "ciphertext"),
-    3: .same(proto: "tag"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}field_number\0\u{1}ciphertext\0\u{1}tag\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3938,9 +3968,7 @@ extension CarServer_EncryptedData: SwiftProtobuf.Message, SwiftProtobuf._Message
 
 extension CarServer_ChargingSetLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargingSetLimitAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "percent"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}percent\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3970,13 +3998,7 @@ extension CarServer_ChargingSetLimitAction: SwiftProtobuf.Message, SwiftProtobuf
 
 extension CarServer_ChargingStartStopAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ChargingStartStopAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "unknown"),
-    2: .same(proto: "start"),
-    3: .standard(proto: "start_standard"),
-    4: .standard(proto: "start_max_range"),
-    5: .same(proto: "stop"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}unknown\0\u{1}start\0\u{3}start_standard\0\u{3}start_max_range\0\u{1}stop\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4094,9 +4116,7 @@ extension CarServer_ChargingStartStopAction: SwiftProtobuf.Message, SwiftProtobu
 
 extension CarServer_DrivingClearSpeedLimitPinAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DrivingClearSpeedLimitPinAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "pin"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}pin\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4124,11 +4144,28 @@ extension CarServer_DrivingClearSpeedLimitPinAction: SwiftProtobuf.Message, Swif
   }
 }
 
+extension CarServer_DrivingClearSpeedLimitPinAdminAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".DrivingClearSpeedLimitPinAdminAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_DrivingClearSpeedLimitPinAdminAction, rhs: CarServer_DrivingClearSpeedLimitPinAdminAction) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension CarServer_DrivingSetSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DrivingSetSpeedLimitAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "limit_mph"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}limit_mph\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4158,10 +4195,7 @@ extension CarServer_DrivingSetSpeedLimitAction: SwiftProtobuf.Message, SwiftProt
 
 extension CarServer_DrivingSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DrivingSpeedLimitAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "activate"),
-    2: .same(proto: "pin"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}activate\0\u{1}pin\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4196,10 +4230,7 @@ extension CarServer_DrivingSpeedLimitAction: SwiftProtobuf.Message, SwiftProtobu
 
 extension CarServer_HvacAutoAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacAutoAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "power_on"),
-    2: .standard(proto: "manual_override"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}power_on\0\u{3}manual_override\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4234,9 +4265,7 @@ extension CarServer_HvacAutoAction: SwiftProtobuf.Message, SwiftProtobuf._Messag
 
 extension CarServer_HvacSeatHeaterActions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacSeatHeaterActions"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "hvacSeatHeaterAction"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hvacSeatHeaterAction\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4266,23 +4295,7 @@ extension CarServer_HvacSeatHeaterActions: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension CarServer_HvacSeatHeaterActions.HvacSeatHeaterAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_HvacSeatHeaterActions.protoMessageName + ".HvacSeatHeaterAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "SEAT_HEATER_UNKNOWN"),
-    2: .standard(proto: "SEAT_HEATER_OFF"),
-    3: .standard(proto: "SEAT_HEATER_LOW"),
-    4: .standard(proto: "SEAT_HEATER_MED"),
-    5: .standard(proto: "SEAT_HEATER_HIGH"),
-    6: .standard(proto: "CAR_SEAT_UNKNOWN"),
-    7: .standard(proto: "CAR_SEAT_FRONT_LEFT"),
-    8: .standard(proto: "CAR_SEAT_FRONT_RIGHT"),
-    9: .standard(proto: "CAR_SEAT_REAR_LEFT"),
-    10: .standard(proto: "CAR_SEAT_REAR_LEFT_BACK"),
-    11: .standard(proto: "CAR_SEAT_REAR_CENTER"),
-    12: .standard(proto: "CAR_SEAT_REAR_RIGHT"),
-    13: .standard(proto: "CAR_SEAT_REAR_RIGHT_BACK"),
-    14: .standard(proto: "CAR_SEAT_THIRD_ROW_LEFT"),
-    15: .standard(proto: "CAR_SEAT_THIRD_ROW_RIGHT"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}SEAT_HEATER_UNKNOWN\0\u{3}SEAT_HEATER_OFF\0\u{3}SEAT_HEATER_LOW\0\u{3}SEAT_HEATER_MED\0\u{3}SEAT_HEATER_HIGH\0\u{3}CAR_SEAT_UNKNOWN\0\u{3}CAR_SEAT_FRONT_LEFT\0\u{3}CAR_SEAT_FRONT_RIGHT\0\u{3}CAR_SEAT_REAR_LEFT\0\u{3}CAR_SEAT_REAR_LEFT_BACK\0\u{3}CAR_SEAT_REAR_CENTER\0\u{3}CAR_SEAT_REAR_RIGHT\0\u{3}CAR_SEAT_REAR_RIGHT_BACK\0\u{3}CAR_SEAT_THIRD_ROW_LEFT\0\u{3}CAR_SEAT_THIRD_ROW_RIGHT\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4574,9 +4587,7 @@ extension CarServer_HvacSeatHeaterActions.HvacSeatHeaterAction: SwiftProtobuf.Me
 
 extension CarServer_HvacSeatCoolerActions: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacSeatCoolerActions"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "hvacSeatCoolerAction"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}hvacSeatCoolerAction\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4605,29 +4616,16 @@ extension CarServer_HvacSeatCoolerActions: SwiftProtobuf.Message, SwiftProtobuf.
 }
 
 extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerLevel_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "HvacSeatCoolerLevel_Unknown"),
-    1: .same(proto: "HvacSeatCoolerLevel_Off"),
-    2: .same(proto: "HvacSeatCoolerLevel_Low"),
-    3: .same(proto: "HvacSeatCoolerLevel_Med"),
-    4: .same(proto: "HvacSeatCoolerLevel_High"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HvacSeatCoolerLevel_Unknown\0\u{1}HvacSeatCoolerLevel_Off\0\u{1}HvacSeatCoolerLevel_Low\0\u{1}HvacSeatCoolerLevel_Med\0\u{1}HvacSeatCoolerLevel_High\0")
 }
 
 extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerPosition_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "HvacSeatCoolerPosition_Unknown"),
-    1: .same(proto: "HvacSeatCoolerPosition_FrontLeft"),
-    2: .same(proto: "HvacSeatCoolerPosition_FrontRight"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HvacSeatCoolerPosition_Unknown\0\u{1}HvacSeatCoolerPosition_FrontLeft\0\u{1}HvacSeatCoolerPosition_FrontRight\0")
 }
 
 extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_HvacSeatCoolerActions.protoMessageName + ".HvacSeatCoolerAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "seat_cooler_level"),
-    2: .standard(proto: "seat_position"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}seat_cooler_level\0\u{3}seat_position\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4662,11 +4660,7 @@ extension CarServer_HvacSeatCoolerActions.HvacSeatCoolerAction: SwiftProtobuf.Me
 
 extension CarServer_HvacSetPreconditioningMaxAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacSetPreconditioningMaxAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "on"),
-    2: .standard(proto: "manual_override"),
-    3: .standard(proto: "manual_override_mode"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{3}manual_override\0\u{3}manual_override_mode\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4705,18 +4699,12 @@ extension CarServer_HvacSetPreconditioningMaxAction: SwiftProtobuf.Message, Swif
 }
 
 extension CarServer_HvacSetPreconditioningMaxAction.ManualOverrideMode_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "DogMode"),
-    1: .same(proto: "Soc"),
-    2: .same(proto: "Doors"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0DogMode\0\u{1}Soc\0\u{1}Doors\0")
 }
 
 extension CarServer_HvacSteeringWheelHeaterAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacSteeringWheelHeaterAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "power_on"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}power_on\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4746,15 +4734,7 @@ extension CarServer_HvacSteeringWheelHeaterAction: SwiftProtobuf.Message, SwiftP
 
 extension CarServer_HvacTemperatureAdjustmentAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacTemperatureAdjustmentAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "delta_celsius"),
-    2: .standard(proto: "delta_percent"),
-    3: .standard(proto: "absolute_celsius"),
-    5: .same(proto: "level"),
-    4: .standard(proto: "hvac_temperature_zone"),
-    6: .standard(proto: "driver_temp_celsius"),
-    7: .standard(proto: "passenger_temp_celsius"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}delta_celsius\0\u{3}delta_percent\0\u{3}absolute_celsius\0\u{3}hvac_temperature_zone\0\u{1}level\0\u{3}driver_temp_celsius\0\u{3}passenger_temp_celsius\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4818,11 +4798,7 @@ extension CarServer_HvacTemperatureAdjustmentAction: SwiftProtobuf.Message, Swif
 
 extension CarServer_HvacTemperatureAdjustmentAction.Temperature: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_HvacTemperatureAdjustmentAction.protoMessageName + ".Temperature"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "TEMP_UNKNOWN"),
-    2: .standard(proto: "TEMP_MIN"),
-    3: .standard(proto: "TEMP_MAX"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}TEMP_UNKNOWN\0\u{3}TEMP_MIN\0\u{3}TEMP_MAX\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4906,12 +4882,7 @@ extension CarServer_HvacTemperatureAdjustmentAction.Temperature: SwiftProtobuf.M
 
 extension CarServer_HvacTemperatureAdjustmentAction.HvacTemperatureZone: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_HvacTemperatureAdjustmentAction.protoMessageName + ".HvacTemperatureZone"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "TEMP_ZONE_UNKNOWN"),
-    2: .standard(proto: "TEMP_ZONE_FRONT_LEFT"),
-    3: .standard(proto: "TEMP_ZONE_FRONT_RIGHT"),
-    4: .standard(proto: "TEMP_ZONE_REAR"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}TEMP_ZONE_UNKNOWN\0\u{3}TEMP_ZONE_FRONT_LEFT\0\u{3}TEMP_ZONE_FRONT_RIGHT\0\u{3}TEMP_ZONE_REAR\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5012,11 +4983,7 @@ extension CarServer_HvacTemperatureAdjustmentAction.HvacTemperatureZone: SwiftPr
 
 extension CarServer_GetNearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GetNearbyChargingSites"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "include_meta_data"),
-    2: .same(proto: "radius"),
-    3: .same(proto: "count"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}include_meta_data\0\u{1}radius\0\u{1}count\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5056,11 +5023,7 @@ extension CarServer_GetNearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf
 
 extension CarServer_NearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".NearbyChargingSites"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "timestamp"),
-    3: .same(proto: "superchargers"),
-    4: .standard(proto: "congestion_sync_time_utc_secs"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}timestamp\0\u{2}\u{2}superchargers\0\u{3}congestion_sync_time_utc_secs\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5104,28 +5067,7 @@ extension CarServer_NearbyChargingSites: SwiftProtobuf.Message, SwiftProtobuf._M
 
 extension CarServer_Superchargers: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Superchargers"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-    2: .same(proto: "amenities"),
-    3: .standard(proto: "available_stalls"),
-    4: .standard(proto: "billing_info"),
-    5: .standard(proto: "billing_time"),
-    6: .same(proto: "city"),
-    7: .same(proto: "country"),
-    8: .standard(proto: "distance_miles"),
-    9: .same(proto: "district"),
-    10: .same(proto: "location"),
-    11: .same(proto: "name"),
-    12: .standard(proto: "postal_code"),
-    13: .standard(proto: "site_closed"),
-    14: .same(proto: "state"),
-    15: .standard(proto: "street_address"),
-    16: .standard(proto: "total_stalls"),
-    17: .standard(proto: "within_range"),
-    18: .standard(proto: "max_power_kw"),
-    19: .standard(proto: "out_of_order_stalls_number"),
-    20: .standard(proto: "out_of_order_stalls_names"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}amenities\0\u{3}available_stalls\0\u{3}billing_info\0\u{3}billing_time\0\u{1}city\0\u{1}country\0\u{3}distance_miles\0\u{1}district\0\u{1}location\0\u{1}name\0\u{3}postal_code\0\u{3}site_closed\0\u{1}state\0\u{3}street_address\0\u{3}total_stalls\0\u{3}within_range\0\u{3}max_power_kw\0\u{3}out_of_order_stalls_number\0\u{3}out_of_order_stalls_names\0")
 
   fileprivate class _StorageClass {
     var _id: Int64 = 0
@@ -5149,15 +5091,11 @@ extension CarServer_Superchargers: SwiftProtobuf.Message, SwiftProtobuf._Message
     var _outOfOrderStallsNumber: Int32 = 0
     var _outOfOrderStallsNames: String = String()
 
-    #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
       // This will force a copy to be made of this reference when the first mutation occurs;
       // hence, it is safe to mark this as `nonisolated(unsafe)`.
       static nonisolated(unsafe) let defaultInstance = _StorageClass()
-    #else
-      static let defaultInstance = _StorageClass()
-    #endif
 
     private init() {}
 
@@ -5351,10 +5289,7 @@ extension CarServer_MediaPlayAction: SwiftProtobuf.Message, SwiftProtobuf._Messa
 
 extension CarServer_MediaUpdateVolume: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MediaUpdateVolume"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "volume_delta"),
-    3: .standard(proto: "volume_absolute_float"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}volume_delta\0\u{4}\u{2}volume_absolute_float\0\u{c}\u{2}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5563,9 +5498,7 @@ extension CarServer_VehicleControlResetValetPinAction: SwiftProtobuf.Message, Sw
 
 extension CarServer_VehicleControlScheduleSoftwareUpdateAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlScheduleSoftwareUpdateAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "offset_sec"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}offset_sec\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5595,9 +5528,7 @@ extension CarServer_VehicleControlScheduleSoftwareUpdateAction: SwiftProtobuf.Me
 
 extension CarServer_VehicleControlSetSentryModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlSetSentryModeAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "on"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5627,10 +5558,7 @@ extension CarServer_VehicleControlSetSentryModeAction: SwiftProtobuf.Message, Sw
 
 extension CarServer_VehicleControlSetValetModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlSetValetModeAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "on"),
-    2: .same(proto: "password"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{1}password\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5665,13 +5593,7 @@ extension CarServer_VehicleControlSetValetModeAction: SwiftProtobuf.Message, Swi
 
 extension CarServer_VehicleControlSunroofOpenCloseAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlSunroofOpenCloseAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "absolute_level"),
-    2: .standard(proto: "delta_level"),
-    3: .same(proto: "vent"),
-    4: .same(proto: "close"),
-    5: .same(proto: "open"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}absolute_level\0\u{3}delta_level\0\u{1}vent\0\u{1}close\0\u{1}open\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5783,10 +5705,7 @@ extension CarServer_VehicleControlSunroofOpenCloseAction: SwiftProtobuf.Message,
 
 extension CarServer_VehicleControlTriggerHomelinkAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlTriggerHomelinkAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "location"),
-    2: .same(proto: "token"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}location\0\u{1}token\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5825,11 +5744,7 @@ extension CarServer_VehicleControlTriggerHomelinkAction: SwiftProtobuf.Message, 
 
 extension CarServer_VehicleControlWindowAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlWindowAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "unknown"),
-    3: .same(proto: "vent"),
-    4: .same(proto: "close"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\u{2}unknown\0\u{1}vent\0\u{1}close\0\u{c}\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5913,10 +5828,7 @@ extension CarServer_VehicleControlWindowAction: SwiftProtobuf.Message, SwiftProt
 
 extension CarServer_HvacBioweaponModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacBioweaponModeAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "on"),
-    2: .standard(proto: "manual_override"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{3}manual_override\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5951,9 +5863,7 @@ extension CarServer_HvacBioweaponModeAction: SwiftProtobuf.Message, SwiftProtobu
 
 extension CarServer_AutoSeatClimateAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AutoSeatClimateAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "carseat"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}carseat\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5982,19 +5892,12 @@ extension CarServer_AutoSeatClimateAction: SwiftProtobuf.Message, SwiftProtobuf.
 }
 
 extension CarServer_AutoSeatClimateAction.AutoSeatPosition_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "AutoSeatPosition_Unknown"),
-    1: .same(proto: "AutoSeatPosition_FrontLeft"),
-    2: .same(proto: "AutoSeatPosition_FrontRight"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0AutoSeatPosition_Unknown\0\u{1}AutoSeatPosition_FrontLeft\0\u{1}AutoSeatPosition_FrontRight\0")
 }
 
 extension CarServer_AutoSeatClimateAction.CarSeat: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = CarServer_AutoSeatClimateAction.protoMessageName + ".CarSeat"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "on"),
-    2: .standard(proto: "seat_position"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{3}seat_position\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6029,11 +5932,7 @@ extension CarServer_AutoSeatClimateAction.CarSeat: SwiftProtobuf.Message, SwiftP
 
 extension CarServer_Ping: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Ping"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "ping_id"),
-    2: .standard(proto: "local_timestamp"),
-    3: .standard(proto: "last_remote_timestamp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}ping_id\0\u{3}local_timestamp\0\u{3}last_remote_timestamp\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6077,10 +5976,7 @@ extension CarServer_Ping: SwiftProtobuf.Message, SwiftProtobuf._MessageImplement
 
 extension CarServer_ScheduledChargingAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ScheduledChargingAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "enabled"),
-    2: .standard(proto: "charging_time"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}enabled\0\u{3}charging_time\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6115,13 +6011,7 @@ extension CarServer_ScheduledChargingAction: SwiftProtobuf.Message, SwiftProtobu
 
 extension CarServer_ScheduledDepartureAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ScheduledDepartureAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "enabled"),
-    2: .standard(proto: "departure_time"),
-    3: .standard(proto: "preconditioning_times"),
-    4: .standard(proto: "off_peak_charging_times"),
-    5: .standard(proto: "off_peak_hours_end_time"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}enabled\0\u{3}departure_time\0\u{3}preconditioning_times\0\u{3}off_peak_charging_times\0\u{3}off_peak_hours_end_time\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6175,10 +6065,7 @@ extension CarServer_ScheduledDepartureAction: SwiftProtobuf.Message, SwiftProtob
 
 extension CarServer_HvacClimateKeeperAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".HvacClimateKeeperAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "ClimateKeeperAction"),
-    2: .standard(proto: "manual_override"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ClimateKeeperAction\0\u{3}manual_override\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6212,19 +6099,12 @@ extension CarServer_HvacClimateKeeperAction: SwiftProtobuf.Message, SwiftProtobu
 }
 
 extension CarServer_HvacClimateKeeperAction.ClimateKeeperAction_E: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "ClimateKeeperAction_Off"),
-    1: .same(proto: "ClimateKeeperAction_On"),
-    2: .same(proto: "ClimateKeeperAction_Dog"),
-    3: .same(proto: "ClimateKeeperAction_Camp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ClimateKeeperAction_Off\0\u{1}ClimateKeeperAction_On\0\u{1}ClimateKeeperAction_Dog\0\u{1}ClimateKeeperAction_Camp\0")
 }
 
 extension CarServer_SetChargingAmpsAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetChargingAmpsAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "charging_amps"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}charging_amps\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6254,9 +6134,7 @@ extension CarServer_SetChargingAmpsAction: SwiftProtobuf.Message, SwiftProtobuf.
 
 extension CarServer_RemoveChargeScheduleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RemoveChargeScheduleAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6286,11 +6164,7 @@ extension CarServer_RemoveChargeScheduleAction: SwiftProtobuf.Message, SwiftProt
 
 extension CarServer_BatchRemoveChargeSchedulesAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BatchRemoveChargeSchedulesAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "home"),
-    2: .same(proto: "work"),
-    3: .same(proto: "other"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}home\0\u{1}work\0\u{1}other\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6330,11 +6204,7 @@ extension CarServer_BatchRemoveChargeSchedulesAction: SwiftProtobuf.Message, Swi
 
 extension CarServer_BatchRemovePreconditionSchedulesAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BatchRemovePreconditionSchedulesAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "home"),
-    2: .same(proto: "work"),
-    3: .same(proto: "other"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}home\0\u{1}work\0\u{1}other\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6374,9 +6244,7 @@ extension CarServer_BatchRemovePreconditionSchedulesAction: SwiftProtobuf.Messag
 
 extension CarServer_RemovePreconditionScheduleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RemovePreconditionScheduleAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6406,10 +6274,7 @@ extension CarServer_RemovePreconditionScheduleAction: SwiftProtobuf.Message, Swi
 
 extension CarServer_SetCabinOverheatProtectionAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetCabinOverheatProtectionAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "on"),
-    2: .standard(proto: "fan_only"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{3}fan_only\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6444,9 +6309,7 @@ extension CarServer_SetCabinOverheatProtectionAction: SwiftProtobuf.Message, Swi
 
 extension CarServer_SetVehicleNameAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetVehicleNameAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "vehicleName"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}vehicleName\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6514,9 +6377,7 @@ extension CarServer_ChargePortDoorOpen: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 extension CarServer_SetCopTempAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SetCopTempAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "copActivationTemp"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}copActivationTemp\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6546,10 +6407,7 @@ extension CarServer_SetCopTempAction: SwiftProtobuf.Message, SwiftProtobuf._Mess
 
 extension CarServer_VehicleControlSetPinToDriveAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleControlSetPinToDriveAction"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "on"),
-    2: .same(proto: "password"),
-  ]
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}on\0\u{1}password\0")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6596,6 +6454,25 @@ extension CarServer_VehicleControlResetPinToDriveAction: SwiftProtobuf.Message, 
   }
 
   static func ==(lhs: CarServer_VehicleControlResetPinToDriveAction, rhs: CarServer_VehicleControlResetPinToDriveAction) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension CarServer_VehicleControlResetPinToDriveAdminAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".VehicleControlResetPinToDriveAdminAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_VehicleControlResetPinToDriveAdminAction, rhs: CarServer_VehicleControlResetPinToDriveAdminAction) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

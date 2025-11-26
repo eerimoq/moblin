@@ -3,6 +3,12 @@ import Foundation
 let moblinkBonjourType = "_moblink._tcp"
 let moblinkBonjourDomain = "local"
 
+enum MoblinkThermalState: String, Codable {
+    case white
+    case yellow
+    case red
+}
+
 enum MoblinkRequest: Codable {
     case startTunnel(address: String, port: UInt16)
     case status
@@ -10,7 +16,7 @@ enum MoblinkRequest: Codable {
 
 enum MoblinkResponse: Codable {
     case startTunnel(port: UInt16)
-    case status(batteryPercentage: Int?)
+    case status(batteryPercentage: Int?, thermalState: MoblinkThermalState?)
 }
 
 struct MoblinkAuthentication: Codable {

@@ -42,16 +42,23 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Show reply.
   - Optional login.
     - Follow, subscribe and raid alerts.
+    - Set stream title and category.
     - Start ads.
     - Hype train.
     - Cheered bits in chat.
 - Kick integration.
   - Number of viewers.
+  - Subscription, host, and kicks.
   - Chat.
+    - Set stream title and category.
+    - Ban.
+    - Timeout.
+    - Delete message.
+    - Gray out or hide deleted messages.
     - Show reply.
 - YouTube integration.
   - Chat.
-- AfreecaTv integration.
+- SOOP integration.
   - Scuffed chat.
 - Basic scenes.
   - Alerts widget.
@@ -138,6 +145,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
     - Optionally subscribers only.
     - Many voices.
     - Detect language per message.
+    - Optionally use TTS.Monster.
   - Colors, background, border and bold.
   - Twitch, Kick, BTTV, FFZ and 7TV emotes.
   - Optionally animated emotes.

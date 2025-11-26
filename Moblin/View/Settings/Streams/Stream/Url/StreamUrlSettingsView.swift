@@ -4,103 +4,102 @@ private struct RtmpHelpView: View {
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
-        Text("")
-        Group {
-            Text("Twitch")
-                .underline()
-            HStack(spacing: 0) {
-                Text("Template: rtmp://")
-                Link(
-                    "nearby_ingest_endpoint",
-                    destination: URL(string: "https://help.twitch.tv/s/twitch-ingest-recommendation")!
-                )
-                .font(.footnote)
-                Text("/app/")
-                if !stream.twitchChannelName.isEmpty, let url =
-                    URL(
-                        string: "https://dashboard.twitch.tv/u/\(stream.twitchChannelName)/settings/stream"
-                    )
-                {
-                    Link("my_stream_key", destination: url)
-                        .font(.footnote)
-                } else {
-                    Text("my_stream_key")
+        Section {
+            VStack(alignment: .leading) {
+                HStack(spacing: 0) {
+                    Text("""
+                    Template: rtmp://\
+                    [nearby_ingest_endpoint](https://help.twitch.tv/s/twitch-ingest-recommendation)\
+                    /app/
+                    """)
+                    if !stream.twitchChannelName.isEmpty,
+                       let url =
+                       URL(string: "https://dashboard.twitch.tv/u/\(stream.twitchChannelName)/settings/stream")
+                    {
+                        Link("my_stream_key", destination: url)
+                    } else {
+                        Text("my_stream_key")
+                    }
                 }
+                Text("Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef")
             }
-            Text("Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef")
-            Text("")
+        } header: {
+            Text("Twitch")
         }
-        Group {
-            Text("YouTube")
-                .underline()
+        Section {
             Text("Example: rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3")
-            Text("")
+        } header: {
+            Text("YouTube")
         }
-        Group {
-            Text("Facebook")
-                .underline()
+        Section {
             Text("Example: rtmps://live-api-s.facebook.com:443/rtmp/FB-11152522122511115-0-BctNCp9jzzz-AAA")
-            Text("")
+        } header: {
+            Text("Facebook")
         }
-        Group {
-            Text("Kick")
-                .underline()
-            HStack(spacing: 0) {
-                Text("Template: rtmps://")
-                Link("stream_url", destination: URL(string: "https://kick.com/dashboard/settings/stream")!)
-                    .font(.footnote)
-                Text("/")
-                Link("my_stream_key", destination: URL(string: "https://kick.com/dashboard/settings/stream")!)
-                    .font(.footnote)
+        Section {
+            VStack(alignment: .leading) {
+                HStack(spacing: 0) {
+                    Text("""
+                    Template: \
+                    [Stream URL](https://dashboard.kick.com/channel/stream)/\
+                    [Stream Key](https://dashboard.kick.com/channel/stream)
+                    """)
+                }
+                Text(
+                    """
+                    Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh
+                    """
+                )
             }
-            Text(
-                """
-                Example:  rtmps://fa723fc1b171.global-contribute.live-video.net/sk_us-west-123hu43ui34hrkjh
-                """
-            )
-            Text("")
+        } header: {
+            Text("Kick")
         }
-        Group {
+        Section {
+            VStack(alignment: .leading) {
+                Text("Template: rtmp://my_public_ip:my_public_port/my_stream_key")
+                Text("Example:  rtmp://foobar.org:3321/5678")
+            }
+        } header: {
             Text("RTMP server")
-                .underline()
-            Text("Template: rtmp://my_public_ip:my_public_port/my_stream_key")
-            Text("Example:  rtmp://foobar.org:3321/5678")
         }
     }
 }
 
 private struct SrtHelpView: View {
     var body: some View {
-        Group {
+        Section {
+            VStack(alignment: .leading) {
+                Text("Template: srt://my_public_ip:my_public_port")
+                Text("Example:  srt://134.20.342.12:5000")
+            }
+        } header: {
             Text("OBS Media Source (SRT)")
-                .underline()
-            Text("Template: srt://my_public_ip:my_public_port")
-            Text("Example:  srt://134.20.342.12:5000")
-            Text("")
         }
-        Group {
-            Group {
-                Text("BELABOX cloud SRTLA").underline()
-                Text("Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3")
-                Text("")
-            }
-            Group {
-                Text("BELABOX cloud SRT").underline()
-                Text("Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3")
-                Text("")
-            }
-            Group {
-                Text("SRTLA server").underline()
+        Section {
+            Text("Example: srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3")
+        } header: {
+            Text("BELABOX cloud SRTLA")
+        }
+        Section {
+            Text("Example: srt://uk.srt.belabox.net:4000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3")
+        } header: {
+            Text("BELABOX cloud SRT")
+        }
+        Section {
+            VStack(alignment: .leading) {
                 Text("Template: srtla://my_public_ip:my_public_port")
                 Text("Example:  srtla://foobar.org:4432")
-                Text("")
             }
-            Group {
-                Text("SRT Live Server (SLS)").underline()
+        } header: {
+            Text("SRTLA server")
+        }
+        Section {
+            VStack(alignment: .leading) {
                 Text("Template: srt://my_public_ip:my_public_port?streamid=publish/live/my_key")
                 Text("Example:  srt://120.12.32.12:4000?streamid=publish/live/feed")
-                Text("")
             }
+        } header: {
+            Text("SRT Live Server (SLS)")
         }
     }
 }
@@ -113,10 +112,10 @@ private struct UrlSettingsView: View {
     let allowedSchemes: [String]?
     let showSrtHelp: Bool
     @State var value: String
-    @State var show: Bool = false
     @State var changed: Bool = false
     @State var submitted: Bool = false
     @State var error: String?
+    @State var presentingHelp: Bool = false
 
     private func submitUrl() {
         guard !submitted else {
@@ -136,47 +135,50 @@ private struct UrlSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ZStack(alignment: .leading) {
-                    MultiLineTextFieldView(value: $value)
-                        .textInputAutocapitalization(.never)
-                        .onSubmit {
+                MultiLineTextFieldView(value: $value)
+                    .textInputAutocapitalization(.never)
+                    .onSubmit {
+                        submitUrl()
+                    }
+                    .submitLabel(.done)
+                    .onChange(of: value) { _ in
+                        error = isValidUrl(url: value, allowedSchemes: allowedSchemes)
+                        changed = true
+                        if value.contains("\n") {
+                            value = value.replacingOccurrences(of: "\n", with: "")
                             submitUrl()
                         }
-                        .submitLabel(.done)
-                        .onChange(of: value) { _ in
-                            error = isValidUrl(url: value, allowedSchemes: allowedSchemes)
-                            changed = true
-                            if value.contains("\n") {
-                                value = value.replacingOccurrences(of: "\n", with: "")
-                                submitUrl()
+                    }
+                    .disableAutocorrection(true)
+            } footer: {
+                if let error {
+                    FormFieldError(error: error)
+                }
+                Text("Do not share your URL with anyone or they can hijack your channel!")
+                    .bold()
+            }
+            Section {
+                TextButtonView("Help") {
+                    presentingHelp = true
+                }
+                .sheet(isPresented: $presentingHelp) {
+                    NavigationView {
+                        Form {
+                            RtmpHelpView(stream: stream)
+                            if showSrtHelp {
+                                SrtHelpView()
                             }
                         }
-                        .disableAutocorrection(true)
-                        .opacity(show ? 1 : 0)
-                    Text(replaceSensitive(value: value, sensitive: true))
-                        .opacity(show ? 0 : 1)
-                }
-                HCenter {
-                    if show {
-                        Button("Hide sensitive URL") {
-                            show = false
+                        .navigationTitle("Help")
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button {
+                                    presentingHelp = false
+                                } label: {
+                                    Image(systemName: "xmark")
+                                }
+                            }
                         }
-                    } else {
-                        Button("Show sensitive URL", role: .destructive) {
-                            show = true
-                        }
-                    }
-                }
-            } footer: {
-                VStack(alignment: .leading) {
-                    if let error {
-                        FormFieldError(error: error)
-                    }
-                    Text("Do not share your URL with anyone or they can hijack your channel!")
-                        .bold()
-                    RtmpHelpView(stream: stream)
-                    if showSrtHelp {
-                        SrtHelpView()
                     }
                 }
             }

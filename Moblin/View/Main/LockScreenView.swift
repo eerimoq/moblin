@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LockScreenView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     var body: some View {
         Text("")

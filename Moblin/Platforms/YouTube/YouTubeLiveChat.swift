@@ -163,7 +163,7 @@ final class YouTubeLiveChat: NSObject {
             onOk: handleOk,
             settings: settings
         )
-        task = Task.init {
+        task = Task {
             while true {
                 do {
                     try await getInitialContinuation()
@@ -332,6 +332,7 @@ final class YouTubeLiveChat: NSObject {
         await MainActor.run {
             model.appendChatMessage(platform: .youTube,
                                     messageId: nil,
+                                    displayName: chatDescription.authorName.simpleText,
                                     user: chatDescription.authorName.simpleText,
                                     userId: nil,
                                     userColor: nil,
@@ -400,7 +401,7 @@ final class YouTubeLiveChat: NSObject {
         var request = URLRequest(url: from)
         request.httpMethod = "POST"
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setContentType("application/json")
         let (data, response) = try await URLSession.shared.upload(for: request, from: data)
         if let response = response.http {
             return (data, response)

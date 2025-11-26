@@ -27,6 +27,12 @@
             "value" : " %lld ch"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld ch"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
@@ -38,6 +44,18 @@
     " %lld kHz" : {
       "localizations" : {
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld kHz"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld kHz"
+          }
+        },
+        "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : " %lld kHz"
@@ -71,10 +89,32 @@
             "value" : "%lld dB,"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld dB,"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld dB,"
+          }
+        }
+      }
+    },
+    "Bad port" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schlechter Port"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連接埠錯誤"
           }
         }
       }
@@ -175,6 +215,12 @@
             "value" : "IRL URL 格式錯誤"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IRL URL 格式錯誤"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
@@ -228,6 +274,12 @@
             "value" : "IRLTookit URL 格式錯誤"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IRLToolkit URL 格式錯誤"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
@@ -275,6 +327,12 @@
           }
         },
         "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RIST URL 格式錯誤"
+          }
+        },
+        "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "RIST URL 格式錯誤"
@@ -332,6 +390,12 @@
             "value" : "RTMP URL 格式錯誤"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP URL 格式錯誤"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
@@ -382,6 +446,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SRT 聚合 URL 格式錯誤"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SRT(LA) URL 格式錯誤"
           }
         },
         "zh-HK" : {
@@ -436,10 +506,32 @@
             "value" : "URL 格式錯誤"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL 格式錯誤"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "URL格式錯誤"
+          }
+        }
+      }
+    },
+    "Not a number" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Zahl"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不是數字"
           }
         }
       }
@@ -488,6 +580,12 @@
             "value" : "缺少 RIST 連接埠"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少 RIST 連接埠號"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
@@ -502,6 +600,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RTMP Streamschlüssel fehlt"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RTMP stream key ontbreekt"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少 RTMP 串流金鑰"
           }
         }
       }
@@ -546,6 +656,12 @@
           }
         },
         "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少 RTMP 串流名稱"
+          }
+        },
+        "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "缺少 RTMP 串流名稱"
@@ -602,6 +718,12 @@
             "state" : "translated",
             "value" : "組合遺失"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少 scheme"
+          }
         }
       }
     },
@@ -643,10 +765,48 @@
             "value" : "缺少 SRT聚合連接埠"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少 SRT(LA) 連接埠"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "缺少SRT(LA)連接埠"
+          }
+        }
+      }
+    },
+    "Too big" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu groß"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "太大"
+          }
+        }
+      }
+    },
+    "Too small" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu klein"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "太小"
           }
         }
       }
@@ -687,6 +847,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不支援的組合 %@"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 計畫不支援"
           }
         }
       }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "fa2ad0d101396197799b8d983ba3f1aadeaae0e7a0acb4fca3deeed8231c7ce8",
+  "originHash" : "6c4b0ed291011e41235c7a080a6098195bdb5ab100e153b777379c9255cbb8b7",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -8,15 +8,6 @@
       "state" : {
         "branch" : "master",
         "revision" : "8153b58666a2854466fc06945ec5ffdfa763e92b"
-      }
-    },
-    {
-      "identity" : "applegpuinfo",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/philipturner/applegpuinfo",
-      "state" : {
-        "branch" : "main",
-        "revision" : "24226431095c614c88de686ea5afcc99d7cb31f5"
       }
     },
     {
@@ -38,15 +29,6 @@
       }
     },
     {
-      "identity" : "devicekit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/devicekit/DeviceKit",
-      "state" : {
-        "branch" : "master",
-        "revision" : "513b9d7e7a1bd46504a1009bbab943b75ce2f195"
-      }
-    },
-    {
       "identity" : "libwebp-xcode",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/libwebp-Xcode.git",
@@ -62,15 +44,6 @@
       "state" : {
         "revision" : "56f1b5724138e4d9f60453b555edc80e43805503",
         "version" : "2.2.0"
-      }
-    },
-    {
-      "identity" : "metalpetal",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/MetalPetal",
-      "state" : {
-        "branch" : "master",
-        "revision" : "f9b78897bd4214bb097f352a1bde0a4f4a1e2ddb"
       }
     },
     {
@@ -96,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage.git",
       "state" : {
-        "revision" : "b62cb63bf4ed1f04c961a56c9c6c9d5ab8524ec6",
-        "version" : "5.21.1"
+        "revision" : "2053b120767c42a70bcba21095f34e4cfb54a75d",
+        "version" : "5.21.3"
       }
     },
     {
@@ -105,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImageSwiftUI",
       "state" : {
-        "revision" : "451c6dfd5ecec2cf626d1d9ca81c2d4a60355172",
-        "version" : "3.1.3"
+        "revision" : "0e331457ca9af2f0b08bcaa138a91ffb907b004f",
+        "version" : "3.1.4"
       }
     },
     {
@@ -114,17 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImageWebPCoder",
       "state" : {
-        "revision" : "f534cfe830a7807ecc3d0332127a502426cfa067",
-        "version" : "0.14.6"
-      }
-    },
-    {
-      "identity" : "swift-argument-parser",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-argument-parser",
-      "state" : {
-        "branch" : "main",
-        "revision" : "d075877f3a7a06e75d46b3c3275dcba0ac9c9f9b"
+        "revision" : "12d83edbcc795fb7b5c0c3cb74d739108d3357d2",
+        "version" : "0.15.0"
       }
     },
     {
@@ -132,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections.git",
       "state" : {
-        "revision" : "8c0c0a8b49e080e54e5e328cc552821ff07cd341",
-        "version" : "1.2.1"
+        "revision" : "7b847a3b7008b2dc2f47ca3110d8c782fb2e5c7e",
+        "version" : "1.3.0"
       }
     },
     {
@@ -141,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "102a647b573f60f73afdce5613a51d71349fe507",
-        "version" : "1.30.0"
+        "revision" : "c169a5744230951031770e27e475ff6eefe51f9d",
+        "version" : "1.33.3"
       }
     },
     {

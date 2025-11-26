@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 private struct QuickButtonMicMicView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var mic: SettingsMicsMic
     @ObservedObject var modelMic: Mic
 
@@ -14,7 +14,7 @@ private struct QuickButtonMicMicView: View {
                 .lineLimit(1)
             Spacer()
             Image(systemName: "checkmark")
-                .foregroundColor(mic == modelMic.current ? .blue : .clear)
+                .foregroundStyle(mic == modelMic.current ? .blue : .clear)
                 .bold()
         }
         .contentShape(Rectangle())
@@ -29,7 +29,7 @@ private struct QuickButtonMicMicView: View {
 }
 
 struct QuickButtonMicView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var mics: SettingsMics
     @ObservedObject var modelMic: Mic
 
@@ -38,7 +38,7 @@ struct QuickButtonMicView: View {
             Section {
                 List {
                     ForEach(mics.mics) { mic in
-                        QuickButtonMicMicView(mic: mic, modelMic: modelMic)
+                        QuickButtonMicMicView(model: model, mic: mic, modelMic: modelMic)
                             .deleteDisabled(mic == modelMic.current)
                     }
                     .onDelete { offsets in

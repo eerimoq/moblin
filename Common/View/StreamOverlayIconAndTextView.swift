@@ -23,7 +23,7 @@ struct StreamOverlayIconAndTextView: View {
                 .frame(width: 17, height: 17)
                 .font(smallFont)
                 .padding([.leading, .trailing], 2)
-                .foregroundColor(color)
+                .foregroundStyle(color)
                 .background(iconBackgroundColor)
                 .cornerRadius(5)
             if textPlacement == .afterIcon {

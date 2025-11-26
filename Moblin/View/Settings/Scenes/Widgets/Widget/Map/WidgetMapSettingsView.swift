@@ -8,7 +8,7 @@ struct WidgetMapSettingsView: View {
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
-                widget.map.northUp!
+                widget.map.northUp
             }, set: { value in
                 widget.map.northUp = value
                 model.resetSelectedScene(changeScene: false)
@@ -35,6 +35,9 @@ struct WidgetMapSettingsView: View {
                     value: $delay,
                     in: 0 ... 10,
                     step: 0.5,
+                    label: {
+                        EmptyView()
+                    },
                     onEditingChanged: { begin in
                         guard !begin else {
                             return
