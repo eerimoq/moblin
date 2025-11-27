@@ -340,7 +340,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var selectedChatPlatform: ChatPlatformSelection = .all
     @Published var bluetoothAllowed = false
     @Published var sceneSettingsPanelSceneId = 1
-    @Published var showLoadSettingsFailed = false
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
     var activeBufferedVideoIds: Set<UUID> = []
@@ -619,7 +618,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     override init() {
         super.init()
-        showLoadSettingsFailed = !settings.load()
+        settings.load()
         streamingHistory.load()
         replaysStorage.load()
         setCurrentStream()
@@ -1365,10 +1364,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isRecording {
             suspendRecording()
         }
-        if !showLoadSettingsFailed {
-            store()
-            replaysStorage.store()
-        }
+        store()
+        replaysStorage.store()
         if isMac() {
             stopAll()
         }

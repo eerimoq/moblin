@@ -1786,14 +1786,12 @@ final class Settings {
 
     @AppStorage("settings") var storage = ""
 
-    func load() -> Bool {
+    func load() {
         do {
             try tryLoadAndMigrate(settings: storage)
-            return true
         } catch {
             logger.info("settings: Failed to load with error \(error). Using default.")
             realDatabase = createDefault()
-            return storage.isEmpty
         }
     }
 

@@ -288,7 +288,6 @@ struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
     let streamView: StreamView
-    @State var showAreYouReallySure = false
     @FocusState private var focused: Bool
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var toast: Toast
@@ -585,21 +584,6 @@ struct MainView: View {
                 toast.toast
             } onTap: {
                 model.toast.onTapped?()
-            }
-            .alert("⚠️ Failed to load settings ⚠️", isPresented: $model.showLoadSettingsFailed) {
-                Button("Delete old settings and continue", role: .cancel) {
-                    showAreYouReallySure = true
-                }
-            } message: {
-                Text("Immediately install the old version of the app to keep your old settings.")
-            }
-            .alert("⚠️ Deleting old settings ⚠️", isPresented: $showAreYouReallySure) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text("""
-                Immediately install the old version of the app to keep your old settings. \
-                This is the last warning!
-                """)
             }
             .persistentSystemOverlays(.hidden)
             if #available(iOS 17.0, *) {
