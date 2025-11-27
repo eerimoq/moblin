@@ -78,6 +78,15 @@ struct RecordingsSettingsView: View {
             RecordingsLocationView(model: model,
                                    text: Text("Replays directory"),
                                    path: model.replaysStorage.defaultStorageDirectory())
+            Section {
+                Text("""
+                Recordings are saved as fragmented MP4 to be resilient against crashes and other \
+                unexpected errors. Converting them to standard MP4 can improve compatibility with \
+                video players and video editing software.
+
+                Convert with `ffmpeg -i fragmented.mp4 -c copy standard.mp4` on your computer.
+                """)
+            }
         }
         .navigationTitle("Recordings")
     }
