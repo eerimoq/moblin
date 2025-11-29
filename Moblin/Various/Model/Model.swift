@@ -896,10 +896,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setAllowHapticsAndSystemSoundsDuringRecording() {
-        do {
-            try AVAudioSession.sharedInstance()
-                .setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate)
-        } catch {}
+        try? AVAudioSession.sharedInstance().setAllowHapticsAndSystemSoundsDuringRecording(database.vibrate)
     }
 
     func setup() {
