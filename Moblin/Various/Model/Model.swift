@@ -1292,8 +1292,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @objc func handleDidEnterBackgroundNotification() {
-        store()
-        replaysStorage.store()
         guard !isMac() else {
             return
         }
@@ -1305,6 +1303,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopPeriodicTimers(keepChatRunning: keepChatRunning,
                                keepBatteryLevelRunning: keepBatteryLevelRunning)
         case .off:
+            store()
+            replaysStorage.store()
             stopAll()
         }
     }
