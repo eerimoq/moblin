@@ -7,6 +7,10 @@ final class RtmpAcknowledgementMessage: RtmpMessage {
         super.init(type: .ack)
     }
 
+    override func execute(_ connection: RtmpConnection) {
+        connection.stream?.info.onAck(sequence: sequence)
+    }
+
     override var encoded: Data {
         get {
             guard super.encoded.isEmpty else {

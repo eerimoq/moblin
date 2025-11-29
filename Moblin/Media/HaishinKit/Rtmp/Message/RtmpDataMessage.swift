@@ -22,6 +22,10 @@ final class RtmpDataMessage: RtmpMessage {
         self.streamId = streamId
     }
 
+    override func execute(_ connection: RtmpConnection) {
+        connection.stream?.info.byteCount.mutate { $0 += Int64(encoded.count) }
+    }
+
     override var encoded: Data {
         get {
             guard super.encoded.isEmpty else {

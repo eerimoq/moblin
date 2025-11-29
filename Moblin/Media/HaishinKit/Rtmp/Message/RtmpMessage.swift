@@ -27,6 +27,8 @@ class RtmpMessage {
         self.type = type
     }
 
+    func execute(_: RtmpConnection) {}
+
     static func create(type: RtmpMessageType) -> RtmpMessage {
         switch type {
         case .chunkSize:

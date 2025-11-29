@@ -31,6 +31,19 @@ final class RtmpUserControlMessage: RtmpMessage {
         self.value = value
     }
 
+    override func execute(_ connection: RtmpConnection) {
+        switch event {
+        case .ping:
+            _ = connection.socket.write(chunk: RtmpChunk(
+                type: .zero,
+                chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+                message: RtmpUserControlMessage(event: .pong, value: value)
+            ))
+        default:
+            break
+        }
+    }
+
     override var encoded: Data {
         get {
             guard super.encoded.isEmpty else {

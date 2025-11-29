@@ -12,6 +12,10 @@ final class RtmpWindowAcknowledgementSizeMessage: RtmpMessage {
         self.size = size
     }
 
+    override func execute(_ connection: RtmpConnection) {
+        connection.handleWindowSizeFromServer()
+    }
+
     override var encoded: Data {
         get {
             guard super.encoded.isEmpty else {

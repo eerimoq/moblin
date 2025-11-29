@@ -18,10 +18,10 @@ enum RtmpCommandName: String {
 }
 
 final class RtmpCommandMessage: RtmpMessage {
-    private(set) var commandName: RtmpCommandName = .close
+    private var commandName: RtmpCommandName = .close
     private(set) var transactionId: Int = 0
     private var commandObject: AsObject?
-    private(set) var arguments: [Any?] = []
+    private var arguments: [Any?] = []
 
     init(commandType: RtmpMessageType) {
         super.init(type: commandType)
@@ -41,6 +41,26 @@ final class RtmpCommandMessage: RtmpMessage {
         self.arguments = arguments
         super.init(type: commandType)
         self.streamId = streamId
+    }
+
+    override func execute(_ connection: RtmpConnection) {
+        guard let responder = connection.callCompletions.removeValue(forKey: transactionId) else {
+            switch commandName {
+            case .close:
+                connection.disconnect()
+            default:
+                if let data = arguments.first as? AsObject?, let data {
+                    connection.gotCommand(data: data)
+                }
+            }
+            return
+        }
+        switch commandName {
+        case .result:
+            responder(arguments)
+        default:
+            break
+        }
     }
 
     override var encoded: Data {
