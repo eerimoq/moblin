@@ -240,7 +240,7 @@ class RtmpConnection {
         stream?.info.onAck(sequence: message.sequence)
     }
 
-    func processMessageWindowAcknowledgementSize() {
+    private func processMessageWindowAcknowledgementSize() {
         _ = socket.write(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
