@@ -231,7 +231,7 @@ class RtmpConnection {
         callCompletions.removeAll()
         fragmentedChunks.removeAll()
     }
-    
+
     private func processMessageSetChunkSize(message: RtmpSetChunkSizeMessage) {
         socket.maximumChunkSizeFromServer = Int(message.size)
     }
