@@ -551,6 +551,14 @@ class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
         new.running = running
         return new
     }
+
+    func currentTime() -> Double {
+        if running {
+            return totalElapsed + playPressedTime.duration(to: .now).seconds
+        } else {
+            return totalElapsed
+        }
+    }
 }
 
 class SettingsWidgetTextSubtitles: Codable {

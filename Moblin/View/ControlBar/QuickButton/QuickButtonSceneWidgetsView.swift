@@ -52,12 +52,49 @@ struct TimerWidgetView: View {
     }
 }
 
+private struct TimeComponentPickerView: View {
+    let title: LocalizedStringKey
+    let range: Range<Int>
+    @Binding var time: Int
+
+    var body: some View {
+        VStack {
+            Text(title)
+            Picker("", selection: $time) {
+                ForEach(range, id: \.self) {
+                    Text(String($0))
+                }
+            }
+            .pickerStyle(.wheel)
+            .frame(width: 100, height: 150)
+        }
+    }
+}
+
+private struct TimeButtonView: View {
+    let text: LocalizedStringKey
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Text(text)
+                .frame(width: 100, height: 30)
+        }
+    }
+}
+
 struct StopwatchWidgetView: View {
     private let name: String
     @ObservedObject var stopwatch: SettingsWidgetTextStopwatch
     private let index: Int
     private let textEffect: TextEffect
     private var indented: Bool
+    @State private var presentingSetTime: Bool = false
+    @State private var hours: Int = 0
+    @State private var minutes: Int = 0
+    @State private var seconds: Int = 0
 
     init(name: String, stopwatch: SettingsWidgetTextStopwatch, index: Int, textEffect: TextEffect, indented: Bool) {
         self.name = name
@@ -77,32 +114,76 @@ struct StopwatchWidgetView: View {
                 Text("")
                 Text("").frame(width: iconWidth)
             }
-            Text(name)
-            Spacer()
-            Button {
-                stopwatch.totalElapsed = 0.0
-                stopwatch.running = false
-                updateTextEffect()
-            } label: {
-                Image(systemName: "arrow.counterclockwise")
-                    .font(.title)
-            }
-            .padding([.trailing], 10)
-            Button {
-                stopwatch.running.toggle()
-                if stopwatch.running {
-                    stopwatch.playPressedTime = .now
-                } else {
-                    stopwatch.totalElapsed += stopwatch.playPressedTime.duration(to: .now).seconds
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(name)
+                    Spacer()
                 }
-                updateTextEffect()
-            } label: {
-                Image(systemName: stopwatch.running ? "stop" : "play")
-                    .font(.title)
-                    .frame(width: 35)
+                HStack {
+                    Spacer()
+                    Button {
+                        presentingSetTime = true
+                    } label: {
+                        Image(systemName: "clock")
+                            .font(.title)
+                    }
+                    .buttonStyle(.borderless)
+                    .popover(isPresented: $presentingSetTime, arrowEdge: .bottom) {
+                        VStack {
+                            HStack {
+                                TimeComponentPickerView(title: "Hours", range: 0 ..< 24, time: $hours)
+                                TimeComponentPickerView(title: "Minutes", range: 0 ..< 60, time: $minutes)
+                                TimeComponentPickerView(title: "Seconds", range: 0 ..< 60, time: $seconds)
+                            }
+                            .padding()
+                            HStack {
+                                TimeButtonView(text: "Set") {
+                                    stopwatch.playPressedTime = .now
+                                    stopwatch.totalElapsed = Double(hours * 3600 + minutes * 60 + seconds)
+                                    updateTextEffect()
+                                    presentingSetTime = false
+                                }
+                                TimeButtonView(text: "Cancel") {
+                                    presentingSetTime = false
+                                }
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .padding()
+                        }
+                        .padding()
+                        .onAppear {
+                            let time = Int(stopwatch.currentTime())
+                            seconds = time % 60
+                            minutes = (time / 60) % 60
+                            hours = min(time / 3600, 23)
+                        }
+                    }
+                    Button {
+                        stopwatch.totalElapsed = 0.0
+                        stopwatch.running = false
+                        updateTextEffect()
+                    } label: {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.title)
+                    }
+                    .buttonStyle(.borderless)
+                    Button {
+                        stopwatch.running.toggle()
+                        if stopwatch.running {
+                            stopwatch.playPressedTime = .now
+                        } else {
+                            stopwatch.totalElapsed += stopwatch.playPressedTime.duration(to: .now).seconds
+                        }
+                        updateTextEffect()
+                    } label: {
+                        Image(systemName: stopwatch.running ? "stop" : "play")
+                            .font(.title)
+                            .frame(width: 35)
+                    }
+                    .buttonStyle(.borderless)
+                }
             }
         }
-        .buttonStyle(BorderlessButtonStyle())
     }
 }
 
