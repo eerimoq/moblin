@@ -93,7 +93,6 @@ private actor RtmpServerMock {
             return
         }
         inputData += data
-        logger.info("rtmp test all \(inputData): \(inputData.hexString())")
         if let data = tryGetData() {
             input.put(data)
         }
@@ -137,8 +136,8 @@ struct RtmpStreamSuite {
         try expectBasicHeader(reader: reader, fmt: 0, csId: 3)
         try expectMessageHeader(reader: reader, size: 259, messageTypeId: 20, messageStreamId: 0)
         try expectConnectCommandMessage(reader: reader)
-        await sendWindowAcknowledgementSize(server: server)
-        await sendSetPeerBandwidth(server: server)
+        await sendWindowAcknowledgementSize(server: server, chunkStreamId: 3, size: 256)
+        await sendSetPeerBandwidth(server: server, chunkStreamId: 3, size: 1000)
         try await expectWindowAcknowledgementSize(server: server)
         await server.send(chunk: RtmpChunk(
             type: .zero,
@@ -156,6 +155,118 @@ struct RtmpStreamSuite {
                 ]]
             )
         ))
+        let setChunkSize = await receiveSetChunkSize(server: server)
+        #expect(setChunkSize.size == 8192)
+        #expect(await modelMock.waitForStatus() == "NetConnection.Connect.Success")
+        var message = try await receiveCommandMessage(server: server, size: 42)
+        #expect(message.commandName == .releaseStream)
+        #expect(message.arguments.count == 1)
+        #expect(message.arguments[0] as! String == streamKey)
+        message = try await receiveCommandMessage(server: server, size: 38)
+        #expect(message.commandName == .fcPublish)
+        #expect(message.arguments.count == 1)
+        #expect(message.arguments[0] as! String == streamKey)
+        message = try await receiveCommandMessage(server: server, size: 37)
+        #expect(message.commandName == .createStream)
+        #expect(message.arguments.count == 0)
+        await server.send(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: 3,
+            message: RtmpCommandMessage(
+                streamId: 0,
+                transactionId: message.transactionId,
+                commandType: .amf0Command,
+                commandName: .result,
+                commandObject: nil,
+                arguments: [1]
+            )
+        ))
+        message = try await receiveCommandMessage(server: server, size: 43)
+        #expect(message.commandName == .publish)
+        #expect(message.arguments.count == 2)
+        #expect(message.arguments[0] as! String == streamKey)
+        #expect(message.arguments[1] as! String == "live")
+        await server.send(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: 3,
+            message: RtmpCommandMessage(
+                streamId: 0,
+                transactionId: message.transactionId,
+                commandType: .amf0Command,
+                commandName: .onStatus,
+                commandObject: nil,
+                arguments: [[
+                    "level": "status",
+                    "code": "NetStream.Publish.Start",
+                    "description": "Start publishing.",
+                ]]
+            )
+        ))
+        #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
+        await modelMock.waitForConnected()
+        rtmpStream.disconnect()
+        // @setDataFrame
+        _ = await server.receive(count: 192)
+        message = try await receiveCommandMessage(server: server, size: 40)
+        #expect(message.commandName == .fcUnpublish)
+        #expect(message.arguments.count == 1)
+        #expect(message.arguments[0] as! String == streamKey)
+        message = try await receiveCommandMessage(server: server, size: 46)
+        #expect(message.commandName == .deleteStream)
+        #expect(message.arguments.count == 1)
+        #expect(message.arguments[0] as! Double == 1)
+        message = try await receiveCommandMessage(server: server, size: 45)
+        #expect(message.commandName == .closeStream)
+        #expect(message.arguments.count == 1)
+        #expect(message.arguments[0] as! Double == 1)
+    }
+
+    @Test
+    func youTube() async throws {
+        let streamKey = "5"
+        let processor = Processor()
+        let modelMock = ModelMock()
+        let server = try RtmpServerMock()
+        let rtmpStream = RtmpStream(name: "test",
+                                    processor: processor,
+                                    delegate: modelMock,
+                                    queue: rtmpQueue)
+        rtmpStream.setUrl("rtmp://127.0.0.1:\(await server.getLocalPort())/live/\(streamKey)")
+        rtmpStream.connect()
+        let c0c1 = await receiveC0C1(server: server)
+        #expect(c0c1[0] == RtmpHandshake.protocolVersion)
+        await sendS0S1(server: server)
+        _ = await receiveC2(server: server)
+        await sendS2(server: server)
+        let reader = ByteReader(data: await server.receive(count: 273))
+        try expectBasicHeader(reader: reader, fmt: 0, csId: 3)
+        try expectMessageHeader(reader: reader, size: 259, messageTypeId: 20, messageStreamId: 0)
+        try expectConnectCommandMessage(reader: reader)
+        await sendWindowAcknowledgementSize(server: server, chunkStreamId: 2, size: 2_500_000)
+        await sendSetPeerBandwidth(server: server, chunkStreamId: 2, size: 59_768_832)
+        try await expectWindowAcknowledgementSize(server: server)
+        await server.send(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: 3,
+            message: RtmpCommandMessage(
+                streamId: 0,
+                transactionId: 2,
+                commandType: .amf0Command,
+                commandName: .result,
+                commandObject: [
+                    "fmsVer": "FMS/3,5,3,824",
+                    "capabilities": 127,
+                    "mode": "1",
+                ],
+                arguments: [[
+                    "level": "status",
+                    "code": "NetConnection.Connect.Success",
+                    "description": "Connection succeeded.",
+                    "objectEncoding": 0,
+                ]]
+            )
+        ))
+        // Nothing below is updated to match Wireshark.
         let setChunkSize = await receiveSetChunkSize(server: server)
         #expect(setChunkSize.size == 8192)
         #expect(await modelMock.waitForStatus() == "NetConnection.Connect.Success")
@@ -239,19 +350,19 @@ private func sendS2(server: RtmpServerMock) async {
     await server.send(data: Data(count: RtmpHandshake.sigSize))
 }
 
-private func sendWindowAcknowledgementSize(server: RtmpServerMock) async {
+private func sendWindowAcknowledgementSize(server: RtmpServerMock, chunkStreamId: UInt16, size: UInt32) async {
     await server.send(chunk: RtmpChunk(
         type: .zero,
-        chunkStreamId: 3,
-        message: RtmpWindowAcknowledgementSizeMessage(256)
+        chunkStreamId: chunkStreamId,
+        message: RtmpWindowAcknowledgementSizeMessage(size)
     ))
 }
 
-private func sendSetPeerBandwidth(server: RtmpServerMock) async {
+private func sendSetPeerBandwidth(server: RtmpServerMock, chunkStreamId: UInt16, size: UInt32) async {
     await server.send(chunk: RtmpChunk(
         type: .zero,
-        chunkStreamId: 3,
-        message: RtmpSetPeerBandwidthMessage(size: 1000, limit: .dynamic)
+        chunkStreamId: chunkStreamId,
+        message: RtmpSetPeerBandwidthMessage(size: size, limit: .dynamic)
     ))
 }
 
