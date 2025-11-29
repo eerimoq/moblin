@@ -43,26 +43,6 @@ final class RtmpCommandMessage: RtmpMessage {
         self.streamId = streamId
     }
 
-    override func execute(_ connection: RtmpConnection) {
-        guard let responder = connection.callCompletions.removeValue(forKey: transactionId) else {
-            switch commandName {
-            case .close:
-                connection.disconnect()
-            default:
-                if let data = arguments.first as? AsObject?, let data {
-                    connection.gotCommand(data: data)
-                }
-            }
-            return
-        }
-        switch commandName {
-        case .result:
-            responder(arguments)
-        default:
-            break
-        }
-    }
-
     override var encoded: Data {
         get {
             guard super.encoded.isEmpty else {
