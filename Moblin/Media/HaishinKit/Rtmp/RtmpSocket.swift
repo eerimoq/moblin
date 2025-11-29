@@ -51,10 +51,14 @@ final class RtmpSocket {
     }
 
     func close(isDisconnected: Bool) {
-        connection?.viabilityUpdateHandler = nil
-        connection?.stateUpdateHandler = nil
-        connection?.cancel()
-        connection = nil
+        if let connection {
+            connection.viabilityUpdateHandler = nil
+            connection.stateUpdateHandler = nil
+            // Workaround for closeStream RTMP command not being sent.
+            queue.asyncAfter(deadline: .now() + 1) {
+                connection.cancel()
+            }
+        }
         setReadyState(state: .closed)
         if isDisconnected {
             let data: AsObject
