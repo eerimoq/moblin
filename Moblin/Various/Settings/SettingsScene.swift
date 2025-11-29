@@ -522,7 +522,9 @@ class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
     @Published var running: Bool = false
 
     enum CodingKeys: CodingKey {
-        case id
+        case id,
+             totalElapsed,
+             running
     }
 
     init() {}
@@ -530,18 +532,22 @@ class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
+        try container.encode(.totalElapsed, totalElapsed)
+        try container.encode(.running, running)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
+        totalElapsed = container.decode(.totalElapsed, Double.self, 0)
+        running = container.decode(.running, Bool.self, false)
     }
 
     func clone() -> SettingsWidgetTextStopwatch {
         let new = SettingsWidgetTextStopwatch()
         new.id = id
-        new.playPressedTime = playPressedTime
         new.totalElapsed = totalElapsed
+        new.playPressedTime = playPressedTime
         new.running = running
         return new
     }

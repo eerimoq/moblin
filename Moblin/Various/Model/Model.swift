@@ -910,6 +910,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setAllowVideoRangePixelFormat()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
+        loadTextWidgetStopwatches()
         quickButtonChatState.showFirstTimeChatterMessage = database.chat.showFirstTimeChatterMessage
         quickButtonChatState.showNewFollowerMessage = database.chat.showNewFollowerMessage
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
@@ -1363,6 +1364,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isRecording {
             suspendRecording()
         }
+        updateSettingsFromTextWidgets()
         store()
         replaysStorage.store()
         if isMac() {

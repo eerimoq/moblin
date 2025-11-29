@@ -1316,6 +1316,25 @@ extension Model {
         sceneUpdated()
     }
 
+    func updateSettingsFromTextWidgets() {
+        for widgetId in textEffects.keys {
+            guard let widget = findWidget(id: widgetId) else {
+                continue
+            }
+            for stopwatch in widget.text.stopwatches where stopwatch.running {
+                stopwatch.totalElapsed += stopwatch.playPressedTime.duration(to: .now).seconds
+            }
+        }
+    }
+
+    func loadTextWidgetStopwatches() {
+        for widget in database.widgets where widget.type == .text {
+            for stopwatch in widget.text.stopwatches where stopwatch.running {
+                stopwatch.playPressedTime = .now
+            }
+        }
+    }
+
     private func updateTimers(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
         let numberOfTimers = parts.filter { $0 == .timer }.count
         while text.timers.count < numberOfTimers {
