@@ -256,7 +256,7 @@ struct RtmpStreamSuite {
                 commandObject: [
                     "fmsVer": "FMS/3,5,3,824",
                     "capabilities": 127,
-                    "mode": "1",
+                    "mode": 1,
                 ],
                 arguments: [[
                     "level": "status",
