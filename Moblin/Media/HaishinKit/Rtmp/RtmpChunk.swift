@@ -20,7 +20,7 @@ enum RtmpChunkType: UInt8 {
     }
 
     func areBasicAndMessageHeadersAvailable(_ data: Data) -> Bool {
-        return RtmpChunk.basicHeaderSize(data[0]) + messageHeaderSize() < data.count
+        return basicHeaderSize(data[0]) + messageHeaderSize() < data.count
     }
 
     func toBasicHeader(_ chunkStreamId: UInt16) -> Data {
@@ -31,6 +31,31 @@ enum RtmpChunkType: UInt8 {
             return Data([rawValue << 6 | 0b0000000, UInt8(chunkStreamId - 64)])
         }
         return Data([rawValue << 6 | 0b0000_0001] + (chunkStreamId - 64).bigEndian.data)
+    }
+}
+
+private func basicAndMessageHeadersSize(chunkStreamId: UInt16, type: RtmpChunkType) -> Int {
+    return basicHeaderSize(chunkStreamId: chunkStreamId) + type.messageHeaderSize()
+}
+
+private func basicHeaderSize(chunkStreamId: UInt16) -> Int {
+    if chunkStreamId <= 63 {
+        return 1
+    }
+    if chunkStreamId <= 319 {
+        return 2
+    }
+    return 3
+}
+
+private func basicHeaderSize(_ byte: UInt8) -> Int {
+    switch byte & 0b0011_1111 {
+    case 0:
+        return 2
+    case 1:
+        return 3
+    default:
+        return 1
     }
 }
 
@@ -131,7 +156,7 @@ final class RtmpChunk {
             return 0
         }
         let buffer = ByteReader(data: data)
-        buffer.position = basicHeaderSize()
+        buffer.position = basicHeaderSize(chunkStreamId: chunkStreamId)
         do {
             self.message = RtmpMessage.create(type: message.type)
             self.message?.streamId = message.streamId
@@ -141,7 +166,7 @@ final class RtmpChunk {
         } catch {
             logger.info("\(buffer)")
         }
-        return basicAndMessageHeadersSize() + message.length
+        return basicAndMessageHeadersSize(chunkStreamId: chunkStreamId, type: type) + message.length
     }
 
     func split(maximumSize: Int) -> [Data] {
@@ -150,7 +175,7 @@ final class RtmpChunk {
         guard let message, maximumSize < message.encoded.count else {
             return [data]
         }
-        let startIndex = maximumSize + basicAndMessageHeadersSize()
+        let startIndex = maximumSize + basicAndMessageHeadersSize(chunkStreamId: chunkStreamId, type: type)
         let header = RtmpChunkType.three.toBasicHeader(chunkStreamId)
         var chunks = [data.subdata(in: 0 ..< startIndex)]
         for index in stride(from: startIndex, to: data.count, by: maximumSize) {
@@ -171,7 +196,7 @@ final class RtmpChunk {
         default:
             break
         }
-        header.append(data[0 ..< basicAndMessageHeadersSize()])
+        header.append(data[0 ..< basicAndMessageHeadersSize(chunkStreamId: chunkStreamId, type: type)])
         guard type == .zero || type == .one else {
             return
         }
@@ -193,30 +218,5 @@ final class RtmpChunk {
         fragmented = size + reader.position <= end
         message.encoded = data.subdata(in: reader.position ..< min(size + reader.position, end))
         self.message = message
-    }
-
-    private func basicAndMessageHeadersSize() -> Int {
-        return basicHeaderSize() + type.messageHeaderSize()
-    }
-
-    private func basicHeaderSize() -> Int {
-        if chunkStreamId <= 63 {
-            return 1
-        }
-        if chunkStreamId <= 319 {
-            return 2
-        }
-        return 3
-    }
-
-    fileprivate static func basicHeaderSize(_ byte: UInt8) -> Int {
-        switch byte & 0b0011_1111 {
-        case 0:
-            return 2
-        case 1:
-            return 3
-        default:
-            return 1
-        }
     }
 }
