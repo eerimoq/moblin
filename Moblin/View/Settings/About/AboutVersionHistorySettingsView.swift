@@ -8,6 +8,18 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "27.6.0", date: "2025-11-29", changes: [
+        "• Finnish translation updated. ✍️ mikeful",
+        "• Do not show low battery warning when using iPhone simulator in Xcode. 🧑‍🏭 xcopy94",
+        "• Convert recordings to standard MP4 how-to.",
+        "• Korean translation updated. ✍️ Winter1l",
+        "• Chinese Taiwan translation updated. ✍️ ИƎØ_ΙΙØZ",
+        "• Update battery level in background when Moblink relay is used. 🐛 Djandrea",
+        "• Try to end RTMP streams cleanly. 🐛 xcopy94",
+        "• Remember stopwatch state when restarting the app. 💡 mikeful",
+        "• Set stopwatch time. 💡 mikeful",
+        "• Fix RTMP streaming to YouTube, and maybe other platforms. 🐛 Aisu and Maheshh",
+    ]),
     Version(version: "27.5.0", date: "2025-11-24", changes: [
         "• Show stopwatch when added to text widget. 🐛 mikeful",
         "• German translation updated. ✍️ MaurisonX",
