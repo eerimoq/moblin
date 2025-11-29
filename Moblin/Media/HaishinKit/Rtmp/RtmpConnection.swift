@@ -231,6 +231,59 @@ class RtmpConnection {
         callCompletions.removeAll()
         fragmentedChunks.removeAll()
     }
+    
+    private func processMessageSetChunkSize(message: RtmpSetChunkSizeMessage) {
+        socket.maximumChunkSizeFromServer = Int(message.size)
+    }
+
+    private func processMessageAcknowledgementMessage(message: RtmpAcknowledgementMessage) {
+        stream?.info.onAck(sequence: message.sequence)
+    }
+
+    func processMessageWindowAcknowledgementSize() {
+        _ = socket.write(chunk: RtmpChunk(
+            type: .zero,
+            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+            message: RtmpWindowAcknowledgementSizeMessage(100_000)
+        ))
+    }
+
+    private func processMessageUserControl(message: RtmpUserControlMessage) {
+        switch message.event {
+        case .ping:
+            _ = socket.write(chunk: RtmpChunk(
+                type: .zero,
+                chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
+                message: RtmpUserControlMessage(event: .pong, value: message.value)
+            ))
+        default:
+            break
+        }
+    }
+
+    private func processMessageCommand(message: RtmpCommandMessage) {
+        guard let responder = callCompletions.removeValue(forKey: message.transactionId) else {
+            switch message.commandName {
+            case .close:
+                disconnect()
+            default:
+                if let data = message.arguments.first as? AsObject?, let data {
+                    gotCommand(data: data)
+                }
+            }
+            return
+        }
+        switch message.commandName {
+        case .result:
+            responder(message.arguments)
+        default:
+            break
+        }
+    }
+
+    private func processMessageData(message: RtmpDataMessage) {
+        stream?.info.byteCount.mutate { $0 += Int64(message.encoded.count) }
+    }
 }
 
 extension RtmpConnection: RtmpSocketDelegate {
@@ -309,58 +362,5 @@ extension RtmpConnection: RtmpSocketDelegate {
 
     func socketPost(data: AsObject) {
         on(data: data)
-    }
-
-    private func processMessageSetChunkSize(message: RtmpSetChunkSizeMessage) {
-        socket.maximumChunkSizeFromServer = Int(message.size)
-    }
-
-    private func processMessageAcknowledgementMessage(message: RtmpAcknowledgementMessage) {
-        stream?.info.onAck(sequence: message.sequence)
-    }
-
-    func processMessageWindowAcknowledgementSize() {
-        _ = socket.write(chunk: RtmpChunk(
-            type: .zero,
-            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
-            message: RtmpWindowAcknowledgementSizeMessage(100_000)
-        ))
-    }
-
-    private func processMessageUserControl(message: RtmpUserControlMessage) {
-        switch message.event {
-        case .ping:
-            _ = socket.write(chunk: RtmpChunk(
-                type: .zero,
-                chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
-                message: RtmpUserControlMessage(event: .pong, value: message.value)
-            ))
-        default:
-            break
-        }
-    }
-
-    private func processMessageCommand(message: RtmpCommandMessage) {
-        guard let responder = callCompletions.removeValue(forKey: message.transactionId) else {
-            switch message.commandName {
-            case .close:
-                disconnect()
-            default:
-                if let data = message.arguments.first as? AsObject?, let data {
-                    gotCommand(data: data)
-                }
-            }
-            return
-        }
-        switch message.commandName {
-        case .result:
-            responder(message.arguments)
-        default:
-            break
-        }
-    }
-
-    private func processMessageData(message: RtmpDataMessage) {
-        stream?.info.byteCount.mutate { $0 += Int64(message.encoded.count) }
     }
 }
