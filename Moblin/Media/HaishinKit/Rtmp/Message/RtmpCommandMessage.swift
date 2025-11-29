@@ -18,10 +18,10 @@ enum RtmpCommandName: String {
 }
 
 final class RtmpCommandMessage: RtmpMessage {
-    private var commandName: RtmpCommandName = .close
+    private(set) var commandName: RtmpCommandName = .close
     private(set) var transactionId: Int = 0
-    private var commandObject: AsObject?
-    private var arguments: [Any?] = []
+    private(set) var commandObject: AsObject?
+    private(set) var arguments: [Any?] = []
 
     init(commandType: RtmpMessageType) {
         super.init(type: commandType)
