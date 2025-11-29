@@ -2,5 +2,5 @@
 "${applicationName}, mute" = "${applicationName}, 靜音";
 
 /* No comment provided by engineer. */
-"${applicationName}, unmute" = ", 取消靜音";
+"${applicationName}, unmute" = "${applicationName}, 取消靜音";
 
