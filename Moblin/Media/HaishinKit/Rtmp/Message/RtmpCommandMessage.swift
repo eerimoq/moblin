@@ -72,7 +72,7 @@ final class RtmpCommandMessage: RtmpMessage {
                     transactionId = try deserializer.deserializeInt()
                     commandObject = try deserializer.deserializeAsObject()
                     arguments.removeAll()
-                    if deserializer.bytesAvailable > 0 {
+                    while deserializer.bytesAvailable > 0 {
                         try arguments.append(deserializer.deserialize())
                     }
                 } catch {

@@ -2,7 +2,7 @@ import Foundation
 
 enum RtmpHandshake {
     static let sigSize = 1536
-    private static let protocolVersion: UInt8 = 3
+    static let protocolVersion: UInt8 = 3
     private static let timestamp: TimeInterval = 0
 
     static func createC0C1Packet() -> Data {

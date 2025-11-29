@@ -70,7 +70,8 @@ class RtmpStream {
     private var streamKey = ""
     private var url: String = ""
     let name: String
-    private let connectTimer = SimpleTimer(queue: processorControlQueue)
+    private let connectTimer: SimpleTimer
+    private let queue: DispatchQueue
 
     // Outbound
     private var baseTimeStamp = -1.0
@@ -81,11 +82,13 @@ class RtmpStream {
     private let processor: Processor
     weak var delegate: RtmpStreamDelegate?
 
-    init(name: String, processor: Processor, delegate: RtmpStreamDelegate) {
+    init(name: String, processor: Processor, delegate: RtmpStreamDelegate, queue: DispatchQueue) {
         self.name = name
         self.processor = processor
         self.delegate = delegate
-        connection = RtmpConnection(name: name)
+        self.queue = queue
+        connectTimer = SimpleTimer(queue: queue)
+        connection = RtmpConnection(name: name, queue: queue)
         connection.stream = self
     }
 
@@ -95,19 +98,19 @@ class RtmpStream {
     }
 
     func connect() {
-        processorControlQueue.async {
+        queue.async {
             self.connectInternal()
         }
     }
 
     func disconnect() {
-        processorControlQueue.async {
+        queue.async {
             self.disconnectInternal()
         }
     }
 
     func reconnectSoon() {
-        processorControlQueue.asyncAfter(deadline: .now() + 5) { [weak self] in
+        queue.asyncAfter(deadline: .now() + 5) { [weak self] in
             self?.connectInternal()
         }
     }
@@ -469,13 +472,13 @@ class RtmpStream {
 
 extension RtmpStream: AudioEncoderDelegate {
     func audioEncoderOutputFormat(_ format: AVAudioFormat) {
-        processorControlQueue.async {
+        queue.async {
             self.audioEncoderOutputFormatInner(format)
         }
     }
 
     func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime) {
-        processorControlQueue.async {
+        queue.async {
             self.audioEncoderOutputBufferInner(buffer, presentationTimeStamp)
         }
     }
@@ -484,7 +487,7 @@ extension RtmpStream: AudioEncoderDelegate {
 extension RtmpStream: VideoEncoderDelegate {
     func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription) {
         let format = encoder.settings.value.format
-        processorControlQueue.async {
+        queue.async {
             self.videoEncoderOutputFormatInner(format, formatDescription)
         }
     }
@@ -494,7 +497,7 @@ extension RtmpStream: VideoEncoderDelegate {
                                         _: CMTime)
     {
         let format = codec.settings.value.format
-        processorControlQueue.async {
+        queue.async {
             self.videoEncoderOutputSampleBufferInner(format, sampleBuffer)
         }
     }

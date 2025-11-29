@@ -26,9 +26,11 @@ final class RtmpSocket {
     private var totalBytesSent: Int64 = 0
     private let name: String
     private var connection: NWConnection?
+    private let queue: DispatchQueue
 
-    init(name: String) {
+    init(name: String, queue: DispatchQueue) {
         self.name = name
+        self.queue = queue
     }
 
     func connect(host: String, port: Int, tlsOptions: NWProtocolTLS.Options?) {
@@ -44,7 +46,7 @@ final class RtmpSocket {
         )
         connection!.viabilityUpdateHandler = viabilityDidChange
         connection!.stateUpdateHandler = stateDidChange
-        connection!.start(queue: processorControlQueue)
+        connection!.start(queue: queue)
         receive(on: connection!)
     }
 
@@ -97,7 +99,7 @@ final class RtmpSocket {
         })
         if hasTooMuchDataBuffered() {
             logger.info("rtmp: \(name): Too much data buffered. Disconnecting.")
-            processorControlQueue.async {
+            queue.async {
                 self.close(isDisconnected: true)
             }
         }

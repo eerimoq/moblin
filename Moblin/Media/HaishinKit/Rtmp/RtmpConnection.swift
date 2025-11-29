@@ -65,10 +65,12 @@ class RtmpConnection {
     private var currentChunk: RtmpChunk?
     private var fragmentedChunks: [UInt16: RtmpChunk] = [:]
     private let name: String
+    private let queue: DispatchQueue
 
-    init(name: String) {
+    init(name: String, queue: DispatchQueue) {
         self.name = name
-        socket = RtmpSocket(name: name)
+        self.queue = queue
+        socket = RtmpSocket(name: name, queue: queue)
     }
 
     func connect(_ url: String) {
@@ -76,7 +78,7 @@ class RtmpConnection {
             return
         }
         self.uri = uri
-        socket = RtmpSocket(name: name)
+        socket = RtmpSocket(name: name, queue: queue)
         socket.delegate = self
         if scheme == "rtmps" {
             socket.connect(host: host, port: uri.port ?? 443, tlsOptions: .init())
@@ -89,7 +91,7 @@ class RtmpConnection {
         timer.stop()
         stream?.closeInternal()
         socket.close(isDisconnected: false)
-        socket = RtmpSocket(name: name)
+        socket = RtmpSocket(name: name, queue: queue)
     }
 
     func call(_ commandName: RtmpCommandName, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
@@ -117,7 +119,7 @@ class RtmpConnection {
     }
 
     private func on(data: AsObject) {
-        processorControlQueue.async {
+        queue.async {
             self.onInternal(data: data)
             self.stream?.onInternal(data: data)
         }

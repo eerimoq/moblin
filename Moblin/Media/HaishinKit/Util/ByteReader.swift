@@ -6,7 +6,7 @@ class ByteReader {
 
     private enum Error: Swift.Error {
         case eof
-        case parse
+        case utf8
     }
 
     private(set) var data: Data
@@ -84,9 +84,10 @@ class ByteReader {
             throw ByteReader.Error.eof
         }
         position += length
-        guard let result = String(data: data.subdata(in: position - length ..< position), encoding: .utf8)
+        let data = data.subdata(in: position - length ..< position)
+        guard let result = String(data: data, encoding: .utf8)
         else {
-            throw ByteReader.Error.parse
+            throw ByteReader.Error.utf8
         }
         return result
     }

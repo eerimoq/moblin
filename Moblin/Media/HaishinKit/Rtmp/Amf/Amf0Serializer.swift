@@ -77,7 +77,7 @@ final class Amf0Serializer: ByteWriter {
     }
 
     private func serializeString(_ value: String) {
-        let isLong: Bool = UInt32(UInt16.max) < UInt32(value.count)
+        let isLong = UInt32(UInt16.max) < UInt32(value.count)
         writeAmf0Type(value: isLong ? .longString : .string)
         serializeUTF8(value, isLong)
     }
@@ -197,7 +197,7 @@ final class Amf0Deserializer: ByteReader {
             throw AmfSerializerError.deserialize
         }
         while true {
-            let key: String = try deserializeUTF8(false)
+            let key = try deserializeUTF8(false)
             guard !key.isEmpty else {
                 position += 1
                 break
