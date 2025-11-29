@@ -20,7 +20,7 @@ private enum BackgroundRunLevel {
     // Streaming and recording
     case full
     // Moblink and cat printer
-    case service(keepChatRunning: Bool)
+    case service(keepChatRunning: Bool, keepBatteryLevelRunning: Bool)
     case off
 }
 
@@ -530,6 +530,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let periodicTimer3s = SimpleTimer(queue: .main)
     private let periodicTimer5s = SimpleTimer(queue: .main)
     private let periodicTimer10s = SimpleTimer(queue: .main)
+    private let periodicTimerBatteryLevel = SimpleTimer(queue: .main)
     var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
     var currentBlackSharkCoolerDeviceSettings: SettingsBlackSharkCoolerDevice?
@@ -1302,9 +1303,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         switch backgroundRunLevel() {
         case .full:
             disableScreenPreview()
-        case let .service(keepChatRunning):
+        case let .service(keepChatRunning, keepBatteryLevelRunning):
             disableScreenPreview()
-            stopPeriodicTimers(keepChatRunning: keepChatRunning)
+            stopPeriodicTimers(keepChatRunning: keepChatRunning,
+                               keepBatteryLevelRunning: keepBatteryLevelRunning)
         case .off:
             stopAll()
         }
@@ -1451,11 +1453,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return .off
         }
-        if database.catPrinters.backgroundPrinting {
-            return .service(keepChatRunning: true)
-        }
-        if database.moblink.relay.enabled {
-            return .service(keepChatRunning: false)
+        if database.catPrinters.backgroundPrinting || database.moblink.relay.enabled {
+            return .service(keepChatRunning: database.catPrinters.backgroundPrinting,
+                            keepBatteryLevelRunning: database.moblink.relay.enabled)
         }
         return .off
     }
@@ -1570,7 +1570,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         periodicTimer10s.startPeriodic(interval: 10) {
             let monotonicNow = ContinuousClock.now
-            self.updateBatteryLevel()
             self.media.logStatistics()
             self.updateObsStatus()
             self.updateRemoteControlStatus()
@@ -1586,9 +1585,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAvailableDiskSpace()
             self.tryToFetchYouTubeVideoId()
         }
+        periodicTimerBatteryLevel.startPeriodic(interval: 30) {
+            self.updateBatteryLevel()
+        }
     }
 
-    func stopPeriodicTimers(keepChatRunning: Bool) {
+    func stopPeriodicTimers(keepChatRunning: Bool, keepBatteryLevelRunning: Bool) {
         periodicTimer20ms.stop()
         if !keepChatRunning {
             periodicTimer200ms.stop()
@@ -1597,6 +1599,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         periodicTimer3s.stop()
         periodicTimer5s.stop()
         periodicTimer10s.stop()
+        if !keepBatteryLevelRunning {
+            periodicTimerBatteryLevel.stop()
+        }
     }
 
     private func updateAvailableDiskSpace() {
