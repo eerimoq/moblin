@@ -25,14 +25,6 @@ enum RtmpConnectionCode: String {
     }
 }
 
-class RtmpStreamWeak {
-    weak var stream: RtmpStream?
-
-    init(stream: RtmpStream) {
-        self.stream = stream
-    }
-}
-
 private func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
     var command = url.absoluteString
     guard let index = description.firstIndex(of: "?") else {

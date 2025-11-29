@@ -155,7 +155,7 @@ class RtmpStream {
         if oldState == .publishing {
             sendFCUnpublish()
             sendDeleteStream()
-            closeStream()
+            sendCloseStream()
             processor.stopEncoding(self)
         }
         switch state {
@@ -302,7 +302,7 @@ class RtmpStream {
         )))
     }
 
-    private func closeStream() {
+    private func sendCloseStream() {
         _ = connection.socket.write(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: RtmpChunk.ChunkStreamId.command.rawValue,
