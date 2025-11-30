@@ -178,12 +178,15 @@ extension Model {
             guard djiDeviceWrapper.device.getState() == .streaming else {
                 continue
             }
-            let (status, _) = formatDeviceStatus(
+            let (status, ok) = formatDeviceStatus(
                 name: device.name,
                 batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage(),
                 thermalState: nil
             )
             statuses.append(status)
+            if !ok, database.chat.botEnabled, database.chat.botSendLowBatteryWarning {
+                sendChatMessage(message: "Moblin bot: \(lowBatteryMessage): \(status)")
+            }
         }
         let status = statuses.joined(separator: ", ")
         if status != statusTopRight.djiDevicesStatus {
