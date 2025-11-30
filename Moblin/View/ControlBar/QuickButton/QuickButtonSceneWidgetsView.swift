@@ -124,7 +124,6 @@ struct TimerWidgetView: View {
                         Image(systemName: "clock")
                             .font(.title)
                     }
-                    .buttonStyle(.borderless)
                     .popover(isPresented: $presentingSetTime, arrowEdge: .bottom) {
                         TimePickerView(time: timer.timeLeft(),
                                        onSet: {
@@ -182,7 +181,6 @@ struct StopwatchWidgetView: View {
                         Image(systemName: "clock")
                             .font(.title)
                     }
-                    .buttonStyle(.borderless)
                     .popover(isPresented: $presentingSetTime, arrowEdge: .bottom) {
                         TimePickerView(time: stopwatch.currentTime(),
                                        onSet: {
@@ -203,7 +201,6 @@ struct StopwatchWidgetView: View {
                         Image(systemName: "arrow.counterclockwise")
                             .font(.title)
                     }
-                    .buttonStyle(.borderless)
                     Button {
                         stopwatch.running.toggle()
                         if stopwatch.running {
@@ -217,8 +214,8 @@ struct StopwatchWidgetView: View {
                             .font(.title)
                             .frame(width: 35)
                     }
-                    .buttonStyle(.borderless)
                 }
+                .buttonStyle(.borderless)
             }
         }
     }
