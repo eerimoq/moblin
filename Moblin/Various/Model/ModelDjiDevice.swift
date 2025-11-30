@@ -133,7 +133,7 @@ extension Model {
 
     func setCurrentDjiDevice(device: SettingsDjiDevice) {
         currentDjiDeviceSettings = device
-        statusTopRight.djiDeviceStreamingState = getDjiDeviceState(device: device)
+        statusTopRight.djiDeviceStreamingState = djiDeviceWrappers[device.id]?.device.getState()
     }
 
     func reloadDjiDevices() {
@@ -160,10 +160,6 @@ extension Model {
         }
     }
 
-    func getDjiDeviceState(device: SettingsDjiDevice) -> DjiDeviceState? {
-        return djiDeviceWrappers[device.id]?.device.getState()
-    }
-
     func removeDjiDevices(offsets: IndexSet) {
         for offset in offsets {
             let device = database.djiDevices.devices[offset]
@@ -179,7 +175,7 @@ extension Model {
             guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
                 continue
             }
-            guard getDjiDeviceState(device: device) == .streaming else {
+            guard djiDeviceWrapper.device.getState() == .streaming else {
                 continue
             }
             let (status, _) = formatDeviceStatus(
