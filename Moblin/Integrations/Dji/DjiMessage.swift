@@ -25,12 +25,12 @@ private func djiCrc16(data: Data) -> UInt16 {
 
 func djiPackString(value: String) -> Data {
     let data = value.utf8Data
-    return Data([UInt8(data.count)]) + data
+    return Data([UInt8(truncatingIfNeeded: data.count)]) + data
 }
 
 func djiPackUrl(url: String) -> Data {
     let data = url.utf8Data
-    return Data([UInt8(data.count), 0]) + data
+    return Data([UInt8(truncatingIfNeeded: data.count), 0]) + data
 }
 
 class DjiMessage {
@@ -78,7 +78,7 @@ class DjiMessage {
     func encode() -> Data {
         let writer = ByteWriter()
         writer.writeUInt8(0x55)
-        writer.writeUInt8(UInt8(13 + payload.count))
+        writer.writeUInt8(UInt8(truncatingIfNeeded: 13 + payload.count))
         writer.writeUInt8(0x04)
         writer.writeUInt8(djiCrc8(data: writer.data))
         writer.writeUInt16Le(target)
