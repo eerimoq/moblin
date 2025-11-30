@@ -156,7 +156,6 @@ class Show: ObservableObject {
 }
 
 class Battery: ObservableObject {
-    var levelLowCounter = -1
     @Published var level = Double(UIDevice.current.batteryLevel)
     @Published var state: UIDevice.BatteryState = .full
 }
@@ -2243,15 +2242,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         streamingHistoryStream?.updateLowestBatteryLevel(level: battery.level)
         if battery.level <= 0.07, !isBatteryCharging(), !isMac(), battery.level != -1 {
-            battery.levelLowCounter += 1
-            if (battery.levelLowCounter % 3) == 0 {
-                makeWarningToast(title: lowBatteryMessage, vibrate: true)
-                if database.chat.botEnabled, database.chat.botSendLowBatteryWarning {
-                    sendChatMessage(message: "Moblin bot: \(lowBatteryMessage)")
-                }
+            makeWarningToast(title: lowBatteryMessage, vibrate: true)
+            if database.chat.botEnabled, database.chat.botSendLowBatteryWarning {
+                sendChatMessage(message: "Moblin bot: \(lowBatteryMessage)")
             }
-        } else {
-            battery.levelLowCounter = -1
         }
     }
 
