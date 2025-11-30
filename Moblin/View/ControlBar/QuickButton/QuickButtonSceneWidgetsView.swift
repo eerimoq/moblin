@@ -1,12 +1,85 @@
 import AVFoundation
 import SwiftUI
 
+private struct TimeComponentPickerView: View {
+    let title: LocalizedStringKey
+    let range: Range<Int>
+    @Binding var time: Int
+
+    var body: some View {
+        VStack {
+            Text(title)
+            Picker("", selection: $time) {
+                ForEach(range, id: \.self) {
+                    Text(String($0))
+                }
+            }
+            .pickerStyle(.wheel)
+            .frame(width: 100, height: 150)
+        }
+    }
+}
+
+private struct TimeButtonView: View {
+    let text: LocalizedStringKey
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Text(text)
+                .frame(width: 100, height: 30)
+        }
+    }
+}
+
+private struct TimePickerView: View {
+    @State private var hours: Int
+    @State private var minutes: Int
+    @State private var seconds: Int
+    private let onSet: (Double) -> Void
+    private let onCancel: () -> Void
+
+    init(time: Double, onSet: @escaping (Double) -> Void, onCancel: @escaping () -> Void) {
+        let time = Int(time)
+        seconds = time % 60
+        minutes = (time / 60) % 60
+        hours = min(time / 3600, 23)
+        self.onSet = onSet
+        self.onCancel = onCancel
+    }
+
+    var body: some View {
+        VStack {
+            HStack {
+                TimeComponentPickerView(title: "Hours", range: 0 ..< 24, time: $hours)
+                TimeComponentPickerView(title: "Minutes", range: 0 ..< 60, time: $minutes)
+                TimeComponentPickerView(title: "Seconds", range: 0 ..< 60, time: $seconds)
+            }
+            .padding()
+            HStack {
+                TimeButtonView(text: "Set") {
+                    onSet(Double(hours * 3600 + minutes * 60 + seconds))
+                }
+                TimeButtonView(text: "Cancel") {
+                    onCancel()
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .padding()
+        }
+        .padding()
+    }
+}
+
 struct TimerWidgetView: View {
     let name: String
     @ObservedObject var timer: SettingsWidgetTextTimer
     let index: Int
     let textEffect: TextEffect
     let indented: Bool
+    @State private var presentingSetTime: Bool = false
 
     private func updateTextEffect() {
         textEffect.setEndTime(index: index, endTime: timer.textEffectEndTime())
@@ -45,42 +118,27 @@ struct TimerWidgetView: View {
                         Image(systemName: "plus.circle")
                             .font(.title)
                     }
+                    Button {
+                        presentingSetTime = true
+                    } label: {
+                        Image(systemName: "clock")
+                            .font(.title)
+                    }
+                    .buttonStyle(.borderless)
+                    .popover(isPresented: $presentingSetTime, arrowEdge: .bottom) {
+                        TimePickerView(time: timer.timeLeft(),
+                                       onSet: {
+                                           timer.set(time: $0)
+                                           updateTextEffect()
+                                           presentingSetTime = false
+                                       },
+                                       onCancel: {
+                                           presentingSetTime = false
+                                       })
+                    }
                 }
                 .buttonStyle(.borderless)
             }
-        }
-    }
-}
-
-private struct TimeComponentPickerView: View {
-    let title: LocalizedStringKey
-    let range: Range<Int>
-    @Binding var time: Int
-
-    var body: some View {
-        VStack {
-            Text(title)
-            Picker("", selection: $time) {
-                ForEach(range, id: \.self) {
-                    Text(String($0))
-                }
-            }
-            .pickerStyle(.wheel)
-            .frame(width: 100, height: 150)
-        }
-    }
-}
-
-private struct TimeButtonView: View {
-    let text: LocalizedStringKey
-    let action: () -> Void
-
-    var body: some View {
-        Button {
-            action()
-        } label: {
-            Text(text)
-                .frame(width: 100, height: 30)
         }
     }
 }
@@ -92,9 +150,6 @@ struct StopwatchWidgetView: View {
     private let textEffect: TextEffect
     private var indented: Bool
     @State private var presentingSetTime: Bool = false
-    @State private var hours: Int = 0
-    @State private var minutes: Int = 0
-    @State private var seconds: Int = 0
 
     init(name: String, stopwatch: SettingsWidgetTextStopwatch, index: Int, textEffect: TextEffect, indented: Bool) {
         self.name = name
@@ -129,34 +184,16 @@ struct StopwatchWidgetView: View {
                     }
                     .buttonStyle(.borderless)
                     .popover(isPresented: $presentingSetTime, arrowEdge: .bottom) {
-                        VStack {
-                            HStack {
-                                TimeComponentPickerView(title: "Hours", range: 0 ..< 24, time: $hours)
-                                TimeComponentPickerView(title: "Minutes", range: 0 ..< 60, time: $minutes)
-                                TimeComponentPickerView(title: "Seconds", range: 0 ..< 60, time: $seconds)
-                            }
-                            .padding()
-                            HStack {
-                                TimeButtonView(text: "Set") {
-                                    stopwatch.playPressedTime = .now
-                                    stopwatch.totalElapsed = Double(hours * 3600 + minutes * 60 + seconds)
-                                    updateTextEffect()
-                                    presentingSetTime = false
-                                }
-                                TimeButtonView(text: "Cancel") {
-                                    presentingSetTime = false
-                                }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .padding()
-                        }
-                        .padding()
-                        .onAppear {
-                            let time = Int(stopwatch.currentTime())
-                            seconds = time % 60
-                            minutes = (time / 60) % 60
-                            hours = min(time / 3600, 23)
-                        }
+                        TimePickerView(time: stopwatch.currentTime(),
+                                       onSet: {
+                                           stopwatch.playPressedTime = .now
+                                           stopwatch.totalElapsed = $0
+                                           updateTextEffect()
+                                           presentingSetTime = false
+                                       },
+                                       onCancel: {
+                                           presentingSetTime = false
+                                       })
                     }
                     Button {
                         stopwatch.totalElapsed = 0.0

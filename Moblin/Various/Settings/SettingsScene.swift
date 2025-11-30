@@ -502,6 +502,10 @@ class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
         endTime += delta
     }
 
+    func set(time: Double) {
+        endTime = Date().timeIntervalSince1970 + time
+    }
+
     func format() -> String {
         return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0).formatWithSeconds()
     }
@@ -510,7 +514,7 @@ class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
         return .now.advanced(by: .seconds(max(timeLeft(), 0)))
     }
 
-    private func timeLeft() -> Double {
+    func timeLeft() -> Double {
         return utcTimeDeltaFromNow(to: endTime)
     }
 }
