@@ -1578,12 +1578,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateCurrentSsid()
             self.teslaGetChargeState()
             self.moblink.streamer?.updateStatus()
-            self.updateDjiDevicesStatus()
             self.updateTwitchStream(monotonicNow: monotonicNow)
             self.updateAvailableDiskSpace()
             self.tryToFetchYouTubeVideoId()
         }
         periodicTimerBatteryLevel.startPeriodic(interval: 30) {
+            self.updateDjiDevicesStatus()
             self.updateBatteryLevel()
         }
     }
