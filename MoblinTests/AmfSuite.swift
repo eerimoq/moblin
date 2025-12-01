@@ -2,7 +2,7 @@ import AVFoundation
 @testable import Moblin
 import Testing
 
-struct RtmpAmfSuite {
+struct AmfSuite {
     @Test
     func number() async throws {
         let value = 1.0
