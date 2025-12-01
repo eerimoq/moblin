@@ -242,7 +242,7 @@ final class Amf0Decoder: ByteReader {
 
     private func decodeDateValue() throws -> Date {
         let date = try Date(timeIntervalSince1970: readDouble() / 1000)
-        position += 2 // timezone offset
+        _ = try readUInt16()
         return date
     }
 
