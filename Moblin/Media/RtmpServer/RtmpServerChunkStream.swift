@@ -101,18 +101,18 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        let amf0 = Amf0Deserializer(data: messageBody)
+        let decoder = Amf0Decoder(data: messageBody)
         let commandName: RtmpCommandName
         let transactionId: Int
         let commandObject: AsObject
         var arguments: [Any?]
         do {
-            commandName = try RtmpCommandName(rawValue: amf0.deserializeString()) ?? .unknown
-            transactionId = try amf0.deserializeInt()
-            commandObject = try amf0.deserializeAsObject()
+            commandName = try RtmpCommandName(rawValue: decoder.decodeString()) ?? .unknown
+            transactionId = try decoder.decodeInt()
+            commandObject = try decoder.decodeAsObject()
             arguments = []
-            if amf0.bytesAvailable > 0 {
-                try arguments.append(amf0.deserialize())
+            if decoder.bytesAvailable > 0 {
+                try arguments.append(decoder.decode())
             }
         } catch {
             client.stopInternal(reason: "AMF-0 decode error \(error)")

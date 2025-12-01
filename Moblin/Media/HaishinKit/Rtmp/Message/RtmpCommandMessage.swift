@@ -48,32 +48,32 @@ final class RtmpCommandMessage: RtmpMessage {
             guard super.encoded.isEmpty else {
                 return super.encoded
             }
-            let serializer = Amf0Serializer()
+            let serializer = Amf0Encoder()
             if type == .amf3Command {
                 serializer.writeUInt8(0)
             }
-            serializer.serialize(commandName.rawValue)
-            serializer.serialize(transactionId)
-            serializer.serialize(commandObject)
+            serializer.encode(commandName.rawValue)
+            serializer.encode(transactionId)
+            serializer.encode(commandObject)
             for argument in arguments {
-                serializer.serialize(argument)
+                serializer.encode(argument)
             }
             super.encoded = serializer.data
             return super.encoded
         }
         set {
             if length == newValue.count {
-                let deserializer = Amf0Deserializer(data: newValue)
+                let decoder = Amf0Decoder(data: newValue)
                 do {
                     if type == .amf3Command {
-                        deserializer.position = 1
+                        decoder.position = 1
                     }
-                    commandName = try RtmpCommandName(rawValue: deserializer.deserializeString()) ?? .unknown
-                    transactionId = try deserializer.deserializeInt()
-                    commandObject = try deserializer.deserializeAsObject()
+                    commandName = try RtmpCommandName(rawValue: decoder.decodeString()) ?? .unknown
+                    transactionId = try decoder.decodeInt()
+                    commandObject = try decoder.decodeAsObject()
                     arguments.removeAll()
-                    while deserializer.bytesAvailable > 0 {
-                        try arguments.append(deserializer.deserialize())
+                    while decoder.bytesAvailable > 0 {
+                        try arguments.append(decoder.decode())
                     }
                 } catch {
                     logger.error("rtmp: \(error)")

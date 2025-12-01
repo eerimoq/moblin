@@ -17,66 +17,17 @@ struct AsTypedObject {
 }
 
 struct AsArray {
-    private(set) var data: [Any?]
-    private(set) var dict: [String: Any?] = [:]
+    private(set) var items: [String: Any?] = [:]
 
-    init(count: Int) {
-        data = [Any?](repeating: kASUndefined, count: count)
+    mutating func set(key: String, value: Any?) {
+        items[key] = value
     }
 
-    init(data: [Any?]) {
-        self.data = data
-    }
-}
-
-extension AsArray: ExpressibleByArrayLiteral {
-    init(arrayLiteral elements: Any?...) {
-        self = AsArray(data: elements)
-    }
-
-    subscript(i: Any) -> Any? {
-        get {
-            if let i = i as? Int {
-                return i < data.count ? data[i] : kASUndefined
-            }
-            if let i = i as? String {
-                if let i = Int(i) {
-                    return i < data.count ? data[i] : kASUndefined
-                }
-                return dict[i] as Any
-            }
-            return nil
+    func get(key: String) throws -> Any? {
+        guard let value = items[key] else {
+            throw "Not found"
         }
-        set {
-            if let i = i as? Int {
-                if data.count <= i {
-                    data += [Any?](repeating: kASUndefined, count: i - data.count + 1)
-                }
-                data[i] = newValue
-            }
-            if let i = i as? String {
-                if let i = Int(i) {
-                    if data.count <= i {
-                        data += [Any?](repeating: kASUndefined, count: i - data.count + 1)
-                    }
-                    data[i] = newValue
-                    return
-                }
-                dict[i] = newValue
-            }
-        }
-    }
-}
-
-extension AsArray: CustomDebugStringConvertible {
-    var debugDescription: String {
-        data.description
-    }
-}
-
-extension AsArray: Equatable {
-    static func == (lhs: AsArray, rhs: AsArray) -> Bool {
-        (lhs.data.description == rhs.data.description) && (lhs.dict.description == rhs.dict.description)
+        return value
     }
 }
 

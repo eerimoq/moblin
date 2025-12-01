@@ -79,7 +79,7 @@ class ByteReader {
         return Double(data: Data(data.subdata(in: position - ByteReader.sizeOfDouble ..< position).reversed()))
     }
 
-    func readUTF8Bytes(_ length: Int) throws -> String {
+    func readUtf8Bytes(_ length: Int) throws -> String {
         guard bytesAvailable >= length else {
             throw ByteReader.Error.eof
         }

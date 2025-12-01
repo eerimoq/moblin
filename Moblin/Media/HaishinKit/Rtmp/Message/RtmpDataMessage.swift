@@ -27,13 +27,13 @@ final class RtmpDataMessage: RtmpMessage {
             guard super.encoded.isEmpty else {
                 return super.encoded
             }
-            let serializer = Amf0Serializer()
+            let serializer = Amf0Encoder()
             if type == .amf3Data {
                 serializer.writeUInt8(0)
             }
-            serializer.serialize(handlerName)
+            serializer.encode(handlerName)
             for arg in arguments {
-                serializer.serialize(arg)
+                serializer.encode(arg)
             }
             super.encoded = serializer.data
             return super.encoded
@@ -43,17 +43,17 @@ final class RtmpDataMessage: RtmpMessage {
                 return
             }
             if length == newValue.count {
-                let deserializer = Amf0Deserializer(data: newValue)
+                let decoder = Amf0Decoder(data: newValue)
                 if type == .amf3Data {
-                    deserializer.position = 1
+                    decoder.position = 1
                 }
                 do {
-                    handlerName = try deserializer.deserializeString()
-                    while deserializer.bytesAvailable > 0 {
-                        try arguments.append(deserializer.deserialize())
+                    handlerName = try decoder.decodeString()
+                    while decoder.bytesAvailable > 0 {
+                        try arguments.append(decoder.decode())
                     }
                 } catch {
-                    logger.error("\(deserializer)")
+                    logger.error("\(decoder)")
                 }
             }
             super.encoded = newValue

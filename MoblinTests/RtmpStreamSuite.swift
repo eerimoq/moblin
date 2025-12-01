@@ -408,11 +408,11 @@ private func expectConnectCommandMessage(reader: ByteReader) throws {
     let reader = ByteReader(data: chunk)
     #expect(try reader.readUInt8() == Amf0Type.string.rawValue)
     #expect(try reader.readUInt16() == 7)
-    #expect(try reader.readUTF8Bytes(7) == "connect")
+    #expect(try reader.readUtf8Bytes(7) == "connect")
     #expect(try reader.readUInt8() == Amf0Type.number.rawValue)
     #expect(try reader.readDouble() == 1)
-    let deserializer = try Amf0Deserializer(data: reader.readBytes(reader.bytesAvailable))
-    let connectMessage = try (deserializer.deserialize()) as! [String: Any]
+    let deserializer = try Amf0Decoder(data: reader.readBytes(reader.bytesAvailable))
+    let connectMessage = try (deserializer.decode()) as! [String: Any]
     #expect(connectMessage.count == 11)
     #expect(connectMessage["app"] as! String == "live")
     #expect(connectMessage["flashVer"] as! String == "FMLE/3.0 (compatible; FMSc/1.0)")
