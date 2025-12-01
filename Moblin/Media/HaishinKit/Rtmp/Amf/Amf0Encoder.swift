@@ -216,10 +216,7 @@ final class Amf0Decoder: ByteReader {
     }
 
     private func decodeEcmaArrayValue() throws -> AsArray {
-        let numberOfElements = try readUInt32()
-        guard numberOfElements < 128 else {
-            throw AmfError.arrayTooBig
-        }
+        let numberOfElements = try readNumberOfArrayElements()
         var array = AsArray()
         for _ in 0 ..< numberOfElements {
             try array.set(key: decodeStringValue(), value: decode())
@@ -232,12 +229,20 @@ final class Amf0Decoder: ByteReader {
     }
 
     private func decodeStrictArrayValue() throws -> [Any?] {
-        var result: [Any?] = []
-        let count = try Int(readUInt32())
-        for _ in 0 ..< count {
-            try result.append(decode())
+        let numberOfElements = try readNumberOfArrayElements()
+        var array: [Any?] = []
+        for _ in 0 ..< numberOfElements {
+            try array.append(decode())
         }
-        return result
+        return array
+    }
+
+    private func readNumberOfArrayElements() throws -> UInt32 {
+        let numberOfElements = try readUInt32()
+        guard numberOfElements < 128 else {
+            throw AmfError.arrayTooBig
+        }
+        return numberOfElements
     }
 
     private func decodeDateValue() throws -> Date {

@@ -103,6 +103,23 @@ struct RtmpAmfSuite {
     }
 
     @Test
+    func strictArray() async throws {
+        let encoded = Data([
+            0x0A,
+            // 2 elements.
+            0x00, 0x00, 0x00, 0x02,
+            // Element true.
+            0x01, 0x01,
+            // Element "fie".
+            0x02, 0x00, 0x03, 0x66, 0x69, 0x65,
+        ])
+        let decoder = Amf0Decoder(data: encoded)
+        let decoded = try decoder.decode() as! [Any?]
+        #expect(try decoded[0] as! Bool == true)
+        #expect(try decoded[1] as! String == "fie")
+    }
+
+    @Test
     func date() async throws {
         let value = Date(timeIntervalSince1970: 15)
         let serializer = Amf0Encoder()
