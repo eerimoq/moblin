@@ -109,7 +109,7 @@ class RtmpServerChunkStream {
         do {
             commandName = try RtmpCommandName(rawValue: decoder.decodeString()) ?? .unknown
             transactionId = try decoder.decodeInt()
-            commandObject = try decoder.decodeAsObject()
+            commandObject = try decoder.decodeObject()
             arguments = []
             if decoder.bytesAvailable > 0 {
                 try arguments.append(decoder.decode())

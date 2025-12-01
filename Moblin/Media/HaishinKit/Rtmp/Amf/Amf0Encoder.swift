@@ -129,72 +129,75 @@ final class Amf0Encoder: ByteWriter {
 final class Amf0Decoder: ByteReader {
     func decode() throws -> Any? {
         let type = try readAmf0Type()
-        position -= 1
         switch type {
         case .number:
-            return try decodeDouble()
+            return try decodeDoubleValue()
         case .bool:
-            return try decodeBool()
+            return try decodeBoolValue()
         case .string:
-            return try decodeString()
+            return try decodeStringValue()
         case .object:
-            return try decodeAsObject()
+            return try decodeObjectValue()
         case .null:
-            position += 1
             return nil
         case .undefined:
-            position += 1
             return kASUndefined
         case .reference:
             return nil
         case .ecmaArray:
-            return try decodeAsArray()
+            return try decodeEcmaArrayValue()
         case .objectEnd:
             return nil
         case .strictArray:
-            return try decodeAnyArray()
+            return try decodeStrictArrayValue()
         case .date:
-            return try decodeDate()
+            return try decodeDateValue()
         case .longString:
-            return try decodeString()
+            return try decodeLongStringValue()
         case .unsupported:
             return nil
         case .xmlDocument:
-            return try decodeAsXmlDocument()
+            return try decodeXmlDocumentValue()
         case .typedObject:
-            return try decodeAny()
+            return try decodeTypedObjectValue()
         case .avmplush:
             return nil
         }
     }
 
     func decodeInt() throws -> Int {
-        try Int(decodeDouble())
+        guard try readAmf0Type() == .number else {
+            throw AmfError.decode
+        }
+        return try Int(decodeDoubleValue())
     }
 
     func decodeString() throws -> String {
         switch try readAmf0Type() {
         case .string:
-            return try decodeShortString()
+            return try decodeStringValue()
         case .longString:
-            return try decodeLongString()
+            return try decodeLongStringValue()
         default:
             throw AmfError.decode
         }
     }
 
-    func decodeAsObject() throws -> AsObject {
-        var object = AsObject()
+    func decodeObject() throws -> AsObject {
         switch try readAmf0Type() {
         case .null:
-            return object
+            return AsObject()
         case .object:
-            break
+            return try decodeObjectValue()
         default:
             throw AmfError.decode
         }
+    }
+
+    private func decodeObjectValue() throws -> AsObject {
+        var object = AsObject()
         while true {
-            let key = try decodeShortString()
+            let key = try decodeStringValue()
             guard !key.isEmpty else {
                 break
             }
@@ -204,54 +207,31 @@ final class Amf0Decoder: ByteReader {
         return object
     }
 
-    private func decodeDouble() throws -> Double {
-        guard try readAmf0Type() == .number else {
-            throw AmfError.decode
-        }
+    private func decodeDoubleValue() throws -> Double {
         return try readDouble()
     }
 
-    private func decodeBool() throws -> Bool {
-        guard try readAmf0Type() == .bool else {
-            throw AmfError.decode
-        }
+    private func decodeBoolValue() throws -> Bool {
         return try readUInt8() == 0x01
     }
 
-    private func decodeAsArray() throws -> AsArray {
-        switch try readAmf0Type() {
-        case .null:
-            return AsArray()
-        case .ecmaArray:
-            break
-        default:
-            throw AmfError.decode
-        }
+    private func decodeEcmaArrayValue() throws -> AsArray {
         let numberOfElements = try readUInt32()
         guard numberOfElements < 128 else {
             throw AmfError.arrayTooBig
         }
         var array = AsArray()
         for _ in 0 ..< numberOfElements {
-            try array.set(key: decodeShortString(), value: decode())
+            try array.set(key: decodeStringValue(), value: decode())
         }
-        guard try decodeShortString() == "" else {
+        guard try decodeStringValue() == "" else {
             throw AmfError.decode
         }
         try parseObjectEnd()
         return array
     }
 
-    private func parseObjectEnd() throws {
-        if try readUInt8() != Amf0Type.objectEnd.rawValue {
-            throw AmfError.notObjectEnd
-        }
-    }
-
-    private func decodeAnyArray() throws -> [Any?] {
-        guard try readAmf0Type() == .strictArray else {
-            throw AmfError.decode
-        }
+    private func decodeStrictArrayValue() throws -> [Any?] {
         var result: [Any?] = []
         let count = try Int(readUInt32())
         for _ in 0 ..< count {
@@ -260,30 +240,21 @@ final class Amf0Decoder: ByteReader {
         return result
     }
 
-    private func decodeDate() throws -> Date {
-        guard try readAmf0Type() == .date else {
-            throw AmfError.decode
-        }
+    private func decodeDateValue() throws -> Date {
         let date = try Date(timeIntervalSince1970: readDouble() / 1000)
         position += 2 // timezone offset
         return date
     }
 
-    private func decodeAsXmlDocument() throws -> AsXmlDocument {
-        guard try readAmf0Type() == .xmlDocument else {
-            throw AmfError.decode
-        }
-        return try AsXmlDocument(data: decodeLongString())
+    private func decodeXmlDocumentValue() throws -> AsXmlDocument {
+        return try AsXmlDocument(data: decodeLongStringValue())
     }
 
-    private func decodeAny() throws -> Any {
-        guard try readAmf0Type() == .typedObject else {
-            throw AmfError.decode
-        }
-        let typeName = try decodeShortString()
+    private func decodeTypedObjectValue() throws -> Any {
+        let typeName = try decodeStringValue()
         var result = AsObject()
         while true {
-            let key = try decodeShortString()
+            let key = try decodeStringValue()
             guard !key.isEmpty else {
                 position += 1
                 break
@@ -293,11 +264,11 @@ final class Amf0Decoder: ByteReader {
         return try AsTypedObject.decode(typeName: typeName, data: result)
     }
 
-    private func decodeShortString() throws -> String {
+    private func decodeStringValue() throws -> String {
         return try readUtf8Bytes(Int(readUInt16()))
     }
 
-    private func decodeLongString() throws -> String {
+    private func decodeLongStringValue() throws -> String {
         return try readUtf8Bytes(Int(readUInt32()))
     }
 
@@ -306,5 +277,11 @@ final class Amf0Decoder: ByteReader {
             throw AmfError.decode
         }
         return value
+    }
+
+    private func parseObjectEnd() throws {
+        if try readUInt8() != Amf0Type.objectEnd.rawValue {
+            throw AmfError.notObjectEnd
+        }
     }
 }
