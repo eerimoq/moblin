@@ -1,5 +1,68 @@
 import Foundation
 
+let kASUndefined = AsUndefined()
+
+typealias AsObject = [String: Any?]
+
+struct AsUndefined: CustomStringConvertible {
+    var description: String {
+        "undefined"
+    }
+}
+
+struct AsTypedObject {
+    static func decode(typeName _: String, data _: AsObject) throws -> Any {
+        return AsTypedObject()
+    }
+}
+
+struct AsArray {
+    private(set) var items: [String: Any?] = [:]
+
+    mutating func set(key: String, value: Any?) {
+        items[key] = value
+    }
+
+    func get(key: String) throws -> Any? {
+        guard let value = items[key] else {
+            throw "Not found"
+        }
+        return value
+    }
+}
+
+struct AsXmlDocument: CustomStringConvertible {
+    var description: String {
+        data
+    }
+
+    private let data: String
+
+    init(data: String) {
+        self.data = data
+    }
+}
+
+extension AsXmlDocument: Equatable {
+    static func == (lhs: AsXmlDocument, rhs: AsXmlDocument) -> Bool {
+        lhs.description == rhs.description
+    }
+}
+
+struct AsXml: CustomStringConvertible {
+    var description: String {
+        data
+    }
+
+    private let data: String
+}
+
+extension AsXml: Equatable {
+    static func == (lhs: AsXml, rhs: AsXml) -> Bool {
+        lhs.description == rhs.description
+    }
+}
+
 enum AmfError: Error {
     case decode
     case arrayTooBig
