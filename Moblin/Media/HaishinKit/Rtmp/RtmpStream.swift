@@ -221,7 +221,7 @@ class RtmpStream {
     private func createOnMetaData() -> AsObject {
         let audioEncoder = processor.getAudioEncoder()
         let videoEncoder = processor.getVideoEncoder()
-        var metadata: [String: AsValue] = [:]
+        var metadata: AsObject = [:]
         let settings = videoEncoder.settings.value
         metadata["width"] = .number(Double(settings.videoSize.width))
         metadata["height"] = .number(Double(settings.videoSize.height))
