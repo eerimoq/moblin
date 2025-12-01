@@ -2,7 +2,7 @@ import Foundation
 
 final class RtmpDataMessage: RtmpMessage {
     var handlerName: String = ""
-    var arguments: [Any?] = []
+    var arguments: [AsValue] = []
 
     init(dataType: RtmpMessageType) {
         super.init(type: dataType)
@@ -13,7 +13,7 @@ final class RtmpDataMessage: RtmpMessage {
         dataType: RtmpMessageType,
         timestamp: UInt32,
         handlerName: String,
-        arguments: [Any?] = []
+        arguments: [AsValue] = []
     ) {
         self.handlerName = handlerName
         self.arguments = arguments
@@ -31,9 +31,9 @@ final class RtmpDataMessage: RtmpMessage {
             if type == .amf3Data {
                 serializer.writeUInt8(0)
             }
-            serializer.encode(handlerName)
-            for arg in arguments {
-                serializer.encode(arg)
+            serializer.encode(.string(handlerName))
+            for argument in arguments {
+                serializer.encode(argument)
             }
             super.encoded = serializer.data
             return super.encoded

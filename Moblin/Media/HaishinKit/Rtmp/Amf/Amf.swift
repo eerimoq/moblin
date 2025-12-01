@@ -1,29 +1,21 @@
 import Foundation
 
-let kASUndefined = AsUndefined()
+typealias AsObject = [String: AsValue]
 
-typealias AsObject = [String: Any?]
-
-struct AsUndefined: CustomStringConvertible {
-    var description: String {
-        "undefined"
-    }
-}
-
-struct AsTypedObject {
-    static func decode(typeName _: String, data _: AsObject) throws -> Any {
+struct AsTypedObject: Equatable {
+    static func decode(typeName _: String, data _: AsObject) throws -> AsTypedObject {
         return AsTypedObject()
     }
 }
 
-struct AsArray {
-    private(set) var items: [String: Any?] = [:]
+struct AsArray: Equatable {
+    private(set) var items: [String: AsValue] = [:]
 
-    mutating func set(key: String, value: Any?) {
+    mutating func set(key: String, value: AsValue) {
         items[key] = value
     }
 
-    func get(key: String) throws -> Any? {
+    func get(key: String) throws -> AsValue {
         guard let value = items[key] else {
             throw "Not found"
         }
@@ -63,6 +55,23 @@ extension AsXml: Equatable {
     }
 }
 
+enum AsValue: Equatable {
+    case number(Double)
+    case bool(Bool)
+    case string(String)
+    case object(AsObject)
+    case null
+    case undefined
+    case reference
+    case ecmaArray(AsArray)
+    case strictArray([AsValue])
+    case date(Date)
+    case unsupported
+    case xmlDocument(AsXmlDocument)
+    case typedObject(AsTypedObject)
+    case avmplush
+}
+
 enum AmfError: Error {
     case decode
     case arrayTooBig
@@ -89,39 +98,21 @@ enum Amf0Type: UInt8 {
 }
 
 final class Amf0Encoder: ByteWriter {
-    func encode(_ value: Any?) {
+    func encode(_ value: AsValue) {
         switch value {
-        case let value as Int:
-            encodeDouble(Double(value))
-        case let value as UInt:
-            encodeDouble(Double(value))
-        case let value as Int8:
-            encodeDouble(Double(value))
-        case let value as UInt8:
-            encodeDouble(Double(value))
-        case let value as Int16:
-            encodeDouble(Double(value))
-        case let value as UInt16:
-            encodeDouble(Double(value))
-        case let value as Int32:
-            encodeDouble(Double(value))
-        case let value as UInt32:
-            encodeDouble(Double(value))
-        case let value as Float:
-            encodeDouble(Double(value))
-        case let value as Double:
+        case let .number(value):
             encodeDouble(value)
-        case let value as Date:
+        case let .date(value):
             encodeDate(value)
-        case let value as String:
+        case let .string(value):
             encodeString(value)
-        case let value as Bool:
+        case let .bool(value):
             encodeBool(value)
-        case let value as AsArray:
+        case let .ecmaArray(value):
             encodeAsArray(value)
-        case let value as AsObject:
+        case let .object(value):
             encodeAsObject(value)
-        case nil:
+        case .null:
             writeAmf0Type(value: .null)
         default:
             writeAmf0Type(value: .undefined)
@@ -190,41 +181,41 @@ final class Amf0Encoder: ByteWriter {
 }
 
 final class Amf0Decoder: ByteReader {
-    func decode() throws -> Any? {
+    func decode() throws -> AsValue {
         let type = try readAmf0Type()
         switch type {
         case .number:
-            return try decodeDoubleValue()
+            return try .number(decodeDoubleValue())
         case .bool:
-            return try decodeBoolValue()
+            return try .bool(decodeBoolValue())
         case .string:
-            return try decodeStringValue()
+            return try .string(decodeStringValue())
         case .object:
-            return try decodeObjectValue()
+            return try .object(decodeObjectValue())
         case .null:
-            return nil
+            return .null
         case .undefined:
-            return kASUndefined
+            return .undefined
         case .reference:
-            return nil
+            return .reference
         case .ecmaArray:
-            return try decodeEcmaArrayValue()
-        case .objectEnd:
-            return nil
+            return try .ecmaArray(decodeEcmaArrayValue())
         case .strictArray:
-            return try decodeStrictArrayValue()
+            return try .strictArray(decodeStrictArrayValue())
         case .date:
-            return try decodeDateValue()
+            return try .date(decodeDateValue())
         case .longString:
-            return try decodeLongStringValue()
+            return try .string(decodeLongStringValue())
         case .unsupported:
-            return nil
+            return .unsupported
         case .xmlDocument:
-            return try decodeXmlDocumentValue()
+            return try .xmlDocument(decodeXmlDocumentValue())
         case .typedObject:
-            return try decodeTypedObjectValue()
+            return try .typedObject(decodeTypedObjectValue())
         case .avmplush:
-            return nil
+            return .avmplush
+        case .objectEnd:
+            throw AmfError.decode
         }
     }
 
@@ -291,9 +282,9 @@ final class Amf0Decoder: ByteReader {
         return array
     }
 
-    private func decodeStrictArrayValue() throws -> [Any?] {
+    private func decodeStrictArrayValue() throws -> [AsValue] {
         let numberOfElements = try readNumberOfArrayElements()
-        var array: [Any?] = []
+        var array: [AsValue] = []
         for _ in 0 ..< numberOfElements {
             try array.append(decode())
         }
@@ -318,7 +309,7 @@ final class Amf0Decoder: ByteReader {
         return try AsXmlDocument(data: decodeLongStringValue())
     }
 
-    private func decodeTypedObjectValue() throws -> Any {
+    private func decodeTypedObjectValue() throws -> AsTypedObject {
         let typeName = try decodeStringValue()
         var result = AsObject()
         while true {

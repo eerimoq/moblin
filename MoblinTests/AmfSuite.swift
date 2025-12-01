@@ -7,12 +7,12 @@ struct AmfSuite {
     func number() async throws {
         let value = 1.0
         let serializer = Amf0Encoder()
-        serializer.encode(value)
+        serializer.encode(.number(value))
         let encoded = serializer.data
         #expect(encoded == Data([0x00, 0x3F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]))
         let decoder = Amf0Decoder(data: encoded)
         let decoded = try decoder.decode()
-        #expect(decoded as! Double == value)
+        #expect(decoded == .number(value))
     }
 
     struct BoolParameters {
@@ -26,47 +26,47 @@ struct AmfSuite {
     ])
     func bool(_ parameters: BoolParameters) async throws {
         let serializer = Amf0Encoder()
-        serializer.encode(parameters.value)
+        serializer.encode(.bool(parameters.value))
         let encoded = serializer.data
         #expect(encoded == parameters.encoded)
         let decoder = Amf0Decoder(data: encoded)
         let decoded = try decoder.decode()
-        #expect(decoded as! Bool == parameters.value)
+        #expect(decoded == .bool(parameters.value))
     }
 
     @Test
     func string() async throws {
         let value = "1234"
         let serializer = Amf0Encoder()
-        serializer.encode(value)
+        serializer.encode(.string(value))
         let encoded = serializer.data
         #expect(encoded == Data([0x02, 0x00, 0x04, 0x31, 0x32, 0x33, 0x34]))
         let decoder = Amf0Decoder(data: encoded)
         let decoded = try decoder.decode()
-        #expect(decoded as! String == value)
+        #expect(decoded == .string(value))
     }
 
     @Test
     func object() async throws {
-        let value = ["1": "2"]
+        let value: AsObject = ["1": .string("2")]
         let serializer = Amf0Encoder()
-        serializer.encode(value)
+        serializer.encode(.object(value))
         let encoded = serializer.data
         #expect(encoded == Data([0x03, 0x00, 0x01, 0x31, 0x02, 0x00, 0x01, 0x32, 0x00, 0x00, 0x09]))
         let decoder = Amf0Decoder(data: encoded)
         let decoded = try decoder.decode()
-        #expect(decoded as! [String: String] == value)
+        #expect(decoded == .object(value))
     }
 
     @Test
     func null() async throws {
         let serializer = Amf0Encoder()
-        serializer.encode(nil)
+        serializer.encode(.null)
         let encoded = serializer.data
         #expect(encoded == Data([0x05]))
         let decoder = Amf0Decoder(data: encoded)
         let decoded = try decoder.decode()
-        #expect(decoded as! Bool? == nil)
+        #expect(decoded == .null)
     }
 
     @Test
@@ -74,7 +74,7 @@ struct AmfSuite {
         let encoded = Data([0x06])
         let decoder = Amf0Decoder(data: encoded)
         let decoded = try decoder.decode()
-        #expect((decoded as! AsUndefined).description == kASUndefined.description)
+        #expect(decoded == .undefined)
     }
 
     @Test
@@ -97,9 +97,12 @@ struct AmfSuite {
             0x09,
         ])
         let decoder = Amf0Decoder(data: encoded)
-        let decoded = try decoder.decode() as! AsArray
-        #expect(try decoded.get(key: "foo") as! Bool == true)
-        #expect(try decoded.get(key: "bar") as! String == "fie")
+        let decoded = try decoder.decode()
+        guard case let .ecmaArray(decoded) = decoded else {
+            throw "error"
+        }
+        #expect(try decoded.get(key: "foo") == .bool(true))
+        #expect(try decoded.get(key: "bar") == .string("fie"))
     }
 
     @Test
@@ -114,20 +117,23 @@ struct AmfSuite {
             0x02, 0x00, 0x03, 0x66, 0x69, 0x65,
         ])
         let decoder = Amf0Decoder(data: encoded)
-        let decoded = try decoder.decode() as! [Any?]
-        #expect(try decoded[0] as! Bool == true)
-        #expect(try decoded[1] as! String == "fie")
+        let decoded = try decoder.decode()
+        guard case let .strictArray(decoded) = decoded else {
+            throw "error"
+        }
+        #expect(try decoded[0] == .bool(true))
+        #expect(try decoded[1] == .string("fie"))
     }
 
     @Test
     func date() async throws {
         let value = Date(timeIntervalSince1970: 15)
         let serializer = Amf0Encoder()
-        serializer.encode(value)
+        serializer.encode(.date(value))
         let encoded = serializer.data
         #expect(encoded == Data([0x0B, 0x40, 0xCD, 0x4C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]))
         let decoder = Amf0Decoder(data: encoded)
         let decoded = try decoder.decode()
-        #expect(decoded as! Date == value)
+        #expect(decoded == .date(value))
     }
 }

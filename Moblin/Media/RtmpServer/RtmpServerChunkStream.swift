@@ -144,7 +144,7 @@ class RtmpServerChunkStream {
         guard let client else {
             return
         }
-        guard let url = commandObject["tcUrl"] as? String else {
+        guard case let .string(url) = commandObject["tcUrl"] else {
             client.stopInternal(reason: "Stream URL missing")
             return
         }
@@ -180,11 +180,11 @@ class RtmpServerChunkStream {
                 commandType: .amf0Command,
                 commandName: .result,
                 commandObject: nil,
-                arguments: [[
-                    "level": "status",
-                    "code": "NetConnection.Connect.Success",
-                    "description": "Connection succeeded.",
-                ]]
+                arguments: [.object([
+                    "level": .string("status"),
+                    "code": .string("NetConnection.Connect.Success"),
+                    "description": .string("Connection succeeded."),
+                ])]
             )
         ))
     }
@@ -204,7 +204,7 @@ class RtmpServerChunkStream {
                 commandName: .result,
                 commandObject: nil,
                 arguments: [
-                    1,
+                    .number(1),
                 ]
             )
         ))
@@ -255,11 +255,11 @@ class RtmpServerChunkStream {
                 commandName: .onStatus,
                 commandObject: nil,
                 arguments: [
-                    [
-                        "level": "status",
-                        "code": "NetStream.Publish.Start",
-                        "description": "Start publishing.",
-                    ],
+                    .object([
+                        "level": .string("status"),
+                        "code": .string("NetStream.Publish.Start"),
+                        "description": .string("Start publishing."),
+                    ]),
                 ]
             )
         ))

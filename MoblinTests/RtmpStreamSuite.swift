@@ -148,11 +148,11 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .result,
                 commandObject: nil,
-                arguments: [[
-                    "level": "status",
-                    "code": "NetConnection.Connect.Success",
-                    "description": "Connection succeeded.",
-                ]]
+                arguments: [.object([
+                    "level": .string("status"),
+                    "code": .string("NetConnection.Connect.Success"),
+                    "description": .string("Connection succeeded."),
+                ])]
             )
         ))
         let setChunkSize = await receiveSetChunkSize(server: server)
@@ -161,11 +161,11 @@ struct RtmpStreamSuite {
         var message = try await receiveCommandMessage(server: server, size: 42)
         #expect(message.commandName == .releaseStream)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! String == streamKey)
+        #expect(message.arguments[0] == .string(streamKey))
         message = try await receiveCommandMessage(server: server, size: 38)
         #expect(message.commandName == .fcPublish)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! String == streamKey)
+        #expect(message.arguments[0] == .string(streamKey))
         message = try await receiveCommandMessage(server: server, size: 37)
         #expect(message.commandName == .createStream)
         #expect(message.arguments.count == 0)
@@ -178,14 +178,14 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .result,
                 commandObject: nil,
-                arguments: [1]
+                arguments: [.number(1)]
             )
         ))
         message = try await receiveCommandMessage(server: server, size: 43)
         #expect(message.commandName == .publish)
         #expect(message.arguments.count == 2)
-        #expect(message.arguments[0] as! String == streamKey)
-        #expect(message.arguments[1] as! String == "live")
+        #expect(message.arguments[0] == .string(streamKey))
+        #expect(message.arguments[1] == .string("live"))
         await server.send(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: 3,
@@ -195,11 +195,11 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .onStatus,
                 commandObject: nil,
-                arguments: [[
-                    "level": "status",
-                    "code": "NetStream.Publish.Start",
-                    "description": "Start publishing.",
-                ]]
+                arguments: [.object([
+                    "level": .string("status"),
+                    "code": .string("NetStream.Publish.Start"),
+                    "description": .string("Start publishing."),
+                ])]
             )
         ))
         #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
@@ -210,15 +210,15 @@ struct RtmpStreamSuite {
         message = try await receiveCommandMessage(server: server, size: 40)
         #expect(message.commandName == .fcUnpublish)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! String == streamKey)
+        #expect(message.arguments[0] == .string(streamKey))
         message = try await receiveCommandMessage(server: server, size: 46)
         #expect(message.commandName == .deleteStream)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! Double == 1)
+        #expect(message.arguments[0] == .number(1))
         message = try await receiveCommandMessage(server: server, size: 45)
         #expect(message.commandName == .closeStream)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! Double == 1)
+        #expect(message.arguments[0] == .number(1))
     }
 
     @Test
@@ -254,16 +254,16 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .result,
                 commandObject: [
-                    "fmsVer": "FMS/3,5,3,824",
-                    "capabilities": 127,
-                    "mode": 1,
+                    "fmsVer": .string("FMS/3,5,3,824"),
+                    "capabilities": .number(127),
+                    "mode": .number(1),
                 ],
-                arguments: [[
-                    "level": "status",
-                    "code": "NetConnection.Connect.Success",
-                    "description": "Connection succeeded.",
-                    "objectEncoding": 0,
-                ]]
+                arguments: [.object([
+                    "level": .string("status"),
+                    "code": .string("NetConnection.Connect.Success"),
+                    "description": .string("Connection succeeded."),
+                    "objectEncoding": .number(0),
+                ])]
             )
         ))
         // Nothing below is updated to match Wireshark.
@@ -273,11 +273,11 @@ struct RtmpStreamSuite {
         var message = try await receiveCommandMessage(server: server, size: 42)
         #expect(message.commandName == .releaseStream)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! String == streamKey)
+        #expect(message.arguments[0] == .string(streamKey))
         message = try await receiveCommandMessage(server: server, size: 38)
         #expect(message.commandName == .fcPublish)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! String == streamKey)
+        #expect(message.arguments[0] == .string(streamKey))
         message = try await receiveCommandMessage(server: server, size: 37)
         #expect(message.commandName == .createStream)
         #expect(message.arguments.count == 0)
@@ -290,14 +290,14 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .result,
                 commandObject: nil,
-                arguments: [1]
+                arguments: [.number(1)]
             )
         ))
         message = try await receiveCommandMessage(server: server, size: 43)
         #expect(message.commandName == .publish)
         #expect(message.arguments.count == 2)
-        #expect(message.arguments[0] as! String == streamKey)
-        #expect(message.arguments[1] as! String == "live")
+        #expect(message.arguments[0] == .string(streamKey))
+        #expect(message.arguments[1] == .string("live"))
         await server.send(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: 3,
@@ -307,11 +307,11 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .onStatus,
                 commandObject: nil,
-                arguments: [[
-                    "level": "status",
-                    "code": "NetStream.Publish.Start",
-                    "description": "Start publishing.",
-                ]]
+                arguments: [.object([
+                    "level": .string("status"),
+                    "code": .string("NetStream.Publish.Start"),
+                    "description": .string("Start publishing."),
+                ])]
             )
         ))
         #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
@@ -322,15 +322,15 @@ struct RtmpStreamSuite {
         message = try await receiveCommandMessage(server: server, size: 40)
         #expect(message.commandName == .fcUnpublish)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! String == streamKey)
+        #expect(message.arguments[0] == .string(streamKey))
         message = try await receiveCommandMessage(server: server, size: 46)
         #expect(message.commandName == .deleteStream)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! Double == 1)
+        #expect(message.arguments[0] == .number(1))
         message = try await receiveCommandMessage(server: server, size: 45)
         #expect(message.commandName == .closeStream)
         #expect(message.arguments.count == 1)
-        #expect(message.arguments[0] as! Double == 1)
+        #expect(message.arguments[0] == .number(1))
     }
 }
 
@@ -412,19 +412,24 @@ private func expectConnectCommandMessage(reader: ByteReader) throws {
     #expect(try reader.readUInt8() == Amf0Type.number.rawValue)
     #expect(try reader.readDouble() == 1)
     let deserializer = try Amf0Decoder(data: reader.readBytes(reader.bytesAvailable))
-    let connectMessage = try (deserializer.decode()) as! [String: Any]
-    #expect(connectMessage.count == 11)
-    #expect(connectMessage["app"] as! String == "live")
-    #expect(connectMessage["flashVer"] as! String == "FMLE/3.0 (compatible; FMSc/1.0)")
-    #expect((connectMessage["swfUrl"] as? String?) == nil)
-    #expect((connectMessage["tcUrl"] as! String).wholeMatch(of: /rtmp:\/\/127\.0\.0\.1:\d+\/live/) != nil)
-    #expect(connectMessage["fpad"] as! Bool == false)
-    #expect(connectMessage["capabilities"] as! Double == 239)
-    #expect(connectMessage["audioCodecs"] as! Double == 0x0400)
-    #expect(connectMessage["videoCodecs"] as! Double == 0x0080)
-    #expect(connectMessage["videoFunction"] as! Double == 1)
-    #expect((connectMessage["pageUrl"] as? String?) == nil)
-    #expect(connectMessage["objectEncoding"] as! Double == 0)
+    let connectMessage = try deserializer.decode()
+    guard case let .object(connectMessage) = connectMessage else {
+        throw "error"
+    }
+    #expect(connectMessage["app"] == .string("live"))
+    #expect(connectMessage["flashVer"] == .string("FMLE/3.0 (compatible; FMSc/1.0)"))
+    #expect(connectMessage["swfUrl"] == .null)
+    guard case let .string(tcUrl) = connectMessage["tcUrl"] else {
+        throw "error"
+    }
+    #expect(tcUrl.wholeMatch(of: /rtmp:\/\/127\.0\.0\.1:\d+\/live/) != nil)
+    #expect(connectMessage["fpad"] == .bool(false))
+    #expect(connectMessage["capabilities"] == .number(239))
+    #expect(connectMessage["audioCodecs"] == .number(0x0400))
+    #expect(connectMessage["videoCodecs"] == .number(0x0080))
+    #expect(connectMessage["videoFunction"] == .number(1))
+    #expect(connectMessage["pageUrl"] == .null)
+    #expect(connectMessage["objectEncoding"] == .number(0))
     #expect(reader.bytesAvailable == 0)
 }
 
@@ -444,7 +449,7 @@ private func receiveCommandMessage(server: RtmpServerMock, size: Int) async thro
 }
 
 private func receiveSetChunkSize(server: RtmpServerMock) async -> RtmpSetChunkSizeMessage {
-    var data = await server.receive(count: 16)
+    let data = await server.receive(count: 16)
     let chunk = RtmpChunk(data: data, size: data.count)!
     return chunk.message as! RtmpSetChunkSizeMessage
 }

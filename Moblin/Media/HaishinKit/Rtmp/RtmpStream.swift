@@ -126,7 +126,7 @@ class RtmpStream {
     }
 
     func onInternal(data: AsObject) {
-        guard let code = data["code"] as? String else {
+        guard case let .string(code) = data["code"] else {
             return
         }
         delegate?.rtmpStreamStatus(self, code: code)
@@ -194,7 +194,7 @@ class RtmpStream {
         connectTimer.stop()
     }
 
-    private func send(handlerName: String, arguments: Any?...) {
+    private func send(handlerName: String, arguments: AsValue...) {
         guard state == .publishing else {
             return
         }
@@ -221,22 +221,22 @@ class RtmpStream {
     private func createOnMetaData() -> AsObject {
         let audioEncoder = processor.getAudioEncoder()
         let videoEncoder = processor.getVideoEncoder()
-        var metadata: [String: Any] = [:]
+        var metadata: [String: AsValue] = [:]
         let settings = videoEncoder.settings.value
-        metadata["width"] = settings.videoSize.width
-        metadata["height"] = settings.videoSize.height
-        metadata["framerate"] = processor.getFps()
+        metadata["width"] = .number(Double(settings.videoSize.width))
+        metadata["height"] = .number(Double(settings.videoSize.height))
+        metadata["framerate"] = .number(processor.getFps())
         switch settings.format {
         case .h264:
-            metadata["videocodecid"] = FlvVideoCodec.avc.rawValue
+            metadata["videocodecid"] = .number(Double(FlvVideoCodec.avc.rawValue))
         case .hevc:
-            metadata["videocodecid"] = FlvVideoFourCC.hevc.rawValue
+            metadata["videocodecid"] = .number(Double(FlvVideoFourCC.hevc.rawValue))
         }
-        metadata["videodatarate"] = settings.bitRate / 1000
-        metadata["audiocodecid"] = FlvAudioCodec.aac.rawValue
-        metadata["audiodatarate"] = audioEncoder.getBitrate() / 1000
+        metadata["videodatarate"] = .number(Double(settings.bitRate / 1000))
+        metadata["audiocodecid"] = .number(Double(FlvAudioCodec.aac.rawValue))
+        metadata["audiodatarate"] = .number(Double(audioEncoder.getBitrate() / 1000))
         if let sampleRate = audioEncoder.getSampleRate() {
-            metadata["audiosamplerate"] = sampleRate
+            metadata["audiosamplerate"] = .number(sampleRate)
         }
         return metadata
     }
@@ -249,7 +249,7 @@ class RtmpStream {
             commandType: .amf0Command,
             commandName: .publish,
             commandObject: nil,
-            arguments: [streamKey, "live"]
+            arguments: [.string(streamKey), .string("live")]
         )))
         startedAt = .init()
         baseTimeStamp = -1.0
@@ -263,15 +263,20 @@ class RtmpStream {
     }
 
     private func handleStateChangeToPublishing() {
-        send(handlerName: "@setDataFrame", arguments: "onMetaData", createOnMetaData())
+        send(handlerName: "@setDataFrame",
+             arguments: .string("onMetaData"), .object(createOnMetaData()))
         stopConnectTimer()
         delegate?.rtmpStreamConnected(self)
         processor.startEncoding(self)
     }
 
     private func sendCreateStream() {
-        connection.call(.createStream, arguments: []) { data in
-            guard let id = data[0] as? Double, id >= 0, id <= Double(UInt32.max) else {
+        connection.call(.createStream, arguments: []) { arguments in
+            guard !arguments.isEmpty,
+                  case let .number(id) = arguments[0],
+                  id >= 0,
+                  id <= Double(UInt32.max)
+            else {
                 return
             }
             self.streamId = UInt32(id)
@@ -280,15 +285,15 @@ class RtmpStream {
     }
 
     private func sendReleaseStream() {
-        connection.call(.releaseStream, arguments: [streamKey])
+        connection.call(.releaseStream, arguments: [.string(streamKey)])
     }
 
     private func sendFCPublish() {
-        connection.call(.fcPublish, arguments: [streamKey])
+        connection.call(.fcPublish, arguments: [.string(streamKey)])
     }
 
     private func sendFCUnpublish() {
-        connection.call(.fcUnpublish, arguments: [streamKey])
+        connection.call(.fcUnpublish, arguments: [.string(streamKey)])
     }
 
     private func sendDeleteStream() {
@@ -298,7 +303,7 @@ class RtmpStream {
             commandType: .amf0Command,
             commandName: .deleteStream,
             commandObject: nil,
-            arguments: [streamId]
+            arguments: [.number(Double(streamId))]
         )))
     }
 
@@ -312,7 +317,7 @@ class RtmpStream {
                 commandType: .amf0Command,
                 commandName: .closeStream,
                 commandObject: nil,
-                arguments: [streamId]
+                arguments: [.number(Double(streamId))]
             )
         ))
     }

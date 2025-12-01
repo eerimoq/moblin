@@ -21,7 +21,7 @@ final class RtmpCommandMessage: RtmpMessage {
     private(set) var commandName: RtmpCommandName = .close
     private(set) var transactionId: Int = 0
     private(set) var commandObject: AsObject?
-    private(set) var arguments: [Any?] = []
+    private(set) var arguments: [AsValue] = []
 
     init(commandType: RtmpMessageType) {
         super.init(type: commandType)
@@ -33,7 +33,7 @@ final class RtmpCommandMessage: RtmpMessage {
         commandType: RtmpMessageType,
         commandName: RtmpCommandName,
         commandObject: AsObject?,
-        arguments: [Any?]
+        arguments: [AsValue]
     ) {
         self.transactionId = transactionId
         self.commandName = commandName
@@ -52,9 +52,13 @@ final class RtmpCommandMessage: RtmpMessage {
             if type == .amf3Command {
                 serializer.writeUInt8(0)
             }
-            serializer.encode(commandName.rawValue)
-            serializer.encode(transactionId)
-            serializer.encode(commandObject)
+            serializer.encode(.string(commandName.rawValue))
+            serializer.encode(.number(Double(transactionId)))
+            if let commandObject {
+                serializer.encode(.object(commandObject))
+            } else {
+                serializer.encode(.null)
+            }
             for argument in arguments {
                 serializer.encode(argument)
             }

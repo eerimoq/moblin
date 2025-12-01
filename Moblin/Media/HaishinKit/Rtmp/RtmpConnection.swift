@@ -20,7 +20,7 @@ enum RtmpConnectionCode: String {
 
     func eventData() -> AsObject {
         return [
-            "code": rawValue,
+            "code": .string(rawValue),
         ]
     }
 }
@@ -50,7 +50,7 @@ class RtmpConnection {
     private(set) var socket: RtmpSocket
     weak var stream: RtmpStream?
     private var chunkStreamIdToStreamId: [UInt16: UInt32] = [:]
-    var callCompletions: [Int: ([Any?]) -> Void] = [:]
+    var callCompletions: [Int: ([AsValue]) -> Void] = [:]
     private var nextTransactionId = 0
     private var timer = SimpleTimer(queue: processorControlQueue)
     private var messages: [UInt16: RtmpMessage] = [:]
@@ -86,7 +86,7 @@ class RtmpConnection {
         socket = RtmpSocket(name: name, queue: queue)
     }
 
-    func call(_ commandName: RtmpCommandName, arguments: [Any?], onCompleted: (([Any?]) -> Void)? = nil) {
+    func call(_ commandName: RtmpCommandName, arguments: [AsValue], onCompleted: (([AsValue]) -> Void)? = nil) {
         let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: getNextTransactionId(),
@@ -126,7 +126,7 @@ class RtmpConnection {
     }
 
     private func onInternal(data: AsObject) {
-        guard let code = data["code"] as? String else {
+        guard case let .string(code) = data["code"] else {
             return
         }
         switch RtmpConnectionCode(rawValue: code) {
@@ -155,7 +155,7 @@ class RtmpConnection {
             let uri,
             let user = uri.user,
             let password = uri.password,
-            let description = data["description"] as? String
+            case let .string(description) = data["description"]
         else {
             return
         }
@@ -193,17 +193,17 @@ class RtmpConnection {
             commandType: .amf0Command,
             commandName: .connect,
             commandObject: [
-                "app": app,
-                "flashVer": "FMLE/3.0 (compatible; FMSc/1.0)",
-                "swfUrl": nil,
-                "tcUrl": uri.absoluteWithoutAuthenticationString,
-                "fpad": false,
-                "capabilities": 239,
-                "audioCodecs": SupportSound.aac.rawValue,
-                "videoCodecs": SupportVideo.h264.rawValue,
-                "videoFunction": VideoFunction.clientSeek.rawValue,
-                "pageUrl": nil,
-                "objectEncoding": 0,
+                "app": .string(app),
+                "flashVer": .string("FMLE/3.0 (compatible; FMSc/1.0)"),
+                "swfUrl": .null,
+                "tcUrl": .string(uri.absoluteWithoutAuthenticationString),
+                "fpad": .bool(false),
+                "capabilities": .number(239),
+                "audioCodecs": .number(Double(SupportSound.aac.rawValue)),
+                "videoCodecs": .number(Double(SupportVideo.h264.rawValue)),
+                "videoFunction": .number(Double(VideoFunction.clientSeek.rawValue)),
+                "pageUrl": .null,
+                "objectEncoding": .number(0),
             ],
             arguments: []
         )
@@ -262,12 +262,12 @@ class RtmpConnection {
     }
 
     private func processMessageCommand(message: RtmpCommandMessage) {
-        guard let responder = callCompletions.removeValue(forKey: message.transactionId) else {
+        guard let completion = callCompletions.removeValue(forKey: message.transactionId) else {
             switch message.commandName {
             case .close:
                 disconnect()
             default:
-                if let data = message.arguments.first as? AsObject?, let data {
+                if case let .object(data) = message.arguments.first {
                     gotCommand(data: data)
                 }
             }
@@ -275,7 +275,7 @@ class RtmpConnection {
         }
         switch message.commandName {
         case .result:
-            responder(message.arguments)
+            completion(message.arguments)
         default:
             break
         }
