@@ -132,10 +132,7 @@ struct RtmpStreamSuite {
         await sendS0S1(server: server)
         _ = await receiveC2(server: server)
         await sendS2(server: server)
-        let reader = ByteReader(data: await server.receive(count: 273))
-        try expectBasicHeader(reader: reader, fmt: 0, csId: 3)
-        try expectMessageHeader(reader: reader, size: 259, messageTypeId: 20, messageStreamId: 0)
-        try expectConnectCommandMessage(reader: reader)
+        try await expectConnectCommandMessage(server: server)
         await sendWindowAcknowledgementSize(server: server, chunkStreamId: 3, size: 256)
         await sendSetPeerBandwidth(server: server, chunkStreamId: 3, size: 1000)
         try await expectWindowAcknowledgementSize(server: server)
@@ -238,10 +235,7 @@ struct RtmpStreamSuite {
         await sendS0S1(server: server)
         _ = await receiveC2(server: server)
         await sendS2(server: server)
-        let reader = ByteReader(data: await server.receive(count: 273))
-        try expectBasicHeader(reader: reader, fmt: 0, csId: 3)
-        try expectMessageHeader(reader: reader, size: 259, messageTypeId: 20, messageStreamId: 0)
-        try expectConnectCommandMessage(reader: reader)
+        try await expectConnectCommandMessage(server: server)
         await sendWindowAcknowledgementSize(server: server, chunkStreamId: 2, size: 2_500_000)
         await sendSetPeerBandwidth(server: server, chunkStreamId: 2, size: 59_768_832)
         try await expectWindowAcknowledgementSize(server: server)
@@ -366,50 +360,21 @@ private func sendSetPeerBandwidth(server: RtmpServerMock, chunkStreamId: UInt16,
     ))
 }
 
-private func sendBasicHeader(server: RtmpServerMock, fmt: UInt8, csId: UInt8) async {
-    await server.send(data: Data([fmt << 6 | csId]))
-}
-
-private func sendMessageHeader(server: RtmpServerMock,
-                               size: UInt32,
-                               messageTypeId: UInt8,
-                               messageStreamId: UInt32) async
-{
-    let writer = ByteWriter()
-    writer.writeBytes(Data([0, 0, 0]))
-    writer.writeUInt24(size)
-    writer.writeUInt8(messageTypeId)
-    writer.writeUInt32(messageStreamId)
-    await server.send(data: writer.data)
-}
-
-private func expectBasicHeader(reader: ByteReader, fmt: UInt8, csId: UInt8) throws {
-    #expect(try reader.readUInt8() == fmt << 6 | csId)
-}
-
-private func expectMessageHeader(reader: ByteReader,
-                                 size: UInt32,
-                                 messageTypeId: UInt8,
-                                 messageStreamId: UInt32) throws
-{
-    try reader.skipBytes(3)
-    #expect(try reader.readUInt24() == size)
-    #expect(try reader.readUInt8() == messageTypeId)
-    #expect(try reader.readUInt32() == messageStreamId)
-}
-
-private func expectConnectCommandMessage(reader: ByteReader) throws {
-    var chunk = try reader.readBytes(128)
+private func expectConnectCommandMessage(server: RtmpServerMock) async throws {
+    let reader = ByteReader(data: await server.receive(count: 273))
+    var data = try reader.readBytes(128 + 12)
     #expect(try reader.readUInt8() == 0xC3)
-    chunk += try reader.readBytes(128)
+    data += try reader.readBytes(128)
     #expect(try reader.readUInt8() == 0xC3)
-    chunk += try reader.readBytes(3)
+    data += try reader.readBytes(3)
     #expect(reader.bytesAvailable == 0)
-    let decoder = Amf0Decoder(data: chunk)
-    #expect(try decoder.decode() == .string("connect"))
-    #expect(try decoder.decode() == .number(1))
-    let connectMessage = try decoder.decode()
-    guard case let .object(connectMessage) = connectMessage else {
+    let chunk = RtmpChunk(data: data, size: data.count)!
+    #expect(chunk.type == .zero)
+    #expect(chunk.chunkStreamId == 3)
+    let message = chunk.message as! RtmpCommandMessage
+    #expect(message.commandName == .connect)
+    #expect(message.transactionId == 1)
+    guard let connectMessage = message.commandObject else {
         throw "error"
     }
     #expect(connectMessage["app"] == .string("live"))
