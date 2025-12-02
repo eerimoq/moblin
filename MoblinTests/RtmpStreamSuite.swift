@@ -145,11 +145,13 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .result,
                 commandObject: nil,
-                arguments: [.object([
-                    "level": .string("status"),
-                    "code": .string("NetConnection.Connect.Success"),
-                    "description": .string("Connection succeeded."),
-                ])]
+                arguments: [
+                    .object([
+                        "level": .string("status"),
+                        "code": .string("NetConnection.Connect.Success"),
+                        "description": .string("Connection succeeded."),
+                    ]),
+                ]
             )
         ))
         let setChunkSize = await receiveSetChunkSize(server: server)
@@ -192,11 +194,13 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .onStatus,
                 commandObject: nil,
-                arguments: [.object([
-                    "level": .string("status"),
-                    "code": .string("NetStream.Publish.Start"),
-                    "description": .string("Start publishing."),
-                ])]
+                arguments: [
+                    .object([
+                        "level": .string("status"),
+                        "code": .string("NetStream.Publish.Start"),
+                        "description": .string("Start publishing."),
+                    ]),
+                ]
             )
         ))
         #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")
@@ -252,12 +256,14 @@ struct RtmpStreamSuite {
                     "capabilities": .number(127),
                     "mode": .number(1),
                 ],
-                arguments: [.object([
-                    "level": .string("status"),
-                    "code": .string("NetConnection.Connect.Success"),
-                    "description": .string("Connection succeeded."),
-                    "objectEncoding": .number(0),
-                ])]
+                arguments: [
+                    .object([
+                        "level": .string("status"),
+                        "code": .string("NetConnection.Connect.Success"),
+                        "description": .string("Connection succeeded."),
+                        "objectEncoding": .number(0),
+                    ]),
+                ]
             )
         ))
         // Nothing below is updated to match Wireshark.
@@ -301,11 +307,13 @@ struct RtmpStreamSuite {
                 commandType: .amf0Command,
                 commandName: .onStatus,
                 commandObject: nil,
-                arguments: [.object([
-                    "level": .string("status"),
-                    "code": .string("NetStream.Publish.Start"),
-                    "description": .string("Start publishing."),
-                ])]
+                arguments: [
+                    .object([
+                        "level": .string("status"),
+                        "code": .string("NetStream.Publish.Start"),
+                        "description": .string("Start publishing."),
+                    ]),
+                ]
             )
         ))
         #expect(await modelMock.waitForStatus() == "NetStream.Publish.Start")

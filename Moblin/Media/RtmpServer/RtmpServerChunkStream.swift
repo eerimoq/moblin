@@ -180,11 +180,13 @@ class RtmpServerChunkStream {
                 commandType: .amf0Command,
                 commandName: .result,
                 commandObject: nil,
-                arguments: [.object([
-                    "level": .string("status"),
-                    "code": .string("NetConnection.Connect.Success"),
-                    "description": .string("Connection succeeded."),
-                ])]
+                arguments: [
+                    .object([
+                        "level": .string("status"),
+                        "code": .string("NetConnection.Connect.Success"),
+                        "description": .string("Connection succeeded."),
+                    ]),
+                ]
             )
         ))
     }
