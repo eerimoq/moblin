@@ -6,7 +6,7 @@ private let cyclingPowerDeviceDispatchQueue = DispatchQueue(label: "com.eerimoq.
 
 protocol CyclingPowerDeviceDelegate: AnyObject {
     func cyclingPowerDeviceState(_ device: CyclingPowerDevice, state: CyclingPowerDeviceState)
-    func cyclingPowerStatus(_ device: CyclingPowerDevice, power: Int, cadence: Int)
+    func cyclingPowerStatus(_ device: CyclingPowerDevice, power: Int, crankCadence: Int, wheelRpm: Int?)
 }
 
 enum CyclingPowerDeviceState {
@@ -217,11 +217,15 @@ class CyclingPowerDevice: NSObject {
     // private var featureCharacteristic: CBCharacteristic?
     private var deviceId: UUID?
     weak var delegate: (any CyclingPowerDeviceDelegate)?
-    private var previousRevolutions: UInt16?
-    private var previousRevolutionsTime: UInt16?
+    private var previousCrankRevolutions: UInt16?
+    private var previousCrankRevolutionsTime: UInt16?
+    private var previousWheelRevolutions: UInt32?
+    private var previousWheelRevolutionsTime: UInt16?
     private var averagePower = AverageMeasurementCalculator()
     private var averageCadence = AverageMeasurementCalculator()
+    private var averageWheelRpm = AverageMeasurementCalculator()
     private var latestAverageCadenceUpdateTime = ContinuousClock.now
+    private var latestAverageWheelUpdateTime = ContinuousClock.now
 
     func start(deviceId: UUID?) {
         cyclingPowerDeviceDispatchQueue.async {
@@ -255,8 +259,15 @@ class CyclingPowerDevice: NSObject {
         measurementCharacteristic = nil
         // vectorCharacteristic = nil
         // featureCharacteristic = nil
-        previousRevolutions = nil
-        previousRevolutionsTime = nil
+        previousCrankRevolutions = nil
+        previousCrankRevolutionsTime = nil
+        previousWheelRevolutions = nil
+        previousWheelRevolutionsTime = nil
+        averagePower = AverageMeasurementCalculator()
+        averageCadence = AverageMeasurementCalculator()
+        averageWheelRpm = AverageMeasurementCalculator()
+        latestAverageCadenceUpdateTime = ContinuousClock.now
+        latestAverageWheelUpdateTime = ContinuousClock.now
         setState(state: .disconnected)
     }
 
@@ -366,15 +377,16 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
     private func handlePowerMeasurement(value: Data) throws {
         let measurement = try CyclingPowerMeasurement(value: value)
         var cadence = -1.0
+        var wheelRpm: Double?
         if let revolutions = measurement.cumulativeCrankRevolutions,
            let time = measurement.lastCrankEventTime
         {
-            if let previousRevolutions, let previousRevolutionsTime {
-                var deltaRevolutions = Int(revolutions) - Int(previousRevolutions)
+            if let previousCrankRevolutions, let previousCrankRevolutionsTime {
+                var deltaRevolutions = Int(revolutions) - Int(previousCrankRevolutions)
                 if deltaRevolutions < 0 {
                     deltaRevolutions += 65536
                 }
-                var deltaTime = Int(time) - Int(previousRevolutionsTime)
+                var deltaTime = Int(time) - Int(previousCrankRevolutionsTime)
                 if deltaTime < 0 {
                     deltaTime += 65536
                 }
@@ -384,8 +396,28 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
                     cadence = min(cadence, 10000)
                 }
             }
-            previousRevolutions = revolutions
-            previousRevolutionsTime = time
+            previousCrankRevolutions = revolutions
+            previousCrankRevolutionsTime = time
+        }
+        if let wheelRevolutions = measurement.cumulativeWheelRevolutions,
+           let wheelTime = measurement.lastWheelEventTime
+        {
+            if let previousWheelRevolutions, let previousWheelRevolutionsTime {
+                var deltaRevolutions = Int(wheelRevolutions) - Int(previousWheelRevolutions)
+                if deltaRevolutions < 0 {
+                    deltaRevolutions += Int(UInt32.max) + 1
+                }
+                var deltaTime = Int(wheelTime) - Int(previousWheelRevolutionsTime)
+                if deltaTime < 0 {
+                    deltaTime += 65536
+                }
+                let deltaTimeSeconds = Double(deltaTime) / 1024
+                if deltaTimeSeconds > 0 {
+                    wheelRpm = min(60 * Double(deltaRevolutions) / deltaTimeSeconds, 10000)
+                }
+            }
+            previousWheelRevolutions = wheelRevolutions
+            previousWheelRevolutionsTime = wheelTime
         }
         averagePower.update(value: Int(measurement.instantaneousPower))
         let now = ContinuousClock.now
@@ -395,7 +427,18 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         } else if latestAverageCadenceUpdateTime.duration(to: now) > .seconds(3) {
             averageCadence.update(value: 0)
         }
-        delegate?.cyclingPowerStatus(self, power: averagePower.average(), cadence: averageCadence.averageIngoreZeros())
+        if let wheelRpm {
+            averageWheelRpm.update(value: Int(wheelRpm))
+            latestAverageWheelUpdateTime = now
+        } else if latestAverageWheelUpdateTime.duration(to: now) > .seconds(3) {
+            averageWheelRpm.update(value: 0)
+        }
+        delegate?.cyclingPowerStatus(
+            self,
+            power: averagePower.average(),
+            crankCadence: averageCadence.averageIngoreZeros(),
+            wheelRpm: averageWheelRpm.averageIngoreZeros()
+        )
     }
 
     private func handlePowerVector(value: Data) throws {

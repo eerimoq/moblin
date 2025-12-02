@@ -66,10 +66,13 @@ extension Model: CyclingPowerDeviceDelegate {
         }
     }
 
-    func cyclingPowerStatus(_: CyclingPowerDevice, power: Int, cadence: Int) {
+    func cyclingPowerStatus(_: CyclingPowerDevice, power: Int, crankCadence: Int, wheelRpm: Int?) {
         DispatchQueue.main.async {
             self.cyclingPower = power
-            self.cyclingCadence = cadence
+            self.cyclingCadence = crankCadence
+            self.realtimeIrl?.updateCyclingPower(power)
+            self.realtimeIrl?.updateCyclingCrank(crankCadence)
+            self.realtimeIrl?.updateCyclingWheel(wheelRpm)
         }
     }
 }

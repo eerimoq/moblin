@@ -619,6 +619,7 @@ extension Model: WCSessionDelegate {
             if self.isWatchLocal() {
                 if let heartRate = stats.heartRate {
                     self.heartRates[""] = heartRate
+                    self.realtimeIrl?.updateHeartRate(heartRate, fromWatch: true)
                 }
                 if let activeEnergyBurned = stats.activeEnergyBurned {
                     self.workoutActiveEnergyBurned = activeEnergyBurned
@@ -628,9 +629,11 @@ extension Model: WCSessionDelegate {
                 }
                 if let stepCount = stats.stepCount {
                     self.workoutStepCount = stepCount
+                    self.realtimeIrl?.updatePedometerSteps(stepCount, fromWatch: true)
                 }
                 if let power = stats.power {
                     self.workoutPower = power
+                    self.realtimeIrl?.updateCyclingPower(power, fromWatch: true)
                 }
             }
         }
