@@ -3,12 +3,11 @@ import Foundation
 typealias AsObject = [String: AsValue]
 
 struct AsTypedObject: Equatable {
-    static func decode(typeName _: String, data _: AsObject) throws -> AsTypedObject {
-        return AsTypedObject()
-    }
+    let type: String
+    let value: AsObject
 }
 
-struct AsArray: Equatable {
+struct AsEcmaArray: Equatable {
     private(set) var items: [String: AsValue] = [:]
 
     mutating func set(key: String, value: AsValue) {
@@ -23,36 +22,8 @@ struct AsArray: Equatable {
     }
 }
 
-struct AsXmlDocument: CustomStringConvertible {
-    var description: String {
-        data
-    }
-
-    private let data: String
-
-    init(data: String) {
-        self.data = data
-    }
-}
-
-extension AsXmlDocument: Equatable {
-    static func == (lhs: AsXmlDocument, rhs: AsXmlDocument) -> Bool {
-        lhs.description == rhs.description
-    }
-}
-
-struct AsXml: CustomStringConvertible {
-    var description: String {
-        data
-    }
-
-    private let data: String
-}
-
-extension AsXml: Equatable {
-    static func == (lhs: AsXml, rhs: AsXml) -> Bool {
-        lhs.description == rhs.description
-    }
+struct AsXmlDocument: Equatable {
+    let data: String
 }
 
 enum AsValue: Equatable {
@@ -63,7 +34,7 @@ enum AsValue: Equatable {
     case null
     case undefined
     case reference
-    case ecmaArray(AsArray)
+    case ecmaArray(AsEcmaArray)
     case strictArray([AsValue])
     case date(Date)
     case unsupported
@@ -78,7 +49,7 @@ enum AmfError: Error {
     case notObjectEnd
 }
 
-enum Amf0Type: UInt8 {
+private enum Amf0Type: UInt8 {
     case number = 0x00
     case bool = 0x01
     case string = 0x02
@@ -109,7 +80,7 @@ final class Amf0Encoder: ByteWriter {
         case let .bool(value):
             encodeBool(value)
         case let .ecmaArray(value):
-            encodeAsArray(value)
+            encodeEcmaArray(value)
         case let .object(value):
             encodeAsObject(value)
         case .null:
@@ -149,7 +120,7 @@ final class Amf0Encoder: ByteWriter {
         writeAmf0Type(value: .objectEnd)
     }
 
-    private func encodeAsArray(_: AsArray) {}
+    private func encodeEcmaArray(_: AsEcmaArray) {}
 
     private func encodeDate(_ value: Date) {
         writeAmf0Type(value: .date)
@@ -269,9 +240,9 @@ final class Amf0Decoder: ByteReader {
         return try readUInt8() == 0x01
     }
 
-    private func decodeEcmaArrayValue() throws -> AsArray {
+    private func decodeEcmaArrayValue() throws -> AsEcmaArray {
         let numberOfElements = try readNumberOfArrayElements()
-        var array = AsArray()
+        var array = AsEcmaArray()
         for _ in 0 ..< numberOfElements {
             try array.set(key: decodeStringValue(), value: decode())
         }
@@ -310,17 +281,9 @@ final class Amf0Decoder: ByteReader {
     }
 
     private func decodeTypedObjectValue() throws -> AsTypedObject {
-        let typeName = try decodeStringValue()
-        var result = AsObject()
-        while true {
-            let key = try decodeStringValue()
-            guard !key.isEmpty else {
-                position += 1
-                break
-            }
-            result[key] = try decode()
-        }
-        return try AsTypedObject.decode(typeName: typeName, data: result)
+        let type = try decodeStringValue()
+        let value = try decodeObjectValue()
+        return AsTypedObject(type: type, value: value)
     }
 
     private func decodeStringValue() throws -> String {

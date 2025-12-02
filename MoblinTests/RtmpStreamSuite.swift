@@ -98,7 +98,7 @@ private actor RtmpServerMock {
         }
         client?.receive(minimumIncompleteLength: 1, maximumLength: 4096) { content, _, _, _ in
             Task {
-                self.handleData(data: content)
+                await self.handleData(data: content)
             }
         }
     }
@@ -405,14 +405,10 @@ private func expectConnectCommandMessage(reader: ByteReader) throws {
     #expect(try reader.readUInt8() == 0xC3)
     chunk += try reader.readBytes(3)
     #expect(reader.bytesAvailable == 0)
-    let reader = ByteReader(data: chunk)
-    #expect(try reader.readUInt8() == Amf0Type.string.rawValue)
-    #expect(try reader.readUInt16() == 7)
-    #expect(try reader.readUtf8Bytes(7) == "connect")
-    #expect(try reader.readUInt8() == Amf0Type.number.rawValue)
-    #expect(try reader.readDouble() == 1)
-    let deserializer = try Amf0Decoder(data: reader.readBytes(reader.bytesAvailable))
-    let connectMessage = try deserializer.decode()
+    let decoder = Amf0Decoder(data: chunk)
+    #expect(try decoder.decode() == .string("connect"))
+    #expect(try decoder.decode() == .number(1))
+    let connectMessage = try decoder.decode()
     guard case let .object(connectMessage) = connectMessage else {
         throw "error"
     }
@@ -430,7 +426,6 @@ private func expectConnectCommandMessage(reader: ByteReader) throws {
     #expect(connectMessage["videoFunction"] == .number(1))
     #expect(connectMessage["pageUrl"] == .null)
     #expect(connectMessage["objectEncoding"] == .number(0))
-    #expect(reader.bytesAvailable == 0)
 }
 
 private func expectWindowAcknowledgementSize(server: RtmpServerMock) async throws {

@@ -59,6 +59,24 @@ struct AmfSuite {
     }
 
     @Test
+    func typedObject() async throws {
+        let encoded = Data([
+            0x10,
+            // Type "21",
+            0x00, 0x02, 0x32, 0x31,
+            // Key "1".
+            0x00, 0x01, 0x31,
+            // Value "2".
+            0x02, 0x00, 0x01, 0x32,
+            // Empty string and object end.
+            0x00, 0x00, 0x09,
+        ])
+        let decoder = Amf0Decoder(data: encoded)
+        let decoded = try decoder.decode()
+        #expect(decoded == .typedObject(AsTypedObject(type: "21", value: ["1": .string("2")])))
+    }
+
+    @Test
     func null() async throws {
         let serializer = Amf0Encoder()
         serializer.encode(.null)
@@ -121,8 +139,9 @@ struct AmfSuite {
         guard case let .strictArray(decoded) = decoded else {
             throw "error"
         }
-        #expect(try decoded[0] == .bool(true))
-        #expect(try decoded[1] == .string("fie"))
+        #expect(decoded.count == 2)
+        #expect(decoded[0] == .bool(true))
+        #expect(decoded[1] == .string("fie"))
     }
 
     @Test

@@ -105,7 +105,7 @@ class RtmpServerChunkStream {
         let commandName: RtmpCommandName
         let transactionId: Int
         let commandObject: AsObject
-        var arguments: [Any?]
+        var arguments: [AsValue]
         do {
             commandName = try RtmpCommandName(rawValue: decoder.decodeString()) ?? .unknown
             transactionId = try decoder.decodeInt()
@@ -212,7 +212,7 @@ class RtmpServerChunkStream {
 
     private func processMessageAmf0CommandDeleteStream(transactionId _: Int) {}
 
-    private func processMessageAmf0CommandPublish(transactionId: Int, arguments: [Any?]) {
+    private func processMessageAmf0CommandPublish(transactionId: Int, arguments: [AsValue]) {
         guard let client else {
             return
         }
@@ -220,7 +220,7 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Missing publish argument")
             return
         }
-        guard let streamKey = arguments[0] as? String else {
+        guard case let .string(streamKey) = arguments[0] else {
             client.stopInternal(reason: "Stream key not a string")
             return
         }
