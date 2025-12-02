@@ -5,16 +5,16 @@ class RealtimeIrl {
     private let pushUrl: URL
     private let stopUrl: URL
     private var updateCount = 0
-    private var pedometerStepsWatch: (value: Int, date: Date)?
-    private var pedometerStepsDevice: (value: Int, date: Date)?
-    private var heartRateWatch: (value: Int, date: Date)?
-    private var heartRateDevice: (value: Int, date: Date)?
-    private var cyclingPowerWatch: (value: Int, date: Date)?
-    private var cyclingPowerDevice: (value: Int, date: Date)?
-    private var cyclingCrankWatch: (value: Int, date: Date)?
-    private var cyclingCrankDevice: (value: Int, date: Date)?
-    private var cyclingWheelWatch: (value: Int, date: Date)?
-    private var cyclingWheelDevice: (value: Int, date: Date)?
+    private var pedometerStepsWatch: Int?
+    private var pedometerStepsDevice: Int?
+    private var heartRateWatch: Int?
+    private var heartRateDevice: Int?
+    private var cyclingPowerWatch: Int?
+    private var cyclingPowerDevice: Int?
+    private var cyclingCrankWatch: Int?
+    private var cyclingCrankDevice: Int?
+    private var cyclingWheelWatch: Int?
+    private var cyclingWheelDevice: Int?
 
     private struct Payload: Encodable {
         let latitude: Double
@@ -30,24 +30,11 @@ class RealtimeIrl {
         let cyclingWheel: Int?
     }
 
-    private func watchFirst(
-        watch: (value: Int, date: Date)?,
-        device: (value: Int, date: Date)?
-    ) -> Int? {
-        if let watch {
-            return watch.value
-        }
-        if let device {
-            return device.value
-        }
-        return nil
-    }
-
-    private var pedometerSteps: Int? { watchFirst(watch: pedometerStepsWatch, device: pedometerStepsDevice) }
-    private var heartRate: Int? { watchFirst(watch: heartRateWatch, device: heartRateDevice) }
-    private var cyclingPower: Int? { watchFirst(watch: cyclingPowerWatch, device: cyclingPowerDevice) }
-    private var cyclingCrank: Int? { watchFirst(watch: cyclingCrankWatch, device: cyclingCrankDevice) }
-    private var cyclingWheel: Int? { watchFirst(watch: cyclingWheelWatch, device: cyclingWheelDevice) }
+    private var pedometerSteps: Int? { pedometerStepsWatch ?? pedometerStepsDevice }
+    private var heartRate: Int? { heartRateWatch ?? heartRateDevice }
+    private var cyclingPower: Int? { cyclingPowerWatch ?? cyclingPowerDevice }
+    private var cyclingCrank: Int? { cyclingCrankWatch ?? cyclingCrankDevice }
+    private var cyclingWheel: Int? { cyclingWheelWatch ?? cyclingWheelDevice }
 
     init?(baseUrl: String, pushKey: String) {
         guard let url = URL(string: "\(baseUrl)/push?key=\(pushKey)") else {
@@ -93,54 +80,46 @@ class RealtimeIrl {
 
     func updatePedometerSteps(_ steps: Int, fromWatch: Bool = false) {
         if fromWatch {
-            pedometerStepsWatch = (steps, Date())
+            pedometerStepsWatch = steps
         } else {
-            pedometerStepsDevice = (steps, Date())
+            pedometerStepsDevice = steps
         }
     }
 
     func updateHeartRate(_ heartRate: Int, fromWatch: Bool = false) {
         if fromWatch {
-            heartRateWatch = (heartRate, Date())
+            heartRateWatch = heartRate
         } else {
-            heartRateDevice = (heartRate, Date())
+            heartRateDevice = heartRate
         }
     }
 
     func updateCyclingPower(_ power: Int, fromWatch: Bool = false) {
         if fromWatch {
-            cyclingPowerWatch = (power, Date())
+            cyclingPowerWatch = power
         } else {
-            cyclingPowerDevice = (power, Date())
+            cyclingPowerDevice = power
         }
     }
 
     func updateCyclingCrank(_ cadence: Int, fromWatch: Bool = false) {
         if fromWatch {
-            cyclingCrankWatch = (cadence, Date())
+            cyclingCrankWatch = cadence
         } else {
-            cyclingCrankDevice = (cadence, Date())
+            cyclingCrankDevice = cadence
         }
     }
 
     func updateCyclingWheel(_ rpm: Int?, fromWatch: Bool = false) {
         if fromWatch {
-            if let rpm {
-                cyclingWheelWatch = (rpm, Date())
-            } else {
-                cyclingWheelWatch = nil
-            }
-        } else {
-            if let rpm {
-                cyclingWheelDevice = (rpm, Date())
-            } else {
-                cyclingWheelDevice = nil
-            }
+            cyclingWheelWatch = rpm
+        }
+        else {
+            cyclingWheelDevice = rpm
         }
     }
 
-    func stop() {
-        updateCount = 0
+    private func resetState() {
         pedometerStepsWatch = nil
         pedometerStepsDevice = nil
         heartRateWatch = nil
@@ -151,10 +130,13 @@ class RealtimeIrl {
         cyclingCrankDevice = nil
         cyclingWheelWatch = nil
         cyclingWheelDevice = nil
+    }
+
+    func stop() {
+        updateCount = 0
+        resetState()
         var request = URLRequest(url: stopUrl)
         request.httpMethod = "POST"
-        URLSession.shared.dataTask(with: request) { _, _, _ in
-        }
-        .resume()
+        URLSession.shared.dataTask(with: request).resume()
     }
 }
