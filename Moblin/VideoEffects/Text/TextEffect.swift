@@ -7,17 +7,22 @@ import WeatherKit
 
 private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
 
-private var dateFormatter: DateFormatter {
+private func createDateFormatter() -> DateFormatter {
     let formatter = DateFormatter()
     formatter.dateStyle = .short
     return formatter
 }
 
-private var fullDateFormatter: DateFormatter {
+private func createFullDateFormatter() -> DateFormatter {
     let formatter = DateFormatter()
     formatter.dateStyle = .full
     return formatter
 }
+
+let textEffectDateFormatter = createDateFormatter()
+let textEffectFullDateFormatter = createFullDateFormatter()
+let textEffectTimeFormat: Date.FormatStyle = .dateTime.hour().minute().second()
+let textEffectShortTimeFormat: Date.FormatStyle = .dateTime.hour().minute()
 
 struct TextEffectStats {
     let timestamp: ContinuousClock.Instant
@@ -209,28 +214,28 @@ private class Formatter {
     private func formatClock(stats: TextEffectStats) {
         parts.append(.init(
             id: partId,
-            data: .text(stats.date.formatted(.dateTime.hour().minute().second()))
+            data: .text(stats.date.formatted(textEffectTimeFormat))
         ))
     }
 
     private func formatShortClock(stats: TextEffectStats) {
         parts.append(.init(
             id: partId,
-            data: .text(stats.date.formatted(.dateTime.hour().minute()))
+            data: .text(stats.date.formatted(textEffectShortTimeFormat))
         ))
     }
 
     private func formatDate(stats: TextEffectStats) {
         parts.append(.init(
             id: partId,
-            data: .text(dateFormatter.string(from: stats.date))
+            data: .text(textEffectDateFormatter.string(from: stats.date))
         ))
     }
 
     private func formatFullDate(stats: TextEffectStats) {
         parts.append(.init(
             id: partId,
-            data: .text(fullDateFormatter.string(from: stats.date))
+            data: .text(textEffectFullDateFormatter.string(from: stats.date))
         ))
     }
 

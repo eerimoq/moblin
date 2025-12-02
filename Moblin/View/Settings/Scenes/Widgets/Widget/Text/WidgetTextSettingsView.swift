@@ -276,18 +276,27 @@ private struct TimeVariablesView: View {
     var body: some View {
         NavigationLink {
             Form {
+                let now = Date()
+                let time = now.formatted(textEffectTimeFormat)
                 VariableView(
                     title: "{time}",
-                    description: String(localized: "Show time as HH:MM:SS"),
+                    description: String(localized: "Show time as \(time)"),
                     text: $value
                 )
+                let shortTime = now.formatted(textEffectShortTimeFormat)
                 VariableView(
                     title: "{shortTime}",
-                    description: String(localized: "Show time as HH:MM"),
+                    description: String(localized: "Show time as \(shortTime)"),
                     text: $value
                 )
-                VariableView(title: "{date}", description: String(localized: "Show date"), text: $value)
-                VariableView(title: "{fullDate}", description: String(localized: "Show full date"), text: $value)
+                let date = textEffectDateFormatter.string(from: now)
+                VariableView(title: "{date}",
+                             description: String(localized: "Show date as \(date)"),
+                             text: $value)
+                let fullDate = textEffectFullDateFormatter.string(from: now)
+                VariableView(title: "{fullDate}",
+                             description: String(localized: "Show date as \(fullDate)"),
+                             text: $value)
                 VariableView(title: "{timer}", description: String(localized: "Show a timer"), text: $value)
                 VariableView(
                     title: "{stopwatch}",
