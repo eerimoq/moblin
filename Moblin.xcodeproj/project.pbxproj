@@ -483,6 +483,7 @@
 				fi,
 				sk,
 				"zh-Hant-TW",
+				sl,
 			);
 			mainGroup = 035E9E2A2A9A02D6009D4F5A;
 			packageReferences = (
