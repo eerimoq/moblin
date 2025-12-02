@@ -188,6 +188,7 @@ private struct LanguageView: View {
     let languageCode: String
     @State var selectedVoice: VoicePickerItem?
     let onVoiceChange: (String, SettingsVoice) -> Void
+    let onLanguageReset: (String) -> Void
     let synthesizer: AVSpeechSynthesizer
     @Binding var rate: Float
     @Binding var volume: Float
@@ -240,6 +241,12 @@ private struct LanguageView: View {
                 Live Speech → Preferred Voices.
                 """)
             }
+            Section {
+                TextButtonView("Reset") {
+                    selectedVoice = nil
+                    onLanguageReset(languageCode)
+                }
+            }
         }
         .navigationTitle(localize(languageCode))
     }
@@ -254,6 +261,7 @@ private struct Language {
 struct VoicesView: View {
     @Binding var textToSpeechLanguageVoices: [String: SettingsVoice]
     let onVoiceChange: (String, SettingsVoice) -> Void
+    let onLanguageReset: (String) -> Void
     private let synthesizer = createSpeechSynthesizer()
     @Binding var rate: Float
     @Binding var volume: Float
@@ -294,6 +302,7 @@ struct VoicesView: View {
                         languageCode: language.code,
                         selectedVoice: selectedVoice(language: language),
                         onVoiceChange: onVoiceChange,
+                        onLanguageReset: onLanguageReset,
                         synthesizer: synthesizer,
                         rate: $rate,
                         volume: $volume,

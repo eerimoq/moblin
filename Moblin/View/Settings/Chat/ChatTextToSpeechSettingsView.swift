@@ -33,6 +33,11 @@ struct ChatTextToSpeechSettingsView: View {
         model.chatTextToSpeech.setVoices(voices: chat.textToSpeechLanguageVoices)
     }
 
+    private func onLanguageReset(languageCode: String) {
+        chat.textToSpeechLanguageVoices.removeValue(forKey: languageCode)
+        model.chatTextToSpeech.setVoices(voices: chat.textToSpeechLanguageVoices)
+    }
+
     var body: some View {
         Form {
             Section {
@@ -40,6 +45,7 @@ struct ChatTextToSpeechSettingsView: View {
                     VoicesView(
                         textToSpeechLanguageVoices: $chat.textToSpeechLanguageVoices,
                         onVoiceChange: onVoiceChange,
+                        onLanguageReset: onLanguageReset,
                         rate: $chat.textToSpeechRate,
                         volume: $chat.textToSpeechSayVolume,
                         ttsMonsterApiToken: ttsMonster.apiToken

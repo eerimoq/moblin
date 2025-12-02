@@ -34,6 +34,11 @@ struct AlertTextToSpeechView: View {
         model.updateAlertsSettings()
     }
 
+    private func onLanguageReset(languageCode: String) {
+        alert.textToSpeechLanguageVoices.removeValue(forKey: languageCode)
+        model.updateAlertsSettings()
+    }
+
     var body: some View {
         Section {
             Toggle(isOn: Binding(get: {
@@ -65,6 +70,7 @@ struct AlertTextToSpeechView: View {
                 VoicesView(
                     textToSpeechLanguageVoices: $alert.textToSpeechLanguageVoices,
                     onVoiceChange: onVoiceChange,
+                    onLanguageReset: onLanguageReset,
                     rate: $rate,
                     volume: $volume,
                     ttsMonsterApiToken: ""
