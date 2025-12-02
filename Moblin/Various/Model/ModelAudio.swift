@@ -3,6 +3,14 @@ import UIKit
 
 class AudioLevel: ObservableObject {
     @Published var level: Float = defaultAudioLevel
+
+    func isMuted() -> Bool {
+        return level.isNaN
+    }
+
+    func isUnknown() -> Bool {
+        return level == .infinity
+    }
 }
 
 class AudioProvider: ObservableObject {

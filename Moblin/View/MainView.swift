@@ -236,6 +236,21 @@ private struct InstantReplayCountdownView: View {
     }
 }
 
+private struct MutedView: View {
+    @ObservedObject var level: AudioLevel
+
+    var body: some View {
+        if level.isMuted() {
+            Image(systemName: "microphone.slash")
+                .font(.system(size: 80))
+                .foregroundStyle(.red)
+                .padding(10)
+                .background(.black.opacity(0.75))
+                .cornerRadius(10)
+        }
+    }
+}
+
 private struct WebBrowserAlertsView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
 
@@ -562,6 +577,7 @@ struct MainView: View {
                 }
                 SnapshotCountdownView(snapshot: model.snapshot)
                 InstantReplayCountdownView(replay: model.replay)
+                MutedView(level: model.audio.level)
             }
             .overlay(alignment: .topLeading) {
                 browserWidgets()

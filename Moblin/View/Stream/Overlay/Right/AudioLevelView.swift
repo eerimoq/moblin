@@ -40,10 +40,10 @@ private struct AudioBarView: View {
     }
 
     var body: some View {
-        if level.level.isNaN {
+        if level.isMuted() {
             Text("Muted")
                 .foregroundStyle(.white)
-        } else if level.level == .infinity {
+        } else if level.isUnknown() {
             Text("Unknown")
                 .foregroundStyle(.white)
         } else {
