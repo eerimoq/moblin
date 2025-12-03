@@ -9,6 +9,36 @@ private struct Word: Identifiable {
     let text: String
 }
 
+private class GifImages {
+    private var images: Deque<AlertsEffectGifImage> = []
+    private var basePresentationTimeStamp: Double?
+
+    init() {}
+
+    init(images: Deque<AlertsEffectGifImage>) {
+        self.images = images
+    }
+
+    func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+        if basePresentationTimeStamp == nil {
+            basePresentationTimeStamp = presentationTimeStamp
+        }
+        let timeOffset = presentationTimeStamp - basePresentationTimeStamp!
+        while let image = images.first {
+            if timeOffset >= image.timeOffset {
+                images.removeFirst()
+                continue
+            }
+            return image.image
+        }
+        return nil
+    }
+
+    func isEmpty() -> Bool {
+        return images.isEmpty
+    }
+}
+
 enum AlertsEffectAlert {
     case twitchFollow(TwitchEventSubNotificationChannelFollowEvent)
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
@@ -30,8 +60,7 @@ protocol AlertsEffectDelegate: AnyObject {
 }
 
 final class AlertsEffect: VideoEffect, @unchecked Sendable {
-    private var images: Deque<AlertsEffectGifImage> = []
-    private var basePresentationTimeStamp: Double?
+    private var images = GifImages()
     private var messageImage: CIImage?
     private var audioPlayer: AVAudioPlayer?
     private var rate: Float = 0.4
@@ -296,8 +325,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                       settings: SettingsWidgetAlertsAlert)
     {
         processorPipelineQueue.async {
-            self.images = images
-            self.basePresentationTimeStamp = nil
+            self.images = GifImages(images: images)
             self.messageImage = messageImage
             self.enabled = true
             self.landmarkSettings = landmarkSettings
@@ -420,7 +448,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         -> (CIImage?, CIImage?, Double, Double, AlertsEffectLandmarkSettings?)
     {
         defer {
-            enabled = !images.isEmpty
+            enabled = !images.isEmpty()
             if !enabled {
                 DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
                     self.isPlaying = false
@@ -428,18 +456,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                 }
             }
         }
-        if basePresentationTimeStamp == nil {
-            basePresentationTimeStamp = presentationTimeStamp
+        if let image = images.getImage(presentationTimeStamp) {
+            return (image, messageImage, x, y, landmarkSettings)
+        } else {
+            return (nil, nil, x, y, landmarkSettings)
         }
-        let timeOffset = presentationTimeStamp - basePresentationTimeStamp!
-        while let image = images.first {
-            if timeOffset >= image.timeOffset {
-                images.removeFirst()
-                continue
-            }
-            return (image.image, messageImage, x, y, landmarkSettings)
-        }
-        return (nil, nil, x, y, landmarkSettings)
     }
 
     private func executePositionFace(
