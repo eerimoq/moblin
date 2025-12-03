@@ -46,17 +46,17 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var x: Double = 0
     private var y: Double = 0
     private let mediaStorage: AlertMediaStorage
-    private var twitchFollow = AlertsEffectMedias()
-    private var twitchSubscribe = AlertsEffectMedias()
-    private var twitchRaid = AlertsEffectMedias()
-    private var twitchCheers: [AlertsEffectMedias] = []
-    private var kickSubscription = AlertsEffectMedias()
-    private var kickGiftedSubscriptions = AlertsEffectMedias()
-    private var kickHost = AlertsEffectMedias()
-    private var kickReward = AlertsEffectMedias()
-    private var kickGifts: [AlertsEffectMedias] = []
-    private var chatBotCommands: [AlertsEffectMedias] = []
-    private var speechToTextStrings: [AlertsEffectMedias] = []
+    private var twitchFollowMedia = AlertsEffectMedia()
+    private var twitchSubscribeMedia = AlertsEffectMedia()
+    private var twitchRaidMedia = AlertsEffectMedia()
+    private var twitchCheersMedias: [AlertsEffectMedia] = []
+    private var kickSubscriptionMedia = AlertsEffectMedia()
+    private var kickGiftedSubscriptionsMedias = AlertsEffectMedia()
+    private var kickHostMedia = AlertsEffectMedia()
+    private var kickRewardMedia = AlertsEffectMedia()
+    private var kickGiftsMedias: [AlertsEffectMedia] = []
+    private var chatBotCommandsMedias: [AlertsEffectMedia] = []
+    private var speechToTextStringsMedias: [AlertsEffectMedia] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
     private var landmarkSettings: AlertsEffectLandmarkSettings?
@@ -129,13 +129,13 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func setChatBotSettings(settings: SettingsWidgetAlerts) {
-        chatBotCommands = []
+        chatBotCommandsMedias = []
         for command in settings.chatBot.commands {
             let (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
-            let medias = AlertsEffectMedias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            chatBotCommands.append(medias)
+            let media = AlertsEffectMedia()
+            media.updateImages(image: image, loopCount: imageLoopCount)
+            media.updateSoundUrl(sound: sound)
+            chatBotCommandsMedias.append(media)
         }
     }
 
@@ -158,13 +158,13 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     private func setSpeechToTextSettings(settings: SettingsWidgetAlerts) {
-        speechToTextStrings = []
+        speechToTextStringsMedias = []
         for string in settings.speechToText.strings {
             let (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
-            let medias = AlertsEffectMedias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            speechToTextStrings.append(medias)
+            let media = AlertsEffectMedia()
+            media.updateImages(image: image, loopCount: imageLoopCount)
+            media.updateSoundUrl(sound: sound)
+            speechToTextStringsMedias.append(media)
         }
     }
 
@@ -213,14 +213,14 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         else {
             return
         }
-        guard commandIndex < chatBotCommands.count else {
+        guard commandIndex < chatBotCommandsMedias.count else {
             return
         }
-        let medias = chatBotCommands[commandIndex]
+        let media = chatBotCommandsMedias[commandIndex]
         let settings = settings.chatBot.commands[commandIndex]
         switch settings.imageType {
         case .file:
-            play(medias: medias, username: name, message: command, settings: settings.alert)
+            play(media: media, username: name, message: command, settings: settings.alert)
         }
     }
 
@@ -230,11 +230,11 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         else {
             return
         }
-        guard stringIndex < speechToTextStrings.count else {
+        guard stringIndex < speechToTextStringsMedias.count else {
             return
         }
         play(
-            medias: speechToTextStrings[stringIndex],
+            media: speechToTextStringsMedias[stringIndex],
             username: "",
             message: "",
             settings: settings.speechToText.strings[stringIndex].alert,
@@ -244,7 +244,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func play(
-        medias: AlertsEffectMedias,
+        media: AlertsEffectMedia,
         username: String,
         message: String,
         settings: SettingsWidgetAlertsAlert,
@@ -254,8 +254,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.delayAfterPlaying = delayAfterPlaying
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
-        let images = medias.images
-        let soundUrl = medias.soundUrl
+        let images = media.images
+        let soundUrl = media.soundUrl
         let ai = self.settings.ai
         if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
             OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
@@ -568,21 +568,21 @@ private func makeCircle(_ image: CIImage) -> CIImage {
 extension AlertsEffect {
     private func setTwitchSettings(twitch: SettingsWidgetAlertsTwitch) {
         var (image, imageLoopCount, sound) = getMediaItems(alert: twitch.follows)
-        twitchFollow.updateImages(image: image, loopCount: imageLoopCount)
-        twitchFollow.updateSoundUrl(sound: sound)
+        twitchFollowMedia.updateImages(image: image, loopCount: imageLoopCount)
+        twitchFollowMedia.updateSoundUrl(sound: sound)
         (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
-        twitchSubscribe.updateImages(image: image, loopCount: imageLoopCount)
-        twitchSubscribe.updateSoundUrl(sound: sound)
+        twitchSubscribeMedia.updateImages(image: image, loopCount: imageLoopCount)
+        twitchSubscribeMedia.updateSoundUrl(sound: sound)
         (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids)
-        twitchRaid.updateImages(image: image, loopCount: imageLoopCount)
-        twitchRaid.updateSoundUrl(sound: sound)
-        twitchCheers = []
+        twitchRaidMedia.updateImages(image: image, loopCount: imageLoopCount)
+        twitchRaidMedia.updateSoundUrl(sound: sound)
+        twitchCheersMedias = []
         for cheerBits in twitch.cheerBits {
             (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
-            let medias = AlertsEffectMedias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            twitchCheers.append(medias)
+            let media = AlertsEffectMedia()
+            media.updateImages(image: image, loopCount: imageLoopCount)
+            media.updateSoundUrl(sound: sound)
+            twitchCheersMedias.append(media)
         }
     }
 
@@ -591,7 +591,7 @@ extension AlertsEffect {
         guard settings.twitch.follows.enabled else {
             return
         }
-        play(medias: twitchFollow,
+        play(media: twitchFollowMedia,
              username: event.user_name,
              message: String(localized: "just followed!"),
              settings: settings.twitch.follows)
@@ -603,7 +603,7 @@ extension AlertsEffect {
             return
         }
         play(
-            medias: twitchSubscribe,
+            media: twitchSubscribeMedia,
             username: event.user_name,
             message: String(localized: "just subscribed tier \(event.tierAsNumber())!"),
             settings: settings.twitch.subscriptions
@@ -615,7 +615,7 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
-        play(medias: twitchSubscribe,
+        play(media: twitchSubscribeMedia,
              username: event.user_name ?? "Anomymous",
              message: String(
                  localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
@@ -629,7 +629,7 @@ extension AlertsEffect {
             return
         }
         play(
-            medias: twitchSubscribe,
+            media: twitchSubscribeMedia,
             username: event.user_name,
             message: String(localized: """
             just resubscribed tier \(event.tierAsNumber()) for \(event.cumulative_months) \
@@ -644,7 +644,7 @@ extension AlertsEffect {
         guard settings.twitch.raids.enabled else {
             return
         }
-        play(medias: twitchRaid,
+        play(media: twitchRaidMedia,
              username: event.from_broadcaster_user_name,
              message: String(localized: "raided with a party of \(event.viewers)!"),
              settings: settings.twitch.raids)
@@ -663,12 +663,12 @@ extension AlertsEffect {
                     continue
                 }
             }
-            guard index < twitchCheers.count else {
+            guard index < twitchCheersMedias.count else {
                 return
             }
             let bits = countFormatter.format(event.bits)
             play(
-                medias: twitchCheers[index],
+                media: twitchCheersMedias[index],
                 username: event.user_name ?? "Anonymous",
                 message: String(localized: "cheered \(bits) bits! \(event.message)"),
                 settings: cheerBit.alert
@@ -681,24 +681,24 @@ extension AlertsEffect {
 extension AlertsEffect {
     private func setKickSettings(kick: SettingsWidgetAlertsKick) {
         var (image, imageLoopCount, sound) = getMediaItems(alert: kick.subscriptions)
-        kickSubscription.updateImages(image: image, loopCount: imageLoopCount)
-        kickSubscription.updateSoundUrl(sound: sound)
+        kickSubscriptionMedia.updateImages(image: image, loopCount: imageLoopCount)
+        kickSubscriptionMedia.updateSoundUrl(sound: sound)
         (image, imageLoopCount, sound) = getMediaItems(alert: kick.giftedSubscriptions)
-        kickGiftedSubscriptions.updateImages(image: image, loopCount: imageLoopCount)
-        kickGiftedSubscriptions.updateSoundUrl(sound: sound)
+        kickGiftedSubscriptionsMedias.updateImages(image: image, loopCount: imageLoopCount)
+        kickGiftedSubscriptionsMedias.updateSoundUrl(sound: sound)
         (image, imageLoopCount, sound) = getMediaItems(alert: kick.hosts)
-        kickHost.updateImages(image: image, loopCount: imageLoopCount)
-        kickHost.updateSoundUrl(sound: sound)
+        kickHostMedia.updateImages(image: image, loopCount: imageLoopCount)
+        kickHostMedia.updateSoundUrl(sound: sound)
         (image, imageLoopCount, sound) = getMediaItems(alert: kick.rewards)
-        kickReward.updateImages(image: image, loopCount: imageLoopCount)
-        kickReward.updateSoundUrl(sound: sound)
-        kickGifts = []
+        kickRewardMedia.updateImages(image: image, loopCount: imageLoopCount)
+        kickRewardMedia.updateSoundUrl(sound: sound)
+        kickGiftsMedias = []
         for kickGift in kick.kickGifts {
             (image, imageLoopCount, sound) = getMediaItems(alert: kickGift.alert)
-            let medias = AlertsEffectMedias()
-            medias.updateImages(image: image, loopCount: imageLoopCount)
-            medias.updateSoundUrl(sound: sound)
-            kickGifts.append(medias)
+            let media = AlertsEffectMedia()
+            media.updateImages(image: image, loopCount: imageLoopCount)
+            media.updateSoundUrl(sound: sound)
+            kickGiftsMedias.append(media)
         }
     }
 
@@ -707,7 +707,7 @@ extension AlertsEffect {
         guard settings.kick.subscriptions.enabled else {
             return
         }
-        play(medias: kickSubscription,
+        play(media: kickSubscriptionMedia,
              username: event.username,
              message: String(localized: "just subscribed! They've been subscribed for \(event.months) months!"),
              settings: settings.kick.subscriptions)
@@ -719,7 +719,7 @@ extension AlertsEffect {
             return
         }
         play(
-            medias: kickGiftedSubscriptions,
+            media: kickGiftedSubscriptionsMedias,
             username: event.gifter_username,
             message: String(localized: """
             just gifted \(event.gifted_usernames.count) subscription(s)! They've \
@@ -734,7 +734,7 @@ extension AlertsEffect {
         guard settings.kick.hosts.enabled else {
             return
         }
-        play(medias: kickHost,
+        play(media: kickHostMedia,
              username: event.host_username,
              message: String(localized: "is now hosting with \(event.number_viewers) viewers!"),
              settings: settings.kick.hosts)
@@ -747,7 +747,7 @@ extension AlertsEffect {
         }
         let baseMessage = String(localized: "redeemed \(event.reward_title)")
         let message = event.user_input.isEmpty ? baseMessage : "\(baseMessage): \(event.user_input)"
-        play(medias: kickReward,
+        play(media: kickRewardMedia,
              username: event.username,
              message: message,
              settings: settings.kick.rewards)
@@ -766,12 +766,12 @@ extension AlertsEffect {
             guard matches, kickGift.alert.enabled else {
                 continue
             }
-            guard index < kickGifts.count else {
+            guard index < kickGiftsMedias.count else {
                 return
             }
             let formattedAmount = countFormatter.format(event.gift.amount)
             play(
-                medias: kickGifts[index],
+                media: kickGiftsMedias[index],
                 username: event.sender.username,
                 message: String(localized: "sent \(event.gift.name) \(formattedAmount) Kicks!"),
                 settings: kickGift.alert

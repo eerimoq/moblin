@@ -13,7 +13,7 @@ struct AlertsEffectGifImage {
     let timeOffset: Double
 }
 
-class AlertsEffectMedias: @unchecked Sendable {
+class AlertsEffectMedia: @unchecked Sendable {
     var images: Deque<AlertsEffectGifImage> = []
     var soundUrl: URL?
 
