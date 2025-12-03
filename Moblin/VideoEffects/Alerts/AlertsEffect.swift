@@ -60,7 +60,7 @@ protocol AlertsEffectDelegate: AnyObject {
 }
 
 final class AlertsEffect: VideoEffect, @unchecked Sendable {
-    private var images = GifImages()
+    private var gifImages = GifImages()
     private var messageImage: CIImage?
     private var audioPlayer: AVAudioPlayer?
     private var rate: Float = 0.4
@@ -283,7 +283,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.delayAfterPlaying = delayAfterPlaying
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
-        let images = media.images
+        let gifImages = GifImages(images: media.images)
         let soundUrl = media.soundUrl
         let ai = self.settings.ai
         if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
@@ -296,7 +296,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                         } else {
                             self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
                         }
-                        self.play(images: images,
+                        self.play(gifImages: gifImages,
                                   soundUrl: soundUrl,
                                   username: username,
                                   message: message,
@@ -306,7 +306,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                     }
                 }
         } else {
-            play(images: images,
+            play(gifImages: gifImages,
                  soundUrl: soundUrl,
                  username: username,
                  message: message,
@@ -316,7 +316,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func play(images: Deque<AlertsEffectGifImage>,
+    private func play(gifImages: GifImages,
                       soundUrl: URL?,
                       username: String,
                       message: String,
@@ -325,7 +325,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                       settings: SettingsWidgetAlertsAlert)
     {
         processorPipelineQueue.async {
-            self.images = GifImages(images: images)
+            self.gifImages = gifImages
             self.messageImage = messageImage
             self.enabled = true
             self.landmarkSettings = landmarkSettings
@@ -448,7 +448,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         -> (CIImage?, CIImage?, Double, Double, AlertsEffectLandmarkSettings?)
     {
         defer {
-            enabled = !images.isEmpty()
+            enabled = !gifImages.isEmpty()
             if !enabled {
                 DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
                     self.isPlaying = false
@@ -456,7 +456,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                 }
             }
         }
-        if let image = images.getImage(presentationTimeStamp) {
+        if let image = gifImages.getImage(presentationTimeStamp) {
             return (image, messageImage, x, y, landmarkSettings)
         } else {
             return (nil, nil, x, y, landmarkSettings)
