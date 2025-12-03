@@ -220,12 +220,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         let settings = settings.chatBot.commands[commandIndex]
         switch settings.imageType {
         case .file:
-            play(
-                medias: medias,
-                username: name,
-                message: command,
-                settings: settings.alert
-            )
+            play(medias: medias, username: name, message: command, settings: settings.alert)
         }
     }
 
@@ -596,12 +591,10 @@ extension AlertsEffect {
         guard settings.twitch.follows.enabled else {
             return
         }
-        play(
-            medias: twitchFollow,
-            username: event.user_name,
-            message: String(localized: "just followed!"),
-            settings: settings.twitch.follows
-        )
+        play(medias: twitchFollow,
+             username: event.user_name,
+             message: String(localized: "just followed!"),
+             settings: settings.twitch.follows)
     }
 
     @MainActor
@@ -622,14 +615,12 @@ extension AlertsEffect {
         guard settings.twitch.subscriptions.enabled else {
             return
         }
-        play(
-            medias: twitchSubscribe,
-            username: event.user_name ?? "Anomymous",
-            message: String(
-                localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
-            ),
-            settings: settings.twitch.subscriptions
-        )
+        play(medias: twitchSubscribe,
+             username: event.user_name ?? "Anomymous",
+             message: String(
+                 localized: "just gifted \(event.total) tier \(event.tierAsNumber()) subscriptions!"
+             ),
+             settings: settings.twitch.subscriptions)
     }
 
     @MainActor
@@ -653,12 +644,10 @@ extension AlertsEffect {
         guard settings.twitch.raids.enabled else {
             return
         }
-        play(
-            medias: twitchRaid,
-            username: event.from_broadcaster_user_name,
-            message: String(localized: "raided with a party of \(event.viewers)!"),
-            settings: settings.twitch.raids
-        )
+        play(medias: twitchRaid,
+             username: event.from_broadcaster_user_name,
+             message: String(localized: "raided with a party of \(event.viewers)!"),
+             settings: settings.twitch.raids)
     }
 
     @MainActor
@@ -718,12 +707,10 @@ extension AlertsEffect {
         guard settings.kick.subscriptions.enabled else {
             return
         }
-        play(
-            medias: kickSubscription,
-            username: event.username,
-            message: String(localized: "just subscribed! They've been subscribed for \(event.months) months!"),
-            settings: settings.kick.subscriptions
-        )
+        play(medias: kickSubscription,
+             username: event.username,
+             message: String(localized: "just subscribed! They've been subscribed for \(event.months) months!"),
+             settings: settings.kick.subscriptions)
     }
 
     @MainActor
@@ -747,12 +734,10 @@ extension AlertsEffect {
         guard settings.kick.hosts.enabled else {
             return
         }
-        play(
-            medias: kickHost,
-            username: event.host_username,
-            message: String(localized: "is now hosting with \(event.number_viewers) viewers!"),
-            settings: settings.kick.hosts
-        )
+        play(medias: kickHost,
+             username: event.host_username,
+             message: String(localized: "is now hosting with \(event.number_viewers) viewers!"),
+             settings: settings.kick.hosts)
     }
 
     @MainActor
@@ -762,12 +747,10 @@ extension AlertsEffect {
         }
         let baseMessage = String(localized: "redeemed \(event.reward_title)")
         let message = event.user_input.isEmpty ? baseMessage : "\(baseMessage): \(event.user_input)"
-        play(
-            medias: kickReward,
-            username: event.username,
-            message: message,
-            settings: settings.kick.rewards
-        )
+        play(medias: kickReward,
+             username: event.username,
+             message: message,
+             settings: settings.kick.rewards)
     }
 
     @MainActor
