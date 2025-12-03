@@ -1,64 +1,8 @@
 import AVFoundation
 import Collections
-import ImagePlayground
-import SDWebImage
 import SwiftUI
 import Vision
 import WrappingHStack
-
-private let backgroundFaceImageWidth = 130.0
-private let backgroundFaceImageHeight = 160.0
-
-private struct BackgroundLandmarkRectangle {
-    let topLeftX: Double
-    let topLeftY: Double
-    let bottomRightX: Double
-    let bottomRightY: Double
-
-    init(topLeftX: Double,
-         topLeftY: Double,
-         bottomRightX: Double,
-         bottomRightY: Double)
-    {
-        self.topLeftX = topLeftX / backgroundFaceImageWidth
-        self.topLeftY = topLeftY / backgroundFaceImageHeight
-        self.bottomRightX = bottomRightX / backgroundFaceImageWidth
-        self.bottomRightY = bottomRightY / backgroundFaceImageHeight
-    }
-
-    func width() -> Double {
-        return bottomRightX - topLeftX
-    }
-
-    func height() -> Double {
-        return bottomRightY - topLeftY
-    }
-}
-
-private let backgroundLeftEyeRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 40,
-    topLeftY: 89,
-    bottomRightX: 62,
-    bottomRightY: 103
-)
-private let backgroundRightEyeRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 72,
-    topLeftY: 89,
-    bottomRightX: 94,
-    bottomRightY: 103
-)
-private let backgroundMouthRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 50,
-    topLeftY: 120,
-    bottomRightX: 82,
-    bottomRightY: 130
-)
-private let backgroundFaceRectangle = BackgroundLandmarkRectangle(
-    topLeftX: 25,
-    topLeftY: 80,
-    bottomRightX: 105,
-    bottomRightY: 147
-)
 
 private struct Word: Identifiable {
     let id: UUID = .init()
@@ -85,98 +29,8 @@ protocol AlertsEffectDelegate: AnyObject {
     func alertsMakeErrorToast(title: String)
 }
 
-private enum MediaItem {
-    case bundledName(String)
-    case customUrl(URL)
-    case image(CIImage)
-}
-
-private struct GifImage {
-    let image: CIImage
-    let timeOffset: Double
-}
-
-private class Medias: @unchecked Sendable {
-    var images: Deque<GifImage> = []
-    var soundUrl: URL?
-
-    func updateSoundUrl(sound: MediaItem) {
-        switch sound {
-        case let .bundledName(name):
-            soundUrl = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "mp3")
-        case let .customUrl(url):
-            if (try? url.checkResourceIsReachable()) == true {
-                soundUrl = url
-            } else {
-                soundUrl = nil
-            }
-        case .image:
-            break
-        }
-    }
-
-    func updateImages(image: MediaItem, loopCount: Int) {
-        DispatchQueue.global().async {
-            var images: Deque<GifImage> = []
-            switch image {
-            case let .bundledName(name):
-                if let url = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "gif") {
-                    images = self.loadImages(url: url, loopCount: loopCount)
-                }
-            case let .customUrl(url):
-                images = self.loadImages(url: url, loopCount: loopCount)
-            case let .image(image):
-                images = self.loadImages(image: image, loopCount: loopCount)
-            }
-            processorPipelineQueue.async {
-                self.images = images
-            }
-        }
-    }
-
-    private func loadImages(url: URL, loopCount: Int) -> Deque<GifImage> {
-        var timeOffset = 0.0
-        var images: Deque<GifImage> = []
-        for _ in 0 ..< loopCount {
-            if let data = try? Data(contentsOf: url), let animatedImage = SDAnimatedImage(data: data) {
-                for index in 0 ..< animatedImage.animatedImageFrameCount {
-                    if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
-                        timeOffset += animatedImage.animatedImageDuration(at: index)
-                        images.append(GifImage(image: CIImage(cgImage: cgImage), timeOffset: timeOffset))
-                    }
-                }
-            }
-        }
-        return images
-    }
-
-    private func loadImages(image: CIImage, loopCount: Int) -> Deque<GifImage> {
-        var timeOffset = 0.0
-        var images: Deque<GifImage> = []
-        for _ in 0 ..< loopCount {
-            timeOffset += 1
-            images.append(GifImage(image: image, timeOffset: timeOffset))
-        }
-        return images
-    }
-}
-
-private enum FaceLandmark {
-    case face
-    case leftEye
-    case rightEye
-    case mouth
-}
-
-private struct LandmarkSettings {
-    let landmark: FaceLandmark
-    let height: Double
-    let centerX: Double
-    let centerY: Double
-}
-
 final class AlertsEffect: VideoEffect, @unchecked Sendable {
-    private var images: Deque<GifImage> = []
+    private var images: Deque<AlertsEffectGifImage> = []
     private var basePresentationTimeStamp: Double?
     private var messageImage: CIImage?
     private var audioPlayer: AVAudioPlayer?
@@ -192,20 +46,20 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var x: Double = 0
     private var y: Double = 0
     private let mediaStorage: AlertMediaStorage
-    private var twitchFollow = Medias()
-    private var twitchSubscribe = Medias()
-    private var twitchRaid = Medias()
-    private var twitchCheers: [Medias] = []
-    private var kickSubscription = Medias()
-    private var kickGiftedSubscriptions = Medias()
-    private var kickHost = Medias()
-    private var kickReward = Medias()
-    private var kickGifts: [Medias] = []
-    private var chatBotCommands: [Medias] = []
-    private var speechToTextStrings: [Medias] = []
+    private var twitchFollow = AlertsEffectMedias()
+    private var twitchSubscribe = AlertsEffectMedias()
+    private var twitchRaid = AlertsEffectMedias()
+    private var twitchCheers: [AlertsEffectMedias] = []
+    private var kickSubscription = AlertsEffectMedias()
+    private var kickGiftedSubscriptions = AlertsEffectMedias()
+    private var kickHost = AlertsEffectMedias()
+    private var kickReward = AlertsEffectMedias()
+    private var kickGifts: [AlertsEffectMedias] = []
+    private var chatBotCommands: [AlertsEffectMedias] = []
+    private var speechToTextStrings: [AlertsEffectMedias] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
-    private var landmarkSettings: LandmarkSettings?
+    private var landmarkSettings: AlertsEffectLandmarkSettings?
     private var aiBaseUrl: URL?
 
     init(
@@ -278,21 +132,23 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         chatBotCommands = []
         for command in settings.chatBot.commands {
             let (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
-            let medias = Medias()
+            let medias = AlertsEffectMedias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             chatBotCommands.append(medias)
         }
     }
 
-    private func getMediaItems(alert: SettingsWidgetAlertsAlert) -> (MediaItem, Int, MediaItem) {
-        let image: MediaItem
+    private func getMediaItems(alert: SettingsWidgetAlertsAlert)
+        -> (AlertsEffectMediaItem, Int, AlertsEffectMediaItem)
+    {
+        let image: AlertsEffectMediaItem
         if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
             image = .bundledName(bundledImage.name)
         } else {
             image = .customUrl(mediaStorage.makePath(id: alert.imageId))
         }
-        let sound: MediaItem
+        let sound: AlertsEffectMediaItem
         if let bundledSound = bundledSounds.first(where: { $0.id == alert.soundId }) {
             sound = .bundledName(bundledSound.name)
         } else {
@@ -305,7 +161,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         speechToTextStrings = []
         for string in settings.speechToText.strings {
             let (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
-            let medias = Medias()
+            let medias = AlertsEffectMedias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             speechToTextStrings.append(medias)
@@ -393,7 +249,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func play(
-        medias: Medias,
+        medias: AlertsEffectMedias,
         username: String,
         message: String,
         settings: SettingsWidgetAlertsAlert,
@@ -436,12 +292,12 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func play(images: Deque<GifImage>,
+    private func play(images: Deque<AlertsEffectGifImage>,
                       soundUrl: URL?,
                       username: String,
                       message: String,
                       messageImage: CIImage?,
-                      landmarkSettings: LandmarkSettings?,
+                      landmarkSettings: AlertsEffectLandmarkSettings?,
                       settings: SettingsWidgetAlertsAlert)
     {
         processorPipelineQueue.async {
@@ -521,51 +377,53 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return CIImage(image: image)
     }
 
-    private func isInRectangle(_ x: Double, _ y: Double, _ rectangle: BackgroundLandmarkRectangle) -> Bool {
+    private func isInRectangle(_ x: Double, _ y: Double, _ rectangle: AlertsEffectBackgroundLandmarkRectangle) -> Bool {
         return x > rectangle.topLeftX && x < rectangle.bottomRightX && y > rectangle.topLeftY && y < rectangle
             .bottomRightY
     }
 
-    private func calculateLandmark(settings: SettingsWidgetAlertsAlert) -> FaceLandmark {
+    private func calculateLandmark(settings: SettingsWidgetAlertsAlert) -> AlertsEffectFaceLandmark {
         let centerX = settings.facePosition.x + settings.facePosition.width / 2
         let centerY = settings.facePosition.y + settings.facePosition.height / 2
-        if isInRectangle(centerX, centerY, backgroundLeftEyeRectangle) {
+        if isInRectangle(centerX, centerY, alertsEffectBackgroundLeftEyeRectangle) {
             return .leftEye
-        } else if isInRectangle(centerX, centerY, backgroundRightEyeRectangle) {
+        } else if isInRectangle(centerX, centerY, alertsEffectBackgroundRightEyeRectangle) {
             return .rightEye
-        } else if isInRectangle(centerX, centerY, backgroundMouthRectangle) {
+        } else if isInRectangle(centerX, centerY, alertsEffectBackgroundMouthRectangle) {
             return .mouth
         } else {
             return .face
         }
     }
 
-    private func calculateLandmarkSettings(settings: SettingsWidgetAlertsAlert) -> LandmarkSettings? {
+    private func calculateLandmarkSettings(settings: SettingsWidgetAlertsAlert) -> AlertsEffectLandmarkSettings? {
         if settings.positionType == .face {
             let landmark = calculateLandmark(settings: settings)
             let centerX = settings.facePosition.x + settings.facePosition.width / 2
             let centerY = settings.facePosition.y + settings.facePosition.height / 2
-            let landmarkRectangle: BackgroundLandmarkRectangle
+            let landmarkRectangle: AlertsEffectBackgroundLandmarkRectangle
             switch landmark {
             case .face:
-                landmarkRectangle = backgroundFaceRectangle
+                landmarkRectangle = alertsEffectBackgroundFaceRectangle
             case .leftEye:
-                landmarkRectangle = backgroundLeftEyeRectangle
+                landmarkRectangle = alertsEffectBackgroundLeftEyeRectangle
             case .rightEye:
-                landmarkRectangle = backgroundRightEyeRectangle
+                landmarkRectangle = alertsEffectBackgroundRightEyeRectangle
             case .mouth:
-                landmarkRectangle = backgroundMouthRectangle
+                landmarkRectangle = alertsEffectBackgroundMouthRectangle
             }
             let x = (centerX - landmarkRectangle.topLeftX) / landmarkRectangle.width()
             let y = (centerY - landmarkRectangle.topLeftY) / landmarkRectangle.height()
-            let height = settings.facePosition.height / backgroundFaceRectangle.height()
-            return LandmarkSettings(landmark: landmark, height: height, centerX: x, centerY: y)
+            let height = settings.facePosition.height / alertsEffectBackgroundFaceRectangle.height()
+            return AlertsEffectLandmarkSettings(landmark: landmark, height: height, centerX: x, centerY: y)
         } else {
             return nil
         }
     }
 
-    private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?, Double, Double, LandmarkSettings?) {
+    private func getNext(_ presentationTimeStamp: Double)
+        -> (CIImage?, CIImage?, Double, Double, AlertsEffectLandmarkSettings?)
+    {
         defer {
             enabled = !images.isEmpty
             if !enabled {
@@ -593,7 +451,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         _ image: CIImage,
         _ faceDetections: [VNFaceObservation]?,
         _ alertImage: CIImage,
-        _ landmarkSettings: LandmarkSettings
+        _ landmarkSettings: AlertsEffectLandmarkSettings
     ) -> CIImage {
         guard let faceDetections else {
             return image
@@ -726,7 +584,7 @@ extension AlertsEffect {
         twitchCheers = []
         for cheerBits in twitch.cheerBits {
             (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
-            let medias = Medias()
+            let medias = AlertsEffectMedias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             twitchCheers.append(medias)
@@ -848,7 +706,7 @@ extension AlertsEffect {
         kickGifts = []
         for kickGift in kick.kickGifts {
             (image, imageLoopCount, sound) = getMediaItems(alert: kickGift.alert)
-            let medias = Medias()
+            let medias = AlertsEffectMedias()
             medias.updateImages(image: image, loopCount: imageLoopCount)
             medias.updateSoundUrl(sound: sound)
             kickGifts.append(medias)
