@@ -60,12 +60,19 @@ protocol AlertsEffectDelegate: AnyObject {
 }
 
 private struct Pipeline {
-    var enabled: Bool = false
+    var playing: Bool = false
     var messageImage: CIImage?
     var gifImages = GifImages()
     var x: Double = 0
     var y: Double = 0
     var landmarkSettings: AlertsEffectLandmarkSettings?
+
+    mutating func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+        defer {
+            playing = !gifImages.isEmpty()
+        }
+        return gifImages.getImage(presentationTimeStamp)
+    }
 }
 
 final class AlertsEffect: VideoEffect, @unchecked Sendable {
@@ -132,7 +139,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func isEnabled() -> Bool {
-        return pipeline.enabled
+        return pipeline.playing
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
@@ -331,7 +338,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         processorPipelineQueue.async {
             self.pipeline.gifImages = gifImages
             self.pipeline.messageImage = messageImage
-            self.pipeline.enabled = true
+            self.pipeline.playing = true
             self.pipeline.landmarkSettings = landmarkSettings
         }
         if let soundUrl {
@@ -450,15 +457,14 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?) {
         defer {
-            pipeline.enabled = !pipeline.gifImages.isEmpty()
-            if !pipeline.enabled {
+            if !pipeline.playing {
                 DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
                     self.isPlaying = false
                     self.tryPlayNextAlert()
                 }
             }
         }
-        if let image = pipeline.gifImages.getImage(presentationTimeStamp) {
+        if let image = pipeline.getImage(presentationTimeStamp) {
             return (image, pipeline.messageImage)
         } else {
             return (nil, nil)
