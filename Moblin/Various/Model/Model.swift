@@ -1039,6 +1039,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         chatTextToSpeech.setVolume(volume: database.chat.textToSpeechSayVolume)
         chatTextToSpeech.setVoices(voices: database.chat.textToSpeechLanguageVoices)
         chatTextToSpeech.setSayUsername(value: database.chat.textToSpeechSayUsername)
+        chatTextToSpeech.setDefaultLanguage(value: database.chat.textToSpeechDefaultLanguage)
         chatTextToSpeech
             .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage)
         chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter)
