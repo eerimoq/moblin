@@ -1,10 +1,6 @@
 import AVFAudio
 import SwiftUI
 
-private func localize(_ languageCode: String) -> String {
-    return NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
-}
-
 private func getVoice(appleVoices: [AVSpeechSynthesisVoice],
                       languageCode: String,
                       identifier: String) -> AVSpeechSynthesisVoice?
@@ -248,7 +244,7 @@ private struct LanguageView: View {
                 }
             }
         }
-        .navigationTitle(localize(languageCode))
+        .navigationTitle(textToSpeechLocalize(languageCode))
     }
 }
 
@@ -270,19 +266,11 @@ struct VoicesView: View {
     let ttsMonsterApiToken: String
 
     private func languages() -> [Language] {
-        var languages: [Language] = []
-        var seen: Set<String> = []
-        for voice in appleVoices {
-            let code = String(voice.language.prefix(2))
-            guard !seen.contains(code) else {
-                continue
-            }
-            languages.append(Language(name: localize(voice.language),
-                                      code: code,
-                                      selectedVoice: textToSpeechLanguageVoices[code]))
-            seen.insert(code)
+        return textToSpeechLanguages(appleVoices: appleVoices).map {
+            Language(name: $0.name,
+                     code: $0.code,
+                     selectedVoice: textToSpeechLanguageVoices[$0.code])
         }
-        return languages
     }
 
     private func selectedVoice(language: Language) -> VoicePickerItem? {

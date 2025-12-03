@@ -61,6 +61,7 @@ class ChatTextToSpeech: NSObject {
     private var rate: Float = 0.4
     private var volume: Float = 0.6
     private var sayUsername: Bool = false
+    private var defaultLanguage: String?
     private var detectLanguagePerMessage: Bool = false
     private var pauseBetweenMessages: Double = 0.0
     private var voices: [String: SettingsVoice] = [:]
@@ -170,6 +171,12 @@ class ChatTextToSpeech: NSObject {
     func setStreamerMentions(streamerMentions: [String]) {
         textToSpeechDispatchQueue.async {
             self.streamerMentions = streamerMentions
+        }
+    }
+
+    func setDefaultLanguage(value: String?) {
+        textToSpeechDispatchQueue.async {
+            self.defaultLanguage = value
         }
     }
 
@@ -319,7 +326,7 @@ class ChatTextToSpeech: NSObject {
         }
         var language = recognizer.dominantLanguage?.rawValue
         if !detectLanguagePerMessage || language == nil {
-            language = Locale.current.language.languageCode?.identifier
+            language = defaultLanguage ?? Locale.current.language.languageCode?.identifier
         }
         guard let language else {
             return nil

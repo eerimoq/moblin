@@ -23,10 +23,34 @@ struct TtsMonsterSettingsView: View {
     }
 }
 
+func textToSpeechLocalize(_ languageCode: String) -> String {
+    return NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
+}
+
+struct TextToSpeechLanguage {
+    let name: String
+    let code: String
+}
+
+func textToSpeechLanguages(appleVoices: [AVSpeechSynthesisVoice]) -> [TextToSpeechLanguage] {
+    var languages: [TextToSpeechLanguage] = []
+    var seen: Set<String> = []
+    for voice in appleVoices {
+        let code = String(voice.language.prefix(2))
+        guard !seen.contains(code) else {
+            continue
+        }
+        languages.append(TextToSpeechLanguage(name: textToSpeechLocalize(voice.language), code: code))
+        seen.insert(code)
+    }
+    return languages
+}
+
 struct ChatTextToSpeechSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chat: SettingsChat
     @ObservedObject var ttsMonster: SettingsTtsMonster
+    @State private var appleVoices: [AVSpeechSynthesisVoice] = []
 
     private func onVoiceChange(languageCode: String, voice: SettingsVoice) {
         chat.textToSpeechLanguageVoices[languageCode] = voice
@@ -113,6 +137,17 @@ struct ChatTextToSpeechSettingsView: View {
                 Text("Pause between messages")
             }
             Section {
+                Picker("Default language", selection: $chat.textToSpeechDefaultLanguage) {
+                    Text("App language")
+                        .tag(nil as String?)
+                    ForEach(textToSpeechLanguages(appleVoices: appleVoices), id: \.code) {
+                        Text($0.name)
+                            .tag($0.code as String?)
+                    }
+                }
+                .onChange(of: chat.textToSpeechDefaultLanguage) {
+                    model.chatTextToSpeech.setDefaultLanguage(value: $0)
+                }
                 Toggle("Detect language per message", isOn: $chat.textToSpeechDetectLanguagePerMessage)
                     .onChange(of: chat.textToSpeechDetectLanguagePerMessage) {
                         model.chatTextToSpeech.setDetectLanguagePerMessage(value: $0)
@@ -143,6 +178,7 @@ struct ChatTextToSpeechSettingsView: View {
             }
         }
         .onAppear {
+            appleVoices = AVSpeechSynthesisVoice.speechVoices()
             if #available(iOS 17.0, *) {
                 AVSpeechSynthesizer.requestPersonalVoiceAuthorization { _ in
                 }

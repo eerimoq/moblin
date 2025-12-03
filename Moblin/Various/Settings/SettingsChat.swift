@@ -529,6 +529,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var enabled: Bool = true
     @Published var filters: [SettingsChatFilter] = []
     var textToSpeechEnabled: Bool = false
+    @Published var textToSpeechDefaultLanguage: String?
     @Published var textToSpeechDetectLanguagePerMessage: Bool = false
     @Published var textToSpeechSayUsername: Bool = true
     @Published var textToSpeechRate: Float = 0.4
@@ -579,6 +580,7 @@ class SettingsChat: Codable, ObservableObject {
              enabled,
              usernamesToIgnore,
              textToSpeechEnabled,
+             textToSpeechDefaultLanguage,
              textToSpeechDetectLanguagePerMessage,
              textToSpeechSayUsername,
              textToSpeechRate,
@@ -632,6 +634,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.enabled, enabled)
         try container.encode(.usernamesToIgnore, filters)
         try container.encode(.textToSpeechEnabled, textToSpeechEnabled)
+        try container.encode(.textToSpeechDefaultLanguage, textToSpeechDefaultLanguage)
         try container.encode(.textToSpeechDetectLanguagePerMessage, textToSpeechDetectLanguagePerMessage)
         try container.encode(.textToSpeechSayUsername, textToSpeechSayUsername)
         try container.encode(.textToSpeechRate, textToSpeechRate)
@@ -691,6 +694,7 @@ class SettingsChat: Codable, ObservableObject {
         enabled = container.decode(.enabled, Bool.self, true)
         filters = container.decode(.usernamesToIgnore, [SettingsChatFilter].self, [])
         textToSpeechEnabled = container.decode(.textToSpeechEnabled, Bool.self, false)
+        textToSpeechDefaultLanguage = container.decode(.textToSpeechDefaultLanguage, String?.self, nil)
         textToSpeechDetectLanguagePerMessage = container.decode(.textToSpeechDetectLanguagePerMessage, Bool.self, false)
         textToSpeechSayUsername = container.decode(.textToSpeechSayUsername, Bool.self, true)
         textToSpeechRate = container.decode(.textToSpeechRate, Float.self, 0.4)
