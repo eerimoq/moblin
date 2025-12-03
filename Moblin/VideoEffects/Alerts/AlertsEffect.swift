@@ -59,21 +59,25 @@ protocol AlertsEffectDelegate: AnyObject {
     func alertsMakeErrorToast(title: String)
 }
 
+private struct Pipeline {
+    var enabled: Bool = false
+    var messageImage: CIImage?
+    var gifImages = GifImages()
+    var x: Double = 0
+    var y: Double = 0
+    var landmarkSettings: AlertsEffectLandmarkSettings?
+}
+
 final class AlertsEffect: VideoEffect, @unchecked Sendable {
-    private var gifImages = GifImages()
-    private var messageImage: CIImage?
     private var audioPlayer: AVAudioPlayer?
     private var rate: Float = 0.4
     private var volume: Float = 1.0
     private var synthesizer = createSpeechSynthesizer()
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
     private weak var delegate: (any AlertsEffectDelegate)?
-    private var enabled: Bool = false
     private var isPlaying: Bool = false
     private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts
-    private var x: Double = 0
-    private var y: Double = 0
     private let mediaStorage: AlertMediaStorage
     private var twitchFollowMedia = AlertsEffectMedia()
     private var twitchSubscribeMedia = AlertsEffectMedia()
@@ -88,8 +92,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var speechToTextStringsMedias: [AlertsEffectMedia] = []
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
-    private var landmarkSettings: AlertsEffectLandmarkSettings?
     private var aiBaseUrl: URL?
+    private var pipeline = Pipeline()
 
     init(
         settings: SettingsWidgetAlerts,
@@ -112,7 +116,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
-        return (landmarkSettings != nil, nil, nil)
+        return (pipeline.landmarkSettings != nil, nil, nil)
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
@@ -128,7 +132,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func isEnabled() -> Bool {
-        return enabled
+        return pipeline.enabled
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
@@ -146,8 +150,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     func setPosition(x: Double, y: Double) {
         processorPipelineQueue.async {
-            self.x = x
-            self.y = y
+            self.pipeline.x = x
+            self.pipeline.y = y
         }
     }
 
@@ -325,10 +329,10 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                       settings: SettingsWidgetAlertsAlert)
     {
         processorPipelineQueue.async {
-            self.gifImages = gifImages
-            self.messageImage = messageImage
-            self.enabled = true
-            self.landmarkSettings = landmarkSettings
+            self.pipeline.gifImages = gifImages
+            self.pipeline.messageImage = messageImage
+            self.pipeline.enabled = true
+            self.pipeline.landmarkSettings = landmarkSettings
         }
         if let soundUrl {
             audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
@@ -448,18 +452,18 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         -> (CIImage?, CIImage?, Double, Double, AlertsEffectLandmarkSettings?)
     {
         defer {
-            enabled = !gifImages.isEmpty()
-            if !enabled {
+            pipeline.enabled = !pipeline.gifImages.isEmpty()
+            if !pipeline.enabled {
                 DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
                     self.isPlaying = false
                     self.tryPlayNextAlert()
                 }
             }
         }
-        if let image = gifImages.getImage(presentationTimeStamp) {
-            return (image, messageImage, x, y, landmarkSettings)
+        if let image = pipeline.gifImages.getImage(presentationTimeStamp) {
+            return (image, pipeline.messageImage, pipeline.x, pipeline.y, pipeline.landmarkSettings)
         } else {
-            return (nil, nil, x, y, landmarkSettings)
+            return (nil, nil, pipeline.x, pipeline.y, pipeline.landmarkSettings)
         }
     }
 
