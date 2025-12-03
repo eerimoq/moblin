@@ -120,14 +120,14 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let (alertImage, messageImage, x, y, landmarkSettings) = getNext(info.presentationTimeStamp.seconds)
+        let (alertImage, messageImage) = getNext(info.presentationTimeStamp.seconds)
         guard let alertImage, let messageImage else {
             return image
         }
-        if let landmarkSettings {
+        if let landmarkSettings = pipeline.landmarkSettings {
             return executePositionFace(image, info.sceneFaceDetections(), alertImage, landmarkSettings)
         } else {
-            return executePositionScene(image, alertImage, messageImage, x, y)
+            return executePositionScene(image, alertImage, messageImage, pipeline.x, pipeline.y)
         }
     }
 
@@ -448,9 +448,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func getNext(_ presentationTimeStamp: Double)
-        -> (CIImage?, CIImage?, Double, Double, AlertsEffectLandmarkSettings?)
-    {
+    private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?) {
         defer {
             pipeline.enabled = !pipeline.gifImages.isEmpty()
             if !pipeline.enabled {
@@ -461,9 +459,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             }
         }
         if let image = pipeline.gifImages.getImage(presentationTimeStamp) {
-            return (image, pipeline.messageImage, pipeline.x, pipeline.y, pipeline.landmarkSettings)
+            return (image, pipeline.messageImage)
         } else {
-            return (nil, nil, pipeline.x, pipeline.y, pipeline.landmarkSettings)
+            return (nil, nil)
         }
     }
 
