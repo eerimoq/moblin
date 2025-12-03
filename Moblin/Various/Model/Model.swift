@@ -1035,17 +1035,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             logger.info("watch: Not supported")
         }
-        chatTextToSpeech.setRate(rate: database.chat.textToSpeechRate)
-        chatTextToSpeech.setVolume(volume: database.chat.textToSpeechSayVolume)
-        chatTextToSpeech.setVoices(voices: database.chat.textToSpeechLanguageVoices)
-        chatTextToSpeech.setSayUsername(value: database.chat.textToSpeechSayUsername)
-        chatTextToSpeech.setDefaultLanguage(value: database.chat.textToSpeechDefaultLanguage)
-        chatTextToSpeech
-            .setDetectLanguagePerMessage(value: database.chat.textToSpeechDetectLanguagePerMessage)
-        chatTextToSpeech.setFilter(value: database.chat.textToSpeechFilter)
-        chatTextToSpeech.setFilterMentions(value: database.chat.textToSpeechFilterMentions)
-        chatTextToSpeech.setPauseBetweenMessages(value: database.chat.textToSpeechPauseBetweenMessages)
-        chatTextToSpeech.setTtsMonsterApiToken(apiToken: database.chat.ttsMonster.apiToken)
+        let chat = database.chat
+        chatTextToSpeech.setRate(rate: chat.textToSpeechRate)
+        chatTextToSpeech.setVolume(volume: chat.textToSpeechSayVolume)
+        chatTextToSpeech.setVoices(voices: chat.textToSpeechLanguageVoices)
+        chatTextToSpeech.setSayUsername(value: chat.textToSpeechSayUsername)
+        chatTextToSpeech.setDefaultLanguage(value: chat.textToSpeechDefaultLanguage)
+        chatTextToSpeech.setDetectLanguagePerMessage(value: chat.textToSpeechDetectLanguagePerMessage)
+        chatTextToSpeech.setFilter(value: chat.textToSpeechFilter)
+        chatTextToSpeech.setFilterMentions(value: chat.textToSpeechFilterMentions)
+        chatTextToSpeech.setPauseBetweenMessages(value: chat.textToSpeechPauseBetweenMessages)
+        chatTextToSpeech.setTtsMonsterApiToken(apiToken: chat.ttsMonster.apiToken)
         setTextToSpeechStreamerMentions()
         updateOrientationLock()
         updateFaceFilterSettings()
