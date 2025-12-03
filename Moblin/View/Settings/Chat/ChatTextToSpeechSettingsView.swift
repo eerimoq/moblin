@@ -114,12 +114,12 @@ struct ChatTextToSpeechSettingsView: View {
             }
             Section {
                 Toggle("Detect language per message", isOn: $chat.textToSpeechDetectLanguagePerMessage)
-                    .onChange(of: chat.textToSpeechDetectLanguagePerMessage) { value in
-                        model.chatTextToSpeech.setDetectLanguagePerMessage(value: value)
+                    .onChange(of: chat.textToSpeechDetectLanguagePerMessage) {
+                        model.chatTextToSpeech.setDetectLanguagePerMessage(value: $0)
                     }
                 Toggle("Say username", isOn: $chat.textToSpeechSayUsername)
-                    .onChange(of: chat.textToSpeechSayUsername) { value in
-                        model.chatTextToSpeech.setSayUsername(value: value)
+                    .onChange(of: chat.textToSpeechSayUsername) {
+                        model.chatTextToSpeech.setSayUsername(value: $0)
                     }
                 Toggle("Subscribers only", isOn: $chat.textToSpeechSubscribersOnly)
             } footer: {
