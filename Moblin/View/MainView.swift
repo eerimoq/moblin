@@ -247,6 +247,7 @@ private struct MutedView: View {
                 .padding(10)
                 .background(.black.opacity(0.75))
                 .cornerRadius(10)
+                .allowsHitTesting(false)
         }
     }
 }
@@ -414,6 +415,7 @@ struct MainView: View {
                 if model.showDrawOnStream, model.stream.portrait {
                     DrawOnStreamView(model: model)
                 }
+                MutedView(level: model.audio.level)
                 if model.showFace && !model.showDrawOnStream {
                     face()
                 }
@@ -488,6 +490,7 @@ struct MainView: View {
                 if model.showDrawOnStream {
                     DrawOnStreamView(model: model)
                 }
+                MutedView(level: model.audio.level)
                 if model.showFace && !model.showDrawOnStream {
                     face()
                 }
@@ -577,7 +580,6 @@ struct MainView: View {
                 }
                 SnapshotCountdownView(snapshot: model.snapshot)
                 InstantReplayCountdownView(replay: model.replay)
-                MutedView(level: model.audio.level)
             }
             .overlay(alignment: .topLeading) {
                 browserWidgets()
