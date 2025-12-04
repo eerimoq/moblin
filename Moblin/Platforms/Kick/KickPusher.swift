@@ -163,7 +163,7 @@ struct KickPusherKicksGiftedEvent: Decodable {
     var gift: KickPusherKickGift
 }
 
-private func decodeEvent(message: String) throws -> (String, String) {
+private func decodeEvent(message: String) throws -> (String, String, String?) {
     if let jsonData = message.data(using: String.Encoding.utf8) {
         let data = try JSONSerialization.jsonObject(
             with: jsonData,
@@ -172,7 +172,8 @@ private func decodeEvent(message: String) throws -> (String, String) {
         if let jsonResult: NSDictionary = data as? NSDictionary {
             if let type: String = jsonResult["event"] as? String {
                 if let data: String = jsonResult["data"] as? String {
-                    return (type, data)
+                    let channel = jsonResult["channel"] as? String
+                    return (type, data, channel)
                 }
             }
         }
@@ -220,6 +221,7 @@ private var url =
 protocol KickPusherDelegate: AnyObject {
     func kickPusherMakeErrorToast(title: String, subTitle: String?)
     func kickPusherAppendMessage(
+        platform: Platform,
         messageId: String?,
         user: String,
         userId: String?,
@@ -230,7 +232,7 @@ protocol KickPusherDelegate: AnyObject {
         isModerator: Bool,
         highlight: ChatHighlight?
     )
-    func kickPusherDeleteMessage(messageId: String)
+    func kickPusherDeleteMessage(platform: Platform, messageId: String)
     func kickPusherDeleteUser(userId: String)
     func kickPusherSubscription(event: KickPusherSubscriptionEvent)
     func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent)
@@ -244,6 +246,8 @@ final class KickPusher: NSObject {
     private var channelName: String
     private var channelId: String
     private var chatroomChannelId: String
+    private var altChatroomId: String?
+    private var altChatroomChannelId: String?
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: KickBadges
@@ -256,12 +260,16 @@ final class KickPusher: NSObject {
         channelName: String,
         channelId: String,
         chatroomChannelId: String,
+        altChatroomId: String? = nil,
+        altChatroomChannelId: String? = nil,
         settings: SettingsStreamChat
     ) {
         self.delegate = delegate
         self.channelName = channelName
         self.channelId = channelId
         self.chatroomChannelId = chatroomChannelId
+        self.altChatroomId = altChatroomId
+        self.altChatroomChannelId = altChatroomChannelId
         self.settings = settings.clone()
         emotes = Emotes()
         badges = KickBadges()
@@ -332,13 +340,18 @@ final class KickPusher: NSObject {
 
     private func handleMessage(message: String) {
         do {
-            let (type, data) = try decodeEvent(message: message)
-            // Handle supported Kick events (no auth required for these)
+            let (type, data, channel) = try decodeEvent(message: message)
+            if determinePlatform(from: channel) == .kickAlt,
+               type != "App\\Events\\ChatMessageEvent",
+               type != "App\\Events\\MessageDeletedEvent"
+            {
+                return
+            }
             switch type {
             case "App\\Events\\ChatMessageEvent":
-                try handleChatMessageEvent(data: data)
+                try handleChatMessageEvent(data: data, channel: channel)
             case "App\\Events\\MessageDeletedEvent":
-                try handleMessageDeletedEvent(data: data)
+                try handleMessageDeletedEvent(data: data, channel: channel)
             case "App\\Events\\UserBannedEvent":
                 try handleUserBannedEvent(data: data)
             case "App\\Events\\SubscriptionEvent":
@@ -363,7 +376,7 @@ final class KickPusher: NSObject {
         }
     }
 
-    private func handleChatMessageEvent(data: String) throws {
+    private func handleChatMessageEvent(data: String, channel: String?) throws {
         let event = try decodeChatMessageEvent(data: data)
         var badgeUrls: [URL] = []
         for badge in event.sender.identity.badges {
@@ -376,6 +389,7 @@ final class KickPusher: NSObject {
             }
         }
         delegate?.kickPusherAppendMessage(
+            platform: determinePlatform(from: channel),
             messageId: event.id,
             user: event.sender.username,
             userId: event.sender.id != nil ? String(event.sender.id!) : nil,
@@ -388,9 +402,10 @@ final class KickPusher: NSObject {
         )
     }
 
-    private func handleMessageDeletedEvent(data: String) throws {
+    private func handleMessageDeletedEvent(data: String, channel: String?) throws {
         let event = try decodeMessageDeletedEvent(data: data)
-        delegate?.kickPusherDeleteMessage(messageId: event.message.id)
+        let platform = determinePlatform(from: channel)
+        delegate?.kickPusherDeleteMessage(platform: platform, messageId: event.message.id)
     }
 
     private func handleUserBannedEvent(data: String) throws {
@@ -450,6 +465,17 @@ final class KickPusher: NSObject {
         return nil
     }
 
+    private func determinePlatform(from channel: String?) -> Platform {
+        guard let channel else { return .kick }
+        if let altChatroomChannelId, channel == "channel_\(altChatroomChannelId)" {
+            return .kickAlt
+        }
+        if let altChatroomId, channel == "chatrooms.\(altChatroomId).v2" {
+            return .kickAlt
+        }
+        return .kick
+    }
+
     private func sendMessage(message: String) {
         logger.debug("kick: pusher: \(channelId): Sending \(message)")
         webSocket.send(string: message)
@@ -491,6 +517,10 @@ extension KickPusher: WebSocketClientDelegate {
         sendSubscribe(channel: "chatrooms.\(channelId)")
         sendSubscribe(channel: "predictions-channel-\(channelId)")
         sendSubscribe(channel: "channel_\(chatroomChannelId)")
+        if let altChatroomId, let altChatroomChannelId {
+            sendSubscribe(channel: "chatrooms.\(altChatroomId).v2")
+            sendSubscribe(channel: "channel_\(altChatroomChannelId)")
+        }
     }
 
     func webSocketClientDisconnected(_: WebSocketClient) {

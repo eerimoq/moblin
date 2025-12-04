@@ -44,11 +44,15 @@ extension Model {
            let channelId = stream.kickChannelId,
            let chatroomChannelId = stream.kickChatroomChannelId
         {
+            let kickAltChannel = stream.kickAltChannels.first
+            let altEnabled = kickAltChannel?.enabled ?? false
             kickPusher = KickPusher(
                 delegate: self,
                 channelName: stream.kickChannelName,
                 channelId: channelId,
                 chatroomChannelId: chatroomChannelId,
+                altChatroomId: altEnabled ? kickAltChannel?.chatroomId : nil,
+                altChatroomChannelId: altEnabled ? kickAltChannel?.chatroomChannelId : nil,
                 settings: stream.chat
             )
             kickPusher!.start()
@@ -83,6 +87,27 @@ extension Model {
                     self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
                 }
                 self.kickChannelNameUpdated()
+            }
+        }
+    }
+
+    func updateKickAltChannelInfoIfNeeded() {
+        guard let kickAltChannel = stream.kickAltChannels.first,
+              kickAltChannel.enabled,
+              !kickAltChannel.channelName.isEmpty
+        else {
+            return
+        }
+        guard kickAltChannel.chatroomId == nil || kickAltChannel.chatroomChannelId == nil else {
+            return
+        }
+        getKickChannelInfo(channelName: kickAltChannel.channelName) { channelInfo in
+            DispatchQueue.main.async {
+                if let channelInfo {
+                    self.stream.kickAltChannels[0].chatroomId = String(channelInfo.chatroom.id)
+                    self.stream.kickAltChannels[0].chatroomChannelId = String(channelInfo.chatroom.channel_id)
+                    self.reloadKickPusher()
+                }
             }
         }
     }
@@ -180,6 +205,7 @@ extension Model: KickPusherDelegate {
     }
 
     func kickPusherAppendMessage(
+        platform: Platform,
         messageId: String?,
         user: String,
         userId: String?,
@@ -190,7 +216,7 @@ extension Model: KickPusherDelegate {
         isModerator: Bool,
         highlight: ChatHighlight?
     ) {
-        appendChatMessage(platform: .kick,
+        appendChatMessage(platform: platform,
                           messageId: messageId,
                           displayName: user,
                           user: user,
@@ -209,7 +235,7 @@ extension Model: KickPusherDelegate {
                           live: true)
     }
 
-    func kickPusherDeleteMessage(messageId: String) {
+    func kickPusherDeleteMessage(platform _: Platform, messageId: String) {
         deleteChatMessage(messageId: messageId)
     }
 
