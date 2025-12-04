@@ -9,36 +9,6 @@ private struct Word: Identifiable {
     let text: String
 }
 
-private class GifImages {
-    private var images: Deque<AlertsEffectGifImage> = []
-    private var basePresentationTimeStamp: Double?
-
-    init() {}
-
-    init(images: Deque<AlertsEffectGifImage>) {
-        self.images = images
-    }
-
-    func getImage(_ presentationTimeStamp: Double) -> CIImage? {
-        if basePresentationTimeStamp == nil {
-            basePresentationTimeStamp = presentationTimeStamp
-        }
-        let timeOffset = presentationTimeStamp - basePresentationTimeStamp!
-        while let image = images.first {
-            if timeOffset >= image.timeOffset {
-                images.removeFirst()
-                continue
-            }
-            return image.image
-        }
-        return nil
-    }
-
-    func isEmpty() -> Bool {
-        return images.isEmpty
-    }
-}
-
 enum AlertsEffectAlert {
     case twitchFollow(TwitchEventSubNotificationChannelFollowEvent)
     case twitchSubscribe(TwitchEventSubNotificationChannelSubscribeEvent)
@@ -62,16 +32,16 @@ protocol AlertsEffectDelegate: AnyObject {
 private struct Pipeline {
     var playing: Bool = false
     var messageImage: CIImage?
-    var gifImages = GifImages()
+    var images: AlertsEffectImages = AlertsEffectGifImages()
     var x: Double = 0
     var y: Double = 0
     var landmarkSettings: AlertsEffectLandmarkSettings?
 
     mutating func getImage(_ presentationTimeStamp: Double) -> CIImage? {
         defer {
-            playing = !gifImages.isEmpty()
+            playing = !images.isEmpty()
         }
-        return gifImages.getImage(presentationTimeStamp)
+        return images.getImage(presentationTimeStamp)
     }
 }
 
@@ -294,8 +264,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.delayAfterPlaying = delayAfterPlaying
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
-        let gifImages = GifImages(images: media.images)
-        let soundUrl = media.soundUrl
+        let images = media.getImages()
+        let sound = media.getSound()
         let ai = self.settings.ai
         if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
             OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
@@ -307,8 +277,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                         } else {
                             self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
                         }
-                        self.play(gifImages: gifImages,
-                                  soundUrl: soundUrl,
+                        self.play(images: images,
+                                  sound: sound,
                                   username: username,
                                   message: message,
                                   messageImage: messageImage,
@@ -317,8 +287,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                     }
                 }
         } else {
-            play(gifImages: gifImages,
-                 soundUrl: soundUrl,
+            play(images: images,
+                 sound: sound,
                  username: username,
                  message: message,
                  messageImage: messageImage,
@@ -327,8 +297,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func play(gifImages: GifImages,
-                      soundUrl: URL?,
+    private func play(images: AlertsEffectImages,
+                      sound: URL?,
                       username: String,
                       message: String,
                       messageImage: CIImage?,
@@ -336,13 +306,13 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                       settings: SettingsWidgetAlertsAlert)
     {
         processorPipelineQueue.async {
-            self.pipeline.gifImages = gifImages
+            self.pipeline.images = images
             self.pipeline.messageImage = messageImage
             self.pipeline.playing = true
             self.pipeline.landmarkSettings = landmarkSettings
         }
-        if let soundUrl {
-            audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
+        if let sound {
+            audioPlayer = try? AVAudioPlayer(contentsOf: sound)
             audioPlayer?.play()
         }
         if settings.textToSpeechEnabled {

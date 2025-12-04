@@ -14,8 +14,16 @@ struct AlertsEffectGifImage {
 }
 
 class AlertsEffectMedia: @unchecked Sendable {
-    var images: Deque<AlertsEffectGifImage> = []
-    var soundUrl: URL?
+    private var images: Deque<AlertsEffectGifImage> = []
+    private var soundUrl: URL?
+
+    func getImages() -> AlertsEffectImages {
+        return AlertsEffectGifImages(images: images)
+    }
+
+    func getSound() -> URL? {
+        return soundUrl
+    }
 
     func updateSoundUrl(sound: AlertsEffectMediaItem) {
         switch sound {
@@ -59,7 +67,8 @@ class AlertsEffectMedia: @unchecked Sendable {
                 for index in 0 ..< animatedImage.animatedImageFrameCount {
                     if let cgImage = animatedImage.animatedImageFrame(at: index)?.cgImage {
                         timeOffset += animatedImage.animatedImageDuration(at: index)
-                        images.append(AlertsEffectGifImage(image: CIImage(cgImage: cgImage), timeOffset: timeOffset))
+                        images.append(AlertsEffectGifImage(image: CIImage(cgImage: cgImage),
+                                                           timeOffset: timeOffset))
                     }
                 }
             }
@@ -75,5 +84,52 @@ class AlertsEffectMedia: @unchecked Sendable {
             images.append(AlertsEffectGifImage(image: image, timeOffset: timeOffset))
         }
         return images
+    }
+}
+
+protocol AlertsEffectImages {
+    func getImage(_ presentationTimeStamp: Double) -> CIImage?
+    func isEmpty() -> Bool
+}
+
+class AlertsEffectGifImages: AlertsEffectImages {
+    private var images: Deque<AlertsEffectGifImage> = []
+    private var basePresentationTimeStamp: Double?
+
+    init() {}
+
+    init(images: Deque<AlertsEffectGifImage>) {
+        self.images = images
+    }
+
+    func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+        if basePresentationTimeStamp == nil {
+            basePresentationTimeStamp = presentationTimeStamp
+        }
+        let timeOffset = presentationTimeStamp - basePresentationTimeStamp!
+        while let image = images.first {
+            if timeOffset >= image.timeOffset {
+                images.removeFirst()
+                continue
+            }
+            return image.image
+        }
+        return nil
+    }
+
+    func isEmpty() -> Bool {
+        return images.isEmpty
+    }
+}
+
+class AlertsEffectVideoImages: AlertsEffectImages {
+    init() {}
+
+    func getImage(_: Double) -> CIImage? {
+        return nil
+    }
+
+    func isEmpty() -> Bool {
+        return true
     }
 }
