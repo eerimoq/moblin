@@ -95,6 +95,7 @@ extension Model {
         streamTotalChatMessages = 0
         updateScreenAutoOff()
         startNetStream()
+        startRealtimeIrlPedometer()
         startFetchingYouTubeChatVideoId()
         if stream.recording.autoStartRecording {
             startRecording()
@@ -114,6 +115,7 @@ extension Model {
         setIsLive(value: false)
         updateScreenAutoOff()
         realtimeIrl?.stop()
+        stopRealtimeIrlPedometer()
         stopFetchingYouTubeChatVideoId()
         if !streaming {
             return false

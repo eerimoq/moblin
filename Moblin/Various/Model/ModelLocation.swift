@@ -69,9 +69,11 @@ extension Model {
 
     func reloadRealtimeIrl() {
         realtimeIrl?.stop()
+        stopRealtimeIrlPedometer()
         realtimeIrl = nil
         if isRealtimeIrlConfigured() {
             realtimeIrl = RealtimeIrl(baseUrl: stream.realtimeIrlBaseUrl, pushKey: stream.realtimeIrlPushKey)
+            startRealtimeIrlPedometer()
         }
     }
 
