@@ -1282,6 +1282,9 @@ extension Model {
             sceneWidget.layout.alignment = .topRight
         case .chat:
             sceneWidget.layout.alignment = .bottomLeft
+        case .alerts:
+            sceneWidget.layout.x = 20
+            sceneWidget.layout.y = 5
         default:
             break
         }
