@@ -308,6 +308,8 @@ func makeUniqueName<T: Named>(name: String, existingNames: [T]) -> String {
 
 func createSpeechSynthesizer() -> AVSpeechSynthesizer {
     let synthesizer = AVSpeechSynthesizer()
+    // Using the application audio session makes mic buffers 144 bytes, which adds a lot of overhead.
+    // But when using two audio sessions the volume is all wrong...
     synthesizer.usesApplicationAudioSession = false
     return synthesizer
 }
