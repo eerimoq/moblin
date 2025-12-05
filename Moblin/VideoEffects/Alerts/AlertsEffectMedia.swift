@@ -13,23 +13,26 @@ struct AlertsEffectGifImage {
     let timeOffset: Double
 }
 
+struct AlertsEffectPlayer {
+    let images: AlertsEffectImages
+    let soundUrl: URL?
+}
+
 class AlertsEffectMedia: @unchecked Sendable {
     private var mediaType: SettingsWidgetAlertsAlertMediaType = .gifAndSound
     private var gifImages: Deque<AlertsEffectGifImage> = []
     private var videoUrl: URL?
     private var soundUrl: URL?
 
-    func getImages() -> AlertsEffectImages {
+    func getPlayer() -> AlertsEffectPlayer {
+        let images: AlertsEffectImages
         switch mediaType {
         case .gifAndSound:
-            return AlertsEffectGifImages(images: gifImages)
+            images = AlertsEffectGifImages(images: gifImages)
         case .video:
-            return AlertsEffectVideoImages(videoUrl: videoUrl)
+            images = AlertsEffectVideoImages(videoUrl: videoUrl)
         }
-    }
-
-    func getSound() -> URL? {
-        return soundUrl
+        return AlertsEffectPlayer(images: images, soundUrl: soundUrl)
     }
 
     func update(_ alert: SettingsWidgetAlertsAlert,

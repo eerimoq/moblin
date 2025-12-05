@@ -242,8 +242,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         self.delayAfterPlaying = delayAfterPlaying
         let messageImage = renderMessage(username: username, message: message, settings: settings)
         let landmarkSettings = calculateLandmarkSettings(settings: settings)
-        let images = media.getImages()
-        let sound = media.getSound()
+        let player = media.getPlayer()
         let ai = self.settings.ai
         if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
             OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
@@ -255,8 +254,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                         } else {
                             self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
                         }
-                        self.play(images: images,
-                                  sound: sound,
+                        self.play(player: player,
                                   username: username,
                                   message: message,
                                   messageImage: messageImage,
@@ -265,8 +263,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                     }
                 }
         } else {
-            play(images: images,
-                 sound: sound,
+            play(player: player,
                  username: username,
                  message: message,
                  messageImage: messageImage,
@@ -275,8 +272,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func play(images: AlertsEffectImages,
-                      sound: URL?,
+    private func play(player: AlertsEffectPlayer,
                       username: String,
                       message: String,
                       messageImage: CIImage?,
@@ -284,12 +280,12 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                       settings: SettingsWidgetAlertsAlert)
     {
         processorPipelineQueue.async {
-            self.pipeline.images = images
+            self.pipeline.images = player.images
             self.pipeline.messageImage = messageImage
             self.pipeline.playing = true
             self.pipeline.landmarkSettings = landmarkSettings
         }
-        if let sound {
+        if let sound = player.soundUrl {
             audioPlayer = try? AVAudioPlayer(contentsOf: sound)
             audioPlayer?.play()
         }
