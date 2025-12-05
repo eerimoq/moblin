@@ -141,39 +141,17 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private func setChatBotSettings(settings: SettingsWidgetAlerts) {
         chatBotCommandsMedias = []
         for command in settings.chatBot.commands {
-            let (image, imageLoopCount, sound) = getMediaItems(alert: command.alert)
             let media = AlertsEffectMedia()
-            media.updateImages(image: image, loopCount: imageLoopCount)
-            media.updateSoundUrl(sound: sound)
+            media.update(command.alert, mediaStorage, bundledImages, bundledSounds)
             chatBotCommandsMedias.append(media)
         }
-    }
-
-    private func getMediaItems(alert: SettingsWidgetAlertsAlert)
-        -> (AlertsEffectMediaItem, Int, AlertsEffectMediaItem)
-    {
-        let image: AlertsEffectMediaItem
-        if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
-            image = .bundledName(bundledImage.name)
-        } else {
-            image = .customUrl(mediaStorage.makePath(id: alert.imageId))
-        }
-        let sound: AlertsEffectMediaItem
-        if let bundledSound = bundledSounds.first(where: { $0.id == alert.soundId }) {
-            sound = .bundledName(bundledSound.name)
-        } else {
-            sound = .customUrl(mediaStorage.makePath(id: alert.soundId))
-        }
-        return (image, alert.imageLoopCount, sound)
     }
 
     private func setSpeechToTextSettings(settings: SettingsWidgetAlerts) {
         speechToTextStringsMedias = []
         for string in settings.speechToText.strings {
-            let (image, imageLoopCount, sound) = getMediaItems(alert: string.alert)
             let media = AlertsEffectMedia()
-            media.updateImages(image: image, loopCount: imageLoopCount)
-            media.updateSoundUrl(sound: sound)
+            media.update(string.alert, mediaStorage, bundledImages, bundledSounds)
             speechToTextStringsMedias.append(media)
         }
     }
@@ -566,21 +544,13 @@ private func makeCircle(_ image: CIImage) -> CIImage {
 
 extension AlertsEffect {
     private func setTwitchSettings(twitch: SettingsWidgetAlertsTwitch) {
-        var (image, imageLoopCount, sound) = getMediaItems(alert: twitch.follows)
-        twitchFollowMedia.updateImages(image: image, loopCount: imageLoopCount)
-        twitchFollowMedia.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.subscriptions)
-        twitchSubscribeMedia.updateImages(image: image, loopCount: imageLoopCount)
-        twitchSubscribeMedia.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: twitch.raids)
-        twitchRaidMedia.updateImages(image: image, loopCount: imageLoopCount)
-        twitchRaidMedia.updateSoundUrl(sound: sound)
-        twitchCheersMedias = []
+        twitchFollowMedia.update(twitch.follows, mediaStorage, bundledImages, bundledSounds)
+        twitchSubscribeMedia.update(twitch.subscriptions, mediaStorage, bundledImages, bundledSounds)
+        twitchRaidMedia.update(twitch.raids, mediaStorage, bundledImages, bundledSounds)
+        twitchCheersMedias.removeAll()
         for cheerBits in twitch.cheerBits {
-            (image, imageLoopCount, sound) = getMediaItems(alert: cheerBits.alert)
             let media = AlertsEffectMedia()
-            media.updateImages(image: image, loopCount: imageLoopCount)
-            media.updateSoundUrl(sound: sound)
+            media.update(cheerBits.alert, mediaStorage, bundledImages, bundledSounds)
             twitchCheersMedias.append(media)
         }
     }
@@ -679,24 +649,14 @@ extension AlertsEffect {
 
 extension AlertsEffect {
     private func setKickSettings(kick: SettingsWidgetAlertsKick) {
-        var (image, imageLoopCount, sound) = getMediaItems(alert: kick.subscriptions)
-        kickSubscriptionMedia.updateImages(image: image, loopCount: imageLoopCount)
-        kickSubscriptionMedia.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: kick.giftedSubscriptions)
-        kickGiftedSubscriptionsMedias.updateImages(image: image, loopCount: imageLoopCount)
-        kickGiftedSubscriptionsMedias.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: kick.hosts)
-        kickHostMedia.updateImages(image: image, loopCount: imageLoopCount)
-        kickHostMedia.updateSoundUrl(sound: sound)
-        (image, imageLoopCount, sound) = getMediaItems(alert: kick.rewards)
-        kickRewardMedia.updateImages(image: image, loopCount: imageLoopCount)
-        kickRewardMedia.updateSoundUrl(sound: sound)
-        kickGiftsMedias = []
+        kickSubscriptionMedia.update(kick.subscriptions, mediaStorage, bundledImages, bundledSounds)
+        kickGiftedSubscriptionsMedias.update(kick.giftedSubscriptions, mediaStorage, bundledImages, bundledSounds)
+        kickHostMedia.update(kick.hosts, mediaStorage, bundledImages, bundledSounds)
+        kickRewardMedia.update(kick.rewards, mediaStorage, bundledImages, bundledSounds)
+        kickGiftsMedias.removeAll()
         for kickGift in kick.kickGifts {
-            (image, imageLoopCount, sound) = getMediaItems(alert: kickGift.alert)
             let media = AlertsEffectMedia()
-            media.updateImages(image: image, loopCount: imageLoopCount)
-            media.updateSoundUrl(sound: sound)
+            media.update(kickGift.alert, mediaStorage, bundledImages, bundledSounds)
             kickGiftsMedias.append(media)
         }
     }

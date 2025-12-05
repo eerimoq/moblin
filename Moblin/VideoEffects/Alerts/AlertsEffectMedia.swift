@@ -14,18 +14,95 @@ struct AlertsEffectGifImage {
 }
 
 class AlertsEffectMedia: @unchecked Sendable {
-    private var images: Deque<AlertsEffectGifImage> = []
+    private var mediaType: SettingsWidgetAlertsAlertMediaType = .gifAndSound
+    private var gifImages: Deque<AlertsEffectGifImage> = []
+    private var videoUrl: URL?
     private var soundUrl: URL?
 
     func getImages() -> AlertsEffectImages {
-        return AlertsEffectGifImages(images: images)
+        switch mediaType {
+        case .gifAndSound:
+            return AlertsEffectGifImages(images: gifImages)
+        case .video:
+            return AlertsEffectVideoImages(videoUrl: videoUrl)
+        }
     }
 
     func getSound() -> URL? {
         return soundUrl
     }
 
-    func updateSoundUrl(sound: AlertsEffectMediaItem) {
+    func update(_ alert: SettingsWidgetAlertsAlert,
+                _ mediaStorage: AlertMediaStorage,
+                _ bundledImages: [SettingsAlertsMediaGalleryItem],
+                _ bundledSounds: [SettingsAlertsMediaGalleryItem])
+    {
+        mediaType = alert.mediaType
+        switch alert.mediaType {
+        case .gifAndSound:
+            updateGifAndSound(alert, mediaStorage, bundledImages, bundledSounds)
+        case .video:
+            updateVideo(alert, mediaStorage)
+        }
+    }
+
+    private func updateGifAndSound(_ alert: SettingsWidgetAlertsAlert,
+                                   _ mediaStorage: AlertMediaStorage,
+                                   _ bundledImages: [SettingsAlertsMediaGalleryItem],
+                                   _ bundledSounds: [SettingsAlertsMediaGalleryItem])
+    {
+        updateGifAndSoundImages(alert, mediaStorage, bundledImages)
+        updateGifAndSoundSoundUrl(alert, mediaStorage, bundledSounds)
+    }
+
+    private func updateVideo(_ alert: SettingsWidgetAlertsAlert, _ mediaStorage: AlertMediaStorage) {
+        if let filename = alert.makeVideoFilename() {
+            videoUrl = mediaStorage.videos.makePath(filename: filename)
+        } else {
+            videoUrl = nil
+        }
+        soundUrl = nil
+    }
+
+    private func updateGifAndSoundImages(_ alert: SettingsWidgetAlertsAlert,
+                                         _ mediaStorage: AlertMediaStorage,
+                                         _ bundledImages: [SettingsAlertsMediaGalleryItem])
+    {
+        let image: AlertsEffectMediaItem
+        if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
+            image = .bundledName(bundledImage.name)
+        } else {
+            image = .customUrl(mediaStorage.makePath(id: alert.imageId))
+        }
+        let loopCount = alert.imageLoopCount
+        DispatchQueue.global().async {
+            var images: Deque<AlertsEffectGifImage> = []
+            switch image {
+            case let .bundledName(name):
+                if let url = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "gif") {
+                    images = self.loadGifImages(url: url, loopCount: loopCount)
+                }
+            case let .customUrl(url):
+                images = self.loadGifImages(url: url, loopCount: loopCount)
+            case let .image(image):
+                images = self.loadGifImages(image: image, loopCount: loopCount)
+            }
+            DispatchQueue.main.async {
+                self.gifImages = images
+            }
+        }
+    }
+
+    private func updateGifAndSoundSoundUrl(_ alert: SettingsWidgetAlertsAlert,
+                                           _ mediaStorage: AlertMediaStorage,
+                                           _ bundledSounds: [SettingsAlertsMediaGalleryItem])
+    {
+        let sound: AlertsEffectMediaItem
+        if let bundledSound = bundledSounds.first(where: { $0.id == alert.soundId }) {
+            sound = .bundledName(bundledSound.name)
+        } else {
+            sound = .customUrl(mediaStorage.makePath(id: alert.soundId))
+        }
         switch sound {
         case let .bundledName(name):
             soundUrl = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "mp3")
@@ -40,26 +117,7 @@ class AlertsEffectMedia: @unchecked Sendable {
         }
     }
 
-    func updateImages(image: AlertsEffectMediaItem, loopCount: Int) {
-        DispatchQueue.global().async {
-            var images: Deque<AlertsEffectGifImage> = []
-            switch image {
-            case let .bundledName(name):
-                if let url = Bundle.main.url(forResource: "Alerts.bundle/\(name)", withExtension: "gif") {
-                    images = self.loadImages(url: url, loopCount: loopCount)
-                }
-            case let .customUrl(url):
-                images = self.loadImages(url: url, loopCount: loopCount)
-            case let .image(image):
-                images = self.loadImages(image: image, loopCount: loopCount)
-            }
-            processorPipelineQueue.async {
-                self.images = images
-            }
-        }
-    }
-
-    private func loadImages(url: URL, loopCount: Int) -> Deque<AlertsEffectGifImage> {
+    private func loadGifImages(url: URL, loopCount: Int) -> Deque<AlertsEffectGifImage> {
         var timeOffset = 0.0
         var images: Deque<AlertsEffectGifImage> = []
         for _ in 0 ..< loopCount {
@@ -76,7 +134,7 @@ class AlertsEffectMedia: @unchecked Sendable {
         return images
     }
 
-    private func loadImages(image: CIImage, loopCount: Int) -> Deque<AlertsEffectGifImage> {
+    private func loadGifImages(image: CIImage, loopCount: Int) -> Deque<AlertsEffectGifImage> {
         var timeOffset = 0.0
         var images: Deque<AlertsEffectGifImage> = []
         for _ in 0 ..< loopCount {
@@ -123,7 +181,7 @@ class AlertsEffectGifImages: AlertsEffectImages {
 }
 
 class AlertsEffectVideoImages: AlertsEffectImages {
-    init() {}
+    init(videoUrl _: URL?) {}
 
     func getImage(_: Double) -> CIImage? {
         return nil
