@@ -117,6 +117,7 @@ private struct VideoView: View {
         if let filename = alert.makeVideoFilename() {
             model.alertMediaStorage.videos.remove(filename: filename)
             model.alertMediaStorage.videos.add(filename: filename, url: url)
+            model.updateAlertsSettings()
         }
     }
 
