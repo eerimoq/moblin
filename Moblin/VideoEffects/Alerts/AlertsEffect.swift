@@ -285,8 +285,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             self.pipeline.playing = true
             self.pipeline.landmarkSettings = landmarkSettings
         }
-        if let sound = player.soundUrl {
-            audioPlayer = try? AVAudioPlayer(contentsOf: sound)
+        if let soundUrl = player.soundUrl {
+            audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
         }
         if settings.textToSpeechEnabled {
