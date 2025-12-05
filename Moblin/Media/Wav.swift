@@ -3,7 +3,7 @@ import Foundation
 func createWav(sampleRate: Int, samples: [[Int16]]) -> Data? {
     let numberOfChannels = samples.count
     let dataSize: UInt32
-    switch samples.count {
+    switch numberOfChannels {
     case 1:
         dataSize = UInt32(samples[0].count * 2)
     case 2:
