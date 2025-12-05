@@ -861,12 +861,13 @@ enum SettingsWidgetAlertsAlertMediaType: String, CaseIterable, Codable {
 }
 
 class SettingsWidgetAlertsAlert: Codable, ObservableObject {
+    var id: UUID = .init()
     var enabled: Bool = true
     @Published var mediaType: SettingsWidgetAlertsAlertMediaType = .gifAndSound
     @Published var imageId: UUID = .init()
     @Published var imageLoopCount: Int = 1
     @Published var soundId: UUID = .init()
-    @Published var videoId: UUID = .init()
+    @Published var videoName: String = ""
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var accentColor: RgbColor = .init(red: 0xFD, green: 0xFB, blue: 0x67)
     var fontSize: Int = 45
@@ -881,12 +882,13 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case enabled,
+        case id,
+             enabled,
              mediaType,
              imageId,
              imageLoopCount,
              soundId,
-             videoId,
+             videoName,
              textColor,
              accentColor,
              fontSize,
@@ -901,12 +903,13 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
         try container.encode(.enabled, enabled)
         try container.encode(.mediaType, mediaType)
         try container.encode(.imageId, imageId)
         try container.encode(.imageLoopCount, imageLoopCount)
         try container.encode(.soundId, soundId)
-        try container.encode(.videoId, videoId)
+        try container.encode(.videoName, videoName)
         try container.encode(.textColor, textColor)
         try container.encode(.accentColor, accentColor)
         try container.encode(.fontSize, fontSize)
@@ -921,12 +924,13 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         mediaType = container.decode(.mediaType, SettingsWidgetAlertsAlertMediaType.self, .gifAndSound)
         imageId = container.decode(.imageId, UUID.self, .init())
         imageLoopCount = container.decode(.imageLoopCount, Int.self, 1)
         soundId = container.decode(.soundId, UUID.self, .init())
-        videoId = container.decode(.videoId, UUID.self, .init())
+        videoName = container.decode(.videoName, String.self, "")
         textColor = container.decode(.textColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
         accentColor = container.decode(.accentColor, RgbColor.self, .init(red: 0xFD, green: 0xFB, blue: 0x67))
         fontSize = container.decode(.fontSize, Int.self, 45)
@@ -950,14 +954,22 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
         return enabled && textToSpeechEnabled
     }
 
+    func makeVideoFilename() -> String? {
+        guard let fileExtension = URL(string: "file:///\(videoName)")?.pathExtension else {
+            return nil
+        }
+        return "\(id).\(fileExtension)"
+    }
+
     func clone() -> SettingsWidgetAlertsAlert {
         let new = SettingsWidgetAlertsAlert()
+        new.id = id
         new.enabled = enabled
         new.mediaType = mediaType
         new.imageId = imageId
         new.imageLoopCount = imageLoopCount
         new.soundId = soundId
-        new.videoId = videoId
+        new.videoName = videoName
         new.textColor = textColor
         new.accentColor = accentColor
         new.fontSize = fontSize

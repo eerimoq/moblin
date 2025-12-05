@@ -109,11 +109,16 @@ private struct VideoPickerView: UIViewControllerRepresentable {
 
 private struct VideoView: View {
     let model: Model
-    @State private var name: String = ""
+    @ObservedObject var alert: SettingsWidgetAlertsAlert
     @State private var showPicker = false
-    @State private var presentingHelp: Bool = false
 
-    private func onUrl(url _: URL) {}
+    private func onUrl(url: URL) {
+        alert.videoName = url.lastPathComponent
+        if let filename = alert.makeVideoFilename() {
+            model.alertMediaStorage.videos.remove(filename: filename)
+            model.alertMediaStorage.videos.add(filename: filename, url: url)
+        }
+    }
 
     var body: some View {
         NavigationLink {
@@ -124,18 +129,16 @@ private struct VideoView: View {
                         model.onDocumentPickerUrl = onUrl
                     } label: {
                         HCenter {
-                            if name.isEmpty {
+                            if alert.videoName.isEmpty {
                                 Text("Select video")
                             } else {
-                                Text(name)
+                                Text(alert.videoName)
                             }
                         }
                     }
                     .sheet(isPresented: $showPicker) {
                         VideoPickerView(model: model)
                     }
-                } footer: {
-                    Text("Use the HEVC/H.265 codec with alpha channel for transparent background.")
                 }
             }
             .navigationTitle("Video")
@@ -143,7 +146,7 @@ private struct VideoView: View {
             HStack {
                 Text("Video")
                 Spacer()
-                Text(name)
+                Text(alert.videoName)
                     .foregroundStyle(.gray)
             }
         }
@@ -155,13 +158,18 @@ struct AlertMediaView: View {
     @ObservedObject var alert: SettingsWidgetAlertsAlert
 
     var body: some View {
-        // Section {
-        //     Picker("Type", selection: $alert.mediaType) {
-        //         ForEach(SettingsWidgetAlertsAlertMediaType.allCases, id: \.self) {
-        //             Text($0.toString())
-        //         }
-        //     }
-        // }
+        Section {
+            Picker("Type", selection: $alert.mediaType) {
+                ForEach(SettingsWidgetAlertsAlertMediaType.allCases, id: \.self) {
+                    Text($0.toString())
+                }
+            }
+            .onChange(of: alert.mediaType) { _ in
+                model.updateAlertsSettings()
+            }
+        } header: {
+            Text("Media")
+        }
         Section {
             switch alert.mediaType {
             case .gifAndSound:
@@ -182,10 +190,8 @@ struct AlertMediaView: View {
                                  value: getSoundName(model: model, id: alert.soundId))
                 }
             case .video:
-                VideoView(model: model)
+                VideoView(model: model, alert: alert)
             }
-        } header: {
-            Text("Media")
         }
     }
 }

@@ -66,8 +66,11 @@ func deleteTrash() {
     }
 }
 
-func createAndGetDirectory(name: String) -> URL {
-    let directory = URL.documentsDirectory.appending(component: name)
+func createAndGetDirectory(name: String...) -> URL {
+    var directory = URL.documentsDirectory
+    for name in name {
+        directory = directory.appending(component: name)
+    }
     try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     return directory
 }
