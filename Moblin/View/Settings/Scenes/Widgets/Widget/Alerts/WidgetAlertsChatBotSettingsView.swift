@@ -36,7 +36,7 @@ private struct ChatBotCommandView: View {
                 } footer: {
                     Text("Trigger with chat message '!moblin alert \(name)'")
                 }
-                AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+                AlertMediaView(alert: alert)
                 AlertPositionView(alert: alert, positionType: alert.positionType)
                 AlertColorsView(
                     alert: alert,

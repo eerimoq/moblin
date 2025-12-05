@@ -16,7 +16,7 @@ private struct TwitchFollowsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
@@ -59,7 +59,7 @@ private struct TwitchSubscriptionsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
@@ -104,7 +104,7 @@ private struct TwitchRaidsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
@@ -194,7 +194,7 @@ private struct TwitchCheerView: View {
                 cheerBit.comparisonOperator = comparisonOperator ?? .greaterEqual
                 model.updateAlertsSettings()
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
@@ -307,7 +307,7 @@ private struct TwitchRewardView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: reward.alert, imageId: reward.alert.imageId, soundId: reward.alert.soundId)
+            AlertMediaView(alert: reward.alert)
         }
         .navigationTitle(reward.title)
     }

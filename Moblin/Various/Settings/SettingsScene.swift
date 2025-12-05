@@ -840,11 +840,33 @@ class SettingsWidgetAlertFacePosition: Codable {
     var height: Double = 0.5
 }
 
+enum SettingsWidgetAlertsAlertMediaType: String, CaseIterable, Codable {
+    case gifAndSound
+    case video
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsWidgetAlertsAlertMediaType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .gifAndSound
+    }
+
+    func toString() -> LocalizedStringKey {
+        switch self {
+        case .gifAndSound:
+            return "GIF and sound"
+        case .video:
+            return "Video"
+        }
+    }
+}
+
 class SettingsWidgetAlertsAlert: Codable, ObservableObject {
     var enabled: Bool = true
-    var imageId: UUID = .init()
-    var imageLoopCount: Int = 1
-    var soundId: UUID = .init()
+    @Published var mediaType: SettingsWidgetAlertsAlertMediaType = .gifAndSound
+    @Published var imageId: UUID = .init()
+    @Published var imageLoopCount: Int = 1
+    @Published var soundId: UUID = .init()
+    @Published var videoId: UUID = .init()
     var textColor: RgbColor = .init(red: 255, green: 255, blue: 255)
     var accentColor: RgbColor = .init(red: 0xFD, green: 0xFB, blue: 0x67)
     var fontSize: Int = 45
@@ -860,9 +882,11 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case enabled,
+             mediaType,
              imageId,
              imageLoopCount,
              soundId,
+             videoId,
              textColor,
              accentColor,
              fontSize,
@@ -878,9 +902,11 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
+        try container.encode(.mediaType, mediaType)
         try container.encode(.imageId, imageId)
         try container.encode(.imageLoopCount, imageLoopCount)
         try container.encode(.soundId, soundId)
+        try container.encode(.videoId, videoId)
         try container.encode(.textColor, textColor)
         try container.encode(.accentColor, accentColor)
         try container.encode(.fontSize, fontSize)
@@ -896,9 +922,11 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, true)
+        mediaType = container.decode(.mediaType, SettingsWidgetAlertsAlertMediaType.self, .gifAndSound)
         imageId = container.decode(.imageId, UUID.self, .init())
         imageLoopCount = container.decode(.imageLoopCount, Int.self, 1)
         soundId = container.decode(.soundId, UUID.self, .init())
+        videoId = container.decode(.videoId, UUID.self, .init())
         textColor = container.decode(.textColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
         accentColor = container.decode(.accentColor, RgbColor.self, .init(red: 0xFD, green: 0xFB, blue: 0x67))
         fontSize = container.decode(.fontSize, Int.self, 45)
@@ -925,9 +953,11 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
     func clone() -> SettingsWidgetAlertsAlert {
         let new = SettingsWidgetAlertsAlert()
         new.enabled = enabled
+        new.mediaType = mediaType
         new.imageId = imageId
         new.imageLoopCount = imageLoopCount
         new.soundId = soundId
+        new.videoId = videoId
         new.textColor = textColor
         new.accentColor = accentColor
         new.fontSize = fontSize

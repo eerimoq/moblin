@@ -32,7 +32,7 @@ private struct SpeechToTextStringView: View {
                 } footer: {
                     Text("Trigger by saying '\(text)'.")
                 }
-                AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+                AlertMediaView(alert: alert)
                 AlertPositionView(alert: alert, positionType: alert.positionType)
                 Section {
                     TextButtonView("Test") {

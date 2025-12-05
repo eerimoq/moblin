@@ -16,7 +16,7 @@ private struct KickSubscriptionsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
@@ -60,7 +60,7 @@ private struct KickGiftedSubscriptionsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
@@ -105,7 +105,7 @@ private struct KickHostsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
@@ -149,7 +149,7 @@ private struct KickRewardsView: View {
                     Text("Enabled")
                 }
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,
@@ -236,7 +236,7 @@ private struct KickGiftView: View {
                 kickGift.comparisonOperator = comparisonOperator ?? .greaterEqual
                 model.updateAlertsSettings()
             }
-            AlertMediaView(alert: alert, imageId: alert.imageId, soundId: alert.soundId)
+            AlertMediaView(alert: alert)
             AlertPositionView(alert: alert, positionType: alert.positionType)
             AlertColorsView(
                 alert: alert,

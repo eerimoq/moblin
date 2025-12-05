@@ -92,27 +92,97 @@ private func getSoundName(model: Model, id: UUID?) -> String {
     return model.getAllAlertSounds().first(where: { $0.id == id })?.name ?? ""
 }
 
+private struct VideoPickerView: UIViewControllerRepresentable {
+    let model: Model
+
+    func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
+        let documentPicker = UIDocumentPickerViewController(
+            forOpeningContentTypes: [.movie],
+            asCopy: true
+        )
+        documentPicker.delegate = model
+        return documentPicker
+    }
+
+    func updateUIViewController(_: UIDocumentPickerViewController, context _: Context) {}
+}
+
+private struct VideoView: View {
+    let model: Model
+    @State private var name: String = ""
+    @State private var showPicker = false
+    @State private var presentingHelp: Bool = false
+
+    private func onUrl(url _: URL) {}
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    Button {
+                        showPicker = true
+                        model.onDocumentPickerUrl = onUrl
+                    } label: {
+                        HCenter {
+                            if name.isEmpty {
+                                Text("Select video")
+                            } else {
+                                Text(name)
+                            }
+                        }
+                    }
+                    .sheet(isPresented: $showPicker) {
+                        VideoPickerView(model: model)
+                    }
+                } footer: {
+                    Text("Use the HEVC/H.265 codec with alpha channel for transparent background.")
+                }
+            }
+            .navigationTitle("Video")
+        } label: {
+            HStack {
+                Text("Video")
+                Spacer()
+                Text(name)
+                    .foregroundStyle(.gray)
+            }
+        }
+    }
+}
+
 struct AlertMediaView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var alert: SettingsWidgetAlertsAlert
-    @State var imageId: UUID
-    @State var soundId: UUID
 
     var body: some View {
+        // Section {
+        //     Picker("Type", selection: $alert.mediaType) {
+        //         ForEach(SettingsWidgetAlertsAlertMediaType.allCases, id: \.self) {
+        //             Text($0.toString())
+        //         }
+        //     }
+        // }
         Section {
-            NavigationLink {
-                AlertImageSelectorView(
-                    alert: alert,
-                    imageId: $imageId,
-                    loopCount: Float(alert.imageLoopCount)
-                )
-            } label: {
-                TextItemView(name: "Image", value: getImageName(model: model, id: imageId))
-            }
-            NavigationLink {
-                AlertSoundSelectorView(alert: alert, soundId: $soundId)
-            } label: {
-                TextItemView(name: "Sound", value: getSoundName(model: model, id: soundId))
+            switch alert.mediaType {
+            case .gifAndSound:
+                NavigationLink {
+                    AlertImageSelectorView(
+                        alert: alert,
+                        imageId: $alert.imageId,
+                        loopCount: Float(alert.imageLoopCount)
+                    )
+                } label: {
+                    TextItemView(name: String(localized: "Image"),
+                                 value: getImageName(model: model, id: alert.imageId))
+                }
+                NavigationLink {
+                    AlertSoundSelectorView(alert: alert, soundId: $alert.soundId)
+                } label: {
+                    TextItemView(name: String(localized: "Sound"),
+                                 value: getSoundName(model: model, id: alert.soundId))
+                }
+            case .video:
+                VideoView(model: model)
             }
         } header: {
             Text("Media")

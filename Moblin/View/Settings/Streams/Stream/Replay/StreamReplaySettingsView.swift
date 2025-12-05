@@ -3,11 +3,10 @@ import UniformTypeIdentifiers
 
 private struct VideoPickerView: UIViewControllerRepresentable {
     let model: Model
-    let type: UTType
 
     func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
         let documentPicker = UIDocumentPickerViewController(
-            forOpeningContentTypes: [type],
+            forOpeningContentTypes: [.movie],
             asCopy: true
         )
         documentPicker.delegate = model
@@ -92,7 +91,7 @@ private struct StingerView: View {
                         }
                     }
                     .sheet(isPresented: $showPicker) {
-                        VideoPickerView(model: model, type: .movie)
+                        VideoPickerView(model: model)
                     }
                 } footer: {
                     Text("Use the HEVC/H.265 codec with alpha channel for transparent background.")
