@@ -1,28 +1,9 @@
 import WebKit
 
-private let moblinScript = """
-class Moblin {
-  constructor() {
-    this.onmessage = null;
-  }
-
-  subscribe(topic) {
-    this.send({ subscribe: { topic: topic } });
-  }
-
-  handleMessage(message) {
-    if (this.onmessage) {
-      this.onmessage(JSON.parse(message).message.data);
-    }
-  }
-
-  send(message) {
-    window.webkit.messageHandlers.moblin.postMessage(JSON.stringify(message));
-  }
+private func moblinScript() -> String {
+    let url = Bundle.main.url(forResource: "moblin", withExtension: "js")!
+    return try! String(contentsOf: url)
 }
-
-const moblin = new Moblin();
-"""
 
 private enum SubscribeTopic: Codable {
     case chat(prefix: String?)
@@ -93,7 +74,7 @@ class BrowserEffectServer: NSObject {
 
     func addScript(configuration: WKWebViewConfiguration) {
         configuration.userContentController.addUserScript(.init(
-            source: moblinScript,
+            source: moblinScript(),
             injectionTime: .atDocumentStart,
             forMainFrameOnly: false
         ))
