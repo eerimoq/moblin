@@ -1,8 +1,7 @@
 import WebKit
 
 private func moblinScript() -> String {
-    let url = Bundle.main.url(forResource: "moblin", withExtension: "js")!
-    return try! String(contentsOf: url)
+    return loadStringResource(name: "moblin", ext: "js")
 }
 
 private enum SubscribeTopic: Codable {

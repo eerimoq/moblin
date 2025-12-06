@@ -26,8 +26,7 @@ private func createStyleSheetSource(styleSheet: String) -> String? {
 }
 
 private func videoScript() -> String {
-    let url = Bundle.main.url(forResource: "video", withExtension: "js")!
-    return try! String(contentsOf: url)
+    return loadStringResource(name: "video", ext: "js")
 }
 
 private func addScript(_ configuration: WKWebViewConfiguration,

@@ -345,3 +345,8 @@ extension AVAsset {
         return duration ?? 0
     }
 }
+
+func loadStringResource(name: String, ext: String) -> String {
+    let url = Bundle.main.url(forResource: name, withExtension: ext)!
+    return try! String(contentsOf: url)
+}
