@@ -69,8 +69,10 @@ class AlertsEffectMedia: @unchecked Sendable {
         guard let videoUrl else {
             return
         }
-        videoSoundLoader(path: videoUrl) {
-            self.soundUrl = $0
+        loadVideoSound(path: videoUrl) { soundUrl in
+            DispatchQueue.main.async {
+                self.soundUrl = soundUrl
+            }
         }
     }
 
@@ -210,44 +212,46 @@ class AlertsEffectVideoImages: AlertsEffectImages {
     }
 }
 
-private func videoSoundLoader(path: URL, onCompleted: @escaping (URL?) -> Void) {
+private func loadVideoSound(path: URL, onCompleted: @escaping (URL?) -> Void) {
     let asset = AVAsset(url: path)
     guard let reader = try? AVAssetReader(asset: asset) else {
         onCompleted(nil)
         return
     }
     asset.loadTracks(withMediaType: .audio) { tracks, error in
-        guard let track = tracks?.first, error == nil else {
-            onCompleted(nil)
-            return
-        }
-        let outputSettings: [String: Any] = [
-            AVFormatIDKey: kAudioFormatLinearPCM,
-            AVNumberOfChannelsKey: 1,
-            AVSampleRateKey: 48000.0,
-            AVLinearPCMBitDepthKey: 16,
-            AVLinearPCMIsFloatKey: false,
-            AVLinearPCMIsBigEndianKey: false,
-        ]
-        let trackOutput = AVAssetReaderTrackOutput(track: track, outputSettings: outputSettings)
-        reader.add(trackOutput)
-        reader.startReading()
-        var samples: [Int16] = []
-        while let sampleBuffer = trackOutput.copyNextSampleBuffer() {
-            guard let data = sampleBuffer.dataBuffer?.data else {
-                continue
+        DispatchQueue.global().async {
+            guard let track = tracks?.first, error == nil else {
+                onCompleted(nil)
+                return
             }
-            let reader = ByteReader(data: data)
-            while reader.bytesAvailable > 0, let sample = try? reader.readUInt16Le() {
-                samples.append(Int16(bitPattern: sample))
+            let outputSettings: [String: Any] = [
+                AVFormatIDKey: kAudioFormatLinearPCM,
+                AVNumberOfChannelsKey: 1,
+                AVSampleRateKey: 48000.0,
+                AVLinearPCMBitDepthKey: 16,
+                AVLinearPCMIsFloatKey: false,
+                AVLinearPCMIsBigEndianKey: false,
+            ]
+            let trackOutput = AVAssetReaderTrackOutput(track: track, outputSettings: outputSettings)
+            reader.add(trackOutput)
+            reader.startReading()
+            var samples: [Int16] = []
+            while let sampleBuffer = trackOutput.copyNextSampleBuffer() {
+                guard let data = sampleBuffer.dataBuffer?.data else {
+                    continue
+                }
+                let reader = ByteReader(data: data)
+                while let sample = try? reader.readUInt16Le() {
+                    samples.append(Int16(bitPattern: sample))
+                }
             }
+            let wav = createWav(sampleRate: 48000, samples: [samples])
+            let soundUrl = path.appendingPathExtension("wav")
+            guard FileManager.default.createFile(atPath: soundUrl.path(), contents: wav) else {
+                onCompleted(nil)
+                return
+            }
+            onCompleted(soundUrl)
         }
-        let wav = createWav(sampleRate: 48000, samples: [samples])
-        let soundUrl = path.appendingPathExtension("wav")
-        guard FileManager.default.createFile(atPath: soundUrl.path(), contents: wav) else {
-            onCompleted(nil)
-            return
-        }
-        onCompleted(soundUrl)
     }
 }
