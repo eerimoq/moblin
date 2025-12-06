@@ -26,11 +26,7 @@ private enum MessageToMoblin: Codable {
     case subscribe(topic: SubscribeTopic)
 
     func toJson() -> String? {
-        do {
-            return try String(bytes: JSONEncoder().encode(self), encoding: .utf8)
-        } catch {
-            return nil
-        }
+        return try? String(bytes: JSONEncoder().encode(self), encoding: .utf8)
     }
 
     static func fromJson(data: String) throws -> MessageToMoblin {
