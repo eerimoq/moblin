@@ -25,6 +25,39 @@ private func createStyleSheetSource(styleSheet: String) -> String? {
     """
 }
 
+private func ensureVideoPlaysInlineScript() -> String {
+    return """
+    function ensureVideoPlaysInline() {
+      document.querySelectorAll('video').forEach(video => {
+        video.setAttribute('playsinline', "");
+      });
+    }
+
+    const moblinObserver = new MutationObserver((mutationList, observer) => {
+      for (const mutation of mutationList) {
+        console.log("xxx", mutation);
+      }
+      ensureVideoPlaysInline();
+    });
+    moblinObserver.observe(document, { childList: true, subtree: true });
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+      ensureVideoPlaysInline();
+    });
+    """
+}
+
+private func addScript(_ configuration: WKWebViewConfiguration,
+                       _ script: String,
+                       _ injectionTime: WKUserScriptInjectionTime)
+{
+    configuration.userContentController.addUserScript(.init(
+        source: script,
+        injectionTime: injectionTime,
+        forMainFrameOnly: false
+    ))
+}
+
 final class BrowserEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     let webView: WKWebView
@@ -76,12 +109,9 @@ final class BrowserEffect: VideoEffect {
         configuration.allowsPictureInPictureMediaPlayback = false
         configuration.mediaTypesRequiringUserActionForPlayback = []
         if let source = createStyleSheetSource(styleSheet: styleSheet) {
-            configuration.userContentController.addUserScript(.init(
-                source: source,
-                injectionTime: .atDocumentEnd,
-                forMainFrameOnly: false
-            ))
+            addScript(configuration, source, .atDocumentEnd)
         }
+        addScript(configuration, ensureVideoPlaysInlineScript(), .atDocumentStart)
         server = BrowserEffectServer()
         if moblinAccess {
             server.addScript(configuration: configuration)
