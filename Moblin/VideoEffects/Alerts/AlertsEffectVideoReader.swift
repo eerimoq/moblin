@@ -8,43 +8,60 @@ enum AlertsEffectVideoReaderSetupState {
     case failed
 }
 
+private struct VideoImage {
+    let image: CIImage
+    let offset: Double
+}
+
+private let lockQueue = DispatchQueue(label: "com.eerimoq.alerts-effect")
+
 class AlertsEffectVideoReader {
-    private var images: Deque<ReplayImage> = []
+    private var images: Deque<VideoImage> = []
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
-    private(set) var duration: Double = 0
-    private(set) var setupState: AlertsEffectVideoReaderSetupState = .working
-    private let size: CGSize
+    private var fillEnded: Bool = false
+    private var basePresentationTimeStamp: Double?
 
-    init(path: URL, size: CMVideoDimensions) {
-        self.size = size.toSize()
-        setup(path: path)
+    init(path: URL) {
+        lockQueue.async {
+            let asset = AVAsset(url: path)
+            self.reader = try? AVAssetReader(asset: asset)
+            asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+                lockQueue.async {
+                    self?.loadVideoTrackCompletion(track: tracks?.first, error: error)
+                }
+            }
+        }
     }
 
-    func getImage(offset: Double) -> ReplayImage? {
-        let image = findImage(offset: offset)
+    func getImage(presentationTimeStamp: Double) -> CIImage? {
+        if basePresentationTimeStamp == nil {
+            basePresentationTimeStamp = presentationTimeStamp
+        }
+        let timeOffset = presentationTimeStamp - basePresentationTimeStamp!
+        let image = findImage(offset: timeOffset)
         if images.count < 10 {
             fill()
         }
         return image
     }
 
-    private func findImage(offset: Double) -> ReplayImage {
+    func hasEnded() -> Bool {
+        return fillEnded && images.isEmpty
+    }
+
+    private func findImage(offset: Double) -> CIImage? {
         while let image = images.first {
-            if let imageOffset = image.offset {
-                if offset < imageOffset {
-                    return image
-                }
-            } else {
-                return image
+            if offset <= image.offset {
+                return image.image
             }
             images.removeFirst()
         }
-        return ReplayImage(image: nil, offset: nil, isLast: false)
+        return nil
     }
 
     private func fill() {
-        replayEffectQueue.async {
+        lockQueue.async {
             self.fillInternal()
         }
     }
@@ -53,42 +70,22 @@ class AlertsEffectVideoReader {
         guard let trackOutput else {
             return
         }
-        var newImages: [ReplayImage] = []
+        var newImages: [VideoImage] = []
         for _ in 0 ... 10 {
             if let sampleBuffer = trackOutput.copyNextSampleBuffer(), let imageBuffer = sampleBuffer.imageBuffer {
-                let image = CIImage(cvImageBuffer: imageBuffer)
-                    .scaledTo(size: size)
-                    .centered(size: size)
-                    .composited(over: CIImage.clear.cropped(to: CGRect(origin: .zero, size: size)))
-                newImages.append(ReplayImage(image: image,
-                                             offset: sampleBuffer.presentationTimeStamp.seconds,
-                                             isLast: false))
-            } else {
-                newImages.append(ReplayImage(image: nil, offset: nil, isLast: true))
-                break
+                newImages.append(VideoImage(image: CIImage(cvImageBuffer: imageBuffer),
+                                            offset: sampleBuffer.presentationTimeStamp.seconds))
             }
         }
         processorPipelineQueue.async {
             self.images += newImages
-        }
-    }
-
-    private func setup(path: URL) {
-        replayEffectQueue.async {
-            let asset = AVAsset(url: path)
-            self.reader = try? AVAssetReader(asset: asset)
-            self.duration = asset.duration()
-            asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
-                replayEffectQueue.async {
-                    self?.loadVideoTrackCompletion(track: tracks?.first, error: error)
-                }
-            }
+            self.fillEnded = newImages.isEmpty
         }
     }
 
     private func loadVideoTrackCompletion(track: AVAssetTrack?, error: (any Error)?) {
         guard error == nil, let track else {
-            setupComplete(state: .failed)
+            markFillEnded()
             return
         }
         let videoOutputSettings: [String: Any] = [
@@ -98,18 +95,17 @@ class AlertsEffectVideoReader {
         ] as [String: Any]
         trackOutput = AVAssetReaderTrackOutput(track: track, outputSettings: videoOutputSettings)
         guard let trackOutput else {
-            setupComplete(state: .failed)
+            markFillEnded()
             return
         }
         reader?.add(trackOutput)
         reader?.startReading()
         fillInternal()
-        setupComplete(state: .ok)
     }
 
-    private func setupComplete(state: AlertsEffectVideoReaderSetupState) {
+    private func markFillEnded() {
         processorPipelineQueue.async {
-            self.setupState = state
+            self.fillEnded = true
         }
     }
 }

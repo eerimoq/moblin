@@ -191,14 +191,22 @@ class AlertsEffectGifImages: AlertsEffectImages {
 }
 
 class AlertsEffectVideoImages: AlertsEffectImages {
-    init(videoUrl _: URL?) {}
+    private let reader: AlertsEffectVideoReader?
 
-    func getImage(_: Double) -> CIImage? {
-        return nil
+    init(videoUrl: URL?) {
+        if let videoUrl {
+            reader = AlertsEffectVideoReader(path: videoUrl)
+        } else {
+            reader = nil
+        }
+    }
+
+    func getImage(_ presentationTimeStamp: Double) -> CIImage? {
+        return reader?.getImage(presentationTimeStamp: presentationTimeStamp)
     }
 
     func isEmpty() -> Bool {
-        return true
+        return reader?.hasEnded() ?? true
     }
 }
 
