@@ -175,39 +175,39 @@ struct QuickButtonsInnerView: View {
         }
     }
 
-    private func movieAction(state _: ButtonState) {
+    private func movieAction() {
         model.toggleFilterQuickButton(type: .movie)
     }
 
-    private func whirlpoolAction(state _: ButtonState) {
+    private func whirlpoolAction() {
         model.toggleWhirlpoolQuickButton()
     }
 
-    private func pinchAction(state _: ButtonState) {
+    private func pinchAction() {
         model.togglePinchQuickButton()
     }
 
-    private func fourThreeAction(state _: ButtonState) {
+    private func fourThreeAction() {
         model.toggleFilterQuickButton(type: .fourThree)
     }
 
-    private func grayScaleAction(state _: ButtonState) {
+    private func grayScaleAction() {
         model.toggleFilterQuickButton(type: .grayScale)
     }
 
-    private func sepiaAction(state _: ButtonState) {
+    private func sepiaAction() {
         model.toggleFilterQuickButton(type: .sepia)
     }
 
-    private func tripleAction(state _: ButtonState) {
+    private func tripleAction() {
         model.toggleFilterQuickButton(type: .triple)
     }
 
-    private func twinAction(state _: ButtonState) {
+    private func twinAction() {
         model.toggleFilterQuickButton(type: .twin)
     }
 
-    private func pixellateAction(state _: ButtonState) {
+    private func pixellateAction() {
         model.togglePixellateQuickButton()
     }
 
@@ -484,7 +484,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    movieAction(state: state)
+                    movieAction()
                 }
             case .fourThree:
                 QuickButtonImage(model: model,
@@ -492,7 +492,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    fourThreeAction(state: state)
+                    fourThreeAction()
                 }
             case .grayScale:
                 QuickButtonImage(model: model,
@@ -500,7 +500,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    grayScaleAction(state: state)
+                    grayScaleAction()
                 }
             case .sepia:
                 QuickButtonImage(model: model,
@@ -508,7 +508,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    sepiaAction(state: state)
+                    sepiaAction()
                 }
             case .triple:
                 QuickButtonImage(model: model,
@@ -516,7 +516,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    tripleAction(state: state)
+                    tripleAction()
                 }
             case .twin:
                 QuickButtonImage(model: model,
@@ -524,7 +524,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    twinAction(state: state)
+                    twinAction()
                 }
             case .pixellate:
                 QuickButtonImage(model: model,
@@ -532,7 +532,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    pixellateAction(state: state)
+                    pixellateAction()
                 }
             case .stream:
                 QuickButtonImage(model: model,
@@ -785,7 +785,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    whirlpoolAction(state: state)
+                    whirlpoolAction()
                 }
             case .pinch:
                 QuickButtonImage(model: model,
@@ -793,7 +793,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    pinchAction(state: state)
+                    pinchAction()
                 }
             case .autoSceneSwitcher:
                 QuickButtonImage(model: model,
