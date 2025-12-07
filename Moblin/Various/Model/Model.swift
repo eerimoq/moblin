@@ -1905,11 +1905,37 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         toggleShowingPanel(type: nil, panel: .quickButtonSettings)
     }
 
-    func toggleGlobalButton(type: SettingsQuickButtonType) {
+    func toggleQuickButton(type: SettingsQuickButtonType) {
         for button in database.quickButtons where button.type == type {
             button.isOn.toggle()
         }
         getQuickButtonState(type: type)?.isOn.toggle()
+    }
+
+    func toggleFilterQuickButton(type: SettingsQuickButtonType) {
+        toggleQuickButton(type: type)
+        sceneUpdated(updateRemoteScene: false)
+        updateQuickButtonStates()
+    }
+
+    func toggleWhirlpoolQuickButton() {
+        streamOverlay.showingWhirlpool.toggle()
+        toggleFilterQuickButton(type: .whirlpool)
+    }
+
+    func togglePinchQuickButton() {
+        streamOverlay.showingPinch.toggle()
+        toggleFilterQuickButton(type: .pinch)
+    }
+
+    func togglePixellateQuickButton() {
+        streamOverlay.showingPixellate.toggle()
+        toggleFilterQuickButton(type: .pixellate)
+    }
+
+    func togglePollQuickButton() {
+        togglePoll()
+        toggleFilterQuickButton(type: .poll)
     }
 
     func setDisplayPortrait(portrait: Bool) {

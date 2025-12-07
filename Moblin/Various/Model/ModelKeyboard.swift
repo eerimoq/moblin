@@ -45,10 +45,10 @@ extension Model {
             toggleStream()
         case .torch:
             toggleTorch()
-            toggleGlobalButton(type: .torch)
+            toggleQuickButton(type: .torch)
         case .mute:
             toggleMute()
-            toggleGlobalButton(type: .mute)
+            toggleQuickButton(type: .mute)
         case .blackScreen:
             toggleStealthMode()
         case .scene:

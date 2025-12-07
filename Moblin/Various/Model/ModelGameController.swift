@@ -52,13 +52,13 @@ extension Model {
         case .torch:
             if !pressed {
                 toggleTorch()
-                toggleGlobalButton(type: .torch)
+                toggleQuickButton(type: .torch)
                 updateQuickButtonStates()
             }
         case .mute:
             if !pressed {
                 toggleMute()
-                toggleGlobalButton(type: .mute)
+                toggleQuickButton(type: .mute)
                 updateQuickButtonStates()
             }
         case .blackScreen:

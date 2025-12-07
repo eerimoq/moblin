@@ -609,7 +609,7 @@ extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerSetTorch(on: Bool) {
         streamOverlay.isTorchOn = on
         updateTorch()
-        toggleGlobalButton(type: .torch)
+        toggleQuickButton(type: .torch)
         updateQuickButtonStates()
     }
 

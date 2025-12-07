@@ -175,50 +175,44 @@ struct QuickButtonsInnerView: View {
         }
     }
 
-    private func videoEffectAction(state: ButtonState, type: SettingsQuickButtonType) {
-        state.button.isOn.toggle()
-        model.setGlobalButtonState(type: type, isOn: state.button.isOn)
-        model.sceneUpdated(updateRemoteScene: false)
-        model.updateQuickButtonStates()
+    private func movieAction(state _: ButtonState) {
+        model.toggleFilterQuickButton(type: .movie)
     }
 
-    private func movieAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .movie)
+    private func whirlpoolAction(state _: ButtonState) {
+        model.toggleWhirlpoolQuickButton()
     }
 
-    private func whirlpoolAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .whirlpool)
-        model.streamOverlay.showingWhirlpool.toggle()
+    private func pinchAction(state _: ButtonState) {
+        model.togglePinchQuickButton()
     }
 
-    private func pinchAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .pinch)
-        model.streamOverlay.showingPinch.toggle()
+    private func fourThreeAction(state _: ButtonState) {
+        model.toggleFilterQuickButton(type: .fourThree)
     }
 
-    private func fourThreeAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .fourThree)
+    private func grayScaleAction(state _: ButtonState) {
+        model.toggleFilterQuickButton(type: .grayScale)
     }
 
-    private func grayScaleAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .grayScale)
+    private func sepiaAction(state _: ButtonState) {
+        model.toggleFilterQuickButton(type: .sepia)
     }
 
-    private func sepiaAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .sepia)
+    private func tripleAction(state _: ButtonState) {
+        model.toggleFilterQuickButton(type: .triple)
     }
 
-    private func tripleAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .triple)
+    private func twinAction(state _: ButtonState) {
+        model.toggleFilterQuickButton(type: .twin)
     }
 
-    private func twinAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .twin)
+    private func pixellateAction(state _: ButtonState) {
+        model.togglePixellateQuickButton()
     }
 
-    private func pixellateAction(state: ButtonState) {
-        videoEffectAction(state: state, type: .pixellate)
-        model.streamOverlay.showingPixellate.toggle()
+    private func pollAction() {
+        model.togglePollQuickButton()
     }
 
     private func streamAction() {
@@ -284,11 +278,6 @@ struct QuickButtonsInnerView: View {
     private func faceAction() {
         model.showFace.toggle()
         model.updateFaceFilterButtonState()
-    }
-
-    private func pollAction() {
-        model.togglePoll()
-        videoEffectAction(state: state, type: .poll)
     }
 
     private func snapshotAction() {

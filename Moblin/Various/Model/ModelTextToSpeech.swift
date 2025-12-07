@@ -5,7 +5,7 @@ extension Model {
         } else {
             chatTextToSpeech.play()
         }
-        toggleGlobalButton(type: .pauseTts)
+        toggleQuickButton(type: .pauseTts)
         updateQuickButtonStates()
     }
 
