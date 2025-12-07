@@ -5,6 +5,21 @@ private func serialize(_ value: Any) -> Data {
     return (try? JSONSerialization.data(withJSONObject: value))!
 }
 
+enum TwitchApiResponse: Equatable {
+    case success(Data)
+    case authError
+    case error
+
+    func isSuccessful() -> Bool {
+        switch self {
+        case .success:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 struct TwitchApiUser: Decodable {
     let id: String
     let login: String
@@ -215,14 +230,19 @@ class TwitchApi {
             "sender_id": broadcasterId,
             "message": message,
         ]
-        doPost(subPath: "chat/messages", body: serialize(body), onComplete: { data in
-            onComplete(data != nil)
+        doPost(subPath: "chat/messages", body: serialize(body), onComplete: {
+            onComplete($0.isSuccessful())
         })
     }
 
     func getUsers(onComplete: @escaping (TwitchApiUsers?) -> Void) {
-        doGet(subPath: "users", onComplete: { data in
-            onComplete(try? JSONDecoder().decode(TwitchApiUsers.self, from: data ?? Data()))
+        doGet(subPath: "users", onComplete: {
+            switch $0 {
+            case let .success(data):
+                onComplete(try? JSONDecoder().decode(TwitchApiUsers.self, from: data))
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -233,15 +253,20 @@ class TwitchApi {
     }
 
     func createEventSubSubscription(body: String, onComplete: @escaping (Bool) -> Void) {
-        doPost(subPath: "eventsub/subscriptions", body: body.utf8Data, onComplete: { data in
-            onComplete(data != nil)
+        doPost(subPath: "eventsub/subscriptions", body: body.utf8Data, onComplete: {
+            onComplete($0.isSuccessful())
         })
     }
 
     func getStreamKey(broadcasterId: String, onComplete: @escaping (String?) -> Void) {
-        doGet(subPath: "streams/key?broadcaster_id=\(broadcasterId)", onComplete: { data in
-            let response = try? JSONDecoder().decode(TwitchApiStreamKey.self, from: data ?? Data())
-            onComplete(response?.data.first?.stream_key)
+        doGet(subPath: "streams/key?broadcaster_id=\(broadcasterId)", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let response = try? JSONDecoder().decode(TwitchApiStreamKey.self, from: data)
+                onComplete(response?.data.first?.stream_key)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -249,13 +274,14 @@ class TwitchApi {
         broadcasterId: String,
         onComplete: @escaping (TwitchApiChannelPointsCustomRewards?) -> Void
     ) {
-        doGet(subPath: "channel_points/custom_rewards?broadcaster_id=\(broadcasterId)", onComplete: { data in
-            // logger.info("Twitch rewards: \(String(data: data ?? Data(), encoding: .utf8))")
-            let message = try? JSONDecoder().decode(
-                TwitchApiChannelPointsCustomRewards.self,
-                from: data ?? Data()
-            )
-            onComplete(message)
+        doGet(subPath: "channel_points/custom_rewards?broadcaster_id=\(broadcasterId)", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiChannelPointsCustomRewards.self, from: data)
+                onComplete(message)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -263,12 +289,14 @@ class TwitchApi {
         broadcasterId: String,
         onComplete: @escaping (TwitchApiChannelInformationData?) -> Void
     ) {
-        doGet(subPath: "channels?broadcaster_id=\(broadcasterId)", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiChannelInformation.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data.first)
+        doGet(subPath: "channels?broadcaster_id=\(broadcasterId)", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiChannelInformation.self, from: data)
+                onComplete(message?.data.first)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -281,12 +309,14 @@ class TwitchApi {
             "broadcaster_id": broadcasterId,
             "length": length,
         ]
-        doPost(subPath: "channels/commercial", body: serialize(body), onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiStartCommercial.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data.first)
+        doPost(subPath: "channels/commercial", body: serialize(body), onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiStartCommercial.self, from: data)
+                onComplete(message?.data.first)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -308,8 +338,8 @@ class TwitchApi {
         }
         doPost(subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
                body: serialize(body),
-               onComplete: { data in
-                   onComplete(data != nil)
+               onComplete: {
+                   onComplete($0.isSuccessful())
                })
     }
 
@@ -321,8 +351,8 @@ class TwitchApi {
             &moderator_id=\(broadcasterId)\
             &message_id=\(messageId)
             """,
-            onComplete: { data in
-                onComplete(data != nil)
+            onComplete: {
+                onComplete($0.isSuccessful())
             }
         )
     }
@@ -334,22 +364,26 @@ class TwitchApi {
         let body = [
             "user_id": userId,
         ]
-        doPost(subPath: "streams/markers", body: serialize(body), onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiCreateStreamMarker.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data.first)
+        doPost(subPath: "streams/markers", body: serialize(body), onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiCreateStreamMarker.self, from: data)
+                onComplete(message?.data.first)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
     func getStream(userId: String, onComplete: @escaping (TwitchApiStreamData?) -> Void) {
-        doGet(subPath: "streams?user_id=\(userId)", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiStreams.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data.first)
+        doGet(subPath: "streams?user_id=\(userId)", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiStreams.self, from: data)
+                onComplete(message?.data.first)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -359,18 +393,20 @@ class TwitchApi {
         guard let query = components.percentEncodedQuery else {
             return
         }
-        doGet(subPath: "games?\(query)", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiGames.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data)
+        doGet(subPath: "games?\(query)", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiGames.self, from: data)
+                onComplete(message?.data)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
     func startRaid(broadcasterId: String,
                    toBroadcasterId: String,
-                   onComplete: @escaping (Bool) -> Void)
+                   onComplete: @escaping (TwitchApiResponse) -> Void)
     {
         var components = URLComponents()
         components.queryItems = [
@@ -378,11 +414,11 @@ class TwitchApi {
             URLQueryItem(name: "to_broadcaster_id", value: toBroadcasterId),
         ]
         guard let query = components.percentEncodedQuery else {
-            onComplete(false)
+            onComplete(.error)
             return
         }
-        doPost(subPath: "raids?\(query)", body: Data(), onComplete: { data in
-            onComplete(data != nil)
+        doPost(subPath: "raids?\(query)", body: Data(), onComplete: {
+            onComplete($0)
         })
     }
 
@@ -395,22 +431,28 @@ class TwitchApi {
         guard let query = components.percentEncodedQuery else {
             return
         }
-        doGet(subPath: "search/categories?\(query)", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiGames.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data)
+        doGet(subPath: "search/categories?\(query)", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiGames.self, from: data)
+                onComplete(message?.data)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
     func searchChannel(channelName: String, onComplete: @escaping (TwitchApiChannel?) -> Void) {
-        doGet(subPath: "search/channels?query=\(channelName)", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiSearchChannels.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data.first(where: { $0.broadcaster_login == channelName }))
+        doGet(subPath: "search/channels?query=\(channelName)", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiSearchChannels.self, from: data)
+                onComplete(message?.data.first(where: {
+                    $0.broadcaster_login.lowercased() == channelName.lowercased()
+                }))
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -429,19 +471,21 @@ class TwitchApi {
         doPatch(
             subPath: "channels?broadcaster_id=\(broadcasterId)",
             body: serialize(body),
-            onComplete: { data in
-                onComplete(data != nil)
+            onComplete: {
+                onComplete($0.isSuccessful())
             }
         )
     }
 
     func getGlobalChatBadges(onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void) {
-        doGet(subPath: "chat/badges/global", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiChatBadges.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data)
+        doGet(subPath: "chat/badges/global", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiChatBadges.self, from: data)
+                onComplete(message?.data)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -449,12 +493,14 @@ class TwitchApi {
         broadcasterId: String,
         onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void
     ) {
-        doGet(subPath: "chat/badges?broadcaster_id=\(broadcasterId)", onComplete: { data in
-            let message = try? JSONDecoder().decode(
-                TwitchApiChatBadges.self,
-                from: data ?? Data()
-            )
-            onComplete(message?.data)
+        doGet(subPath: "chat/badges?broadcaster_id=\(broadcasterId)", onComplete: {
+            switch $0 {
+            case let .success(data):
+                let message = try? JSONDecoder().decode(TwitchApiChatBadges.self, from: data)
+                onComplete(message?.data)
+            default:
+                onComplete(nil)
+            }
         })
     }
 
@@ -465,12 +511,14 @@ class TwitchApi {
     ) {
         doGet(
             subPath: "subscriptions?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            onComplete: { data in
-                let message = try? JSONDecoder().decode(
-                    TwitchApiGetBroadcasterSubscriptions.self,
-                    from: data ?? Data()
-                )
-                onComplete(message?.data.first)
+            onComplete: {
+                switch $0 {
+                case let .success(data):
+                    let message = try? JSONDecoder().decode(TwitchApiGetBroadcasterSubscriptions.self, from: data)
+                    onComplete(message?.data.first)
+                default:
+                    onComplete(nil)
+                }
             }
         )
     }
@@ -481,17 +529,19 @@ class TwitchApi {
     ) {
         doGet(
             subPath: "bits/cheermotes?broadcaster_id=\(broadcasterId)",
-            onComplete: { data in
-                let message = try? JSONDecoder().decode(
-                    TwitchApiGetCheermotes.self,
-                    from: data ?? Data()
-                )
-                onComplete(message?.data)
+            onComplete: {
+                switch $0 {
+                case let .success(data):
+                    let message = try? JSONDecoder().decode(TwitchApiGetCheermotes.self, from: data)
+                    onComplete(message?.data)
+                default:
+                    onComplete(nil)
+                }
             }
         )
     }
 
-    private func doGet(subPath: String, onComplete: @escaping ((Data?) -> Void)) {
+    private func doGet(subPath: String, onComplete: @escaping ((TwitchApiResponse) -> Void)) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -499,7 +549,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doPost(subPath: String, body: Data, onComplete: @escaping (Data?) -> Void) {
+    private func doPost(subPath: String, body: Data, onComplete: @escaping (TwitchApiResponse) -> Void) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -508,7 +558,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doPatch(subPath: String, body: Data, onComplete: @escaping (Data?) -> Void) {
+    private func doPatch(subPath: String, body: Data, onComplete: @escaping (TwitchApiResponse) -> Void) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -517,7 +567,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doDelete(subPath: String, onComplete: @escaping (Data?) -> Void) {
+    private func doDelete(subPath: String, onComplete: @escaping (TwitchApiResponse) -> Void) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -525,20 +575,22 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (Data?) -> Void) {
+    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (TwitchApiResponse) -> Void) {
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
-                    if response?.http?.isUnauthorized == true {
-                        self.delegate?.twitchApiUnauthorized()
-                    }
                     if let data, let data = String(bytes: data, encoding: .utf8) {
                         logger.info("twitch-api: Error response body: \(data)")
                     }
-                    onComplete(nil)
+                    if response?.http?.isUnauthorized == true {
+                        self.delegate?.twitchApiUnauthorized()
+                        onComplete(.authError)
+                    } else {
+                        onComplete(.error)
+                    }
                     return
                 }
-                onComplete(data)
+                onComplete(.success(data))
             }
         }
         .resume()

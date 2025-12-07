@@ -267,11 +267,14 @@ extension Model {
 
     func raidTwitchChannel(channelName: String, channelId: String) {
         TwitchApi(stream.twitchAccessToken)
-            .startRaid(broadcasterId: stream.twitchChannelId, toBroadcasterId: channelId) { ok in
-                if ok {
+            .startRaid(broadcasterId: stream.twitchChannelId, toBroadcasterId: channelId) {
+                switch $0 {
+                case .success:
                     self.makeToast(title: String(localized: "Raiding \(channelName) in 90 seconds!"))
-                } else {
+                case .error:
                     self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
+                case .authError:
+                    break
                 }
             }
     }
