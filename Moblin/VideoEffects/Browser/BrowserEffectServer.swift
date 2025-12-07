@@ -109,6 +109,7 @@ class BrowserEffectServer: NSObject {
 
     private func handlePingTimer() {
         if !gotPing {
+            logger.info("browser-effect-server: Ping timeout")
             videoPlaying = false
         }
         gotPing = false
@@ -148,6 +149,7 @@ class BrowserEffectServer: NSObject {
     private func handlePublish(message: PublishMessage) {
         switch message {
         case let .videoPlaying(videoPlaying):
+            logger.debug("browser-effect-server: Got video playing: \(videoPlaying)")
             self.videoPlaying = videoPlaying
         }
     }
