@@ -85,10 +85,9 @@ extension Model {
     }
 
     func fetchTwitchGameId(stream: SettingsStream, name: String, onComplete: @escaping (String?) -> Void) {
-        createTwitchApi(stream: stream)
-            .getGames(names: [name]) {
-                onComplete($0?.first?.id)
-            }
+        createTwitchApi(stream: stream).getGames(names: [name]) {
+            onComplete($0?.first?.id)
+        }
     }
 
     func searchTwitchCategories(
@@ -97,10 +96,9 @@ extension Model {
         onComplete: @escaping ([TwitchApiGameData]?) -> Void
     ) {
         twitchSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
-            self.createTwitchApi(stream: stream)
-                .searchCategories(query: filter) {
-                    onComplete($0)
-                }
+            self.createTwitchApi(stream: stream).searchCategories(query: filter) {
+                onComplete($0)
+            }
         }
     }
 
@@ -109,10 +107,9 @@ extension Model {
         names: [String],
         onComplete: @escaping ([TwitchApiGameData]?) -> Void
     ) {
-        createTwitchApi(stream: stream)
-            .getGames(names: names) {
-                onComplete($0)
-            }
+        createTwitchApi(stream: stream).getGames(names: names) {
+            onComplete($0)
+        }
     }
 
     func searchTwitchChannel(
@@ -136,27 +133,24 @@ extension Model {
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void
     ) {
-        createTwitchApi(stream: stream)
-            .getChannelInformation(broadcasterId: stream.twitchChannelId) { info in
-                guard let info else {
-                    return
-                }
-                onComplete(info)
+        createTwitchApi(stream: stream).getChannelInformation(broadcasterId: stream.twitchChannelId) { info in
+            guard let info else {
+                return
             }
+            onComplete(info)
+        }
     }
 
     func setTwitchStreamTitle(stream: SettingsStream, title: String) {
-        createTwitchApi(stream: stream)
-            .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
-                                      categoryId: nil,
-                                      title: title) { _ in }
+        createTwitchApi(stream: stream).modifyChannelInformation(broadcasterId: stream.twitchChannelId,
+                                                                 categoryId: nil,
+                                                                 title: title) { _ in }
     }
 
     func setTwitchStreamCategory(stream: SettingsStream, categoryId: String) {
-        createTwitchApi(stream: stream)
-            .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
-                                      categoryId: categoryId,
-                                      title: nil) { _ in }
+        createTwitchApi(stream: stream).modifyChannelInformation(broadcasterId: stream.twitchChannelId,
+                                                                 categoryId: categoryId,
+                                                                 title: nil) { _ in }
     }
 
     func twitchLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
@@ -195,14 +189,13 @@ extension Model {
     }
 
     func createStreamMarker() {
-        createTwitchApi(stream: stream)
-            .createStreamMarker(userId: stream.twitchChannelId) { data in
-                if data != nil {
-                    self.makeToast(title: String(localized: "Stream marker created"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to create stream marker"))
-                }
+        createTwitchApi(stream: stream).createStreamMarker(userId: stream.twitchChannelId) { data in
+            if data != nil {
+                self.makeToast(title: String(localized: "Stream marker created"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to create stream marker"))
             }
+        }
     }
 
     func updateTwitchStream(monotonicNow: ContinuousClock.Instant) {
@@ -218,14 +211,13 @@ extension Model {
     }
 
     func sendTwitchChatMessage(message: String) {
-        createTwitchApi(stream: stream)
-            .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
-                if !ok {
-                    DispatchQueue.main.async {
-                        self.makeErrorToast(title: "Failed to send to Twitch")
-                    }
+        createTwitchApi(stream: stream).sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
+            if !ok {
+                DispatchQueue.main.async {
+                    self.makeErrorToast(title: "Failed to send to Twitch")
                 }
             }
+        }
     }
 
     func startAds(seconds: Int) {
@@ -240,9 +232,12 @@ extension Model {
     }
 
     func banTwitchUser(user _: String, userId: String, duration: Int?) {
-        createTwitchApi(stream: stream)
-            .banUser(broadcasterId: stream.twitchChannelId, userId: userId, duration: duration) { _ in
-            }
+        createTwitchApi(stream: stream).banUser(
+            broadcasterId: stream.twitchChannelId,
+            userId: userId,
+            duration: duration
+        ) { _ in
+        }
     }
 
     func deleteTwitchChatMessage(messageId: String) {
@@ -252,17 +247,16 @@ extension Model {
     }
 
     func raidTwitchChannel(channelName: String, channelId: String) {
-        createTwitchApi(stream: stream)
-            .startRaid(broadcasterId: stream.twitchChannelId, toBroadcasterId: channelId) {
-                switch $0 {
-                case .success:
-                    self.makeToast(title: String(localized: "Raiding \(channelName) in 90 seconds!"))
-                case .error:
-                    self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
-                case .authError:
-                    break
-                }
+        createTwitchApi(stream: stream).startRaid(broadcasterId: stream.twitchChannelId, toBroadcasterId: channelId) {
+            switch $0 {
+            case .success:
+                self.makeToast(title: String(localized: "Raiding \(channelName) in 90 seconds!"))
+            case .error:
+                self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
+            case .authError:
+                break
             }
+        }
     }
 
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {
@@ -272,14 +266,13 @@ extension Model {
     }
 
     private func getStream() {
-        createTwitchApi(stream: stream)
-            .getStream(userId: stream.twitchChannelId) { data in
-                guard let data else {
-                    self.numberOfTwitchViewers = nil
-                    return
-                }
-                self.numberOfTwitchViewers = data.viewer_count
+        createTwitchApi(stream: stream).getStream(userId: stream.twitchChannelId) { data in
+            guard let data else {
+                self.numberOfTwitchViewers = nil
+                return
             }
+            self.numberOfTwitchViewers = data.viewer_count
+        }
     }
 }
 
