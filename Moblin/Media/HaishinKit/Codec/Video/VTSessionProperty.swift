@@ -6,7 +6,6 @@ struct VTSessionProperty {
     let value: AnyObject
 }
 
-// periphery:ignore
 struct VTSessionPropertyKey {
     static let profileLevel = VTSessionPropertyKey(value: kVTCompressionPropertyKey_ProfileLevel)
     static let h264EntropyMode = VTSessionPropertyKey(value: kVTCompressionPropertyKey_H264EntropyMode)

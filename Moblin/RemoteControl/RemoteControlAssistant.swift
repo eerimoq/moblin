@@ -120,7 +120,6 @@ class RemoteControlAssistant: NSObject {
         }
     }
 
-    // periphery:ignore
     func setRecord(on: Bool, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setRecord(on: on), onSuccess: onSuccess)
     }

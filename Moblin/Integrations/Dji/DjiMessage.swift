@@ -90,7 +90,6 @@ class DjiMessage {
         return writer.data
     }
 
-    // periphery:ignore
     func format() -> String {
         return "target: \(target), id: \(id), type: \(type) \(payload.hexString())"
     }

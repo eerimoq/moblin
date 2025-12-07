@@ -92,7 +92,6 @@ private struct NotificationChannelFollowMessage: Decodable {
     var payload: NotificationChannelFollowPayload
 }
 
-// periphery:ignore
 struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEventReward: Decodable {
     var id: String
     var title: String
@@ -100,7 +99,6 @@ struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEventRewa
     var prompt: String
 }
 
-// periphery:ignore
 struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent: Decodable {
     var id: String
     var user_id: String
@@ -115,12 +113,10 @@ struct TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent: De
 }
 
 private struct NotificationChannelPointsCustomRewardRedemptionAddPayload: Decodable {
-    // periphery:ignore
     var event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
 }
 
 private struct NotificationChannelPointsCustomRewardRedemptionAddMessage: Decodable {
-    // periphery:ignore
     var payload: NotificationChannelPointsCustomRewardRedemptionAddPayload
 }
 
@@ -155,9 +151,7 @@ struct TwitchEventSubChannelHypeTrainBeginEvent: Decodable {
     var progress: Int
     var goal: Int
     var level: Int
-    // periphery:ignore
     var started_at: String
-    // periphery:ignore
     var expires_at: String
 }
 
@@ -173,9 +167,7 @@ struct TwitchEventSubChannelHypeTrainProgressEvent: Decodable {
     var progress: Int
     var goal: Int
     var level: Int
-    // periphery:ignore
     var started_at: String
-    // periphery:ignore
     var expires_at: String
 }
 
@@ -189,9 +181,7 @@ private struct NotificationChannelHypeTrainProgressMessage: Decodable {
 
 struct TwitchEventSubChannelHypeTrainEndEvent: Decodable {
     var level: Int
-    // periphery:ignore
     var started_at: String
-    // periphery:ignore
     var ended_at: String
 }
 

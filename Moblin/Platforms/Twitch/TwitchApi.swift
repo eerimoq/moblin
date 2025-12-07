@@ -37,14 +37,12 @@ struct TwitchApiStreamKey: Decodable {
     let data: [TwitchApiStreamKeyData]
 }
 
-// periphery:ignore
 struct TwitchApiUrls: Decodable {
     let url_1x: String
     let url_2x: String
     let url_4x: String
 }
 
-// periphery:ignore
 struct TwitchApiChannelPointsCustomRewardsData: Decodable {
     let id: String
     let title: String
@@ -54,7 +52,6 @@ struct TwitchApiChannelPointsCustomRewardsData: Decodable {
     let background_color: String
 }
 
-// periphery:ignore
 struct TwitchApiChannelPointsCustomRewards: Decodable {
     let data: [TwitchApiChannelPointsCustomRewardsData]
 }
@@ -70,9 +67,7 @@ struct TwitchApiChannelInformation: Decodable {
 
 struct TwitchApiStartCommercialData: Decodable {
     let message: String
-    // periphery:ignore
     let length: Int
-    // periphery:ignore
     let retry_after: Int
 }
 
@@ -120,9 +115,7 @@ struct TwitchApiSearchChannels: Decodable {
 }
 
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
-    // periphery:ignore
     let user_id: String
-    // periphery:ignore
     let user_login: String
     let tier: String
 
@@ -135,7 +128,6 @@ struct TwitchApiGetBroadcasterSubscriptions: Decodable {
     let data: [TwitchApiGetBroadcasterSubscriptionsData]
 }
 
-// periphery:ignore
 struct TwitchApiGetCheermotesDataTiersImagesThemeKind: Decodable {
     let two: String
 
@@ -144,7 +136,6 @@ struct TwitchApiGetCheermotesDataTiersImagesThemeKind: Decodable {
     }
 }
 
-// periphery:ignore
 struct TwitchApiGetCheermotesDataTiersImagesTheme: Decodable {
     let static_: TwitchApiGetCheermotesDataTiersImagesThemeKind
 
@@ -153,13 +144,11 @@ struct TwitchApiGetCheermotesDataTiersImagesTheme: Decodable {
     }
 }
 
-// periphery:ignore
 struct TwitchApiGetCheermotesDataTiersImages: Decodable {
     let dark: TwitchApiGetCheermotesDataTiersImagesTheme
     let light: TwitchApiGetCheermotesDataTiersImagesTheme
 }
 
-// periphery:ignore
 struct TwitchApiGetCheermotesDataTier: Decodable {
     let min_bits: Int
     let id: String
@@ -167,13 +156,11 @@ struct TwitchApiGetCheermotesDataTier: Decodable {
     let images: TwitchApiGetCheermotesDataTiersImages
 }
 
-// periphery:ignore
 struct TwitchApiGetCheermotesData: Decodable {
     let prefix: String
     let tiers: [TwitchApiGetCheermotesDataTier]
 }
 
-// periphery:ignore
 struct TwitchApiGetCheermotes: Decodable {
     let data: [TwitchApiGetCheermotesData]
 }

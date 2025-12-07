@@ -25,10 +25,8 @@ private let vectorCharacteristicId = CBUUID(string: "2A64")
 // private let featureCharacteristicId = CBUUID(string: "2A65")
 
 private let measurementPedalPowerBalanceFlagIndex = 0
-// periphery:ignore
 private let measurementPedalPowerBalanceReferenceIndex = 1
 private let measurementAccumulatedTorqueFlagIndex = 2
-// periphery:ignore
 private let measurementAccumulatedTorqueSourceIndex = 3
 private let measurementWheelRevolutionDataFlagIndex = 4
 private let measurementCrankRevolutionDataFlagIndex = 5
@@ -38,7 +36,6 @@ private let measurementExtremeAnglesFlagIndex = 8
 private let measurementTopDeadSpotAngleFlagIndex = 9
 private let measurementBottomDeadSpotAngleFlagIndex = 10
 private let measurementAccumulatedEnergyFlagIndex = 11
-// periphery:ignore
 private let measurementOffsetCompensationIndicatorFlagIndex = 12
 
 enum CyclingPowerPedalPowerBalanceReference: UInt8 {
@@ -53,35 +50,21 @@ enum CyclingPowerAccumulatedTorqueSource: UInt8 {
 
 struct CyclingPowerMeasurement {
     var instantaneousPower: UInt16 = 0
-    // periphery:ignore
     var pedalPowerBalance: UInt8?
-    // periphery:ignore
     var pedalPowerBalanceReference: CyclingPowerPedalPowerBalanceReference?
-    // periphery:ignore
     var accumulatedTorque: UInt16?
-    // periphery:ignore
     var accumulatedTorqueSource: CyclingPowerAccumulatedTorqueSource?
-    // periphery:ignore
     var cumulativeWheelRevolutions: UInt32?
-    // periphery:ignore
     var lastWheelEventTime: UInt16?
     var cumulativeCrankRevolutions: UInt16?
     var lastCrankEventTime: UInt16?
-    // periphery:ignore
     var maximumForceMagnitude: UInt16?
-    // periphery:ignore
     var minimumForceMagnitude: UInt16?
-    // periphery:ignore
     var maximumTorqueMagnitude: UInt16?
-    // periphery:ignore
     var minimumTorqueMagnitude: UInt16?
-    // periphery:ignore
     var extremeAngles: UInt16?
-    // periphery:ignore
     var topDeadSpotAngle: UInt16?
-    // periphery:ignore
     var bottomDeadSpotAngle: UInt16?
-    // periphery:ignore
     var accumulatedEnergy: UInt16?
 
     init(value: Data) throws {
@@ -140,17 +123,11 @@ enum CyclingPowerInstantaneousMeasurementDirection: UInt8 {
 }
 
 struct CyclingPowerVector {
-    // periphery:ignore
     var cumulativeCrankRevolutions: UInt16?
-    // periphery:ignore
     var lastCrankEventTime: UInt16?
-    // periphery:ignore
     var firstCrankMeasurementAngle: UInt16?
-    // periphery:ignore
     var instantaneousForceMagnitudes: [UInt16]?
-    // periphery:ignore
     var instantaneousTorqueMagnitudes: [UInt16]?
-    // periphery:ignore
     var instantaneousMeasurementDirection: CyclingPowerInstantaneousMeasurementDirection?
 
     init(value: Data) throws {

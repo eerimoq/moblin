@@ -32,7 +32,6 @@ enum WatchMessageToWatch: String {
         ]
     }
 
-    // periphery:ignore
     static func unpack(_ message: [String: Any]) -> (WatchMessageToWatch, Any)? {
         guard let type = message["type"] as? String else {
             return nil
@@ -64,7 +63,6 @@ enum WatchMessageFromWatch: String {
     case instantReplay
     case saveReplay
 
-    // periphery:ignore
     static func pack(type: WatchMessageFromWatch, data: Any) -> [String: Any] {
         return [
             "type": type.rawValue,
@@ -86,13 +84,11 @@ enum WatchMessageFromWatch: String {
     }
 }
 
-// periphery:ignore
 struct WatchProtocolChatSegment: Codable {
     var text: String?
     var url: String?
 }
 
-// periphery:ignore
 enum WatchProtocolChatHighlightKind: Codable {
     case reply
     case redemption

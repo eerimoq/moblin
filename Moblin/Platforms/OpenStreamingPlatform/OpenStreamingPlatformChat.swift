@@ -17,7 +17,6 @@ private struct MessageContainer: Codable {
     let message: Message
 }
 
-// periphery:ignore
 private struct Open: Codable, DynamicNodeEncoding {
     let xmlns: String
     let to: String?
@@ -36,7 +35,6 @@ private struct OpenContainer: Codable {
 
 private struct Success: Codable {}
 
-// periphery:ignore
 private struct SuccessContainer: Codable {
     let success: Success
 }
@@ -49,12 +47,10 @@ private struct Iq: Codable {
     var bind: IqBind
 }
 
-// periphery:ignore
 private struct IqContainer: Codable {
     let iq: Iq
 }
 
-// periphery:ignore
 private struct Auth: Codable, DynamicNodeEncoding {
     let xmlns: String
     let mechanism: String
@@ -76,12 +72,10 @@ private struct Auth: Codable, DynamicNodeEncoding {
     }
 }
 
-// periphery:ignore
 private struct Mechanisms: Codable {
     let mechanism: [String]
 }
 
-// periphery:ignore
 private struct Features: Codable {
     let mechanisms: Mechanisms?
 }

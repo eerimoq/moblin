@@ -17,7 +17,6 @@ private enum CatPrinterCommandId: UInt8 {
     case setDrawMode = 0xBE
 }
 
-// periphery:ignore
 struct CatPrinterDeviceState {
     let noPaper: Bool
     let coverIsOpen: Bool

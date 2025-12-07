@@ -146,18 +146,15 @@ private enum EventType: String, Codable {
     case inputMuteStateChanged = "InputMuteStateChanged"
 }
 
-// periphery:ignore
 private struct Identify: Codable {
     let rpcVersion: Int
     let authentication: String?
 }
 
-// periphery:ignore
 private struct Identified: Codable {
     let negotiatedRpcVersion: Int
 }
 
-// periphery:ignore
 private struct Reidentify: Codable {
     let eventSubscriptions: UInt64
 }
@@ -184,7 +181,6 @@ struct GetSceneListResponse: Decodable {
     let scenes: [GetSceneListResponseScene]
 }
 
-// periphery:ignore
 struct GetSceneItemList: Codable {
     let sceneName: String
 }
@@ -199,9 +195,7 @@ struct GetSceneItemListResponse: Decodable {
 }
 
 struct GetSpecialInputsResponse: Decodable {
-    // periphery:ignore
     let desktop1: String?
-    // periphery:ignore
     let desktop2: String?
     let mic1: String?
     let mic2: String?
@@ -234,7 +228,6 @@ struct GetInputListResponse: Decodable {
     let inputs: [GetInputListResponseInput]
 }
 
-// periphery:ignore
 struct SetCurrentProgramSceneRequest: Codable {
     let sceneName: String
 }
@@ -247,7 +240,6 @@ struct GetRecordStatusResponse: Codable {
     let outputActive: Bool
 }
 
-// periphery:ignore
 struct GetSourceScreenshot: Codable {
     let sourceName: String
     let imageFormat: String
@@ -259,13 +251,11 @@ struct GetSourceScreenshotResponse: Codable {
     let imageData: String
 }
 
-// periphery:ignore
 struct SetInputAudioSyncOffset: Codable {
     let inputName: String
     let inputAudioSyncOffset: Int
 }
 
-// periphery:ignore
 struct GetInputAudioSyncOffset: Codable {
     let inputName: String
 }
@@ -274,14 +264,12 @@ struct GetInputAudioSyncOffsetResponse: Codable {
     let inputAudioSyncOffset: Int
 }
 
-// periphery:ignore
 struct SetSceneItemEnabled: Codable {
     let sceneName: String
     let sceneItemId: Int
     let sceneItemEnabled: Bool
 }
 
-// periphery:ignore
 struct GetSceneItemId: Codable {
     let sceneName: String
     let sourceName: String
@@ -289,19 +277,16 @@ struct GetSceneItemId: Codable {
 
 struct InputSettings: Codable {}
 
-// periphery:ignore
 struct SetInputSettings: Codable {
     let inputName: String
     let inputSettings: InputSettings
 }
 
-// periphery:ignore
 struct SetInputMute: Codable {
     let inputName: String
     let inputMuted: Bool
 }
 
-// periphery:ignore
 struct GetInputMute: Codable {
     let inputName: String
 }

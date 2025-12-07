@@ -143,7 +143,6 @@ extension [AvcNalUnit] {
 
 // vui_parameters_present_flag must be true in SPS for this to work as
 // VUI parameters contains pic_struct_present_flag, which must be true.
-// periphery:ignore
 func packSeiPictureTiming() -> Data {
     let picStruct: UInt8 = 0
     let clockTimestampFlag = true

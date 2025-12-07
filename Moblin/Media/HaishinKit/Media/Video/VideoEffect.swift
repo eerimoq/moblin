@@ -7,9 +7,7 @@ public struct VideoEffectInfo {
     let sceneVideoSourceId: UUID
     let faceDetectionJobs: [FaceDetectionJob]
     let faceDetections: [UUID: [VNFaceObservation]]
-    // periphery:ignore
     let presentationTimeStamp: CMTime
-    // periphery:ignore
     let videoUnit: VideoUnit
 
     func sceneFaceDetections() -> [VNFaceObservation]? {

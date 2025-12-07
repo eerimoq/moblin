@@ -54,7 +54,6 @@ class MoblinSettingsUrlStreamKick: Codable {
 class MoblinSettingsUrlStream: Codable {
     var name: String
     var url: String
-    // periphery:ignore
     var enabled: Bool?
     var selected: Bool?
     var video: MoblinSettingsUrlStreamVideo?

@@ -14,7 +14,6 @@ struct SubscriberBadge: Codable {
 }
 
 struct KickLivestream: Codable {
-    // periphery:ignore
     let id: Int
     let viewers: Int
     let session_title: String?
@@ -30,7 +29,6 @@ struct KickChannelUser: Codable {
 }
 
 struct KickChannel: Codable {
-    // periphery:ignore
     let slug: String
     let chatroom: KickChatroom
     let livestream: KickLivestream?
