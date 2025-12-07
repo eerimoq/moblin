@@ -4,6 +4,10 @@ private func moblinScript() -> String {
     return loadStringResource(name: "moblin", ext: "js")
 }
 
+private enum PublishMessage: Codable {
+    case videoPlaying(value: Bool)
+}
+
 private enum SubscribeTopic: Codable {
     case chat(prefix: String?)
 }
@@ -23,6 +27,8 @@ private struct ChatMessage: Codable {
 }
 
 private enum MessageToMoblin: Codable {
+    case ping
+    case publish(message: PublishMessage)
     case subscribe(topic: SubscribeTopic)
 
     func toJson() -> String? {
@@ -66,6 +72,16 @@ private class Subscriptions {
 class BrowserEffectServer: NSObject {
     weak var webView: WKWebView?
     private let subscriptions = Subscriptions()
+    private var videoPlaying: Bool = false
+    private let pingTimer = SimpleTimer(queue: .main)
+    private var gotPing = true
+
+    override init() {
+        super.init()
+        pingTimer.startPeriodic(interval: 5) { [weak self] in
+            self?.handlePingTimer()
+        }
+    }
 
     func addScript(configuration: WKWebViewConfiguration) {
         configuration.userContentController.addUserScript(.init(
@@ -88,6 +104,17 @@ class BrowserEffectServer: NSObject {
         send(message: .message(data: .chat(message: .init(message: post))))
     }
 
+    func isVideoPlaying() -> Bool {
+        return videoPlaying
+    }
+
+    private func handlePingTimer() {
+        if !gotPing {
+            videoPlaying = false
+        }
+        gotPing = false
+    }
+
     private func send(message: MessageToBrowser) {
         do {
             let message = try message.toJson()
@@ -103,11 +130,26 @@ class BrowserEffectServer: NSObject {
     private func handleMessage(message: String) throws {
         do {
             switch try MessageToMoblin.fromJson(data: message) {
+            case .ping:
+                handlePing()
+            case let .publish(message: message):
+                handlePublish(message: message)
             case let .subscribe(topic: topic):
                 handleSubscribe(topic: topic)
             }
         } catch {
             logger.info("browser-effect-server: Decode failed with error: \(error)")
+        }
+    }
+
+    private func handlePing() {
+        gotPing = true
+    }
+
+    private func handlePublish(message: PublishMessage) {
+        switch message {
+        case let .videoPlaying(videoPlaying):
+            self.videoPlaying = videoPlaying
         }
     }
 

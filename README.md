@@ -350,10 +350,10 @@ moblin.onmessage = (message) => {
 ## Specification
 
 Topics to subscribe to are defined by `SubscribeTopic` in
-[BrowserEffectServer.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/VideoEffects/BrowserEffect/BrowserEffectServer.swift).
+[BrowserEffectServer.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/VideoEffects/Browser/BrowserEffectServer.swift).
 
 Messages passed to `onmessage` are defined by `Message` in
-[BrowserEffectServer.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/VideoEffects/BrowserEffect/BrowserEffectServer.swift).
+[BrowserEffectServer.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/VideoEffects/Browser/BrowserEffectServer.swift).
 
 # Similar software
 

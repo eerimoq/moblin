@@ -1,6 +1,13 @@
 class Moblin {
   constructor() {
+      this.timer = setInterval(() => {
+          this.send({ping: {}})
+      }, 2000);
     this.onmessage = null;
+  }
+
+  publish(message) {
+      this.send({ publish: { message: message } });
   }
 
   subscribe(topic) {

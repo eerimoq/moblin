@@ -201,6 +201,7 @@ final class BrowserEffect: VideoEffect {
         guard !stopped else {
             return
         }
+        let fps = server.isVideoPlaying() ? 30 : self.fps
         snapshotTimer.startSingleShot(timeout: Double(1 / fps)) { [weak self] in
             guard let self else {
                 return
