@@ -84,11 +84,9 @@ function moblinVideoPlayingUpdated() {
     return;
   }
   moblinPublishedVideoPlaying = videoPlaying;
-  try {
-    moblin.publish({
-      videoPlaying: { value: videoPlaying },
-    });
-  } catch {}
+  moblin.publish({
+    videoPlaying: { value: videoPlaying },
+  });
 }
 
 function moblinUpdateVideosPlaysInline() {
