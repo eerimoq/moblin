@@ -180,6 +180,7 @@ final class BrowserEffect: VideoEffect {
         if !isLoaded {
             startLoadingTime = .now
             webView.load(URLRequest(url: url))
+            server.enable()
             isLoaded = true
         }
         stopped = false
@@ -191,6 +192,7 @@ final class BrowserEffect: VideoEffect {
             self.snapshot = nil
         }
         webView.loadHTMLString("<html></html>", baseURL: nil)
+        server.disable()
         isLoaded = false
     }
 

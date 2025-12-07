@@ -83,9 +83,16 @@ class BrowserEffectServer: NSObject {
             forMainFrameOnly: false
         ))
         configuration.userContentController.add(self, name: "moblin")
+    }
+
+    func enable() {
         pingTimer.startPeriodic(interval: 5) { [weak self] in
             self?.handlePingTimer()
         }
+    }
+
+    func disable() {
+        pingTimer.stop()
     }
 
     func sendChatMessage(post: ChatPost) {
