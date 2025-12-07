@@ -80,7 +80,7 @@ final class RtmpCommandMessage: RtmpMessage {
                         try arguments.append(decoder.decode())
                     }
                 } catch {
-                    logger.error("rtmp: \(error)")
+                    logger.info("rtmp: \(error)")
                 }
             }
             super.encoded = newValue

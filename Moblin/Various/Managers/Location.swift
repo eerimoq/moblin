@@ -90,7 +90,7 @@ extension Location: CLLocationManagerDelegate {
     }
 
     func locationManager(_: CLLocationManager, didFailWithError error: Error) {
-        logger.error("location: Error \(error)")
+        logger.info("location: Error \(error)")
     }
 
     func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

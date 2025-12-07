@@ -120,7 +120,7 @@ class SrtlaServer {
     private func startListener() {
         logger.info("srtla-server: Setup listener")
         guard let srtlaPort = NWEndpoint.Port(rawValue: settings.srtlaPort) else {
-            logger.error("srtla-server: Bad listener port \(settings.srtlaPort)")
+            logger.info("srtla-server: Bad listener port \(settings.srtlaPort)")
             return
         }
         let parameters = NWParameters(dtls: .none, udp: .init())
@@ -129,7 +129,7 @@ class SrtlaServer {
         do {
             listener = try NWListener(using: parameters)
         } catch {
-            logger.error("srtla-server: Failed to create listener with error \(error)")
+            logger.info("srtla-server: Failed to create listener with error \(error)")
             return
         }
         listener?.stateUpdateHandler = handleListenerStateChange(to:)
@@ -176,7 +176,7 @@ class SrtlaServer {
 
     private func handlePacket(connection: NWConnection, packet: Data) -> Bool {
         guard packet.count >= srtControlTypeSize else {
-            logger.error("srtla-server: Packet too short (\(packet.count).")
+            logger.info("srtla-server: Packet too short (\(packet.count).")
             return false
         }
         if !isSrtDataPacket(packet: packet) {
@@ -210,7 +210,7 @@ class SrtlaServer {
     private func handleSrtlaReg1(connection: NWConnection, packet: Data) {
         logger.debug("srtla-server: Got reg 1 (create group)")
         guard packet.count == 258 else {
-            logger.warning("srtla-server: Wrong reg 1 packet length \(packet.count)")
+            logger.info("srtla-server: Wrong reg 1 packet length \(packet.count)")
             return
         }
         let groupId = packet[srtControlTypeSize ..< srtControlTypeSize + 128] + Data.random(length: 128)
@@ -224,7 +224,7 @@ class SrtlaServer {
     private func handleSrtlaReg2(connection: NWConnection, packet: Data) -> Bool {
         logger.debug("srtla-server: Got reg 2 (register connection)")
         guard packet.count == 258 else {
-            logger.warning("srtla-server: Wrong reg 2 packet length \(packet.count)")
+            logger.info("srtla-server: Wrong reg 2 packet length \(packet.count)")
             return false
         }
         let groupId = packet[srtControlTypeSize...]

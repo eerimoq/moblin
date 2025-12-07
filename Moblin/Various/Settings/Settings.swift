@@ -1807,7 +1807,7 @@ final class Settings {
             storage = try realDatabase.toString()
             insertSensitiveData(toDatabase: realDatabase, fromDatabase: database)
         } catch {
-            logger.error("settings: Failed to store.")
+            logger.info("settings: Failed to store.")
         }
     }
 

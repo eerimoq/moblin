@@ -55,7 +55,7 @@ extension Model {
             }
             logger.debug("cosmetics: Got \(products.count) product(s) from App Store")
         } catch {
-            logger.error("cosmetics: Failed to get products from App Store: \(error)")
+            logger.info("cosmetics: Failed to get products from App Store: \(error)")
         }
     }
 
@@ -149,7 +149,7 @@ extension Model {
         case .userCancelled, .pending:
             logger.info("cosmetics: Purchase not done yet")
         default:
-            logger.warning("cosmetics: What happend when buying? \(result)")
+            logger.info("cosmetics: What happend when buying? \(result)")
         }
     }
 
@@ -159,7 +159,7 @@ extension Model {
 
     func updateIconImageFromDatabase() {
         if !isInMyIcons(id: database.iconImage) {
-            logger.warning("Database icon image \(database.iconImage) is not mine")
+            logger.info("Database icon image \(database.iconImage) is not mine")
             database.iconImage = plainIcon.id
         }
         cosmetics.iconImage = database.iconImage

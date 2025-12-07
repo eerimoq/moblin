@@ -753,7 +753,7 @@ final class Media: NSObject {
 
     func setCameraZoomLevel(device: AVCaptureDevice?, level: Float, rate: Float?) -> Float? {
         guard let device else {
-            logger.warning("Device not ready to zoom")
+            logger.info("Device not ready to zoom")
             return nil
         }
         let level = level.clamped(to: 1.0 ... Float(device.activeFormat.videoMaxZoomFactor))
@@ -766,14 +766,14 @@ final class Media: NSObject {
             }
             device.unlockForConfiguration()
         } catch let error as NSError {
-            logger.warning("While locking device for ramp: \(error)")
+            logger.info("While locking device for ramp: \(error)")
         }
         return level
     }
 
     func stopCameraZoomLevel(device: AVCaptureDevice?) -> Float? {
         guard let device else {
-            logger.warning("Device not ready to zoom")
+            logger.info("Device not ready to zoom")
             return nil
         }
         do {
@@ -781,7 +781,7 @@ final class Media: NSObject {
             device.videoZoomFactor = device.videoZoomFactor
             device.unlockForConfiguration()
         } catch let error as NSError {
-            logger.warning("While locking device for stop: \(error)")
+            logger.info("While locking device for stop: \(error)")
         }
         return Float(device.videoZoomFactor)
     }

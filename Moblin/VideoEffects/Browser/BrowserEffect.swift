@@ -217,13 +217,13 @@ final class BrowserEffect: VideoEffect {
                 }
                 self.startTakeSnapshots()
                 if let error {
-                    logger.warning("Browser snapshot error: \(error)")
+                    logger.info("Browser snapshot error: \(error)")
                 } else if let image {
                     processorPipelineQueue.async {
                         self.snapshot = CIImage(image: image)
                     }
                 } else {
-                    logger.warning("No browser image")
+                    logger.info("No browser image")
                 }
             }
         }

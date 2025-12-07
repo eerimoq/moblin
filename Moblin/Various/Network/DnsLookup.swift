@@ -32,7 +32,7 @@ func performDnsLookup(host: String, family: DnsLookupFamily) -> String? {
     let status = getaddrinfo(host, nil, &hints, &infoPointer)
     if status != 0 {
         if let errorString = gai_strerror(status) {
-            logger.error("dns: Lookup of \(host) failed with \(String(cString: errorString))")
+            logger.info("dns: Lookup of \(host) failed with \(String(cString: errorString))")
         }
         return nil
     }

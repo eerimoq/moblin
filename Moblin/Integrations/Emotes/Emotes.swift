@@ -61,7 +61,7 @@ class Emotes {
                     return
                 }
                 if let error = bttvError ?? ffzError ?? seventvError {
-                    logger.warning("emotes: \(error)")
+                    logger.info("emotes: \(error)")
                     if firstRetry {
                         onError(error, String(localized: "Retrying later"))
                     }

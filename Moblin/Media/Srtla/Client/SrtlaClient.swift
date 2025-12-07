@@ -88,7 +88,7 @@ class SrtlaClient: NSObject {
     func start(uri: String, timeout: Double, dnsLookupStrategy: SettingsDnsLookupStrategy) {
         srtlaClientQueue.async {
             guard let url = URL(string: uri), var host = url.host, let port = url.port else {
-                logger.error("srtla: Malformed URL")
+                logger.info("srtla: Malformed URL")
                 return
             }
             if IPv4Address(host) == nil, IPv6Address(host) == nil {

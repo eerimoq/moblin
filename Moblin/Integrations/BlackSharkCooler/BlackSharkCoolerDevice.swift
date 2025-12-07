@@ -195,7 +195,7 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         @unknown default:
             coolingPowerTarget = 100
             fanSpeedTarget = 100
-            logger.warning("black-shark-cooler-device: Thermal state is unknown value")
+            logger.info("black-shark-cooler-device: Thermal state is unknown value")
         }
         // Since we do not know the fan and cooler-state we have to assume that it can be out of sync. sending the
         // commands to update the cooling power and fan speed on every interval will make sure that its in sync.

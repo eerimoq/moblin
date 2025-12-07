@@ -53,7 +53,7 @@ final class RtmpDataMessage: RtmpMessage {
                         try arguments.append(decoder.decode())
                     }
                 } catch {
-                    logger.error("\(decoder)")
+                    logger.info("rtmp-data-message: \(decoder)")
                 }
             }
             super.encoded = newValue

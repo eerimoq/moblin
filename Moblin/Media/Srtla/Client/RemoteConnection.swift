@@ -346,7 +346,7 @@ class RemoteConnection {
                         return
                     }
                     if let error {
-                        logger.warning("srtla: \(self.typeString): Receive \(error)")
+                        logger.info("srtla: \(self.typeString): Receive \(error)")
                         return
                     }
                     self.receivePackets()
@@ -448,7 +448,7 @@ class RemoteConnection {
     private func handleSrtlaReg2(packet: Data) {
         logger.debug("srtla: \(typeString): Got reg 2 (group created)")
         guard packet.count == 258 else {
-            logger.warning("srtla: \(typeString): Wrong reg 2 packet length \(packet.count)")
+            logger.info("srtla: \(typeString): Wrong reg 2 packet length \(packet.count)")
             return
         }
         guard groupId.count == 256 else {
@@ -456,7 +456,7 @@ class RemoteConnection {
         }
         let groupIdRange = 0 ..< groupId.count / 2
         guard packet.advanced(by: srtControlTypeSize)[groupIdRange] == groupId[groupIdRange] else {
-            logger.warning("srtla: \(typeString): Wrong group id in reg 2")
+            logger.info("srtla: \(typeString): Wrong group id in reg 2")
             return
         }
         delegate?.remoteConnectionOnReg2(groupId: packet.advanced(by: srtControlTypeSize))
@@ -499,7 +499,7 @@ class RemoteConnection {
         case .ack:
             handleSrtlaAck(packet: packet)
         case .reg1:
-            logger.error("srtla: \(typeString): Received register 1 packet")
+            logger.info("srtla: \(typeString): Received register 1 packet")
         case .reg2:
             handleSrtlaReg2(packet: packet)
         case .reg3:
@@ -545,7 +545,7 @@ class RemoteConnection {
 
     private func handlePacketFromClient(packet: Data) {
         guard packet.count >= srtControlTypeSize else {
-            logger.error("srtla: \(typeString): Packet too short (\(packet.count) bytes.")
+            logger.info("srtla: \(typeString): Packet too short (\(packet.count) bytes.")
             return
         }
         latestReceivedTime = .now

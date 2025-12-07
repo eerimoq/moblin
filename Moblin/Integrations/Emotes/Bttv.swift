@@ -36,7 +36,7 @@ func fetchBttvEmotes(platform: EmotesPlatform,
 
 private func makeUrl(emote: BttvEmote) -> URL? {
     guard let url = URL(string: "https://cdn.betterttv.net/emote/\(emote.id)/3x") else {
-        logger.error("emotes: Faield to create URL for BTTV emote \(emote.code)")
+        logger.info("emotes: Failed to create URL for BTTV emote \(emote.code)")
         return nil
     }
     return url
@@ -74,10 +74,7 @@ private func fetchChannelEmotes(platform: EmotesPlatform,
     }
     let (data, response) = try await httpGet(from: url)
     if response.isNotFound {
-        logger
-            .warning(
-                "emotes: \(platform): \(channelId): BTTV channel emotes not found (HTTP 404)"
-            )
+        logger.info("emotes: \(platform): \(channelId): BTTV channel emotes not found (HTTP 404)")
         return [:]
     }
     if !response.isSuccessful {

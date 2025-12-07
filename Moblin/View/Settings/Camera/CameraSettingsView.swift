@@ -104,9 +104,9 @@ private struct CameraSettingsPngLutsView: View {
                             selectedImageItem = nil
                         }
                     case .success(nil):
-                        logger.error("widget: image is nil")
+                        logger.info("widget: image is nil")
                     case let .failure(error):
-                        logger.error("widget: image error: \(error)")
+                        logger.info("widget: image error: \(error)")
                     }
                 }
             }

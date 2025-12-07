@@ -75,7 +75,7 @@ class SrtlaServerClientConnection {
 
     private func handlePacketFromClient(packet: Data) {
         guard packet.count >= srtControlTypeSize else {
-            logger.error("srtla-server-client: Packet too short (\(packet.count) bytes.")
+            logger.info("srtla-server-client: Packet too short (\(packet.count) bytes.")
             return
         }
         latestReceivedTime = .now

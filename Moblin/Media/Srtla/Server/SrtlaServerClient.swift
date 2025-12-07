@@ -124,7 +124,7 @@ class SrtlaServerClient {
                         return
                     }
                     if let error {
-                        logger.warning("srtla-server-client: Receive \(error)")
+                        logger.info("srtla-server-client: Receive \(error)")
                         return
                     }
                     self.receivePackets()

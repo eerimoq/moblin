@@ -88,7 +88,7 @@ class SrtServer {
         // Makes NAK too slow?
         let option = SrtSocketOption(rawValue: "lossmaxttl")!
         if !option.setOption(listenerSocket, value: "30") {
-            logger.error("srt-server: \(port): Failed to set lossmaxttl option.")
+            logger.info("srt-server: \(port): Failed to set lossmaxttl option.")
         }
     }
 

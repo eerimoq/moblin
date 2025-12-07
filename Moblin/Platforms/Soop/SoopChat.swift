@@ -235,7 +235,7 @@ final class SoopChat: NSObject {
 
     private func handlePostMessage(parts: [String]) async {
         guard parts.count > 5 else {
-            logger.error("soop: Bad post length")
+            logger.info("soop: Bad post length")
             return
         }
         let user = parts[5]

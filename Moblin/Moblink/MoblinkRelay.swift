@@ -209,7 +209,7 @@ private class Relay: NSObject {
             let parameters = NWParameters(dtls: .none, udp: options)
             streamerListener = try NWListener(using: parameters)
         } catch {
-            logger.error("moblink-relay: \(name): Failed to create streamer listener with error \(error)")
+            logger.info("moblink-relay: \(name): Failed to create streamer listener with error \(error)")
             reconnect(reason: "Failed to create listener")
             return
         }

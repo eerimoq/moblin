@@ -95,7 +95,7 @@ private struct CosmeticsSettingsMyIconsView: View {
         }
         UIApplication.shared.setAlternateIconName(iconImage) { error in
             if let error {
-                logger.error("Failed to change app icon with error \(error)")
+                logger.info("Failed to change app icon with error \(error)")
             }
         }
     }

@@ -97,7 +97,7 @@ class RtmpServer {
         do {
             listener = try NWListener(using: parameters)
         } catch {
-            logger.error("rtmp-server: Failed to create listener with error \(error)")
+            logger.info("rtmp-server: Failed to create listener with error \(error)")
             return
         }
         listener?.stateUpdateHandler = handleListenerStateChange(to:)

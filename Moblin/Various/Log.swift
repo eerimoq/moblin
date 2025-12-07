@@ -23,18 +23,6 @@ class EasyLogger {
         print(formattedMessage)
         handler?(formattedMessage)
     }
-
-    func warning(_ messsge: String) {
-        let formattedMessage = "\(makeTimestamp()) \(messsge)"
-        print(formattedMessage)
-        handler?(formattedMessage)
-    }
-
-    func error(_ messsge: String) {
-        let formattedMessage = "\(makeTimestamp()) \(messsge)"
-        print(formattedMessage)
-        handler?(formattedMessage)
-    }
 }
 
 let logger = EasyLogger()

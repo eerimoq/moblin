@@ -1616,7 +1616,7 @@ final class VideoUnit: NSObject {
             }
             device.unlockForConfiguration()
         } catch {
-            logger.error("Error while locking device: \(error)")
+            logger.info("Error while locking device: \(error)")
         }
     }
 
@@ -1700,7 +1700,7 @@ final class VideoUnit: NSObject {
             device.torchMode = torchMode
             device.unlockForConfiguration()
         } catch {
-            logger.error("while setting torch: \(error)")
+            logger.info("while setting torch: \(error)")
         }
     }
 

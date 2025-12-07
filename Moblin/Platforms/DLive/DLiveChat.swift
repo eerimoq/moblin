@@ -165,7 +165,7 @@ final class DLiveChat {
                 break
             }
         } catch {
-            logger.error("dlive: chat: Failed to handle message: \(error)")
+            logger.info("dlive: chat: Failed to handle message: \(error)")
         }
     }
 

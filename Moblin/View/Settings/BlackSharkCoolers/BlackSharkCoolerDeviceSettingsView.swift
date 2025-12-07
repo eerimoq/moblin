@@ -51,7 +51,7 @@ struct BlackSharkCoolerDeviceSettingsView: View {
         let blackSharkCoolerDevice = model.blackSharkCoolerDevices
             .first(where: { $0.key == device.bluetoothPeripheralId })?.value
         guard let blackSharkCoolerDevice else {
-            logger.error("Could not find phone cooler")
+            logger.info("Could not find phone cooler")
             return
         }
         blackSharkCoolerDevice.setLedColor(
@@ -65,7 +65,7 @@ struct BlackSharkCoolerDeviceSettingsView: View {
             .first(where: { $0.key == device.bluetoothPeripheralId })?
             .value
         else {
-            logger.error("Could not find phone cooler")
+            logger.info("Could not find phone cooler")
             return
         }
         if device.rgbLightEnabled {

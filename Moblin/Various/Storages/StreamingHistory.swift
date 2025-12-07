@@ -173,7 +173,7 @@ final class StreamingHistory {
         do {
             storage = try realDatabase.toString()
         } catch {
-            logger.error("streaming-history: Failed to store.")
+            logger.info("streaming-history: Failed to store.")
         }
     }
 

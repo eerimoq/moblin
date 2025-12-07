@@ -25,7 +25,7 @@ class MediaPlayerStorage {
         do {
             try fileManager.removeItem(at: makePath(id: id))
         } catch {
-            logger.error("media-player-storage: Remove failed with error \(error)")
+            logger.info("media-player-storage: Remove failed with error \(error)")
         }
     }
 }

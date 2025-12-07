@@ -147,7 +147,7 @@ class TeslaVehicle: NSObject {
         do {
             clientPrivateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: privateKeyPem)
         } catch {
-            logger.error("tesla-vehicle: Error \(error)")
+            logger.info("tesla-vehicle: Error \(error)")
             return nil
         }
         clientPublicKeyBytes = clientPrivateKey.publicKey.toBytes()
@@ -581,7 +581,7 @@ extension TeslaVehicle: CBCentralManagerDelegate {
 extension TeslaVehicle: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
         guard let peripheralServices = peripheral.services else {
-            logger.error("tesla-vehicle: No services found")
+            logger.info("tesla-vehicle: No services found")
             return
         }
         for service in peripheralServices {

@@ -2362,11 +2362,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             .requestAuthorization(for: .readWrite) { authorizationStatus in
                 switch authorizationStatus {
                 case .limited:
-                    logger.warning("photo-auth: limited authorization granted")
+                    logger.info("photo-auth: limited authorization granted")
                 case .authorized:
                     logger.info("photo-auth: authorization granted")
                 default:
-                    logger.error("photo-auth: Status \(authorizationStatus)")
+                    logger.info("photo-auth: Status \(authorizationStatus)")
                 }
             }
     }

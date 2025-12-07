@@ -101,7 +101,7 @@ final class ReplaysStorage {
         do {
             storage = try realDatabase.toString()
         } catch {
-            logger.error("replays-storage: Failed to store.")
+            logger.info("replays-storage: Failed to store.")
         }
     }
 

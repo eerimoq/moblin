@@ -16,7 +16,7 @@ class LocalListener {
             parameters.acceptLocalOnly = true
             listener = try NWListener(using: parameters)
         } catch {
-            logger.error("srtla: local: Failed to create listener with error \(error)")
+            logger.info("srtla: local: Failed to create listener with error \(error)")
             return
         }
         listener.stateUpdateHandler = handleListenerStateChange(to:)

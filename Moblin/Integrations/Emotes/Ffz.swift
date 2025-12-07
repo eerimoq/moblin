@@ -77,7 +77,7 @@ private func fetchEmotes(url: String,
     }
     let (data, response) = try await httpGet(from: url)
     if response.isNotFound {
-        logger.warning("emotes: \(platform): FFZ emotes not found (HTTP 404)")
+        logger.info("emotes: \(platform): FFZ emotes not found (HTTP 404)")
         return [:]
     }
     if !response.isSuccessful {
@@ -85,10 +85,7 @@ private func fetchEmotes(url: String,
     }
     for emote in try JSONDecoder().decode([FfzEmote].self, from: data) {
         guard let url = makeUrl(emote: emote) else {
-            logger
-                .error(
-                    "emotes: \(platform): Failed to create URL for FFZ emote \(emote.code)"
-                )
+            logger.info("emotes: \(platform): Failed to create URL for FFZ emote \(emote.code)")
             continue
         }
         emotes[emote.code] = Emote(url: url)

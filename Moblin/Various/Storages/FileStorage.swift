@@ -31,7 +31,7 @@ class FileStorage {
         do {
             try fileManager.removeItem(at: makePath(id: id))
         } catch {
-            logger.error("file-storage: \(directory): Remove failed with error \(error)")
+            logger.info("file-storage: \(directory): Remove failed with error \(error)")
         }
     }
 
@@ -39,7 +39,7 @@ class FileStorage {
         do {
             try data.write(to: makePath(id: id))
         } catch {
-            logger.error("file-storage: \(directory): Write failed with error \(error)")
+            logger.info("file-storage: \(directory): Write failed with error \(error)")
         }
     }
 
@@ -47,7 +47,7 @@ class FileStorage {
         do {
             try write(id: id, data: Data(contentsOf: url))
         } catch {
-            logger.error("file-storage: \(directory): Write URL failed with error \(error)")
+            logger.info("file-storage: \(directory): Write URL failed with error \(error)")
         }
     }
 
@@ -55,7 +55,7 @@ class FileStorage {
         do {
             return try Data(contentsOf: makePath(id: id))
         } catch {
-            logger.error("image-storage: Read failed with error \(error)")
+            logger.info("image-storage: Read failed with error \(error)")
         }
         return nil
     }

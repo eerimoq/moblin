@@ -55,7 +55,7 @@ extension Model {
         guard
             let device = cameraDevice, device.isFocusPointOfInterestSupported
         else {
-            logger.warning("Tap to focus not supported for this camera")
+            logger.info("Tap to focus not supported for this camera")
             makeErrorToast(title: String(localized: "Tap to focus not supported for this camera"))
             return
         }
@@ -77,7 +77,7 @@ extension Model {
             camera.setManualFocusPoint(value: focusPoint)
             startMotionDetection()
         } catch let error as NSError {
-            logger.error("while locking device for focusPointOfInterest: \(error)")
+            logger.info("while locking device for focusPointOfInterest: \(error)")
         }
         camera.isFocusesLocked[device] = false
         camera.isFocusLocked = false
@@ -97,7 +97,7 @@ extension Model {
             device.unlockForConfiguration()
             camera.setManualFocusPoint(value: nil)
         } catch let error as NSError {
-            logger.error("while locking device for focusPointOfInterest: \(error)")
+            logger.info("while locking device for focusPointOfInterest: \(error)")
         }
         camera.isFocusesLocked[device] = false
         camera.isFocusLocked = false
@@ -116,7 +116,7 @@ extension Model {
             device.setFocusModeLocked(lensPosition: lensPosition)
             device.unlockForConfiguration()
         } catch let error as NSError {
-            logger.error("while locking device for manual focus: \(error)")
+            logger.info("while locking device for manual focus: \(error)")
         }
         camera.setManualFocusPoint(value: nil)
         camera.isFocusesLocked[device] = true
@@ -176,7 +176,7 @@ extension Model {
             device.exposureMode = .continuousAutoExposure
             device.unlockForConfiguration()
         } catch let error as NSError {
-            logger.error("while locking device for continuous auto exposure: \(error)")
+            logger.info("while locking device for continuous auto exposure: \(error)")
         }
         camera.isExposuresAndIsosLocked[device] = false
         camera.isExposureAndIsoLocked = false
@@ -234,7 +234,7 @@ extension Model {
             device.setExposureModeCustom(duration: exposure, iso: iso) { _ in }
             device.unlockForConfiguration()
         } catch let error as NSError {
-            logger.error("while locking device for manual exposure: \(error)")
+            logger.info("while locking device for manual exposure: \(error)")
         }
     }
 
@@ -304,7 +304,7 @@ extension Model {
             device.whiteBalanceMode = .continuousAutoWhiteBalance
             device.unlockForConfiguration()
         } catch let error as NSError {
-            logger.error("while locking device for continuous auto white balance: \(error)")
+            logger.info("while locking device for continuous auto white balance: \(error)")
         }
         camera.isWhiteBalancesLocked[device] = false
         camera.isWhiteBalanceLocked = false
@@ -323,7 +323,7 @@ extension Model {
             device.setWhiteBalanceModeLocked(with: factorToWhiteBalance(device: device, factor: factor))
             device.unlockForConfiguration()
         } catch let error as NSError {
-            logger.error("while locking device for manual white balance: \(error)")
+            logger.info("while locking device for manual white balance: \(error)")
         }
         camera.isWhiteBalancesLocked[device] = true
         camera.isWhiteBalanceLocked = true

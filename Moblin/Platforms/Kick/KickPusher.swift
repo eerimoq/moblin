@@ -355,11 +355,7 @@ final class KickPusher: NSObject {
                 logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
             }
         } catch {
-            logger
-                .error("""
-                kick: pusher: \(channelId): Failed to process \
-                message \"\(message)\" with error \(error)
-                """)
+            logger.info("kick: pusher: \(channelId): Failed to process message \"\(message)\" with error \(error)")
         }
     }
 

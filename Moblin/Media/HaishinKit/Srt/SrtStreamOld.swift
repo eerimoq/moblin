@@ -181,7 +181,7 @@ class SrtStreamOld {
     private func configure(_ binding: SrtSocketOption.Binding) -> Bool {
         let failures = SrtSocketOption.configure(socket, binding: binding, options: options)
         guard failures.isEmpty else {
-            logger.error("srt: configure failures: \(failures)")
+            logger.info("srt: configure failures: \(failures)")
             return false
         }
         return true

@@ -15,7 +15,7 @@ enum SrtSocketOption: String {
         var options: [SrtSocketOption: String] = [:]
         for item in queryItems {
             guard let option = SrtSocketOption(rawValue: item.key) else {
-                logger.error("Unknown option: \(item.key)")
+                logger.info("Unknown option: \(item.key)")
                 continue
             }
             options[option] = item.value

@@ -77,9 +77,9 @@ struct MediaPlayerSettingsView: View {
                                 case let .success(video?):
                                     self.appendMedia(url: video.url)
                                 case .success(nil):
-                                    logger.error("media-player: Media is nil")
+                                    logger.info("media-player: Media is nil")
                                 case let .failure(error):
-                                    logger.error("media-player: Media error: \(error)")
+                                    logger.info("media-player: Media error: \(error)")
                                 }
                                 selectedVideoItem = nil
                             }
