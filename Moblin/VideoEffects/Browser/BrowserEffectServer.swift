@@ -46,11 +46,8 @@ private enum MessageToMoblin: Codable {
 private enum MessageToBrowser: Codable {
     case message(data: Message)
 
-    func toJson() throws -> String {
-        guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {
-            throw "Encode failed"
-        }
-        return encoded
+    func toJson() -> String? {
+        return try? String(bytes: JSONEncoder().encode(self), encoding: .utf8)
     }
 
     static func fromJson(data: String) throws -> MessageToBrowser {
@@ -116,15 +113,13 @@ class BrowserEffectServer: NSObject {
     }
 
     private func send(message: MessageToBrowser) {
-        do {
-            let message = try message.toJson()
-            let data = message.utf8Data.base64EncodedString()
-            webView?.evaluateJavaScript("""
-            moblin.handleMessage(window.atob("\(data)"))
-            """)
-        } catch {
-            logger.info("browser-effect-server: Encode failed")
+        guard let message = message.toJson() else {
+            return
         }
+        let data = message.utf8Data.base64EncodedString()
+        webView?.evaluateJavaScript("""
+        moblin.handleMessage(window.atob("\(data)"))
+        """)
     }
 
     private func handleMessage(message: String) throws {
