@@ -68,7 +68,7 @@ extension Model {
     }
 
     func fetchTwitchRewards() {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .getChannelPointsCustomRewards(broadcasterId: stream.twitchChannelId) { rewards in
                 guard let rewards else {
                     logger.info("Failed to get Twitch rewards")
@@ -85,7 +85,7 @@ extension Model {
     }
 
     func fetchTwitchGameId(stream: SettingsStream, name: String, onComplete: @escaping (String?) -> Void) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .getGames(names: [name]) {
                 onComplete($0?.first?.id)
             }
@@ -97,7 +97,7 @@ extension Model {
         onComplete: @escaping ([TwitchApiGameData]?) -> Void
     ) {
         twitchSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
-            TwitchApi(stream.twitchAccessToken)
+            self.createTwitchApi(stream: stream)
                 .searchCategories(query: filter) {
                     onComplete($0)
                 }
@@ -109,7 +109,7 @@ extension Model {
         names: [String],
         onComplete: @escaping ([TwitchApiGameData]?) -> Void
     ) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .getGames(names: names) {
                 onComplete($0)
             }
@@ -120,11 +120,8 @@ extension Model {
         channelName: String,
         onComplete: @escaping (TwitchApiChannel?) -> Void
     ) {
-        twitchSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
-            TwitchApi(stream.twitchAccessToken)
-                .searchChannel(channelName: channelName) {
-                    onComplete($0)
-                }
+        createTwitchApi(stream: stream).searchChannel(channelName: channelName) {
+            onComplete($0)
         }
     }
 
@@ -139,7 +136,7 @@ extension Model {
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void
     ) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .getChannelInformation(broadcasterId: stream.twitchChannelId) { info in
                 guard let info else {
                     return
@@ -149,14 +146,14 @@ extension Model {
     }
 
     func setTwitchStreamTitle(stream: SettingsStream, title: String) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
                                       categoryId: nil,
                                       title: title) { _ in }
     }
 
     func setTwitchStreamCategory(stream: SettingsStream, categoryId: String) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .modifyChannelInformation(broadcasterId: stream.twitchChannelId,
                                       categoryId: categoryId,
                                       title: nil) { _ in }
@@ -198,24 +195,13 @@ extension Model {
     }
 
     func createStreamMarker() {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .createStreamMarker(userId: stream.twitchChannelId) { data in
                 if data != nil {
                     self.makeToast(title: String(localized: "Stream marker created"))
                 } else {
                     self.makeErrorToast(title: String(localized: "Failed to create stream marker"))
                 }
-            }
-    }
-
-    private func getStream() {
-        TwitchApi(stream.twitchAccessToken)
-            .getStream(userId: stream.twitchChannelId) { data in
-                guard let data else {
-                    self.numberOfTwitchViewers = nil
-                    return
-                }
-                self.numberOfTwitchViewers = data.viewer_count
             }
     }
 
@@ -232,7 +218,7 @@ extension Model {
     }
 
     func sendTwitchChatMessage(message: String) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
                 if !ok {
                     DispatchQueue.main.async {
@@ -243,7 +229,7 @@ extension Model {
     }
 
     func startAds(seconds: Int) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
                 if let data {
                     self.makeToast(title: data.message)
@@ -254,19 +240,19 @@ extension Model {
     }
 
     func banTwitchUser(user _: String, userId: String, duration: Int?) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .banUser(broadcasterId: stream.twitchChannelId, userId: userId, duration: duration) { _ in
             }
     }
 
     func deleteTwitchChatMessage(messageId: String) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .deleteChatMessage(broadcasterId: stream.twitchChannelId, messageId: messageId) { _ in
             }
     }
 
     func raidTwitchChannel(channelName: String, channelId: String) {
-        TwitchApi(stream.twitchAccessToken)
+        createTwitchApi(stream: stream)
             .startRaid(broadcasterId: stream.twitchChannelId, toBroadcasterId: channelId) {
                 switch $0 {
                 case .success:
@@ -276,6 +262,23 @@ extension Model {
                 case .authError:
                     break
                 }
+            }
+    }
+
+    func createTwitchApi(stream: SettingsStream) -> TwitchApi {
+        let twitchApi = TwitchApi(stream.twitchAccessToken)
+        twitchApi.delegate = self
+        return twitchApi
+    }
+
+    private func getStream() {
+        createTwitchApi(stream: stream)
+            .getStream(userId: stream.twitchChannelId) { data in
+                guard let data else {
+                    self.numberOfTwitchViewers = nil
+                    return
+                }
+                self.numberOfTwitchViewers = data.viewer_count
             }
     }
 }

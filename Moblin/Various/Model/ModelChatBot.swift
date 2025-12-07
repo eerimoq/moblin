@@ -693,7 +693,7 @@ extension Model {
             if command.message.platform == .twitch {
                 if permissions.minimumSubscriberTier > 1 {
                     if let userId = command.message.userId {
-                        TwitchApi(stream.twitchAccessToken).getBroadcasterSubscriptions(
+                        createTwitchApi(stream: stream).getBroadcasterSubscriptions(
                             broadcasterId: stream.twitchChannelId,
                             userId: userId
                         ) { data in
