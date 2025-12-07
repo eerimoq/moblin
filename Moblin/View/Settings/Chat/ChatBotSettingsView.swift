@@ -290,6 +290,24 @@ private struct AiPermissionsSettingsView: View {
     }
 }
 
+private struct TwitchPermissionsSettingsView: View {
+    @ObservedObject var permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin twitch ...",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text(String("!moblin twitch raid <channel>"))
+                Text("Raid given channel.")
+            }
+        }
+    }
+}
+
 private struct MuteUnmutePermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
@@ -365,6 +383,7 @@ private struct ChatBotCommandsSettingsView: View {
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
             TtsSayPermissionsSettingsView(permissions: permissions.tts)
             WidgetPermissionsSettingsView(permissions: permissions.widget)
+            TwitchPermissionsSettingsView(permissions: permissions.twitch)
         }
         .navigationTitle("Commands")
     }

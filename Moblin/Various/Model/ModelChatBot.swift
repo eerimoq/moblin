@@ -143,6 +143,8 @@ extension Model {
                 handleChatBotMessageWidget(command: command)
             case "ai":
                 handleChatBotMessageAi(command: command)
+            case "twitch":
+                handleChatBotMessageTwitch(command: command)
             default:
                 break
             }
@@ -368,6 +370,32 @@ extension Model {
                 let message = "\(user) \(getAsked(language)): \(question) \(getAnswer(language)): \(answer)"
                 self.sendChatBotReply(message: "\(message)", platform: command.message.platform)
             }
+    }
+
+    private func handleChatBotMessageTwitch(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.twitch,
+            command: command
+        ) {
+            switch command.popFirst() {
+            case "raid":
+                self.handleChatBotMessageTwitchRaid(command: command)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageTwitchRaid(command: ChatBotCommand) {
+        let channelName = command.rest()
+        searchTwitchChannel(stream: stream, channelName: channelName) { channel in
+            guard let channel else {
+                self.makeErrorToast(title: String(localized: "Raid failed"),
+                                    subTitle: String(localized: "Channel \(channelName) not found"))
+                return
+            }
+            self.raidTwitchChannel(channelName: channelName, channelId: channel.id)
+        }
     }
 
     private func handleChatBotMessageReaction(command: ChatBotCommand) {

@@ -115,6 +115,19 @@ extension Model {
             }
     }
 
+    func searchTwitchChannel(
+        stream: SettingsStream,
+        channelName: String,
+        onComplete: @escaping (TwitchApiChannel?) -> Void
+    ) {
+        twitchSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
+            TwitchApi(stream.twitchAccessToken)
+                .searchChannel(channelName: channelName) {
+                    onComplete($0)
+                }
+        }
+    }
+
     func makeNotLoggedInToTwitchToast() {
         makeErrorToast(
             title: String(localized: "Not logged in to Twitch"),
@@ -249,6 +262,17 @@ extension Model {
     func deleteTwitchChatMessage(messageId: String) {
         TwitchApi(stream.twitchAccessToken)
             .deleteChatMessage(broadcasterId: stream.twitchChannelId, messageId: messageId) { _ in
+            }
+    }
+
+    func raidTwitchChannel(channelName: String, channelId: String) {
+        TwitchApi(stream.twitchAccessToken)
+            .startRaid(broadcasterId: stream.twitchChannelId, toBroadcasterId: channelId) { ok in
+                if ok {
+                    self.makeToast(title: String(localized: "Raiding \(channelName) in 90 seconds!"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
+                }
             }
     }
 }

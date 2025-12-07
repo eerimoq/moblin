@@ -95,6 +95,15 @@ struct TwitchApiGames: Decodable {
     let data: [TwitchApiGameData]
 }
 
+struct TwitchApiChannel: Decodable {
+    let broadcaster_login: String
+    let id: String
+}
+
+struct TwitchApiSearchChannels: Decodable {
+    let data: [TwitchApiChannel]
+}
+
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
     // periphery:ignore
     let user_id: String
@@ -359,6 +368,24 @@ class TwitchApi {
         })
     }
 
+    func startRaid(broadcasterId: String,
+                   toBroadcasterId: String,
+                   onComplete: @escaping (Bool) -> Void)
+    {
+        var components = URLComponents()
+        components.queryItems = [
+            URLQueryItem(name: "from_broadcaster_id", value: broadcasterId),
+            URLQueryItem(name: "to_broadcaster_id", value: toBroadcasterId),
+        ]
+        guard let query = components.percentEncodedQuery else {
+            onComplete(false)
+            return
+        }
+        doPost(subPath: "raids?\(query)", body: Data(), onComplete: { data in
+            onComplete(data != nil)
+        })
+    }
+
     func searchCategories(query: String, onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
         var components = URLComponents()
         components.queryItems = [
@@ -374,6 +401,16 @@ class TwitchApi {
                 from: data ?? Data()
             )
             onComplete(message?.data)
+        })
+    }
+
+    func searchChannel(channelName: String, onComplete: @escaping (TwitchApiChannel?) -> Void) {
+        doGet(subPath: "search/channels?query=\(channelName)", onComplete: { data in
+            let message = try? JSONDecoder().decode(
+                TwitchApiSearchChannels.self,
+                from: data ?? Data()
+            )
+            onComplete(message?.data.first(where: { $0.broadcaster_login == channelName }))
         })
     }
 
