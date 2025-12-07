@@ -496,19 +496,7 @@ class TwitchApi {
             return
         }
         let request = createGetRequest(url: url)
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil, let data, response?.http?.isSuccessful == true else {
-                    if response?.http?.isUnauthorized == true {
-                        self.delegate?.twitchApiUnauthorized()
-                    }
-                    onComplete(nil)
-                    return
-                }
-                onComplete(data)
-            }
-        }
-        .resume()
+        doRequest(request, onComplete)
     }
 
     private func doPost(subPath: String, body: Data, onComplete: @escaping (Data?) -> Void) {
@@ -517,22 +505,7 @@ class TwitchApi {
         }
         var request = createPostRequest(url: url)
         request.httpBody = body
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil, let data, response?.http?.isSuccessful == true else {
-                    if response?.http?.isUnauthorized == true {
-                        self.delegate?.twitchApiUnauthorized()
-                    }
-                    if let data, let data = String(bytes: data, encoding: .utf8) {
-                        logger.info("twitch-api: Error response body: \(data)")
-                    }
-                    onComplete(nil)
-                    return
-                }
-                onComplete(data)
-            }
-        }
-        .resume()
+        doRequest(request, onComplete)
     }
 
     private func doPatch(subPath: String, body: Data, onComplete: @escaping (Data?) -> Void) {
@@ -541,19 +514,7 @@ class TwitchApi {
         }
         var request = createPatchRequest(url: url)
         request.httpBody = body
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil, let data, response?.http?.isSuccessful == true else {
-                    if response?.http?.isUnauthorized == true {
-                        self.delegate?.twitchApiUnauthorized()
-                    }
-                    onComplete(nil)
-                    return
-                }
-                onComplete(data)
-            }
-        }
-        .resume()
+        doRequest(request, onComplete)
     }
 
     private func doDelete(subPath: String, onComplete: @escaping (Data?) -> Void) {
@@ -561,11 +522,18 @@ class TwitchApi {
             return
         }
         let request = createDeleteRequest(url: url)
+        doRequest(request, onComplete)
+    }
+
+    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (Data?) -> Void) {
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
                     if response?.http?.isUnauthorized == true {
                         self.delegate?.twitchApiUnauthorized()
+                    }
+                    if let data, let data = String(bytes: data, encoding: .utf8) {
+                        logger.info("twitch-api: Error response body: \(data)")
                     }
                     onComplete(nil)
                     return
