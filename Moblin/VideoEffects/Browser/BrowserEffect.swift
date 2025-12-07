@@ -94,10 +94,7 @@ final class BrowserEffect: VideoEffect {
             addScript(configuration, source, .atDocumentEnd)
         }
         addScript(configuration, videoScript(), .atDocumentStart)
-        server = BrowserEffectServer()
-        if moblinAccess {
-            server.addScript(configuration: configuration)
-        }
+        server = BrowserEffectServer(configuration: configuration, moblinAccess: moblinAccess)
         webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height),
                             configuration: configuration)
         webView.isOpaque = false

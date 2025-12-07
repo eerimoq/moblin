@@ -75,21 +75,20 @@ class BrowserEffectServer: NSObject {
     private var videoPlaying: Bool = false
     private let pingTimer = SimpleTimer(queue: .main)
     private var gotPing = true
+    private let moblinAccess: Bool
 
-    override init() {
+    init(configuration: WKWebViewConfiguration, moblinAccess: Bool) {
+        self.moblinAccess = moblinAccess
         super.init()
-        pingTimer.startPeriodic(interval: 5) { [weak self] in
-            self?.handlePingTimer()
-        }
-    }
-
-    func addScript(configuration: WKWebViewConfiguration) {
         configuration.userContentController.addUserScript(.init(
             source: moblinScript(),
             injectionTime: .atDocumentStart,
             forMainFrameOnly: false
         ))
         configuration.userContentController.add(self, name: "moblin")
+        pingTimer.startPeriodic(interval: 5) { [weak self] in
+            self?.handlePingTimer()
+        }
     }
 
     func sendChatMessage(post: ChatPost) {
@@ -154,6 +153,9 @@ class BrowserEffectServer: NSObject {
     }
 
     private func handleSubscribe(topic: SubscribeTopic) {
+        guard moblinAccess else {
+            return
+        }
         switch topic {
         case let .chat(prefix: prefix):
             subscriptions.chat = .init(prefix: prefix)
