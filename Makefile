@@ -12,6 +12,7 @@ style:
 	swiftformat $(FORMAT_ARGS) "Moblin Widget"
 	swiftformat $(FORMAT_ARGS) "Moblin Screen Recording"
 	swiftformat $(FORMAT_ARGS) "MoblinTests"
+	prettier --write "Moblin/**/*.js"
 
 style-check:
 	swiftformat $(FORMAT_ARGS) --lint "Common"
@@ -20,6 +21,7 @@ style-check:
 	swiftformat $(FORMAT_ARGS) --lint "Moblin Widget"
 	swiftformat $(FORMAT_ARGS) --lint "Moblin Screen Recording"
 	swiftformat $(FORMAT_ARGS) --lint "MoblinTests"
+	prettier --check "Moblin/**/*.js"
 
 lint:
 	swiftlint lint $(LINT_ARGS) "Common"

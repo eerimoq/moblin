@@ -14,7 +14,7 @@ jobs:
           xcode-version: latest-stable
       - name: Source code styling
         run: |
-          brew install swiftformat
+          brew install swiftformat prettier
           make style-check
       - name: Linting
         run: |
