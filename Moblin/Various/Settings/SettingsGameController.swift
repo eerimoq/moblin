@@ -12,7 +12,18 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case chat = "Chat"
     case scene = "Scene"
     case instantReplay = "Instant replay"
+    case snapshot = "Snapshot"
     case pauseTts = "Pause TTS"
+    case pixellate = "Pixellate"
+    case movie = "Movie"
+    case grayScale = "Gray scale"
+    case sepia = "Sepia"
+    case triple = "Triple"
+    case twin = "Twin"
+    case fourThree = "4:3"
+    case pinch = "Pinch"
+    case whirlpool = "Whirlpool"
+    case poll = "Poll"
 
     init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -46,8 +57,30 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return String(localized: "Scene")
         case .instantReplay:
             return String(localized: "Instant replay")
+        case .snapshot:
+            return String(localized: "Snapshot")
         case .pauseTts:
             return String(localized: "Pause TTS")
+        case .pixellate:
+            return String(localized: "Pixellate")
+        case .movie:
+            return String(localized: "Movie")
+        case .grayScale:
+            return String(localized: "Gray scale")
+        case .sepia:
+            return String(localized: "Sepia")
+        case .triple:
+            return String(localized: "Triple")
+        case .twin:
+            return String(localized: "Twin")
+        case .fourThree:
+            return String(localized: "4:3")
+        case .pinch:
+            return String(localized: "Pinch")
+        case .whirlpool:
+            return String(localized: "Whirlpool")
+        case .poll:
+            return String(localized: "Poll")
         }
     }
 }

@@ -76,9 +76,53 @@ extension Model {
             if !pressed {
                 instantReplay()
             }
+        case .snapshot:
+            if !pressed {
+                takeSnapshot()
+            }
         case .pauseTts:
             if !pressed {
                 toggleTextToSpeechPaused()
+            }
+        case .pixellate:
+            if !pressed {
+                togglePixellateQuickButton()
+            }
+        case .movie:
+            if !pressed {
+                toggleFilterQuickButton(type: .movie)
+            }
+        case .grayScale:
+            if !pressed {
+                toggleFilterQuickButton(type: .grayScale)
+            }
+        case .sepia:
+            if !pressed {
+                toggleFilterQuickButton(type: .sepia)
+            }
+        case .triple:
+            if !pressed {
+                toggleFilterQuickButton(type: .triple)
+            }
+        case .twin:
+            if !pressed {
+                toggleFilterQuickButton(type: .twin)
+            }
+        case .fourThree:
+            if !pressed {
+                toggleFilterQuickButton(type: .fourThree)
+            }
+        case .pinch:
+            if !pressed {
+                togglePinchQuickButton()
+            }
+        case .whirlpool:
+            if !pressed {
+                toggleWhirlpoolQuickButton()
+            }
+        case .poll:
+            if !pressed {
+                togglePollQuickButton()
             }
         }
     }
