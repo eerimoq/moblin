@@ -280,8 +280,8 @@ extension Model {
         setAudioStreamBitrate(stream: stream)
         setAudioStreamFormat(format: stream.audioCodec.toEncoder())
         setAudioChannelsMap(channelsMap: [
-            0: database.audio.audioOutputToInputChannelsMap.channel1,
-            1: database.audio.audioOutputToInputChannelsMap.channel2,
+            0: database.audio.outputToInputChannelsMap.channel1,
+            1: database.audio.outputToInputChannelsMap.channel2,
         ])
         startRecorderIfNeeded()
         reloadConnections()
@@ -306,6 +306,7 @@ extension Model {
             portrait: stream.portrait,
             timecodesEnabled: isTimecodesEnabled(),
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
+            removeWindNoise: database.audio.removeWindNoise,
             destinations: stream.multiStreaming.destinations,
             newSrt: database.debug.newSrt
         )

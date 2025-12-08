@@ -29,6 +29,7 @@ struct AudioSettingsView: View {
     @ObservedObject var stream: SettingsStream
     @ObservedObject var mic: Mic
     @ObservedObject var debug: SettingsDebug
+    @ObservedObject var audio: SettingsAudio
 
     private func changeOutputChannel(value: String) -> String? {
         if Int(value) != nil {
@@ -42,7 +43,7 @@ struct AudioSettingsView: View {
         guard let channel = Int(value) else {
             return
         }
-        database.audio.audioOutputToInputChannelsMap.channel1 = max(channel - 1, -1)
+        audio.outputToInputChannelsMap.channel1 = max(channel - 1, -1)
         model.reloadStreamIfEnabled(stream: stream)
     }
 
@@ -50,7 +51,7 @@ struct AudioSettingsView: View {
         guard let channel = Int(value) else {
             return
         }
-        database.audio.audioOutputToInputChannelsMap.channel2 = max(channel - 1, -1)
+        audio.outputToInputChannelsMap.channel2 = max(channel - 1, -1)
         model.reloadStreamIfEnabled(stream: stream)
     }
 
@@ -97,16 +98,27 @@ struct AudioSettingsView: View {
                 }
             }
             Section {
+                Toggle("Remove wind noise", isOn: $audio.removeWindNoise)
+                    .onChange(of: audio.removeWindNoise) { _ in
+                        if mic.current.isAudioSession() {
+                            model.reloadAudioSession()
+                            model.selectMicDefault(mic: mic.current)
+                        }
+                    }
+            } footer: {
+                Text("Requires stereo mic.")
+            }
+            Section {
                 TextEditNavigationView(
                     title: String(localized: "Output channel 1"),
-                    value: String(database.audio.audioOutputToInputChannelsMap.channel1 + 1),
+                    value: String(audio.outputToInputChannelsMap.channel1 + 1),
                     onChange: changeOutputChannel,
                     onSubmit: submitOutputChannel1
                 )
                 .disabled(model.isLive || model.isRecording)
                 TextEditNavigationView(
                     title: String(localized: "Output channel 2"),
-                    value: String(database.audio.audioOutputToInputChannelsMap.channel2 + 1),
+                    value: String(audio.outputToInputChannelsMap.channel2 + 1),
                     onChange: changeOutputChannel,
                     onSubmit: submitOutputChannel2
                 )

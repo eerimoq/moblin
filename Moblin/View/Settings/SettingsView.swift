@@ -48,7 +48,8 @@ struct SettingsView: View {
                         AudioSettingsView(database: database,
                                           stream: model.stream,
                                           mic: model.mic,
-                                          debug: database.debug)
+                                          debug: database.debug,
+                                          audio: database.audio)
                     } label: {
                         Label("Audio", systemImage: "waveform")
                     }

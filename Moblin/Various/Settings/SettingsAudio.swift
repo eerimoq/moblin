@@ -139,24 +139,28 @@ class SettingsAudioOutputToInputChannelsMap: Codable {
     var channel2: Int = 1
 }
 
-class AudioSettings: Codable {
-    var audioOutputToInputChannelsMap: SettingsAudioOutputToInputChannelsMap = .init()
+class SettingsAudio: Codable, ObservableObject {
+    var outputToInputChannelsMap: SettingsAudioOutputToInputChannelsMap = .init()
+    @Published var removeWindNoise: Bool = false
 
     init() {}
 
     enum CodingKeys: CodingKey {
-        case audioOutputToInputChannelsMap
+        case audioOutputToInputChannelsMap,
+             removeWindNoise
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.audioOutputToInputChannelsMap, audioOutputToInputChannelsMap)
+        try container.encode(.audioOutputToInputChannelsMap, outputToInputChannelsMap)
+        try container.encode(.removeWindNoise, removeWindNoise)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        audioOutputToInputChannelsMap = container.decode(.audioOutputToInputChannelsMap,
-                                                         SettingsAudioOutputToInputChannelsMap.self,
-                                                         .init())
+        outputToInputChannelsMap = container.decode(.audioOutputToInputChannelsMap,
+                                                    SettingsAudioOutputToInputChannelsMap.self,
+                                                    .init())
+        removeWindNoise = container.decode(.removeWindNoise, Bool.self, false)
     }
 }
