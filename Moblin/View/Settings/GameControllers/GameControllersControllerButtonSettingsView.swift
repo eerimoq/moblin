@@ -5,13 +5,15 @@ struct GameControllersControllerButtonSettingsView: View {
     @ObservedObject var button: SettingsGameControllerButton
 
     private func onFunctionChange(function: String) {
-        button.function = SettingsGameControllerButtonFunction(rawValue: function) ?? .unused
+        button.function = SettingsControllerFunction(rawValue: function) ?? .unused
     }
 
     private func buttonText() -> String {
         switch button.function {
         case .scene:
-            return "\(model.getSceneName(id: button.sceneId)) scene"
+            return String(localized: "\(model.getSceneName(id: button.sceneId)) scene")
+        case .widget:
+            return String(localized: "\(model.getWidgetName(id: button.widgetId)) widget")
         default:
             return button.function.toString()
         }
@@ -34,7 +36,7 @@ struct GameControllersControllerButtonSettingsView: View {
                         InlinePickerView(
                             title: String(localized: "Function"),
                             onChange: onFunctionChange,
-                            items: SettingsGameControllerButtonFunction.allCases.map { .init(
+                            items: SettingsControllerFunction.allCases.map { .init(
                                 id: $0.rawValue,
                                 text: $0.toString()
                             ) },
@@ -44,7 +46,8 @@ struct GameControllersControllerButtonSettingsView: View {
                         TextItemView(name: String(localized: "Function"), value: button.function.toString())
                     }
                 }
-                if button.function == .scene {
+                switch button.function {
+                case .scene:
                     Section {
                         Picker("", selection: $button.sceneId) {
                             ForEach(model.database.scenes) { scene in
@@ -57,6 +60,21 @@ struct GameControllersControllerButtonSettingsView: View {
                     } header: {
                         Text("Scene")
                     }
+                case .widget:
+                    Section {
+                        Picker("", selection: $button.widgetId) {
+                            ForEach(model.database.widgets) { widget in
+                                Text(widget.name)
+                                    .tag(widget.id)
+                            }
+                        }
+                        .pickerStyle(.inline)
+                        .labelsHidden()
+                    } header: {
+                        Text("Widget")
+                    }
+                default:
+                    EmptyView()
                 }
             }
             .navigationTitle("Game controller button")

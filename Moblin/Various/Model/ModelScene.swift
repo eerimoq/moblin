@@ -481,9 +481,11 @@ extension Model {
     }
 
     func getSceneName(id: UUID) -> String {
-        return database.scenes.first { scene in
-            scene.id == id
-        }?.name ?? "Unknown"
+        return database.scenes.first { $0.id == id }?.name ?? "Unknown"
+    }
+
+    func getWidgetName(id: UUID) -> String {
+        return database.widgets.first { $0.id == id }?.name ?? "Unknown"
     }
 
     private func sceneUpdatedOff() {

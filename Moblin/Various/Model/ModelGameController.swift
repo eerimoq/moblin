@@ -32,7 +32,18 @@ extension Model {
         guard let button else {
             return
         }
-        switch button.function {
+        handleControllerFunction(function: button.function,
+                                 sceneId: button.sceneId,
+                                 widgetId: button.widgetId,
+                                 pressed: pressed)
+    }
+
+    func handleControllerFunction(function: SettingsControllerFunction,
+                                  sceneId: UUID,
+                                  widgetId: UUID,
+                                  pressed: Bool)
+    {
+        switch function {
         case .unused:
             break
         case .record:
@@ -66,11 +77,13 @@ extension Model {
                 toggleStealthMode()
                 updateQuickButtonStates()
             }
-        case .chat:
-            break
         case .scene:
             if !pressed {
-                selectScene(id: button.sceneId)
+                selectScene(id: sceneId)
+            }
+        case .widget:
+            if !pressed {
+                toggleWidgetOnOff(id: widgetId)
             }
         case .instantReplay:
             if !pressed {

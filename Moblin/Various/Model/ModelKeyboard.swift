@@ -25,40 +25,18 @@ extension Model {
 
     @available(iOS 17.0, *)
     func handleKeyPress(press: KeyPress) -> KeyPress.Result {
-        let charactersHex = press.characters.data(using: .utf8)?.hexString() ?? "???"
-        logger.info("""
-        keyboard: Press characters \"\(press.characters)\" (\(charactersHex)), \
-        modifiers \(press.modifiers), key \(press.key), phase \(press.phase)
-        """)
         guard isKeyboardActive() else {
             return .ignored
         }
         guard let key = database.keyboard.keys.first(where: { $0.key == press.characters }) else {
             return .ignored
         }
-        switch key.function {
-        case .unused:
-            break
-        case .record:
-            toggleRecording()
-        case .stream:
-            toggleStream()
-        case .torch:
-            toggleTorch()
-            toggleQuickButton(type: .torch)
-        case .mute:
-            toggleMute()
-            toggleQuickButton(type: .mute)
-        case .blackScreen:
-            toggleStealthMode()
-        case .scene:
-            selectScene(id: key.sceneId)
-        case .widget:
-            toggleWidgetOnOff(id: key.widgetId)
-        case .instantReplay:
-            instantReplay()
+        DispatchQueue.main.async {
+            self.handleControllerFunction(function: key.function,
+                                          sceneId: key.sceneId,
+                                          widgetId: key.widgetId,
+                                          pressed: false)
         }
-        updateQuickButtonStates()
         return .handled
     }
 }

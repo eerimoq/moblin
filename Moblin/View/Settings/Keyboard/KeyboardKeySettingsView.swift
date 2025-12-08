@@ -5,13 +5,15 @@ struct KeyboardKeySettingsView: View {
     @ObservedObject var key: SettingsKeyboardKey
 
     private func onFunctionChange(function: String) {
-        key.function = SettingsKeyboardKeyFunction(rawValue: function) ?? .unused
+        key.function = SettingsControllerFunction(rawValue: function) ?? .unused
     }
 
     private func keyText() -> String {
         switch key.function {
         case .scene:
-            return "\(model.getSceneName(id: key.sceneId)) scene"
+            return String(localized: "\(model.getSceneName(id: key.sceneId)) scene")
+        case .widget:
+            return String(localized: "\(model.getWidgetName(id: key.widgetId)) widget")
         default:
             return key.function.toString()
         }
@@ -41,7 +43,7 @@ struct KeyboardKeySettingsView: View {
                         InlinePickerView(
                             title: String(localized: "Function"),
                             onChange: onFunctionChange,
-                            items: SettingsKeyboardKeyFunction.allCases
+                            items: SettingsControllerFunction.allCases.filter { $0 != .zoomIn && $0 != .zoomOut }
                                 .map { .init(id: $0.rawValue, text: $0.toString()) },
                             selectedId: key.function.rawValue
                         )

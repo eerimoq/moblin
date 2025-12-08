@@ -1,6 +1,6 @@
 import Foundation
 
-enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
+enum SettingsControllerFunction: String, Codable, CaseIterable {
     case unused = "Unused"
     case record = "Record"
     case stream = "Stream"
@@ -9,8 +9,8 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case mute = "Mute"
     case torch = "Torch"
     case blackScreen = "Black screen"
-    case chat = "Chat"
     case scene = "Scene"
+    case widget = "Widget"
     case instantReplay = "Instant replay"
     case snapshot = "Snapshot"
     case pauseTts = "Pause TTS"
@@ -26,11 +26,7 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
     case poll = "Poll"
 
     init(from decoder: Decoder) throws {
-        var value = try decoder.singleValueContainer().decode(RawValue.self)
-        if value == "Pause chat" {
-            value = "Interactive chat"
-        }
-        self = SettingsGameControllerButtonFunction(rawValue: value) ?? .unused
+        self = try SettingsControllerFunction(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unused
     }
 
     func toString() -> String {
@@ -51,10 +47,10 @@ enum SettingsGameControllerButtonFunction: String, Codable, CaseIterable {
             return String(localized: "Torch")
         case .blackScreen:
             return String(localized: "Stealth mode")
-        case .chat:
-            return String(localized: "Chat")
         case .scene:
             return String(localized: "Scene")
+        case .widget:
+            return String(localized: "Widget")
         case .instantReplay:
             return String(localized: "Instant replay")
         case .snapshot:
@@ -89,8 +85,9 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     var name: String = ""
     var text: String = ""
-    @Published var function: SettingsGameControllerButtonFunction = .unused
+    @Published var function: SettingsControllerFunction = .unused
     @Published var sceneId: UUID = .init()
+    @Published var widgetId: UUID = .init()
 
     init() {}
 
@@ -99,7 +96,8 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
              name,
              text,
              function,
-             sceneId
+             sceneId,
+             widgetId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -109,6 +107,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         try container.encode(.text, text)
         try container.encode(.function, function)
         try container.encode(.sceneId, sceneId)
+        try container.encode(.widgetId, widgetId)
     }
 
     required init(from decoder: Decoder) throws {
@@ -116,8 +115,9 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "")
         text = container.decode(.text, String.self, "")
-        function = container.decode(.function, SettingsGameControllerButtonFunction.self, .unused)
+        function = container.decode(.function, SettingsControllerFunction.self, .unused)
         sceneId = container.decode(.sceneId, UUID.self, .init())
+        widgetId = container.decode(.widgetId, UUID.self, .init())
     }
 }
 
@@ -195,12 +195,12 @@ class SettingsGameController: Codable, Identifiable, ObservableObject {
         button = SettingsGameControllerButton()
         button.name = "zr.rectangle.roundedtop"
         button.text = "ZR"
-        button.function = .chat
+        button.function = .instantReplay
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "r.rectangle.roundedbottom"
         button.text = "R"
-        button.function = .chat
+        button.function = .snapshot
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "l2.rectangle.roundedtop"
@@ -215,12 +215,12 @@ class SettingsGameController: Codable, Identifiable, ObservableObject {
         button = SettingsGameControllerButton()
         button.name = "r2.rectangle.roundedtop"
         button.text = "R2"
-        button.function = .chat
+        button.function = .pixellate
         buttons.append(button)
         button = SettingsGameControllerButton()
         button.name = "r1.rectangle.roundedbottom"
         button.text = "R1"
-        button.function = .chat
+        button.function = .triple
         buttons.append(button)
     }
 
