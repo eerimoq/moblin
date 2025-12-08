@@ -102,10 +102,8 @@ final class AudioUnit: NSObject {
             session.removeOutput(output)
         }
         input = try AVCaptureDeviceInput(device: device)
-        if #available(iOS 18.0, *) {
-            if removeWindNoise, input!.isWindNoiseRemovalSupported {
-                input!.isWindNoiseRemovalEnabled = true
-            }
+        if #available(iOS 18.0, *), input!.isWindNoiseRemovalSupported {
+            input!.isWindNoiseRemovalEnabled = removeWindNoise
         }
         if session.canAddInput(input!) {
             session.addInput(input!)
