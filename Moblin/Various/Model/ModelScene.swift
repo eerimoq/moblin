@@ -1178,7 +1178,18 @@ extension Model {
             devices.devices.append(makeCaptureDevice(device: sceneDevice))
         }
         var addedSceneIds: Set<UUID> = []
-        getBuiltinCameraDevicesInScene(scene: scene, devices: &devices.devices, addedSceneIds: &addedSceneIds)
+        if let quickSwitchGroup = scene.quickSwitchGroup {
+            for otherScene in database.scenes where otherScene.quickSwitchGroup == quickSwitchGroup {
+                let cameraId = otherScene.videoSource.getCaptureDeviceCameraId()
+                getBuiltinCameraDevices(cameraId: cameraId, devices: &devices.devices)
+                getBuiltinCameraDevicesInScene(scene: otherScene,
+                                               devices: &devices.devices,
+                                               addedSceneIds: &addedSceneIds)
+            }
+        }
+        getBuiltinCameraDevicesInScene(scene: scene,
+                                       devices: &devices.devices,
+                                       addedSceneIds: &addedSceneIds)
         return devices
     }
 
@@ -1219,20 +1230,12 @@ extension Model {
         devices: inout [CaptureDevice]
     ) {
         let cameraId = videoSource.videoSource.getCaptureDeviceCameraId()
-        if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
-            if !devices.contains(where: { $0.device == device }) {
-                devices.append(makeCaptureDevice(device: device))
-            }
-        }
+        getBuiltinCameraDevices(cameraId: cameraId, devices: &devices)
     }
 
     private func getBuiltinCameraDevicesForVTuberWidget(vTuber: SettingsWidgetVTuber, devices: inout [CaptureDevice]) {
         let cameraId = vTuber.videoSource.getCaptureDeviceCameraId()
-        if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
-            if !devices.contains(where: { $0.device == device }) {
-                devices.append(makeCaptureDevice(device: device))
-            }
-        }
+        getBuiltinCameraDevices(cameraId: cameraId, devices: &devices)
     }
 
     private func getBuiltinCameraDevicesForPngTuberWidget(
@@ -1240,6 +1243,10 @@ extension Model {
         devices: inout [CaptureDevice]
     ) {
         let cameraId = pngTuber.videoSource.getCaptureDeviceCameraId()
+        getBuiltinCameraDevices(cameraId: cameraId, devices: &devices)
+    }
+
+    private func getBuiltinCameraDevices(cameraId: String?, devices: inout [CaptureDevice]) {
         if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
             if !devices.contains(where: { $0.device == device }) {
                 devices.append(makeCaptureDevice(device: device))

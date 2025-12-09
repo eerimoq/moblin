@@ -2653,6 +2653,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     @Published var fillFrame: Bool = false
     @Published var overrideMic: Bool = false
     @Published var micId: String = ""
+    @Published var quickSwitchGroup: Int?
 
     init(name: String) {
         self.name = name
@@ -2683,7 +2684,8 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
              overrideVideoStabilizationMode,
              fillFrame,
              overrideMic,
-             micId
+             micId,
+             quickSwitchGroup
     }
 
     func encode(to encoder: Encoder) throws {
@@ -2708,6 +2710,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.fillFrame, fillFrame)
         try container.encode(.overrideMic, overrideMic)
         try container.encode(.micId, micId)
+        try container.encode(.quickSwitchGroup, quickSwitchGroup)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2732,6 +2735,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         fillFrame = container.decode(.fillFrame, Bool.self, false)
         overrideMic = container.decode(.overrideMic, Bool.self, false)
         micId = container.decode(.micId, String.self, "")
+        quickSwitchGroup = container.decode(.quickSwitchGroup, Int?.self, nil)
     }
 
     func clone() -> SettingsScene {
@@ -2747,6 +2751,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         new.fillFrame = fillFrame
         new.overrideMic = overrideMic
         new.micId = micId
+        new.quickSwitchGroup = quickSwitchGroup
         return new
     }
 

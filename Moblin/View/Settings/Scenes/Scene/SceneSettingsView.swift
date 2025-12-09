@@ -193,6 +193,18 @@ struct SceneSettingsView: View {
                     """)
                 }
             }
+            Section {
+                Picker("Quick switch group", selection: $scene.quickSwitchGroup) {
+                    Text("-- None --")
+                        .tag(nil as Int?)
+                    ForEach(1 ..< 5, id: \.self) { group in
+                        Text(String(group))
+                            .tag(group as Int?)
+                    }
+                }
+            } footer: {
+                Text("Switching between scenes in the same group may be instant.")
+            }
             if database.showAllSettings {
                 Section {
                     Toggle("Override", isOn: $scene.overrideMic)
