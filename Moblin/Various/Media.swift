@@ -819,7 +819,6 @@ final class Media: NSObject {
                                            externalDisplayPreview: externalDisplayPreview,
                                            bufferedVideo: cameraId,
                                            preferredVideoStabilizationMode: .off,
-                                           isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
                                            fillFrame: fillFrame,
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi)

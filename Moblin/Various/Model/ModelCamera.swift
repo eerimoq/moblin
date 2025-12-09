@@ -768,7 +768,9 @@ extension Model {
     }
 
     func makeCaptureDevice(device: AVCaptureDevice) -> CaptureDevice {
-        return CaptureDevice(device: device, id: getBuiltinCameraId(device.uniqueID))
+        return CaptureDevice(device: device,
+                             id: getBuiltinCameraId(device.uniqueID),
+                             isVideoMirrored: getVideoMirroredOnStream(device: device))
     }
 
     private func statusCameraText() -> String {

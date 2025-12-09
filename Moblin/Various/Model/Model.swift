@@ -2439,7 +2439,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            externalDisplayPreview: false,
                                            bufferedVideo: nil,
                                            preferredVideoStabilizationMode: .off,
-                                           isVideoMirrored: false,
                                            ignoreFramesAfterAttachSeconds: 0.0,
                                            fillFrame: false,
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi())
@@ -2472,8 +2471,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func getVideoMirroredOnStream() -> Bool {
-        if cameraPosition == .front {
+    func getVideoMirroredOnStream(device: AVCaptureDevice) -> Bool {
+        if device.position == .front {
             return database.mirrorFrontCameraOnStream
         }
         return false
@@ -2606,7 +2605,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            externalDisplayPreview: externalDisplayPreview,
                                            bufferedVideo: nil,
                                            preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
-                                           isVideoMirrored: getVideoMirroredOnStream(),
                                            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
                                            fillFrame: getFillFrame(scene: scene),
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi())
