@@ -115,8 +115,7 @@ private class FaceDetectionsCompletion {
 }
 
 private struct CaptureSessionDevice {
-    let device: AVCaptureDevice
-    let isVideoMirrored: Bool
+    let device: CaptureDevice
     let input: AVCaptureInput
     let output: AVCaptureVideoDataOutput
     let connection: AVCaptureConnection
@@ -149,7 +148,6 @@ final class VideoUnit: NSObject {
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?
-    private var videoUnitBuiltinDevice: VideoUnitBuiltinDevice?
     private var sceneVideoSourceId = UUID()
     private var selectedBufferedVideoCameraId: UUID?
     fileprivate var bufferedVideos: [UUID: BufferedVideo] = [:]
@@ -211,7 +209,7 @@ final class VideoUnit: NSObject {
             session.beginConfiguration()
             for device in captureSessionDevices {
                 for connection in device.output.connections.filter({ $0.isVideoOrientationSupported }) {
-                    setOrientation(device: device.device,
+                    setOrientation(device: device.device.device,
                                    isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
                                    connection: connection,
                                    orientation: videoOrientation)
@@ -234,10 +232,8 @@ final class VideoUnit: NSObject {
     }
 
     override init() {
-        videoUnitBuiltinDevice = nil
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
-        videoUnitBuiltinDevice = VideoUnitBuiltinDevice(videoUnit: self)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleSessionRuntimeError),
                                                name: .AVCaptureSessionRuntimeError,
@@ -435,12 +431,6 @@ final class VideoUnit: NSObject {
     }
 
     private func attachQuickSwap(params: VideoUnitAttachParams) {
-        guard let sceneDevice = params.devices.devices.first else {
-            return
-        }
-        for device in captureSessionDevices {
-            device.output.setSampleBufferDelegate(nil, queue: processorPipelineQueue)
-        }
         processorPipelineQueue.async {
             self.selectedBufferedVideoCameraId = params.bufferedVideo
             self.isFirstAfterAttach = true
@@ -448,8 +438,8 @@ final class VideoUnit: NSObject {
             self.fillFrame = params.fillFrame
             if let bufferedVideo = params.bufferedVideo {
                 self.sceneVideoSourceId = bufferedVideo
-            } else if params.devices.hasSceneDevice {
-                self.sceneVideoSourceId = sceneDevice.id
+            } else if params.devices.hasSceneDevice, let id = params.devices.devices.first?.id {
+                self.sceneVideoSourceId = id
             } else {
                 self.sceneVideoSourceId = UUID()
             }
@@ -458,13 +448,6 @@ final class VideoUnit: NSObject {
             }
             for effect in self.effects where effect is VideoSourceEffect {
                 self.unregisterEffectInner(effect)
-            }
-        }
-        for device in captureSessionDevices {
-            if params.devices.hasSceneDevice, device.device == sceneDevice.device {
-                device.output.setSampleBufferDelegate(self, queue: processorPipelineQueue)
-            } else {
-                device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: processorPipelineQueue)
             }
         }
     }
@@ -527,17 +510,17 @@ final class VideoUnit: NSObject {
         }
         removeDevices(session)
         for device in params.devices.devices {
-            try attachDevice(device.device, device.isVideoMirrored, session)
+            try attachDevice(device, session)
         }
         session.automaticallyConfiguresCaptureDeviceForWideColor = false
         device = params.devices.hasSceneDevice ? params.devices.devices.first?.device : nil
         for device in captureSessionDevices {
             for connection in device.output.connections {
                 if connection.isVideoMirroringSupported {
-                    connection.isVideoMirrored = device.isVideoMirrored
+                    connection.isVideoMirrored = device.device.isVideoMirrored
                 }
                 if connection.isVideoOrientationSupported {
-                    setOrientation(device: device.device,
+                    setOrientation(device: device.device.device,
                                    isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
                                    connection: connection,
                                    orientation: videoOrientation)
@@ -547,12 +530,8 @@ final class VideoUnit: NSObject {
                 }
             }
         }
-        for (i, device) in captureSessionDevices.enumerated() {
-            if params.devices.hasSceneDevice, i == 0 {
-                device.output.setSampleBufferDelegate(self, queue: processorPipelineQueue)
-            } else {
-                device.output.setSampleBufferDelegate(videoUnitBuiltinDevice, queue: processorPipelineQueue)
-            }
+        for device in captureSessionDevices {
+            device.output.setSampleBufferDelegate(self, queue: processorPipelineQueue)
         }
         updateCameraControls()
         params.cameraPreviewLayer.session = nil
@@ -578,7 +557,7 @@ final class VideoUnit: NSObject {
     private func updateDevicesFormat() {
         for device in captureSessionDevices {
             setDeviceFormat(
-                device: device.device,
+                device: device.device.device,
                 fps: fps,
                 preferAutoFrameRate: preferAutoFps,
                 colorSpace: colorSpace
@@ -1694,14 +1673,11 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func attachDevice(_ device: AVCaptureDevice?,
-                              _ isVideoMirrored: Bool,
-                              _ session: AVCaptureSession) throws
-    {
-        guard let device else {
+    private func attachDevice(_ device: CaptureDevice, _ session: AVCaptureSession) throws {
+        guard let captureDevice = device.device else {
             return
         }
-        let input = try AVCaptureDeviceInput(device: device)
+        let input = try AVCaptureDeviceInput(device: captureDevice)
         let output = AVCaptureVideoDataOutput()
         output.videoSettings = [
             kCVPixelBufferPixelFormatTypeKey as String: pixelFormatType,
@@ -1731,7 +1707,6 @@ final class VideoUnit: NSObject {
         } else {
             captureSessionDevices.append(CaptureSessionDevice(
                 device: device,
-                isVideoMirrored: isVideoMirrored,
                 input: input,
                 output: output,
                 connection: connection!
@@ -1876,6 +1851,10 @@ final class VideoUnit: NSObject {
         bufferedVideo.appendSampleBuffer(sampleBufferCopy)
         return bufferedVideo
     }
+
+    private func isSceneDevice(device: AVCaptureDevice) -> Bool {
+        return captureSessionDevices.first(where: { $0.device.device == device })?.device.id == sceneVideoSourceId
+    }
 }
 
 extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -1887,38 +1866,21 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        var sampleBuffer = sampleBuffer
-        if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
-            for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
-                bufferedVideoBuiltin.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
+        if isSceneDevice(device: input.device) {
+            var sampleBuffer = sampleBuffer
+            if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
+                for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
+                    bufferedVideoBuiltin.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
+                }
+                sampleBuffer = bufferedVideo.getSampleBuffer(sampleBuffer.presentationTimeStamp) ?? sampleBuffer
             }
-            sampleBuffer = bufferedVideo.getSampleBuffer(sampleBuffer.presentationTimeStamp) ?? sampleBuffer
+            guard selectedBufferedVideoCameraId == nil else {
+                return
+            }
+            appendNewSampleBuffer(sampleBuffer: sampleBuffer)
+        } else {
+            _ = appendBufferedBuiltinVideo(sampleBuffer, input.device)
         }
-        guard selectedBufferedVideoCameraId == nil else {
-            return
-        }
-        appendNewSampleBuffer(sampleBuffer: sampleBuffer)
-    }
-}
-
-class VideoUnitBuiltinDevice: NSObject {
-    weak var videoUnit: VideoUnit?
-
-    init(videoUnit: VideoUnit) {
-        self.videoUnit = videoUnit
-    }
-}
-
-extension VideoUnitBuiltinDevice: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(
-        _: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection
-    ) {
-        guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
-            return
-        }
-        _ = videoUnit?.appendBufferedBuiltinVideo(sampleBuffer, input.device)
     }
 }
 
