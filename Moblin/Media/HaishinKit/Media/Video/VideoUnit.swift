@@ -24,7 +24,7 @@ struct VideoUnitAttachParams {
     let fillFrame: Bool
     let isLandscapeStreamAndPortraitUi: Bool
 
-    func canQuickSwapTo(other: VideoUnitAttachParams) -> Bool {
+    func canQuickSwitchTo(other: VideoUnitAttachParams) -> Bool {
         if devices.devices.count != other.devices.devices.count {
             return false
         }
@@ -422,15 +422,15 @@ final class VideoUnit: NSObject {
     }
 
     func attach(params: VideoUnitAttachParams) throws {
-        if currentAttachParams?.canQuickSwapTo(other: params) == true {
-            attachQuickSwap(params: params)
+        if currentAttachParams?.canQuickSwitchTo(other: params) == true {
+            attachQuickSwitch(params: params)
         } else {
             try attachDefault(params: params)
         }
         currentAttachParams = params
     }
 
-    private func attachQuickSwap(params: VideoUnitAttachParams) {
+    private func attachQuickSwitch(params: VideoUnitAttachParams) {
         processorPipelineQueue.async {
             self.selectedBufferedVideoCameraId = params.bufferedVideo
             self.isFirstAfterAttach = true
@@ -1852,7 +1852,7 @@ final class VideoUnit: NSObject {
         return bufferedVideo
     }
 
-    private func isSceneDevice(device: AVCaptureDevice) -> Bool {
+    private func isSceneVideoSource(device: AVCaptureDevice) -> Bool {
         return captureSessionDevices.first(where: { $0.device.device == device })?.device.id == sceneVideoSourceId
     }
 }
@@ -1866,7 +1866,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        if isSceneDevice(device: input.device) {
+        if isSceneVideoSource(device: input.device) {
             var sampleBuffer = sampleBuffer
             if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
                 for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
