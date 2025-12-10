@@ -202,6 +202,11 @@ struct SceneSettingsView: View {
                             .tag(group as Int?)
                     }
                 }
+                .onChange(of: scene.quickSwitchGroup) { _ in
+                    if model.getSelectedScene() === scene {
+                        model.resetSelectedScene(attachCamera: true)
+                    }
+                }
             } footer: {
                 Text("Switching between scenes in the same group may be instant.")
             }
