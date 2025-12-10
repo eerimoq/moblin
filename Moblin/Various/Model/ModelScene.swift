@@ -1179,7 +1179,7 @@ extension Model {
         }
         var addedSceneIds: Set<UUID> = []
         if let quickSwitchGroup = scene.quickSwitchGroup {
-            for otherScene in database.scenes where otherScene.quickSwitchGroup == quickSwitchGroup {
+            for otherScene in enabledScenes where otherScene.quickSwitchGroup == quickSwitchGroup {
                 let cameraId = otherScene.videoSource.getCaptureDeviceCameraId()
                 getBuiltinCameraDevices(cameraId: cameraId, devices: &devices.devices)
                 getBuiltinCameraDevicesInScene(scene: otherScene,

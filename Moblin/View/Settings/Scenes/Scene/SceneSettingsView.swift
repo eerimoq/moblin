@@ -204,7 +204,7 @@ struct SceneSettingsView: View {
                 }
                 .onChange(of: scene.quickSwitchGroup) { _ in
                     if model.getSelectedScene() === scene {
-                        model.resetSelectedScene(attachCamera: true)
+                        model.resetSelectedScene(changeScene: false, attachCamera: true)
                     }
                 }
             } footer: {
