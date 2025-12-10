@@ -599,6 +599,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var replayEffect: ReplayEffect?
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
+    private let pedometer = CMPedometer()
+    private var pedometerUpdatesActive = false
     private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
     let weatherManager = WeatherManager()

@@ -73,6 +73,7 @@ extension Model: HeartRateDeviceDelegate {
                 return
             }
             self.heartRates[device.name.lowercased()] = heartRate
+            self.realtimeIrl?.updateHeartRate(heartRate)
         }
     }
 }
