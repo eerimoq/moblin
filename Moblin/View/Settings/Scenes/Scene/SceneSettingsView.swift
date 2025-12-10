@@ -92,16 +92,11 @@ private struct SceneWidgetView: View {
     }
 }
 
-struct SceneSettingsView: View {
+private struct VideoSourceView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
-    @State private var showingAddWidget = false
     @State private var showingScreenCaptureAlert = false
-
-    var widgets: [SettingsWidget] {
-        model.database.widgets
-    }
 
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
@@ -112,198 +107,243 @@ struct SceneSettingsView: View {
     }
 
     var body: some View {
-        Form {
-            NameEditView(name: $scene.name, existingNames: database.scenes)
-            Section {
-                NavigationLink {
-                    InlinePickerView(
-                        title: String(localized: "Name"),
-                        onChange: onCameraChange,
-                        footers: [
-                            String(localized: """
-                            The ultra wide camera does not perform well in low light conditions. Likewise, the \
-                            auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera \
-                            will be used.
-                            """),
-                            "",
-                            String(localized: """
-                            Auto cameras use more energy as multiple cameras are powered on, even if only \
-                            one is used at a time. This allows the phone to quickly change camera when zooming.
-                            """),
-                        ],
-                        items: model.listCameraPositions().map { id, name in
-                            InlinePickerItem(id: id, text: name)
-                        },
-                        selectedId: model.getCameraPositionId(scene: scene)
-                    )
-                } label: {
-                    Label {
-                        HStack {
-                            Text("Name")
-                            Spacer()
-                            if !model.isSceneVideoSourceActive(scene: scene) {
-                                Image(systemName: "cable.connector.slash")
-                            }
-                            Text(model.getCameraPositionName(scene: scene))
-                                .foregroundStyle(.gray)
-                                .lineLimit(1)
+        Section {
+            NavigationLink {
+                InlinePickerView(
+                    title: String(localized: "Name"),
+                    onChange: onCameraChange,
+                    footers: [
+                        String(localized: """
+                        The ultra wide camera does not perform well in low light conditions. Likewise, the \
+                        auto cameras do not perform well when zoom is 0.5-1.0x since the ultra wide camera \
+                        will be used.
+                        """),
+                        "",
+                        String(localized: """
+                        Auto cameras use more energy as multiple cameras are powered on, even if only \
+                        one is used at a time. This allows the phone to quickly change camera when zooming.
+                        """),
+                    ],
+                    items: model.listCameraPositions().map { id, name in
+                        InlinePickerItem(id: id, text: name)
+                    },
+                    selectedId: model.getCameraPositionId(scene: scene)
+                )
+            } label: {
+                Label {
+                    HStack {
+                        Text("Name")
+                        Spacer()
+                        if !model.isSceneVideoSourceActive(scene: scene) {
+                            Image(systemName: "cable.connector.slash")
                         }
-                    } icon: {
-                        Image(systemName: "camera")
+                        Text(model.getCameraPositionName(scene: scene))
+                            .foregroundStyle(.gray)
+                            .lineLimit(1)
                     }
-                }
-                .alert(
-                    """
-                    Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.
-                    """,
-                    isPresented: $showingScreenCaptureAlert
-                ) {
-                    Button("Got it") {
-                        showingScreenCaptureAlert = false
-                    }
-                }
-                if database.showAllSettings {
-                    if scene.videoSource.cameraPosition != .none {
-                        VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
-                            .onChange(of: scene.videoSourceRotation) { _ in
-                                model.sceneUpdated(updateRemoteScene: false)
-                            }
-                    }
-                    Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
-                        .onChange(of: scene.overrideVideoStabilizationMode) { _ in
-                            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
-                        }
-                    if scene.overrideVideoStabilizationMode {
-                        VideoStabilizationView(model: model, scene: scene)
-                    }
-                    if scene.videoSource.cameraPosition != .none {
-                        Toggle("Fill frame", isOn: $scene.fillFrame)
-                            .onChange(of: scene.fillFrame) { _ in
-                                model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
-                            }
-                    }
-                }
-            } header: {
-                Text("Video source")
-            } footer: {
-                if database.showAllSettings {
-                    Text("""
-                    Enable Override video stabilization to override Settings → Camera → Video \
-                    stabilization in this scene.
-                    """)
+                } icon: {
+                    Image(systemName: "camera")
                 }
             }
-            Section {
-                Picker("Quick switch group", selection: $scene.quickSwitchGroup) {
-                    Text("-- None --")
-                        .tag(nil as Int?)
-                    ForEach(1 ..< 5, id: \.self) { group in
-                        Text(String(group))
-                            .tag(group as Int?)
-                    }
+            .alert(
+                """
+                Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.
+                """,
+                isPresented: $showingScreenCaptureAlert
+            ) {
+                Button("Got it") {
+                    showingScreenCaptureAlert = false
                 }
-                .onChange(of: scene.quickSwitchGroup) { _ in
-                    if model.getSelectedScene() === scene {
-                        model.resetSelectedScene(changeScene: false, attachCamera: true)
-                    }
-                }
-            } footer: {
-                Text("Switching between scenes in the same group may be instant.")
             }
             if database.showAllSettings {
-                Section {
-                    Toggle("Override", isOn: $scene.overrideMic)
-                        .onChange(of: scene.overrideMic) { _ in
-                            model.switchMicIfNeededAfterSceneSwitch()
+                if scene.videoSource.cameraPosition != .none {
+                    VideoSourceRotationView(selectedRotation: $scene.videoSourceRotation)
+                        .onChange(of: scene.videoSourceRotation) { _ in
+                            model.sceneUpdated(updateRemoteScene: false)
                         }
-                    if scene.overrideMic {
-                        MicView(model: model, scene: scene, mic: model.mic)
+                }
+                Toggle("Override video stabilization", isOn: $scene.overrideVideoStabilizationMode)
+                    .onChange(of: scene.overrideVideoStabilizationMode) { _ in
+                        model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
                     }
-                } header: {
-                    Text("Mic")
-                } footer: {
-                    Text("""
-                    Enable Override to automatically switch to selected mic (if available) when \
-                    switching to this scene.
-                    """)
+                if scene.overrideVideoStabilizationMode {
+                    VideoStabilizationView(model: model, scene: scene)
+                }
+                if scene.videoSource.cameraPosition != .none {
+                    Toggle("Fill frame", isOn: $scene.fillFrame)
+                        .onChange(of: scene.fillFrame) { _ in
+                            model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+                        }
                 }
             }
-            Section {
-                List {
-                    ForEach(scene.widgets) { sceneWidget in
-                        SceneWidgetView(database: database, sceneWidget: sceneWidget)
-                    }
-                    .onMove { froms, to in
-                        scene.widgets.move(fromOffsets: froms, toOffset: to)
-                        model.sceneUpdated()
-                    }
-                    .onDelete { offsets in
-                        var attachCamera = false
-                        if scene.id == model.getSelectedScene()?.id {
-                            for offset in offsets {
-                                if let widget = model.findWidget(id: scene.widgets[offset].widgetId) {
-                                    attachCamera = model.isCaptureDeviceWidget(widget: widget)
-                                }
-                            }
-                        }
-                        scene.widgets.remove(atOffsets: offsets)
-                        model.sceneUpdated(attachCamera: attachCamera)
-                    }
+        } header: {
+            Text("Video source")
+        } footer: {
+            if database.showAllSettings {
+                Text("""
+                Enable Override video stabilization to override Settings → Camera → Video \
+                stabilization in this scene.
+                """)
+            }
+        }
+    }
+}
+
+private struct QuickSwitchGroupView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        Section {
+            Picker("Quick switch group", selection: $scene.quickSwitchGroup) {
+                Text("-- None --")
+                    .tag(nil as Int?)
+                ForEach(1 ..< 5, id: \.self) { group in
+                    Text(String(group))
+                        .tag(group as Int?)
                 }
-                AddButtonView(action: {
-                    showingAddWidget = true
-                })
-                .popover(isPresented: $showingAddWidget) {
-                    VStack {
-                        if isPhone() {
-                            HStack {
-                                Spacer()
-                                Button {
-                                    showingAddWidget = false
-                                } label: {
-                                    Text("Cancel")
-                                        .padding(5)
-                                        .foregroundStyle(.blue)
-                                }
+            }
+            .onChange(of: scene.quickSwitchGroup) { _ in
+                if model.getSelectedScene() === scene {
+                    model.resetSelectedScene(changeScene: false, attachCamera: true)
+                }
+            }
+        } footer: {
+            Text("Switching between scenes in the same group may be instant.")
+        }
+    }
+}
+
+private struct SceneMicView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        if database.showAllSettings {
+            Section {
+                Toggle("Override", isOn: $scene.overrideMic)
+                    .onChange(of: scene.overrideMic) { _ in
+                        model.switchMicIfNeededAfterSceneSwitch()
+                    }
+                if scene.overrideMic {
+                    MicView(model: model, scene: scene, mic: model.mic)
+                }
+            } header: {
+                Text("Mic")
+            } footer: {
+                Text("""
+                Enable Override to automatically switch to selected mic (if available) when \
+                switching to this scene.
+                """)
+            }
+        }
+    }
+}
+
+private struct WidgetsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var scene: SettingsScene
+    @State private var showingAddWidget = false
+
+    private var widgets: [SettingsWidget] {
+        database.widgets
+    }
+
+    var body: some View {
+        Section {
+            List {
+                ForEach(scene.widgets) { sceneWidget in
+                    SceneWidgetView(database: database, sceneWidget: sceneWidget)
+                }
+                .onMove { froms, to in
+                    scene.widgets.move(fromOffsets: froms, toOffset: to)
+                    model.sceneUpdated()
+                }
+                .onDelete { offsets in
+                    var attachCamera = false
+                    if scene.id == model.getSelectedScene()?.id {
+                        for offset in offsets {
+                            if let widget = model.findWidget(id: scene.widgets[offset].widgetId) {
+                                attachCamera = model.isCaptureDeviceWidget(widget: widget)
                             }
                         }
-                        let form = Form {
-                            if widgets.isEmpty {
-                                Section {
-                                    Text("No widgets found. Create widgets in Settings → Scenes → Widgets.")
-                                }
-                            } else {
-                                Section("Widget name") {
-                                    ForEach(widgets) { widget in
-                                        Button {
-                                            model.appendWidgetToScene(scene: scene, widget: widget)
-                                            showingAddWidget = false
-                                        } label: {
-                                            IconAndTextView(
-                                                image: widget.image(),
-                                                text: widget.name,
-                                                longDivider: true
-                                            )
-                                        }
+                    }
+                    scene.widgets.remove(atOffsets: offsets)
+                    model.sceneUpdated(attachCamera: attachCamera)
+                }
+            }
+            AddButtonView(action: {
+                showingAddWidget = true
+            })
+            .popover(isPresented: $showingAddWidget) {
+                VStack {
+                    if isPhone() {
+                        HStack {
+                            Spacer()
+                            Button {
+                                showingAddWidget = false
+                            } label: {
+                                Text("Cancel")
+                                    .padding(5)
+                                    .foregroundStyle(.blue)
+                            }
+                        }
+                    }
+                    let form = Form {
+                        if widgets.isEmpty {
+                            Section {
+                                Text("No widgets found. Create widgets in Settings → Scenes → Widgets.")
+                            }
+                        } else {
+                            Section("Widget name") {
+                                ForEach(widgets) { widget in
+                                    Button {
+                                        model.appendWidgetToScene(scene: scene, widget: widget)
+                                        showingAddWidget = false
+                                    } label: {
+                                        IconAndTextView(
+                                            image: widget.image(),
+                                            text: widget.name,
+                                            longDivider: true
+                                        )
                                     }
                                 }
                             }
                         }
-                        if !isPhone() {
-                            form
-                                .frame(width: 300, height: 400)
-                        } else {
-                            form
-                        }
+                    }
+                    if !isPhone() {
+                        form
+                            .frame(width: 300, height: 400)
+                    } else {
+                        form
                     }
                 }
-            } header: {
-                Text("Widgets")
-            } footer: {
-                VStack(alignment: .leading) {
-                    SwipeLeftToRemoveHelpView(kind: String(localized: "a widget"))
-                }
             }
+        } header: {
+            Text("Widgets")
+        } footer: {
+            VStack(alignment: .leading) {
+                SwipeLeftToRemoveHelpView(kind: String(localized: "a widget"))
+            }
+        }
+    }
+}
+
+struct SceneSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        Form {
+            NameEditView(name: $scene.name, existingNames: database.scenes)
+            VideoSourceView(database: database, scene: scene)
+            QuickSwitchGroupView(database: database, scene: scene)
+            SceneMicView(database: database, scene: scene)
+            WidgetsView(database: database, scene: scene)
         }
         .navigationTitle("Scene")
     }
