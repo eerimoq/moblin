@@ -358,6 +358,8 @@ extension Model {
             captureSize = .init(width: 1920, height: 1440)
         case .r1920x1080:
             captureSize = .init(width: 1920, height: 1080)
+        case .r1664x936:
+            captureSize = .init(width: 1664, height: 936)
         case .r1024x768:
             captureSize = .init(width: 1024, height: 768)
         case .r1280x720:

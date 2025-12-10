@@ -38,6 +38,7 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r2560x1440 = "2560x1440"
     case r1920x1440 = "1920x1440"
     case r1920x1080 = "1920x1080"
+    case r1664x936 = "1664x936"
     case r1280x720 = "1280x720"
     case r1024x768 = "1024x768"
     case r960x540 = "960x540"
@@ -66,6 +67,8 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
             return "1440p (4:3)"
         case .r1920x1080:
             return "1080p"
+        case .r1664x936:
+            return "936p"
         case .r1024x768:
             return "768p (4:3)"
         case .r1280x720:
@@ -94,6 +97,8 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
             size = .init(width: 1920, height: 1440)
         case .r1920x1080:
             size = .init(width: 1920, height: 1080)
+        case .r1664x936:
+            size = .init(width: 1664, height: 936)
         case .r1024x768:
             size = .init(width: 1024, height: 768)
         case .r1280x720:
