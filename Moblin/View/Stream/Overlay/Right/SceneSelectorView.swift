@@ -15,12 +15,26 @@ private struct SceneNameView: View {
     }
 
     var body: some View {
-        Text(scene.name)
-            .font(.subheadline)
-            .frame(
-                width: min(sceneSegmentWidth, max((width - 20) / CGFloat(model.enabledScenes.count), 1)),
-                height: height()
-            )
+        ZStack {
+            Text(scene.name)
+                .font(.subheadline)
+                .frame(
+                    width: min(sceneSegmentWidth, max((width - 20) / CGFloat(model.enabledScenes.count), 1)),
+                    height: height()
+                )
+            if let quickSwitchGroup = scene.quickSwitchGroup {
+                HStack {
+                    Spacer()
+                    VStack {
+                        Spacer()
+                        Text(String(quickSwitchGroup))
+                            .font(.system(size: 8))
+                            .padding([.trailing], 4)
+                            .padding([.bottom], 3)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -43,8 +57,8 @@ struct StreamOverlayRightSceneSelectorView: View {
             } else {
                 sceneSelector.sceneIndex = 0
             }
-        })) { scene in
-            SceneNameView(database: database, scene: scene, width: width)
+        })) {
+            SceneNameView(database: database, scene: $0, width: width)
         } onLongPress: { index in
             if index < model.enabledScenes.count {
                 model.showSceneSettings(scene: model.enabledScenes[index])
