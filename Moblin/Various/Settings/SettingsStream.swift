@@ -671,6 +671,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
     @Published var transitionType: SettingsStreamReplayTransitionType = .fade
     @Published var inStinger: SettingsStreamReplayStinger = .init()
     @Published var outStinger: SettingsStreamReplayStinger = .init()
+    var enterForegroundCountAtLatestUsage: Int?
 
     init() {}
 
@@ -679,7 +680,8 @@ class SettingsStreamReplay: Codable, ObservableObject {
              fade,
              transitionType,
              inStinger,
-             outStinger
+             outStinger,
+             enterForegroundCountAtLatestUsage
     }
 
     func encode(to encoder: Encoder) throws {
@@ -688,6 +690,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         try container.encode(.transitionType, transitionType)
         try container.encode(.inStinger, inStinger)
         try container.encode(.outStinger, outStinger)
+        try container.encode(.enterForegroundCountAtLatestUsage, enterForegroundCountAtLatestUsage)
     }
 
     required init(from decoder: Decoder) throws {
@@ -704,6 +707,9 @@ class SettingsStreamReplay: Codable, ObservableObject {
         }
         inStinger = container.decode(.inStinger, SettingsStreamReplayStinger.self, .init())
         outStinger = container.decode(.outStinger, SettingsStreamReplayStinger.self, .init())
+        enterForegroundCountAtLatestUsage = container.decode(.enterForegroundCountAtLatestUsage,
+                                                             Int?.self,
+                                                             nil)
     }
 
     func clone() -> SettingsStreamReplay {
@@ -712,6 +718,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         new.transitionType = transitionType
         new.inStinger = inStinger
         new.outStinger = outStinger
+        new.enterForegroundCountAtLatestUsage = enterForegroundCountAtLatestUsage
         return new
     }
 }

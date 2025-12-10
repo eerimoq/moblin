@@ -95,6 +95,26 @@ extension Model {
         }
     }
 
+    func makeReplayShouldBeDisabledToastIfNeeded() {
+        guard stream.replay.enabled,
+              let enterForegroundCountAtLatestUsage = stream.replay.enterForegroundCountAtLatestUsage
+        else {
+            return
+        }
+        let unusedCount = enterForegroundCount - enterForegroundCountAtLatestUsage
+        guard unusedCount >= 20, unusedCount % 3 == 0 else {
+            return
+        }
+        makeToast(
+            title: String(localized: "Replay is enabled but seems unused"),
+            subTitle: String(localized: "Tap here to disable it.")
+        ) {
+            self.stream.replay.enabled = false
+            self.streamReplayEnabledUpdated()
+            self.makeToast(title: String(localized: "Replay disabled"))
+        }
+    }
+
     func setReplayPosition(start: Double) {
         guard let replaySettings else {
             return
@@ -111,6 +131,7 @@ extension Model {
             return false
         }
         let replay = stream.replay
+        replay.enterForegroundCountAtLatestUsage = enterForegroundCount
         let transitionMode: ReplayEffectTransitionMode
         switch replay.transitionType {
         case .none:
@@ -151,6 +172,7 @@ extension Model {
         } else {
             stopRecorderIfNeeded()
         }
+        stream.replay.enterForegroundCountAtLatestUsage = enterForegroundCount
     }
 
     func handleRecorderInitSegment(data: Data) {

@@ -791,15 +791,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func makeBuyIconsToastIfNeeded() {
+    private func makeBuyIconsToastIfNeeded() -> Bool {
         if cosmetics.hasBoughtSomething {
-            return
+            return false
         }
         if enterForegroundCount < 100 {
-            return
+            return false
         }
         if enterForegroundCount < 500, (enterForegroundCount % 10) != 0 {
-            return
+            return false
         }
         makeToast(title: randomBuyIconsTitle(),
                   subTitle: String(localized: "Tap here to open the shop."))
@@ -807,6 +807,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.toggleShowingPanel(type: nil, panel: .none)
             self.toggleShowingPanel(type: nil, panel: .cosmetics)
         }
+        return true
     }
 
     func makePortErrorToast(port: String) {
@@ -1322,7 +1323,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             startPeriodicTimers()
         case .off:
             enterForegroundCount += 1
-            makeBuyIconsToastIfNeeded()
+            if !makeBuyIconsToastIfNeeded() {
+                makeReplayShouldBeDisabledToastIfNeeded()
+            }
             clearRemoteSceneSettingsAndData()
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
