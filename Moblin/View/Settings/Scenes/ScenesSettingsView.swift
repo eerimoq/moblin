@@ -140,18 +140,18 @@ private struct RemoteSceneView: View {
 }
 
 struct ScenesSettingsView: View {
-    @EnvironmentObject var model: Model
+    @ObservedObject var database: Database
 
     var body: some View {
         Form {
-            ScenesListView(database: model.database)
-            WidgetsSettingsView(database: model.database)
-            if model.database.showAllSettings {
-                SceneSwitching(database: model.database, debug: model.database.debug)
-                AutoSwitchersSettingsView(autoSceneSwitchers: model.database.autoSceneSwitchers, showSelector: true)
-                DisconnectProtectionSettingsView(database: model.database,
-                                                 disconnectProtection: model.database.disconnectProtection)
-                RemoteSceneView(selectedSceneId: model.database.remoteSceneId)
+            ScenesListView(database: database)
+            WidgetsSettingsView(database: database)
+            if database.showAllSettings {
+                SceneSwitching(database: database, debug: database.debug)
+                AutoSwitchersSettingsView(autoSceneSwitchers: database.autoSceneSwitchers, showSelector: true)
+                DisconnectProtectionSettingsView(database: database,
+                                                 disconnectProtection: database.disconnectProtection)
+                RemoteSceneView(selectedSceneId: database.remoteSceneId)
             }
         }
         .navigationTitle("Scenes")

@@ -24,7 +24,7 @@ struct SettingsView: View {
                     Label("Streams", systemImage: "dot.radiowaves.left.and.right")
                 }
                 NavigationLink {
-                    ScenesSettingsView()
+                    ScenesSettingsView(database: database)
                 } label: {
                     Label("Scenes", systemImage: "photo.on.rectangle")
                 }
