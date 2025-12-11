@@ -210,7 +210,13 @@ private struct QuickSwitchGroupView: View {
                 }
             }
         } footer: {
-            Text("Switching between scenes in the same group may be instant.")
+            VStack(alignment: .leading) {
+                Text("Switching between scenes in the same group may be instant.")
+                if database.forceSceneSwitchTransition {
+                    Text("")
+                    Text("⚠️ Disable Settings → Scenes → Scene switching → Force transition to enable groups.")
+                }
+            }
         }
     }
 }

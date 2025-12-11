@@ -2444,7 +2444,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            preferredVideoStabilizationMode: .off,
                                            ignoreFramesAfterAttachSeconds: 0.0,
                                            fillFrame: false,
-                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi())
+                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
+                                           forceSceneTransition: false)
         media.attachCamera(params: params)
     }
 
@@ -2610,7 +2611,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
                                            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
                                            fillFrame: getFillFrame(scene: scene),
-                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi())
+                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
+                                           forceSceneTransition: database.forceSceneSwitchTransition)
         media.attachCamera(
             params: params,
             onSuccess: {
@@ -2663,7 +2665,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             cameraId: cameraId,
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
             fillFrame: getFillFrame(scene: scene),
-            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi()
+            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
+            forceSceneTransition: database.forceSceneSwitchTransition
         )
         media.usePendingAfterAttachEffects()
     }

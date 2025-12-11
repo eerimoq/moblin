@@ -23,6 +23,7 @@ struct VideoUnitAttachParams {
     let ignoreFramesAfterAttachSeconds: Double
     let fillFrame: Bool
     let isLandscapeStreamAndPortraitUi: Bool
+    let forceSceneTransition: Bool
 
     func canQuickSwitchTo(other: VideoUnitAttachParams) -> Bool {
         if devices.devices.count != other.devices.devices.count {
@@ -46,7 +47,10 @@ struct VideoUnitAttachParams {
         if preferredVideoStabilizationMode != other.preferredVideoStabilizationMode {
             return false
         }
-        if isLandscapeStreamAndPortraitUi {
+        if isLandscapeStreamAndPortraitUi != other.isLandscapeStreamAndPortraitUi {
+            return false
+        }
+        if forceSceneTransition {
             return false
         }
         return true

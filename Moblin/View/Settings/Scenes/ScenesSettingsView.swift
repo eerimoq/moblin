@@ -86,6 +86,9 @@ private struct SceneSwitching: View {
                         model.setSceneSwitchTransition()
                     }
                     Toggle("Force transition", isOn: $database.forceSceneSwitchTransition)
+                        .onChange(of: database.forceSceneSwitchTransition) { _ in
+                            model.resetSelectedScene(changeScene: false, attachCamera: true)
+                        }
                     HStack {
                         Text("Video blackish")
                         Slider(

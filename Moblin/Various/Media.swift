@@ -810,7 +810,8 @@ final class Media: NSObject {
         cameraId: UUID,
         ignoreFramesAfterAttachSeconds: Double,
         fillFrame: Bool,
-        isLandscapeStreamAndPortraitUi: Bool
+        isLandscapeStreamAndPortraitUi: Bool,
+        forceSceneTransition: Bool
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
@@ -821,7 +822,8 @@ final class Media: NSObject {
                                            preferredVideoStabilizationMode: .off,
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
                                            fillFrame: fillFrame,
-                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi)
+                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
+                                           forceSceneTransition: forceSceneTransition)
         processor?.attachCamera(params: params)
     }
 
