@@ -1,35 +1,44 @@
-FORMAT_ARGS=--maxwidth 120 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf
-LINT_ARGS=--strict --quiet
+SWIFTFORMAT_ARGS=--maxwidth 120 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf --quiet
+PRETTIER_ARGS=--log-level silent "Moblin/**/*.js"
+SWIFTLINT_ARGS=--strict --quiet
+CODESPELL_ARGS=--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
+		 --ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
 
 all:
-	$(MAKE) style
-	$(MAKE) lint
 
 style:
-	swiftformat $(FORMAT_ARGS) "Common"
-	swiftformat $(FORMAT_ARGS) "Moblin"
-	swiftformat $(FORMAT_ARGS) "Moblin Watch"
-	swiftformat $(FORMAT_ARGS) "Moblin Widget"
-	swiftformat $(FORMAT_ARGS) "Moblin Screen Recording"
-	swiftformat $(FORMAT_ARGS) "MoblinTests"
-	prettier --write "Moblin/**/*.js"
+	swiftformat $(SWIFTFORMAT_ARGS) "Common"
+	swiftformat $(SWIFTFORMAT_ARGS) "Moblin"
+	swiftformat $(SWIFTFORMAT_ARGS) "Moblin Watch"
+	swiftformat $(SWIFTFORMAT_ARGS) "Moblin Widget"
+	swiftformat $(SWIFTFORMAT_ARGS) "Moblin Screen Recording"
+	swiftformat $(SWIFTFORMAT_ARGS) "MoblinTests"
+	prettier $(PRETTIER_ARGS) --write
 
 style-check:
-	swiftformat $(FORMAT_ARGS) --lint "Common"
-	swiftformat $(FORMAT_ARGS) --lint "Moblin"
-	swiftformat $(FORMAT_ARGS) --lint "Moblin Watch"
-	swiftformat $(FORMAT_ARGS) --lint "Moblin Widget"
-	swiftformat $(FORMAT_ARGS) --lint "Moblin Screen Recording"
-	swiftformat $(FORMAT_ARGS) --lint "MoblinTests"
-	prettier --check "Moblin/**/*.js"
+	swiftformat $(SWIFTFORMAT_ARGS) --lint "Common"
+	swiftformat $(SWIFTFORMAT_ARGS) --lint "Moblin"
+	swiftformat $(SWIFTFORMAT_ARGS) --lint "Moblin Watch"
+	swiftformat $(SWIFTFORMAT_ARGS) --lint "Moblin Widget"
+	swiftformat $(SWIFTFORMAT_ARGS) --lint "Moblin Screen Recording"
+	swiftformat $(SWIFTFORMAT_ARGS) --lint "MoblinTests"
+	prettier $(PRETTIER_ARGS) --check
 
 lint:
-	swiftlint lint $(LINT_ARGS) "Common"
-	swiftlint lint $(LINT_ARGS) "Moblin"
-	swiftlint lint $(LINT_ARGS) "Moblin Watch"
-	swiftlint lint $(LINT_ARGS) "Moblin Widget"
-	swiftlint lint $(LINT_ARGS) "Moblin Screen Recording"
-	swiftlint lint $(LINT_ARGS) "MoblinTests"
+	swiftlint lint $(SWIFTLINT_ARGS) "Common"
+	swiftlint lint $(SWIFTLINT_ARGS) "Moblin"
+	swiftlint lint $(SWIFTLINT_ARGS) "Moblin Watch"
+	swiftlint lint $(SWIFTLINT_ARGS) "Moblin Widget"
+	swiftlint lint $(SWIFTLINT_ARGS) "Moblin Screen Recording"
+	swiftlint lint $(SWIFTLINT_ARGS) "MoblinTests"
+
+spell-check:
+	codespell $(CODESPELL_ARGS) "Common"
+	codespell $(CODESPELL_ARGS) "Moblin"
+	codespell $(CODESPELL_ARGS) "Moblin Watch"
+	codespell $(CODESPELL_ARGS) "Moblin Widget"
+	codespell $(CODESPELL_ARGS) "Moblin Screen Recording"
+	codespell $(CODESPELL_ARGS) "MoblinTests"
 
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings

@@ -275,7 +275,7 @@ stream.startRecording([
   ]
 ])
 
-// 2nd arguemnt set false
+// 2nd argument set false
 stream.attachAudio(AVCaptureDevice.default(for: .audio), automaticallyConfiguresApplicationAudioSession: false)
 ```
 
@@ -320,7 +320,7 @@ stream.attachScreen(AVCaptureScreenInput(displayID: CGMainDisplayID()))
 ```
 
 ## 📓 HTTP Usage
-HTTP Live Streaming (HLS). Your iPhone/Mac become a IP Camera. Basic snipet. You can see http://ip.address:8080/hello/playlist.m3u8 
+HTTP Live Streaming (HLS). Your iPhone/Mac become a IP Camera. Basic snippet. You can see http://ip.address:8080/hello/playlist.m3u8 
 ```swift
 var stream = HTTPStream()
 stream.attachCamera(AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back))

@@ -149,7 +149,7 @@ extension Model {
         case .userCancelled, .pending:
             logger.info("cosmetics: Purchase not done yet")
         default:
-            logger.info("cosmetics: What happend when buying? \(result)")
+            logger.info("cosmetics: What happened when buying? \(result)")
         }
     }
 

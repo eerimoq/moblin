@@ -20,6 +20,10 @@ jobs:
         run: |
           brew install swiftlint
           make lint
+      - name: Spell checking
+        run: |
+          brew install codespell
+          make spell-check
       - name: Download platform iOS
         run: |
           xcodebuild -downloadPlatform iOS

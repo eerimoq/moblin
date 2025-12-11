@@ -148,7 +148,7 @@ class OpenStreamingPlatformChat {
     private func setupConnection() async throws {
         authenticated = false
         guard let url = URL(string: url) else {
-            throw "Faield to create URL"
+            throw "Failed to create URL"
         }
         logger.debug("open-streaming-platform: URL \(url)")
         webSocket = URLSession.shared.webSocketTask(

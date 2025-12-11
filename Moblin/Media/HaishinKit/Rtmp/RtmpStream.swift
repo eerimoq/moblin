@@ -199,7 +199,7 @@ class RtmpStream {
             return
         }
         let dataWasSent = dataTimeStamps[handlerName] != nil
-        let timestmap = dataWasSent ?
+        let timestamp = dataWasSent ?
             UInt32((dataTimeStamps[handlerName]?.timeIntervalSinceNow ?? 0) * -1000) :
             UInt32(startedAt.timeIntervalSinceNow * -1000)
         let chunk = RtmpChunk(
@@ -208,7 +208,7 @@ class RtmpStream {
             message: RtmpDataMessage(
                 streamId: streamId,
                 dataType: .amf0Data,
-                timestamp: timestmap,
+                timestamp: timestamp,
                 handlerName: handlerName,
                 arguments: arguments
             )

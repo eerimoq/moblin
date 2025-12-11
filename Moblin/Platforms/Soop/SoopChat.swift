@@ -177,7 +177,7 @@ final class SoopChat: NSObject {
 
     private func setupConnection(info: PlayerLiveChannel) async throws {
         guard let url = makeWebSocketUrl(chdomain: info.chdomain, chpt: info.chpt) else {
-            throw "Faield to create URL"
+            throw "Failed to create URL"
         }
         logger.debug("soop: URL \(url)")
         webSocket = URLSession.shared.webSocketTask(

@@ -59,7 +59,7 @@ private func convertLut(image: UIImage) throws -> (Float, Data) {
         throw String(localized: "LUT image is not a cube")
     }
     guard let cgImage = image.cgImage else {
-        throw String(localized: "LUT image convertion failed")
+        throw String(localized: "LUT image conversion failed")
     }
     guard let data = cgImage.dataProvider?.data else {
         throw String(localized: "Failed to get LUT data")
