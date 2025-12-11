@@ -84,8 +84,12 @@ function moblinVideoPlayingUpdated() {
     return;
   }
   moblinPublishedVideoPlaying = videoPlaying;
+  publishVideoPlaying(videoPlaying);
+}
+
+function publishVideoPlaying(value) {
   moblin.publish({
-    videoPlaying: { value: videoPlaying },
+    videoPlaying: { value: value },
   });
 }
 
@@ -123,5 +127,6 @@ const moblinObserver = new MutationObserver(() => {
 moblinObserver.observe(document, { childList: true, subtree: true });
 
 document.addEventListener("DOMContentLoaded", () => {
+  publishVideoPlaying(false);
   moblinUpdateVideosConfigured();
 });
