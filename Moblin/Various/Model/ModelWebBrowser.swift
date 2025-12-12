@@ -1,6 +1,10 @@
 import Foundation
 import WebKit
 
+class WebBrowserState: ObservableObject {
+    @Published var isSmall = false
+}
+
 extension Model {
     private func getWebBrowserUrl() -> URL? {
         if let url = URL(string: webBrowserUrl), let scehme = url.scheme, !scehme.isEmpty {
@@ -33,6 +37,8 @@ extension Model {
         if webBrowser == nil {
             webBrowser = WKWebView()
             webBrowser?.navigationDelegate = self
+            webBrowser?.isOpaque = false
+            webBrowser?.backgroundColor = .clear
             webBrowser?.uiDelegate = webBrowserController
             webBrowser?.configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
             DispatchQueue.main.async {

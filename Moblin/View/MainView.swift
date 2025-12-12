@@ -420,7 +420,9 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    WebBrowserView(orientation: orientation)
+                    WebBrowserView(database: model.database,
+                                   orientation: orientation,
+                                   webBrowserState: model.webBrowserState)
                 }
                 if model.showNavigation {
                     if #available(iOS 26, *) {
@@ -495,7 +497,9 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    WebBrowserView(orientation: orientation)
+                    WebBrowserView(database: model.database,
+                                   orientation: orientation,
+                                   webBrowserState: model.webBrowserState)
                 }
                 if model.showNavigation {
                     if #available(iOS 26, *) {

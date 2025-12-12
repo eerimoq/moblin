@@ -355,6 +355,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
     let orientation = Orientation()
     let snapshot = Snapshot()

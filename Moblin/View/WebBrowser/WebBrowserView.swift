@@ -1,6 +1,8 @@
 import SwiftUI
 import WebKit
 
+private let smallBrowserSide = 250.0
+
 struct WebView: UIViewRepresentable {
     @EnvironmentObject var model: Model
 
@@ -37,14 +39,14 @@ private struct NextPrevView: View {
                 model.getWebBrowser().goBack()
             } label: {
                 Image(systemName: "chevron.left")
-                    .padding(10)
+                    .padding(7)
             }
             .disabled(!model.getWebBrowser().canGoBack)
             Button {
                 model.getWebBrowser().goForward()
             } label: {
                 Image(systemName: "chevron.right")
-                    .padding(10)
+                    .padding(7)
             }
             .disabled(!model.getWebBrowser().canGoForward)
         }
@@ -55,6 +57,7 @@ private struct RefreshBookmarksView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowser: WebBrowserSettings
     @Binding var showingBookmarks: Bool
+    @Binding var isSmall: Bool
 
     var body: some View {
         HStack {
@@ -62,13 +65,19 @@ private struct RefreshBookmarksView: View {
                 model.getWebBrowser().reload()
             } label: {
                 Image(systemName: "arrow.clockwise")
-                    .padding(10)
+                    .padding(7)
             }
             Button {
                 showingBookmarks = true
             } label: {
                 Image(systemName: "bookmark")
-                    .padding(10)
+                    .padding(7)
+            }
+            Button {
+                isSmall.toggle()
+            } label: {
+                Image(systemName: "arrow.down.right.and.arrow.up.left")
+                    .padding(7)
             }
         }
     }
@@ -135,9 +144,72 @@ private struct BookmarksView: View {
     }
 }
 
-struct WebBrowserView: View {
-    @EnvironmentObject var model: Model
+private struct WebBrowserSmallView: View {
+    @ObservedObject var database: Database
+    @ObservedObject var webBrowserState: WebBrowserState
+
+    private func offset(metrics _: GeometryProxy) -> Double {
+        if database.bigButtons {
+            return -(2 * segmentHeightBig + 10)
+        } else {
+            return -(2 * segmentHeight + 10)
+        }
+    }
+
+    private func mapSide(maximum: Double) -> Double {
+        return min(maximum - 130, smallBrowserSide)
+    }
+
+    var body: some View {
+        GeometryReader { metrics in
+            ZStack {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        WebView()
+                            .background(.clear)
+                            .frame(width: smallBrowserSide, height: smallBrowserSide)
+                            .frame(maxWidth: mapSide(maximum: metrics.size.width),
+                                   maxHeight: mapSide(maximum: metrics.size.height))
+                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                            .padding([.trailing], 3)
+                    }
+                }
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button {
+                            webBrowserState.isSmall.toggle()
+                        } label: {
+                            if #available(iOS 26, *) {
+                                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                    .foregroundStyle(.primary)
+                                    .frame(width: 12, height: 12)
+                                    .padding()
+                                    .glassEffect()
+                                    .padding([.trailing, .bottom], 10)
+                            } else {
+                                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                    .foregroundStyle(.primary)
+                                    .frame(width: 12, height: 12)
+                                    .padding()
+                                    .padding([.trailing, .bottom], 10)
+                            }
+                        }
+                    }
+                }
+            }
+            .offset(CGSize(width: 0, height: offset(metrics: metrics)))
+        }
+    }
+}
+
+private struct WebBrowserBigView: View {
+    @ObservedObject var database: Database
     @ObservedObject var orientation: Orientation
+    @ObservedObject var webBrowserState: WebBrowserState
     @State var showingBookmarks = false
 
     var body: some View {
@@ -148,23 +220,44 @@ struct WebBrowserView: View {
                     HStack {
                         NextPrevView()
                         Spacer()
-                        RefreshBookmarksView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
+                        RefreshBookmarksView(webBrowser: database.webBrowser,
+                                             showingBookmarks: $showingBookmarks,
+                                             isSmall: $webBrowserState.isSmall)
                     }
                 }
                 .padding(3)
+                .background(ignoresSafeAreaEdges: .bottom)
             } else {
                 HStack {
                     NextPrevView()
                     UrlView()
-                    RefreshBookmarksView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
+                    RefreshBookmarksView(webBrowser: database.webBrowser,
+                                         showingBookmarks: $showingBookmarks,
+                                         isSmall: $webBrowserState.isSmall)
                 }
                 .padding(3)
+                .background(ignoresSafeAreaEdges: .bottom)
             }
             WebView()
                 .sheet(isPresented: $showingBookmarks) {
-                    BookmarksView(webBrowser: model.database.webBrowser, showingBookmarks: $showingBookmarks)
+                    BookmarksView(webBrowser: database.webBrowser,
+                                  showingBookmarks: $showingBookmarks)
                 }
         }
-        .background(ignoresSafeAreaEdges: .bottom)
+        .background(.clear, ignoresSafeAreaEdges: .bottom)
+    }
+}
+
+struct WebBrowserView: View {
+    let database: Database
+    let orientation: Orientation
+    @ObservedObject var webBrowserState: WebBrowserState
+
+    var body: some View {
+        if webBrowserState.isSmall {
+            WebBrowserSmallView(database: database, webBrowserState: webBrowserState)
+        } else {
+            WebBrowserBigView(database: database, orientation: orientation, webBrowserState: webBrowserState)
+        }
     }
 }
