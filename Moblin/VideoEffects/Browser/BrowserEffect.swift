@@ -47,10 +47,11 @@ final class BrowserEffect: VideoEffect {
     private let videoSize: CGSize
     let width: Double
     let height: Double
-    let url: URL
-    var isLoaded: Bool
-    let audioOnly: Bool
-    var fps: Float
+    private let url: URL
+    private(set) var isLoaded: Bool
+    private let audioAndVideoOnly: Bool
+    private var baseFps: Double
+    private var fps: Double
     private let snapshotTimer = SimpleTimer(queue: .main)
     var startLoadingTime = ContinuousClock.now
     private let scale: Double
@@ -59,6 +60,8 @@ final class BrowserEffect: VideoEffect {
     private let settingName: String
     private let server: BrowserEffectServer
     private var stopped = false
+    private var suspended = false
+    private let snapshotConfiguration: WKSnapshotConfiguration
 
     init(
         url: URL,
@@ -76,16 +79,14 @@ final class BrowserEffect: VideoEffect {
         self.url = url
         self.videoSize = videoSize
         self.settingName = settingName
-        fps = widget.fps
+        baseFps = Double(widget.baseFps)
+        fps = baseFps
         isLoaded = false
-        audioOnly = widget.audioOnly
-        if audioOnly {
-            width = 1
-            height = 1
-        } else {
-            width = Double(widget.width)
-            height = Double(widget.height)
-        }
+        audioAndVideoOnly = widget.audioAndVideoOnly
+        width = Double(widget.width)
+        height = Double(widget.height)
+        snapshotConfiguration = WKSnapshotConfiguration()
+        snapshotConfiguration.snapshotWidth = NSNumber(value: width / scale)
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.allowsPictureInPictureMediaPlayback = false
@@ -104,9 +105,11 @@ final class BrowserEffect: VideoEffect {
         webView.scrollView.showsHorizontalScrollIndicator = false
         super.init()
         server.webView = webView
+        server.delegate = self
     }
 
     deinit {
+        webView.configuration.userContentController.removeAllScriptMessageHandlers()
         stopTakeSnapshots()
     }
 
@@ -115,7 +118,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     override func isEnabled() -> Bool {
-        return !audioOnly
+        return snapshot != nil
     }
 
     func sendChatMessage(post: ChatPost) {
@@ -197,42 +200,64 @@ final class BrowserEffect: VideoEffect {
     }
 
     private func startTakeSnapshots() {
-        guard !stopped else {
+        guard !stopped, !audioAndVideoOnly else {
             return
         }
-        let fps = server.isVideoPlaying() ? 30 : self.fps
-        snapshotTimer.startSingleShot(timeout: Double(1 / fps)) { [weak self] in
-            guard let self else {
-                return
-            }
-            guard !self.audioOnly else {
-                return
-            }
-            let configuration = WKSnapshotConfiguration()
-            configuration.snapshotWidth = NSNumber(value: self.width / self.scale)
-            self.webView.takeSnapshot(with: configuration) { [weak self] image, error in
-                guard let self else {
-                    return
-                }
-                guard !self.stopped else {
-                    return
-                }
-                self.startTakeSnapshots()
-                if let error {
-                    logger.info("Browser snapshot error: \(error)")
-                } else if let image {
-                    processorPipelineQueue.async {
-                        self.snapshot = CIImage(image: image)
-                    }
-                } else {
-                    logger.info("No browser image")
-                }
-            }
-        }
+        resumeTakeSnapshots()
     }
 
     private func stopTakeSnapshots() {
         stopped = true
         snapshotTimer.stop()
+    }
+
+    private func suspendTakeSnapshots() {
+        suspended = true
+        snapshotTimer.stop()
+        processorPipelineQueue.async { [weak self] in
+            self?.snapshot = nil
+        }
+    }
+
+    private func resumeTakeSnapshots() {
+        suspended = false
+        takeSnapshots(takeSnapshotTime: 0)
+    }
+
+    private func takeSnapshots(takeSnapshotTime: Double) {
+        snapshotTimer.startSingleShot(timeout: max(1 / fps - takeSnapshotTime, 0.001)) { [weak self] in
+            guard let self else {
+                return
+            }
+            let takeSnapshotBeginTime = ContinuousClock.now
+            self.webView.takeSnapshot(with: snapshotConfiguration) { [weak self] image, _ in
+                guard let self, !stopped, !suspended else {
+                    return
+                }
+                let takeSnapshotTime = takeSnapshotBeginTime.duration(to: .now)
+                takeSnapshots(takeSnapshotTime: takeSnapshotTime.seconds)
+                guard let image else {
+                    return
+                }
+                processorPipelineQueue.async {
+                    self.snapshot = CIImage(image: image)
+                }
+            }
+        }
+    }
+}
+
+extension BrowserEffect: BrowserEffectServerDelegate {
+    func browserEffectServerVideoPlaying() {
+        fps = 30
+        resumeTakeSnapshots()
+    }
+
+    func browserEffectServerVideoEnded() {
+        fps = baseFps
+        guard audioAndVideoOnly else {
+            return
+        }
+        suspendTakeSnapshots()
     }
 }

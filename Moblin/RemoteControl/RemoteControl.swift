@@ -209,7 +209,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
     var url: String
     var width: Int
     var height: Int
-    var audioOnly: Bool
+    var audioAndVideoOnly: Bool
     var fps: Float
     var styleSheet: String
 
@@ -217,8 +217,8 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
         url = browser.url
         width = browser.width
         height = browser.height
-        audioOnly = browser.audioOnly
-        fps = browser.fps
+        audioAndVideoOnly = browser.audioAndVideoOnly
+        fps = browser.baseFps
         styleSheet = browser.styleSheet
     }
 
@@ -227,8 +227,8 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeBrowser: Codable {
         browser.url = url
         browser.width = width
         browser.height = height
-        browser.audioOnly = audioOnly
-        browser.fps = fps
+        browser.audioAndVideoOnly = audioAndVideoOnly
+        browser.baseFps = fps
         browser.styleSheet = styleSheet
         return browser
     }

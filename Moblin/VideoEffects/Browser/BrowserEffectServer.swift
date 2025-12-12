@@ -66,13 +66,18 @@ private class Subscriptions {
     var chat: Chat?
 }
 
+protocol BrowserEffectServerDelegate: AnyObject {
+    func browserEffectServerVideoPlaying()
+    func browserEffectServerVideoEnded()
+}
+
 class BrowserEffectServer: NSObject {
     weak var webView: WKWebView?
     private let subscriptions = Subscriptions()
-    private var videoPlaying: Bool = false
     private let pingTimer = SimpleTimer(queue: .main)
     private var gotPing = true
     private let moblinAccess: Bool
+    weak var delegate: BrowserEffectServerDelegate?
 
     init(configuration: WKWebViewConfiguration, moblinAccess: Bool) {
         self.moblinAccess = moblinAccess
@@ -107,14 +112,10 @@ class BrowserEffectServer: NSObject {
         send(message: .message(data: .chat(message: .init(message: post))))
     }
 
-    func isVideoPlaying() -> Bool {
-        return videoPlaying
-    }
-
     private func handlePingTimer() {
         if !gotPing {
             logger.info("browser-effect-server: Ping timeout")
-            videoPlaying = false
+            delegate?.browserEffectServerVideoEnded()
         }
         gotPing = false
     }
@@ -152,7 +153,11 @@ class BrowserEffectServer: NSObject {
         switch message {
         case let .videoPlaying(videoPlaying):
             logger.debug("browser-effect-server: Got video playing: \(videoPlaying)")
-            self.videoPlaying = videoPlaying
+            if videoPlaying {
+                delegate?.browserEffectServerVideoPlaying()
+            } else {
+                delegate?.browserEffectServerVideoEnded()
+            }
         }
     }
 

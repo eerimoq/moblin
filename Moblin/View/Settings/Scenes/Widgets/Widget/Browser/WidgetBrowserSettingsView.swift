@@ -48,7 +48,7 @@ struct WidgetBrowserSettingsView: View {
     }
 
     private func submitFps(value: Float) {
-        browser.fps = value
+        browser.baseFps = value
         model.resetSelectedScene(changeScene: false)
     }
 
@@ -74,27 +74,27 @@ struct WidgetBrowserSettingsView: View {
                     "p {color: red;}",
                 ]
             )
-            Toggle("Audio only", isOn: $browser.audioOnly)
-                .onChange(of: browser.audioOnly) { _ in
+            Toggle("Audio and video only", isOn: $browser.audioAndVideoOnly)
+                .onChange(of: browser.audioAndVideoOnly) { _ in
                     model.resetSelectedScene(changeScene: false)
                 }
-            if !browser.audioOnly {
-                TextEditNavigationView(
-                    title: String(localized: "Width"),
-                    value: String(browser.width),
-                    onChange: changeWidthHeight,
-                    onSubmit: submitWidth,
-                    keyboardType: .numbersAndPunctuation
-                )
-                TextEditNavigationView(title: String(localized: "Height"),
-                                       value: String(browser.height),
-                                       onChange: changeWidthHeight,
-                                       onSubmit: submitHeight,
-                                       keyboardType: .numbersAndPunctuation)
+            TextEditNavigationView(
+                title: String(localized: "Width"),
+                value: String(browser.width),
+                onChange: changeWidthHeight,
+                onSubmit: submitWidth,
+                keyboardType: .numbersAndPunctuation
+            )
+            TextEditNavigationView(title: String(localized: "Height"),
+                                   value: String(browser.height),
+                                   onChange: changeWidthHeight,
+                                   onSubmit: submitHeight,
+                                   keyboardType: .numbersAndPunctuation)
+            if !browser.audioAndVideoOnly {
                 HStack {
-                    Text("FPS")
+                    Text("Base FPS")
                     SliderView(
-                        value: browser.fps,
+                        value: browser.baseFps,
                         minimum: 1,
                         maximum: 15,
                         step: 1,
