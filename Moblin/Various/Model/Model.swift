@@ -2210,7 +2210,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func reloadViewers() {
+    func reloadViewers() {
         statusTopLeft.numberOfViewersIconColor = .orange
         statusTopLeft.numberOfViewersCompact = noValue
         statusTopLeft.numberOfViewers.removeAll()

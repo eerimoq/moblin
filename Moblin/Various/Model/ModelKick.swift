@@ -57,12 +57,14 @@ extension Model {
     }
 
     func kickChannelNameUpdated() {
+        reloadViewers()
         reloadKickPusher()
         reloadKickViewers()
         resetChat()
     }
 
     func kickAccessTokenUpdated() {
+        reloadViewers()
         reloadKickPusher()
         reloadKickViewers()
         resetChat()

@@ -42,12 +42,14 @@ extension Model {
     }
 
     func twitchChannelNameUpdated() {
+        reloadViewers()
         reloadTwitchEventSub()
         reloadTwitchChat()
         resetChat()
     }
 
     func twitchChannelIdUpdated() {
+        reloadViewers()
         reloadTwitchEventSub()
         reloadTwitchChat()
         resetChat()
@@ -179,6 +181,7 @@ extension Model {
         stream.twitchAccessToken = ""
         removeTwitchAccessTokenInKeychain(streamId: stream.id)
         if stream.enabled {
+            reloadViewers()
             reloadTwitchEventSub()
             reloadChats()
         }
