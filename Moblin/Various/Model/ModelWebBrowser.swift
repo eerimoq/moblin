@@ -35,7 +35,9 @@ extension Model {
 
     func getWebBrowser() -> WKWebView {
         if webBrowser == nil {
-            webBrowser = WKWebView()
+            let configuration = WKWebViewConfiguration()
+            configuration.allowsInlineMediaPlayback = true
+            webBrowser = WKWebView(frame: .zero, configuration: configuration)
             webBrowser?.navigationDelegate = self
             webBrowser?.isOpaque = false
             webBrowser?.backgroundColor = .clear
