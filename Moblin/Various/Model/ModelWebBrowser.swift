@@ -37,12 +37,12 @@ extension Model {
         if webBrowser == nil {
             let configuration = WKWebViewConfiguration()
             configuration.allowsInlineMediaPlayback = true
+            configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
             webBrowser = WKWebView(frame: .zero, configuration: configuration)
             webBrowser?.navigationDelegate = self
             webBrowser?.isOpaque = false
             webBrowser?.backgroundColor = .clear
             webBrowser?.uiDelegate = webBrowserController
-            webBrowser?.configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
             DispatchQueue.main.async {
                 self.loadWebBrowserHome()
             }
