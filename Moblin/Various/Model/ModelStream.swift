@@ -739,7 +739,7 @@ extension Model {
     }
 
     func setStreamFps(fps: Int? = nil) {
-        media.setFps(fps: fps ?? stream.fps, preferAutoFps: stream.autoFps)
+        media.setFps(fps: fps ?? stream.fps, preferAutoFps: stream.lowLightBoost)
     }
 
     func setStreamBitrate(stream: SettingsStream) {
@@ -947,7 +947,7 @@ extension Model: MediaDelegate {
 
     func mediaSelectedFps(auto: Bool) {
         DispatchQueue.main.async {
-            self.autoFps = auto
+            self.lowLightBoost = auto
             self.updateStatusStreamText()
         }
     }

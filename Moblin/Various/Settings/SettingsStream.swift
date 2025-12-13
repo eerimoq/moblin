@@ -971,7 +971,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var discordSnapshotWebhookOnlyWhenLive: Bool = true
     @Published var resolution: SettingsStreamResolution = SettingsStream.defaultResolution
     @Published var fps: Int = SettingsStream.defaultFps
-    @Published var autoFps: Bool = false
+    @Published var lowLightBoost: Bool = false
     @Published var bitrate: UInt32 = 5_000_000
     @Published var codec: SettingsStreamCodec = .h265hevc
     @Published var h264Profile: SettingsStreamH264Profile = .main
@@ -1131,7 +1131,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.discordSnapshotWebhookOnlyWhenLive, discordSnapshotWebhookOnlyWhenLive)
         try container.encode(.resolution, resolution)
         try container.encode(.fps, fps)
-        try container.encode(.autoFps, autoFps)
+        try container.encode(.autoFps, lowLightBoost)
         try container.encode(.bitrate, bitrate)
         try container.encode(.codec, codec)
         try container.encode(.h264Profile, h264Profile)
@@ -1212,7 +1212,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         discordSnapshotWebhookOnlyWhenLive = container.decode(.discordSnapshotWebhookOnlyWhenLive, Bool.self, true)
         resolution = container.decode(.resolution, SettingsStreamResolution.self, Self.defaultResolution)
         fps = container.decode(.fps, Int.self, Self.defaultFps)
-        autoFps = container.decode(.autoFps, Bool.self, false)
+        lowLightBoost = container.decode(.autoFps, Bool.self, false)
         bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
         codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
         h264Profile = container.decode(.h264Profile, SettingsStreamH264Profile.self, .main)
@@ -1283,7 +1283,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.discordSnapshotWebhookOnlyWhenLive = discordSnapshotWebhookOnlyWhenLive
         new.resolution = resolution
         new.fps = fps
-        new.autoFps = autoFps
+        new.lowLightBoost = lowLightBoost
         new.bitrate = bitrate
         new.codec = codec
         new.h264Profile = h264Profile

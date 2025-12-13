@@ -47,8 +47,8 @@ private struct LowLightBoostSettingsView: View {
     var body: some View {
         if #available(iOS 18, *) {
             Section {
-                Toggle("Low light boost (LLB)", isOn: $stream.autoFps)
-                    .onChange(of: stream.autoFps) { _ in
+                Toggle("Low light boost (LLB)", isOn: $stream.lowLightBoost)
+                    .onChange(of: stream.lowLightBoost) { _ in
                         model.setStreamFps()
                     }
             } footer: {

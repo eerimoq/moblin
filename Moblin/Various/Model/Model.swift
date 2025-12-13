@@ -407,7 +407,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let bonding = Bonding()
     var currentFps: Int?
     var currentResolution: String?
-    var autoFps = false
+    var lowLightBoost = false
     var showBackgroudStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
     private var findFaceTimer: Timer?
@@ -2865,7 +2865,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let audioCodec = stream.audioCodecString()
         let audioBitrate = stream.audioBitrateString()
         let fps: String
-        if autoFps {
+        if lowLightBoost {
             fps = "\(currentFps ?? stream.fps) LLB"
         } else {
             fps = String(currentFps ?? stream.fps)
