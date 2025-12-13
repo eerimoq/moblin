@@ -169,7 +169,6 @@ private struct WebBrowserSmallView: View {
                         Spacer()
                         WebView()
                             .background(.clear)
-                            .frame(width: smallBrowserSide, height: smallBrowserSide)
                             .frame(maxWidth: mapSide(maximum: metrics.size.width),
                                    maxHeight: mapSide(maximum: metrics.size.height))
                             .clipShape(RoundedRectangle(cornerRadius: 7))
