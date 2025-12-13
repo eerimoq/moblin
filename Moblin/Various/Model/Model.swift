@@ -1680,51 +1680,66 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateViewers() {
-        var color: Color = .white
+        var newColor: Color = .white
         var newNumberOfViewers = 0
         var hasCount = false
         var numberOfViewers: [PlatformViewers] = []
         for viewers in statusTopLeft.numberOfViewers {
-            let newViewers: PlatformViewers
             switch viewers.platform {
             case .twitch:
-                if let numberOfTwitchViewers {
-                    newNumberOfViewers += numberOfTwitchViewers
-                    hasCount = true
-                    newViewers = .init(platform: .twitch, status: .live(viewerCount: numberOfTwitchViewers))
-                } else {
-                    color = .orange
-                    newViewers = .init(platform: .twitch, status: .unknown)
-                }
+                numberOfViewers.append(updateViewersTwitch(&newNumberOfViewers, &hasCount, &newColor))
             case .kick:
-                if let kickNumberOfViewers = kickViewers?.numberOfViewers {
-                    newNumberOfViewers += kickNumberOfViewers
-                    hasCount = true
-                    newViewers = .init(platform: .kick, status: .live(viewerCount: kickNumberOfViewers))
-                } else {
-                    color = .orange
-                    newViewers = .init(platform: .kick, status: .unknown)
-                }
+                numberOfViewers.append(updateViewersKick(&newNumberOfViewers, &hasCount, &newColor))
             default:
-                continue
+                numberOfViewers.append(viewers)
             }
-            numberOfViewers.append(newViewers)
         }
-        if color != statusTopLeft.numberOfViewersIconColor {
-            statusTopLeft.numberOfViewersIconColor = color
+        if newColor != statusTopLeft.numberOfViewersIconColor {
+            statusTopLeft.numberOfViewersIconColor = newColor
         }
         if numberOfViewers != statusTopLeft.numberOfViewers {
             statusTopLeft.numberOfViewers = numberOfViewers
         }
-        let newNumberOfViewersCompact: String
-        if hasCount {
-            newNumberOfViewersCompact = countFormatter.format(newNumberOfViewers)
-        } else {
-            newNumberOfViewersCompact = noValue
-        }
+        let newNumberOfViewersCompact = updateViewersCompact(newNumberOfViewers, hasCount)
         if newNumberOfViewersCompact != statusTopLeft.numberOfViewersCompact {
             statusTopLeft.numberOfViewersCompact = newNumberOfViewersCompact
             sendViewerCountWatch()
+        }
+    }
+
+    private func updateViewersTwitch(_ newNumberOfViewers: inout Int,
+                                     _ hasCount: inout Bool,
+                                     _ newColor: inout Color) -> PlatformViewers
+    {
+        if let numberOfTwitchViewers {
+            newNumberOfViewers += numberOfTwitchViewers
+            hasCount = true
+            return PlatformViewers(platform: .twitch, status: .live(viewerCount: numberOfTwitchViewers))
+        } else {
+            newColor = .orange
+            return PlatformViewers(platform: .twitch, status: .unknown)
+        }
+    }
+
+    private func updateViewersKick(_ newNumberOfViewers: inout Int,
+                                   _ hasCount: inout Bool,
+                                   _ newColor: inout Color) -> PlatformViewers
+    {
+        if let kickNumberOfViewers = kickViewers?.numberOfViewers {
+            newNumberOfViewers += kickNumberOfViewers
+            hasCount = true
+            return PlatformViewers(platform: .kick, status: .live(viewerCount: kickNumberOfViewers))
+        } else {
+            newColor = .orange
+            return PlatformViewers(platform: .kick, status: .unknown)
+        }
+    }
+
+    private func updateViewersCompact(_ newNumberOfViewers: Int, _ hasCount: Bool) -> String {
+        if hasCount {
+            return countFormatter.format(newNumberOfViewers)
+        } else {
+            return noValue
         }
     }
 
