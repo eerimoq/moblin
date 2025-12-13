@@ -166,8 +166,21 @@ class StatusOther: ObservableObject {
     @Published var digitalClock = noValue
 }
 
+enum PlatformStatus: Equatable {
+    case live(viewerCount: Int)
+    case unknown
+    case offline
+}
+
+struct PlatformViewers: Equatable {
+    let platform: Platform
+    let status: PlatformStatus
+}
+
 class StatusTopLeft: ObservableObject {
-    @Published var numberOfViewers = noValue
+    @Published var numberOfViewersIconColor: Color = .white
+    @Published var numberOfViewersCompact = noValue
+    @Published var numberOfViewers: [PlatformViewers] = []
     @Published var statusEventsText = noValue
     @Published var statusChatText = noValue
     @Published var streamText = noValue
@@ -1667,27 +1680,50 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateViewers() {
+        var color: Color = .white
         var newNumberOfViewers = 0
-        var hasInfo = false
-        if let numberOfTwitchViewers {
-            newNumberOfViewers += numberOfTwitchViewers
-            hasInfo = true
+        var hasCount = false
+        var numberOfViewers: [PlatformViewers] = []
+        for viewers in statusTopLeft.numberOfViewers {
+            let newViewers: PlatformViewers
+            switch viewers.platform {
+            case .twitch:
+                if let numberOfTwitchViewers {
+                    newNumberOfViewers += numberOfTwitchViewers
+                    hasCount = true
+                    newViewers = .init(platform: .twitch, status: .live(viewerCount: numberOfTwitchViewers))
+                } else {
+                    color = .orange
+                    newViewers = .init(platform: .twitch, status: .unknown)
+                }
+            case .kick:
+                if let kickNumberOfViewers = kickViewers?.numberOfViewers {
+                    newNumberOfViewers += kickNumberOfViewers
+                    hasCount = true
+                    newViewers = .init(platform: .kick, status: .live(viewerCount: kickNumberOfViewers))
+                } else {
+                    color = .orange
+                    newViewers = .init(platform: .kick, status: .unknown)
+                }
+            default:
+                continue
+            }
+            numberOfViewers.append(newViewers)
         }
-        if isKickViewersConfigured(), let numberOfViewers = kickViewers?.numberOfViewers {
-            newNumberOfViewers += numberOfViewers
-            hasInfo = true
+        if color != statusTopLeft.numberOfViewersIconColor {
+            statusTopLeft.numberOfViewersIconColor = color
         }
-        var newValue: String
-        if hasInfo {
-            newValue = countFormatter.format(newNumberOfViewers)
+        if numberOfViewers != statusTopLeft.numberOfViewers {
+            statusTopLeft.numberOfViewers = numberOfViewers
+        }
+        let newNumberOfViewersCompact: String
+        if hasCount {
+            newNumberOfViewersCompact = countFormatter.format(newNumberOfViewers)
         } else {
-            newValue = noValue
+            newNumberOfViewersCompact = noValue
         }
-        if !isLive {
-            newValue = noValue
-        }
-        if newValue != statusTopLeft.numberOfViewers {
-            statusTopLeft.numberOfViewers = newValue
+        if newNumberOfViewersCompact != statusTopLeft.numberOfViewersCompact {
+            statusTopLeft.numberOfViewersCompact = newNumberOfViewersCompact
             sendViewerCountWatch()
         }
     }
@@ -1977,6 +2013,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func reloadConnections() {
         useRemoteControlForChatAndEvents = false
+        reloadViewers()
         reloadChats()
         reloadTwitchEventSub()
         reloadObsWebSocket()
@@ -2170,6 +2207,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if statusTopRight.browserWidgetsStatus != message {
             statusTopRight.browserWidgetsStatus = message
+        }
+    }
+
+    private func reloadViewers() {
+        statusTopLeft.numberOfViewersIconColor = .orange
+        statusTopLeft.numberOfViewersCompact = noValue
+        statusTopLeft.numberOfViewers.removeAll()
+        if isTwitchViewersConfigured() {
+            statusTopLeft.numberOfViewers.append(.init(platform: .twitch, status: .unknown))
+        }
+        if isKickViewersConfigured() {
+            statusTopLeft.numberOfViewers.append(.init(platform: .kick, status: .unknown))
         }
     }
 
@@ -2805,7 +2854,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusViewers() -> Bool {
-        return database.show.viewers && isViewersConfigured() && isLive
+        return isLive && !statusTopLeft.numberOfViewers.isEmpty
     }
 
     private func statusStreamText() -> String {
@@ -2858,7 +2907,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func statusViewersText() -> String {
         if isViewersConfigured() {
-            return statusTopLeft.numberOfViewers
+            return statusTopLeft.numberOfViewersCompact
         } else {
             return String(localized: "Not configured")
         }

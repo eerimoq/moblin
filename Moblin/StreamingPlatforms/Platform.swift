@@ -25,7 +25,7 @@ enum Platform: Codable {
         }
     }
 
-    func imageName() -> String? {
+    func imageName() -> String {
         switch self {
         case .soop:
             return "SoopLogo"

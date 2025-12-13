@@ -363,7 +363,7 @@ class TwitchApi {
     }
 
     func getStream(userId: String, onComplete: @escaping (TwitchApiStreamData?) -> Void) {
-        doGet(subPath: "streams?user_id=\(userId)") {
+        doGet(subPath: "streams?user_id=\(userId)&type=live") {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiStreams.self, from: data)

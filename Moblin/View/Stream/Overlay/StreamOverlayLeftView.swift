@@ -3,23 +3,70 @@ import WebKit
 
 private struct CollapsedViewersView: View {
     @ObservedObject var status: StatusTopLeft
-    let color: Color
 
     var body: some View {
         HStack(spacing: 1) {
             Image(systemName: "eye")
                 .frame(width: 17, height: 17)
                 .padding([.leading], 2)
-                .foregroundStyle(color)
-            if !status.numberOfViewers.isEmpty {
-                Text(status.numberOfViewers)
-                    .foregroundStyle(.white)
-                    .padding([.leading, .trailing], 2)
-            }
+                .foregroundStyle(status.numberOfViewersIconColor)
+            Text(status.numberOfViewersCompact)
+                .foregroundStyle(.white)
+                .padding([.leading, .trailing], 2)
         }
         .font(smallFont)
         .background(backgroundColor)
         .cornerRadius(5)
+        .padding(20)
+        .contentShape(Rectangle())
+        .padding(-20)
+    }
+}
+
+private struct ViewersLogoView: View {
+    let platform: Platform
+
+    var body: some View {
+        Image(platform.imageName())
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .padding([.top, .bottom], 2)
+            .frame(height: 18)
+    }
+}
+
+private struct ViewersView: View {
+    @ObservedObject var status: StatusTopLeft
+
+    var body: some View {
+        HStack(spacing: 1) {
+            Image(systemName: "eye")
+                .frame(width: 17, height: 17)
+                .padding([.leading, .trailing], 2)
+                .foregroundStyle(status.numberOfViewersIconColor)
+                .background(backgroundColor)
+                .cornerRadius(5)
+            HStack(spacing: 2) {
+                ForEach(status.numberOfViewers, id: \.platform) {
+                    ViewersLogoView(platform: $0.platform)
+                    switch $0.status {
+                    case let .live(viewerCount: viewerCount):
+                        Text(countFormatter.format(viewerCount))
+                            .foregroundStyle(.white)
+                    case .unknown:
+                        Text("Unknown")
+                            .foregroundStyle(.orange)
+                    case .offline:
+                        Text("Offline")
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .padding([.leading, .trailing], 2)
+            .background(backgroundColor)
+            .cornerRadius(5)
+        }
+        .font(smallFont)
         .padding(20)
         .contentShape(Rectangle())
         .padding(-20)
@@ -150,13 +197,9 @@ private struct StatusesView: View {
         }
         if model.isShowingStatusViewers() {
             if textPlacement == .hide {
-                CollapsedViewersView(status: status, color: .white)
+                CollapsedViewersView(status: status)
             } else {
-                StreamOverlayIconAndTextView(
-                    icon: "eye",
-                    text: model.statusViewersText(),
-                    textPlacement: textPlacement
-                )
+                ViewersView(status: status)
             }
         }
     }

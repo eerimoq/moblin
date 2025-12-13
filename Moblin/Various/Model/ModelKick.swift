@@ -24,7 +24,7 @@ extension Model {
     }
 
     func isKickViewersConfigured() -> Bool {
-        return stream.kickChannelName != ""
+        return stream.kickChannelName != "" && stream.kickLoggedIn
     }
 
     func reloadKickViewers() {

@@ -128,7 +128,7 @@ extension Model {
         guard isWatchReachable() else {
             return
         }
-        sendMessageToWatch(type: .viewerCount, data: statusTopLeft.numberOfViewers)
+        sendMessageToWatch(type: .viewerCount, data: statusTopLeft.numberOfViewersCompact)
     }
 
     func sendUpdatePadelScoreboardToWatch(id: UUID, padel: SettingsWidgetPadelScoreboard) {
