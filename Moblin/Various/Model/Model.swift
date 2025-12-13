@@ -2854,7 +2854,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusViewers() -> Bool {
-        return isLive && !statusTopLeft.numberOfViewers.isEmpty
+        return isLive && database.show.viewers && !statusTopLeft.numberOfViewers.isEmpty
     }
 
     private func statusStreamText() -> String {
