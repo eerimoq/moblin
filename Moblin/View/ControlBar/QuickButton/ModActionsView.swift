@@ -17,13 +17,13 @@ enum ModPlatform: String, CaseIterable, Identifiable {
 enum ModActionCategory: String, CaseIterable {
     case userModeration = "User Moderation"
     case chatMode = "Chat Modes"
-    case chatManagement = "Chat Management"
+    case channelManagement = "Channel Management"
 
     var icon: String {
         switch self {
         case .userModeration: "person.fill"
         case .chatMode: "bubble.left.fill"
-        case .chatManagement: "gearshape.fill"
+        case .channelManagement: "gearshape.fill"
         }
     }
 }
@@ -103,13 +103,13 @@ enum ModActionType: CaseIterable, Identifiable {
 
     var category: ModActionCategory {
         switch self {
-        case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip, .raid:
+        case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip:
             .userModeration
         case .slow, .slowoff, .followers, .followersoff,
              .emoteonly, .emoteonlyoff, .subscribers, .subscribersoff:
             .chatMode
-        case .poll, .deletepoll, .prediction, .commercial, .announcement:
-            .chatManagement
+        case .raid, .poll, .deletepoll, .prediction, .commercial, .announcement:
+            .channelManagement
         }
     }
 
