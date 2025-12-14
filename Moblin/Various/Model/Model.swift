@@ -425,7 +425,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var twitchChat: TwitchChat?
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
-    var kickViewers: KickViewers?
+    var kickPlatformStatus: KickPlatformStatus?
     private var youTubeLiveChat: YouTubeLiveChat?
     private var soopChat: SoopChat?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
@@ -505,7 +505,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var keepSpeakerAliveLatestPlayed: ContinuousClock.Instant = .now
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
-    var numberOfTwitchViewers: PlatformStatus = .unknown
+    var twitchPlatformStatus: PlatformStatus = .unknown
     let twitchSearchCategoriesTimer = SimpleTimer(queue: .main)
     let kickSearchCategoriesTimer = SimpleTimer(queue: .main)
     var drawOnStreamSize: CGSize = .zero
@@ -1721,12 +1721,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateViewersTwitch() -> StreamingPlatformStatus {
-        return StreamingPlatformStatus(platform: .twitch, status: numberOfTwitchViewers)
+        return StreamingPlatformStatus(platform: .twitch, status: twitchPlatformStatus)
     }
 
     private func updateViewersKick() -> StreamingPlatformStatus {
-        if let kickNumberOfViewers = kickViewers?.numberOfViewers {
-            return StreamingPlatformStatus(platform: .kick, status: .live(viewerCount: kickNumberOfViewers))
+        if let platformStatus = kickPlatformStatus?.platformStatus {
+            return StreamingPlatformStatus(platform: .kick, status: platformStatus)
         } else {
             return StreamingPlatformStatus(platform: .kick, status: .unknown)
         }

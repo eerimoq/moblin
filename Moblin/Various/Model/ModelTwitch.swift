@@ -203,7 +203,7 @@ extension Model {
 
     func updateTwitchStream(monotonicNow: ContinuousClock.Instant) {
         guard isLive, isTwitchViewersConfigured() else {
-            numberOfTwitchViewers = .unknown
+            twitchPlatformStatus = .unknown
             return
         }
         guard twitchStreamUpdateTime.duration(to: monotonicNow) > .seconds(25) else {
@@ -273,12 +273,12 @@ extension Model {
             switch $0 {
             case let .success(data):
                 if let data {
-                    self.numberOfTwitchViewers = .live(viewerCount: data.viewer_count)
+                    self.twitchPlatformStatus = .live(viewerCount: data.viewer_count)
                 } else {
-                    self.numberOfTwitchViewers = .offline
+                    self.twitchPlatformStatus = .offline
                 }
             default:
-                self.numberOfTwitchViewers = .unknown
+                self.twitchPlatformStatus = .unknown
             }
         }
     }

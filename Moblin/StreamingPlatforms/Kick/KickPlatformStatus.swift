@@ -1,8 +1,8 @@
 import Foundation
 
-class KickViewers {
+class KickPlatformStatus {
     private var task: Task<Void, Error>?
-    var numberOfViewers: Int?
+    var platformStatus: PlatformStatus = .unknown
 
     func start(channelName: String) {
         task = Task {
@@ -11,12 +11,16 @@ class KickViewers {
                 do {
                     try await sleep(seconds: delay)
                     let info = try await getKickChannelInfo(channelName: channelName)
-                    await self.setNumberOfViewers(value: info.livestream?.viewers)
+                    if let livestream = info.livestream {
+                        await self.setNumberOfViewers(status: .live(viewerCount: livestream.viewers))
+                    } else {
+                        await self.setNumberOfViewers(status: .offline)
+                    }
                 } catch {
-                    await self.setNumberOfViewers(value: nil)
+                    await self.setNumberOfViewers(status: .unknown)
                 }
                 if Task.isCancelled {
-                    await self.setNumberOfViewers(value: nil)
+                    await self.setNumberOfViewers(status: .unknown)
                     break
                 }
                 delay = 30
@@ -24,9 +28,9 @@ class KickViewers {
         }
     }
 
-    private func setNumberOfViewers(value: Int?) async {
+    private func setNumberOfViewers(status: PlatformStatus) async {
         await MainActor.run {
-            self.numberOfViewers = value
+            self.platformStatus = status
         }
     }
 

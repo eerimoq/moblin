@@ -28,10 +28,10 @@ extension Model {
     }
 
     func reloadKickViewers() {
-        kickViewers?.stop()
+        kickPlatformStatus?.stop()
         if isKickViewersConfigured() {
-            kickViewers = KickViewers()
-            kickViewers!.start(channelName: stream.kickChannelName)
+            kickPlatformStatus = KickPlatformStatus()
+            kickPlatformStatus!.start(channelName: stream.kickChannelName)
         }
     }
 
