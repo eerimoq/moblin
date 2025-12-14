@@ -47,7 +47,7 @@ private struct ViewersView: View {
                 .background(backgroundColor)
                 .cornerRadius(5)
             HStack(spacing: 2) {
-                ForEach(status.numberOfViewers, id: \.platform) {
+                ForEach(status.streamingPlatformStatuses, id: \.platform) {
                     ViewersLogoView(platform: $0.platform)
                     switch $0.status {
                     case let .live(viewerCount: viewerCount):

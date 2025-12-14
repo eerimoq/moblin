@@ -172,7 +172,7 @@ enum PlatformStatus: Equatable {
     case offline
 }
 
-struct PlatformViewers: Equatable {
+struct StreamingPlatformStatus: Equatable {
     let platform: Platform
     let status: PlatformStatus
 }
@@ -180,7 +180,7 @@ struct PlatformViewers: Equatable {
 class StatusTopLeft: ObservableObject {
     @Published var numberOfViewersIconColor: Color = .white
     @Published var numberOfViewersCompact = noValue
-    @Published var numberOfViewers: [PlatformViewers] = []
+    @Published var streamingPlatformStatuses: [StreamingPlatformStatus] = []
     @Published var statusEventsText = noValue
     @Published var statusChatText = noValue
     @Published var streamText = noValue
@@ -505,7 +505,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var keepSpeakerAliveLatestPlayed: ContinuousClock.Instant = .now
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
-    var numberOfTwitchViewers: Int?
+    var numberOfTwitchViewers: PlatformStatus = .unknown
     let twitchSearchCategoriesTimer = SimpleTimer(queue: .main)
     let kickSearchCategoriesTimer = SimpleTimer(queue: .main)
     var drawOnStreamSize: CGSize = .zero
@@ -1683,22 +1683,35 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var newColor: Color = .white
         var newNumberOfViewers = 0
         var hasCount = false
-        var numberOfViewers: [PlatformViewers] = []
-        for viewers in statusTopLeft.numberOfViewers {
-            switch viewers.platform {
+        var streamingPlatformsStatus: [StreamingPlatformStatus] = []
+        for streamingPlatformStatus in statusTopLeft.streamingPlatformStatuses {
+            let newStreamingPlatformStatus: StreamingPlatformStatus
+            switch streamingPlatformStatus.platform {
             case .twitch:
-                numberOfViewers.append(updateViewersTwitch(&newNumberOfViewers, &hasCount, &newColor))
+                newStreamingPlatformStatus = updateViewersTwitch()
             case .kick:
-                numberOfViewers.append(updateViewersKick(&newNumberOfViewers, &hasCount, &newColor))
+                newStreamingPlatformStatus = updateViewersKick()
             default:
-                numberOfViewers.append(viewers)
+                newStreamingPlatformStatus = streamingPlatformStatus
+            }
+            streamingPlatformsStatus.append(newStreamingPlatformStatus)
+            switch newStreamingPlatformStatus.status {
+            case let .live(viewerCount):
+                newNumberOfViewers += viewerCount
+                hasCount = true
+            case .unknown:
+                if newColor != .red {
+                    newColor = .orange
+                }
+            case .offline:
+                newColor = .red
             }
         }
         if newColor != statusTopLeft.numberOfViewersIconColor {
             statusTopLeft.numberOfViewersIconColor = newColor
         }
-        if numberOfViewers != statusTopLeft.numberOfViewers {
-            statusTopLeft.numberOfViewers = numberOfViewers
+        if streamingPlatformsStatus != statusTopLeft.streamingPlatformStatuses {
+            statusTopLeft.streamingPlatformStatuses = streamingPlatformsStatus
         }
         let newNumberOfViewersCompact = updateViewersCompact(newNumberOfViewers, hasCount)
         if newNumberOfViewersCompact != statusTopLeft.numberOfViewersCompact {
@@ -1707,31 +1720,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func updateViewersTwitch(_ newNumberOfViewers: inout Int,
-                                     _ hasCount: inout Bool,
-                                     _ newColor: inout Color) -> PlatformViewers
-    {
-        if let numberOfTwitchViewers {
-            newNumberOfViewers += numberOfTwitchViewers
-            hasCount = true
-            return PlatformViewers(platform: .twitch, status: .live(viewerCount: numberOfTwitchViewers))
-        } else {
-            newColor = .orange
-            return PlatformViewers(platform: .twitch, status: .unknown)
-        }
+    private func updateViewersTwitch() -> StreamingPlatformStatus {
+        return StreamingPlatformStatus(platform: .twitch, status: numberOfTwitchViewers)
     }
 
-    private func updateViewersKick(_ newNumberOfViewers: inout Int,
-                                   _ hasCount: inout Bool,
-                                   _ newColor: inout Color) -> PlatformViewers
-    {
+    private func updateViewersKick() -> StreamingPlatformStatus {
         if let kickNumberOfViewers = kickViewers?.numberOfViewers {
-            newNumberOfViewers += kickNumberOfViewers
-            hasCount = true
-            return PlatformViewers(platform: .kick, status: .live(viewerCount: kickNumberOfViewers))
+            return StreamingPlatformStatus(platform: .kick, status: .live(viewerCount: kickNumberOfViewers))
         } else {
-            newColor = .orange
-            return PlatformViewers(platform: .kick, status: .unknown)
+            return StreamingPlatformStatus(platform: .kick, status: .unknown)
         }
     }
 
@@ -2228,12 +2225,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadViewers() {
         statusTopLeft.numberOfViewersIconColor = .orange
         statusTopLeft.numberOfViewersCompact = noValue
-        statusTopLeft.numberOfViewers.removeAll()
+        statusTopLeft.streamingPlatformStatuses.removeAll()
         if isTwitchViewersConfigured() {
-            statusTopLeft.numberOfViewers.append(.init(platform: .twitch, status: .unknown))
+            statusTopLeft.streamingPlatformStatuses.append(.init(platform: .twitch, status: .unknown))
         }
         if isKickViewersConfigured() {
-            statusTopLeft.numberOfViewers.append(.init(platform: .kick, status: .unknown))
+            statusTopLeft.streamingPlatformStatuses.append(.init(platform: .kick, status: .unknown))
         }
     }
 
@@ -2869,7 +2866,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusViewers() -> Bool {
-        return isLive && database.show.viewers && !statusTopLeft.numberOfViewers.isEmpty
+        return isLive && database.show.viewers && !statusTopLeft.streamingPlatformStatuses.isEmpty
     }
 
     private func statusStreamText() -> String {

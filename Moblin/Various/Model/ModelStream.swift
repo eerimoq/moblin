@@ -96,6 +96,7 @@ extension Model {
         updateScreenAutoOff()
         startNetStream()
         startFetchingYouTubeChatVideoId()
+        reloadViewers()
         if stream.recording.autoStartRecording {
             startRecording()
         }
