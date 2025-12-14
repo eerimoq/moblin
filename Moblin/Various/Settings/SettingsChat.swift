@@ -562,7 +562,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
     @Published var nicknames: SettingsChatNicknames = .init()
     @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
-    var quickButtonMode: String = "predefined"
+    @Published var quickButtonMode: String = "predefined"
 
     enum CodingKeys: CodingKey {
         case fontSize,

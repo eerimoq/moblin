@@ -719,24 +719,23 @@ private struct SendMessagesToSelectorView: View {
 
 private struct ControlMessagesButtonView: View {
     @ObservedObject var model: Model
+    @ObservedObject var chat: SettingsChat
     @Binding var showingModActions: Bool
     @State var showingPredefinedMessages = false
 
     private var buttonIcon: String {
-        model.database.chat.quickButtonMode == "mod" ? "shield.fill" : "list.bullet"
+        chat.quickButtonMode == "mod" ? "shield" : "list.bullet"
     }
 
     var body: some View {
         Menu {
             Button {
-                model.database.chat.quickButtonMode = "mod"
-                showingModActions = true
+                chat.quickButtonMode = "mod"
             } label: {
-                Label("Mod Actions", systemImage: "shield.fill")
+                Label("Mod Actions", systemImage: "shield")
             }
             Button {
-                model.database.chat.quickButtonMode = "predefined"
-                showingPredefinedMessages = true
+                chat.quickButtonMode = "predefined"
             } label: {
                 Label("Predefined Messages", systemImage: "list.bullet")
             }
@@ -745,7 +744,7 @@ private struct ControlMessagesButtonView: View {
                 .font(.title)
                 .padding(5)
         } primaryAction: {
-            if model.database.chat.quickButtonMode == "mod" {
+            if chat.quickButtonMode == "mod" {
                 showingModActions = true
             } else {
                 showingPredefinedMessages = true
@@ -794,7 +793,7 @@ private struct ControlView: View {
         .padding(5)
         .foregroundStyle(.white)
         SendMessagesToSelectorView(stream: model.stream)
-        ControlMessagesButtonView(model: model, showingModActions: $showingModActions)
+        ControlMessagesButtonView(model: model, chat: model.database.chat, showingModActions: $showingModActions)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }
 }
