@@ -727,18 +727,7 @@ private struct ControlMessagesButtonView: View {
     }
 
     var body: some View {
-        Button {
-            if model.database.chat.quickButtonMode == "mod" {
-                showingModActions = true
-            } else {
-                showingPredefinedMessages = true
-            }
-        } label: {
-            Image(systemName: buttonIcon)
-                .font(.title)
-                .padding(5)
-        }
-        .contextMenu {
+        Menu {
             Button {
                 model.database.chat.quickButtonMode = "mod"
                 showingModActions = true
@@ -750,6 +739,16 @@ private struct ControlMessagesButtonView: View {
                 showingPredefinedMessages = true
             } label: {
                 Label("Predefined Messages", systemImage: "list.bullet")
+            }
+        } label: {
+            Image(systemName: buttonIcon)
+                .font(.title)
+                .padding(5)
+        } primaryAction: {
+            if model.database.chat.quickButtonMode == "mod" {
+                showingModActions = true
+            } else {
+                showingPredefinedMessages = true
             }
         }
         .sheet(isPresented: $showingPredefinedMessages) {
