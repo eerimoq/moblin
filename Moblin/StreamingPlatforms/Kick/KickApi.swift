@@ -159,7 +159,7 @@ class KickApi {
         }
     }
 
-    func banUser(user: String, duration: Int? = nil) {
+    func banUser(user: String, duration: Int? = nil, reason: String? = nil, onComplete: @escaping (Bool) -> Void) {
         var body: [String: Any] = [
             "banned_username": user,
             "permanent": duration == nil,
@@ -167,11 +167,125 @@ class KickApi {
         if let duration {
             body["duration"] = duration / 60
         }
+        if let reason {
+            body["reason"] = reason
+        }
         doRequest(method: "POST",
                   subPath: "channels/\(slug)/bans",
                   body: body)
-        { _, _ in
+        { ok, _ in onComplete(ok) }
+    }
+
+    func unbanUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        doRequest(method: "DELETE",
+                  subPath: "channels/\(slug)/bans/\(user)")
+        { ok, _ in onComplete(ok) }
+    }
+
+    func modUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        doInternalRequest(method: "POST",
+                          subPath: "channels/\(slug)/community/moderators",
+                          body: ["username": user])
+        { ok, _ in onComplete(ok) }
+    }
+
+    func unmodUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        doInternalRequest(method: "DELETE",
+                          subPath: "channels/\(slug)/community/moderators/\(user)")
+        { ok, _ in onComplete(ok) }
+    }
+
+    func vipUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        doInternalRequest(method: "POST",
+                          subPath: "channels/\(slug)/community/vips",
+                          body: ["username": user])
+        { ok, _ in onComplete(ok) }
+    }
+
+    func unvipUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        doInternalRequest(method: "DELETE",
+                          subPath: "channels/\(slug)/community/vips/\(user)")
+        { ok, _ in onComplete(ok) }
+    }
+
+    func hostChannel(channel: String, onComplete: @escaping (Bool) -> Void) {
+        doRequest(method: "POST",
+                  subPath: "channels/\(slug)/chat-commands",
+                  body: ["command": "host", "parameter": channel])
+        { ok, _ in onComplete(ok) }
+    }
+
+    func setSlowMode(enabled: Bool, messageInterval: Int? = nil, onComplete: @escaping (Bool) -> Void) {
+        var body: [String: Any] = ["slow_mode": enabled]
+        if let messageInterval, enabled {
+            body["message_interval"] = messageInterval
         }
+        doRequest(method: "PUT",
+                  subPath: "channels/\(slug)/chatroom",
+                  body: body)
+        { ok, _ in onComplete(ok) }
+    }
+
+    func setFollowersMode(enabled: Bool, followingMinDuration: Int? = nil, onComplete: @escaping (Bool) -> Void) {
+        var body: [String: Any] = ["followers_mode": enabled]
+        if let followingMinDuration, enabled {
+            body["following_min_duration"] = followingMinDuration
+        }
+        doRequest(method: "PUT",
+                  subPath: "channels/\(slug)/chatroom",
+                  body: body)
+        { ok, _ in onComplete(ok) }
+    }
+
+    func setEmoteOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+        doRequest(method: "PUT",
+                  subPath: "channels/\(slug)/chatroom",
+                  body: ["emotes_mode": enabled])
+        { ok, _ in onComplete(ok) }
+    }
+
+    func setSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+        doRequest(method: "PUT",
+                  subPath: "channels/\(slug)/chatroom",
+                  body: ["subscribers_mode": enabled])
+        { ok, _ in onComplete(ok) }
+    }
+
+    func createPoll(
+        title: String,
+        options: [String],
+        duration: Int,
+        resultDisplayDuration: Int,
+        onComplete: @escaping (Bool) -> Void
+    ) {
+        let body: [String: Any] = [
+            "title": title,
+            "options": options,
+            "duration": duration,
+            "result_display_duration": resultDisplayDuration,
+        ]
+        doRequest(method: "POST",
+                  subPath: "channels/\(slug)/polls",
+                  body: body)
+        { ok, _ in onComplete(ok) }
+    }
+
+    func deletePoll(onComplete: @escaping (Bool) -> Void) {
+        doRequest(method: "DELETE",
+                  subPath: "channels/\(slug)/polls")
+        { ok, _ in onComplete(ok) }
+    }
+
+    func createPrediction(title: String, outcomes: [String], duration: Int, onComplete: @escaping (Bool) -> Void) {
+        let body: [String: Any] = [
+            "title": title,
+            "outcomes": outcomes,
+            "duration": duration,
+        ]
+        doRequest(method: "POST",
+                  subPath: "channels/\(slug)/predictions",
+                  body: body)
+        { ok, _ in onComplete(ok) }
     }
 
     func getStreamInfo(onComplete: @escaping (KickStreamInfo?) -> Void) {
@@ -255,6 +369,30 @@ class KickApi {
                            onComplete: @escaping (Bool, Data?) -> Void)
     {
         guard let url = URL(string: "https://kick.com/api/v2/\(subPath)") else {
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = method
+        request.setContentType("application/json")
+        request.setAuthorization("Bearer \(accessToken)")
+        if let body {
+            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        }
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                let ok = error == nil && response?.http?.isSuccessful == true
+                onComplete(ok, data)
+            }
+        }
+        .resume()
+    }
+
+    private func doInternalRequest(method: String,
+                                   subPath: String,
+                                   body: [String: Any]? = nil,
+                                   onComplete: @escaping (Bool, Data?) -> Void)
+    {
+        guard let url = URL(string: "https://kick.com/api/internal/v1/\(subPath)") else {
             return
         }
         var request = URLRequest(url: url)

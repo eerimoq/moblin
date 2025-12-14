@@ -719,15 +719,39 @@ private struct SendMessagesToSelectorView: View {
 
 private struct ControlMessagesButtonView: View {
     let model: Model
+    @Binding var showingModActions: Bool
     @State var showingPredefinedMessages = false
+    @AppStorage("chatButtonLastSelected") var lastSelected: String = "predefined"
+
+    private var buttonIcon: String {
+        lastSelected == "mod" ? "shield.fill" : "list.bullet"
+    }
 
     var body: some View {
         Button {
-            showingPredefinedMessages = true
+            if lastSelected == "mod" {
+                showingModActions = true
+            } else {
+                showingPredefinedMessages = true
+            }
         } label: {
-            Image(systemName: "list.bullet")
+            Image(systemName: buttonIcon)
                 .font(.title)
                 .padding(5)
+        }
+        .contextMenu {
+            Button {
+                lastSelected = "mod"
+                showingModActions = true
+            } label: {
+                Label("Mod Actions", systemImage: "shield.fill")
+            }
+            Button {
+                lastSelected = "predefined"
+                showingPredefinedMessages = true
+            } label: {
+                Label("Predefined Messages", systemImage: "list.bullet")
+            }
         }
         .sheet(isPresented: $showingPredefinedMessages) {
             PredefinedMessagesView(model: model,
@@ -755,6 +779,7 @@ private struct ControlAlertsButtonView: View {
 private struct ControlView: View {
     let model: Model
     @Binding var message: String
+    @Binding var showingModActions: Bool
 
     var body: some View {
         TextField(text: $message) {
@@ -771,7 +796,7 @@ private struct ControlView: View {
         .padding(5)
         .foregroundStyle(.white)
         SendMessagesToSelectorView(stream: model.stream)
-        ControlMessagesButtonView(model: model)
+        ControlMessagesButtonView(model: model, showingModActions: $showingModActions)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }
 }
@@ -979,6 +1004,7 @@ struct QuickButtonChatView: View {
     @ObservedObject var quickButtonChat: QuickButtonChat
     @State var message: String = ""
     @State var selectedPost: ChatPost?
+    @State var showingModActions: Bool = false
 
     var body: some View {
         ZStack {
@@ -990,7 +1016,7 @@ struct QuickButtonChatView: View {
                 }
                 HStack {
                     if quickButtonChat.showAllChatMessages {
-                        ControlView(model: model, message: $message)
+                        ControlView(model: model, message: $message, showingModActions: $showingModActions)
                     } else {
                         AlertsControlView(model: model, quickButtonChat: quickButtonChat)
                     }
@@ -1003,5 +1029,8 @@ struct QuickButtonChatView: View {
         }
         .background(.black)
         .navigationTitle("Chat")
+        .sheet(isPresented: $showingModActions) {
+            ModActionsView(model: model, showingModActions: $showingModActions)
+        }
     }
 }

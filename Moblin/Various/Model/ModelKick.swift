@@ -100,8 +100,157 @@ extension Model {
         createKickApi(stream: stream)?.sendMessage(message: message)
     }
 
-    func banKickUser(user: String, duration: Int? = nil) {
-        createKickApi(stream: stream)?.banUser(user: user, duration: duration)
+    func banKickUser(user: String, duration: Int? = nil, reason: String? = nil) {
+        let action = duration != nil ? String(localized: "Timed out") : String(localized: "Banned")
+        createKickApi(stream: stream)?.banUser(user: user, duration: duration, reason: reason) { ok in
+            if ok {
+                self.makeToast(title: "\(action) \(user)")
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to \(action.lowercased()) \(user)"))
+            }
+        }
+    }
+
+    func unbanKickUser(user: String) {
+        createKickApi(stream: stream)?.unbanUser(user: user) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Unbanned \(user)"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to unban \(user)"))
+            }
+        }
+    }
+
+    func modKickUser(user: String) {
+        createKickApi(stream: stream)?.modUser(user: user) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Modded \(user)"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to mod \(user)"))
+            }
+        }
+    }
+
+    func unmodKickUser(user: String) {
+        createKickApi(stream: stream)?.unmodUser(user: user) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Unmodded \(user)"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to unmod \(user)"))
+            }
+        }
+    }
+
+    func vipKickUser(user: String) {
+        createKickApi(stream: stream)?.vipUser(user: user) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "VIPed \(user)"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to VIP \(user)"))
+            }
+        }
+    }
+
+    func unvipKickUser(user: String) {
+        createKickApi(stream: stream)?.unvipUser(user: user) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "UnVIPed \(user)"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to UnVIP \(user)"))
+            }
+        }
+    }
+
+    func hostKickChannel(channel: String) {
+        createKickApi(stream: stream)?.hostChannel(channel: channel) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Hosting \(channel)"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to host \(channel)"))
+            }
+        }
+    }
+
+    func setKickSlowMode(enabled: Bool, messageInterval: Int? = nil) {
+        createKickApi(stream: stream)?.setSlowMode(enabled: enabled, messageInterval: messageInterval) { ok in
+            if ok {
+                self.makeToast(title: String(localized: enabled ? "Slow mode enabled" : "Slow mode disabled"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to update slow mode"))
+            }
+        }
+    }
+
+    func setKickFollowersMode(enabled: Bool, followingMinDuration: Int? = nil) {
+        createKickApi(stream: stream)?
+            .setFollowersMode(enabled: enabled, followingMinDuration: followingMinDuration) { ok in
+                if ok {
+                    self
+                        .makeToast(title: String(localized: enabled ? "Followers mode enabled" :
+                                "Followers mode disabled"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to update followers mode"))
+                }
+            }
+    }
+
+    func setKickEmoteOnlyMode(enabled: Bool) {
+        createKickApi(stream: stream)?.setEmoteOnlyMode(enabled: enabled) { ok in
+            if ok {
+                self
+                    .makeToast(title: String(localized: enabled ? "Emote only mode enabled" :
+                            "Emote only mode disabled"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to update emote only mode"))
+            }
+        }
+    }
+
+    func setKickSubscribersOnlyMode(enabled: Bool) {
+        createKickApi(stream: stream)?.setSubscribersOnlyMode(enabled: enabled) { ok in
+            if ok {
+                self
+                    .makeToast(title: String(localized: enabled ? "Subscribers only mode enabled" :
+                            "Subscribers only mode disabled"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to update subscribers only mode"))
+            }
+        }
+    }
+
+    func createKickPoll(title: String, options: [String], duration: Int, resultDisplayDuration: Int) {
+        createKickApi(stream: stream)?.createPoll(
+            title: title,
+            options: options,
+            duration: duration,
+            resultDisplayDuration: resultDisplayDuration
+        ) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Poll created"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to create poll"))
+            }
+        }
+    }
+
+    func deleteKickPoll() {
+        createKickApi(stream: stream)?.deletePoll { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Poll deleted"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to delete poll"))
+            }
+        }
+    }
+
+    func createKickPrediction(title: String, outcomes: [String], duration: Int) {
+        createKickApi(stream: stream)?.createPrediction(title: title, outcomes: outcomes, duration: duration) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Prediction created"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to create prediction"))
+            }
+        }
     }
 
     func deleteKickMessage(messageId: String) {
