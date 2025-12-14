@@ -18,6 +18,14 @@ enum ModActionCategory: String, CaseIterable {
     case userModeration = "User Moderation"
     case chatMode = "Chat Modes"
     case chatManagement = "Chat Management"
+
+    var icon: String {
+        switch self {
+        case .userModeration: "person.fill"
+        case .chatMode: "bubble.left.fill"
+        case .chatManagement: "gearshape.fill"
+        }
+    }
 }
 
 enum ModActionType: CaseIterable, Identifiable {
@@ -171,8 +179,6 @@ enum AnnouncementColor: String, CaseIterable, Identifiable {
 struct ModActionsView: View {
     let model: Model
     @Binding var showingModActions: Bool
-    @State private var selectedAction: ModActionType?
-    @State private var selectedPlatform: ModPlatform = .twitch
 
     private var availablePlatforms: [ModPlatform] {
         var platforms: [ModPlatform] = []
@@ -205,19 +211,6 @@ struct ModActionsView: View {
                     }
                 }
             }
-            .sheet(item: $selectedAction) { action in
-                ModActionDetailView(
-                    action: action,
-                    platform: selectedPlatform,
-                    model: model,
-                    showingModActions: $showingModActions
-                )
-            }
-            .onAppear {
-                if let first = availablePlatforms.first, !availablePlatforms.contains(selectedPlatform) {
-                    selectedPlatform = first
-                }
-            }
         }
     }
 
@@ -239,60 +232,93 @@ struct ModActionsView: View {
 
     private var actionsList: some View {
         List {
-            if availablePlatforms.count > 1 {
-                Section {
-                    HStack(spacing: 0) {
-                        ForEach(availablePlatforms) { platform in
-                            Button {
-                                selectedPlatform = platform
-                            } label: {
-                                HStack(spacing: 6) {
-                                    Image(platform.logo)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 20, height: 20)
-                                    Text(platform.rawValue)
-                                        .font(.subheadline.weight(.medium))
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 10)
-                                .background(selectedPlatform == platform ? Color.blue : Color.gray.opacity(0.2))
-                                .foregroundStyle(selectedPlatform == platform ? .white : .primary)
-                            }
-                            .buttonStyle(.plain)
-                        }
+            ForEach(availablePlatforms) { platform in
+                NavigationLink {
+                    ModActionPlatformView(
+                        platform: platform,
+                        model: model,
+                        showingModActions: $showingModActions
+                    )
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(platform.logo)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 24, height: 24)
+                        Text(platform.rawValue)
+                            .font(.body)
+                            .foregroundStyle(.primary)
                     }
-                    .cornerRadius(8)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .padding(.vertical, 8)
                 }
             }
+        }
+        .listStyle(.insetGrouped)
+    }
+}
 
+private struct ModActionPlatformView: View {
+    let platform: ModPlatform
+    let model: Model
+    @Binding var showingModActions: Bool
+
+    var body: some View {
+        List {
             ForEach(ModActionCategory.allCases, id: \.self) { category in
-                let actions = ModActionType.actions(for: category, platform: selectedPlatform)
+                let actions = ModActionType.actions(for: category, platform: platform)
                 if !actions.isEmpty {
-                    Section {
-                        ForEach(actions) { action in
-                            ModActionRowView(
-                                action: action,
-                                platform: selectedPlatform,
-                                model: model,
-                                showingModActions: $showingModActions,
-                                selectedAction: $selectedAction
-                            )
-                        }
-                    } header: {
-                        HStack(spacing: 6) {
-                            Image(selectedPlatform.logo)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 16, height: 16)
+                    NavigationLink {
+                        ModActionCategoryView(
+                            category: category,
+                            platform: platform,
+                            model: model,
+                            showingModActions: $showingModActions
+                        )
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: category.icon)
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                                .frame(width: 24)
                             Text(category.rawValue)
+                                .font(.body)
+                                .foregroundStyle(.primary)
                         }
+                        .padding(.vertical, 8)
                     }
                 }
             }
         }
         .listStyle(.insetGrouped)
+        .navigationTitle(platform.rawValue)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct ModActionCategoryView: View {
+    let category: ModActionCategory
+    let platform: ModPlatform
+    let model: Model
+    @Binding var showingModActions: Bool
+
+    private var actions: [ModActionType] {
+        ModActionType.actions(for: category, platform: platform)
+    }
+
+    var body: some View {
+        List {
+            ForEach(actions) { action in
+                ModActionRowView(
+                    action: action,
+                    platform: platform,
+                    model: model,
+                    showingModActions: $showingModActions
+                )
+            }
+        }
+        .listStyle(.insetGrouped)
+        .navigationTitle(category.rawValue)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -301,30 +327,42 @@ private struct ModActionRowView: View {
     let platform: ModPlatform
     let model: Model
     @Binding var showingModActions: Bool
-    @Binding var selectedAction: ModActionType?
+
+    private var rowContent: some View {
+        HStack(spacing: 12) {
+            Image(systemName: action.icon)
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .frame(width: 24)
+            Text(action.title(for: platform))
+                .font(.body)
+                .foregroundStyle(.primary)
+            Spacer()
+        }
+        .padding(.vertical, 8)
+        .contentShape(Rectangle())
+    }
 
     var body: some View {
-        Button {
-            if action.needsDetailView {
-                selectedAction = action
-            } else {
+        if action.needsDetailView {
+            NavigationLink {
+                ModActionDetailView(
+                    action: action,
+                    platform: platform,
+                    model: model,
+                    showingModActions: $showingModActions
+                )
+            } label: {
+                rowContent
+            }
+        } else {
+            Button {
                 executeAction()
+            } label: {
+                rowContent
             }
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: action.icon)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .frame(width: 24)
-                Text(action.title(for: platform))
-                    .font(.body)
-                    .foregroundStyle(.primary)
-                Spacer()
-            }
-            .padding(.vertical, 8)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
     }
 
     private func executeAction() {
@@ -368,46 +406,33 @@ private struct ModActionDetailView: View {
     let platform: ModPlatform
     let model: Model
     @Binding var showingModActions: Bool
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            Group {
-                switch action {
-                case .poll:
-                    CreatePollView(platform: platform, model: model, onComplete: complete)
-                case .prediction:
-                    CreatePredictionView(platform: platform, model: model, onComplete: complete)
-                case .commercial:
-                    RunCommercialView(model: model, onComplete: complete)
-                case .announcement:
-                    SendAnnouncementView(model: model, onComplete: complete)
-                default:
-                    StandardActionFormView(
-                        action: action,
-                        platform: platform,
-                        model: model,
-                        onComplete: complete
-                    )
-                }
-            }
-            .navigationTitle(action.title(for: platform))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
-                }
+        Group {
+            switch action {
+            case .poll:
+                CreatePollView(platform: platform, model: model, onComplete: complete)
+            case .prediction:
+                CreatePredictionView(platform: platform, model: model, onComplete: complete)
+            case .commercial:
+                RunCommercialView(model: model, onComplete: complete)
+            case .announcement:
+                SendAnnouncementView(model: model, onComplete: complete)
+            default:
+                StandardActionFormView(
+                    action: action,
+                    platform: platform,
+                    model: model,
+                    onComplete: complete
+                )
             }
         }
+        .navigationTitle(action.title(for: platform))
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     private func complete() {
         showingModActions = false
-        dismiss()
     }
 }
 

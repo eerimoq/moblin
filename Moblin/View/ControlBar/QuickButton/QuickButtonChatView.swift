@@ -718,18 +718,17 @@ private struct SendMessagesToSelectorView: View {
 }
 
 private struct ControlMessagesButtonView: View {
-    let model: Model
+    @ObservedObject var model: Model
     @Binding var showingModActions: Bool
     @State var showingPredefinedMessages = false
-    @AppStorage("chatButtonLastSelected") var lastSelected: String = "predefined"
 
     private var buttonIcon: String {
-        lastSelected == "mod" ? "shield.fill" : "list.bullet"
+        model.database.chat.quickButtonMode == "mod" ? "shield.fill" : "list.bullet"
     }
 
     var body: some View {
         Button {
-            if lastSelected == "mod" {
+            if model.database.chat.quickButtonMode == "mod" {
                 showingModActions = true
             } else {
                 showingPredefinedMessages = true
@@ -741,13 +740,13 @@ private struct ControlMessagesButtonView: View {
         }
         .contextMenu {
             Button {
-                lastSelected = "mod"
+                model.database.chat.quickButtonMode = "mod"
                 showingModActions = true
             } label: {
                 Label("Mod Actions", systemImage: "shield.fill")
             }
             Button {
-                lastSelected = "predefined"
+                model.database.chat.quickButtonMode = "predefined"
                 showingPredefinedMessages = true
             } label: {
                 Label("Predefined Messages", systemImage: "list.bullet")
