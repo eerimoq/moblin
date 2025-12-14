@@ -74,10 +74,6 @@ struct WidgetBrowserSettingsView: View {
                     "p {color: red;}",
                 ]
             )
-            Toggle("Audio and video only", isOn: $browser.audioAndVideoOnly)
-                .onChange(of: browser.audioAndVideoOnly) { _ in
-                    model.resetSelectedScene(changeScene: false)
-                }
             TextEditNavigationView(
                 title: String(localized: "Width"),
                 value: String(browser.width),
@@ -90,6 +86,12 @@ struct WidgetBrowserSettingsView: View {
                                    onChange: changeWidthHeight,
                                    onSubmit: submitHeight,
                                    keyboardType: .numbersAndPunctuation)
+        }
+        Section {
+            Toggle("Audio and video only", isOn: $browser.audioAndVideoOnly)
+                .onChange(of: browser.audioAndVideoOnly) { _ in
+                    model.resetSelectedScene(changeScene: false)
+                }
             if !browser.audioAndVideoOnly {
                 HStack {
                     Text("Base FPS")
@@ -104,6 +106,12 @@ struct WidgetBrowserSettingsView: View {
                     )
                 }
             }
+        } footer: {
+            Text("""
+            When \"Audio and video only\" is enabled, images, text, GIFs etc. \
+            will only be shown when a video (.mp4/.mov) is playing, reducing overall \
+            energy consumption.
+            """)
         }
         Section {
             Toggle("Moblin access", isOn: $browser.moblinAccess)
