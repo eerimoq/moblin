@@ -281,7 +281,7 @@ class MoblinkStreamer: NSObject {
 
     func getStatuses() -> [(String, Int?, MoblinkThermalState?)] {
         return relays
-            .sorted(by: { first, second in first.name < second.name })
+            .sorted(by: { $0.name < $1.name })
             .map { ($0.name, $0.batteryPercentage, $0.thermalState) }
     }
 
