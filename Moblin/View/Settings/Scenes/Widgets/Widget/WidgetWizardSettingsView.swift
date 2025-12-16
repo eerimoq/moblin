@@ -144,6 +144,15 @@ struct WidgetWizardSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Picker("Type", selection: $createWidgetWizard.type) {
+                    ForEach(widgetTypes, id: \.self) { type in
+                        Text(type.toString())
+                    }
+                }
+            } footer: {
+                Text(createWidgetWizard.type.description())
+            }
+            Section {
                 TextField("My widget", text: $createWidgetWizard.name)
                     .disableAutocorrection(true)
             } header: {
@@ -154,15 +163,6 @@ struct WidgetWizardSettingsView: View {
                         .foregroundStyle(.red)
                         .bold()
                 }
-            }
-            Section {
-                Picker("Type", selection: $createWidgetWizard.type) {
-                    ForEach(widgetTypes, id: \.self) { type in
-                        Text(type.toString())
-                    }
-                }
-            } footer: {
-                Text(createWidgetWizard.type.description())
             }
             Section {
                 NavigationLink {
