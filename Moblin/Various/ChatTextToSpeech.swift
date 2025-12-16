@@ -77,7 +77,7 @@ class ChatTextToSpeech: NSObject {
     private var paused = false
     private var currentlyPlayingMessage: TextToSpeechMessage?
     private var ttsMonster: TtsMonster?
-    private var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AudioPlayer?
     private var isSpeaking: Bool = false
 
     func say(messageId: String?, user: String, userId: String?, message: String, isRedemption: Bool) {
@@ -393,14 +393,15 @@ class ChatTextToSpeech: NSObject {
         utterance.volume = volume
         utterance.voice = voice
         synthesizer.speak(utterance)
+        KeepSpeakerAlivePlayer.shared.audioPlayed()
     }
 
     private func utterTtsMonster(voiceId: String, text: String) {
         Task {
             if let data = await ttsMonster?.generateTts(voiceId: voiceId, message: text) {
                 textToSpeechDispatchQueue.async {
-                    self.audioPlayer = try? AVAudioPlayer(data: data)
-                    self.audioPlayer?.delegate = self
+                    self.audioPlayer = try? AudioPlayer(data: data)
+                    self.audioPlayer?.setDelegate(delegate: self)
                     self.audioPlayer?.play()
                 }
             } else {

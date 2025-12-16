@@ -501,8 +501,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     var speechToText: SpeechToText?
-    var keepSpeakerAlivePlayer: AVAudioPlayer?
-    var keepSpeakerAliveLatestPlayed: ContinuousClock.Instant = .now
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
     var twitchPlatformStatus: PlatformStatus = .unknown
@@ -1561,7 +1559,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.geographyManager.setLocation(location: self.latestKnownLocation)
             self.updateBitrateStatus()
             self.updateAdsRemainingTimer(now: now)
-            self.keepSpeakerAlive(now: monotonicNow)
             if self.database.show.systemMonitor {
                 self.resourceUsage.update(now: monotonicNow)
                 self.systemMonitor.cpu = self.resourceUsage.getCpuUsage()
@@ -1599,6 +1596,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateTwitchStream(monotonicNow: monotonicNow)
             self.updateAvailableDiskSpace()
             self.tryToFetchYouTubeVideoId()
+            self.keepSpeakerAlive(now: monotonicNow)
         }
         periodicTimerBatteryLevel.startPeriodic(interval: 30) {
             self.updateDjiDevicesStatus()

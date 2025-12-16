@@ -204,16 +204,7 @@ extension Model {
     }
 
     func keepSpeakerAlive(now: ContinuousClock.Instant) {
-        guard keepSpeakerAliveLatestPlayed.duration(to: now) > .seconds(5 * 60) else {
-            return
-        }
-        keepSpeakerAliveLatestPlayed = now
-        guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Silence", withExtension: "mp3")
-        else {
-            return
-        }
-        keepSpeakerAlivePlayer = try? AVAudioPlayer(contentsOf: soundUrl)
-        keepSpeakerAlivePlayer?.play()
+        KeepSpeakerAlivePlayer.shared.playIfNeeded(now: now)
     }
 
     func updateAudioLevel() {

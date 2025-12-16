@@ -46,7 +46,7 @@ private struct Pipeline {
 }
 
 final class AlertsEffect: VideoEffect, @unchecked Sendable {
-    private var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AudioPlayer?
     private var rate: Float = 0.4
     private var volume: Float = 1.0
     private var synthesizer = createSpeechSynthesizer()
@@ -286,7 +286,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             self.pipeline.landmarkSettings = landmarkSettings
         }
         if let soundUrl = player.soundUrl {
-            audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
+            audioPlayer = try? AudioPlayer(contentsOf: soundUrl)
             audioPlayer?.play()
         }
         if settings.textToSpeechEnabled {
@@ -305,6 +305,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         utterance.voice = voice
         DispatchQueue.main.asyncAfter(deadline: .now() + settings.textToSpeechDelay) {
             self.synthesizer.speak(utterance)
+            KeepSpeakerAlivePlayer.shared.audioPlayed()
         }
     }
 

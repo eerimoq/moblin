@@ -108,7 +108,7 @@ private struct VoiceView: View {
     let appleVoices: [AVSpeechSynthesisVoice]
     let languageCode: String
     let synthesizer: AVSpeechSynthesizer
-    @State var audioPlayer: AVAudioPlayer?
+    @State var audioPlayer: AudioPlayer?
     @Binding var rate: Float
     @Binding var volume: Float
     let ttsMonsterApiToken: String
@@ -123,6 +123,7 @@ private struct VoiceView: View {
                                    languageCode: languageCode,
                                    identifier: identifier)
         synthesizer.speak(utterance)
+        KeepSpeakerAlivePlayer.shared.audioPlayed()
     }
 
     private func playTtsMonsterTestMessage(voiceId: String) {
@@ -139,7 +140,7 @@ private struct VoiceView: View {
             guard let data = await ttsMonster.generateTts(voiceId: voiceId, message: message) else {
                 return
             }
-            audioPlayer = try? AVAudioPlayer(data: data)
+            audioPlayer = try? AudioPlayer(data: data)
             audioPlayer?.play()
         }
     }

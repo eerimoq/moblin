@@ -2,7 +2,7 @@ import AVFAudio
 import SwiftUI
 import UniformTypeIdentifiers
 
-private func loadSound(model: Model, soundId: UUID) -> AVAudioPlayer? {
+private func loadSound(model: Model, soundId: UUID) -> AudioPlayer? {
     var url: URL?
     if let bundledSound = model.database.alertsMediaGallery.bundledSounds.first(where: { $0.id == soundId }) {
         url = Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
@@ -12,14 +12,14 @@ private func loadSound(model: Model, soundId: UUID) -> AVAudioPlayer? {
     guard let url else {
         return nil
     }
-    return try? AVAudioPlayer(contentsOf: url)
+    return try? AudioPlayer(contentsOf: url)
 }
 
 private struct CustomSoundView: View {
     @EnvironmentObject var model: Model
     let media: SettingsAlertsMediaGalleryItem
     @State var showPicker = false
-    @State var audioPlayer: AVAudioPlayer?
+    @State var audioPlayer: AudioPlayer?
 
     private func onUrl(url: URL) {
         model.alertMediaStorage.add(id: media.id, url: url)
@@ -105,7 +105,7 @@ private struct SoundGalleryView: View {
     }
 }
 
-private var player: AVAudioPlayer?
+private var player: AudioPlayer?
 
 struct AlertSoundSelectorView: View {
     @EnvironmentObject var model: Model

@@ -102,7 +102,7 @@ class CatPrinter: NSObject {
     private var tryWriteNextChunkTimer = SimpleTimer(queue: catPrinterDispatchQueue)
     private var jobCompleteTimer = SimpleTimer(queue: catPrinterDispatchQueue)
     private var feedPaperTimer = SimpleTimer(queue: catPrinterDispatchQueue)
-    private var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AudioPlayer?
     private var meowSoundEnabled: Bool = false
 
     func start(deviceId: UUID?, meowSoundEnabled: Bool) {
@@ -226,7 +226,7 @@ class CatPrinter: NSObject {
         guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Nya", withExtension: "mp3") else {
             return
         }
-        audioPlayer = try? AVAudioPlayer(contentsOf: soundUrl)
+        audioPlayer = try? AudioPlayer(contentsOf: soundUrl)
         audioPlayer?.play()
     }
 
