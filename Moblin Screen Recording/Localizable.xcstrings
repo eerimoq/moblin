@@ -60,6 +60,12 @@
             "state" : "translated",
             "value" : " %lld kHz"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " %lld kHz"
+          }
         }
       }
     },
@@ -112,6 +118,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連接埠錯誤"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "連接埠錯誤"
@@ -533,6 +545,12 @@
             "state" : "translated",
             "value" : "不是數字"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這不是數字"
+          }
         }
       }
     },
@@ -612,6 +630,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "缺少 RTMP 串流金鑰"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少RTMP串流key"
           }
         }
       }
@@ -724,6 +748,12 @@
             "state" : "translated",
             "value" : "缺少 scheme"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "缺少Scheme"
+          }
         }
       }
     },
@@ -792,6 +822,12 @@
             "state" : "translated",
             "value" : "太大"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "太大"
+          }
         }
       }
     },
@@ -804,6 +840,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "太小"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "太小"
@@ -853,6 +895,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 計畫不支援"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未支援的scheme %@"
           }
         }
       }

@@ -82,6 +82,12 @@
             "state" : "translated",
             "value" : "Moblin 正在錄製螢幕"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin螢幕擷取"
+          }
         }
       }
     },
