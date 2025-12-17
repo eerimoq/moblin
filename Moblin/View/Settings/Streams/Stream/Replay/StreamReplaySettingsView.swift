@@ -31,15 +31,7 @@ private struct HelpView: View {
                     VStack(alignment: .leading) {
                         Text("NOTE: Only works on Mac as `hevc_videotoolbox` uses Apple’s encoder.")
                         Text("")
-                        HStack {
-                            Text("`\(ffmpegCommand)`")
-                            Button {
-                                UIPasteboard.general.string = ffmpegCommand
-                            } label: {
-                                Image(systemName: "doc.on.doc")
-                            }
-                            .buttonStyle(.borderless)
-                        }
+                        CommandCopyView(command: ffmpegCommand)
                     }
                 } header: {
                     Text("How to convert `.webm` (VP9) to `.mov` (HEVC) with alpha channel")

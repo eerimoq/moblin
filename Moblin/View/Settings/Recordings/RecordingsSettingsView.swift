@@ -1,5 +1,11 @@
 import SwiftUI
 
+private let ffmpegCommand = "ffmpeg -i input.mp4 -c copy output.mp4"
+
+private let ffmpegConstantFrameRateCommand = """
+ffmpeg -i input.mp4 -vf "fps=60" -c:v hevc_videotoolbox -preset slow -crf 18 -c:a copy output.mp4
+"""
+
 private struct RecordingsLocationView: View {
     let model: Model
     let text: Text
@@ -58,8 +64,55 @@ private struct RecordingsLocationView: View {
     }
 }
 
+private struct HelpView: View {
+    @Binding var presentingHelp: Bool
+
+    var body: some View {
+        NavigationView {
+            Form {
+                Section {
+                    Text("""
+                    Recordings are saved as variable frame rate (VFR) fragmented MP4 to be resilient \
+                    against crashes and other unexpected errors. Converting them to constant frame \
+                    rate (CFR) standard MP4 can improve compatibility with video players and video \
+                    editing software.
+                    """)
+                }
+                Section {
+                    CommandCopyView(command: ffmpegCommand)
+                } header: {
+                    Text("How to convert a recording to standard MP4")
+                }
+                Section {
+                    VStack(alignment: .leading) {
+                        CommandCopyView(command: ffmpegConstantFrameRateCommand)
+                        Text("")
+                        Text("""
+                        Replace `hevc_videotoolbox` with your preferred encoder, typically a hardware \
+                        encoder for faster conversion.
+                        """)
+                    }
+                } header: {
+                    Text("How to convert a recording to constant frame rate (CFR) standard MP4")
+                }
+            }
+            .navigationTitle("Help")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        presentingHelp = false
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
+        }
+    }
+}
+
 struct RecordingsSettingsView: View {
     let model: Model
+    @State private var presentingHelp: Bool = false
 
     var body: some View {
         Form {
@@ -79,16 +132,12 @@ struct RecordingsSettingsView: View {
                                    text: Text("Replays directory"),
                                    path: model.replaysStorage.defaultStorageDirectory())
             Section {
-                Text("""
-                Recordings are saved as variable frame rate (VFR) fragmented MP4 to be resilient \
-                against crashes and other unexpected errors. Converting them to constant frame \
-                rate (CFR) standard MP4 can improve compatibility with video players and video \
-                editing software.
-
-                Convert with `ffmpeg -i input.mp4 -vf "fps=60" -c:v hevc_videotoolbox -preset \
-                slow -crf 18 -c:a copy output.mp4` on your computer. Repalce `hevc_videotoolbox` \
-                with your preferred encoder.
-                """)
+                TextButtonView("Help") {
+                    presentingHelp = true
+                }
+                .sheet(isPresented: $presentingHelp) {
+                    HelpView(presentingHelp: $presentingHelp)
+                }
             }
         }
         .navigationTitle("Recordings")
