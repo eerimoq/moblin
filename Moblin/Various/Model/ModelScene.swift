@@ -112,7 +112,7 @@ extension Model {
             }
             lutEffects[lut.id] = lutEffect
         }
-        sceneUpdated(imageEffectChanged: true, attachCamera: attachCamera)
+        sceneUpdated(attachCamera: attachCamera)
     }
 
     func getSelectedScene() -> SettingsScene? {
@@ -152,10 +152,7 @@ extension Model {
         sceneUpdated()
     }
 
-    func sceneUpdated(imageEffectChanged: Bool = false, attachCamera: Bool = false, updateRemoteScene: Bool = true) {
-        if imageEffectChanged {
-            reloadImageEffects()
-        }
+    func sceneUpdated(attachCamera: Bool = false, updateRemoteScene: Bool = true) {
         guard let scene = getSelectedScene() else {
             sceneUpdatedOff()
             return
@@ -306,7 +303,7 @@ extension Model {
         if scene.id == getSelectedScene()?.id {
             attachCamera = isCaptureDeviceWidget(widget: widget)
         }
-        sceneUpdated(imageEffectChanged: true, attachCamera: attachCamera)
+        sceneUpdated(attachCamera: attachCamera)
     }
 
     func textWidgetTextChanged(widget: SettingsWidget) {
@@ -342,17 +339,6 @@ extension Model {
             for stopwatch in widget.text.stopwatches where stopwatch.running {
                 stopwatch.playPressedTime = .now
             }
-        }
-    }
-
-    private func reloadImageEffects() {
-        imageEffects.removeAll()
-        for widget in database.widgets where widget.type == .image {
-            let effect = ImageEffect(imageStorage: imageStorage,
-                                     settingName: widget.name,
-                                     widgetId: widget.id)
-            effect.effects = widget.getEffects()
-            imageEffects[widget.id] = effect
         }
     }
 
@@ -456,6 +442,7 @@ extension Model {
 
     private func resetVideoEffects(widgets: [SettingsWidget]) {
         unregisterGlobalVideoEffects()
+        resetImageEffects(widgets: widgets)
         resetTextVideoEffects(widgets: widgets)
         resetBrowserVideoEffects(widgets: widgets)
         resetMapVideoEffects(widgets: widgets)
@@ -470,6 +457,24 @@ extension Model {
         resetSlideshowVideoEffects(widgets: widgets)
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
+        }
+    }
+
+    private func createImageEffect(widget: SettingsWidget) -> ImageEffect {
+        return ImageEffect(imageStorage: imageStorage,
+                           settingName: widget.name,
+                           widgetId: widget.id)
+    }
+
+    private func resetImageEffects(widgets: [SettingsWidget]) {
+        for effect in imageEffects.values {
+            media.unregisterEffect(effect)
+        }
+        imageEffects.removeAll()
+        for widget in widgets where widget.type == .image {
+            let effect = createImageEffect(widget: widget)
+            effect.effects = widget.getEffects()
+            imageEffects[widget.id] = effect
         }
     }
 

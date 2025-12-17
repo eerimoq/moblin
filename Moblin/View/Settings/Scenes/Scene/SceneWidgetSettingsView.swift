@@ -37,7 +37,7 @@ private struct ExportImportView: View {
         layout.size = settings.size.clamped(to: 1 ... 100)
         layout.updateSizeString()
         layout.alignment = settings.alignment
-        model.sceneUpdated(imageEffectChanged: true)
+        model.sceneUpdated()
     }
 
     var body: some View {
