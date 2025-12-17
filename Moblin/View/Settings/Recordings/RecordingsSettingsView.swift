@@ -80,11 +80,14 @@ struct RecordingsSettingsView: View {
                                    path: model.replaysStorage.defaultStorageDirectory())
             Section {
                 Text("""
-                Recordings are saved as fragmented MP4 to be resilient against crashes and other \
-                unexpected errors. Converting them to standard MP4 can improve compatibility with \
-                video players and video editing software.
+                Recordings are saved as variable frame rate (VFR) fragmented MP4 to be resilient \
+                against crashes and other unexpected errors. Converting them to constant frame \
+                rate (CFR) standard MP4 can improve compatibility with video players and video \
+                editing software.
 
-                Convert with `ffmpeg -i fragmented.mp4 -c copy standard.mp4` on your computer.
+                Convert with `ffmpeg -i input.mp4 -vf "fps=60" -c:v hevc_videotoolbox -preset \
+                slow -crf 18 -c:a copy output.mp4` on your computer. Repalce `hevc_videotoolbox` \
+                with your preferred encoder.
                 """)
             }
         }
