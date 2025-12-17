@@ -162,16 +162,12 @@ enum AnnouncementColor: String, CaseIterable, Identifiable {
     var id: Self { self }
 
     var displayName: String {
-        rawValue.capitalized
-    }
-
-    var color: Color {
         switch self {
-        case .primary: .gray
-        case .blue: .blue
-        case .green: .green
-        case .orange: .orange
-        case .purple: .purple
+        case .primary: "⚪ Primary"
+        case .blue: "🔵 Blue"
+        case .green: "🟢 Green"
+        case .orange: "🟠 Orange"
+        case .purple: "🟣 Purple"
         }
     }
 }
@@ -246,10 +242,7 @@ struct ModActionsView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 24, height: 24)
                         Text(platform.rawValue)
-                            .font(.body)
-                            .foregroundStyle(.primary)
                     }
-                    .padding(.vertical, 8)
                 }
             }
         }
@@ -277,14 +270,10 @@ private struct ModActionPlatformView: View {
                     } label: {
                         HStack(spacing: 12) {
                             Image(systemName: category.icon)
-                                .font(.body)
                                 .foregroundStyle(.secondary)
                                 .frame(width: 24)
                             Text(category.rawValue)
-                                .font(.body)
-                                .foregroundStyle(.primary)
                         }
-                        .padding(.vertical, 8)
                     }
                 }
             }
@@ -331,16 +320,10 @@ private struct ModActionRowView: View {
     private var rowContent: some View {
         HStack(spacing: 12) {
             Image(systemName: action.icon)
-                .font(.body)
                 .foregroundStyle(.secondary)
                 .frame(width: 24)
             Text(action.title(for: platform))
-                .font(.body)
-                .foregroundStyle(.primary)
-            Spacer()
         }
-        .padding(.vertical, 8)
-        .contentShape(Rectangle())
     }
 
     var body: some View {
@@ -443,16 +426,65 @@ private struct StandardActionFormView: View {
     let onComplete: () -> Void
     @State private var username = ""
     @State private var reason = ""
-    @State private var duration = ""
+    @State private var timeoutDuration = 60
+    @State private var slowModeDuration = 10
+    @State private var followersDuration = 10
 
     private var canExecute: Bool {
         if action.requiresUsername && username.trimmingCharacters(in: .whitespaces).isEmpty {
             return false
         }
-        if action.requiresDuration && duration.trimmingCharacters(in: .whitespaces).isEmpty {
-            return false
-        }
         return true
+    }
+
+    private var timeoutPresets: [(String, Int)] {
+        [
+            ("1 minute", 60),
+            ("5 minutes", 300),
+            ("10 minutes", 600),
+            ("30 minutes", 1800),
+            ("1 hour", 3600),
+            ("6 hours", 21600),
+            ("1 day", 86400),
+            ("1 week", 604_800),
+        ]
+    }
+
+    private var slowModePresets: [(String, Int)] {
+        if platform == .twitch {
+            [
+                ("3 seconds", 3),
+                ("5 seconds", 5),
+                ("10 seconds", 10),
+                ("30 seconds", 30),
+                ("1 minute", 60),
+                ("2 minutes", 120),
+            ]
+        } else {
+            [
+                ("3 seconds", 3),
+                ("5 seconds", 5),
+                ("10 seconds", 10),
+                ("30 seconds", 30),
+                ("1 minute", 60),
+                ("2 minutes", 120),
+                ("5 minutes", 300),
+            ]
+        }
+    }
+
+    private var followersPresets: [(String, Int)] {
+        [
+            ("0 minutes", 0),
+            ("1 minute", 1),
+            ("5 minutes", 5),
+            ("10 minutes", 10),
+            ("30 minutes", 30),
+            ("1 hour", 60),
+            ("1 day", 1440),
+            ("1 week", 10080),
+            ("1 month", 43200),
+        ]
     }
 
     var body: some View {
@@ -467,14 +499,33 @@ private struct StandardActionFormView: View {
                 }
             }
 
-            if action.requiresDuration {
+            if action == .timeout {
                 Section {
-                    TextField("Duration in seconds", text: $duration)
-                        .keyboardType(.numberPad)
-                } header: {
-                    Text("Duration")
-                } footer: {
-                    Text(durationFooterText)
+                    Picker("Duration", selection: $timeoutDuration) {
+                        ForEach(timeoutPresets, id: \.1) { preset in
+                            Text(preset.0).tag(preset.1)
+                        }
+                    }
+                }
+            }
+
+            if action == .slow {
+                Section {
+                    Picker("Message Interval", selection: $slowModeDuration) {
+                        ForEach(slowModePresets, id: \.1) { preset in
+                            Text(preset.0).tag(preset.1)
+                        }
+                    }
+                }
+            }
+
+            if action == .followers {
+                Section {
+                    Picker("Minimum Follow Time", selection: $followersDuration) {
+                        ForEach(followersPresets, id: \.1) { preset in
+                            Text(preset.0).tag(preset.1)
+                        }
+                    }
                 }
             }
 
@@ -487,53 +538,33 @@ private struct StandardActionFormView: View {
             }
 
             Section {
-                Button {
+                TextButtonView("Send") {
                     executeAction()
-                } label: {
-                    Text("Send")
                 }
                 .disabled(!canExecute)
             }
         }
     }
 
-    private var durationFooterText: String {
-        switch action {
-        case .slow:
-            if platform == .twitch {
-                String(localized: "Message interval in seconds (3-120)")
-            } else {
-                String(localized: "Message interval in seconds")
-            }
-        case .followers:
-            String(localized: "Minimum follow duration in minutes")
-        default:
-            String(localized: "Duration in seconds")
-        }
-    }
-
     private func executeAction() {
         let user = username.trimmingCharacters(in: .whitespaces)
-        let durationValue = Int(duration.trimmingCharacters(in: .whitespaces))
         let banReason = reason.trimmingCharacters(in: .whitespaces)
 
         switch platform {
         case .kick:
-            executeKickAction(user: user, durationValue: durationValue, banReason: banReason)
+            executeKickAction(user: user, banReason: banReason)
         case .twitch:
-            executeTwitchAction(user: user, durationValue: durationValue, banReason: banReason)
+            executeTwitchAction(user: user, banReason: banReason)
         }
         onComplete()
     }
 
-    private func executeKickAction(user: String, durationValue: Int?, banReason: String) {
+    private func executeKickAction(user: String, banReason: String) {
         switch action {
         case .ban:
             model.banKickUser(user: user, duration: nil, reason: banReason.isEmpty ? nil : banReason)
         case .timeout:
-            if let duration = durationValue {
-                model.banKickUser(user: user, duration: duration)
-            }
+            model.banKickUser(user: user, duration: timeoutDuration)
         case .unban:
             model.unbanKickUser(user: user)
         case .mod:
@@ -547,26 +578,20 @@ private struct StandardActionFormView: View {
         case .raid:
             model.hostKickChannel(channel: user)
         case .slow:
-            if let messageInterval = durationValue {
-                model.setKickSlowMode(enabled: true, messageInterval: messageInterval)
-            }
+            model.setKickSlowMode(enabled: true, messageInterval: slowModeDuration)
         case .followers:
-            if let followingMinDuration = durationValue {
-                model.setKickFollowersMode(enabled: true, followingMinDuration: followingMinDuration)
-            }
+            model.setKickFollowersMode(enabled: true, followingMinDuration: followersDuration)
         default:
             break
         }
     }
 
-    private func executeTwitchAction(user: String, durationValue: Int?, banReason: String) {
+    private func executeTwitchAction(user: String, banReason: String) {
         switch action {
         case .ban:
             model.banTwitchUserByName(user: user, duration: nil, reason: banReason.isEmpty ? nil : banReason)
         case .timeout:
-            if let duration = durationValue {
-                model.banTwitchUserByName(user: user, duration: duration, reason: nil)
-            }
+            model.banTwitchUserByName(user: user, duration: timeoutDuration, reason: nil)
         case .unban:
             model.unbanTwitchUser(user: user)
         case .mod:
@@ -580,17 +605,18 @@ private struct StandardActionFormView: View {
         case .raid:
             model.raidTwitchChannelByName(channelName: user)
         case .slow:
-            if let duration = durationValue {
-                model.setTwitchSlowMode(enabled: true, duration: max(3, min(120, duration)))
-            }
+            model.setTwitchSlowMode(enabled: true, duration: slowModeDuration)
         case .followers:
-            if let duration = durationValue {
-                model.setTwitchFollowersMode(enabled: true, duration: duration)
-            }
+            model.setTwitchFollowersMode(enabled: true, duration: followersDuration)
         default:
             break
         }
     }
+}
+
+private struct PollOption: Identifiable {
+    let id = UUID()
+    var text = ""
 }
 
 private struct CreatePollView: View {
@@ -598,13 +624,13 @@ private struct CreatePollView: View {
     let model: Model
     let onComplete: () -> Void
     @State private var title = ""
-    @State private var options = ["", ""]
+    @State private var options = [PollOption(), PollOption()]
     @State private var duration = 30
     @State private var resultDisplayDuration = 15
 
     private var canExecute: Bool {
         let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
-        let filledOptions = options.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+        let filledOptions = options.filter { !$0.text.trimmingCharacters(in: .whitespaces).isEmpty }
         return !trimmedTitle.isEmpty && filledOptions.count >= 2
     }
 
@@ -617,24 +643,23 @@ private struct CreatePollView: View {
             }
 
             Section {
-                ForEach(options.indices, id: \.self) { index in
-                    TextField("Option \(index + 1)", text: $options[index])
+                ForEach($options) { $option in
+                    TextField("Option", text: $option.text)
+                        .deleteDisabled(options.count <= 2)
+                }
+                .onDelete { offsets in
+                    options.remove(atOffsets: offsets)
                 }
 
                 if options.count < 6 {
-                    Button {
-                        options.append("")
-                    } label: {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                            Text("Add Option")
-                        }
+                    TextButtonView("Add Option") {
+                        options.append(PollOption())
                     }
                 }
             } header: {
                 Text("Options")
             } footer: {
-                Text("At least 2 options required, up to 6 total")
+                Text("Swipe to delete. Minimum 2, maximum 6.")
             }
 
             Section {
@@ -669,10 +694,8 @@ private struct CreatePollView: View {
             }
 
             Section {
-                Button {
+                TextButtonView("Create Poll") {
                     createPoll()
-                } label: {
-                    Text("Create Poll")
                 }
                 .disabled(!canExecute)
             }
@@ -681,7 +704,7 @@ private struct CreatePollView: View {
 
     private func createPoll() {
         let trimmedOptions = options
-            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .map { $0.text.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
 
         switch platform {
@@ -745,10 +768,8 @@ private struct CreatePredictionView: View {
             }
 
             Section {
-                Button {
+                TextButtonView("Create Prediction") {
                     createPrediction()
-                } label: {
-                    Text("Create Prediction")
                 }
                 .disabled(!canExecute)
             }
@@ -798,11 +819,9 @@ private struct RunCommercialView: View {
             }
 
             Section {
-                Button {
+                TextButtonView("Run Commercial") {
                     model.startAds(seconds: duration)
                     onComplete()
-                } label: {
-                    Text("Run Commercial")
                 }
             }
         }
@@ -829,42 +848,20 @@ private struct SendAnnouncementView: View {
             }
 
             Section {
-                Menu {
+                Picker("Color", selection: $selectedColor) {
                     ForEach(AnnouncementColor.allCases) { color in
-                        Button {
-                            selectedColor = color
-                        } label: {
-                            Label(
-                                color.displayName,
-                                systemImage: selectedColor == color ? "checkmark.circle.fill" : "circle.fill"
-                            )
-                        }
-                        .tint(color.color)
-                    }
-                } label: {
-                    HStack {
-                        Text("Color")
-                        Spacer()
-                        Text(selectedColor.displayName)
-                            .foregroundStyle(selectedColor.color)
-                        Image(systemName: "chevron.up.chevron.down")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        Text(color.displayName).tag(color)
                     }
                 }
-            } header: {
-                Text("Announcement Color")
             }
 
             Section {
-                Button {
+                TextButtonView("Send Announcement") {
                     model.sendTwitchAnnouncement(
                         message: message.trimmingCharacters(in: .whitespaces),
                         color: selectedColor.rawValue
                     )
                     onComplete()
-                } label: {
-                    Text("Send Announcement")
                 }
                 .disabled(!canSend)
             }

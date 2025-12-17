@@ -742,6 +742,7 @@ private struct ControlMessagesButtonView: View {
         } label: {
             Image(systemName: buttonIcon)
                 .font(.title)
+                .frame(width: 30, height: 30)
                 .padding(5)
         } primaryAction: {
             if chat.quickButtonMode == "mod" {
