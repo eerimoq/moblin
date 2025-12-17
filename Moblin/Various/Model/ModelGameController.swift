@@ -141,9 +141,7 @@ extension Model {
     }
 
     private func numberOfGameControllers() -> Int {
-        return gameControllers.filter { gameController in
-            gameController != nil
-        }.count
+        return gameControllers.filter { $0 != nil }.count
     }
 
     func isGameControllerConnected() -> Bool {

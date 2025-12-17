@@ -652,7 +652,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     var enabledScenes: [SettingsScene] {
-        database.scenes.filter { scene in scene.enabled }
+        database.scenes.filter { $0.enabled }
     }
 
     func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {

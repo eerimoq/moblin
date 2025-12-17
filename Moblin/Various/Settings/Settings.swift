@@ -1687,9 +1687,7 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
             quickButtons.buttons.append(button)
         }
     }
-    quickButtons.buttons = quickButtons.buttons.filter { button in
-        button.type != .unknown
-    }
+    quickButtons.buttons = quickButtons.buttons.filter { $0.type != .unknown }
 }
 
 private func addMissingBundledLuts(database: Database) {
