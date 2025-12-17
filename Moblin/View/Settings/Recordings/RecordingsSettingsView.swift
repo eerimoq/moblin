@@ -3,7 +3,7 @@ import SwiftUI
 private let ffmpegCommand = "ffmpeg -i input.mp4 -c copy output.mp4"
 
 private let ffmpegConstantFrameRateCommand = """
-ffmpeg -i input.mp4 -vf "fps=60" -c:v hevc_videotoolbox -preset slow -crf 18 -c:a copy output.mp4
+ffmpeg -i input.mp4 -vf "fps=60" -c:v hevc_videotoolbox -c:a copy output.mp4
 """
 
 private struct RecordingsLocationView: View {

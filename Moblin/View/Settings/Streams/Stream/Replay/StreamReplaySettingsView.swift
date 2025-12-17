@@ -17,8 +17,7 @@ private struct VideoPickerView: UIViewControllerRepresentable {
 }
 
 private let ffmpegCommand = """
-ffmpeg -c:v libvpx-vp9 -i my-stinger.webm -c:v hevc_videotoolbox -b:v 15M -allow_sw 1 \
--alpha_quality 1 -vtag hvc1 my-stinger.mov
+ffmpeg -c:v libvpx-vp9 -i input.webm -c:v hevc_videotoolbox -alpha_quality 1 -vtag hvc1 output.mov
 """
 
 private struct HelpView: View {
