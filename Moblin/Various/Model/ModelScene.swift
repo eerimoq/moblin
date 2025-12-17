@@ -130,8 +130,19 @@ extension Model {
         return effects
     }
 
-    func getTextEffect(id: UUID) -> TextEffect? {
-        return textEffects.first(where: { $0.key == id })?.value
+    func getTextEffects(id: UUID) -> [TextEffect] {
+        var effects: [TextEffect] = []
+        if let effect = textEffects.first(where: { $0.key == id })?.value {
+            effects.append(effect)
+        }
+        for slideshow in slideshowEffects.values {
+            for slide in slideshow.slides where slide.widgetId == id {
+                if let textEffect = slide.effect as? TextEffect {
+                    effects.append(textEffect)
+                }
+            }
+        }
+        return effects
     }
 
     func getVideoSourceEffect(id: UUID) -> VideoSourceEffect? {
@@ -144,6 +155,10 @@ extension Model {
 
     func getPngTuberEffect(id: UUID) -> PngTuberEffect? {
         return pngTuberEffects.first(where: { $0.key == id })?.value
+    }
+
+    func getSlideshowEffect(id: UUID) -> SlideshowEffect? {
+        return slideshowEffects.first(where: { $0.key == id })?.value
     }
 
     private func getImageEffect(id: UUID) -> ImageEffect? {
@@ -200,9 +215,32 @@ extension Model {
         resetPngTuberVideoEffects(widgets: widgets)
         resetSnapshotVideoEffects(widgets: widgets)
         resetChatVideoEffects(widgets: widgets)
+        resetSlideshowVideoEffects(widgets: widgets)
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
+    }
+
+    private func createTextEffect(widget: SettingsWidget) -> TextEffect {
+        return TextEffect(
+            format: widget.text.formatString,
+            backgroundColor: widget.text.backgroundColor,
+            foregroundColor: widget.text.foregroundColor,
+            fontSize: CGFloat(widget.text.fontSize),
+            fontDesign: widget.text.fontDesign.toSystem(),
+            fontWeight: widget.text.fontWeight.toSystem(),
+            fontMonospacedDigits: widget.text.fontMonospacedDigits,
+            horizontalAlignment: widget.text.horizontalAlignment.toSystem(),
+            settingName: widget.name,
+            delay: widget.text.delay,
+            timersEndTime: widget.text.timers.map {
+                .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
+            },
+            stopwatches: widget.text.stopwatches.map { $0.clone() },
+            checkboxes: widget.text.checkboxes.map { $0.checked },
+            ratings: widget.text.ratings.map { $0.rating },
+            lapTimes: widget.text.lapTimes.map { $0.lapTimes }
+        )
     }
 
     private func resetTextVideoEffects(widgets: [SettingsWidget]) {
@@ -211,25 +249,7 @@ extension Model {
         }
         textEffects.removeAll()
         for widget in widgets where widget.type == .text {
-            textEffects[widget.id] = TextEffect(
-                format: widget.text.formatString,
-                backgroundColor: widget.text.backgroundColor,
-                foregroundColor: widget.text.foregroundColor,
-                fontSize: CGFloat(widget.text.fontSize),
-                fontDesign: widget.text.fontDesign.toSystem(),
-                fontWeight: widget.text.fontWeight.toSystem(),
-                fontMonospacedDigits: widget.text.fontMonospacedDigits,
-                horizontalAlignment: widget.text.horizontalAlignment.toSystem(),
-                settingName: widget.name,
-                delay: widget.text.delay,
-                timersEndTime: widget.text.timers.map {
-                    .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
-                },
-                stopwatches: widget.text.stopwatches.map { $0.clone() },
-                checkboxes: widget.text.checkboxes.map { $0.checked },
-                ratings: widget.text.ratings.map { $0.rating },
-                lapTimes: widget.text.lapTimes.map { $0.lapTimes }
-            )
+            textEffects[widget.id] = createTextEffect(widget: widget)
         }
     }
 
@@ -370,6 +390,32 @@ extension Model {
         }
     }
 
+    private func resetSlideshowVideoEffects(widgets: [SettingsWidget]) {
+        for effect in slideshowEffects.values {
+            media.unregisterEffect(effect)
+        }
+        slideshowEffects.removeAll()
+        for widget in widgets where widget.type == .slideshow {
+            var slides: [SlideshowEffectSlide] = []
+            for slide in widget.slideshow.slides {
+                guard let widgetId = slide.widgetId, let widget = findWidget(id: widgetId) else {
+                    continue
+                }
+                let effect: VideoEffect
+                switch widget.type {
+                case .text:
+                    effect = createTextEffect(widget: widget)
+                default:
+                    continue
+                }
+                slides.append(SlideshowEffectSlide(widgetId: widgetId,
+                                                   effect: effect,
+                                                   time: Double(slide.time)))
+            }
+            slideshowEffects[widget.id] = SlideshowEffect(slides: slides)
+        }
+    }
+
     private func isGlobalButtonOn(type: SettingsQuickButtonType) -> Bool {
         return database.quickButtons.first(where: { $0.type == type })?.isOn ?? false
     }
@@ -490,26 +536,29 @@ extension Model {
 
     private func sceneUpdatedOff() {
         unregisterGlobalVideoEffects()
-        for imageEffect in imageEffects.values {
-            media.unregisterEffect(imageEffect)
+        for effect in imageEffects.values {
+            media.unregisterEffect(effect)
         }
-        for textEffect in textEffects.values {
-            media.unregisterEffect(textEffect)
+        for effect in textEffects.values {
+            media.unregisterEffect(effect)
         }
-        for browserEffect in browserEffects.values {
-            media.unregisterEffect(browserEffect)
-            browserEffect.stop()
+        for effect in browserEffects.values {
+            media.unregisterEffect(effect)
+            effect.stop()
         }
-        for mapEffect in mapEffects.values {
-            media.unregisterEffect(mapEffect)
+        for effect in mapEffects.values {
+            media.unregisterEffect(effect)
         }
         media.unregisterEffect(drawOnStreamEffect)
         media.unregisterEffect(lutEffect)
-        for lutEffect in lutEffects.values {
-            media.unregisterEffect(lutEffect)
+        for effect in lutEffects.values {
+            media.unregisterEffect(effect)
         }
-        for scoreboardEffect in scoreboardEffects.values {
-            media.unregisterEffect(scoreboardEffect)
+        for effect in scoreboardEffects.values {
+            media.unregisterEffect(effect)
+        }
+        for effect in slideshowEffects.values {
+            media.unregisterEffect(effect)
         }
     }
 
@@ -609,6 +658,8 @@ extension Model {
                 addSceneMapEffects(sceneWidget, widget, &effects)
             case .scene:
                 addSceneSceneEffects(widget, &effects, &addedScenes, &needsSpeechToText)
+            case .slideshow:
+                addSceneSlideshowEffects(sceneWidget, widget, &effects)
             case .qrCode:
                 addSceneQrCodeEffects(sceneWidget, widget, &effects)
             case .alerts:
@@ -715,6 +766,18 @@ extension Model {
             return
         }
         addSceneEffects(sceneWidgetScene, &effects, &addedScenes, &needsSpeechToText)
+    }
+
+    private func addSceneSlideshowEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = slideshowEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effects.append(effect)
     }
 
     private func addSceneQrCodeEffects(
@@ -1048,7 +1111,9 @@ extension Model {
                 }
                 lapTimes.lapTimes[lastIndex] = now - currentLapStartTime
             }
-            getTextEffect(id: widget.id)?.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
+            for effect in getTextEffects(id: widget.id) {
+                effect.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
+            }
         }
     }
 
@@ -1099,8 +1164,15 @@ extension Model {
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
         }
-        for textEffect in textEffects.values {
-            textEffect.updateStats(stats: stats)
+        for effect in textEffects.values {
+            effect.updateStats(stats: stats)
+        }
+        for effect in slideshowEffects.values {
+            for slide in effect.slides {
+                if let textEffect = slide.effect as? TextEffect {
+                    textEffect.updateStats(stats: stats)
+                }
+            }
         }
     }
 
@@ -1113,8 +1185,15 @@ extension Model {
     }
 
     func forceUpdateTextEffects() {
-        for textEffect in textEffects.values {
-            textEffect.forceImageUpdate()
+        for effect in textEffects.values {
+            effect.forceImageUpdate()
+        }
+        for effect in slideshowEffects.values {
+            for slide in effect.slides {
+                if let textEffect = slide.effect as? TextEffect {
+                    textEffect.forceImageUpdate()
+                }
+            }
         }
     }
 
@@ -1313,15 +1392,16 @@ extension Model {
     }
 
     func textWidgetTextChanged(widget: SettingsWidget) {
-        let textEffect = getTextEffect(id: widget.id)
-        textEffect?.setFormat(format: widget.text.formatString)
         let parts = loadTextFormat(format: widget.text.formatString)
-        updateTimers(widget.text, textEffect, parts)
-        updateStopwatches(widget.text, textEffect, parts)
-        updateCheckboxes(widget.text, textEffect, parts)
-        updateRatings(widget.text, textEffect, parts)
-        updateLapTimes(widget.text, textEffect, parts)
-        updateSubtitles(widget.text, textEffect, parts)
+        for effect in getTextEffects(id: widget.id) {
+            effect.setFormat(format: widget.text.formatString)
+            updateTimers(widget.text, effect, parts)
+            updateStopwatches(widget.text, effect, parts)
+            updateCheckboxes(widget.text, effect, parts)
+            updateRatings(widget.text, effect, parts)
+            updateLapTimes(widget.text, effect, parts)
+            updateSubtitles(widget.text, effect, parts)
+        }
         updateNeedsWeather(widget.text, parts)
         updateNeedsGeography(widget.text, parts)
         updateNeedsGForce(widget.text, parts)

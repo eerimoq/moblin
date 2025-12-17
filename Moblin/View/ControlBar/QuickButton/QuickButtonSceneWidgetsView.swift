@@ -77,12 +77,14 @@ struct TimerWidgetView: View {
     let name: String
     @ObservedObject var timer: SettingsWidgetTextTimer
     let index: Int
-    let textEffect: TextEffect
+    let textEffects: [TextEffect]
     let indented: Bool
     @State private var presentingSetTime: Bool = false
 
     private func updateTextEffect() {
-        textEffect.setEndTime(index: index, endTime: timer.textEffectEndTime())
+        for effect in textEffects {
+            effect.setEndTime(index: index, endTime: timer.textEffectEndTime())
+        }
     }
 
     var body: some View {
@@ -146,20 +148,22 @@ struct StopwatchWidgetView: View {
     private let name: String
     @ObservedObject var stopwatch: SettingsWidgetTextStopwatch
     private let index: Int
-    private let textEffect: TextEffect
+    private let textEffects: [TextEffect]
     private var indented: Bool
     @State private var presentingSetTime: Bool = false
 
-    init(name: String, stopwatch: SettingsWidgetTextStopwatch, index: Int, textEffect: TextEffect, indented: Bool) {
+    init(name: String, stopwatch: SettingsWidgetTextStopwatch, index: Int, textEffects: [TextEffect], indented: Bool) {
         self.name = name
         self.stopwatch = stopwatch
         self.index = index
-        self.textEffect = textEffect
+        self.textEffects = textEffects
         self.indented = indented
     }
 
     private func updateTextEffect() {
-        textEffect.setStopwatch(index: index, stopwatch: stopwatch.clone())
+        for effect in textEffects {
+            effect.setStopwatch(index: index, stopwatch: stopwatch.clone())
+        }
     }
 
     var body: some View {
@@ -225,7 +229,7 @@ struct CheckboxWidgetView: View {
     private let name: String
     private let checkbox: SettingsWidgetTextCheckbox
     private let index: Int
-    private let textEffect: TextEffect
+    private let textEffects: [TextEffect]
     private var indented: Bool
     @State var image: String
 
@@ -233,19 +237,21 @@ struct CheckboxWidgetView: View {
         name: String,
         checkbox: SettingsWidgetTextCheckbox,
         index: Int,
-        textEffect: TextEffect,
+        textEffects: [TextEffect],
         indented: Bool
     ) {
         self.name = name
         self.checkbox = checkbox
         self.index = index
-        self.textEffect = textEffect
+        self.textEffects = textEffects
         self.indented = indented
         image = checkbox.checked ? "checkmark.square" : "square"
     }
 
     private func updateTextEffect() {
-        textEffect.setCheckbox(index: index, checked: checkbox.checked)
+        for effect in textEffects {
+            effect.setCheckbox(index: index, checked: checkbox.checked)
+        }
     }
 
     var body: some View {
@@ -273,7 +279,7 @@ struct RatingWidgetView: View {
     private let name: String
     private let rating: SettingsWidgetTextRating
     private let index: Int
-    private let textEffect: TextEffect
+    private let textEffects: [TextEffect]
     private var indented: Bool
     @State private var ratingSelection: Int
 
@@ -281,19 +287,21 @@ struct RatingWidgetView: View {
         name: String,
         rating: SettingsWidgetTextRating,
         index: Int,
-        textEffect: TextEffect,
+        textEffects: [TextEffect],
         indented: Bool
     ) {
         self.name = name
         self.rating = rating
         self.index = index
-        self.textEffect = textEffect
+        self.textEffects = textEffects
         self.indented = indented
         ratingSelection = rating.rating
     }
 
     private func updateTextEffect() {
-        textEffect.setRating(index: index, rating: rating.rating)
+        for effect in textEffects {
+            effect.setRating(index: index, rating: rating.rating)
+        }
     }
 
     var body: some View {
@@ -321,25 +329,27 @@ struct LapTimesWidgetView: View {
     private let name: String
     private let lapTimes: SettingsWidgetTextLapTimes
     private let index: Int
-    private let textEffect: TextEffect
+    private let textEffects: [TextEffect]
     private var indented: Bool
 
     init(
         name: String,
         lapTimes: SettingsWidgetTextLapTimes,
         index: Int,
-        textEffect: TextEffect,
+        textEffects: [TextEffect],
         indented: Bool
     ) {
         self.name = name
         self.lapTimes = lapTimes
         self.index = index
-        self.textEffect = textEffect
+        self.textEffects = textEffects
         self.indented = indented
     }
 
     private func updateTextEffect() {
-        textEffect.setLapTimes(index: index, lapTimes: lapTimes.lapTimes)
+        for effect in textEffects {
+            effect.setLapTimes(index: index, lapTimes: lapTimes.lapTimes)
+        }
     }
 
     var body: some View {
@@ -399,7 +409,8 @@ private struct WidgetTextView: View {
     @ObservedObject var text: SettingsWidgetText
 
     var body: some View {
-        if let textEffect = model.getTextEffect(id: widget.id) {
+        let textEffects = model.getTextEffects(id: widget.id)
+        if !textEffects.isEmpty {
             let textFormat = loadTextFormat(format: text.formatString)
             ForEach(text.timers) { timer in
                 let index = text.timers.firstIndex(where: { $0 === timer }) ?? 0
@@ -407,7 +418,7 @@ private struct WidgetTextView: View {
                     name: String(localized: "Timer \(index + 1)"),
                     timer: timer,
                     index: index,
-                    textEffect: textEffect,
+                    textEffects: textEffects,
                     indented: true
                 )
             }
@@ -417,7 +428,7 @@ private struct WidgetTextView: View {
                     name: String(localized: "Stopwatch \(index + 1)"),
                     stopwatch: stopwatch,
                     index: index,
-                    textEffect: textEffect,
+                    textEffects: textEffects,
                     indented: true
                 )
             }
@@ -427,7 +438,7 @@ private struct WidgetTextView: View {
                     name: textFormat.getCheckboxText(index: index),
                     checkbox: checkbox,
                     index: index,
-                    textEffect: textEffect,
+                    textEffects: textEffects,
                     indented: true
                 )
             }
@@ -437,7 +448,7 @@ private struct WidgetTextView: View {
                     name: String(localized: "Rating \(index + 1)"),
                     rating: rating,
                     index: index,
-                    textEffect: textEffect,
+                    textEffects: textEffects,
                     indented: true
                 )
             }
@@ -447,7 +458,7 @@ private struct WidgetTextView: View {
                     name: String(localized: "Lap times \(index + 1)"),
                     lapTimes: lapTimes,
                     index: index,
-                    textEffect: textEffect,
+                    textEffects: textEffects,
                     indented: true
                 )
             }

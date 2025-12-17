@@ -157,6 +157,8 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             type = .map(data: RemoteControlRemoteSceneSettingsWidgetTypeMap(map: widget.map))
         case .scene:
             type = .scene(data: RemoteControlRemoteSceneSettingsWidgetTypeScene(scene: widget.scene))
+        case .slideshow:
+            return nil
         case .qrCode:
             return nil
         case .alerts:

@@ -84,6 +84,8 @@ struct WidgetSettingsView: View {
                 WidgetMapSettingsView(widget: widget, delay: widget.map.delay)
             case .scene:
                 WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene.sceneId)
+            case .slideshow:
+                WidgetSlideshowSettingsView(widget: widget)
             case .qrCode:
                 WidgetQrCodeSettingsView(widget: widget)
             case .alerts:

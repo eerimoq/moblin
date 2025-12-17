@@ -508,7 +508,8 @@ extension Model {
     }
 
     private func handleChatBotMessageWidgetTimer(command: ChatBotCommand, widget: SettingsWidget) {
-        guard let textEffect = getTextEffect(id: widget.id) else {
+        let effects = getTextEffects(id: widget.id)
+        guard !effects.isEmpty else {
             return
         }
         guard let number = command.popFirst(), var index = Int(number) else {
@@ -525,7 +526,9 @@ extension Model {
                 return
             }
             timer.add(delta: delta.clamped(to: -3600 ... 3600))
-            textEffect.setEndTime(index: index, endTime: timer.textEffectEndTime())
+            for effect in effects {
+                effect.setEndTime(index: index, endTime: timer.textEffectEndTime())
+            }
         default:
             break
         }

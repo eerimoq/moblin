@@ -1651,6 +1651,58 @@ class SettingsWidgetChat: Codable, ObservableObject {
     }
 }
 
+class SettingsWidgetSlideshowSlide: Codable, ObservableObject, Identifiable {
+    var id: UUID = .init()
+    @Published var widgetId: UUID?
+    @Published var time: Int = 15
+
+    enum CodingKeys: CodingKey {
+        case id,
+             widgetId,
+             time
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.widgetId, widgetId)
+        try container.encode(.time, time)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        widgetId = container.decode(.widgetId, UUID.self, .init())
+        time = container.decode(.time, Int.self, .init())
+    }
+}
+
+class SettingsWidgetSlideshow: Codable, ObservableObject {
+    var id: UUID = .init()
+    @Published var slides: [SettingsWidgetSlideshowSlide] = []
+
+    enum CodingKeys: CodingKey {
+        case id,
+             slides
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.slides, slides)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        slides = container.decode(.slides, [SettingsWidgetSlideshowSlide].self, [])
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {
     static let baseName = String(localized: "My widget")
     @Published var name: String
@@ -1669,6 +1721,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     var pngTuber: SettingsWidgetPngTuber = .init()
     var snapshot: SettingsWidgetSnapshot = .init()
     var chat: SettingsWidgetChat = .init()
+    var slideshow: SettingsWidgetSlideshow = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -1697,6 +1750,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
              pngTuber,
              snapshot,
              chat,
+             slideshow,
              enabled,
              effects
     }
@@ -1719,6 +1773,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.pngTuber, pngTuber)
         try container.encode(.snapshot, snapshot)
         try container.encode(.chat, chat)
+        try container.encode(.slideshow, slideshow)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -1741,6 +1796,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         pngTuber = container.decode(.pngTuber, SettingsWidgetPngTuber.self, .init())
         snapshot = container.decode(.snapshot, SettingsWidgetSnapshot.self, .init())
         chat = container.decode(.chat, SettingsWidgetChat.self, .init())
+        slideshow = container.decode(.slideshow, SettingsWidgetSlideshow.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
         migrateFromOlderVersions()
@@ -1800,6 +1856,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .pngTuber,
             .snapshot,
             .chat,
+            .slideshow,
         ].contains(type)
     }
 
@@ -1830,6 +1887,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .pngTuber,
             .snapshot,
             .chat,
+            .slideshow,
         ].contains(type)
     }
 
@@ -2528,6 +2586,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case snapshot = "Snapshot"
     case chat = "Chat"
     case scene = "Scene"
+    case slideshow = "Slideshow"
     case vTuber = "VTuber"
     case pngTuber = "PNGTuber"
     case qrCode = "QR code"
@@ -2558,6 +2617,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Chat")
         case .scene:
             return String(localized: "Scene")
+        case .slideshow:
+            return String(localized: "Slideshow")
         case .vTuber:
             return String(localized: "VTuber")
         case .pngTuber:
@@ -2589,6 +2650,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return "message"
         case .scene:
             return "photo.on.rectangle"
+        case .slideshow:
+            return "play.rectangle"
         case .qrCode:
             return "qrcode"
         case .alerts:
@@ -2624,6 +2687,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "A chat widget shows your chat.")
         case .scene:
             return String(localized: "A scene widget shows a scene's widgets.")
+        case .slideshow:
+            return String(localized: "A slideshow widget shows a slideshow of widgets.")
         case .vTuber:
             return String(localized: "A VTuber widget shows a VTuber model that imitates your facial movements.")
         case .pngTuber:

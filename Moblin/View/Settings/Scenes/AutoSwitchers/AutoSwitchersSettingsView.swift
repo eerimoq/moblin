@@ -1,5 +1,19 @@
 import SwiftUI
 
+struct SwitcherTimePickerView: View {
+    @Binding var time: Int
+
+    var body: some View {
+        Picker(selection: $time) {
+            ForEach([5, 10, 15, 30, 60, 120], id: \.self) {
+                Text("\($0)s")
+            }
+        } label: {
+            Text("Time")
+        }
+    }
+}
+
 private struct AutoSwitcherSceneSettingsView: View {
     let model: Model
     @ObservedObject var scene: SettingsAutoSceneSwitcherScene
@@ -26,13 +40,7 @@ private struct AutoSwitcherSceneSettingsView: View {
                     } label: {
                         Text("Scene")
                     }
-                    Picker(selection: $scene.time) {
-                        ForEach([5, 10, 15, 30, 60, 120], id: \.self) { time in
-                            Text("\(time)s")
-                        }
-                    } label: {
-                        Text("Time")
-                    }
+                    SwitcherTimePickerView(time: $scene.time)
                 }
             }
         } label: {

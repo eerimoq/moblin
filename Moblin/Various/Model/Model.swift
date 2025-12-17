@@ -465,6 +465,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pngTuberEffects: [UUID: PngTuberEffect] = [:]
     var snapshotEffects: [UUID: SnapshotEffect] = [:]
     var chatEffects: [UUID: ChatEffect] = [:]
+    var slideshowEffects: [UUID: SlideshowEffect] = [:]
     var enabledSnapshotEffects: [SnapshotEffect] = []
     var enabledChatEffects: [ChatEffect] = []
     var speechToTextAlertMatchOffset = 0
@@ -1169,13 +1170,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isWeatherNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            guard widget.widget.type == .text else {
-                continue
+            switch widget.widget.type {
+            case .text:
+                if widget.widget.text.needsWeather {
+                    return true
+                }
+            case .slideshow:
+                for slide in widget.widget.slideshow.slides {
+                    if let widgetId = slide.widgetId,
+                       let widget = findWidget(id: widgetId),
+                       widget.type == .text,
+                       widget.text.needsWeather == true
+                    {
+                        return true
+                    }
+                }
+            default:
+                break
             }
-            guard widget.widget.text.needsWeather else {
-                continue
-            }
-            return true
         }
         return false
     }
@@ -1187,13 +1199,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func isGeographyNeeded() -> Bool {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
-            guard widget.widget.type == .text else {
-                continue
+            switch widget.widget.type {
+            case .text:
+                if widget.widget.text.needsGeography {
+                    return true
+                }
+            case .slideshow:
+                for slide in widget.widget.slideshow.slides {
+                    if let widgetId = slide.widgetId,
+                       let widget = findWidget(id: widgetId),
+                       widget.type == .text,
+                       widget.text.needsGeography == true
+                    {
+                        return true
+                    }
+                }
+            default:
+                break
             }
-            guard widget.widget.text.needsGeography else {
-                continue
-            }
-            return true
         }
         return false
     }

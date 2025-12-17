@@ -594,8 +594,9 @@ struct WidgetTextSettingsView: View {
                 TextItemView(name: String(localized: "Text"), value: widget.text.formatString)
             }
         }
-        if !text.timers.isEmpty {
-            if let textEffect = model.getTextEffect(id: widget.id) {
+        let textEffects = model.getTextEffects(id: widget.id)
+        if !textEffects.isEmpty {
+            if !text.timers.isEmpty {
                 Section {
                     ForEach(text.timers) { timer in
                         let index = text.timers.firstIndex(where: { $0 === timer }) ?? 0
@@ -603,7 +604,7 @@ struct WidgetTextSettingsView: View {
                             name: String(localized: "Timer \(index + 1)"),
                             timer: timer,
                             index: index,
-                            textEffect: textEffect,
+                            textEffects: textEffects,
                             indented: false
                         )
                     }
@@ -611,9 +612,7 @@ struct WidgetTextSettingsView: View {
                     Text("Timers")
                 }
             }
-        }
-        if !text.stopwatches.isEmpty {
-            if let textEffect = model.getTextEffect(id: widget.id) {
+            if !text.stopwatches.isEmpty {
                 Section {
                     ForEach(text.stopwatches) { stopwatch in
                         let index = widget.text.stopwatches.firstIndex(where: { $0 === stopwatch }) ?? 0
@@ -621,7 +620,7 @@ struct WidgetTextSettingsView: View {
                             name: String(localized: "Stopwatch \(index + 1)"),
                             stopwatch: stopwatch,
                             index: index,
-                            textEffect: textEffect,
+                            textEffects: textEffects,
                             indented: false
                         )
                     }
@@ -629,9 +628,7 @@ struct WidgetTextSettingsView: View {
                     Text("Stopwatches")
                 }
             }
-        }
-        if !text.checkboxes.isEmpty {
-            if let textEffect = model.getTextEffect(id: widget.id) {
+            if !text.checkboxes.isEmpty {
                 let textFormat = loadTextFormat(format: text.formatString)
                 Section {
                     ForEach(text.checkboxes) { checkbox in
@@ -640,7 +637,7 @@ struct WidgetTextSettingsView: View {
                             name: textFormat.getCheckboxText(index: index),
                             checkbox: checkbox,
                             index: index,
-                            textEffect: textEffect,
+                            textEffects: textEffects,
                             indented: false
                         )
                     }
@@ -648,9 +645,7 @@ struct WidgetTextSettingsView: View {
                     Text("Checkboxes")
                 }
             }
-        }
-        if !text.ratings.isEmpty {
-            if let textEffect = model.getTextEffect(id: widget.id) {
+            if !text.ratings.isEmpty {
                 Section {
                     ForEach(text.ratings) { rating in
                         let index = text.ratings.firstIndex(where: { $0 === rating }) ?? 0
@@ -658,7 +653,7 @@ struct WidgetTextSettingsView: View {
                             name: String(localized: "Rating \(index + 1)"),
                             rating: rating,
                             index: index,
-                            textEffect: textEffect,
+                            textEffects: textEffects,
                             indented: false
                         )
                     }
@@ -666,9 +661,7 @@ struct WidgetTextSettingsView: View {
                     Text("Ratings")
                 }
             }
-        }
-        if !text.lapTimes.isEmpty {
-            if let textEffect = model.getTextEffect(id: widget.id) {
+            if !text.lapTimes.isEmpty {
                 Section {
                     ForEach(text.lapTimes) { lapTimes in
                         let index = text.lapTimes.firstIndex(where: { $0 === lapTimes }) ?? 0
@@ -676,7 +669,7 @@ struct WidgetTextSettingsView: View {
                             name: String(localized: "Lap times \(index + 1)"),
                             lapTimes: lapTimes,
                             index: index,
-                            textEffect: textEffect,
+                            textEffects: textEffects,
                             indented: false
                         )
                     }
@@ -692,7 +685,9 @@ struct WidgetTextSettingsView: View {
                         return
                     }
                     text.backgroundColor = color
-                    model.getTextEffect(id: widget.id)?.setBackgroundColor(color: color)
+                    for effect in model.getTextEffects(id: widget.id) {
+                        effect.setBackgroundColor(color: color)
+                    }
                     model.remoteSceneSettingsUpdated()
                 }
             ColorPicker("Foreground", selection: $text.foregroundColorColor, supportsOpacity: true)
@@ -701,7 +696,9 @@ struct WidgetTextSettingsView: View {
                         return
                     }
                     text.foregroundColor = color
-                    model.getTextEffect(id: widget.id)?.setForegroundColor(color: color)
+                    for effect in model.getTextEffects(id: widget.id) {
+                        effect.setForegroundColor(color: color)
+                    }
                     model.remoteSceneSettingsUpdated()
                 }
         } header: {
@@ -720,7 +717,9 @@ struct WidgetTextSettingsView: View {
                 )
                 .onChange(of: text.fontSizeFloat) { _ in
                     text.fontSize = Int(text.fontSizeFloat)
-                    model.getTextEffect(id: widget.id)?.setFontSize(size: CGFloat(text.fontSizeFloat))
+                    for effect in model.getTextEffects(id: widget.id) {
+                        effect.setFontSize(size: CGFloat(text.fontSizeFloat))
+                    }
                     model.remoteSceneSettingsUpdated()
                 }
                 Text(String(Int(text.fontSizeFloat)))
@@ -733,7 +732,9 @@ struct WidgetTextSettingsView: View {
                 }
             }
             .onChange(of: text.fontDesign) { _ in
-                model.getTextEffect(id: widget.id)?.setFontDesign(design: text.fontDesign.toSystem())
+                for effect in model.getTextEffects(id: widget.id) {
+                    effect.setFontDesign(design: text.fontDesign.toSystem())
+                }
                 model.remoteSceneSettingsUpdated()
             }
             Picker("Weight", selection: $text.fontWeight) {
@@ -743,12 +744,16 @@ struct WidgetTextSettingsView: View {
                 }
             }
             .onChange(of: text.fontWeight) { _ in
-                model.getTextEffect(id: widget.id)?.setFontWeight(weight: text.fontWeight.toSystem())
+                for effect in model.getTextEffects(id: widget.id) {
+                    effect.setFontWeight(weight: text.fontWeight.toSystem())
+                }
                 model.remoteSceneSettingsUpdated()
             }
             Toggle("Monospaced digits", isOn: $text.fontMonospacedDigits)
                 .onChange(of: text.fontMonospacedDigits) { _ in
-                    model.getTextEffect(id: widget.id)?.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
+                    for effect in model.getTextEffects(id: widget.id) {
+                        effect.setFontMonospacedDigits(enabled: text.fontMonospacedDigits)
+                    }
                     model.remoteSceneSettingsUpdated()
                 }
         } header: {
@@ -762,8 +767,9 @@ struct WidgetTextSettingsView: View {
                 }
             }
             .onChange(of: text.horizontalAlignment) { _ in
-                model.getTextEffect(id: widget.id)?
-                    .setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
+                for effect in model.getTextEffects(id: widget.id) {
+                    effect.setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
+                }
                 model.remoteSceneSettingsUpdated()
             }
         }
