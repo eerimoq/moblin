@@ -1412,7 +1412,7 @@ extension Model {
     private func createSceneWidget(widget: SettingsWidget) -> SettingsSceneWidget {
         let sceneWidget = SettingsSceneWidget(widgetId: widget.id)
         switch widget.type {
-        case .image:
+        case .image, .slideshow:
             sceneWidget.layout.size = 30
         case .map, .qrCode:
             sceneWidget.layout.size = 23
