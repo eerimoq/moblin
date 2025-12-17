@@ -14,7 +14,7 @@ private struct SlideView: View {
     }
 
     private func widgets() -> [SettingsWidget] {
-        return database.widgets.filter { $0.type == .text }
+        return database.widgets.filter { $0.type == .text || $0.type == .image }
     }
 
     var body: some View {

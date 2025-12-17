@@ -1871,6 +1871,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .vTuber,
             .pngTuber,
             .snapshot,
+            .slideshow,
         ].contains(type)
     }
 

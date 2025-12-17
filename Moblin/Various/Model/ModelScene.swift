@@ -662,6 +662,8 @@ extension Model {
                 switch widget.type {
                 case .text:
                     effect = createTextEffect(widget: widget)
+                case .image:
+                    effect = createImageEffect(widget: widget)
                 default:
                     continue
                 }
