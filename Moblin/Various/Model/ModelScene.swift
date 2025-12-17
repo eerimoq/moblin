@@ -348,19 +348,11 @@ extension Model {
     private func reloadImageEffects() {
         imageEffects.removeAll()
         for widget in database.widgets where widget.type == .image {
-            guard let data = imageStorage.read(id: widget.id) else {
-                continue
-            }
-            guard let image = CIImage(data: data, options: [.applyOrientationProperty: true]) else {
-                continue
-            }
-            let imageEffect = ImageEffect(
-                image: image,
-                settingName: widget.name,
-                widgetId: widget.id
-            )
-            imageEffect.effects = widget.getEffects()
-            imageEffects[widget.id] = imageEffect
+            let effect = ImageEffect(imageStorage: imageStorage,
+                                     settingName: widget.name,
+                                     widgetId: widget.id)
+            effect.effects = widget.getEffects()
+            imageEffects[widget.id] = effect
         }
     }
 
