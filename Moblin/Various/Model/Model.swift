@@ -1176,14 +1176,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     return true
                 }
             case .slideshow:
-                for slide in widget.widget.slideshow.slides {
-                    if let widgetId = slide.widgetId,
-                       let widget = findWidget(id: widgetId),
-                       widget.type == .text,
-                       widget.text.needsWeather == true
-                    {
-                        return true
-                    }
+                for slide in widget.widget.slideshow.slides
+                    where getTextWidget(id: slide.widgetId)?.text.needsWeather == true
+                {
+                    return true
                 }
             default:
                 break
@@ -1205,14 +1201,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     return true
                 }
             case .slideshow:
-                for slide in widget.widget.slideshow.slides {
-                    if let widgetId = slide.widgetId,
-                       let widget = findWidget(id: widgetId),
-                       widget.type == .text,
-                       widget.text.needsGeography == true
-                    {
-                        return true
-                    }
+                for slide in widget.widget.slideshow.slides
+                    where getTextWidget(id: slide.widgetId)?.text.needsGeography == true
+                {
+                    return true
                 }
             default:
                 break

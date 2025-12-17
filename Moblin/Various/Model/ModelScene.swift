@@ -1007,6 +1007,16 @@ extension Model {
         return nil
     }
 
+    func getTextWidget(id: UUID?) -> SettingsWidget? {
+        guard let id else {
+            return nil
+        }
+        if let widget = findWidget(id: id), widget.type == .text {
+            return widget
+        }
+        return nil
+    }
+
     func findEnabledScene(id: UUID) -> SettingsScene? {
         return enabledScenes.first(where: { $0.id == id })
     }
