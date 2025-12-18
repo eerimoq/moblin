@@ -250,7 +250,7 @@ extension Model {
         }
     }
 
-    func banTwitchUserByName(user: String, duration: Int?, reason: String?) {
+    func banTwitchUser(user: String, duration: Int?, reason: String?) {
         createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
                 self.makeErrorToast(title: String(localized: "User '\(user)' not found"))

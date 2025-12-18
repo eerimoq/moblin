@@ -589,9 +589,9 @@ private struct StandardActionFormView: View {
     private func executeTwitchAction(user: String, banReason: String) {
         switch action {
         case .ban:
-            model.banTwitchUserByName(user: user, duration: nil, reason: banReason.isEmpty ? nil : banReason)
+            model.banTwitchUser(user: user, duration: nil, reason: banReason.isEmpty ? nil : banReason)
         case .timeout:
-            model.banTwitchUserByName(user: user, duration: timeoutDuration, reason: nil)
+            model.banTwitchUser(user: user, duration: timeoutDuration, reason: nil)
         case .unban:
             model.unbanTwitchUser(user: user)
         case .mod:
