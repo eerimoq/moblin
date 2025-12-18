@@ -150,7 +150,7 @@ private struct LineView: View {
 }
 
 private struct PostView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     @Binding var selectedPost: ChatPost?
@@ -204,7 +204,7 @@ private struct PostView: View {
 }
 
 private struct MessagesView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     @Binding var selectedPost: ChatPost?
@@ -246,7 +246,7 @@ private struct MessagesView: View {
 }
 
 private struct HypeTrainView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var hypeTrain: HypeTrain
 
     var body: some View {
@@ -307,7 +307,7 @@ private struct HypeTrainView: View {
 }
 
 private struct ChatView: View {
-    var model: Model
+    let model: Model
     @ObservedObject var chat: ChatProvider
     @Binding var selectedPost: ChatPost?
 
@@ -718,10 +718,10 @@ private struct SendMessagesToSelectorView: View {
 }
 
 private struct ControlMessagesButtonView: View {
-    @ObservedObject var model: Model
+    let model: Model
     @ObservedObject var chat: SettingsChat
+    @State var showingPredefinedMessages: Bool = false
     @State var showingModeration: Bool = false
-    @State var showingPredefinedMessages = false
 
     private func buttonIcon() -> String {
         switch chat.buttonMode {

@@ -1,10 +1,8 @@
 import SwiftUI
 
-enum ModPlatform: String, CaseIterable, Identifiable {
+private enum ModPlatform: String, CaseIterable {
     case kick = "Kick"
     case twitch = "Twitch"
-
-    var id: Self { self }
 
     var logo: String {
         switch self {
@@ -14,10 +12,10 @@ enum ModPlatform: String, CaseIterable, Identifiable {
     }
 }
 
-enum ModActionCategory: String, CaseIterable {
-    case userModeration = "User Moderation"
-    case chatMode = "Chat Modes"
-    case channelManagement = "Channel Management"
+private enum ModActionCategory: String, CaseIterable {
+    case userModeration = "User moderation"
+    case chatMode = "Chat modes"
+    case channelManagement = "Channel management"
 
     var icon: String {
         switch self {
@@ -28,7 +26,7 @@ enum ModActionCategory: String, CaseIterable {
     }
 }
 
-enum ModActionType: CaseIterable, Identifiable {
+private enum ModActionType: CaseIterable {
     case ban, timeout, unban
     case mod, unmod
     case vip, unvip
@@ -41,8 +39,6 @@ enum ModActionType: CaseIterable, Identifiable {
     case prediction
     case commercial
     case announcement
-
-    var id: Self { self }
 
     func title(for platform: ModPlatform) -> String {
         switch self {
@@ -215,24 +211,22 @@ struct ModerationView: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 48))
                 .foregroundStyle(.yellow)
-            Text("Not Logged In")
+            Text("Not logged in")
                 .font(.headline)
             Text("Please log in to Kick or Twitch in stream settings to use moderator actions.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var actionsList: some View {
         List {
-            ForEach(availablePlatforms) { platform in
+            ForEach(availablePlatforms, id: \.self) { platform in
                 NavigationLink {
                     ModActionPlatformView(
-                        platform: platform,
                         model: model,
+                        platform: platform,
                         showingModActions: $showingModActions
                     )
                 } label: {
@@ -251,8 +245,8 @@ struct ModerationView: View {
 }
 
 private struct ModActionPlatformView: View {
-    let platform: ModPlatform
     let model: Model
+    let platform: ModPlatform
     @Binding var showingModActions: Bool
 
     var body: some View {
@@ -262,9 +256,9 @@ private struct ModActionPlatformView: View {
                 if !actions.isEmpty {
                     NavigationLink {
                         ModActionCategoryView(
+                            model: model,
                             category: category,
                             platform: platform,
-                            model: model,
                             showingModActions: $showingModActions
                         )
                     } label: {
@@ -285,9 +279,9 @@ private struct ModActionPlatformView: View {
 }
 
 private struct ModActionCategoryView: View {
+    let model: Model
     let category: ModActionCategory
     let platform: ModPlatform
-    let model: Model
     @Binding var showingModActions: Bool
 
     private var actions: [ModActionType] {
@@ -296,7 +290,7 @@ private struct ModActionCategoryView: View {
 
     var body: some View {
         List {
-            ForEach(actions) { action in
+            ForEach(actions, id: \.self) { action in
                 ModActionRowView(
                     action: action,
                     platform: platform,
@@ -641,7 +635,6 @@ private struct CreatePollView: View {
             } header: {
                 Text("Question")
             }
-
             Section {
                 ForEach($options) { $option in
                     TextField("Option", text: $option.text)
@@ -650,7 +643,6 @@ private struct CreatePollView: View {
                 .onDelete { offsets in
                     options.remove(atOffsets: offsets)
                 }
-
                 if options.count < 6 {
                     TextButtonView("Add Option") {
                         options.append(PollOption())
