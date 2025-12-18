@@ -624,7 +624,7 @@ private struct CreatePollView: View {
     var body: some View {
         Form {
             Section {
-                TextField("Poll Question", text: $title)
+                TextField("", text: $title)
             } header: {
                 Text("Question")
             }
@@ -637,49 +637,53 @@ private struct CreatePollView: View {
                     options.remove(atOffsets: offsets)
                 }
                 if options.count < 6 {
-                    TextButtonView("Add Option") {
+                    TextButtonView("Add option") {
                         options.append(PollOption())
                     }
                 }
             } header: {
                 Text("Options")
             } footer: {
-                Text("Swipe to delete. Minimum 2, maximum 6.")
+                SwipeLeftToDeleteHelpView(kind: String(localized: "an option"))
             }
-
             Section {
                 Picker("Duration", selection: $duration) {
-                    Text("30 seconds").tag(30)
-                    Text("2 minutes").tag(120)
-                    Text("3 minutes").tag(180)
-                    Text("4 minutes").tag(240)
-                    Text("5 minutes").tag(300)
+                    Text("30 seconds")
+                        .tag(30)
+                    Text("2 minutes")
+                        .tag(120)
+                    Text("3 minutes")
+                        .tag(180)
+                    Text("4 minutes")
+                        .tag(240)
+                    Text("5 minutes")
+                        .tag(300)
                 }
             } header: {
-                Text("Poll Duration")
-            } footer: {
-                Text("How long the poll will run")
+                Text("Poll duration")
             }
-
             if platform == .kick {
                 Section {
-                    Picker("Result Display", selection: $resultDisplayDuration) {
-                        Text("15 seconds").tag(15)
-                        Text("30 seconds").tag(30)
-                        Text("2 minutes").tag(120)
-                        Text("3 minutes").tag(180)
-                        Text("4 minutes").tag(240)
-                        Text("5 minutes").tag(300)
+                    Picker("Result display", selection: $resultDisplayDuration) {
+                        Text("15 seconds")
+                            .tag(15)
+                        Text("30 seconds")
+                            .tag(30)
+                        Text("2 minutes")
+                            .tag(120)
+                        Text("3 minutes")
+                            .tag(180)
+                        Text("4 minutes")
+                            .tag(240)
+                        Text("5 minutes")
+                            .tag(300)
                     }
                 } header: {
-                    Text("Result Display Duration")
-                } footer: {
-                    Text("How long results will be shown")
+                    Text("Result display duration")
                 }
             }
-
             Section {
-                TextButtonView("Create Poll") {
+                TextButtonView("Create poll") {
                     createPoll()
                 }
                 .disabled(!canExecute)
@@ -691,7 +695,6 @@ private struct CreatePollView: View {
         let trimmedOptions = options
             .map { $0.text.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
-
         switch platform {
         case .kick:
             model.createKickPoll(
@@ -725,20 +728,16 @@ private struct CreatePredictionView: View {
     var body: some View {
         Form {
             Section {
-                TextField("Prediction Question", text: $title)
+                TextField("", text: $title)
             } header: {
                 Text("Question")
             }
-
             Section {
-                TextField("Outcome 1", text: $outcome1)
-                TextField("Outcome 2", text: $outcome2)
+                TextField("", text: $outcome1)
+                TextField("", text: $outcome2)
             } header: {
                 Text("Outcomes")
-            } footer: {
-                Text("2 outcomes required")
             }
-
             Section {
                 Picker("Duration", selection: $duration) {
                     Text("1 minute").tag(60)
@@ -747,13 +746,10 @@ private struct CreatePredictionView: View {
                     Text("30 minutes").tag(1800)
                 }
             } header: {
-                Text("Prediction Duration")
-            } footer: {
-                Text("How long users can make predictions")
+                Text("Prediction duration")
             }
-
             Section {
-                TextButtonView("Create Prediction") {
+                TextButtonView("Create prediction") {
                     createPrediction()
                 }
                 .disabled(!canExecute)
@@ -766,7 +762,6 @@ private struct CreatePredictionView: View {
             outcome1.trimmingCharacters(in: .whitespaces),
             outcome2.trimmingCharacters(in: .whitespaces),
         ]
-
         switch platform {
         case .kick:
             model.createKickPrediction(
@@ -798,13 +793,10 @@ private struct RunCommercialView: View {
                     Text("3 minutes").tag(180)
                 }
             } header: {
-                Text("Commercial Length")
-            } footer: {
-                Text("How long the commercial will run")
+                Text("Commercial duration")
             }
-
             Section {
-                TextButtonView("Run Commercial") {
+                TextButtonView("Run commercial") {
                     model.startAds(seconds: duration)
                     onComplete()
                 }
@@ -831,17 +823,16 @@ private struct SendAnnouncementView: View {
             } header: {
                 Text("Message")
             }
-
             Section {
                 Picker("Color", selection: $selectedColor) {
                     ForEach(AnnouncementColor.allCases) { color in
-                        Text(color.displayName).tag(color)
+                        Text(color.displayName)
+                            .tag(color)
                     }
                 }
             }
-
             Section {
-                TextButtonView("Send Announcement") {
+                TextButtonView("Send announcement") {
                     model.sendTwitchAnnouncement(
                         message: message.trimmingCharacters(in: .whitespaces),
                         color: selectedColor.rawValue
