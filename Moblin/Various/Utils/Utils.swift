@@ -128,7 +128,7 @@ func uploadImage(
     }
 }
 
-func formatCommercialStartedDuration(seconds: Int) -> String {
+func formatSecondsAndMinutes(seconds: Int) -> String {
     let minutes = seconds / 60
     if minutes * 60 == seconds {
         if minutes == 1 {

@@ -361,26 +361,11 @@ private struct StandardActionFormView: View {
         ]
     }
 
-    private var slowModePresets: [(String, Int)] {
+    private var slowModePresets: [Int] {
         if platform == .twitch {
-            [
-                ("3 seconds", 3),
-                ("5 seconds", 5),
-                ("10 seconds", 10),
-                ("30 seconds", 30),
-                ("1 minute", 60),
-                ("2 minutes", 120),
-            ]
+            [3, 5, 10, 30, 60, 120]
         } else {
-            [
-                ("3 seconds", 3),
-                ("5 seconds", 5),
-                ("10 seconds", 10),
-                ("30 seconds", 30),
-                ("1 minute", 60),
-                ("2 minutes", 120),
-                ("5 minutes", 300),
-            ]
+            [3, 5, 10, 30, 60, 120, 300]
         }
     }
 
@@ -487,8 +472,8 @@ private struct StandardActionFormView: View {
             if action == .slow {
                 Section {
                     Picker("Message interval", selection: $slowModeDuration) {
-                        ForEach(slowModePresets, id: \.1) { preset in
-                            Text(preset.0).tag(preset.1)
+                        ForEach(slowModePresets, id: \.self) {
+                            Text(formatSecondsAndMinutes(seconds: $0))
                         }
                     }
                 }
@@ -566,16 +551,9 @@ private struct CreatePollView: View {
             }
             Section {
                 Picker("Duration", selection: $duration) {
-                    Text("30 seconds")
-                        .tag(30)
-                    Text("2 minutes")
-                        .tag(120)
-                    Text("3 minutes")
-                        .tag(180)
-                    Text("4 minutes")
-                        .tag(240)
-                    Text("5 minutes")
-                        .tag(300)
+                    ForEach([30, 120, 180, 240, 300], id: \.self) {
+                        Text(formatSecondsAndMinutes(seconds: $0))
+                    }
                 }
             } header: {
                 Text("Poll duration")
@@ -583,18 +561,9 @@ private struct CreatePollView: View {
             if platform == .kick {
                 Section {
                     Picker("Result display", selection: $resultDisplayDuration) {
-                        Text("15 seconds")
-                            .tag(15)
-                        Text("30 seconds")
-                            .tag(30)
-                        Text("2 minutes")
-                            .tag(120)
-                        Text("3 minutes")
-                            .tag(180)
-                        Text("4 minutes")
-                            .tag(240)
-                        Text("5 minutes")
-                            .tag(300)
+                        ForEach([15, 30, 120, 180, 240, 300], id: \.self) {
+                            Text(formatSecondsAndMinutes(seconds: $0))
+                        }
                     }
                 } header: {
                     Text("Result display duration")
@@ -676,10 +645,9 @@ private struct CreatePredictionView: View {
             }
             Section {
                 Picker("Duration", selection: $duration) {
-                    Text("1 minute").tag(60)
-                    Text("5 minutes").tag(300)
-                    Text("10 minutes").tag(600)
-                    Text("30 minutes").tag(1800)
+                    ForEach([60, 300, 600, 1800], id: \.self) {
+                        Text(formatSecondsAndMinutes(seconds: $0))
+                    }
                 }
             } header: {
                 Text("Prediction duration")
@@ -703,12 +671,9 @@ private struct RunCommercialView: View {
         Form {
             Section {
                 Picker("Duration", selection: $duration) {
-                    Text("30 seconds").tag(30)
-                    Text("60 seconds").tag(60)
-                    Text("90 seconds").tag(90)
-                    Text("2 minutes").tag(120)
-                    Text("2.5 minutes").tag(150)
-                    Text("3 minutes").tag(180)
+                    ForEach([30, 60, 90, 120, 180], id: \.self) {
+                        Text(formatSecondsAndMinutes(seconds: $0))
+                    }
                 }
             } header: {
                 Text("Commercial duration")
