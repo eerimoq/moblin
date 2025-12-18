@@ -350,3 +350,14 @@ func loadStringResource(name: String, ext: String) -> String {
     let url = Bundle.main.url(forResource: name, withExtension: ext)!
     return try! String(contentsOf: url)
 }
+
+extension Array {
+    mutating func truncate(length: Int, create: () -> Element) {
+        while count < length {
+            append(create())
+        }
+        while count > length {
+            removeLast()
+        }
+    }
+}

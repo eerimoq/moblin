@@ -174,6 +174,10 @@ final class Processor {
         video.unregisterEffect(effect)
     }
 
+    func unregisterAllVideoEffects() {
+        video.unregisterAllEffects()
+    }
+
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
         video.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
     }

@@ -302,6 +302,12 @@ final class VideoUnit: NSObject {
         }
     }
 
+    func unregisterAllEffects() {
+        processorPipelineQueue.async {
+            self.unregisterAllEffectsInner()
+        }
+    }
+
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
         processorControlQueue.async {
             processorPipelineQueue.async {
@@ -1071,6 +1077,13 @@ final class VideoUnit: NSObject {
         if let index = effects.firstIndex(of: effect) {
             effects.remove(at: index)
         }
+    }
+
+    private func unregisterAllEffectsInner() {
+        for effect in effects {
+            effect.removed()
+        }
+        effects.removeAll()
     }
 
     private func setPendingAfterAttachEffectsInner(effects: [VideoEffect], rotation: Double) {

@@ -101,9 +101,6 @@ extension Model {
             lines: drawOnStream.lines,
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
-        for lutEffect in lutEffects.values {
-            media.unregisterEffect(lutEffect)
-        }
         lutEffects.removeAll()
         for lut in allLuts() {
             let lutEffect = LutEffect()
@@ -342,20 +339,94 @@ extension Model {
         }
     }
 
-    private func unregisterGlobalVideoEffects() {
-        media.unregisterEffect(faceEffect)
-        media.unregisterEffect(movieEffect)
-        media.unregisterEffect(grayScaleEffect)
-        media.unregisterEffect(sepiaEffect)
-        media.unregisterEffect(tripleEffect)
-        media.unregisterEffect(twinEffect)
-        media.unregisterEffect(pixellateEffect)
-        if let pollEffect {
-            media.unregisterEffect(pollEffect)
+    func forceUpdateTextEffects() {
+        for effect in textEffects.values {
+            effect.forceImageUpdate()
         }
-        media.unregisterEffect(whirlpoolEffect)
-        media.unregisterEffect(pinchEffect)
-        media.unregisterEffect(fixedHorizonEffect)
+        for effect in slideshowEffects.values {
+            for slide in effect.slides {
+                if let textEffect = slide.effect as? TextEffect {
+                    textEffect.forceImageUpdate()
+                }
+            }
+        }
+    }
+
+    func updateMapEffects() {
+        guard !mapEffects.isEmpty else {
+            return
+        }
+        let location: CLLocation
+        if let remoteSceneLocation = remoteSceneData.location {
+            location = remoteSceneLocation.toLocation()
+        } else {
+            guard var latestKnownLocation = locationManager.getLatestKnownLocation() else {
+                return
+            }
+            if isLocationInPrivacyRegion(location: latestKnownLocation) {
+                latestKnownLocation = .init()
+            }
+            remoteControlAssistantSetRemoteSceneDataLocation(location: latestKnownLocation)
+            location = latestKnownLocation
+        }
+        for mapEffect in mapEffects.values {
+            mapEffect.updateLocation(location: location)
+        }
+    }
+
+    func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
+        switch scene.videoSource.cameraPosition {
+        case .rtmp:
+            return activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
+        case .srtla:
+            return activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
+        case .rist:
+            return activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
+        case .rtsp:
+            return activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
+        case .external:
+            return isExternalCameraConnected(id: scene.videoSource.externalCameraId)
+        default:
+            return true
+        }
+    }
+
+    func isCurrentScenesVideoSourceNetwork(cameraId: UUID) -> Bool {
+        guard let scene = getSelectedScene() else {
+            return false
+        }
+        return scene.videoSource.isNetwork(cameraId: cameraId)
+    }
+
+    func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
+        guard let scene = findEnabledScene(id: sceneId) else {
+            return false
+        }
+        return isSceneVideoSourceActive(scene: scene)
+    }
+
+    func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
+        var devices = CaptureDevices(hasSceneDevice: false, devices: [])
+        if let sceneDevice {
+            devices.hasSceneDevice = true
+            devices.devices.append(makeCaptureDevice(device: sceneDevice))
+        }
+        var addedSceneIds: Set<UUID> = []
+        if let quickSwitchGroup = scene.quickSwitchGroup {
+            for otherScene in enabledScenes where otherScene.quickSwitchGroup == quickSwitchGroup {
+                getBuiltinCameraDevices(videoSource: otherScene.videoSource, devices: &devices.devices)
+                getBuiltinCameraDevicesInScene(scene: otherScene,
+                                               devices: &devices.devices,
+                                               addedSceneIds: &addedSceneIds)
+            }
+        }
+        getBuiltinCameraDevicesInScene(scene: scene,
+                                       devices: &devices.devices,
+                                       addedSceneIds: &addedSceneIds)
+        return devices
+    }
+
+    private func createGlobalVideoEffects() {
         faceEffect = FaceEffect()
         updateFaceFilterSettings()
         movieEffect = MovieEffect()
@@ -441,7 +512,8 @@ extension Model {
     }
 
     private func resetVideoEffects(widgets: [SettingsWidget]) {
-        unregisterGlobalVideoEffects()
+        media.unregisterAllEffects()
+        createGlobalVideoEffects()
         resetImageEffects(widgets: widgets)
         resetTextVideoEffects(widgets: widgets)
         resetBrowserVideoEffects(widgets: widgets)
@@ -467,9 +539,6 @@ extension Model {
     }
 
     private func resetImageEffects(widgets: [SettingsWidget]) {
-        for effect in imageEffects.values {
-            media.unregisterEffect(effect)
-        }
         imageEffects.removeAll()
         for widget in widgets where widget.type == .image {
             let effect = createImageEffect(widget: widget)
@@ -501,9 +570,6 @@ extension Model {
     }
 
     private func resetTextVideoEffects(widgets: [SettingsWidget]) {
-        for effect in textEffects.values {
-            media.unregisterEffect(effect)
-        }
         textEffects.removeAll()
         for widget in widgets where widget.type == .text {
             textEffects[widget.id] = createTextEffect(widget: widget)
@@ -512,7 +578,6 @@ extension Model {
 
     private func resetBrowserVideoEffects(widgets: [SettingsWidget]) {
         for effect in browserEffects.values {
-            media.unregisterEffect(effect)
             effect.stop()
         }
         browserEffects.removeAll()
@@ -535,9 +600,6 @@ extension Model {
     }
 
     private func resetMapVideoEffects(widgets: [SettingsWidget]) {
-        for effect in mapEffects.values {
-            media.unregisterEffect(effect)
-        }
         mapEffects.removeAll()
         for widget in widgets where widget.type == .map {
             let mapEffect = MapEffect(widget: widget.map)
@@ -547,9 +609,6 @@ extension Model {
     }
 
     private func resetQrCodeVideoEffects(widgets: [SettingsWidget]) {
-        for effect in qrCodeEffects.values {
-            media.unregisterEffect(effect)
-        }
         qrCodeEffects.removeAll()
         for widget in widgets where widget.type == .qrCode {
             let qrCodeEffect = QrCodeEffect(widget: widget.qrCode.clone())
@@ -559,9 +618,6 @@ extension Model {
     }
 
     private func resetVideoSourceVideoEffects(widgets: [SettingsWidget]) {
-        for effect in videoSourceEffects.values {
-            media.unregisterEffect(effect)
-        }
         videoSourceEffects.removeAll()
         for widget in widgets where widget.type == .videoSource {
             let videoSourceEffect = VideoSourceEffect()
@@ -571,9 +627,6 @@ extension Model {
     }
 
     private func resetScoreboardVideoEffects(widgets: [SettingsWidget]) {
-        for effect in scoreboardEffects.values {
-            media.unregisterEffect(effect)
-        }
         scoreboardEffects.removeAll()
         for widget in widgets where widget.type == .scoreboard {
             scoreboardEffects[widget.id] = ScoreboardEffect()
@@ -581,9 +634,6 @@ extension Model {
     }
 
     private func resetAlertsVideoEffects(widgets: [SettingsWidget]) {
-        for effect in alertsEffects.values {
-            media.unregisterEffect(effect)
-        }
         alertsEffects.removeAll()
         for widget in widgets where widget.type == .alerts {
             alertsEffects[widget.id] = AlertsEffect(
@@ -597,9 +647,6 @@ extension Model {
     }
 
     private func resetVTuberVideoEffects(widgets: [SettingsWidget]) {
-        for effect in vTuberEffects.values {
-            media.unregisterEffect(effect)
-        }
         vTuberEffects.removeAll()
         for widget in widgets where widget.type == .vTuber {
             vTuberEffects[widget.id] = VTuberEffect(
@@ -611,9 +658,6 @@ extension Model {
     }
 
     private func resetPngTuberVideoEffects(widgets: [SettingsWidget]) {
-        for effect in pngTuberEffects.values {
-            media.unregisterEffect(effect)
-        }
         pngTuberEffects.removeAll()
         for widget in widgets where widget.type == .pngTuber {
             pngTuberEffects[widget.id] = PngTuberEffect(
@@ -624,9 +668,6 @@ extension Model {
     }
 
     private func resetSnapshotVideoEffects(widgets: [SettingsWidget]) {
-        for effect in snapshotEffects.values {
-            media.unregisterEffect(effect)
-        }
         snapshotEffects.removeAll()
         for widget in widgets where widget.type == .snapshot {
             let effect = SnapshotEffect(showtime: widget.snapshot.showtime)
@@ -636,9 +677,6 @@ extension Model {
     }
 
     private func resetChatVideoEffects(widgets: [SettingsWidget]) {
-        for effect in chatEffects.values {
-            media.unregisterEffect(effect)
-        }
         chatEffects.removeAll()
         for widget in widgets where widget.type == .chat {
             let effect = ChatEffect(chat: chatWidgetChat)
@@ -648,9 +686,6 @@ extension Model {
     }
 
     private func resetSlideshowVideoEffects(widgets: [SettingsWidget]) {
-        for effect in slideshowEffects.values {
-            media.unregisterEffect(effect)
-        }
         slideshowEffects.removeAll()
         for widget in widgets where widget.type == .slideshow {
             var slides: [SlideshowEffectSlide] = []
@@ -697,30 +732,10 @@ extension Model {
     }
 
     private func sceneUpdatedOff() {
-        unregisterGlobalVideoEffects()
-        for effect in imageEffects.values {
-            media.unregisterEffect(effect)
-        }
-        for effect in textEffects.values {
-            media.unregisterEffect(effect)
-        }
+        media.unregisterAllEffects()
+        createGlobalVideoEffects()
         for effect in browserEffects.values {
-            media.unregisterEffect(effect)
             effect.stop()
-        }
-        for effect in mapEffects.values {
-            media.unregisterEffect(effect)
-        }
-        media.unregisterEffect(drawOnStreamEffect)
-        media.unregisterEffect(lutEffect)
-        for effect in lutEffects.values {
-            media.unregisterEffect(effect)
-        }
-        for effect in scoreboardEffects.values {
-            media.unregisterEffect(effect)
-        }
-        for effect in slideshowEffects.values {
-            media.unregisterEffect(effect)
         }
     }
 
@@ -1249,94 +1264,6 @@ extension Model {
         }
     }
 
-    func forceUpdateTextEffects() {
-        for effect in textEffects.values {
-            effect.forceImageUpdate()
-        }
-        for effect in slideshowEffects.values {
-            for slide in effect.slides {
-                if let textEffect = slide.effect as? TextEffect {
-                    textEffect.forceImageUpdate()
-                }
-            }
-        }
-    }
-
-    func updateMapEffects() {
-        guard !mapEffects.isEmpty else {
-            return
-        }
-        let location: CLLocation
-        if let remoteSceneLocation = remoteSceneData.location {
-            location = remoteSceneLocation.toLocation()
-        } else {
-            guard var latestKnownLocation = locationManager.getLatestKnownLocation() else {
-                return
-            }
-            if isLocationInPrivacyRegion(location: latestKnownLocation) {
-                latestKnownLocation = .init()
-            }
-            remoteControlAssistantSetRemoteSceneDataLocation(location: latestKnownLocation)
-            location = latestKnownLocation
-        }
-        for mapEffect in mapEffects.values {
-            mapEffect.updateLocation(location: location)
-        }
-    }
-
-    func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
-        switch scene.videoSource.cameraPosition {
-        case .rtmp:
-            return activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
-        case .srtla:
-            return activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
-        case .rist:
-            return activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
-        case .rtsp:
-            return activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
-        case .external:
-            return isExternalCameraConnected(id: scene.videoSource.externalCameraId)
-        default:
-            return true
-        }
-    }
-
-    func isCurrentScenesVideoSourceNetwork(cameraId: UUID) -> Bool {
-        guard let scene = getSelectedScene() else {
-            return false
-        }
-        return scene.videoSource.isNetwork(cameraId: cameraId)
-    }
-
-    func isSceneVideoSourceActive(sceneId: UUID) -> Bool {
-        guard let scene = findEnabledScene(id: sceneId) else {
-            return false
-        }
-        return isSceneVideoSourceActive(scene: scene)
-    }
-
-    func getBuiltinCameraDevices(scene: SettingsScene, sceneDevice: AVCaptureDevice?) -> CaptureDevices {
-        var devices = CaptureDevices(hasSceneDevice: false, devices: [])
-        if let sceneDevice {
-            devices.hasSceneDevice = true
-            devices.devices.append(makeCaptureDevice(device: sceneDevice))
-        }
-        var addedSceneIds: Set<UUID> = []
-        if let quickSwitchGroup = scene.quickSwitchGroup {
-            for otherScene in enabledScenes where otherScene.quickSwitchGroup == quickSwitchGroup {
-                let cameraId = otherScene.videoSource.getCaptureDeviceCameraId()
-                getBuiltinCameraDevices(cameraId: cameraId, devices: &devices.devices)
-                getBuiltinCameraDevicesInScene(scene: otherScene,
-                                               devices: &devices.devices,
-                                               addedSceneIds: &addedSceneIds)
-            }
-        }
-        getBuiltinCameraDevicesInScene(scene: scene,
-                                       devices: &devices.devices,
-                                       addedSceneIds: &addedSceneIds)
-        return devices
-    }
-
     private func getBuiltinCameraDevicesInScene(scene: SettingsScene,
                                                 devices: inout [CaptureDevice],
                                                 addedSceneIds: inout Set<UUID>)
@@ -1346,19 +1273,16 @@ extension Model {
         }
         addedSceneIds.insert(scene.id)
         for sceneWidget in scene.widgets {
-            guard let widget = findWidget(id: sceneWidget.widgetId) else {
-                continue
-            }
-            guard widget.enabled else {
+            guard let widget = findWidget(id: sceneWidget.widgetId), widget.enabled else {
                 continue
             }
             switch widget.type {
             case .videoSource:
-                getBuiltinCameraDevicesForVideoSourceWidget(videoSource: widget.videoSource, devices: &devices)
+                getBuiltinCameraDevices(videoSource: widget.videoSource.videoSource, devices: &devices)
             case .vTuber:
-                getBuiltinCameraDevicesForVTuberWidget(vTuber: widget.vTuber, devices: &devices)
+                getBuiltinCameraDevices(videoSource: widget.vTuber.videoSource, devices: &devices)
             case .pngTuber:
-                getBuiltinCameraDevicesForPngTuberWidget(pngTuber: widget.pngTuber, devices: &devices)
+                getBuiltinCameraDevices(videoSource: widget.pngTuber.videoSource, devices: &devices)
             case .scene:
                 getBuiltinCameraDevicesForSceneWidget(scene: widget.scene,
                                                       devices: &devices,
@@ -1369,29 +1293,8 @@ extension Model {
         }
     }
 
-    private func getBuiltinCameraDevicesForVideoSourceWidget(
-        videoSource: SettingsWidgetVideoSource,
-        devices: inout [CaptureDevice]
-    ) {
-        let cameraId = videoSource.videoSource.getCaptureDeviceCameraId()
-        getBuiltinCameraDevices(cameraId: cameraId, devices: &devices)
-    }
-
-    private func getBuiltinCameraDevicesForVTuberWidget(vTuber: SettingsWidgetVTuber, devices: inout [CaptureDevice]) {
-        let cameraId = vTuber.videoSource.getCaptureDeviceCameraId()
-        getBuiltinCameraDevices(cameraId: cameraId, devices: &devices)
-    }
-
-    private func getBuiltinCameraDevicesForPngTuberWidget(
-        pngTuber: SettingsWidgetPngTuber,
-        devices: inout [CaptureDevice]
-    ) {
-        let cameraId = pngTuber.videoSource.getCaptureDeviceCameraId()
-        getBuiltinCameraDevices(cameraId: cameraId, devices: &devices)
-    }
-
-    private func getBuiltinCameraDevices(cameraId: String?, devices: inout [CaptureDevice]) {
-        if let cameraId, let device = AVCaptureDevice(uniqueID: cameraId) {
+    private func getBuiltinCameraDevices(videoSource: SettingsVideoSource, devices: inout [CaptureDevice]) {
+        if let cameraId = videoSource.getCaptureDeviceCameraId(), let device = AVCaptureDevice(uniqueID: cameraId) {
             if !devices.contains(where: { $0.device == device }) {
                 devices.append(makeCaptureDevice(device: device))
             }
@@ -1436,61 +1339,36 @@ extension Model {
         return sceneWidget
     }
 
-    private func updateTimers(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfTimers = parts.filter { $0 == .timer }.count
-        while text.timers.count < numberOfTimers {
-            text.timers.append(.init())
-        }
-        while text.timers.count > numberOfTimers {
-            text.timers.removeLast()
-        }
-        textEffect?.setTimersEndTime(endTimes: text.timers.map {
+    private func updateTimers(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+        let length = parts.filter { $0 == .timer }.count
+        text.timers.truncate(length: length, create: { .init() })
+        textEffect.setTimersEndTime(endTimes: text.timers.map {
             .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
         })
     }
 
-    private func updateStopwatches(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfStopwatches = parts.filter { $0 == .stopwatch }.count
-        while text.stopwatches.count < numberOfStopwatches {
-            text.stopwatches.append(.init())
-        }
-        while text.stopwatches.count > numberOfStopwatches {
-            text.stopwatches.removeLast()
-        }
-        textEffect?.setStopwatches(stopwatches: text.stopwatches.map { $0.clone() })
+    private func updateStopwatches(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+        let length = parts.filter { $0 == .stopwatch }.count
+        text.timers.truncate(length: length, create: { .init() })
+        textEffect.setStopwatches(stopwatches: text.stopwatches.map { $0.clone() })
     }
 
-    private func updateCheckboxes(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfCheckboxes = parts.filter { $0 == .checkbox }.count
-        while text.checkboxes.count < numberOfCheckboxes {
-            text.checkboxes.append(.init())
-        }
-        while text.checkboxes.count > numberOfCheckboxes {
-            text.checkboxes.removeLast()
-        }
-        textEffect?.setCheckboxes(checkboxes: text.checkboxes.map { $0.checked })
+    private func updateCheckboxes(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+        let length = parts.filter { $0 == .checkbox }.count
+        text.checkboxes.truncate(length: length, create: { .init() })
+        textEffect.setCheckboxes(checkboxes: text.checkboxes.map { $0.checked })
     }
 
-    private func updateRatings(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfRatings = parts.filter { $0 == .rating }.count
-        while text.ratings.count < numberOfRatings {
-            text.ratings.append(.init())
-        }
-        while text.ratings.count > numberOfRatings {
-            text.ratings.removeLast()
-        }
-        textEffect?.setRatings(ratings: text.ratings.map { $0.rating })
+    private func updateRatings(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+        let length = parts.filter { $0 == .rating }.count
+        text.ratings.truncate(length: length, create: { .init() })
+        textEffect.setRatings(ratings: text.ratings.map { $0.rating })
     }
 
-    private func updateLapTimes(_ text: SettingsWidgetText, _ textEffect: TextEffect?, _ parts: [TextFormatPart]) {
-        let numberOfLapTimes = parts.filter { $0 == .lapTimes }.count
-        while text.lapTimes.count < numberOfLapTimes {
-            text.lapTimes.append(.init())
-        }
-        while text.lapTimes.count > numberOfLapTimes {
-            text.lapTimes.removeLast()
-        }
-        textEffect?.setLapTimes(lapTimes: text.lapTimes.map { $0.lapTimes })
+    private func updateLapTimes(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+        let length = parts.filter { $0 == .lapTimes }.count
+        text.lapTimes.truncate(length: length, create: { .init() })
+        textEffect.setLapTimes(lapTimes: text.lapTimes.map { $0.lapTimes })
     }
 
     private func updateSubtitles(_ text: SettingsWidgetText, _: TextEffect?, _ parts: [TextFormatPart]) {
@@ -1510,50 +1388,38 @@ extension Model {
     }
 
     private func updateNeedsWeather(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsWeather = !parts.filter {
+        text.needsWeather = parts.contains(where: {
             switch $0 {
-            case .conditions:
-                return true
-            case .temperature:
+            case .conditions, .temperature:
                 return true
             default:
                 return false
             }
-        }.isEmpty
+        })
         startWeatherManager()
     }
 
     private func updateNeedsGeography(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsGeography = !parts.filter {
+        text.needsGeography = parts.contains(where: {
             switch $0 {
-            case .country:
-                return true
-            case .countryFlag:
-                return true
-            case .state:
-                return true
-            case .city:
+            case .country, .countryFlag, .state, .city:
                 return true
             default:
                 return false
             }
-        }.isEmpty
+        })
         startGeographyManager()
     }
 
     private func updateNeedsGForce(_ text: SettingsWidgetText, _ parts: [TextFormatPart]) {
-        text.needsGForce = !parts.filter {
+        text.needsGForce = parts.contains(where: {
             switch $0 {
-            case .gForce:
-                return true
-            case .gForceRecentMax:
-                return true
-            case .gForceMax:
+            case .gForce, .gForceRecentMax, .gForceMax:
                 return true
             default:
                 return false
             }
-        }.isEmpty
+        })
         startGForceManager()
     }
 }

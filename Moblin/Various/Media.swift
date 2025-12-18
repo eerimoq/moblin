@@ -617,6 +617,10 @@ final class Media: NSObject {
         processor?.unregisterVideoEffect(effect)
     }
 
+    func unregisterAllEffects() {
+        processor?.unregisterAllVideoEffects()
+    }
+
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
         processor?.setPendingAfterAttachEffects(effects: effects, rotation: rotation)
     }
