@@ -215,25 +215,34 @@ class KickApi {
         { ok, _ in onComplete(ok) }
     }
 
-    func setSlowMode(enabled: Bool, messageInterval: Int? = nil, onComplete: @escaping (Bool) -> Void) {
-        var body: [String: Any] = ["slow_mode": enabled]
-        if let messageInterval, enabled {
-            body["message_interval"] = messageInterval
-        }
+    func enableSlowMode(messageInterval: Int, onComplete: @escaping (Bool) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
-                    body: body)
+                    body: ["slow_mode": true, "message_interval": messageInterval])
         { ok, _ in onComplete(ok) }
     }
 
-    func setFollowersMode(enabled: Bool, minimumDuration: Int? = nil, onComplete: @escaping (Bool) -> Void) {
-        var body: [String: Any] = ["followers_mode": enabled]
-        if enabled, let minimumDuration {
-            body["following_min_duration"] = minimumDuration
-        }
+    func disableSlowMode(onComplete: @escaping (Bool) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
-                    body: body)
+                    body: ["slow_mode": false])
+        { ok, _ in onComplete(ok) }
+    }
+
+    func enableFollowersMode(minimumDuration: Int, onComplete: @escaping (Bool) -> Void) {
+        doV2Request(method: "PUT",
+                    subPath: "channels/\(slug)/chatroom",
+                    body: [
+                        "followers_mode": true,
+                        "following_min_duration": minimumDuration,
+                    ])
+        { ok, _ in onComplete(ok) }
+    }
+
+    func disableFollowersMode(onComplete: @escaping (Bool) -> Void) {
+        doV2Request(method: "PUT",
+                    subPath: "channels/\(slug)/chatroom",
+                    body: ["followers_mode": false])
         { ok, _ in onComplete(ok) }
     }
 

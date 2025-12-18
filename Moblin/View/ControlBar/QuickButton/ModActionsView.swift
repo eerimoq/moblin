@@ -361,8 +361,8 @@ private struct ModActionRowView: View {
     private func executeKickAction() {
         switch action {
         case .deletepoll: model.deleteKickPoll()
-        case .slowoff: model.setKickSlowMode(enabled: false)
-        case .followersoff: model.setKickFollowersMode(enabled: false)
+        case .slowoff: model.disableKickSlowMode()
+        case .followersoff: model.disableKickFollowersMode()
         case .emoteonlyoff: model.setKickEmoteOnlyMode(enabled: false)
         case .emoteonly: model.setKickEmoteOnlyMode(enabled: true)
         case .subscribersoff: model.setKickSubscribersOnlyMode(enabled: false)
@@ -578,9 +578,9 @@ private struct StandardActionFormView: View {
         case .raid:
             model.hostKickChannel(channel: user)
         case .slow:
-            model.setKickSlowMode(enabled: true, messageInterval: slowModeDuration)
+            model.enableKickSlowMode(messageInterval: slowModeDuration)
         case .followers:
-            model.setKickFollowersMode(enabled: true, followingMinDuration: followersDuration)
+            model.enableKickFollowersMode(followingMinDuration: followersDuration)
         default:
             break
         }
