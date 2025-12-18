@@ -122,7 +122,7 @@ extension Model {
     }
 
     func modKickUser(user: String) {
-        createKickApi(stream: stream)?.modUser(user: user) { ok in
+        createKickApi(stream: stream)?.addModerator(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "Modded \(user)"))
             } else {
@@ -132,7 +132,7 @@ extension Model {
     }
 
     func unmodKickUser(user: String) {
-        createKickApi(stream: stream)?.unmodUser(user: user) { ok in
+        createKickApi(stream: stream)?.removeModerator(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "Unmodded \(user)"))
             } else {
@@ -142,7 +142,7 @@ extension Model {
     }
 
     func vipKickUser(user: String) {
-        createKickApi(stream: stream)?.vipUser(user: user) { ok in
+        createKickApi(stream: stream)?.addVip(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "VIPed \(user)"))
             } else {
@@ -152,7 +152,7 @@ extension Model {
     }
 
     func unvipKickUser(user: String) {
-        createKickApi(stream: stream)?.unvipUser(user: user) { ok in
+        createKickApi(stream: stream)?.removeVip(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "UnVIPed \(user)"))
             } else {
