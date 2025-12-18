@@ -183,29 +183,6 @@ struct ModerationView: View {
         return platforms
     }
 
-    var body: some View {
-        NavigationStack {
-            Group {
-                if availablePlatforms.isEmpty {
-                    notLoggedInView
-                } else {
-                    actionsList
-                }
-            }
-            .navigationTitle("Moderation")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingModActions = false
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
-                }
-            }
-        }
-    }
-
     private var notLoggedInView: some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
@@ -221,7 +198,7 @@ struct ModerationView: View {
     }
 
     private var actionsList: some View {
-        List {
+        Form {
             ForEach(availablePlatforms, id: \.self) { platform in
                 NavigationLink {
                     ModActionPlatformView(
@@ -240,7 +217,28 @@ struct ModerationView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if availablePlatforms.isEmpty {
+                    notLoggedInView
+                } else {
+                    actionsList
+                }
+            }
+            .navigationTitle("Moderation")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingModActions = false
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -250,7 +248,7 @@ private struct ModActionPlatformView: View {
     @Binding var showingModActions: Bool
 
     var body: some View {
-        List {
+        Form {
             ForEach(ModActionCategory.allCases, id: \.self) { category in
                 let actions = ModActionType.actions(for: category, platform: platform)
                 if !actions.isEmpty {
@@ -272,9 +270,7 @@ private struct ModActionPlatformView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
         .navigationTitle(platform.rawValue)
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -289,7 +285,7 @@ private struct ModActionCategoryView: View {
     }
 
     var body: some View {
-        List {
+        Form {
             ForEach(actions, id: \.self) { action in
                 ModActionRowView(
                     action: action,
@@ -299,9 +295,7 @@ private struct ModActionCategoryView: View {
                 )
             }
         }
-        .listStyle(.insetGrouped)
         .navigationTitle(category.rawValue)
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -405,7 +399,6 @@ private struct ModActionDetailView: View {
             }
         }
         .navigationTitle(action.title(for: platform))
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private func complete() {
