@@ -166,80 +166,6 @@ private enum AnnouncementColor: String, CaseIterable {
     }
 }
 
-struct ModerationView: View {
-    let model: Model
-    @Binding var showingModActions: Bool
-
-    private var availablePlatforms: [ModPlatform] {
-        var platforms: [ModPlatform] = []
-        if model.stream.twitchLoggedIn {
-            platforms.append(.twitch)
-        }
-        if model.stream.kickLoggedIn {
-            platforms.append(.kick)
-        }
-        return platforms
-    }
-
-    private var notLoggedInView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 48))
-                .foregroundStyle(.yellow)
-            Text("Not logged in")
-                .font(.headline)
-            Text("Please log in to Kick or Twitch in stream settings to use moderator actions.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-
-    private var actionsList: some View {
-        Form {
-            ForEach(availablePlatforms, id: \.self) { platform in
-                NavigationLink {
-                    ModActionPlatformView(
-                        model: model,
-                        platform: platform,
-                        showingModActions: $showingModActions
-                    )
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(platform.logo)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
-                        Text(platform.rawValue)
-                    }
-                }
-            }
-        }
-    }
-
-    var body: some View {
-        NavigationStack {
-            Group {
-                if availablePlatforms.isEmpty {
-                    notLoggedInView
-                } else {
-                    actionsList
-                }
-            }
-            .navigationTitle("Moderation")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingModActions = false
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
-                }
-            }
-        }
-    }
-}
-
 private struct ModActionPlatformView: View {
     let model: Model
     let platform: ModPlatform
@@ -311,29 +237,7 @@ private struct ModActionRowView: View {
             Text(action.title(for: platform))
         }
     }
-
-    var body: some View {
-        if action.needsDetailView {
-            NavigationLink {
-                ModActionDetailView(
-                    action: action,
-                    platform: platform,
-                    model: model,
-                    showingModActions: $showingModActions
-                )
-            } label: {
-                rowContent
-            }
-        } else {
-            Button {
-                executeAction()
-            } label: {
-                rowContent
-            }
-            .buttonStyle(.plain)
-        }
-    }
-
+    
     private func executeAction() {
         switch platform {
         case .kick:
@@ -368,6 +272,28 @@ private struct ModActionRowView: View {
         default: break
         }
     }
+
+    var body: some View {
+        if action.needsDetailView {
+            NavigationLink {
+                ModActionDetailView(
+                    action: action,
+                    platform: platform,
+                    model: model,
+                    showingModActions: $showingModActions
+                )
+            } label: {
+                rowContent
+            }
+        } else {
+            Button {
+                executeAction()
+            } label: {
+                rowContent
+            }
+            .buttonStyle(.plain)
+        }
+    }
 }
 
 private struct ModActionDetailView: View {
@@ -375,6 +301,10 @@ private struct ModActionDetailView: View {
     let platform: ModPlatform
     let model: Model
     @Binding var showingModActions: Bool
+    
+    private func complete() {
+        showingModActions = false
+    }
 
     var body: some View {
         Group {
@@ -397,10 +327,6 @@ private struct ModActionDetailView: View {
             }
         }
         .navigationTitle(action.title(for: platform))
-    }
-
-    private func complete() {
-        showingModActions = false
     }
 }
 
@@ -471,61 +397,7 @@ private struct StandardActionFormView: View {
             ("1 month", 43200),
         ]
     }
-
-    var body: some View {
-        Form {
-            if action.requiresUsername {
-                Section {
-                    TextField("Username", text: $username)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                } header: {
-                    Text("Username")
-                }
-            }
-            if action == .timeout {
-                Section {
-                    Picker("Duration", selection: $timeoutDuration) {
-                        ForEach(timeoutPresets, id: \.1) { preset in
-                            Text(preset.0).tag(preset.1)
-                        }
-                    }
-                }
-            }
-            if action == .slow {
-                Section {
-                    Picker("Message interval", selection: $slowModeDuration) {
-                        ForEach(slowModePresets, id: \.1) { preset in
-                            Text(preset.0).tag(preset.1)
-                        }
-                    }
-                }
-            }
-            if action == .followers {
-                Section {
-                    Picker("Minimum follow time", selection: $followersDuration) {
-                        ForEach(followersPresets, id: \.1) { preset in
-                            Text(preset.0).tag(preset.1)
-                        }
-                    }
-                }
-            }
-            if action.requiresReason {
-                Section {
-                    TextField("Reason", text: $reason)
-                } header: {
-                    Text("Reason (optional)")
-                }
-            }
-            Section {
-                TextButtonView("Send") {
-                    executeAction()
-                }
-                .disabled(!canExecute)
-            }
-        }
-    }
-
+    
     private func executeAction() {
         let user = username.trimmingCharacters(in: .whitespaces)
         let banReason = reason.trimmingCharacters(in: .whitespaces)
@@ -589,6 +461,60 @@ private struct StandardActionFormView: View {
             model.setTwitchFollowersMode(enabled: true, duration: followersDuration)
         default:
             break
+        }
+    }
+
+    var body: some View {
+        Form {
+            if action.requiresUsername {
+                Section {
+                    TextField("Username", text: $username)
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled()
+                } header: {
+                    Text("Username")
+                }
+            }
+            if action == .timeout {
+                Section {
+                    Picker("Duration", selection: $timeoutDuration) {
+                        ForEach(timeoutPresets, id: \.1) { preset in
+                            Text(preset.0).tag(preset.1)
+                        }
+                    }
+                }
+            }
+            if action == .slow {
+                Section {
+                    Picker("Message interval", selection: $slowModeDuration) {
+                        ForEach(slowModePresets, id: \.1) { preset in
+                            Text(preset.0).tag(preset.1)
+                        }
+                    }
+                }
+            }
+            if action == .followers {
+                Section {
+                    Picker("Minimum follow time", selection: $followersDuration) {
+                        ForEach(followersPresets, id: \.1) { preset in
+                            Text(preset.0).tag(preset.1)
+                        }
+                    }
+                }
+            }
+            if action.requiresReason {
+                Section {
+                    TextField("Reason", text: $reason)
+                } header: {
+                    Text("Reason (optional)")
+                }
+            }
+            Section {
+                TextButtonView("Send") {
+                    executeAction()
+                }
+                .disabled(!canExecute)
+            }
         }
     }
 }
@@ -716,6 +642,24 @@ private struct CreatePredictionView: View {
             !outcome1.trimmingCharacters(in: .whitespaces).isEmpty &&
             !outcome2.trimmingCharacters(in: .whitespaces).isEmpty
     }
+    
+    private func createPrediction() {
+        let outcomes = [
+            outcome1.trimmingCharacters(in: .whitespaces),
+            outcome2.trimmingCharacters(in: .whitespaces),
+        ]
+        switch platform {
+        case .kick:
+            model.createKickPrediction(
+                title: title.trimmingCharacters(in: .whitespaces),
+                outcomes: outcomes,
+                duration: duration
+            )
+        case .twitch:
+            break
+        }
+        onComplete()
+    }
 
     var body: some View {
         Form {
@@ -747,24 +691,6 @@ private struct CreatePredictionView: View {
                 .disabled(!canExecute)
             }
         }
-    }
-
-    private func createPrediction() {
-        let outcomes = [
-            outcome1.trimmingCharacters(in: .whitespaces),
-            outcome2.trimmingCharacters(in: .whitespaces),
-        ]
-        switch platform {
-        case .kick:
-            model.createKickPrediction(
-                title: title.trimmingCharacters(in: .whitespaces),
-                outcomes: outcomes,
-                duration: duration
-            )
-        case .twitch:
-            break
-        }
-        onComplete()
     }
 }
 
@@ -832,6 +758,80 @@ private struct SendAnnouncementView: View {
                     onComplete()
                 }
                 .disabled(!canSend)
+            }
+        }
+    }
+}
+
+struct QuickButtonChatModerationView: View {
+    let model: Model
+    @Binding var showingModActions: Bool
+
+    private var availablePlatforms: [ModPlatform] {
+        var platforms: [ModPlatform] = []
+        if model.stream.twitchLoggedIn {
+            platforms.append(.twitch)
+        }
+        if model.stream.kickLoggedIn {
+            platforms.append(.kick)
+        }
+        return platforms
+    }
+
+    private var notLoggedInView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(.yellow)
+            Text("Not logged in")
+                .font(.headline)
+            Text("Please log in to Kick or Twitch in stream settings to use moderator actions.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
+
+    private var actionsList: some View {
+        Form {
+            ForEach(availablePlatforms, id: \.self) { platform in
+                NavigationLink {
+                    ModActionPlatformView(
+                        model: model,
+                        platform: platform,
+                        showingModActions: $showingModActions
+                    )
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(platform.logo)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 24, height: 24)
+                        Text(platform.rawValue)
+                    }
+                }
+            }
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if availablePlatforms.isEmpty {
+                    notLoggedInView
+                } else {
+                    actionsList
+                }
+            }
+            .navigationTitle("Moderation")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingModActions = false
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
             }
         }
     }

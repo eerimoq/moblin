@@ -764,7 +764,7 @@ private struct ControlMessagesButtonView: View {
                                    showingPredefinedMessages: $showingPredefinedMessages)
         }
         .sheet(isPresented: $showingModeration) {
-            ModerationView(model: model, showingModActions: $showingModeration)
+            QuickButtonChatModerationView(model: model, showingModActions: $showingModeration)
         }
     }
 }
