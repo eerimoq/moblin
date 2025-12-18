@@ -5,7 +5,6 @@ struct AudioUnitAttachParams {
     let device: AVCaptureDevice?
     let builtinDelay: Double
     let bufferedAudio: UUID?
-    let removeWindNoise: Bool
 }
 
 func makeChannelMap(
@@ -68,7 +67,7 @@ final class AudioUnit: NSObject {
             )
         }
         if let device = params.device {
-            try attachDevice(device, params.removeWindNoise)
+            try attachDevice(device)
         }
     }
 
@@ -90,7 +89,7 @@ final class AudioUnit: NSObject {
         }
     }
 
-    private func attachDevice(_ device: AVCaptureDevice, _ removeWindNoise: Bool) throws {
+    private func attachDevice(_ device: AVCaptureDevice) throws {
         session.beginConfiguration()
         defer {
             session.commitConfiguration()
@@ -102,9 +101,6 @@ final class AudioUnit: NSObject {
             session.removeOutput(output)
         }
         input = try AVCaptureDeviceInput(device: device)
-        if #available(iOS 18.0, *), input!.isWindNoiseRemovalSupported {
-            input!.isWindNoiseRemovalEnabled = removeWindNoise
-        }
         if session.canAddInput(input!) {
             session.addInput(input!)
         }

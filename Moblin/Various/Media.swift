@@ -113,7 +113,6 @@ final class Media: NSObject {
                       portrait: Bool,
                       timecodesEnabled: Bool,
                       builtinAudioDelay: Double,
-                      removeWindNoise: Bool,
                       destinations: [SettingsStreamMultiStreamingDestination],
                       newSrt: Bool)
     {
@@ -159,7 +158,7 @@ final class Media: NSObject {
         self.processor = processor
         processor.setDelegate(delegate: self)
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
-        attachDefaultAudioDevice(builtinDelay: builtinAudioDelay, removeWindNoise: removeWindNoise)
+        attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
     }
 
     func getAudioLevel() -> Float {
@@ -834,8 +833,7 @@ final class Media: NSObject {
     func attachBufferedAudio(cameraId: UUID?) {
         let params = AudioUnitAttachParams(device: nil,
                                            builtinDelay: 0,
-                                           bufferedAudio: cameraId,
-                                           removeWindNoise: false)
+                                           bufferedAudio: cameraId)
         processor?.attachAudio(params: params)
     }
 
@@ -871,12 +869,11 @@ final class Media: NSObject {
         processor?.setBufferedVideoTargetLatency(cameraId: cameraId, latency)
     }
 
-    func attachDefaultAudioDevice(builtinDelay: Double, removeWindNoise: Bool) {
+    func attachDefaultAudioDevice(builtinDelay: Double) {
         let params = AudioUnitAttachParams(
             device: AVCaptureDevice.default(for: .audio),
             builtinDelay: builtinDelay,
-            bufferedAudio: nil,
-            removeWindNoise: removeWindNoise
+            bufferedAudio: nil
         )
         processor?.attachAudio(params: params) {
             self.delegate?.mediaError(error: $0)

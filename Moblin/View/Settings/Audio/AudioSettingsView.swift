@@ -98,17 +98,6 @@ struct AudioSettingsView: View {
                 }
             }
             Section {
-                Toggle("Remove wind noise", isOn: $audio.removeWindNoise)
-                    .onChange(of: audio.removeWindNoise) { _ in
-                        if mic.current.isAudioSession() {
-                            model.reloadAudioSession()
-                            model.selectMicDefault(mic: mic.current)
-                        }
-                    }
-            } footer: {
-                Text("Requires stereo mic.")
-            }
-            Section {
                 TextEditNavigationView(
                     title: String(localized: "Output channel 1"),
                     value: String(audio.outputToInputChannelsMap.channel1 + 1),

@@ -307,7 +307,6 @@ extension Model {
             portrait: stream.portrait,
             timecodesEnabled: isTimecodesEnabled(),
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
-            removeWindNoise: database.audio.removeWindNoise,
             destinations: stream.multiStreaming.destinations,
             newSrt: database.debug.newSrt
         )
