@@ -86,9 +86,16 @@ private func padelScoreboardSettingsToEffect(_ scoreboard: SettingsWidgetPadelSc
 
 final class ScoreboardEffect: VideoEffect {
     private var scoreboardImage: CIImage?
+    private var sceneWidget: SettingsSceneWidget?
 
     override func getName() -> String {
         return "Scoreboard"
+    }
+
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
+        processorPipelineQueue.async {
+            self.sceneWidget = sceneWidget
+        }
     }
 
     @MainActor
@@ -109,13 +116,14 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        guard var scoreboardImage else {
+        guard let scoreboardImage, let sceneWidget else {
             return image
         }
         let scale = image.extent.size.maximum() / 1920
-        scoreboardImage = scoreboardImage.scaled(x: scale, y: scale)
         return scoreboardImage
-            .translated(x: 10 * scale, y: image.extent.height - scoreboardImage.extent.height - 10 * scale)
+            .scaled(x: scale, y: scale)
+            .move(sceneWidget.layout, image.extent.size)
+            .cropped(to: image.extent)
             .composited(over: image)
     }
 
@@ -129,7 +137,8 @@ final class ScoreboardEffect: VideoEffect {
     private func updatePadel(textColor: Color,
                              primaryBackgroundColor: Color,
                              secondaryBackgroundColor: Color,
-                             padel: SettingsWidgetPadelScoreboard, players: [SettingsWidgetScoreboardPlayer])
+                             padel: SettingsWidgetPadelScoreboard,
+                             players: [SettingsWidgetScoreboardPlayer])
     {
         let scoreboard = padelScoreboardSettingsToEffect(padel, players)
         let scoreBoard = VStack(alignment: .leading, spacing: 0) {

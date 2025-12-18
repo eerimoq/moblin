@@ -846,7 +846,7 @@ extension Model {
             case .videoSource:
                 addSceneVideoSourceEffects(sceneWidget, widget, &effects)
             case .scoreboard:
-                addSceneScoreboardEffects(widget, &effects)
+                addSceneScoreboardEffects(sceneWidget, widget, &effects)
             case .vTuber:
                 addSceneVTuberEffects(sceneWidget, widget, &effects)
             case .pngTuber:
@@ -1005,12 +1005,14 @@ extension Model {
     }
 
     private func addSceneScoreboardEffects(
+        _ sceneWidget: SettingsSceneWidget,
         _ widget: SettingsWidget,
         _ effects: inout [VideoEffect]
     ) {
         guard let effect = scoreboardEffects[widget.id], !effects.contains(effect) else {
             return
         }
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         DispatchQueue.main.async {
             effect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
         }
@@ -1332,6 +1334,9 @@ extension Model {
         case .alerts:
             sceneWidget.layout.x = 20
             sceneWidget.layout.y = 5
+        case .scoreboard:
+            sceneWidget.layout.x = 0.78
+            sceneWidget.layout.y = 1.388
         default:
             break
         }

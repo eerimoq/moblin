@@ -1876,6 +1876,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .snapshot,
             .chat,
             .slideshow,
+            .scoreboard,
         ].contains(type)
     }
 
@@ -1908,6 +1909,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .snapshot,
             .chat,
             .slideshow,
+            .scoreboard,
         ].contains(type)
     }
 
