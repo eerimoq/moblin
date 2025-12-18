@@ -48,12 +48,7 @@ private struct WidgetsSettingsItemView: View {
             }
         }
         .swipeActions(edge: .trailing) {
-            Button {
-                presentingDeleteConfirmation = true
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-            .tint(.red)
+            SwipeLeftToDeleteButtonView(presentingConfirmation: $presentingDeleteConfirmation)
         }
         .confirmationDialog("", isPresented: $presentingDeleteConfirmation) {
             Button("Delete", role: .destructive) {

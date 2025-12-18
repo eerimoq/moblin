@@ -23,19 +23,11 @@ private struct StreamItemView: View {
         }
         .swipeActions(edge: .trailing) {
             if !stream.enabled {
-                Button {
-                    presentingDeleteConfirmation = true
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-                .tint(.red)
+                SwipeLeftToDeleteButtonView(presentingConfirmation: $presentingDeleteConfirmation)
             }
-            Button {
+            SwipeLeftToDuplicateButtonView {
                 database.streams.append(stream.clone())
-            } label: {
-                Label("Duplicate", systemImage: "plus.square.on.square")
             }
-            .tint(.blue)
         }
         .confirmationDialog("", isPresented: $presentingDeleteConfirmation) {
             Button("Delete", role: .destructive) {
