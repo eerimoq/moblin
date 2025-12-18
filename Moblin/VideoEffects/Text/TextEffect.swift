@@ -532,6 +532,8 @@ private struct TextView: View {
     let fontWeight: Font.Weight
     let fontMonospacedDigits: Bool
     let horizontalAlignment: HorizontalAlignment
+    let minWidth: Double
+    let cornerRadius: Double
     let foregroundColor: Color
     let backgroundColor: Color
     let size: CGSize
@@ -542,9 +544,13 @@ private struct TextView: View {
     }
 
     var body: some View {
-        let stack = VStack(alignment: horizontalAlignment, spacing: 2) {
+        let fontSize = scaledFontSize(size: size)
+        let stack = VStack(spacing: 2) {
             ForEach(lines) { line in
                 HStack(spacing: 0) {
+                    if horizontalAlignment != .leading {
+                        Spacer(minLength: 0)
+                    }
                     ForEach(line.parts) { part in
                         switch part.data {
                         case let .text(text):
@@ -573,14 +579,18 @@ private struct TextView: View {
                             }
                         }
                     }
+                    if horizontalAlignment != .trailing {
+                        Spacer(minLength: 0)
+                    }
                 }
-                .padding([.leading, .trailing], 7)
+                .padding([.leading, .trailing], 7 * fontSize / 30 + min(CGFloat(cornerRadius / 5), fontSize / 7.5))
+                .frame(minWidth: minWidth)
                 .background(backgroundColor)
-                .cornerRadius(10)
+                .cornerRadius(cornerRadius)
             }
         }
         .font(.system(
-            size: scaledFontSize(size: size),
+            size: fontSize,
             weight: fontWeight,
             design: fontDesign
         ))
@@ -601,6 +611,8 @@ final class TextEffect: VideoEffect {
     private var fontWeight: Font.Weight
     private var fontMonospacedDigits: Bool
     private var horizontalAlignment: HorizontalAlignment
+    private var width: Int?
+    private var cornerRadius: Double
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
@@ -622,6 +634,8 @@ final class TextEffect: VideoEffect {
         fontWeight: Font.Weight,
         fontMonospacedDigits: Bool,
         horizontalAlignment: HorizontalAlignment,
+        width: Int?,
+        cornerRadius: Double,
         settingName: String,
         delay: Double,
         timersEndTime: [ContinuousClock.Instant],
@@ -639,6 +653,8 @@ final class TextEffect: VideoEffect {
         self.fontWeight = fontWeight
         self.fontMonospacedDigits = fontMonospacedDigits
         self.horizontalAlignment = horizontalAlignment
+        self.width = width
+        self.cornerRadius = cornerRadius
         self.settingName = settingName
         self.delay = delay
         formatter.timersEndTime = timersEndTime
@@ -700,8 +716,10 @@ final class TextEffect: VideoEffect {
         forceImageUpdate()
     }
 
-    func setHorizontalAlignment(alignment: HorizontalAlignment) {
+    func setLayout(alignment: HorizontalAlignment, width: Int?, cornerRadius: Double) {
         horizontalAlignment = alignment
+        self.width = width
+        self.cornerRadius = cornerRadius
         forceImageUpdate()
     }
 
@@ -852,6 +870,8 @@ final class TextEffect: VideoEffect {
                             fontWeight: fontWeight,
                             fontMonospacedDigits: fontMonospacedDigits,
                             horizontalAlignment: horizontalAlignment,
+                            minWidth: Double(width ?? 0),
+                            cornerRadius: cornerRadius,
                             foregroundColor: foregroundColor,
                             backgroundColor: backgroundColor,
                             size: size,

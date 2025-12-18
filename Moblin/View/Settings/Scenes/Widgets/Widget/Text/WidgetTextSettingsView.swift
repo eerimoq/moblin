@@ -586,6 +586,57 @@ struct WidgetTextSettingsView: View {
     let widget: SettingsWidget
     @ObservedObject var text: SettingsWidgetText
 
+    private func changeWidth(value: String) -> String? {
+        guard let width = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard width > 0 else {
+            return String(localized: "Too small")
+        }
+        guard width < 4000 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
+    private func submitWidth(value: String) {
+        guard let width = Int(value) else {
+            return
+        }
+        text.width = width
+        setLayout()
+    }
+
+    private func changeCornerRadius(value: String) -> String? {
+        guard let cornerRadius = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard cornerRadius >= 0 else {
+            return String(localized: "Too small")
+        }
+        guard cornerRadius < 1000 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
+    private func submitCornerRadius(value: String) {
+        guard let cornerRadius = Int(value) else {
+            return
+        }
+        text.cornerRadius = cornerRadius
+        setLayout()
+    }
+
+    private func setLayout() {
+        for effect in model.getTextEffects(id: widget.id) {
+            effect.setLayout(alignment: text.horizontalAlignment.toSystem(),
+                             width: text.widthEnabled ? text.width : nil,
+                             cornerRadius: Double(text.cornerRadius))
+        }
+        model.remoteSceneSettingsUpdated()
+    }
+
     var body: some View {
         Section {
             NavigationLink {
@@ -767,11 +818,38 @@ struct WidgetTextSettingsView: View {
                 }
             }
             .onChange(of: text.horizontalAlignment) { _ in
-                for effect in model.getTextEffects(id: widget.id) {
-                    effect.setHorizontalAlignment(alignment: text.horizontalAlignment.toSystem())
-                }
-                model.remoteSceneSettingsUpdated()
+                setLayout()
             }
+            NavigationLink {
+                TextEditView(
+                    title: String(localized: "Minimum width"),
+                    value: String(text.width),
+                    keyboardType: .numbersAndPunctuation,
+                    onChange: changeWidth,
+                    onSubmit: submitWidth
+                )
+            } label: {
+                HStack {
+                    Text("Minimum width")
+                    Spacer(minLength: 0)
+                    Toggle(isOn: $text.widthEnabled) {}
+                        .padding([.trailing], 2)
+                    Text(String(text.width))
+                        .foregroundStyle(.gray)
+                }
+                .onChange(of: text.widthEnabled) { _ in
+                    setLayout()
+                }
+            }
+            TextEditNavigationView(
+                title: String(localized: "Corner radius"),
+                value: String(text.cornerRadius),
+                onChange: changeCornerRadius,
+                onSubmit: submitCornerRadius,
+                keyboardType: .numbersAndPunctuation
+            )
+        } header: {
+            Text("Layout")
         }
         Section {
             HStack {

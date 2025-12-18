@@ -591,6 +591,8 @@ class SettingsWidgetTextLapTimes: Codable, Identifiable {
 }
 
 class SettingsWidgetText: Codable, ObservableObject {
+    private static let defaultWidth: Int = 300
+    private static let defaultCornerRadius: Int = 10
     @Published var formatString: String = "{shortTime}"
     var backgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0, opacity: 0.75)
     @Published var backgroundColorColor: Color
@@ -617,6 +619,9 @@ class SettingsWidgetText: Codable, ObservableObject {
     @Published var ratings: [SettingsWidgetTextRating] = []
     @Published var lapTimes: [SettingsWidgetTextLapTimes] = []
     var needsGForce: Bool = false
+    @Published var widthEnabled: Bool = false
+    @Published var width: Int = defaultWidth
+    @Published var cornerRadius: Int = defaultCornerRadius
 
     enum CodingKeys: CodingKey {
         case formatString,
@@ -641,7 +646,10 @@ class SettingsWidgetText: Codable, ObservableObject {
              checkboxes,
              ratings,
              lapTimes,
-             needsGForce
+             needsGForce,
+             widthEnabled,
+             width,
+             cornerRadius
     }
 
     init() {
@@ -675,6 +683,9 @@ class SettingsWidgetText: Codable, ObservableObject {
         try container.encode(.ratings, ratings)
         try container.encode(.lapTimes, lapTimes)
         try container.encode(.needsGForce, needsGForce)
+        try container.encode(.widthEnabled, widthEnabled)
+        try container.encode(.width, width)
+        try container.encode(.cornerRadius, cornerRadius)
     }
 
     required init(from decoder: Decoder) throws {
@@ -709,6 +720,9 @@ class SettingsWidgetText: Codable, ObservableObject {
         ratings = container.decode(.ratings, [SettingsWidgetTextRating].self, [])
         lapTimes = container.decode(.lapTimes, [SettingsWidgetTextLapTimes].self, [])
         needsGForce = container.decode(.needsGForce, Bool.self, false)
+        widthEnabled = container.decode(.widthEnabled, Bool.self, false)
+        width = container.decode(.width, Int.self, Self.defaultWidth)
+        cornerRadius = container.decode(.cornerRadius, Int.self, Self.defaultCornerRadius)
     }
 }
 

@@ -557,6 +557,8 @@ extension Model {
             fontWeight: widget.text.fontWeight.toSystem(),
             fontMonospacedDigits: widget.text.fontMonospacedDigits,
             horizontalAlignment: widget.text.horizontalAlignment.toSystem(),
+            width: widget.text.widthEnabled ? widget.text.width : nil,
+            cornerRadius: Double(widget.text.cornerRadius),
             settingName: widget.name,
             delay: widget.text.delay,
             timersEndTime: widget.text.timers.map {
