@@ -261,12 +261,13 @@ extension Model {
     }
 
     func unbanTwitchUser(user: String) {
-        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+        let twitchApi = createTwitchApi(stream: stream)
+        twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
                 self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
                 return
             }
-            self.createTwitchApi(stream: self.stream).unbanUser(
+            twitchApi.unbanUser(
                 broadcasterId: self.stream.twitchChannelId,
                 userId: twitchUser.id
             ) { ok in
@@ -280,12 +281,13 @@ extension Model {
     }
 
     func modTwitchUser(user: String) {
-        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+        let twitchApi = createTwitchApi(stream: stream)
+        twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
                 self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
                 return
             }
-            self.createTwitchApi(stream: self.stream).addModerator(
+            twitchApi.addModerator(
                 broadcasterId: self.stream.twitchChannelId,
                 userId: twitchUser.id
             ) { ok in
@@ -299,12 +301,13 @@ extension Model {
     }
 
     func unmodTwitchUser(user: String) {
-        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+        let twitchApi = createTwitchApi(stream: stream)
+        twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
                 self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
                 return
             }
-            self.createTwitchApi(stream: self.stream).removeModerator(
+            twitchApi.removeModerator(
                 broadcasterId: self.stream.twitchChannelId,
                 userId: twitchUser.id
             ) { ok in
@@ -318,12 +321,13 @@ extension Model {
     }
 
     func vipTwitchUser(user: String) {
-        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+        let twitchApi = createTwitchApi(stream: stream)
+        twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
                 self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
                 return
             }
-            self.createTwitchApi(stream: self.stream).addVip(
+            twitchApi.addVip(
                 broadcasterId: self.stream.twitchChannelId,
                 userId: twitchUser.id
             ) { ok in
@@ -337,12 +341,13 @@ extension Model {
     }
 
     func unvipTwitchUser(user: String) {
-        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+        let twitchApi = createTwitchApi(stream: stream)
+        twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
                 self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
                 return
             }
-            self.createTwitchApi(stream: self.stream).removeVip(
+            twitchApi.removeVip(
                 broadcasterId: self.stream.twitchChannelId,
                 userId: twitchUser.id
             ) { ok in
