@@ -5,8 +5,6 @@ import UIKit
 import Vision
 import WeatherKit
 
-private let textQueue = DispatchQueue(label: "com.eerimoq.widget.text")
-
 private func createDateFormatter() -> DateFormatter {
     let formatter = DateFormatter()
     formatter.dateStyle = .short
@@ -616,8 +614,6 @@ final class TextEffect: VideoEffect {
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
-    private var image: CIImage?
-    private var newImagePresent: Bool = false
     private var nextUpdateTime = ContinuousClock.now
     private var previousLines: [Line]?
     private var delay: Double
@@ -667,16 +663,16 @@ final class TextEffect: VideoEffect {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        textQueue.sync {
+        processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
-            forceUpdate = true
+            self.forceUpdate = true
         }
         previousLines = nil
     }
 
     func forceImageUpdate() {
-        textQueue.sync {
-            forceUpdate = true
+        processorPipelineQueue.async {
+            self.forceUpdate = true
         }
         previousLines = nil
     }
@@ -825,29 +821,13 @@ final class TextEffect: VideoEffect {
         return formatter.format(stats: stats, now: now)
     }
 
-    private func updateOverlay(size: CGSize) -> SettingsSceneWidget {
+    private func updateOverlayIfNeeded(size: CGSize) {
+        defer {
+            self.forceUpdate = false
+        }
         let now = ContinuousClock.now
-        var newImage: CIImage?
-        let (sceneWidget, forceUpdate, newImagePresent) = textQueue.sync {
-            if self.image != nil {
-                newImage = self.image
-                self.image = nil
-            }
-            defer {
-                self.forceUpdate = false
-                self.newImagePresent = false
-            }
-            return (
-                self.sceneWidget,
-                self.forceUpdate,
-                self.newImagePresent
-            )
-        }
-        if newImagePresent {
-            overlay = newImage
-        }
         guard now >= nextUpdateTime || forceUpdate else {
-            return sceneWidget
+            return
         }
         if !forceUpdate {
             nextUpdateTime += .seconds(1)
@@ -855,7 +835,6 @@ final class TextEffect: VideoEffect {
         DispatchQueue.main.async {
             self.updateOverlayInner(size: size, now: now)
         }
-        return sceneWidget
     }
 
     @MainActor
@@ -876,15 +855,17 @@ final class TextEffect: VideoEffect {
                             backgroundColor: backgroundColor,
                             size: size,
                             lines: lines)
-        let image = ImageRenderer(content: text).ciImage()
-        textQueue.sync {
-            self.image = image
-            self.newImagePresent = true
+        setOverlay(image: ImageRenderer(content: text).ciImage())
+    }
+
+    private func setOverlay(image: CIImage?) {
+        processorPipelineQueue.async {
+            self.overlay = image
         }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        let sceneWidget = updateOverlay(size: image.extent.size)
+        updateOverlayIfNeeded(size: image.extent.size)
         return overlay?
             .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
