@@ -123,7 +123,7 @@ private struct RemoteSceneView: View {
                 Text("-- None --")
                     .tag(nil as UUID?)
                 ForEach(model.database.scenes) { scene in
-                    Text(scene.name)
+                    SceneNameView(scene: scene)
                         .tag(scene.id as UUID?)
                 }
             } label: {
@@ -139,6 +139,14 @@ private struct RemoteSceneView: View {
             assistant is connected to.
             """)
         }
+    }
+}
+
+struct SceneNameView: View {
+    @ObservedObject var scene: SettingsScene
+
+    var body: some View {
+        Text(scene.name)
     }
 }
 

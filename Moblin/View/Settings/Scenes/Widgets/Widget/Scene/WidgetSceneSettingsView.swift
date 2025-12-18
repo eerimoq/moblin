@@ -9,7 +9,7 @@ struct WidgetSceneSettingsView: View {
         Section {
             Picker("", selection: $selectedSceneId) {
                 ForEach(model.database.scenes) { scene in
-                    Text(scene.name)
+                    SceneNameView(scene: scene)
                         .tag(scene.id)
                 }
             }

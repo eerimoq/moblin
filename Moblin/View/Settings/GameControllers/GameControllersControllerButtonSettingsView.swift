@@ -51,7 +51,7 @@ struct GameControllersControllerButtonSettingsView: View {
                     Section {
                         Picker("", selection: $button.sceneId) {
                             ForEach(model.database.scenes) { scene in
-                                Text(scene.name)
+                                SceneNameView(scene: scene)
                                     .tag(scene.id)
                             }
                         }
@@ -64,7 +64,7 @@ struct GameControllersControllerButtonSettingsView: View {
                     Section {
                         Picker("", selection: $button.widgetId) {
                             ForEach(model.database.widgets) { widget in
-                                Text(widget.name)
+                                WidgetNameView(widget: widget)
                                     .tag(widget.id)
                             }
                         }

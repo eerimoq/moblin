@@ -74,6 +74,14 @@ struct WidgetShortcutView: View {
     }
 }
 
+struct WidgetNameView: View {
+    @ObservedObject var widget: SettingsWidget
+
+    var body: some View {
+        Text(widget.name)
+    }
+}
+
 struct WidgetSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database

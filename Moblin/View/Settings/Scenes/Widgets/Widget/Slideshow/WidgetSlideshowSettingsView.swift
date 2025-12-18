@@ -1,13 +1,5 @@
 import SwiftUI
 
-private struct SlideNameView: View {
-    @ObservedObject var widget: SettingsWidget
-
-    var body: some View {
-        Text(widget.name)
-    }
-}
-
 private struct SlideView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -25,7 +17,7 @@ private struct SlideView: View {
                         Text("-- None --")
                             .tag(nil as UUID?)
                         ForEach(widgets()) {
-                            SlideNameView(widget: $0)
+                            WidgetNameView(widget: $0)
                                 .tag($0.id as UUID?)
                         }
                     } label: {
@@ -51,7 +43,7 @@ private struct SlideView: View {
             HStack {
                 DraggableItemPrefixView()
                 if let widgetId = slide.widgetId, let widget = model.findWidget(id: widgetId) {
-                    SlideNameView(widget: widget)
+                    WidgetNameView(widget: widget)
                 } else {
                     Text("-- None --")
                 }

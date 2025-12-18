@@ -34,7 +34,7 @@ private struct AutoSwitcherSceneSettingsView: View {
                         Text("-- None --")
                             .tag(nil as UUID?)
                         ForEach(model.database.scenes) { scene in
-                            Text(scene.name)
+                            SceneNameView(scene: scene)
                                 .tag(scene.id as UUID?)
                         }
                     } label: {

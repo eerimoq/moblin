@@ -1,6 +1,6 @@
 import SwiftUI
 
-private struct SceneNameView: View {
+private struct SceneItemView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
@@ -58,7 +58,7 @@ struct StreamOverlayRightSceneSelectorView: View {
                 sceneSelector.sceneIndex = 0
             }
         })) {
-            SceneNameView(database: database, scene: $0, width: width)
+            SceneItemView(database: database, scene: $0, width: width)
         } onLongPress: { index in
             if index < model.enabledScenes.count {
                 model.showSceneSettings(scene: model.enabledScenes[index])

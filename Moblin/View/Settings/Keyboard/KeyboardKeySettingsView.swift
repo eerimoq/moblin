@@ -56,7 +56,7 @@ struct KeyboardKeySettingsView: View {
                     Section {
                         Picker("", selection: $key.sceneId) {
                             ForEach(model.database.scenes) { scene in
-                                Text(scene.name)
+                                SceneNameView(scene: scene)
                                     .tag(scene.id)
                             }
                         }
@@ -69,7 +69,7 @@ struct KeyboardKeySettingsView: View {
                     Section {
                         Picker("", selection: $key.widgetId) {
                             ForEach(model.database.widgets) { widget in
-                                Text(widget.name)
+                                WidgetNameView(widget: widget)
                                     .tag(widget.id)
                             }
                         }
