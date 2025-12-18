@@ -464,7 +464,8 @@ private struct StandardActionFormView: View {
                 Section {
                     Picker("Duration", selection: $timeoutDuration) {
                         ForEach(timeoutPresets, id: \.1) { preset in
-                            Text(preset.0).tag(preset.1)
+                            Text(preset.0)
+                                .tag(preset.1)
                         }
                     }
                 }
@@ -482,7 +483,8 @@ private struct StandardActionFormView: View {
                 Section {
                     Picker("Minimum follow time", selection: $followersDuration) {
                         ForEach(followersPresets, id: \.1) { preset in
-                            Text(preset.0).tag(preset.1)
+                            Text(preset.0)
+                                .tag(preset.1)
                         }
                     }
                 }
@@ -505,18 +507,18 @@ private struct StandardActionFormView: View {
 }
 
 private struct PollOption: Identifiable {
-    let id = UUID()
-    var text = ""
+    let id: UUID = .init()
+    var text: String = ""
 }
 
 private struct CreatePollView: View {
     let platform: ModPlatform
     let model: Model
     let onComplete: () -> Void
-    @State private var title = ""
+    @State private var title: String = ""
     @State private var options = [PollOption(), PollOption()]
-    @State private var duration = 30
-    @State private var resultDisplayDuration = 15
+    @State private var duration: Int = 30
+    @State private var resultDisplayDuration: Int = 15
 
     private var canExecute: Bool {
         let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
