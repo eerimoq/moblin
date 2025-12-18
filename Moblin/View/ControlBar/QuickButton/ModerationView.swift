@@ -152,10 +152,8 @@ private enum ModActionType: CaseIterable {
     }
 }
 
-enum AnnouncementColor: String, CaseIterable, Identifiable {
+private enum AnnouncementColor: String, CaseIterable {
     case primary, blue, green, orange, purple
-
-    var id: Self { self }
 
     var displayName: String {
         switch self {
@@ -485,7 +483,6 @@ private struct StandardActionFormView: View {
                     Text("Username")
                 }
             }
-
             if action == .timeout {
                 Section {
                     Picker("Duration", selection: $timeoutDuration) {
@@ -495,35 +492,31 @@ private struct StandardActionFormView: View {
                     }
                 }
             }
-
             if action == .slow {
                 Section {
-                    Picker("Message Interval", selection: $slowModeDuration) {
+                    Picker("Message interval", selection: $slowModeDuration) {
                         ForEach(slowModePresets, id: \.1) { preset in
                             Text(preset.0).tag(preset.1)
                         }
                     }
                 }
             }
-
             if action == .followers {
                 Section {
-                    Picker("Minimum Follow Time", selection: $followersDuration) {
+                    Picker("Minimum follow time", selection: $followersDuration) {
                         ForEach(followersPresets, id: \.1) { preset in
                             Text(preset.0).tag(preset.1)
                         }
                     }
                 }
             }
-
             if action.requiresReason {
                 Section {
                     TextField("Reason", text: $reason)
                 } header: {
-                    Text("Reason (Optional)")
+                    Text("Reason (optional)")
                 }
             }
-
             Section {
                 TextButtonView("Send") {
                     executeAction()
@@ -536,7 +529,6 @@ private struct StandardActionFormView: View {
     private func executeAction() {
         let user = username.trimmingCharacters(in: .whitespaces)
         let banReason = reason.trimmingCharacters(in: .whitespaces)
-
         switch platform {
         case .kick:
             executeKickAction(user: user, banReason: banReason)
@@ -825,7 +817,7 @@ private struct SendAnnouncementView: View {
             }
             Section {
                 Picker("Color", selection: $selectedColor) {
-                    ForEach(AnnouncementColor.allCases) { color in
+                    ForEach(AnnouncementColor.allCases, id: \.self) { color in
                         Text(color.displayName)
                             .tag(color)
                     }
