@@ -46,13 +46,13 @@ enum ModActionType: CaseIterable, Identifiable {
 
     func title(for platform: ModPlatform) -> String {
         switch self {
-        case .ban: String(localized: "Ban User")
-        case .timeout: String(localized: "Timeout User")
-        case .unban: String(localized: "UnBan User")
-        case .mod: String(localized: "Mod User")
-        case .unmod: String(localized: "UnMod User")
-        case .vip: String(localized: "VIP User")
-        case .unvip: String(localized: "UnVIP User")
+        case .ban: String(localized: "Ban")
+        case .timeout: String(localized: "Timeout")
+        case .unban: String(localized: "UnBan")
+        case .mod: String(localized: "Mod")
+        case .unmod: String(localized: "UnMod")
+        case .vip: String(localized: "VIP")
+        case .unvip: String(localized: "UnVIP")
         case .raid:
             if platform == .kick {
                 String(localized: "Host Channel")
