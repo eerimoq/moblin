@@ -234,12 +234,202 @@ extension Model {
             }
     }
 
-    func banTwitchUser(user _: String, userId: String, duration: Int?) {
+    func banTwitchUser(user: String, userId: String, duration: Int?, reason: String? = nil) {
+        let action = duration != nil ? String(localized: "Timed out") : String(localized: "Banned")
         createTwitchApi(stream: stream).banUser(
             broadcasterId: stream.twitchChannelId,
             userId: userId,
-            duration: duration
-        ) { _ in
+            duration: duration,
+            reason: reason
+        ) { ok in
+            if ok {
+                self.makeToast(title: "\(action) \(user)")
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to \(action.lowercased()) \(user)"))
+            }
+        }
+    }
+
+    func banTwitchUserByName(user: String, duration: Int?, reason: String?) {
+        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+            guard let twitchUser else {
+                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                return
+            }
+            self.banTwitchUser(user: user, userId: twitchUser.id, duration: duration, reason: reason)
+        }
+    }
+
+    func unbanTwitchUser(user: String) {
+        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+            guard let twitchUser else {
+                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                return
+            }
+            self.createTwitchApi(stream: self.stream).unbanUser(
+                broadcasterId: self.stream.twitchChannelId,
+                userId: twitchUser.id
+            ) { ok in
+                if ok {
+                    self.makeToast(title: String(localized: "Unbanned \(user)"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to unban \(user)"))
+                }
+            }
+        }
+    }
+
+    func modTwitchUser(user: String) {
+        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+            guard let twitchUser else {
+                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                return
+            }
+            self.createTwitchApi(stream: self.stream).addModerator(
+                broadcasterId: self.stream.twitchChannelId,
+                userId: twitchUser.id
+            ) { ok in
+                if ok {
+                    self.makeToast(title: String(localized: "Modded \(user)"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to mod \(user)"))
+                }
+            }
+        }
+    }
+
+    func unmodTwitchUser(user: String) {
+        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+            guard let twitchUser else {
+                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                return
+            }
+            self.createTwitchApi(stream: self.stream).removeModerator(
+                broadcasterId: self.stream.twitchChannelId,
+                userId: twitchUser.id
+            ) { ok in
+                if ok {
+                    self.makeToast(title: String(localized: "Unmodded \(user)"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to unmod \(user)"))
+                }
+            }
+        }
+    }
+
+    func vipTwitchUser(user: String) {
+        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+            guard let twitchUser else {
+                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                return
+            }
+            self.createTwitchApi(stream: self.stream).addVIP(
+                broadcasterId: self.stream.twitchChannelId,
+                userId: twitchUser.id
+            ) { ok in
+                if ok {
+                    self.makeToast(title: String(localized: "VIPed \(user)"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to VIP \(user)"))
+                }
+            }
+        }
+    }
+
+    func unvipTwitchUser(user: String) {
+        createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
+            guard let twitchUser else {
+                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                return
+            }
+            self.createTwitchApi(stream: self.stream).removeVIP(
+                broadcasterId: self.stream.twitchChannelId,
+                userId: twitchUser.id
+            ) { ok in
+                if ok {
+                    self.makeToast(title: String(localized: "UnVIPed \(user)"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to UnVIP \(user)"))
+                }
+            }
+        }
+    }
+
+    func sendTwitchAnnouncement(message: String, color: String) {
+        createTwitchApi(stream: stream).sendAnnouncement(
+            broadcasterId: stream.twitchChannelId,
+            message: message,
+            color: color
+        ) { ok in
+            if ok {
+                self.makeToast(title: String(localized: "Announcement sent"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to send announcement"))
+            }
+        }
+    }
+
+    func setTwitchSlowMode(enabled: Bool, duration: Int? = nil) {
+        var settings: [String: Any] = ["slow_mode": enabled]
+        if enabled, let duration {
+            settings["slow_mode_wait_time"] = duration
+        }
+        createTwitchApi(stream: stream).updateChatSettings(
+            broadcasterId: stream.twitchChannelId,
+            settings: settings
+        ) { ok in
+            if ok {
+                self.makeToast(title: String(localized: enabled ? "Slow mode enabled" : "Slow mode disabled"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to update slow mode"))
+            }
+        }
+    }
+
+    func setTwitchFollowersMode(enabled: Bool, duration: Int? = nil) {
+        var settings: [String: Any] = ["follower_mode": enabled]
+        if enabled, let duration {
+            settings["follower_mode_duration"] = duration
+        }
+        createTwitchApi(stream: stream).updateChatSettings(
+            broadcasterId: stream.twitchChannelId,
+            settings: settings
+        ) { ok in
+            if ok {
+                self.makeToast(title: String(localized: enabled ? "Followers mode enabled" : "Followers mode disabled"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to update followers mode"))
+            }
+        }
+    }
+
+    func setTwitchEmoteOnlyMode(enabled: Bool) {
+        createTwitchApi(stream: stream).updateChatSettings(
+            broadcasterId: stream.twitchChannelId,
+            settings: ["emote_mode": enabled]
+        ) { ok in
+            if ok {
+                self
+                    .makeToast(title: String(localized: enabled ? "Emote only mode enabled" :
+                            "Emote only mode disabled"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to update emote only mode"))
+            }
+        }
+    }
+
+    func setTwitchSubscribersOnlyMode(enabled: Bool) {
+        createTwitchApi(stream: stream).updateChatSettings(
+            broadcasterId: stream.twitchChannelId,
+            settings: ["subscriber_mode": enabled]
+        ) { ok in
+            if ok {
+                self
+                    .makeToast(title: String(localized: enabled ? "Subscribers only mode enabled" :
+                            "Subscribers only mode disabled"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to update subscribers only mode"))
+            }
         }
     }
 
@@ -259,6 +449,16 @@ extension Model {
             case .authError:
                 break
             }
+        }
+    }
+
+    func raidTwitchChannelByName(channelName: String) {
+        createTwitchApi(stream: stream).searchChannel(channelName: channelName) { channel in
+            guard let channel else {
+                self.makeErrorToast(title: String(localized: "Channel '\(channelName)' not found"))
+                return
+            }
+            self.raidTwitchChannel(channelName: channel.broadcaster_login, channelId: channel.id)
         }
     }
 
