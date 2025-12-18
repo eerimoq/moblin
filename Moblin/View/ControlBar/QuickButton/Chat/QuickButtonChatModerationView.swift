@@ -1,17 +1,5 @@
 import SwiftUI
 
-private enum ModPlatform: String, CaseIterable {
-    case kick = "Kick"
-    case twitch = "Twitch"
-
-    var logo: String {
-        switch self {
-        case .kick: "KickLogo"
-        case .twitch: "TwitchLogo"
-        }
-    }
-}
-
 private enum ModActionCategory: String, CaseIterable {
     case userModeration = "User moderation"
     case chatMode = "Chat modes"
@@ -40,7 +28,7 @@ private enum ModActionType: CaseIterable {
     case commercial
     case announcement
 
-    func title(for platform: ModPlatform) -> String {
+    func title(for platform: Platform) -> String {
         switch self {
         case .ban: String(localized: "Ban")
         case .timeout: String(localized: "Timeout")
@@ -136,7 +124,7 @@ private enum ModActionType: CaseIterable {
             self == .poll || self == .prediction || self == .commercial || self == .announcement
     }
 
-    func isSupported(by platform: ModPlatform) -> Bool {
+    func isSupported(by platform: Platform) -> Bool {
         switch self {
         case .poll, .deletepoll, .prediction:
             platform == .kick
@@ -147,7 +135,7 @@ private enum ModActionType: CaseIterable {
         }
     }
 
-    static func actions(for category: ModActionCategory, platform: ModPlatform) -> [ModActionType] {
+    static func actions(for category: ModActionCategory, platform: Platform) -> [ModActionType] {
         allCases.filter { $0.category == category && $0.isSupported(by: platform) }
     }
 }
@@ -168,7 +156,7 @@ private enum AnnouncementColor: String, CaseIterable {
 
 private struct ModActionPlatformView: View {
     let model: Model
-    let platform: ModPlatform
+    let platform: Platform
     @Binding var showingModActions: Bool
 
     var body: some View {
@@ -194,14 +182,14 @@ private struct ModActionPlatformView: View {
                 }
             }
         }
-        .navigationTitle(platform.rawValue)
+        .navigationTitle(platform.name())
     }
 }
 
 private struct ModActionCategoryView: View {
     let model: Model
     let category: ModActionCategory
-    let platform: ModPlatform
+    let platform: Platform
     @Binding var showingModActions: Bool
 
     private var actions: [ModActionType] {
@@ -212,9 +200,9 @@ private struct ModActionCategoryView: View {
         Form {
             ForEach(actions, id: \.self) { action in
                 ModActionRowView(
+                    model: model,
                     action: action,
                     platform: platform,
-                    model: model,
                     showingModActions: $showingModActions
                 )
             }
@@ -224,9 +212,9 @@ private struct ModActionCategoryView: View {
 }
 
 private struct ModActionRowView: View {
-    let action: ModActionType
-    let platform: ModPlatform
     let model: Model
+    let action: ModActionType
+    let platform: Platform
     @Binding var showingModActions: Bool
 
     private var rowContent: some View {
@@ -244,6 +232,8 @@ private struct ModActionRowView: View {
             executeKickAction()
         case .twitch:
             executeTwitchAction()
+        default:
+            break
         }
         showingModActions = false
     }
@@ -277,9 +267,9 @@ private struct ModActionRowView: View {
         if action.needsDetailView {
             NavigationLink {
                 ModActionDetailView(
+                    model: model,
                     action: action,
                     platform: platform,
-                    model: model,
                     showingModActions: $showingModActions
                 )
             } label: {
@@ -297,9 +287,9 @@ private struct ModActionRowView: View {
 }
 
 private struct ModActionDetailView: View {
-    let action: ModActionType
-    let platform: ModPlatform
     let model: Model
+    let action: ModActionType
+    let platform: Platform
     @Binding var showingModActions: Bool
 
     private func complete() {
@@ -310,20 +300,15 @@ private struct ModActionDetailView: View {
         Group {
             switch action {
             case .poll:
-                CreatePollView(platform: platform, model: model, onComplete: complete)
+                CreatePollView(model: model, platform: platform, onComplete: complete)
             case .prediction:
-                CreatePredictionView(platform: platform, model: model, onComplete: complete)
+                CreatePredictionView(model: model, platform: platform, onComplete: complete)
             case .commercial:
                 RunCommercialView(model: model, onComplete: complete)
             case .announcement:
                 SendAnnouncementView(model: model, onComplete: complete)
             default:
-                StandardActionFormView(
-                    action: action,
-                    platform: platform,
-                    model: model,
-                    onComplete: complete
-                )
+                StandardActionFormView(model: model, action: action, platform: platform, onComplete: complete)
             }
         }
         .navigationTitle(action.title(for: platform))
@@ -331,9 +316,9 @@ private struct ModActionDetailView: View {
 }
 
 private struct StandardActionFormView: View {
-    let action: ModActionType
-    let platform: ModPlatform
     let model: Model
+    let action: ModActionType
+    let platform: Platform
     let onComplete: () -> Void
     @State private var username = ""
     @State private var reason = ""
@@ -342,7 +327,7 @@ private struct StandardActionFormView: View {
     @State private var followersDuration = 10
 
     private var canExecute: Bool {
-        if action.requiresUsername && username.trimmingCharacters(in: .whitespaces).isEmpty {
+        if action.requiresUsername && username.trim().isEmpty {
             return false
         }
         return true
@@ -384,13 +369,15 @@ private struct StandardActionFormView: View {
     }
 
     private func executeAction() {
-        let user = username.trimmingCharacters(in: .whitespaces)
-        let banReason = reason.trimmingCharacters(in: .whitespaces)
+        let user = username.trim()
+        let banReason = reason.trim()
         switch platform {
         case .kick:
             executeKickAction(user: user, banReason: banReason)
         case .twitch:
             executeTwitchAction(user: user, banReason: banReason)
+        default:
+            break
         }
         onComplete()
     }
@@ -512,18 +499,34 @@ private struct PollOption: Identifiable {
 }
 
 private struct CreatePollView: View {
-    let platform: ModPlatform
     let model: Model
+    let platform: Platform
     let onComplete: () -> Void
     @State private var title: String = ""
     @State private var options = [PollOption(), PollOption()]
     @State private var duration: Int = 30
     @State private var resultDisplayDuration: Int = 15
 
-    private var canExecute: Bool {
-        let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
-        let filledOptions = options.filter { !$0.text.trimmingCharacters(in: .whitespaces).isEmpty }
+    private func canExecute() -> Bool {
+        let trimmedTitle = title.trim()
+        let filledOptions = options.filter { !$0.text.trim().isEmpty }
         return !trimmedTitle.isEmpty && filledOptions.count >= 2
+    }
+
+    private func createPoll() {
+        let trimmedOptions = options.map { $0.text.trim() }.filter { !$0.isEmpty }
+        switch platform {
+        case .kick:
+            model.createKickPoll(
+                title: title.trim(),
+                options: trimmedOptions,
+                duration: duration,
+                resultDisplayDuration: resultDisplayDuration
+            )
+        default:
+            break
+        }
+        onComplete()
     }
 
     var body: some View {
@@ -575,58 +578,34 @@ private struct CreatePollView: View {
                 TextButtonView("Create poll") {
                     createPoll()
                 }
-                .disabled(!canExecute)
+                .disabled(!canExecute())
             }
         }
-    }
-
-    private func createPoll() {
-        let trimmedOptions = options
-            .map { $0.text.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
-        switch platform {
-        case .kick:
-            model.createKickPoll(
-                title: title.trimmingCharacters(in: .whitespaces),
-                options: trimmedOptions,
-                duration: duration,
-                resultDisplayDuration: resultDisplayDuration
-            )
-        case .twitch:
-            break
-        }
-        onComplete()
     }
 }
 
 private struct CreatePredictionView: View {
-    let platform: ModPlatform
     let model: Model
+    let platform: Platform
     let onComplete: () -> Void
     @State private var title = ""
     @State private var outcome1 = ""
     @State private var outcome2 = ""
     @State private var duration = 300
 
-    private var canExecute: Bool {
-        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
-            !outcome1.trimmingCharacters(in: .whitespaces).isEmpty &&
-            !outcome2.trimmingCharacters(in: .whitespaces).isEmpty
+    private func canExecute() -> Bool {
+        return !title.trim().isEmpty && !outcome1.trim().isEmpty && !outcome2.trim().isEmpty
     }
 
     private func createPrediction() {
         let outcomes = [
-            outcome1.trimmingCharacters(in: .whitespaces),
-            outcome2.trimmingCharacters(in: .whitespaces),
+            outcome1.trim(),
+            outcome2.trim(),
         ]
         switch platform {
         case .kick:
-            model.createKickPrediction(
-                title: title.trimmingCharacters(in: .whitespaces),
-                outcomes: outcomes,
-                duration: duration
-            )
-        case .twitch:
+            model.createKickPrediction(title: title.trim(), outcomes: outcomes, duration: duration)
+        default:
             break
         }
         onComplete()
@@ -658,7 +637,7 @@ private struct CreatePredictionView: View {
                 TextButtonView("Create prediction") {
                     createPrediction()
                 }
-                .disabled(!canExecute)
+                .disabled(!canExecute())
             }
         }
     }
@@ -696,8 +675,8 @@ private struct SendAnnouncementView: View {
     @State private var message = ""
     @State private var selectedColor: AnnouncementColor = .primary
 
-    private var canSend: Bool {
-        !message.trimmingCharacters(in: .whitespaces).isEmpty
+    private func canSend() -> Bool {
+        return !message.trim().isEmpty
     }
 
     var body: some View {
@@ -719,12 +698,12 @@ private struct SendAnnouncementView: View {
             Section {
                 TextButtonView("Send announcement") {
                     model.sendTwitchAnnouncement(
-                        message: message.trimmingCharacters(in: .whitespaces),
+                        message: message.trim(),
                         color: selectedColor.rawValue
                     )
                     onComplete()
                 }
-                .disabled(!canSend)
+                .disabled(!canSend())
             }
         }
     }
@@ -734,8 +713,8 @@ struct QuickButtonChatModerationView: View {
     let model: Model
     @Binding var showingModActions: Bool
 
-    private var availablePlatforms: [ModPlatform] {
-        var platforms: [ModPlatform] = []
+    private func availablePlatforms() -> [Platform] {
+        var platforms: [Platform] = []
         if model.stream.twitchLoggedIn {
             platforms.append(.twitch)
         }
@@ -745,7 +724,7 @@ struct QuickButtonChatModerationView: View {
         return platforms
     }
 
-    private var notLoggedInView: some View {
+    private func notLoggedInView() -> some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 48))
@@ -759,9 +738,9 @@ struct QuickButtonChatModerationView: View {
         }
     }
 
-    private var actionsList: some View {
+    private func actionsList() -> some View {
         Form {
-            ForEach(availablePlatforms, id: \.self) { platform in
+            ForEach(availablePlatforms(), id: \.self) { platform in
                 NavigationLink {
                     ModActionPlatformView(
                         model: model,
@@ -770,11 +749,11 @@ struct QuickButtonChatModerationView: View {
                     )
                 } label: {
                     HStack(spacing: 12) {
-                        Image(platform.logo)
+                        Image(platform.imageName())
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 24, height: 24)
-                        Text(platform.rawValue)
+                        Text(platform.name())
                     }
                 }
             }
@@ -784,10 +763,10 @@ struct QuickButtonChatModerationView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if availablePlatforms.isEmpty {
-                    notLoggedInView
+                if availablePlatforms().isEmpty {
+                    notLoggedInView()
                 } else {
-                    actionsList
+                    actionsList()
                 }
             }
             .navigationTitle("Moderation")

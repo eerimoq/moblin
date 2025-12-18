@@ -1,6 +1,6 @@
 import Foundation
 
-enum Platform: Codable {
+enum Platform: Codable, CaseIterable {
     case soop
     case kick
     case openStreamingPlatform
