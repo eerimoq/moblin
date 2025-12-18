@@ -545,10 +545,10 @@ private struct TextView: View {
 
     var body: some View {
         let fontSize = scaledFontSize(size: size)
-        let stack = VStack(spacing: 2) {
+        let stack = VStack(alignment: horizontalAlignment, spacing: 2) {
             ForEach(lines) { line in
                 HStack(spacing: 0) {
-                    if horizontalAlignment != .leading {
+                    if horizontalAlignment != .leading, minWidth != 0 {
                         Spacer(minLength: 0)
                     }
                     ForEach(line.parts) { part in
@@ -579,7 +579,7 @@ private struct TextView: View {
                             }
                         }
                     }
-                    if horizontalAlignment != .trailing {
+                    if horizontalAlignment != .trailing, minWidth != 0 {
                         Spacer(minLength: 0)
                     }
                 }
