@@ -42,7 +42,7 @@ struct WidgetScoreboardGenericSettingsView: View {
         guard let maximum = Int(value) else {
             return ""
         }
-        return formatMinutes(minutes: maximum)
+        return formatSecondsAndMinutes(seconds: 60 * maximum)
     }
 
     var body: some View {

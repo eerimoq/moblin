@@ -141,16 +141,6 @@ func formatSecondsAndMinutes(seconds: Int) -> String {
     }
 }
 
-func formatMinutes(minutes: Int) -> String {
-    let suffix: String
-    if minutes == 1 {
-        suffix = String(localized: "minute")
-    } else {
-        suffix = String(localized: "minutes")
-    }
-    return "\(minutes) \(suffix)"
-}
-
 extension CGSize {
     func minimum() -> CGFloat {
         return min(height, width)
