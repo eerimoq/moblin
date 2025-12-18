@@ -720,35 +720,41 @@ private struct SendMessagesToSelectorView: View {
 private struct ControlMessagesButtonView: View {
     @ObservedObject var model: Model
     @ObservedObject var chat: SettingsChat
-    @Binding var showingModActions: Bool
+    @State var showingModeration: Bool = false
     @State var showingPredefinedMessages = false
 
-    private var buttonIcon: String {
-        chat.quickButtonMode == "mod" ? "shield" : "list.bullet"
+    private func buttonIcon() -> String {
+        switch chat.buttonMode {
+        case .predefinedMessages:
+            return "list.bullet"
+        case .moderation:
+            return "shield"
+        }
     }
 
     var body: some View {
         Menu {
             Button {
-                chat.quickButtonMode = "mod"
+                chat.buttonMode = .moderation
             } label: {
-                Label("Mod Actions", systemImage: "shield")
+                Label("Moderation", systemImage: "shield")
             }
             Button {
-                chat.quickButtonMode = "predefined"
+                chat.buttonMode = .predefinedMessages
             } label: {
-                Label("Predefined Messages", systemImage: "list.bullet")
+                Label("Predefined messages", systemImage: "list.bullet")
             }
         } label: {
-            Image(systemName: buttonIcon)
+            Image(systemName: buttonIcon())
                 .font(.title)
                 .frame(width: 30, height: 30)
                 .padding(5)
         } primaryAction: {
-            if chat.quickButtonMode == "mod" {
-                showingModActions = true
-            } else {
+            switch chat.buttonMode {
+            case .predefinedMessages:
                 showingPredefinedMessages = true
+            case .moderation:
+                showingModeration = true
             }
         }
         .sheet(isPresented: $showingPredefinedMessages) {
@@ -756,6 +762,9 @@ private struct ControlMessagesButtonView: View {
                                    chat: model.database.chat,
                                    filter: model.database.chat.predefinedMessagesFilter,
                                    showingPredefinedMessages: $showingPredefinedMessages)
+        }
+        .sheet(isPresented: $showingModeration) {
+            ModerationView(model: model, showingModActions: $showingModeration)
         }
     }
 }
@@ -777,7 +786,6 @@ private struct ControlAlertsButtonView: View {
 private struct ControlView: View {
     let model: Model
     @Binding var message: String
-    @Binding var showingModActions: Bool
 
     var body: some View {
         TextField(text: $message) {
@@ -794,7 +802,7 @@ private struct ControlView: View {
         .padding(5)
         .foregroundStyle(.white)
         SendMessagesToSelectorView(stream: model.stream)
-        ControlMessagesButtonView(model: model, chat: model.database.chat, showingModActions: $showingModActions)
+        ControlMessagesButtonView(model: model, chat: model.database.chat)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }
 }
@@ -1002,7 +1010,6 @@ struct QuickButtonChatView: View {
     @ObservedObject var quickButtonChat: QuickButtonChat
     @State var message: String = ""
     @State var selectedPost: ChatPost?
-    @State var showingModActions: Bool = false
 
     var body: some View {
         ZStack {
@@ -1014,7 +1021,7 @@ struct QuickButtonChatView: View {
                 }
                 HStack {
                     if quickButtonChat.showAllChatMessages {
-                        ControlView(model: model, message: $message, showingModActions: $showingModActions)
+                        ControlView(model: model, message: $message)
                     } else {
                         AlertsControlView(model: model, quickButtonChat: quickButtonChat)
                     }
@@ -1027,8 +1034,5 @@ struct QuickButtonChatView: View {
         }
         .background(.black)
         .navigationTitle("Chat")
-        .sheet(isPresented: $showingModActions) {
-            ModActionsView(model: model, showingModActions: $showingModActions)
-        }
     }
 }

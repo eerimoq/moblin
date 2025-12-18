@@ -507,6 +507,16 @@ class SettingsVoice: Codable {
     var ttsMonster: SettingsVoiceTtsMonster = .init()
 }
 
+enum SettingsChatButtonMode: String, Codable, CaseIterable {
+    case predefinedMessages
+    case moderation
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsChatButtonMode(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .predefinedMessages
+    }
+}
+
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)
@@ -562,7 +572,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
     @Published var nicknames: SettingsChatNicknames = .init()
     @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
-    @Published var quickButtonMode: String = "predefined"
+    @Published var buttonMode: SettingsChatButtonMode = .predefinedMessages
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -615,7 +625,7 @@ class SettingsChat: Codable, ObservableObject {
              sendMessagesTo,
              nicknames,
              displayStyle,
-             quickButtonMode
+             buttonMode
     }
 
     func encode(to encoder: Encoder) throws {
@@ -669,7 +679,7 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
         try container.encode(.nicknames, nicknames)
         try container.encode(.displayStyle, displayStyle)
-        try container.encode(.quickButtonMode, quickButtonMode)
+        try container.encode(.buttonMode, buttonMode)
     }
 
     init() {}
@@ -744,7 +754,7 @@ class SettingsChat: Codable, ObservableObject {
         )
         nicknames = container.decode(.nicknames, SettingsChatNicknames.self, .init())
         displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
-        quickButtonMode = container.decode(.quickButtonMode, String.self, "predefined")
+        buttonMode = container.decode(.buttonMode, SettingsChatButtonMode.self, .predefinedMessages)
     }
 
     func getRotation() -> Double {

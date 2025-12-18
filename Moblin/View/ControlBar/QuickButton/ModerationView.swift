@@ -172,7 +172,7 @@ enum AnnouncementColor: String, CaseIterable, Identifiable {
     }
 }
 
-struct ModActionsView: View {
+struct ModerationView: View {
     let model: Model
     @Binding var showingModActions: Bool
 
@@ -196,7 +196,7 @@ struct ModActionsView: View {
                     actionsList
                 }
             }
-            .navigationTitle("Moderator Actions")
+            .navigationTitle("Moderation")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
