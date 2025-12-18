@@ -4,6 +4,7 @@ private struct SceneItemView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
+    @State private var presentingDeleteConfirmation: Bool = false
 
     var body: some View {
         NavigationLink {
@@ -22,21 +23,27 @@ private struct SceneItemView: View {
             }
         }
         .swipeActions(edge: .trailing) {
-            Button(role: .destructive) {
-                let deletedCurrentScene = model.getSelectedScene() === scene
-                database.scenes.removeAll { $0 == scene }
-                if deletedCurrentScene {
-                    model.resetSelectedScene()
-                }
+            Button {
+                presentingDeleteConfirmation = true
             } label: {
                 Label("Delete", systemImage: "trash")
             }
+            .tint(.red)
             Button {
                 database.scenes.append(scene.clone())
             } label: {
                 Label("Duplicate", systemImage: "plus.square.on.square")
             }
             .tint(.blue)
+        }
+        .confirmationDialog("", isPresented: $presentingDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                let deletedCurrentScene = model.getSelectedScene() === scene
+                database.scenes.removeAll { $0 === scene }
+                if deletedCurrentScene {
+                    model.resetSelectedScene()
+                }
+            }
         }
     }
 }

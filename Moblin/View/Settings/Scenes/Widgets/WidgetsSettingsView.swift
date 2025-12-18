@@ -26,6 +26,7 @@ private struct WidgetsSettingsItemView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var widget: SettingsWidget
+    @State private var presentingDeleteConfirmation: Bool = false
 
     var body: some View {
         NavigationLink {
@@ -46,6 +47,21 @@ private struct WidgetsSettingsItemView: View {
                 model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
             }
         }
+        .swipeActions(edge: .trailing) {
+            Button {
+                presentingDeleteConfirmation = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            .tint(.red)
+        }
+        .confirmationDialog("", isPresented: $presentingDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                database.widgets.removeAll(where: { $0 === widget })
+                model.removeDeadWidgetsFromScenes()
+                model.resetSelectedScene()
+            }
+        }
     }
 }
 
@@ -61,11 +77,6 @@ struct WidgetsSettingsView: View {
             }
             .onMove { froms, to in
                 database.widgets.move(fromOffsets: froms, toOffset: to)
-            }
-            .onDelete { offsets in
-                database.widgets.remove(atOffsets: offsets)
-                model.removeDeadWidgetsFromScenes()
-                model.resetSelectedScene()
             }
             CreateButtonView {
                 presentingCreateWizard = true
