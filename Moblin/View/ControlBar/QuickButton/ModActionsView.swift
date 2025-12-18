@@ -48,30 +48,30 @@ enum ModActionType: CaseIterable, Identifiable {
         switch self {
         case .ban: String(localized: "Ban")
         case .timeout: String(localized: "Timeout")
-        case .unban: String(localized: "UnBan")
+        case .unban: String(localized: "Unban")
         case .mod: String(localized: "Mod")
-        case .unmod: String(localized: "UnMod")
+        case .unmod: String(localized: "Unmod")
         case .vip: String(localized: "VIP")
-        case .unvip: String(localized: "UnVIP")
+        case .unvip: String(localized: "Unvip")
         case .raid:
             if platform == .kick {
-                String(localized: "Host Channel")
+                String(localized: "Host channel")
             } else {
-                String(localized: "Raid Channel")
+                String(localized: "Raid channel")
             }
-        case .slow: String(localized: "Slow Mode")
-        case .slowoff: String(localized: "Slow Mode Off")
-        case .followers: String(localized: "Followers Only")
-        case .followersoff: String(localized: "Followers Only Off")
-        case .emoteonly: String(localized: "Emote Only")
-        case .emoteonlyoff: String(localized: "Emote Only Off")
-        case .subscribers: String(localized: "Subscribers Only")
-        case .subscribersoff: String(localized: "Subscribers Only Off")
-        case .poll: String(localized: "Create Poll")
-        case .deletepoll: String(localized: "Delete Poll")
-        case .prediction: String(localized: "Create Prediction")
-        case .commercial: String(localized: "Run Commercial")
-        case .announcement: String(localized: "Send Announcement")
+        case .slow: String(localized: "Slow mode")
+        case .slowoff: String(localized: "Slow mode off")
+        case .followers: String(localized: "Followers only")
+        case .followersoff: String(localized: "Followers only off")
+        case .emoteonly: String(localized: "Emote only")
+        case .emoteonlyoff: String(localized: "Emote only off")
+        case .subscribers: String(localized: "Subscribers only")
+        case .subscribersoff: String(localized: "Subscribers only off")
+        case .poll: String(localized: "Create poll")
+        case .deletepoll: String(localized: "Delete poll")
+        case .prediction: String(localized: "Create prediction")
+        case .commercial: String(localized: "Run commercial")
+        case .announcement: String(localized: "Send announcement")
         }
     }
 
