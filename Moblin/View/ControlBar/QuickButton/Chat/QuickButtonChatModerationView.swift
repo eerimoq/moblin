@@ -711,69 +711,27 @@ private struct SendAnnouncementView: View {
 
 struct QuickButtonChatModerationView: View {
     let model: Model
-    @Binding var showingModActions: Bool
-
-    private func availablePlatforms() -> [Platform] {
-        var platforms: [Platform] = []
-        if model.stream.twitchLoggedIn {
-            platforms.append(.twitch)
-        }
-        if model.stream.kickLoggedIn {
-            platforms.append(.kick)
-        }
-        return platforms
-    }
-
-    private func notLoggedInView() -> some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 48))
-                .foregroundStyle(.yellow)
-            Text("Not logged in")
-                .font(.headline)
-            Text("Please log in to Kick or Twitch in stream settings to use moderator actions.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-
-    private func actionsList() -> some View {
-        Form {
-            ForEach(availablePlatforms(), id: \.self) { platform in
-                NavigationLink {
-                    ModActionPlatformView(
-                        model: model,
-                        platform: platform,
-                        showingModActions: $showingModActions
-                    )
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(platform.imageName())
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
-                        Text(platform.name())
-                    }
-                }
-            }
-        }
-    }
+    @Binding var showingModeration: Bool
 
     var body: some View {
         NavigationStack {
-            Group {
-                if availablePlatforms().isEmpty {
-                    notLoggedInView()
-                } else {
-                    actionsList()
+            Form {
+                NavigationLink {
+                    ModActionPlatformView(model: model, platform: .twitch, showingModActions: $showingModeration)
+                } label: {
+                    TwitchLogoAndNameView()
+                }
+                NavigationLink {
+                    ModActionPlatformView(model: model, platform: .kick, showingModActions: $showingModeration)
+                } label: {
+                    KickLogoAndNameView()
                 }
             }
             .navigationTitle("Moderation")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        showingModActions = false
+                        showingModeration = false
                     } label: {
                         Image(systemName: "xmark")
                     }
