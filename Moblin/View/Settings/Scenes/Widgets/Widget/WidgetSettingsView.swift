@@ -61,6 +61,19 @@ struct WidgetLayoutView: View {
     }
 }
 
+struct WidgetShortcutView: View {
+    let database: Database
+    let widget: SettingsWidget
+
+    var body: some View {
+        NavigationLink {
+            WidgetSettingsView(database: database, widget: widget)
+        } label: {
+            Text("Widget")
+        }
+    }
+}
+
 struct WidgetSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database

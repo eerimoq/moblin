@@ -1,17 +1,17 @@
 import SwiftUI
 
+private struct SlideNameView: View {
+    @ObservedObject var widget: SettingsWidget
+
+    var body: some View {
+        Text(widget.name)
+    }
+}
+
 private struct SlideView: View {
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var slide: SettingsWidgetSlideshowSlide
-
-    private func getWidgetName(widgetId: UUID?) -> String {
-        if let widgetId {
-            return model.getWidgetName(id: widgetId)
-        } else {
-            return String(localized: "-- None --")
-        }
-    }
 
     private func widgets() -> [SettingsWidget] {
         return database.widgets.filter { $0.type == .text || $0.type == .image }
@@ -25,7 +25,7 @@ private struct SlideView: View {
                         Text("-- None --")
                             .tag(nil as UUID?)
                         ForEach(widgets()) {
-                            Text($0.name)
+                            SlideNameView(widget: $0)
                                 .tag($0.id as UUID?)
                         }
                     } label: {
@@ -41,11 +41,7 @@ private struct SlideView: View {
                 }
                 if let widgetId = slide.widgetId, let widget = model.findWidget(id: widgetId) {
                     Section {
-                        NavigationLink {
-                            WidgetSettingsView(database: database, widget: widget)
-                        } label: {
-                            Text("Widget")
-                        }
+                        WidgetShortcutView(database: database, widget: widget)
                     } header: {
                         Text("Shortcut")
                     }
@@ -54,7 +50,11 @@ private struct SlideView: View {
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(getWidgetName(widgetId: slide.widgetId))
+                if let widgetId = slide.widgetId, let widget = model.findWidget(id: widgetId) {
+                    SlideNameView(widget: widget)
+                } else {
+                    Text("-- None --")
+                }
                 Spacer()
                 Text("\(slide.time)s")
             }

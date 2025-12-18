@@ -338,6 +338,19 @@ private struct WidgetsView: View {
     }
 }
 
+struct SceneShortcutView: View {
+    let database: Database
+    let scene: SettingsScene
+
+    var body: some View {
+        NavigationLink {
+            SceneSettingsView(database: database, scene: scene)
+        } label: {
+            Text("Scene")
+        }
+    }
+}
+
 struct SceneSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database

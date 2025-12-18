@@ -69,19 +69,11 @@ struct SceneWidgetSettingsView: View {
                              widget: widget,
                              numericInput: $database.sceneNumericInput)
             Section {
-                NavigationLink {
-                    WidgetSettingsView(database: model.database, widget: widget)
-                } label: {
-                    Text("Widget")
-                }
+                WidgetShortcutView(database: model.database, widget: widget)
                 if widget.type == .scene,
                    let scene = model.database.scenes.first(where: { $0.id == widget.scene.sceneId })
                 {
-                    NavigationLink {
-                        SceneSettingsView(database: model.database, scene: scene)
-                    } label: {
-                        Text("Scene")
-                    }
+                    SceneShortcutView(database: model.database, scene: scene)
                 }
             } header: {
                 Text("Shortcut")
