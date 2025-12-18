@@ -191,6 +191,12 @@ struct WidgetWizardSettingsView: View {
                                                       widget: createWidgetWizard.widget,
                                                       createWidgetWizard: createWidgetWizard,
                                                       presentingCreateWizard: $presentingCreateWizard)
+                    case .slideshow:
+                        WidgetWizardSlideshowSettingsView(model: model,
+                                                          database: database,
+                                                          createWidgetWizard: createWidgetWizard,
+                                                          slideshow: createWidgetWizard.widget.slideshow,
+                                                          presentingCreateWizard: $presentingCreateWizard)
                     case .vTuber:
                         WidgetWizardVTuberSettingsView(model: model,
                                                        database: database,

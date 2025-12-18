@@ -1,7 +1,6 @@
 import SwiftUI
 
-private struct SlideView: View {
-    let model: Model
+struct WidgetSlideshowSlidePickerView: View {
     @ObservedObject var database: Database
     @ObservedObject var slide: SettingsWidgetSlideshowSlide
 
@@ -10,22 +9,50 @@ private struct SlideView: View {
     }
 
     var body: some View {
+        Picker(selection: $slide.widgetId) {
+            Text("-- None --")
+                .tag(nil as UUID?)
+            ForEach(widgets()) {
+                WidgetNameView(widget: $0)
+                    .tag($0.id as UUID?)
+            }
+        } label: {
+            Text("Widget")
+        }
+    }
+}
+
+struct WidgetSlideshowSlideSummaryView: View {
+    let model: Model
+    @ObservedObject var slide: SettingsWidgetSlideshowSlide
+
+    var body: some View {
+        HStack {
+            DraggableItemPrefixView()
+            if let widgetId = slide.widgetId, let widget = model.findWidget(id: widgetId) {
+                WidgetNameView(widget: widget)
+            } else {
+                Text("-- None --")
+            }
+            Spacer()
+            Text("\(slide.time)s")
+        }
+    }
+}
+
+private struct SlideView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var slide: SettingsWidgetSlideshowSlide
+
+    var body: some View {
         NavigationLink {
             Form {
                 Section {
-                    Picker(selection: $slide.widgetId) {
-                        Text("-- None --")
-                            .tag(nil as UUID?)
-                        ForEach(widgets()) {
-                            WidgetNameView(widget: $0)
-                                .tag($0.id as UUID?)
+                    WidgetSlideshowSlidePickerView(database: database, slide: slide)
+                        .onChange(of: slide.widgetId) { _ in
+                            model.resetSelectedScene(changeScene: false, attachCamera: false)
                         }
-                    } label: {
-                        Text("Widget")
-                    }
-                    .onChange(of: slide.widgetId) { _ in
-                        model.resetSelectedScene(changeScene: false, attachCamera: false)
-                    }
                     SwitcherTimePickerView(time: $slide.time)
                         .onChange(of: slide.time) { _ in
                             model.resetSelectedScene(changeScene: false, attachCamera: false)
@@ -40,16 +67,7 @@ private struct SlideView: View {
                 }
             }
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                if let widgetId = slide.widgetId, let widget = model.findWidget(id: widgetId) {
-                    WidgetNameView(widget: widget)
-                } else {
-                    Text("-- None --")
-                }
-                Spacer()
-                Text("\(slide.time)s")
-            }
+            WidgetSlideshowSlideSummaryView(model: model, slide: slide)
         }
     }
 }
