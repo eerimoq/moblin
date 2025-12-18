@@ -383,6 +383,7 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
 enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     case leading = "Leading"
     case trailing = "Trailing"
+    case center = "Center"
 
     init(from decoder: Decoder) throws {
         self = try SettingsHorizontalAlignment(rawValue: decoder.singleValueContainer()
@@ -395,6 +396,8 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
             return String(localized: "Leading")
         case .trailing:
             return String(localized: "Trailing")
+        case .center:
+            return String(localized: "Center")
         }
     }
 
@@ -404,6 +407,8 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
             return .leading
         case .trailing:
             return .trailing
+        case .center:
+            return .center
         }
     }
 }

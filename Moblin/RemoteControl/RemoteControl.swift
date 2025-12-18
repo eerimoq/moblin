@@ -283,6 +283,7 @@ struct RemoteControlRemoteSceneSettingsWidgetTypeText: Codable {
 enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
     case leading
     case trailing
+    case center
 
     init(alignment: SettingsHorizontalAlignment) {
         switch alignment {
@@ -290,6 +291,8 @@ enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
             self = .leading
         case .trailing:
             self = .trailing
+        case .center:
+            self = .center
         }
     }
 
@@ -299,6 +302,8 @@ enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
             return .leading
         case .trailing:
             return .trailing
+        case .center:
+            return .center
         }
     }
 }
