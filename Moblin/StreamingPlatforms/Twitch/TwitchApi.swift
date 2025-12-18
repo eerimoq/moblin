@@ -239,6 +239,22 @@ class TwitchApi {
         }
     }
 
+    func getUserByLogin(login: String, onComplete: @escaping (TwitchApiUser?) -> Void) {
+        guard let encodedLogin = login.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            onComplete(nil)
+            return
+        }
+        doGet(subPath: "users?login=\(encodedLogin)") {
+            switch $0 {
+            case let .success(data):
+                let users = try? JSONDecoder().decode(TwitchApiUsers.self, from: data)
+                onComplete(users?.data.first)
+            default:
+                onComplete(nil)
+            }
+        }
+    }
+
     func createEventSubSubscription(body: String, onComplete: @escaping (Bool) -> Void) {
         doPost(subPath: "eventsub/subscriptions", body: body.utf8Data) {
             onComplete($0.isSuccessful())
@@ -318,12 +334,11 @@ class TwitchApi {
         if let duration {
             data["duration"] = duration
         }
-        if let reason, !reason.isEmpty {
+        if let reason {
             data["reason"] = reason
         }
-        let body: [String: Any] = ["data": data]
         doPost(subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
-               body: serialize(body))
+               body: serialize(["data": data]))
         {
             onComplete($0.isSuccessful())
         }
@@ -331,11 +346,10 @@ class TwitchApi {
 
     func unbanUser(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
         doDelete(
-            subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)&user_id=\(userId)",
-            onComplete: {
-                onComplete($0.isSuccessful())
-            }
-        )
+            subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)&user_id=\(userId)"
+        ) {
+            onComplete($0.isSuccessful())
+        }
     }
 
     func addModerator(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
@@ -356,7 +370,7 @@ class TwitchApi {
         )
     }
 
-    func addVIP(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
+    func addVip(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
         doPost(
             subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
             body: Data()
@@ -365,13 +379,10 @@ class TwitchApi {
         }
     }
 
-    func removeVIP(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
-        doDelete(
-            subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            onComplete: {
-                onComplete($0.isSuccessful())
-            }
-        )
+    func removeVip(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
+        doDelete(subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)") {
+            onComplete($0.isSuccessful())
+        }
     }
 
     func sendAnnouncement(broadcasterId: String, message: String, color: String, onComplete: @escaping (Bool) -> Void) {
@@ -395,22 +406,6 @@ class TwitchApi {
                 onComplete($0.isSuccessful())
             }
         )
-    }
-
-    func getUserByLogin(login: String, onComplete: @escaping (TwitchApiUser?) -> Void) {
-        guard let encodedLogin = login.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            onComplete(nil)
-            return
-        }
-        doGet(subPath: "users?login=\(encodedLogin)") {
-            switch $0 {
-            case let .success(data):
-                let users = try? JSONDecoder().decode(TwitchApiUsers.self, from: data)
-                onComplete(users?.data.first)
-            default:
-                onComplete(nil)
-            }
-        }
     }
 
     func deleteChatMessage(broadcasterId: String, messageId: String, onComplete: @escaping (Bool) -> Void) {
@@ -651,6 +646,9 @@ class TwitchApi {
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {
+                    if let data, let data = String(bytes: data, encoding: .utf8) {
+                        logger.info("twitch-api: Error response body: \(data)")
+                    }
                     if response?.http?.isUnauthorized == true {
                         self.delegate?.twitchApiUnauthorized()
                         onComplete(.authError)

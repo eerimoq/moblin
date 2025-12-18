@@ -323,7 +323,7 @@ extension Model {
                 self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
                 return
             }
-            self.createTwitchApi(stream: self.stream).addVIP(
+            self.createTwitchApi(stream: self.stream).addVip(
                 broadcasterId: self.stream.twitchChannelId,
                 userId: twitchUser.id
             ) { ok in
@@ -342,7 +342,7 @@ extension Model {
                 self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
                 return
             }
-            self.createTwitchApi(stream: self.stream).removeVIP(
+            self.createTwitchApi(stream: self.stream).removeVip(
                 broadcasterId: self.stream.twitchChannelId,
                 userId: twitchUser.id
             ) { ok in
