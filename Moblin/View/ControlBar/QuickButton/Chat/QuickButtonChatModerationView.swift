@@ -237,7 +237,7 @@ private struct ModActionRowView: View {
             Text(action.title(for: platform))
         }
     }
-    
+
     private func executeAction() {
         switch platform {
         case .kick:
@@ -301,7 +301,7 @@ private struct ModActionDetailView: View {
     let platform: ModPlatform
     let model: Model
     @Binding var showingModActions: Bool
-    
+
     private func complete() {
         showingModActions = false
     }
@@ -397,7 +397,7 @@ private struct StandardActionFormView: View {
             ("1 month", 43200),
         ]
     }
-    
+
     private func executeAction() {
         let user = username.trimmingCharacters(in: .whitespaces)
         let banReason = reason.trimmingCharacters(in: .whitespaces)
@@ -642,7 +642,7 @@ private struct CreatePredictionView: View {
             !outcome1.trimmingCharacters(in: .whitespaces).isEmpty &&
             !outcome2.trimmingCharacters(in: .whitespaces).isEmpty
     }
-    
+
     private func createPrediction() {
         let outcomes = [
             outcome1.trimmingCharacters(in: .whitespaces),

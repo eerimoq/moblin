@@ -285,7 +285,14 @@ struct StreamSettingsView: View {
                     Section {
                         Toggle("Background streaming", isOn: $stream.backgroundStreaming)
                     } footer: {
-                        Text("Live stream and record when the app is in background mode.")
+                        VStack(alignment: .leading) {
+                            Text("Live stream and record when the app is in background mode.")
+                            Text("")
+                            Text("""
+                            Built-in and USB cameras will freeze when the app is in \
+                            background mode. Apple limitation. 😢
+                            """)
+                        }
                     }
                 }
                 Section {
