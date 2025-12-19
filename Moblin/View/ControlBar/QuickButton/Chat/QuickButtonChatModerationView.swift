@@ -1,5 +1,51 @@
 import SwiftUI
 
+private enum ExecutorState {
+    case idle
+    case inProgress
+    case success
+    case error
+}
+
+private class Executor: ObservableObject {
+    @Published var state: ExecutorState = .idle
+
+    func startProgress() {
+        state = .inProgress
+    }
+
+    func completed(ok: Bool) {
+        if ok {
+            state = .success
+        } else {
+            state = .error
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.state = .idle
+        }
+    }
+}
+
+private struct ExecutorView<Content: View>: View {
+    @ObservedObject var executor: Executor
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        switch executor.state {
+        case .idle:
+            content()
+        case .inProgress:
+            ProgressView()
+        case .success:
+            Text("Success")
+                .foregroundStyle(.green)
+        case .error:
+            Text("Failed")
+                .foregroundStyle(.red)
+        }
+    }
+}
+
 private enum ModActionCategory: String, CaseIterable {
     case userModeration = "User moderation"
     case channelManagement = "Channel management"
@@ -193,27 +239,10 @@ private struct ModActionRowView: View {
     let model: Model
     let action: ModActionType
     let platform: Platform
+    @StateObject private var executor = Executor()
 
-    private var rowContent: some View {
-        IconAndTextView(image: action.icon, text: action.title(for: platform))
-    }
-
-    private func executeAction() {
-        switch platform {
-        case .kick:
-            executeKickAction()
-        default:
-            break
-        }
-    }
-
-    private func executeKickAction() {
-        switch action {
-        case .deletepoll:
-            return model.deleteKickPoll()
-        default:
-            break
-        }
+    private func rowContent() -> some View {
+        return IconAndTextView(image: action.icon, text: action.title(for: platform))
     }
 
     var body: some View {
@@ -221,18 +250,21 @@ private struct ModActionRowView: View {
             NavigationLink {
                 ModActionDetailView(model: model, action: action, platform: platform)
             } label: {
-                rowContent
+                rowContent()
             }
         } else {
             HStack {
-                rowContent
+                rowContent()
                 Spacer()
-                Button {
-                    executeAction()
-                } label: {
-                    Text("Send")
+                ExecutorView(executor: executor) {
+                    Button {
+                        executor.startProgress()
+                        model.deleteKickPoll(onComplete: executor.completed)
+                    } label: {
+                        Text("Send")
+                    }
+                    .buttonStyle(.borderless)
                 }
-                .buttonStyle(.borderless)
             }
         }
     }
@@ -495,6 +527,7 @@ private struct CreatePredictionView: View {
 private struct RunCommercialView: View {
     let model: Model
     @State private var duration = 30
+    @StateObject private var executor = Executor()
 
     var body: some View {
         Form {
@@ -508,8 +541,13 @@ private struct RunCommercialView: View {
                 Text("Duration")
             }
             Section {
-                TextButtonView("Run commercial") {
-                    model.startAds(seconds: duration)
+                HCenter {
+                    ExecutorView(executor: executor) {
+                        TextButtonView("Run commercial") {
+                            executor.startProgress()
+                            model.startAds(seconds: duration, onComplete: executor.completed)
+                        }
+                    }
                 }
             }
         }
@@ -521,6 +559,7 @@ private struct SendAnnouncementView: View {
     @State private var message = ""
     @State private var color: AnnouncementColor = .primary
     @FocusState var editingText: Bool
+    @StateObject private var executor = Executor()
 
     private func canSend() -> Bool {
         return !message.trim().isEmpty
@@ -552,45 +591,32 @@ private struct SendAnnouncementView: View {
                 }
             }
             Section {
-                TextButtonView("Send") {
-                    model.sendTwitchAnnouncement(message: message.trim(), color: color.rawValue)
+                HCenter {
+                    ExecutorView(executor: executor) {
+                        TextButtonView("Send") {
+                            executor.startProgress()
+                            model.sendTwitchAnnouncement(message: message.trim(),
+                                                         color: color.rawValue,
+                                                         onComplete: executor.completed)
+                        }
+                        .disabled(!canSend())
+                    }
                 }
-                .disabled(!canSend())
             }
         }
     }
-}
-
-private enum ActionState {
-    case idle
-    case inProgress
-    case success
-    case error
 }
 
 private struct ToggleActionView: View {
     let text: String
     let image: String
     let action: (Bool, @escaping (Bool) -> Void) -> Void
-    @State private var state: ActionState = .idle
-
-    private func performAction(on: Bool) {
-        state = .inProgress
-        action(on) { ok in
-            if ok {
-                state = .success
-            } else {
-                state = .error
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                state = .idle
-            }
-        }
-    }
+    @StateObject private var executor = Executor()
 
     private func button(text: LocalizedStringKey, on: Bool) -> some View {
         Button {
-            performAction(on: on)
+            executor.startProgress()
+            action(on, executor.completed)
         } label: {
             Text(text)
         }
@@ -601,19 +627,10 @@ private struct ToggleActionView: View {
         HStack {
             IconAndTextView(image: image, text: text)
             Spacer()
-            switch state {
-            case .idle:
+            ExecutorView(executor: executor) {
                 button(text: "On", on: true)
                     .padding([.trailing], 15)
                 button(text: "Off", on: false)
-            case .inProgress:
-                ProgressView()
-            case .success:
-                Text("Success")
-                    .foregroundStyle(.green)
-            case .error:
-                Text("Failed")
-                    .foregroundStyle(.red)
             }
         }
     }
@@ -624,29 +641,14 @@ private struct DurationActionView: View {
     let image: String
     let durations: [Int]
     let action: (Int?, @escaping (Bool) -> Void) -> Void
-    @State private var state: ActionState = .idle
+    @StateObject private var executor = Executor()
     @State private var duration: Int?
-
-    private func performAction() {
-        state = .inProgress
-        action(duration) { ok in
-            if ok {
-                state = .success
-            } else {
-                state = .error
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                state = .idle
-            }
-        }
-    }
 
     var body: some View {
         HStack {
             IconAndTextView(image: image, text: text)
             Spacer()
-            switch state {
-            case .idle:
+            ExecutorView(executor: executor) {
                 Picker("", selection: $duration) {
                     Text("Off")
                         .tag(nil as Int?)
@@ -657,19 +659,12 @@ private struct DurationActionView: View {
                 }
                 .padding([.trailing], 15)
                 Button {
-                    performAction()
+                    executor.startProgress()
+                    action(duration, executor.completed)
                 } label: {
                     Text("Send")
                 }
                 .buttonStyle(.borderless)
-            case .inProgress:
-                ProgressView()
-            case .success:
-                Text("Success")
-                    .foregroundStyle(.green)
-            case .error:
-                Text("Failed")
-                    .foregroundStyle(.red)
             }
         }
     }

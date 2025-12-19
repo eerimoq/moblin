@@ -98,9 +98,7 @@ extension Model {
         onComplete: @escaping ([TwitchApiGameData]?) -> Void
     ) {
         twitchSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
-            self.createTwitchApi(stream: stream).searchCategories(query: filter) {
-                onComplete($0)
-            }
+            self.createTwitchApi(stream: stream).searchCategories(query: filter, onComplete: onComplete)
         }
     }
 
@@ -109,9 +107,7 @@ extension Model {
         names: [String],
         onComplete: @escaping ([TwitchApiGameData]?) -> Void
     ) {
-        createTwitchApi(stream: stream).getGames(names: names) {
-            onComplete($0)
-        }
+        createTwitchApi(stream: stream).getGames(names: names, onComplete: onComplete)
     }
 
     func searchTwitchChannel(
@@ -119,9 +115,7 @@ extension Model {
         channelName: String,
         onComplete: @escaping (TwitchApiChannel?) -> Void
     ) {
-        createTwitchApi(stream: stream).searchChannel(channelName: channelName) {
-            onComplete($0)
-        }
+        createTwitchApi(stream: stream).searchChannel(channelName: channelName, onComplete: onComplete)
     }
 
     func makeNotLoggedInToTwitchToast() {
@@ -223,14 +217,10 @@ extension Model {
         }
     }
 
-    func startAds(seconds: Int) {
+    func startAds(seconds: Int, onComplete: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream)
-            .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) { data in
-                if let data {
-                    self.makeToast(title: data.message)
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to start commercial"))
-                }
+            .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) {
+                onComplete($0 != nil)
             }
     }
 
@@ -360,18 +350,13 @@ extension Model {
         }
     }
 
-    func sendTwitchAnnouncement(message: String, color: String) {
+    func sendTwitchAnnouncement(message: String, color: String, onComplete: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream).sendAnnouncement(
             broadcasterId: stream.twitchChannelId,
             message: message,
-            color: color
-        ) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Announcement sent"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to send announcement"))
-            }
-        }
+            color: color,
+            onComplete: onComplete
+        )
     }
 
     func setTwitchSlowMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (Bool) -> Void) {
@@ -381,10 +366,9 @@ extension Model {
         }
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
-            settings: settings
-        ) {
-            onComplete($0)
-        }
+            settings: settings,
+            onComplete: onComplete
+        )
     }
 
     func setTwitchFollowersMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (Bool) -> Void) {
@@ -394,28 +378,25 @@ extension Model {
         }
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
-            settings: settings
-        ) {
-            onComplete($0)
-        }
+            settings: settings,
+            onComplete: onComplete
+        )
     }
 
     func setTwitchEmoteOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
-            settings: ["emote_mode": enabled]
-        ) {
-            onComplete($0)
-        }
+            settings: ["emote_mode": enabled],
+            onComplete: onComplete
+        )
     }
 
     func setTwitchSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
-            settings: ["subscriber_mode": enabled]
-        ) {
-            onComplete($0)
-        }
+            settings: ["subscriber_mode": enabled],
+            onComplete: onComplete
+        )
     }
 
     func deleteTwitchChatMessage(messageId: String) {

@@ -213,13 +213,9 @@ extension Model {
         }
     }
 
-    func deleteKickPoll() {
-        createKickApi(stream: stream).deletePoll { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Poll deleted"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to delete poll"))
-            }
+    func deleteKickPoll(onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream).deletePoll {
+            onComplete($0)
         }
     }
 
