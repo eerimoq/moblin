@@ -114,16 +114,11 @@ private enum ModActionType: CaseIterable {
     }
 
     var requiresReason: Bool {
-        self == .ban
+        return self == .ban
     }
 
     var requiresDuration: Bool {
-        switch self {
-        case .timeout:
-            true
-        default:
-            false
-        }
+        return self == .timeout
     }
 
     var needsDetailView: Bool {
@@ -134,11 +129,11 @@ private enum ModActionType: CaseIterable {
     func isSupported(by platform: Platform) -> Bool {
         switch self {
         case .poll, .deletepoll, .prediction:
-            platform == .kick
+            return platform == .kick
         case .commercial, .announcement:
-            platform == .twitch
+            return platform == .twitch
         default:
-            true
+            return true
         }
     }
 
@@ -178,11 +173,7 @@ private struct ModActionCategoryView: View {
     var body: some View {
         Form {
             ForEach(actions, id: \.self) { action in
-                ModActionRowView(
-                    model: model,
-                    action: action,
-                    platform: platform
-                )
+                ModActionRowView(model: model, action: action, platform: platform)
             }
         }
         .navigationTitle(category.rawValue)
