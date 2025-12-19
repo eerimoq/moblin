@@ -238,9 +238,9 @@ private struct ModActionDetailView: View {
         Group {
             switch action {
             case .poll:
-                CreatePollView(model: model, platform: platform)
+                CreatePollView(model: model)
             case .prediction:
-                CreatePredictionView(model: model, platform: platform)
+                CreatePredictionView(model: model)
             case .commercial:
                 RunCommercialView(model: model)
             case .announcement:
@@ -373,7 +373,6 @@ private struct PollOption: Identifiable {
 
 private struct CreatePollView: View {
     let model: Model
-    let platform: Platform
     @State private var title: String = ""
     @State private var options = [PollOption(), PollOption()]
     @State private var duration: Int = 30
@@ -386,18 +385,12 @@ private struct CreatePollView: View {
     }
 
     private func createPoll() {
-        let trimmedOptions = options.map { $0.text.trim() }.filter { !$0.isEmpty }
-        switch platform {
-        case .kick:
-            model.createKickPoll(
-                title: title.trim(),
-                options: trimmedOptions,
-                duration: duration,
-                resultDisplayDuration: resultDisplayDuration
-            )
-        default:
-            break
-        }
+        model.createKickPoll(
+            title: title.trim(),
+            options: options.map { $0.text.trim() }.filter { !$0.isEmpty },
+            duration: duration,
+            resultDisplayDuration: resultDisplayDuration
+        )
     }
 
     var body: some View {
@@ -430,12 +423,10 @@ private struct CreatePollView: View {
                     }
                 }
             }
-            if platform == .kick {
-                Section {
-                    Picker("Result display duration", selection: $resultDisplayDuration) {
-                        ForEach([15, 30, 120, 180, 240, 300], id: \.self) {
-                            Text(formatFullDuration(seconds: $0))
-                        }
+            Section {
+                Picker("Result display duration", selection: $resultDisplayDuration) {
+                    ForEach([15, 30, 120, 180, 240, 300], id: \.self) {
+                        Text(formatFullDuration(seconds: $0))
                     }
                 }
             }
@@ -451,7 +442,6 @@ private struct CreatePollView: View {
 
 private struct CreatePredictionView: View {
     let model: Model
-    let platform: Platform
     @State private var title = ""
     @State private var outcome1 = ""
     @State private var outcome2 = ""
@@ -462,16 +452,9 @@ private struct CreatePredictionView: View {
     }
 
     private func createPrediction() {
-        let outcomes = [
-            outcome1.trim(),
-            outcome2.trim(),
-        ]
-        switch platform {
-        case .kick:
-            model.createKickPrediction(title: title.trim(), outcomes: outcomes, duration: duration)
-        default:
-            break
-        }
+        model.createKickPrediction(title: title.trim(),
+                                   outcomes: [outcome1.trim(), outcome2.trim()],
+                                   duration: duration)
     }
 
     var body: some View {
@@ -513,7 +496,7 @@ private struct RunCommercialView: View {
                     }
                 }
             } header: {
-                Text("Commercial duration")
+                Text("Duration")
             }
             Section {
                 TextButtonView("Run commercial") {
@@ -536,7 +519,7 @@ private struct SendAnnouncementView: View {
     var body: some View {
         Form {
             Section {
-                TextField("Announcement message", text: $message, axis: .vertical)
+                TextField("Message", text: $message, axis: .vertical)
                     .lineLimit(3 ... 6)
             } header: {
                 Text("Message")
@@ -550,7 +533,7 @@ private struct SendAnnouncementView: View {
                 }
             }
             Section {
-                TextButtonView("Send announcement") {
+                TextButtonView("Send") {
                     model.sendTwitchAnnouncement(message: message.trim(), color: selectedColor.rawValue)
                 }
                 .disabled(!canSend())
@@ -679,8 +662,8 @@ private struct TwitchUserModerationView: View {
     var body: some View {
         NavigationLink {
             Form {
-                ForEach(ModActionType.actions(for: .userModeration, platform: .twitch), id: \.self) { action in
-                    ModActionRowView(model: model, action: action, platform: .twitch)
+                ForEach(ModActionType.actions(for: .userModeration, platform: .twitch), id: \.self) {
+                    ModActionRowView(model: model, action: $0, platform: .twitch)
                 }
             }
             .navigationTitle("User moderation")
@@ -736,8 +719,8 @@ private struct TwitchChannelManagementView: View {
     var body: some View {
         NavigationLink {
             Form {
-                ForEach(ModActionType.actions(for: .channelManagement, platform: .twitch), id: \.self) { action in
-                    ModActionRowView(model: model, action: action, platform: .twitch)
+                ForEach(ModActionType.actions(for: .channelManagement, platform: .twitch), id: \.self) {
+                    ModActionRowView(model: model, action: $0, platform: .twitch)
                 }
             }
             .navigationTitle("Channel management")
@@ -770,8 +753,8 @@ private struct KickUserModerationView: View {
     var body: some View {
         NavigationLink {
             Form {
-                ForEach(ModActionType.actions(for: .userModeration, platform: .kick), id: \.self) { action in
-                    ModActionRowView(model: model, action: action, platform: .kick)
+                ForEach(ModActionType.actions(for: .userModeration, platform: .kick), id: \.self) {
+                    ModActionRowView(model: model, action: $0, platform: .kick)
                 }
             }
             .navigationTitle("User moderation")
@@ -839,8 +822,8 @@ private struct KickChannelManagementView: View {
     var body: some View {
         NavigationLink {
             Form {
-                ForEach(ModActionType.actions(for: .channelManagement, platform: .kick), id: \.self) { action in
-                    ModActionRowView(model: model, action: action, platform: .kick)
+                ForEach(ModActionType.actions(for: .channelManagement, platform: .kick), id: \.self) {
+                    ModActionRowView(model: model, action: $0, platform: .kick)
                 }
             }
             .navigationTitle("Channel management")
