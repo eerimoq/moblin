@@ -97,12 +97,12 @@ extension Model {
     }
 
     func sendKickChatMessage(message: String) {
-        createKickApi(stream: stream)?.sendMessage(message: message)
+        createKickApi(stream: stream).sendMessage(message: message)
     }
 
     func banKickUser(user: String, duration: Int? = nil, reason: String? = nil) {
         let action = duration != nil ? String(localized: "Timed out") : String(localized: "Banned")
-        createKickApi(stream: stream)?.banUser(user: user, duration: duration, reason: reason) { ok in
+        createKickApi(stream: stream).banUser(user: user, duration: duration, reason: reason) { ok in
             if ok {
                 self.makeToast(title: "\(action) \(user)")
             } else {
@@ -112,7 +112,7 @@ extension Model {
     }
 
     func unbanKickUser(user: String) {
-        createKickApi(stream: stream)?.unbanUser(user: user) { ok in
+        createKickApi(stream: stream).unbanUser(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "Unbanned \(user)"))
             } else {
@@ -122,7 +122,7 @@ extension Model {
     }
 
     func modKickUser(user: String) {
-        createKickApi(stream: stream)?.addModerator(user: user) { ok in
+        createKickApi(stream: stream).addModerator(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "Modded \(user)"))
             } else {
@@ -132,7 +132,7 @@ extension Model {
     }
 
     func unmodKickUser(user: String) {
-        createKickApi(stream: stream)?.removeModerator(user: user) { ok in
+        createKickApi(stream: stream).removeModerator(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "Unmodded \(user)"))
             } else {
@@ -142,7 +142,7 @@ extension Model {
     }
 
     func vipKickUser(user: String) {
-        createKickApi(stream: stream)?.addVip(user: user) { ok in
+        createKickApi(stream: stream).addVip(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "VIPed \(user)"))
             } else {
@@ -152,7 +152,7 @@ extension Model {
     }
 
     func unvipKickUser(user: String) {
-        createKickApi(stream: stream)?.removeVip(user: user) { ok in
+        createKickApi(stream: stream).removeVip(user: user) { ok in
             if ok {
                 self.makeToast(title: String(localized: "UnVIPed \(user)"))
             } else {
@@ -162,7 +162,7 @@ extension Model {
     }
 
     func hostKickChannel(channel: String) {
-        createKickApi(stream: stream)?.hostChannel(channel: channel) { ok in
+        createKickApi(stream: stream).hostChannel(channel: channel) { ok in
             if ok {
                 self.makeToast(title: String(localized: "Hosting \(channel)"))
             } else {
@@ -172,34 +172,34 @@ extension Model {
     }
 
     func enableKickSlowMode(messageInterval: Int, onComplete: @escaping (Bool) -> Void) {
-        createKickApi(stream: stream)?.enableSlowMode(messageInterval: messageInterval, onComplete: onComplete)
+        createKickApi(stream: stream).enableSlowMode(messageInterval: messageInterval, onComplete: onComplete)
     }
 
     func disableKickSlowMode(onComplete: @escaping (Bool) -> Void) {
-        createKickApi(stream: stream)?.disableSlowMode(onComplete: onComplete)
+        createKickApi(stream: stream).disableSlowMode(onComplete: onComplete)
     }
 
     func enableKickFollowersMode(followingMinDuration: Int, onComplete: @escaping (Bool) -> Void) {
-        createKickApi(stream: stream)?.enableFollowersMode(
+        createKickApi(stream: stream).enableFollowersMode(
             minimumDuration: followingMinDuration,
             onComplete: onComplete
         )
     }
 
     func disableKickFollowersMode(onComplete: @escaping (Bool) -> Void) {
-        createKickApi(stream: stream)?.disableFollowersMode(onComplete: onComplete)
+        createKickApi(stream: stream).disableFollowersMode(onComplete: onComplete)
     }
 
     func setKickEmoteOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
-        createKickApi(stream: stream)?.setEmoteOnlyMode(enabled: enabled, onComplete: onComplete)
+        createKickApi(stream: stream).setEmoteOnlyMode(enabled: enabled, onComplete: onComplete)
     }
 
     func setKickSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
-        createKickApi(stream: stream)?.setSubscribersOnlyMode(enabled: enabled, onComplete: onComplete)
+        createKickApi(stream: stream).setSubscribersOnlyMode(enabled: enabled, onComplete: onComplete)
     }
 
     func createKickPoll(title: String, options: [String], duration: Int, resultDisplayDuration: Int) {
-        createKickApi(stream: stream)?.createPoll(
+        createKickApi(stream: stream).createPoll(
             title: title,
             options: options,
             duration: duration,
@@ -214,7 +214,7 @@ extension Model {
     }
 
     func deleteKickPoll() {
-        createKickApi(stream: stream)?.deletePoll { ok in
+        createKickApi(stream: stream).deletePoll { ok in
             if ok {
                 self.makeToast(title: String(localized: "Poll deleted"))
             } else {
@@ -224,7 +224,7 @@ extension Model {
     }
 
     func createKickPrediction(title: String, outcomes: [String], duration: Int) {
-        createKickApi(stream: stream)?.createPrediction(title: title, outcomes: outcomes, duration: duration) { ok in
+        createKickApi(stream: stream).createPrediction(title: title, outcomes: outcomes, duration: duration) { ok in
             if ok {
                 self.makeToast(title: String(localized: "Prediction created"))
             } else {
@@ -234,40 +234,39 @@ extension Model {
     }
 
     func deleteKickMessage(messageId: String) {
-        createKickApi(stream: stream)?.deleteMessage(messageId: messageId)
+        createKickApi(stream: stream).deleteMessage(messageId: messageId)
     }
 
     func getKickStreamInfo(stream: SettingsStream, onComplete: @escaping (KickStreamInfo?) -> Void) {
-        createKickApi(stream: stream)?.getStreamInfo(onComplete: onComplete)
+        createKickApi(stream: stream).getStreamInfo(onComplete: onComplete)
     }
 
     func setKickStreamTitle(stream: SettingsStream, title: String, onComplete: @escaping (String) -> Void) {
-        createKickApi(stream: stream)?.setStreamTitle(title: title, onComplete: onComplete)
+        createKickApi(stream: stream).setStreamTitle(title: title, onComplete: onComplete)
     }
 
     func searchKickCategories(stream: SettingsStream, query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
         kickSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
-            self.createKickApi(stream: stream)?.searchCategories(query: query, onComplete: onComplete)
+            self.createKickApi(stream: stream).searchCategories(query: query, onComplete: onComplete)
         }
     }
 
     func fetchKickCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
-        createKickApi(stream: stream)?.searchCategories(query: query, onComplete: onComplete)
+        createKickApi(stream: stream).searchCategories(query: query, onComplete: onComplete)
     }
 
     func setKickStreamCategory(stream: SettingsStream, categoryId: Int) {
-        createKickApi(stream: stream)?.setStreamCategory(categoryId: categoryId) { ok in
+        createKickApi(stream: stream).setStreamCategory(categoryId: categoryId) { ok in
             if !ok {
                 self.makeErrorToast(title: "Failed to set stream category")
             }
         }
     }
 
-    private func createKickApi(stream: SettingsStream) -> KickApi? {
-        guard let channelId = stream.kickChannelId, let slug = stream.kickSlug else {
-            return nil
-        }
-        return KickApi(channelId: channelId, slug: slug, accessToken: stream.kickAccessToken)
+    private func createKickApi(stream: SettingsStream) -> KickApi {
+        return KickApi(channelId: stream.kickChannelId ?? "",
+                       slug: stream.kickSlug ?? "",
+                       accessToken: stream.kickAccessToken)
     }
 
     private func appendKickChatAlertMessage(
