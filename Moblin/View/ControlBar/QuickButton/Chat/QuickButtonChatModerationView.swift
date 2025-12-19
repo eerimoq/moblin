@@ -143,20 +143,24 @@ private enum ModActionType: CaseIterable {
 }
 
 private enum AnnouncementColor: String, CaseIterable {
-    case primary, blue, green, orange, purple
+    case primary
+    case blue
+    case green
+    case orange
+    case purple
 
-    var displayName: String {
+    func name() -> String {
         switch self {
         case .primary:
-            return "⚪ Primary"
+            return String(localized: "Primary")
         case .blue:
-            return "🔵 Blue"
+            return "🔵"
         case .green:
-            return "🟢 Green"
+            return "🟢"
         case .orange:
-            return "🟠 Orange"
+            return "🟠"
         case .purple:
-            return "🟣 Purple"
+            return "🟣"
         }
     }
 }
@@ -510,7 +514,8 @@ private struct RunCommercialView: View {
 private struct SendAnnouncementView: View {
     let model: Model
     @State private var message = ""
-    @State private var selectedColor: AnnouncementColor = .primary
+    @State private var color: AnnouncementColor = .primary
+    @FocusState var editingText: Bool
 
     private func canSend() -> Bool {
         return !message.trim().isEmpty
@@ -519,22 +524,31 @@ private struct SendAnnouncementView: View {
     var body: some View {
         Form {
             Section {
-                TextField("Message", text: $message, axis: .vertical)
-                    .lineLimit(3 ... 6)
+                MultiLineTextFieldView(value: $message)
+                    .focused($editingText)
             } header: {
                 Text("Message")
+            } footer: {
+                if isPhone() {
+                    HStack {
+                        Spacer()
+                        Button("Done") {
+                            editingText = false
+                        }
+                    }
+                    .disabled(!editingText)
+                }
             }
             Section {
-                Picker("Color", selection: $selectedColor) {
-                    ForEach(AnnouncementColor.allCases, id: \.self) { color in
-                        Text(color.displayName)
-                            .tag(color)
+                Picker("Color", selection: $color) {
+                    ForEach(AnnouncementColor.allCases, id: \.self) {
+                        Text($0.name())
                     }
                 }
             }
             Section {
                 TextButtonView("Send") {
-                    model.sendTwitchAnnouncement(message: message.trim(), color: selectedColor.rawValue)
+                    model.sendTwitchAnnouncement(message: message.trim(), color: color.rawValue)
                 }
                 .disabled(!canSend())
             }
