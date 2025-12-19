@@ -7,9 +7,12 @@ private enum ModActionCategory: String, CaseIterable {
 
     var icon: String {
         switch self {
-        case .userModeration: "person.fill"
-        case .chatMode: "bubble.left.fill"
-        case .channelManagement: "gearshape.fill"
+        case .userModeration:
+            return "person"
+        case .chatMode:
+            return "bubble.left"
+        case .channelManagement:
+            return "gearshape"
         }
     }
 }
@@ -30,58 +33,99 @@ private enum ModActionType: CaseIterable {
 
     func title(for platform: Platform) -> String {
         switch self {
-        case .ban: String(localized: "Ban")
-        case .timeout: String(localized: "Timeout")
-        case .unban: String(localized: "Unban")
-        case .mod: String(localized: "Mod")
-        case .unmod: String(localized: "Unmod")
-        case .vip: String(localized: "VIP")
-        case .unvip: String(localized: "Unvip")
+        case .ban:
+            return String(localized: "Ban")
+        case .timeout:
+            return String(localized: "Timeout")
+        case .unban:
+            return String(localized: "Unban")
+        case .mod:
+            return String(localized: "Mod")
+        case .unmod:
+            return String(localized: "Unmod")
+        case .vip:
+            return String(localized: "VIP")
+        case .unvip:
+            return String(localized: "Unvip")
         case .raid:
             if platform == .kick {
-                String(localized: "Host channel")
+                return String(localized: "Host channel")
             } else {
-                String(localized: "Raid channel")
+                return String(localized: "Raid channel")
             }
-        case .slow: String(localized: "Slow mode")
-        case .slowoff: String(localized: "Slow mode off")
-        case .followers: String(localized: "Followers only")
-        case .followersoff: String(localized: "Followers only off")
-        case .emoteonly: String(localized: "Emote only")
-        case .emoteonlyoff: String(localized: "Emote only off")
-        case .subscribers: String(localized: "Subscribers only")
-        case .subscribersoff: String(localized: "Subscribers only off")
-        case .poll: String(localized: "Create poll")
-        case .deletepoll: String(localized: "Delete poll")
-        case .prediction: String(localized: "Create prediction")
-        case .commercial: String(localized: "Run commercial")
-        case .announcement: String(localized: "Send announcement")
+        case .slow:
+            return String(localized: "Slow mode")
+        case .slowoff:
+            return String(localized: "Slow mode off")
+        case .followers:
+            return String(localized: "Followers only")
+        case .followersoff:
+            return String(localized: "Followers only off")
+        case .emoteonly:
+            return String(localized: "Emote only")
+        case .emoteonlyoff:
+            return String(localized: "Emote only off")
+        case .subscribers:
+            return String(localized: "Subscribers only")
+        case .subscribersoff:
+            return String(localized: "Subscribers only off")
+        case .poll:
+            return String(localized: "Create poll")
+        case .deletepoll:
+            return String(localized: "Delete poll")
+        case .prediction:
+            return String(localized: "Create prediction")
+        case .commercial:
+            return String(localized: "Run commercial")
+        case .announcement:
+            return String(localized: "Send announcement")
         }
     }
 
     var icon: String {
         switch self {
-        case .ban: "hand.raised.fill"
-        case .timeout: "clock.fill"
-        case .unban: "checkmark.circle.fill"
-        case .mod: "shield.fill"
-        case .unmod: "shield.slash.fill"
-        case .vip: "crown.fill"
-        case .unvip: "crown"
-        case .raid: "tv.fill"
-        case .slow: "tortoise.fill"
-        case .slowoff: "hare.fill"
-        case .followers: "person.2.fill"
-        case .followersoff: "person.2.slash.fill"
-        case .emoteonly: "face.smiling.fill"
-        case .emoteonlyoff: "text.bubble.fill"
-        case .subscribers: "star.fill"
-        case .subscribersoff: "star.slash.fill"
-        case .poll: "chart.bar.fill"
-        case .deletepoll: "chart.bar.xaxis"
-        case .prediction: "sparkles"
-        case .commercial: "dollarsign.circle.fill"
-        case .announcement: "megaphone.fill"
+        case .ban:
+            return "hand.raised"
+        case .timeout:
+            return "clock"
+        case .unban:
+            return "checkmark.circle"
+        case .mod:
+            return "shield"
+        case .unmod:
+            return "shield.slash"
+        case .vip:
+            return "crown"
+        case .unvip:
+            return "crown"
+        case .raid:
+            return "play.tv"
+        case .slow:
+            return "tortoise"
+        case .slowoff:
+            return "hare"
+        case .followers:
+            return "person.2"
+        case .followersoff:
+            return "person.2.slash"
+        case .emoteonly:
+            return "face.smiling"
+        case .emoteonlyoff:
+            return "text.bubble"
+        case .subscribers:
+            return "star"
+        case .subscribersoff:
+            return "star.slash"
+        case .poll:
+            return "chart.bar"
+        case .deletepoll:
+            return "chart.bar.xaxis"
+        case .prediction:
+            return "sparkles"
+        case .commercial:
+            return "cup.and.saucer"
+        case .announcement:
+            return "megaphone"
         }
     }
 
@@ -145,11 +189,16 @@ private enum AnnouncementColor: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .primary: "⚪ Primary"
-        case .blue: "🔵 Blue"
-        case .green: "🟢 Green"
-        case .orange: "🟠 Orange"
-        case .purple: "🟣 Purple"
+        case .primary:
+            return "⚪ Primary"
+        case .blue:
+            return "🔵 Blue"
+        case .green:
+            return "🟢 Green"
+        case .orange:
+            return "🟠 Orange"
+        case .purple:
+            return "🟣 Purple"
         }
     }
 }
@@ -158,7 +207,6 @@ private struct ModActionCategoryView: View {
     let model: Model
     let category: ModActionCategory
     let platform: Platform
-    @Binding var showingModActions: Bool
 
     private var actions: [ModActionType] {
         ModActionType.actions(for: category, platform: platform)
@@ -170,8 +218,7 @@ private struct ModActionCategoryView: View {
                 ModActionRowView(
                     model: model,
                     action: action,
-                    platform: platform,
-                    showingModActions: $showingModActions
+                    platform: platform
                 )
             }
         }
@@ -183,50 +230,36 @@ private struct ModActionRowView: View {
     let model: Model
     let action: ModActionType
     let platform: Platform
-    @Binding var showingModActions: Bool
 
     private var rowContent: some View {
-        HStack(spacing: 12) {
-            Image(systemName: action.icon)
-                .foregroundStyle(.secondary)
-                .frame(width: 24)
-            Text(action.title(for: platform))
-        }
+        IconAndTextView(image: action.icon, text: action.title(for: platform))
     }
 
     private func executeAction() {
         switch platform {
         case .kick:
             executeKickAction()
-        case .twitch:
-            executeTwitchAction()
         default:
             break
         }
-        showingModActions = false
     }
 
     private func executeKickAction() {
         switch action {
-        case .deletepoll: model.deleteKickPoll()
-        case .slowoff: model.disableKickSlowMode()
-        case .followersoff: model.disableKickFollowersMode()
-        case .emoteonlyoff: model.setKickEmoteOnlyMode(enabled: false)
-        case .emoteonly: model.setKickEmoteOnlyMode(enabled: true)
-        case .subscribersoff: model.setKickSubscribersOnlyMode(enabled: false)
-        case .subscribers: model.setKickSubscribersOnlyMode(enabled: true)
-        default: break
-        }
-    }
-
-    private func executeTwitchAction() {
-        switch action {
-        case .slowoff: model.setTwitchSlowMode(enabled: false)
-        case .followersoff: model.setTwitchFollowersMode(enabled: false)
-        case .emoteonlyoff: model.setTwitchEmoteOnlyMode(enabled: false)
-        case .emoteonly: model.setTwitchEmoteOnlyMode(enabled: true)
-        case .subscribersoff: model.setTwitchSubscribersOnlyMode(enabled: false)
-        case .subscribers: model.setTwitchSubscribersOnlyMode(enabled: true)
+        case .deletepoll:
+            return model.deleteKickPoll()
+        case .slowoff:
+            return model.disableKickSlowMode()
+        case .followersoff:
+            return model.disableKickFollowersMode()
+        case .emoteonlyoff:
+            return model.setKickEmoteOnlyMode(enabled: false)
+        case .emoteonly:
+            return model.setKickEmoteOnlyMode(enabled: true)
+        case .subscribersoff:
+            return model.setKickSubscribersOnlyMode(enabled: false)
+        case .subscribers:
+            return model.setKickSubscribersOnlyMode(enabled: true)
         default: break
         }
     }
@@ -234,12 +267,7 @@ private struct ModActionRowView: View {
     var body: some View {
         if action.needsDetailView {
             NavigationLink {
-                ModActionDetailView(
-                    model: model,
-                    action: action,
-                    platform: platform,
-                    showingModActions: $showingModActions
-                )
+                ModActionDetailView(model: model, action: action, platform: platform)
             } label: {
                 rowContent
             }
@@ -262,25 +290,20 @@ private struct ModActionDetailView: View {
     let model: Model
     let action: ModActionType
     let platform: Platform
-    @Binding var showingModActions: Bool
-
-    private func complete() {
-        showingModActions = false
-    }
 
     var body: some View {
         Group {
             switch action {
             case .poll:
-                CreatePollView(model: model, platform: platform, onComplete: complete)
+                CreatePollView(model: model, platform: platform)
             case .prediction:
-                CreatePredictionView(model: model, platform: platform, onComplete: complete)
+                CreatePredictionView(model: model, platform: platform)
             case .commercial:
-                RunCommercialView(model: model, onComplete: complete)
+                RunCommercialView(model: model)
             case .announcement:
-                SendAnnouncementView(model: model, onComplete: complete)
+                SendAnnouncementView(model: model)
             default:
-                StandardActionFormView(model: model, action: action, platform: platform, onComplete: complete)
+                StandardActionFormView(model: model, action: action, platform: platform)
             }
         }
         .navigationTitle(action.title(for: platform))
@@ -291,7 +314,6 @@ private struct StandardActionFormView: View {
     let model: Model
     let action: ModActionType
     let platform: Platform
-    let onComplete: () -> Void
     @State private var username = ""
     @State private var reason = ""
     @State private var timeoutDuration = 60
@@ -306,7 +328,7 @@ private struct StandardActionFormView: View {
     }
 
     private let timeoutPresets = [60, 300, 600, 1800, 3600, 21600, 86400, 604_800]
-    private let followersPresets = [0, 1, 5, 10, 30, 60, 1440, 10080, 43200]
+    private let followersPresets = [1, 5, 10, 30, 60, 1440, 10080, 43200]
 
     private func slowModePresets() -> [Int] {
         if platform == .twitch {
@@ -327,7 +349,6 @@ private struct StandardActionFormView: View {
         default:
             break
         }
-        onComplete()
     }
 
     private func executeKickAction(user: String, banReason: String) {
@@ -375,10 +396,6 @@ private struct StandardActionFormView: View {
             model.unvipTwitchUser(user: user)
         case .raid:
             model.raidTwitchChannelByName(channelName: user)
-        case .slow:
-            model.setTwitchSlowMode(enabled: true, duration: slowModeDuration)
-        case .followers:
-            model.setTwitchFollowersMode(enabled: true, duration: followersDuration)
         default:
             break
         }
@@ -447,7 +464,6 @@ private struct PollOption: Identifiable {
 private struct CreatePollView: View {
     let model: Model
     let platform: Platform
-    let onComplete: () -> Void
     @State private var title: String = ""
     @State private var options = [PollOption(), PollOption()]
     @State private var duration: Int = 30
@@ -472,7 +488,6 @@ private struct CreatePollView: View {
         default:
             break
         }
-        onComplete()
     }
 
     var body: some View {
@@ -527,7 +542,6 @@ private struct CreatePollView: View {
 private struct CreatePredictionView: View {
     let model: Model
     let platform: Platform
-    let onComplete: () -> Void
     @State private var title = ""
     @State private var outcome1 = ""
     @State private var outcome2 = ""
@@ -548,7 +562,6 @@ private struct CreatePredictionView: View {
         default:
             break
         }
-        onComplete()
     }
 
     var body: some View {
@@ -579,7 +592,6 @@ private struct CreatePredictionView: View {
 
 private struct RunCommercialView: View {
     let model: Model
-    let onComplete: () -> Void
     @State private var duration = 30
 
     var body: some View {
@@ -596,7 +608,6 @@ private struct RunCommercialView: View {
             Section {
                 TextButtonView("Run commercial") {
                     model.startAds(seconds: duration)
-                    onComplete()
                 }
             }
         }
@@ -605,7 +616,6 @@ private struct RunCommercialView: View {
 
 private struct SendAnnouncementView: View {
     let model: Model
-    let onComplete: () -> Void
     @State private var message = ""
     @State private var selectedColor: AnnouncementColor = .primary
 
@@ -631,11 +641,7 @@ private struct SendAnnouncementView: View {
             }
             Section {
                 TextButtonView("Send announcement") {
-                    model.sendTwitchAnnouncement(
-                        message: message.trim(),
-                        color: selectedColor.rawValue
-                    )
-                    onComplete()
+                    model.sendTwitchAnnouncement(message: message.trim(), color: selectedColor.rawValue)
                 }
                 .disabled(!canSend())
             }
@@ -643,59 +649,229 @@ private struct SendAnnouncementView: View {
     }
 }
 
-private struct TwitchView: View {
-    let model: Model
-    @Binding var showingModActions: Bool
+private enum ActionState {
+    case idle
+    case inProgress
+    case success
+    case error
+}
 
-    var body: some View {
-        Form {
-            ForEach(ModActionCategory.allCases, id: \.self) { category in
-                NavigationLink {
-                    ModActionCategoryView(
-                        model: model,
-                        category: category,
-                        platform: .twitch,
-                        showingModActions: $showingModActions
-                    )
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: category.icon)
-                            .foregroundStyle(.secondary)
-                            .frame(width: 24)
-                        Text(category.rawValue)
-                    }
-                }
+private struct ToggleActionView: View {
+    let text: String
+    let image: String
+    let action: (Bool, @escaping (Bool) -> Void) -> Void
+    @State private var state: ActionState = .idle
+
+    private func performAction(on: Bool) {
+        state = .inProgress
+        action(on) { ok in
+            if ok {
+                state = .success
+            } else {
+                state = .error
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                state = .idle
             }
         }
-        .navigationTitle("Twitch")
+    }
+
+    private func button(text: LocalizedStringKey, on: Bool) -> some View {
+        Button {
+            performAction(on: on)
+        } label: {
+            Text(text)
+        }
+        .buttonStyle(.borderless)
+    }
+
+    var body: some View {
+        HStack {
+            IconAndTextView(image: image, text: text)
+            Spacer()
+            switch state {
+            case .idle:
+                button(text: "On", on: true)
+                    .padding([.trailing], 15)
+                button(text: "Off", on: false)
+            case .inProgress:
+                ProgressView()
+            case .success:
+                Text("Success")
+                    .foregroundStyle(.green)
+            case .error:
+                Text("Failed")
+                    .foregroundStyle(.red)
+            }
+        }
+    }
+}
+
+private struct DurationActionView: View {
+    let text: String
+    let image: String
+    let durations: [Int]
+    let action: (Int?, @escaping (Bool) -> Void) -> Void
+    @State private var state: ActionState = .idle
+    @State private var duration: Int?
+
+    private func performAction() {
+        state = .inProgress
+        action(duration) { ok in
+            if ok {
+                state = .success
+            } else {
+                state = .error
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                state = .idle
+            }
+        }
+    }
+
+    var body: some View {
+        HStack {
+            IconAndTextView(image: image, text: text)
+            Spacer()
+            switch state {
+            case .idle:
+                Picker("", selection: $duration) {
+                    Text("Off")
+                        .tag(nil as Int?)
+                    ForEach(durations, id: \.self) {
+                        Text(formatFullDuration(seconds: $0))
+                            .tag($0 as Int?)
+                    }
+                }
+                .padding([.trailing], 15)
+                Button {
+                    performAction()
+                } label: {
+                    Text("Send")
+                }
+                .buttonStyle(.borderless)
+            case .inProgress:
+                ProgressView()
+            case .success:
+                Text("Success")
+                    .foregroundStyle(.green)
+            case .error:
+                Text("Failed")
+                    .foregroundStyle(.red)
+            }
+        }
+    }
+}
+
+private struct TwitchUserModerationView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                ForEach(ModActionType.actions(for: .userModeration, platform: .twitch), id: \.self) { action in
+                    ModActionRowView(model: model, action: action, platform: .twitch)
+                }
+            }
+            .navigationTitle("User moderation")
+        } label: {
+            IconAndTextView(image: "person", text: String(localized: "User moderation"))
+        }
+    }
+}
+
+private struct TwitchChatModesView: View {
+    let model: Model
+
+    private func slowModeAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
+        model.setTwitchSlowMode(enabled: duration != nil, duration: duration) {
+            onComplete($0)
+        }
+    }
+
+    private func followersOnlyAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
+        model.setTwitchFollowersMode(enabled: duration != nil, duration: (duration ?? 0) / 60) {
+            onComplete($0)
+        }
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                DurationActionView(text: String(localized: "Slow mode"),
+                                   image: "tortoise",
+                                   durations: [3, 5, 10, 30, 60, 120],
+                                   action: slowModeAction)
+                DurationActionView(text: String(localized: "Followers only"),
+                                   image: "person.2",
+                                   durations: [60, 300, 600, 3600],
+                                   action: followersOnlyAction)
+                ToggleActionView(text: String(localized: "Subscribers only"),
+                                 image: "star",
+                                 action: model.setTwitchSubscribersOnlyMode)
+                ToggleActionView(text: String(localized: "Emotes only"),
+                                 image: "face.smiling",
+                                 action: model.setTwitchEmoteOnlyMode)
+            }
+            .navigationTitle("Chat modes")
+        } label: {
+            IconAndTextView(image: "bubble.left", text: String(localized: "Chat modes"))
+        }
+    }
+}
+
+private struct TwitchChannelManagementView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                ForEach(ModActionType.actions(for: .channelManagement, platform: .twitch), id: \.self) { action in
+                    ModActionRowView(model: model, action: action, platform: .twitch)
+                }
+            }
+            .navigationTitle("Channel management")
+        } label: {
+            IconAndTextView(image: "gearshape", text: String(localized: "Channel management"))
+        }
+    }
+}
+
+private struct TwitchView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                TwitchUserModerationView(model: model)
+                TwitchChatModesView(model: model)
+                TwitchChannelManagementView(model: model)
+            }
+            .navigationTitle("Twitch")
+        } label: {
+            TwitchLogoAndNameView()
+        }
     }
 }
 
 private struct KickView: View {
     let model: Model
-    @Binding var showingModActions: Bool
 
     var body: some View {
-        Form {
-            ForEach(ModActionCategory.allCases, id: \.self) { category in
-                NavigationLink {
-                    ModActionCategoryView(
-                        model: model,
-                        category: category,
-                        platform: .kick,
-                        showingModActions: $showingModActions
-                    )
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: category.icon)
-                            .foregroundStyle(.secondary)
-                            .frame(width: 24)
-                        Text(category.rawValue)
+        NavigationLink {
+            Form {
+                ForEach(ModActionCategory.allCases, id: \.self) { category in
+                    NavigationLink {
+                        ModActionCategoryView(model: model, category: category, platform: .kick)
+                    } label: {
+                        IconAndTextView(image: category.icon, text: category.rawValue)
                     }
                 }
             }
+            .navigationTitle("Kick")
+        } label: {
+            KickLogoAndNameView()
         }
-        .navigationTitle("Kick")
     }
 }
 
@@ -706,16 +882,8 @@ struct QuickButtonChatModerationView: View {
     var body: some View {
         NavigationStack {
             Form {
-                NavigationLink {
-                    TwitchView(model: model, showingModActions: $showingModeration)
-                } label: {
-                    TwitchLogoAndNameView()
-                }
-                NavigationLink {
-                    KickView(model: model, showingModActions: $showingModeration)
-                } label: {
-                    KickLogoAndNameView()
-                }
+                TwitchView(model: model)
+                KickView(model: model)
             }
             .navigationTitle("Moderation")
             .toolbar {

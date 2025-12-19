@@ -374,7 +374,7 @@ extension Model {
         }
     }
 
-    func setTwitchSlowMode(enabled: Bool, duration: Int? = nil) {
+    func setTwitchSlowMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (Bool) -> Void) {
         var settings: [String: Any] = ["slow_mode": enabled]
         if enabled, let duration {
             settings["slow_mode_wait_time"] = duration
@@ -382,16 +382,12 @@ extension Model {
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
             settings: settings
-        ) { ok in
-            if ok {
-                self.makeToast(title: String(localized: enabled ? "Slow mode enabled" : "Slow mode disabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to update slow mode"))
-            }
+        ) {
+            onComplete($0)
         }
     }
 
-    func setTwitchFollowersMode(enabled: Bool, duration: Int? = nil) {
+    func setTwitchFollowersMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (Bool) -> Void) {
         var settings: [String: Any] = ["follower_mode": enabled]
         if enabled, let duration {
             settings["follower_mode_duration"] = duration
@@ -399,42 +395,26 @@ extension Model {
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
             settings: settings
-        ) { ok in
-            if ok {
-                self.makeToast(title: String(localized: enabled ? "Followers mode enabled" : "Followers mode disabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to update followers mode"))
-            }
+        ) {
+            onComplete($0)
         }
     }
 
-    func setTwitchEmoteOnlyMode(enabled: Bool) {
+    func setTwitchEmoteOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
             settings: ["emote_mode": enabled]
-        ) { ok in
-            if ok {
-                self
-                    .makeToast(title: String(localized: enabled ? "Emote only mode enabled" :
-                            "Emote only mode disabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to update emote only mode"))
-            }
+        ) {
+            onComplete($0)
         }
     }
 
-    func setTwitchSubscribersOnlyMode(enabled: Bool) {
+    func setTwitchSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
             settings: ["subscriber_mode": enabled]
-        ) { ok in
-            if ok {
-                self
-                    .makeToast(title: String(localized: enabled ? "Subscribers only mode enabled" :
-                            "Subscribers only mode disabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to update subscribers only mode"))
-            }
+        ) {
+            onComplete($0)
         }
     }
 
