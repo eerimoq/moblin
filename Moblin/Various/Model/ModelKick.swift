@@ -100,75 +100,32 @@ extension Model {
         createKickApi(stream: stream).sendMessage(message: message)
     }
 
-    func banKickUser(user: String, duration: Int? = nil, reason: String? = nil) {
-        let action = duration != nil ? String(localized: "Timed out") : String(localized: "Banned")
-        createKickApi(stream: stream).banUser(user: user, duration: duration, reason: reason) { ok in
-            if ok {
-                self.makeToast(title: "\(action) \(user)")
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to \(action.lowercased()) \(user)"))
-            }
-        }
+    func banKickUser(user: String, duration: Int? = nil, reason: String? = nil, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream).banUser(user: user, duration: duration, reason: reason, onComplete: onComplete)
     }
 
-    func unbanKickUser(user: String) {
-        createKickApi(stream: stream).unbanUser(user: user) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Unbanned \(user)"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to unban \(user)"))
-            }
-        }
+    func unbanKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream).unbanUser(user: user, onComplete: onComplete)
     }
 
-    func modKickUser(user: String) {
-        createKickApi(stream: stream).addModerator(user: user) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Modded \(user)"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to mod \(user)"))
-            }
-        }
+    func modKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream).addModerator(user: user, onComplete: onComplete)
     }
 
-    func unmodKickUser(user: String) {
-        createKickApi(stream: stream).removeModerator(user: user) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Unmodded \(user)"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to unmod \(user)"))
-            }
-        }
+    func unmodKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream).removeModerator(user: user, onComplete: onComplete)
     }
 
-    func vipKickUser(user: String) {
-        createKickApi(stream: stream).addVip(user: user) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "VIPed \(user)"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to VIP \(user)"))
-            }
-        }
+    func vipKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream).addVip(user: user, onComplete: onComplete)
     }
 
-    func unvipKickUser(user: String) {
-        createKickApi(stream: stream).removeVip(user: user) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "UnVIPed \(user)"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to UnVIP \(user)"))
-            }
-        }
+    func unvipKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream).removeVip(user: user, onComplete: onComplete)
     }
 
-    func hostKickChannel(channel: String) {
-        createKickApi(stream: stream).hostChannel(channel: channel) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Hosting \(channel)"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to host \(channel)"))
-            }
-        }
+    func hostKickChannel(channel: String, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream).hostChannel(channel: channel, onComplete: onComplete)
     }
 
     func enableKickSlowMode(messageInterval: Int, onComplete: @escaping (Bool) -> Void) {

@@ -521,9 +521,9 @@ extension Model {
             guard let userId = post.userId else {
                 return
             }
-            banTwitchUser(user: user, userId: userId, duration: nil)
+            banTwitchUser(user: user, userId: userId, duration: nil) { _ in }
         case .kick:
-            banKickUser(user: user, duration: nil)
+            banKickUser(user: user, duration: nil) { _ in }
         default:
             makeErrorToast(title: "Ban not supported for this platform")
         }
@@ -538,9 +538,9 @@ extension Model {
             guard let userId = post.userId else {
                 return
             }
-            banTwitchUser(user: user, userId: userId, duration: duration)
+            banTwitchUser(user: user, userId: userId, duration: duration) { _ in }
         case .kick:
-            banKickUser(user: user, duration: duration)
+            banKickUser(user: user, duration: duration) { _ in }
         default:
             makeErrorToast(title: "Timeout not supported for this platform")
         }

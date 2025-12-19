@@ -224,129 +224,106 @@ extension Model {
             }
     }
 
-    func banTwitchUser(user: String, userId: String, duration: Int?, reason: String? = nil) {
-        let action = duration != nil ? String(localized: "Timed out") : String(localized: "Banned")
+    func banTwitchUser(user _: String, userId: String,
+                       duration: Int?,
+                       reason: String? = nil,
+                       onComplete: @escaping (Bool) -> Void)
+    {
         createTwitchApi(stream: stream).banUser(
             broadcasterId: stream.twitchChannelId,
             userId: userId,
             duration: duration,
-            reason: reason
-        ) { ok in
-            if ok {
-                self.makeToast(title: "\(action) \(user)")
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to \(action.lowercased()) \(user)"))
-            }
-        }
+            reason: reason,
+            onComplete: onComplete
+        )
     }
 
-    func banTwitchUser(user: String, duration: Int?, reason: String?) {
+    func banTwitchUser(user: String, duration: Int?, reason: String?, onComplete: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                onComplete(false)
                 return
             }
-            self.banTwitchUser(user: user, userId: twitchUser.id, duration: duration, reason: reason)
+            self.banTwitchUser(user: user,
+                               userId: twitchUser.id,
+                               duration: duration,
+                               reason: reason,
+                               onComplete: onComplete)
         }
     }
 
-    func unbanTwitchUser(user: String) {
+    func unbanTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                onComplete(false)
                 return
             }
             twitchApi.unbanUser(
                 broadcasterId: self.stream.twitchChannelId,
-                userId: twitchUser.id
-            ) { ok in
-                if ok {
-                    self.makeToast(title: String(localized: "Unbanned \(user)"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to unban \(user)"))
-                }
-            }
+                userId: twitchUser.id,
+                onComplete: onComplete
+            )
         }
     }
 
-    func modTwitchUser(user: String) {
+    func modTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                onComplete(false)
                 return
             }
             twitchApi.addModerator(
                 broadcasterId: self.stream.twitchChannelId,
-                userId: twitchUser.id
-            ) { ok in
-                if ok {
-                    self.makeToast(title: String(localized: "Modded \(user)"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to mod \(user)"))
-                }
-            }
+                userId: twitchUser.id,
+                onComplete: onComplete
+            )
         }
     }
 
-    func unmodTwitchUser(user: String) {
+    func unmodTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                onComplete(false)
                 return
             }
             twitchApi.removeModerator(
                 broadcasterId: self.stream.twitchChannelId,
-                userId: twitchUser.id
-            ) { ok in
-                if ok {
-                    self.makeToast(title: String(localized: "Unmodded \(user)"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to unmod \(user)"))
-                }
-            }
+                userId: twitchUser.id,
+                onComplete: onComplete
+            )
         }
     }
 
-    func vipTwitchUser(user: String) {
+    func vipTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                onComplete(false)
                 return
             }
             twitchApi.addVip(
                 broadcasterId: self.stream.twitchChannelId,
-                userId: twitchUser.id
-            ) { ok in
-                if ok {
-                    self.makeToast(title: String(localized: "VIPed \(user)"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to VIP \(user)"))
-                }
-            }
+                userId: twitchUser.id,
+                onComplete: onComplete
+            )
         }
     }
 
-    func unvipTwitchUser(user: String) {
+    func unvipTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                self.makeErrorToast(title: String(localized: "User '\(user)' not found"))
+                onComplete(false)
                 return
             }
             twitchApi.removeVip(
                 broadcasterId: self.stream.twitchChannelId,
-                userId: twitchUser.id
-            ) { ok in
-                if ok {
-                    self.makeToast(title: String(localized: "UnVIPed \(user)"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to UnVIP \(user)"))
-                }
-            }
+                userId: twitchUser.id,
+                onComplete: onComplete
+            )
         }
     }
 
@@ -418,7 +395,7 @@ extension Model {
         }
     }
 
-    func raidTwitchChannelByName(channelName: String) {
+    func raidTwitchChannelByName(channelName: String, onComplete _: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream).searchChannel(channelName: channelName) { channel in
             guard let channel else {
                 self.makeErrorToast(title: String(localized: "Channel '\(channelName)' not found"))

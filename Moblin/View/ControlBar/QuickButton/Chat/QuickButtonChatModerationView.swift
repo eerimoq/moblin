@@ -46,6 +46,69 @@ private struct ExecutorView<Content: View>: View {
     }
 }
 
+private struct ToggleActionView: View {
+    let text: String
+    let image: String
+    let action: (Bool, @escaping (Bool) -> Void) -> Void
+    @StateObject private var executor = Executor()
+
+    private func button(text: LocalizedStringKey, on: Bool) -> some View {
+        Button {
+            executor.startProgress()
+            action(on, executor.completed)
+        } label: {
+            Text(text)
+        }
+        .buttonStyle(.borderless)
+    }
+
+    var body: some View {
+        HStack {
+            IconAndTextView(image: image, text: text)
+            Spacer()
+            ExecutorView(executor: executor) {
+                button(text: "On", on: true)
+                    .padding([.trailing], 15)
+                button(text: "Off", on: false)
+            }
+        }
+    }
+}
+
+private struct DurationActionView: View {
+    let text: String
+    let image: String
+    let durations: [Int]
+    let action: (Int?, @escaping (Bool) -> Void) -> Void
+    @StateObject private var executor = Executor()
+    @State private var duration: Int?
+
+    var body: some View {
+        HStack {
+            IconAndTextView(image: image, text: text)
+            Spacer()
+            ExecutorView(executor: executor) {
+                Picker("", selection: $duration) {
+                    Text("Off")
+                        .tag(nil as Int?)
+                    ForEach(durations, id: \.self) {
+                        Text(formatFullDuration(seconds: $0))
+                            .tag($0 as Int?)
+                    }
+                }
+                .padding([.trailing], 15)
+                Button {
+                    executor.startProgress()
+                    action(duration, executor.completed)
+                } label: {
+                    Text("Send")
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+    }
+}
+
 private enum ModActionCategory: String, CaseIterable {
     case userModeration = "User moderation"
     case channelManagement = "Channel management"
@@ -301,6 +364,7 @@ private struct StandardActionFormView: View {
     @State private var username = ""
     @State private var reason = ""
     @State private var timeoutDuration = 60
+    @StateObject var executor = Executor()
 
     private func canExecute() -> Bool {
         if action.requiresUsername && username.trim().isEmpty {
@@ -311,60 +375,68 @@ private struct StandardActionFormView: View {
 
     private let timeoutPresets = [60, 300, 600, 1800, 3600, 21600, 86400, 604_800]
 
-    private func executeAction() {
+    private func executeAction(onComplete: @escaping (Bool) -> Void) {
         let user = username.trim()
         let banReason = reason.trim()
         switch platform {
         case .kick:
-            executeKickAction(user: user, banReason: banReason)
+            executeKickAction(user: user, banReason: banReason, onComplete: onComplete)
         case .twitch:
-            executeTwitchAction(user: user, banReason: banReason)
+            executeTwitchAction(user: user, banReason: banReason, onComplete: onComplete)
         default:
             break
         }
     }
 
-    private func executeKickAction(user: String, banReason: String) {
+    private func executeKickAction(user: String, banReason: String, onComplete: @escaping (Bool) -> Void) {
         switch action {
         case .ban:
-            model.banKickUser(user: user, duration: nil, reason: banReason.isEmpty ? nil : banReason)
+            model.banKickUser(user: user,
+                              duration: nil,
+                              reason: banReason.isEmpty ? nil : banReason,
+                              onComplete: onComplete)
         case .timeout:
-            model.banKickUser(user: user, duration: timeoutDuration)
+            model.banKickUser(user: user, duration: timeoutDuration, onComplete: onComplete)
         case .unban:
-            model.unbanKickUser(user: user)
+            model.unbanKickUser(user: user, onComplete: onComplete)
         case .mod:
-            model.modKickUser(user: user)
+            model.modKickUser(user: user, onComplete: onComplete)
         case .unmod:
-            model.unmodKickUser(user: user)
+            model.unmodKickUser(user: user, onComplete: onComplete)
         case .vip:
-            model.vipKickUser(user: user)
+            model.vipKickUser(user: user, onComplete: onComplete)
         case .unvip:
-            model.unvipKickUser(user: user)
+            model.unvipKickUser(user: user, onComplete: onComplete)
         case .raid:
-            model.hostKickChannel(channel: user)
+            model.hostKickChannel(channel: user, onComplete: onComplete)
         default:
             break
         }
     }
 
-    private func executeTwitchAction(user: String, banReason: String) {
+    private func executeTwitchAction(user: String, banReason: String, onComplete: @escaping (Bool) -> Void) {
         switch action {
         case .ban:
-            model.banTwitchUser(user: user, duration: nil, reason: banReason.isEmpty ? nil : banReason)
+            model.banTwitchUser(
+                user: user,
+                duration: nil,
+                reason: banReason.isEmpty ? nil : banReason,
+                onComplete: onComplete
+            )
         case .timeout:
-            model.banTwitchUser(user: user, duration: timeoutDuration, reason: nil)
+            model.banTwitchUser(user: user, duration: timeoutDuration, reason: nil, onComplete: onComplete)
         case .unban:
-            model.unbanTwitchUser(user: user)
+            model.unbanTwitchUser(user: user, onComplete: onComplete)
         case .mod:
-            model.modTwitchUser(user: user)
+            model.modTwitchUser(user: user, onComplete: onComplete)
         case .unmod:
-            model.unmodTwitchUser(user: user)
+            model.unmodTwitchUser(user: user, onComplete: onComplete)
         case .vip:
-            model.vipTwitchUser(user: user)
+            model.vipTwitchUser(user: user, onComplete: onComplete)
         case .unvip:
-            model.unvipTwitchUser(user: user)
+            model.unvipTwitchUser(user: user, onComplete: onComplete)
         case .raid:
-            model.raidTwitchChannelByName(channelName: user)
+            model.raidTwitchChannelByName(channelName: user, onComplete: onComplete)
         default:
             break
         }
@@ -398,10 +470,15 @@ private struct StandardActionFormView: View {
                 }
             }
             Section {
-                TextButtonView("Send") {
-                    executeAction()
+                HCenter {
+                    ExecutorView(executor: executor) {
+                        TextButtonView("Send") {
+                            executor.startProgress()
+                            executeAction(onComplete: executor.completed)
+                        }
+                        .disabled(!canExecute())
+                    }
                 }
-                .disabled(!canExecute())
             }
         }
     }
@@ -602,69 +679,6 @@ private struct SendAnnouncementView: View {
                         .disabled(!canSend())
                     }
                 }
-            }
-        }
-    }
-}
-
-private struct ToggleActionView: View {
-    let text: String
-    let image: String
-    let action: (Bool, @escaping (Bool) -> Void) -> Void
-    @StateObject private var executor = Executor()
-
-    private func button(text: LocalizedStringKey, on: Bool) -> some View {
-        Button {
-            executor.startProgress()
-            action(on, executor.completed)
-        } label: {
-            Text(text)
-        }
-        .buttonStyle(.borderless)
-    }
-
-    var body: some View {
-        HStack {
-            IconAndTextView(image: image, text: text)
-            Spacer()
-            ExecutorView(executor: executor) {
-                button(text: "On", on: true)
-                    .padding([.trailing], 15)
-                button(text: "Off", on: false)
-            }
-        }
-    }
-}
-
-private struct DurationActionView: View {
-    let text: String
-    let image: String
-    let durations: [Int]
-    let action: (Int?, @escaping (Bool) -> Void) -> Void
-    @StateObject private var executor = Executor()
-    @State private var duration: Int?
-
-    var body: some View {
-        HStack {
-            IconAndTextView(image: image, text: text)
-            Spacer()
-            ExecutorView(executor: executor) {
-                Picker("", selection: $duration) {
-                    Text("Off")
-                        .tag(nil as Int?)
-                    ForEach(durations, id: \.self) {
-                        Text(formatFullDuration(seconds: $0))
-                            .tag($0 as Int?)
-                    }
-                }
-                .padding([.trailing], 15)
-                Button {
-                    executor.startProgress()
-                    action(duration, executor.completed)
-                } label: {
-                    Text("Send")
-                }
-                .buttonStyle(.borderless)
             }
         }
     }
