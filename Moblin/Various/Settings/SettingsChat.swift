@@ -572,7 +572,6 @@ class SettingsChat: Codable, ObservableObject {
     @Published var predefinedMessagesFilter: SettingsChatPredefinedMessagesFilter = .init()
     @Published var nicknames: SettingsChatNicknames = .init()
     @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
-    @Published var buttonMode: SettingsChatButtonMode = .predefinedMessages
 
     enum CodingKeys: CodingKey {
         case fontSize,
@@ -624,8 +623,7 @@ class SettingsChat: Codable, ObservableObject {
              predefinedMessagesFilter,
              sendMessagesTo,
              nicknames,
-             displayStyle,
-             buttonMode
+             displayStyle
     }
 
     func encode(to encoder: Encoder) throws {
@@ -679,7 +677,6 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.predefinedMessagesFilter, predefinedMessagesFilter)
         try container.encode(.nicknames, nicknames)
         try container.encode(.displayStyle, displayStyle)
-        try container.encode(.buttonMode, buttonMode)
     }
 
     init() {}
@@ -754,7 +751,6 @@ class SettingsChat: Codable, ObservableObject {
         )
         nicknames = container.decode(.nicknames, SettingsChatNicknames.self, .init())
         displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
-        buttonMode = container.decode(.buttonMode, SettingsChatButtonMode.self, .predefinedMessages)
     }
 
     func getRotation() -> Double {

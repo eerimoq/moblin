@@ -276,12 +276,16 @@ private struct ModActionRowView: View {
                 rowContent
             }
         } else {
-            Button {
-                executeAction()
-            } label: {
+            HStack {
                 rowContent
+                Spacer()
+                Button {
+                    executeAction()
+                } label: {
+                    Text("Send")
+                }
+                .buttonStyle(.borderless)
             }
-            .buttonStyle(.plain)
         }
     }
 }
@@ -505,10 +509,8 @@ private struct CreatePollView: View {
 
     var body: some View {
         Form {
-            Section {
-                TextField("", text: $title)
-            } header: {
-                Text("Question")
+            Section("Title") {
+                TextField("Title", text: $title)
             }
             Section {
                 ForEach($options) { $option in
@@ -519,7 +521,7 @@ private struct CreatePollView: View {
                     options.remove(atOffsets: offsets)
                 }
                 if options.count < 6 {
-                    TextButtonView("Add option") {
+                    AddButtonView {
                         options.append(PollOption())
                     }
                 }
@@ -534,22 +536,18 @@ private struct CreatePollView: View {
                         Text(formatFullDuration(seconds: $0))
                     }
                 }
-            } header: {
-                Text("Poll duration")
             }
             if platform == .kick {
                 Section {
-                    Picker("Result display", selection: $resultDisplayDuration) {
+                    Picker("Result display duration", selection: $resultDisplayDuration) {
                         ForEach([15, 30, 120, 180, 240, 300], id: \.self) {
                             Text(formatFullDuration(seconds: $0))
                         }
                     }
-                } header: {
-                    Text("Result display duration")
                 }
             }
             Section {
-                TextButtonView("Create poll") {
+                CreateButtonView {
                     createPoll()
                 }
                 .disabled(!canExecute())
@@ -587,16 +585,12 @@ private struct CreatePredictionView: View {
 
     var body: some View {
         Form {
-            Section {
-                TextField("", text: $title)
-            } header: {
-                Text("Question")
+            Section("Title") {
+                TextField("Title", text: $title)
             }
-            Section {
-                TextField("", text: $outcome1)
-                TextField("", text: $outcome2)
-            } header: {
-                Text("Outcomes")
+            Section("Outcomes") {
+                TextField("Outcome", text: $outcome1)
+                TextField("Outcome", text: $outcome2)
             }
             Section {
                 Picker("Duration", selection: $duration) {
@@ -604,11 +598,9 @@ private struct CreatePredictionView: View {
                         Text(formatFullDuration(seconds: $0))
                     }
                 }
-            } header: {
-                Text("Prediction duration")
             }
             Section {
-                TextButtonView("Create prediction") {
+                CreateButtonView {
                     createPrediction()
                 }
                 .disabled(!canExecute())

@@ -133,7 +133,7 @@ struct QuickButtonsInnerView: View {
     let nameWidth: CGFloat
     @State private var isPresentingRecordConfirm = false
     @State private var isPresentingStartWorkoutTypePicker = false
-    @State private var isPresentingAdsTimePicker = false
+    @State private var isPresentingModeration = false
     @State private var isPresentingStopWorkoutConfirm = false
 
     private func torchAction(state: ButtonState) {
@@ -685,27 +685,16 @@ struct QuickButtonsInnerView: View {
                         }
                     }
                 }
-            case .ads:
+            case .moderation:
                 QuickButtonImage(model: model,
                                  quickButtonsSettings: quickButtonsSettings,
                                  state: state,
                                  buttonSize: size)
                 {
-                    isPresentingAdsTimePicker = true
+                    isPresentingModeration = true
                 }
-                .confirmationDialog("", isPresented: $isPresentingAdsTimePicker) {
-                    Button("30 seconds") {
-                        model.startAds(seconds: 30)
-                    }
-                    Button("1 minute") {
-                        model.startAds(seconds: 60)
-                    }
-                    Button("2 minutes") {
-                        model.startAds(seconds: 120)
-                    }
-                    Button("3 minutes") {
-                        model.startAds(seconds: 180)
-                    }
+                .sheet(isPresented: $isPresentingModeration) {
+                    QuickButtonChatModerationView(model: model, showingModeration: $isPresentingModeration)
                 }
             case .skipCurrentTts:
                 QuickButtonImage(model: model,

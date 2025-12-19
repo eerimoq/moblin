@@ -719,52 +719,21 @@ private struct SendMessagesToSelectorView: View {
 
 private struct ControlMessagesButtonView: View {
     let model: Model
-    @ObservedObject var chat: SettingsChat
     @State var showingPredefinedMessages: Bool = false
-    @State var showingModeration: Bool = false
-
-    private func buttonIcon() -> String {
-        switch chat.buttonMode {
-        case .predefinedMessages:
-            return "list.bullet"
-        case .moderation:
-            return "shield"
-        }
-    }
 
     var body: some View {
-        Menu {
-            Button {
-                chat.buttonMode = .moderation
-            } label: {
-                Label("Moderation", systemImage: "shield")
-            }
-            Button {
-                chat.buttonMode = .predefinedMessages
-            } label: {
-                Label("Predefined messages", systemImage: "list.bullet")
-            }
+        Button {
+            showingPredefinedMessages = true
         } label: {
-            Image(systemName: buttonIcon())
+            Image(systemName: "list.bullet")
                 .font(.title)
-                .frame(width: 30, height: 30)
                 .padding(5)
-        } primaryAction: {
-            switch chat.buttonMode {
-            case .predefinedMessages:
-                showingPredefinedMessages = true
-            case .moderation:
-                showingModeration = true
-            }
         }
         .sheet(isPresented: $showingPredefinedMessages) {
             PredefinedMessagesView(model: model,
                                    chat: model.database.chat,
                                    filter: model.database.chat.predefinedMessagesFilter,
                                    showingPredefinedMessages: $showingPredefinedMessages)
-        }
-        .sheet(isPresented: $showingModeration) {
-            QuickButtonChatModerationView(model: model, showingModeration: $showingModeration)
         }
     }
 }
@@ -802,7 +771,7 @@ private struct ControlView: View {
         .padding(5)
         .foregroundStyle(.white)
         SendMessagesToSelectorView(stream: model.stream)
-        ControlMessagesButtonView(model: model, chat: model.database.chat)
+        ControlMessagesButtonView(model: model)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
     }
 }

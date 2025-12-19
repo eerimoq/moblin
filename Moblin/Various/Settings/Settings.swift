@@ -1622,10 +1622,9 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOn: "waveform.badge.xmark",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Ads"),
-                                 type: .ads,
-                                 imageOn: "cup.and.saucer.fill",
-                                 imageOff: "cup.and.saucer",
+    button = SettingsQuickButton(name: String(localized: "Moderation"),
+                                 type: .moderation,
+                                 imageOn: "shield",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Stream marker"),
