@@ -12,7 +12,7 @@ struct CloseButtonView: View {
         } label: {
             if #available(iOS 26, *) {
                 Image(systemName: "xmark")
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.foreground)
                     .frame(width: 12, height: 12)
                     .padding()
                     .glassEffect()
@@ -55,7 +55,7 @@ private struct HideShowButtonPanelView: View {
         } label: {
             if #available(iOS 26, *) {
                 Image(systemName: model.panelHidden ? "eye" : "eye.slash")
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.foreground)
                     .frame(width: 12, height: 12)
                     .padding()
                     .glassEffect()
