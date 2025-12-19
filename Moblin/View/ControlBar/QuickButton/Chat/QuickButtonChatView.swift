@@ -442,11 +442,7 @@ private struct PredefinedMessagesToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            Button {
-                showingPredefinedMessages = false
-            } label: {
-                Image(systemName: "xmark")
-            }
+            ToolbarCloseButtonView(presenting: $showingPredefinedMessages)
         }
     }
 }
@@ -705,11 +701,7 @@ private struct SendMessagesToSelectorView: View {
                 .navigationTitle("Send messages to")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button {
-                            showingSelector = false
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
+                        ToolbarCloseButtonView(presenting: $showingSelector)
                     }
                 }
             }

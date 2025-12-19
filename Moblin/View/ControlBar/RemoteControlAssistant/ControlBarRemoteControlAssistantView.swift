@@ -670,11 +670,7 @@ private struct StreamersToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            Button {
-                remoteControl.assistantShowStreamers = false
-            } label: {
-                Image(systemName: "xmark")
-            }
+            ToolbarCloseButtonView(presenting: $remoteControl.assistantShowStreamers)
         }
     }
 }

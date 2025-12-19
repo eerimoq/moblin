@@ -5,11 +5,7 @@ private struct CloseToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            Button {
-                presenting = false
-            } label: {
-                Image(systemName: "xmark")
-            }
+            ToolbarCloseButtonView(presenting: $presenting)
         }
     }
 }

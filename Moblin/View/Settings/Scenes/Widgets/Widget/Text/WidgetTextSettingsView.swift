@@ -160,11 +160,7 @@ private struct SubtitlesWithLanguageToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            Button {
-                presentingLanguagePicker = false
-            } label: {
-                Image(systemName: "xmark")
-            }
+            ToolbarCloseButtonView(presenting: $presentingLanguagePicker)
         }
     }
 }

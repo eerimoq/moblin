@@ -88,11 +88,7 @@ private struct BookmarksToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            Button {
-                showingBookmarks = false
-            } label: {
-                Image(systemName: "xmark")
-            }
+            ToolbarCloseButtonView(presenting: $showingBookmarks)
         }
     }
 }

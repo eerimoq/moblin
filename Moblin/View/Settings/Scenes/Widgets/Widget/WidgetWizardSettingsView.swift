@@ -9,11 +9,7 @@ struct CreateWidgetWizardToolbar: ToolbarContent {
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
-            Button {
-                presentingCreateWizard = false
-            } label: {
-                Image(systemName: "xmark")
-            }
+            ToolbarCloseButtonView(presenting: $presentingCreateWizard)
         }
     }
 }

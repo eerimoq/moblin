@@ -50,11 +50,7 @@ struct DebugLogSettingsView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        presentingLog = false
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
+                    ToolbarCloseButtonView(presenting: $presentingLog)
                 }
             }
         }

@@ -888,11 +888,7 @@ struct QuickButtonChatModerationView: View {
             .navigationTitle("Moderation")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingModeration = false
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
+                    ToolbarCloseButtonView(presenting: $showingModeration)
                 }
             }
         }

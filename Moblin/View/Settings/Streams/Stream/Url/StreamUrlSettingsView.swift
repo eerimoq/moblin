@@ -172,11 +172,7 @@ private struct UrlSettingsView: View {
                         .navigationTitle("Help")
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
-                                Button {
-                                    presentingHelp = false
-                                } label: {
-                                    Image(systemName: "xmark")
-                                }
+                                ToolbarCloseButtonView(presenting: $presentingHelp)
                             }
                         }
                     }
