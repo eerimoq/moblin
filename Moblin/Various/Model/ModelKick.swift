@@ -155,19 +155,19 @@ extension Model {
         createKickApi(stream: stream).setSubscribersOnlyMode(enabled: enabled, onComplete: onComplete)
     }
 
-    func createKickPoll(title: String, options: [String], duration: Int, resultDisplayDuration: Int) {
+    func createKickPoll(title: String,
+                        options: [String],
+                        duration: Int,
+                        resultDisplayDuration: Int,
+                        onComplete: @escaping (Bool) -> Void)
+    {
         createKickApi(stream: stream).createPoll(
             title: title,
             options: options,
             duration: duration,
-            resultDisplayDuration: resultDisplayDuration
-        ) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Poll created"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to create poll"))
-            }
-        }
+            resultDisplayDuration: resultDisplayDuration,
+            onComplete: onComplete
+        )
     }
 
     func deleteKickPoll(onComplete: @escaping (Bool) -> Void) {
@@ -176,14 +176,15 @@ extension Model {
         }
     }
 
-    func createKickPrediction(title: String, outcomes: [String], duration: Int) {
-        createKickApi(stream: stream).createPrediction(title: title, outcomes: outcomes, duration: duration) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Prediction created"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to create prediction"))
-            }
-        }
+    func createKickPrediction(title: String,
+                              outcomes: [String],
+                              duration: Int,
+                              onComplete: @escaping (Bool) -> Void)
+    {
+        createKickApi(stream: stream).createPrediction(title: title,
+                                                       outcomes: outcomes,
+                                                       duration: duration,
+                                                       onComplete: onComplete)
     }
 
     func deleteKickMessage(messageId: String) {

@@ -495,6 +495,7 @@ private struct CreatePollView: View {
     @State private var options = [PollOption(), PollOption()]
     @State private var duration: Int = 30
     @State private var resultDisplayDuration: Int = 15
+    @StateObject private var executor = Executor()
 
     private func canExecute() -> Bool {
         let trimmedTitle = title.trim()
@@ -503,11 +504,13 @@ private struct CreatePollView: View {
     }
 
     private func createPoll() {
+        executor.startProgress()
         model.createKickPoll(
             title: title.trim(),
             options: options.map { $0.text.trim() }.filter { !$0.isEmpty },
             duration: duration,
-            resultDisplayDuration: resultDisplayDuration
+            resultDisplayDuration: resultDisplayDuration,
+            onComplete: executor.completed
         )
     }
 
@@ -549,10 +552,14 @@ private struct CreatePollView: View {
                 }
             }
             Section {
-                CreateButtonView {
-                    createPoll()
+                HCenter {
+                    ExecutorView(executor: executor) {
+                        CreateButtonView {
+                            createPoll()
+                        }
+                        .disabled(!canExecute())
+                    }
                 }
-                .disabled(!canExecute())
             }
         }
     }
@@ -564,15 +571,18 @@ private struct CreatePredictionView: View {
     @State private var outcome1 = ""
     @State private var outcome2 = ""
     @State private var duration = 300
+    @StateObject private var executor = Executor()
 
     private func canExecute() -> Bool {
         return !title.trim().isEmpty && !outcome1.trim().isEmpty && !outcome2.trim().isEmpty
     }
 
     private func createPrediction() {
+        executor.startProgress()
         model.createKickPrediction(title: title.trim(),
                                    outcomes: [outcome1.trim(), outcome2.trim()],
-                                   duration: duration)
+                                   duration: duration,
+                                   onComplete: executor.completed)
     }
 
     var body: some View {
@@ -592,10 +602,14 @@ private struct CreatePredictionView: View {
                 }
             }
             Section {
-                CreateButtonView {
-                    createPrediction()
+                HCenter {
+                    ExecutorView(executor: executor) {
+                        CreateButtonView {
+                            createPrediction()
+                        }
+                        .disabled(!canExecute())
+                    }
                 }
-                .disabled(!canExecute())
             }
         }
     }
