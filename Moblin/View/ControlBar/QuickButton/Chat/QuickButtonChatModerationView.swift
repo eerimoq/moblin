@@ -154,38 +154,6 @@ private enum AnnouncementColor: String, CaseIterable {
     }
 }
 
-private struct ModActionPlatformView: View {
-    let model: Model
-    let platform: Platform
-    @Binding var showingModActions: Bool
-
-    var body: some View {
-        Form {
-            ForEach(ModActionCategory.allCases, id: \.self) { category in
-                let actions = ModActionType.actions(for: category, platform: platform)
-                if !actions.isEmpty {
-                    NavigationLink {
-                        ModActionCategoryView(
-                            model: model,
-                            category: category,
-                            platform: platform,
-                            showingModActions: $showingModActions
-                        )
-                    } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: category.icon)
-                                .foregroundStyle(.secondary)
-                                .frame(width: 24)
-                            Text(category.rawValue)
-                        }
-                    }
-                }
-            }
-        }
-        .navigationTitle(platform.name())
-    }
-}
-
 private struct ModActionCategoryView: View {
     let model: Model
     let category: ModActionCategory
@@ -675,6 +643,62 @@ private struct SendAnnouncementView: View {
     }
 }
 
+private struct TwitchView: View {
+    let model: Model
+    @Binding var showingModActions: Bool
+
+    var body: some View {
+        Form {
+            ForEach(ModActionCategory.allCases, id: \.self) { category in
+                NavigationLink {
+                    ModActionCategoryView(
+                        model: model,
+                        category: category,
+                        platform: .twitch,
+                        showingModActions: $showingModActions
+                    )
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: category.icon)
+                            .foregroundStyle(.secondary)
+                            .frame(width: 24)
+                        Text(category.rawValue)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Twitch")
+    }
+}
+
+private struct KickView: View {
+    let model: Model
+    @Binding var showingModActions: Bool
+
+    var body: some View {
+        Form {
+            ForEach(ModActionCategory.allCases, id: \.self) { category in
+                NavigationLink {
+                    ModActionCategoryView(
+                        model: model,
+                        category: category,
+                        platform: .kick,
+                        showingModActions: $showingModActions
+                    )
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: category.icon)
+                            .foregroundStyle(.secondary)
+                            .frame(width: 24)
+                        Text(category.rawValue)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Kick")
+    }
+}
+
 struct QuickButtonChatModerationView: View {
     let model: Model
     @Binding var showingModeration: Bool
@@ -683,12 +707,12 @@ struct QuickButtonChatModerationView: View {
         NavigationStack {
             Form {
                 NavigationLink {
-                    ModActionPlatformView(model: model, platform: .twitch, showingModActions: $showingModeration)
+                    TwitchView(model: model, showingModActions: $showingModeration)
                 } label: {
                     TwitchLogoAndNameView()
                 }
                 NavigationLink {
-                    ModActionPlatformView(model: model, platform: .kick, showingModActions: $showingModeration)
+                    KickView(model: model, showingModActions: $showingModeration)
                 } label: {
                     KickLogoAndNameView()
                 }
