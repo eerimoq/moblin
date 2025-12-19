@@ -52,7 +52,7 @@
       "location" : "https://github.com/eerimoq/NWWebSocket",
       "state" : {
         "branch" : "main",
-        "revision" : "8268fa2ea53080c03af24b22307750002f12c5c9"
+        "revision" : "1b44f9ea56a300d1642a4e99aa4801622d49ea1c"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SDWebImage/SDWebImage.git",
       "state" : {
-        "revision" : "2053b120767c42a70bcba21095f34e4cfb54a75d",
-        "version" : "5.21.3"
+        "revision" : "36e79ba485e9bb4d3cd4e3318908866dac5e7b51",
+        "version" : "5.21.5"
       }
     },
     {
