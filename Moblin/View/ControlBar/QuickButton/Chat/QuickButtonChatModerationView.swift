@@ -326,46 +326,22 @@ private struct StandardActionFormView: View {
     @State private var slowModeDuration = 10
     @State private var followersDuration = 10
 
-    private var canExecute: Bool {
+    private func canExecute() -> Bool {
         if action.requiresUsername && username.trim().isEmpty {
             return false
         }
         return true
     }
 
-    private var timeoutPresets: [(String, Int)] {
-        [
-            ("1 minute", 60),
-            ("5 minutes", 300),
-            ("10 minutes", 600),
-            ("30 minutes", 1800),
-            ("1 hour", 3600),
-            ("6 hours", 21600),
-            ("1 day", 86400),
-            ("1 week", 604_800),
-        ]
-    }
+    private let timeoutPresets = [60, 300, 600, 1800, 3600, 21600, 86400, 604_800]
+    private let followersPresets = [0, 1, 5, 10, 30, 60, 1440, 10080, 43200]
 
-    private var slowModePresets: [Int] {
+    private func slowModePresets() -> [Int] {
         if platform == .twitch {
-            [3, 5, 10, 30, 60, 120]
+            return [3, 5, 10, 30, 60, 120]
         } else {
-            [3, 5, 10, 30, 60, 120, 300]
+            return [3, 5, 10, 30, 60, 120, 300]
         }
-    }
-
-    private var followersPresets: [(String, Int)] {
-        [
-            ("0 minutes", 0),
-            ("1 minute", 1),
-            ("5 minutes", 5),
-            ("10 minutes", 10),
-            ("30 minutes", 30),
-            ("1 hour", 60),
-            ("1 day", 1440),
-            ("1 week", 10080),
-            ("1 month", 43200),
-        ]
     }
 
     private func executeAction() {
@@ -450,9 +426,8 @@ private struct StandardActionFormView: View {
             if action == .timeout {
                 Section {
                     Picker("Duration", selection: $timeoutDuration) {
-                        ForEach(timeoutPresets, id: \.1) { preset in
-                            Text(preset.0)
-                                .tag(preset.1)
+                        ForEach(timeoutPresets, id: \.self) {
+                            Text(formatFullDuration(seconds: $0))
                         }
                     }
                 }
@@ -460,7 +435,7 @@ private struct StandardActionFormView: View {
             if action == .slow {
                 Section {
                     Picker("Message interval", selection: $slowModeDuration) {
-                        ForEach(slowModePresets, id: \.self) {
+                        ForEach(slowModePresets(), id: \.self) {
                             Text(formatFullDuration(seconds: $0))
                         }
                     }
@@ -469,9 +444,8 @@ private struct StandardActionFormView: View {
             if action == .followers {
                 Section {
                     Picker("Minimum follow time", selection: $followersDuration) {
-                        ForEach(followersPresets, id: \.1) { preset in
-                            Text(preset.0)
-                                .tag(preset.1)
+                        ForEach(followersPresets, id: \.self) {
+                            Text(formatFullDuration(seconds: $0))
                         }
                     }
                 }
@@ -480,14 +454,14 @@ private struct StandardActionFormView: View {
                 Section {
                     TextField("Reason", text: $reason)
                 } header: {
-                    Text("Reason (optional)")
+                    Text("Reason")
                 }
             }
             Section {
                 TextButtonView("Send") {
                     executeAction()
                 }
-                .disabled(!canExecute)
+                .disabled(!canExecute())
             }
         }
     }
