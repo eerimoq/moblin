@@ -122,8 +122,13 @@ private enum ModActionType: CaseIterable {
     }
 
     var needsDetailView: Bool {
-        requiresUsername || requiresReason || requiresDuration ||
-            self == .poll || self == .prediction || self == .commercial || self == .announcement
+        return requiresUsername
+            || requiresReason
+            || requiresDuration
+            || self == .poll
+            || self == .prediction
+            || self == .commercial
+            || self == .announcement
     }
 
     func isSupported(by platform: Platform) -> Bool {
@@ -138,7 +143,7 @@ private enum ModActionType: CaseIterable {
     }
 
     static func actions(for category: ModActionCategory, platform: Platform) -> [ModActionType] {
-        allCases.filter { $0.category == category && $0.isSupported(by: platform) }
+        return allCases.filter { $0.category == category && $0.isSupported(by: platform) }
     }
 }
 
