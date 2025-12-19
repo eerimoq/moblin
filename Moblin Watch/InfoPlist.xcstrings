@@ -59,6 +59,12 @@
             "value" : "Ja"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tak"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -99,6 +105,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin kan je hartslag op je stream laten zien."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może pokazać twoje tętno podczas streamu."
           }
         },
         "tr" : {
@@ -143,6 +155,12 @@
             "value" : "Moblin kan je hartslag op je stream laten zien."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może pokazać twoje tętno podczas streamu."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -185,6 +203,12 @@
             "value" : "Moblin kan je hartslag op je stream laten zien."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może pokazać twoje tętno podczas streamu."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -221,6 +245,12 @@
             "value" : "Ja"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tak"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -251,6 +281,12 @@
             "value" : "Ja"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tak"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -279,6 +315,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ja"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tak"
           }
         },
         "zh-Hant" : {

@@ -117,6 +117,12 @@
             "value" : "Schlechter Port"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zły port"
+          }
+        },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
@@ -155,6 +161,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Host ontbreekt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brakuje hosta"
           }
         },
         "ru" : {
@@ -207,6 +219,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Foutieve IRL URL"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieprawidłowy URL IRL"
           }
         },
         "ru" : {
@@ -268,6 +286,12 @@
             "value" : "Foutieve IRLToolkit URL"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieprawidłowy URL IRLToolkit"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -324,6 +348,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Foutieve RIST URL"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieprawidłowy URL RIST"
           }
         },
         "ru" : {
@@ -384,6 +414,12 @@
             "value" : "Foutieve RTMP URL"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieprawidłowy URL RTMP"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -440,6 +476,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Foutieve SRT(LA) URL"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieprawidłowy URL SRT(LA)"
           }
         },
         "ru" : {
@@ -500,6 +542,12 @@
             "value" : "Foutieve URL"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieprawidłowy URL"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -540,6 +588,12 @@
             "value" : "Keine Zahl"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nie jest liczbą"
+          }
+        },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
@@ -578,6 +632,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RIST port nummer ontbreekt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "brakuje portu dla RIST"
           }
         },
         "ru" : {
@@ -626,6 +686,12 @@
             "value" : "RTMP stream key ontbreekt"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "brakuje klucza dla strumienia RTMP"
+          }
+        },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
@@ -665,6 +731,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "RTMP stream naam ontbreekt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "brakuje nazwy dla strumienia RTMP"
           }
         },
         "ru" : {
@@ -725,6 +797,12 @@
             "value" : "Schema ontbreekt"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "brakuje schematu"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -777,6 +855,12 @@
             "value" : "SRT(LA) port nummer ontbreekt"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "brakuje portu dla SRT(LA)"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -817,6 +901,12 @@
             "value" : "Zu groß"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "za duży"
+          }
+        },
         "zh-Hant-TW" : {
           "stringUnit" : {
             "state" : "translated",
@@ -837,6 +927,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zu klein"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "za mały"
           }
         },
         "zh-Hant-TW" : {
@@ -871,6 +967,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Niet-ondersteund schema %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "niewspierany schemat %@"
           }
         },
         "ru" : {

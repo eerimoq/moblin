@@ -35,6 +35,12 @@
             "value" : "Moblin"
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -84,6 +90,12 @@
           }
         },
         "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin"
+          }
+        },
+        "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin"
@@ -141,6 +153,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin communiceert met DJI-camera's via Bluetooth."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin komunikuje się z kamerami DJI przez Bluetooth"
           }
         },
         "ru" : {
@@ -215,6 +233,12 @@
             "value" : "Moblin streamt live video van de camera."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin stremuje live z kamery"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -275,6 +299,12 @@
             "value" : "Moblin kan je hartslag weergeven in de stream."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może pokazać twoje tętno podczas streamu."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -329,6 +359,12 @@
             "value" : "Moblin kan je hartslag weergeven in de stream."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może pokazać twoje tętno podczas streamu."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -381,6 +417,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin kan je hartslag weergeven in de stream."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może pokazać twoje tętno podczas streamu."
           }
         },
         "tr" : {
@@ -449,6 +491,12 @@
             "value" : "Moblin gebruikt localhost als invoer en uitvoer naar de SRT-bibliotheek."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin używa localhost jako wejście i wyjście użyte w połączeniach SRT"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -507,6 +555,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin kan uw locatie en/of snelheid op het scherm weergeven en streamen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może pokazać twoją lokalizacje i/lub prędkość na ekranie i podczas streamu"
           }
         },
         "ru" : {
@@ -581,6 +635,12 @@
             "value" : "Moblin streamt live audio via de microfoon."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może przekazywać dźwięk z milkrofonu"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -645,6 +705,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin toont geselecteerde afbeeldingen als overlays."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin pokazuje wybrane obrazy jako warstwy"
           }
         },
         "ru" : {
@@ -719,6 +785,12 @@
             "value" : "Moblin toont geselecteerde afbeeldingen als overlays."
           }
         },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin pokazuje wybrane obrazy jako warstwy"
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
@@ -777,6 +849,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin kan transcriptie aan de stream toevoegen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin może transkrybować stream"
           }
         },
         "tr" : {
