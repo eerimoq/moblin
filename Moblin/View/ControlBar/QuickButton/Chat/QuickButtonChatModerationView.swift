@@ -670,23 +670,6 @@ private struct DurationActionView: View {
     }
 }
 
-private struct TwitchUserModerationView: View {
-    let model: Model
-
-    var body: some View {
-        NavigationLink {
-            Form {
-                ForEach(ModActionType.actions(for: .userModeration, platform: .twitch), id: \.self) {
-                    ModActionRowView(model: model, action: $0, platform: .twitch)
-                }
-            }
-            .navigationTitle("User moderation")
-        } label: {
-            IconAndTextView(image: "person", text: String(localized: "User moderation"))
-        }
-    }
-}
-
 private struct SlowModeView: View {
     let durations: [Int]
     let action: (Int?, @escaping (Bool) -> Void) -> Void
@@ -727,6 +710,59 @@ private struct EmotesOnlyView: View {
     }
 }
 
+private struct NavigationLinkView<Content: View>: View {
+    let text: String
+    let image: String
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                content()
+            }
+            .navigationTitle(text)
+        } label: {
+            IconAndTextView(image: image, text: text)
+        }
+    }
+}
+
+private struct UserModerationView<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        NavigationLinkView(text: String(localized: "User moderation"), image: "person", content: content)
+    }
+}
+
+private struct ChatModesView<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        NavigationLinkView(text: String(localized: "Chat modes"), image: "bubble.left", content: content)
+    }
+}
+
+private struct ChannelManagementView<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        NavigationLinkView(text: String(localized: "Channel management"), image: "gearshape", content: content)
+    }
+}
+
+private struct TwitchUserModerationView: View {
+    let model: Model
+
+    var body: some View {
+        UserModerationView {
+            ForEach(ModActionType.actions(for: .userModeration, platform: .twitch), id: \.self) {
+                ModActionRowView(model: model, action: $0, platform: .twitch)
+            }
+        }
+    }
+}
+
 private struct TwitchChatModesView: View {
     let model: Model
 
@@ -743,16 +779,11 @@ private struct TwitchChatModesView: View {
     }
 
     var body: some View {
-        NavigationLink {
-            Form {
-                SlowModeView(durations: [3, 5, 10, 30, 60, 120], action: slowModeAction)
-                FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
-                SubscribersOnlyView(action: model.setTwitchSubscribersOnlyMode)
-                EmotesOnlyView(action: model.setTwitchEmoteOnlyMode)
-            }
-            .navigationTitle("Chat modes")
-        } label: {
-            IconAndTextView(image: "bubble.left", text: String(localized: "Chat modes"))
+        ChatModesView {
+            SlowModeView(durations: [3, 5, 10, 30, 60, 120], action: slowModeAction)
+            FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
+            SubscribersOnlyView(action: model.setTwitchSubscribersOnlyMode)
+            EmotesOnlyView(action: model.setTwitchEmoteOnlyMode)
         }
     }
 }
@@ -761,15 +792,10 @@ private struct TwitchChannelManagementView: View {
     let model: Model
 
     var body: some View {
-        NavigationLink {
-            Form {
-                ForEach(ModActionType.actions(for: .channelManagement, platform: .twitch), id: \.self) {
-                    ModActionRowView(model: model, action: $0, platform: .twitch)
-                }
+        ChannelManagementView {
+            ForEach(ModActionType.actions(for: .channelManagement, platform: .twitch), id: \.self) {
+                ModActionRowView(model: model, action: $0, platform: .twitch)
             }
-            .navigationTitle("Channel management")
-        } label: {
-            IconAndTextView(image: "gearshape", text: String(localized: "Channel management"))
         }
     }
 }
@@ -795,15 +821,10 @@ private struct KickUserModerationView: View {
     let model: Model
 
     var body: some View {
-        NavigationLink {
-            Form {
-                ForEach(ModActionType.actions(for: .userModeration, platform: .kick), id: \.self) {
-                    ModActionRowView(model: model, action: $0, platform: .kick)
-                }
+        UserModerationView {
+            ForEach(ModActionType.actions(for: .userModeration, platform: .kick), id: \.self) {
+                ModActionRowView(model: model, action: $0, platform: .kick)
             }
-            .navigationTitle("User moderation")
-        } label: {
-            IconAndTextView(image: "person", text: String(localized: "User moderation"))
         }
     }
 }
@@ -836,16 +857,11 @@ private struct KickChatModesView: View {
     }
 
     var body: some View {
-        NavigationLink {
-            Form {
-                SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)
-                FollowersOnlyView(durations: [1, 5, 10, 30, 60, 1440, 10080, 43200], action: followersOnlyAction)
-                SubscribersOnlyView(action: model.setKickSubscribersOnlyMode)
-                EmotesOnlyView(action: model.setKickEmoteOnlyMode)
-            }
-            .navigationTitle("Chat modes")
-        } label: {
-            IconAndTextView(image: "bubble.left", text: String(localized: "Chat modes"))
+        ChatModesView {
+            SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)
+            FollowersOnlyView(durations: [1, 5, 10, 30, 60, 1440, 10080, 43200], action: followersOnlyAction)
+            SubscribersOnlyView(action: model.setKickSubscribersOnlyMode)
+            EmotesOnlyView(action: model.setKickEmoteOnlyMode)
         }
     }
 }
@@ -854,15 +870,10 @@ private struct KickChannelManagementView: View {
     let model: Model
 
     var body: some View {
-        NavigationLink {
-            Form {
-                ForEach(ModActionType.actions(for: .channelManagement, platform: .kick), id: \.self) {
-                    ModActionRowView(model: model, action: $0, platform: .kick)
-                }
+        ChannelManagementView {
+            ForEach(ModActionType.actions(for: .channelManagement, platform: .kick), id: \.self) {
+                ModActionRowView(model: model, action: $0, platform: .kick)
             }
-            .navigationTitle("Channel management")
-        } label: {
-            IconAndTextView(image: "gearshape", text: String(localized: "Channel management"))
         }
     }
 }
