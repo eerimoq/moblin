@@ -38,9 +38,7 @@ private struct HelpView: View {
             }
             .navigationTitle("Help")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    ToolbarCloseButtonView(presenting: $presentingHelp)
-                }
+                CloseToolbar(presenting: $presentingHelp)
             }
         }
     }

@@ -21,7 +21,7 @@ struct WidgetWizardTextSettingsView: View {
         }
         .navigationTitle(basicWidgetSettingsTitle(createWidgetWizard))
         .toolbar {
-            CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
+            CloseToolbar(presenting: $presentingCreateWizard)
         }
     }
 }

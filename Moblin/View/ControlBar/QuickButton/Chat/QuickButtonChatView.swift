@@ -437,16 +437,6 @@ private struct ChatAlertsView: View {
     }
 }
 
-private struct PredefinedMessagesToolbar: ToolbarContent {
-    @Binding var showingPredefinedMessages: Bool
-
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            ToolbarCloseButtonView(presenting: $showingPredefinedMessages)
-        }
-    }
-}
-
 private struct TagButtonView: View {
     let tag: String
     @Binding var enabled: Bool
@@ -616,7 +606,7 @@ private struct PredefinedMessagesView: View {
             }
             .navigationTitle("Predefined messages")
             .toolbar {
-                PredefinedMessagesToolbar(showingPredefinedMessages: $showingPredefinedMessages)
+                CloseToolbar(presenting: $showingPredefinedMessages)
             }
         }
     }
@@ -700,9 +690,7 @@ private struct SendMessagesToSelectorView: View {
                 }
                 .navigationTitle("Send messages to")
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        ToolbarCloseButtonView(presenting: $showingSelector)
-                    }
+                    CloseToolbar(presenting: $showingSelector)
                 }
             }
         }

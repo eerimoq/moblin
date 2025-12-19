@@ -4,16 +4,6 @@ func basicWidgetSettingsTitle(_ createWidgetWizard: CreateWidgetWizard) -> Strin
     return String(localized: "Basic \(createWidgetWizard.type.toString()) widget settings")
 }
 
-struct CreateWidgetWizardToolbar: ToolbarContent {
-    @Binding var presentingCreateWizard: Bool
-
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            ToolbarCloseButtonView(presenting: $presentingCreateWizard)
-        }
-    }
-}
-
 private struct AddWidgetToSceneView: View {
     @ObservedObject var scene: SceneToAddWidgetTo
 
@@ -90,7 +80,7 @@ private struct SelectScenesView: View {
         }
         .navigationTitle("Scenes to add the widget to")
         .toolbar {
-            CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
+            CloseToolbar(presenting: $presentingCreateWizard)
         }
         .onAppear {
             scenesToAddWidgetTo = database.scenes.map {
@@ -219,7 +209,7 @@ struct WidgetWizardSettingsView: View {
         }
         .navigationTitle("Create widget wizard")
         .toolbar {
-            CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
+            CloseToolbar(presenting: $presentingCreateWizard)
         }
     }
 }

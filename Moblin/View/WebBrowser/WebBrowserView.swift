@@ -83,16 +83,6 @@ private struct RefreshBookmarksView: View {
     }
 }
 
-private struct BookmarksToolbar: ToolbarContent {
-    @Binding var showingBookmarks: Bool
-
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            ToolbarCloseButtonView(presenting: $showingBookmarks)
-        }
-    }
-}
-
 private struct BookmarksView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowser: WebBrowserSettings
@@ -134,7 +124,7 @@ private struct BookmarksView: View {
             }
             .navigationTitle("Bookmarks")
             .toolbar {
-                BookmarksToolbar(showingBookmarks: $showingBookmarks)
+                CloseToolbar(presenting: $showingBookmarks)
             }
         }
     }

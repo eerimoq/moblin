@@ -49,9 +49,7 @@ struct DebugLogSettingsView: View {
                         Image(systemName: "trash")
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    ToolbarCloseButtonView(presenting: $presentingLog)
-                }
+                CloseToolbar(presenting: $presentingLog)
             }
         }
     }

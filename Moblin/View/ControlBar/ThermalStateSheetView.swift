@@ -1,15 +1,5 @@
 import SwiftUI
 
-private struct CloseToolbar: ToolbarContent {
-    @Binding var presenting: Bool
-
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            ToolbarCloseButtonView(presenting: $presenting)
-        }
-    }
-}
-
 private struct FlameStateView: View {
     let color: Color
     let text: LocalizedStringKey

@@ -887,9 +887,7 @@ struct QuickButtonChatModerationView: View {
             }
             .navigationTitle("Moderation")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    ToolbarCloseButtonView(presenting: $showingModeration)
-                }
+                CloseToolbar(presenting: $showingModeration)
             }
         }
     }

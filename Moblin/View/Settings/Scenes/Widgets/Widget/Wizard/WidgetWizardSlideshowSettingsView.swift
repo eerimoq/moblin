@@ -13,7 +13,7 @@ private struct SlideView: View {
                 SwitcherTimePickerView(time: $slide.time)
             }
             .toolbar {
-                CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
+                CloseToolbar(presenting: $presentingCreateWizard)
             }
         } label: {
             WidgetSlideshowSlideSummaryView(model: model, slide: slide)
@@ -69,7 +69,7 @@ struct WidgetWizardSlideshowSettingsView: View {
         }
         .navigationTitle(basicWidgetSettingsTitle(createWidgetWizard))
         .toolbar {
-            CreateWidgetWizardToolbar(presentingCreateWizard: $presentingCreateWizard)
+            CloseToolbar(presenting: $presentingCreateWizard)
         }
     }
 }

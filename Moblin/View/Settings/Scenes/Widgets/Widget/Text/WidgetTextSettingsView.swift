@@ -155,16 +155,6 @@ private struct Language: Identifiable {
     var status: LanguageAvailability.Status
 }
 
-private struct SubtitlesWithLanguageToolbar: ToolbarContent {
-    @Binding var presentingLanguagePicker: Bool
-
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            ToolbarCloseButtonView(presenting: $presentingLanguagePicker)
-        }
-    }
-}
-
 @available(iOS 26, *)
 private struct SubtitlesWithLanguageView: View {
     @EnvironmentObject var model: Model
@@ -214,7 +204,7 @@ private struct SubtitlesWithLanguageView: View {
                 }
                 .navigationTitle("Subtitles language")
                 .toolbar {
-                    SubtitlesWithLanguageToolbar(presentingLanguagePicker: $presentingLanguagePicker)
+                    CloseToolbar(presenting: $presentingLanguagePicker)
                 }
                 .task {
                     let availability = LanguageAvailability()

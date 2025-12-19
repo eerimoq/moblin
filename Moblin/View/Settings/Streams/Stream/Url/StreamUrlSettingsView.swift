@@ -171,9 +171,7 @@ private struct UrlSettingsView: View {
                         }
                         .navigationTitle("Help")
                         .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                ToolbarCloseButtonView(presenting: $presentingHelp)
-                            }
+                            CloseToolbar(presenting: $presentingHelp)
                         }
                     }
                 }

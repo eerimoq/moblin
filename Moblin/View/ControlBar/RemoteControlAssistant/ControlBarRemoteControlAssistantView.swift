@@ -665,16 +665,6 @@ private struct ButtonsView: View {
     }
 }
 
-private struct StreamersToolbar: ToolbarContent {
-    @ObservedObject var remoteControl: RemoteControl
-
-    var body: some ToolbarContent {
-        ToolbarItem(placement: .navigationBarTrailing) {
-            ToolbarCloseButtonView(presenting: $remoteControl.assistantShowStreamers)
-        }
-    }
-}
-
 private struct StreamerNotConfiguredView: View {
     var body: some View {
         Text("No streamer selected.")
@@ -776,7 +766,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                 }
                 .navigationTitle("Streamers")
                 .toolbar {
-                    StreamersToolbar(remoteControl: remoteControl)
+                    CloseToolbar(presenting: $remoteControl.assistantShowStreamers)
                 }
             }
         }
