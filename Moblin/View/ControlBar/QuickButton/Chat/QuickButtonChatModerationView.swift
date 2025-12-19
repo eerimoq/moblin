@@ -2,15 +2,12 @@ import SwiftUI
 
 private enum ModActionCategory: String, CaseIterable {
     case userModeration = "User moderation"
-    case chatMode = "Chat modes"
     case channelManagement = "Channel management"
 
     var icon: String {
         switch self {
         case .userModeration:
             return "person"
-        case .chatMode:
-            return "bubble.left"
         case .channelManagement:
             return "gearshape"
         }
@@ -18,15 +15,16 @@ private enum ModActionCategory: String, CaseIterable {
 }
 
 private enum ModActionType: CaseIterable {
-    case ban, timeout, unban
-    case mod, unmod
-    case vip, unvip
+    case ban
+    case timeout
+    case unban
+    case mod
+    case unmod
+    case vip
+    case unvip
     case raid
-    case slow, slowoff
-    case followers, followersoff
-    case emoteonly, emoteonlyoff
-    case subscribers, subscribersoff
-    case poll, deletepoll
+    case poll
+    case deletepoll
     case prediction
     case commercial
     case announcement
@@ -53,22 +51,6 @@ private enum ModActionType: CaseIterable {
             } else {
                 return String(localized: "Raid channel")
             }
-        case .slow:
-            return String(localized: "Slow mode")
-        case .slowoff:
-            return String(localized: "Slow mode off")
-        case .followers:
-            return String(localized: "Followers only")
-        case .followersoff:
-            return String(localized: "Followers only off")
-        case .emoteonly:
-            return String(localized: "Emote only")
-        case .emoteonlyoff:
-            return String(localized: "Emote only off")
-        case .subscribers:
-            return String(localized: "Subscribers only")
-        case .subscribersoff:
-            return String(localized: "Subscribers only off")
         case .poll:
             return String(localized: "Create poll")
         case .deletepoll:
@@ -100,22 +82,6 @@ private enum ModActionType: CaseIterable {
             return "crown"
         case .raid:
             return "play.tv"
-        case .slow:
-            return "tortoise"
-        case .slowoff:
-            return "hare"
-        case .followers:
-            return "person.2"
-        case .followersoff:
-            return "person.2.slash"
-        case .emoteonly:
-            return "face.smiling"
-        case .emoteonlyoff:
-            return "text.bubble"
-        case .subscribers:
-            return "star"
-        case .subscribersoff:
-            return "star.slash"
         case .poll:
             return "chart.bar"
         case .deletepoll:
@@ -132,12 +98,9 @@ private enum ModActionType: CaseIterable {
     var category: ModActionCategory {
         switch self {
         case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip:
-            .userModeration
-        case .slow, .slowoff, .followers, .followersoff,
-             .emoteonly, .emoteonlyoff, .subscribers, .subscribersoff:
-            .chatMode
+            return .userModeration
         case .raid, .poll, .deletepoll, .prediction, .commercial, .announcement:
-            .channelManagement
+            return .channelManagement
         }
     }
 
@@ -156,7 +119,7 @@ private enum ModActionType: CaseIterable {
 
     var requiresDuration: Bool {
         switch self {
-        case .timeout, .slow, .followers:
+        case .timeout:
             true
         default:
             false
@@ -248,19 +211,8 @@ private struct ModActionRowView: View {
         switch action {
         case .deletepoll:
             return model.deleteKickPoll()
-        case .slowoff:
-            return model.disableKickSlowMode()
-        case .followersoff:
-            return model.disableKickFollowersMode()
-        case .emoteonlyoff:
-            return model.setKickEmoteOnlyMode(enabled: false)
-        case .emoteonly:
-            return model.setKickEmoteOnlyMode(enabled: true)
-        case .subscribersoff:
-            return model.setKickSubscribersOnlyMode(enabled: false)
-        case .subscribers:
-            return model.setKickSubscribersOnlyMode(enabled: true)
-        default: break
+        default:
+            break
         }
     }
 
@@ -317,8 +269,6 @@ private struct StandardActionFormView: View {
     @State private var username = ""
     @State private var reason = ""
     @State private var timeoutDuration = 60
-    @State private var slowModeDuration = 10
-    @State private var followersDuration = 10
 
     private func canExecute() -> Bool {
         if action.requiresUsername && username.trim().isEmpty {
@@ -328,15 +278,6 @@ private struct StandardActionFormView: View {
     }
 
     private let timeoutPresets = [60, 300, 600, 1800, 3600, 21600, 86400, 604_800]
-    private let followersPresets = [1, 5, 10, 30, 60, 1440, 10080, 43200]
-
-    private func slowModePresets() -> [Int] {
-        if platform == .twitch {
-            return [3, 5, 10, 30, 60, 120]
-        } else {
-            return [3, 5, 10, 30, 60, 120, 300]
-        }
-    }
 
     private func executeAction() {
         let user = username.trim()
@@ -369,10 +310,6 @@ private struct StandardActionFormView: View {
             model.unvipKickUser(user: user)
         case .raid:
             model.hostKickChannel(channel: user)
-        case .slow:
-            model.enableKickSlowMode(messageInterval: slowModeDuration)
-        case .followers:
-            model.enableKickFollowersMode(followingMinDuration: followersDuration)
         default:
             break
         }
@@ -416,24 +353,6 @@ private struct StandardActionFormView: View {
                 Section {
                     Picker("Duration", selection: $timeoutDuration) {
                         ForEach(timeoutPresets, id: \.self) {
-                            Text(formatFullDuration(seconds: $0))
-                        }
-                    }
-                }
-            }
-            if action == .slow {
-                Section {
-                    Picker("Message interval", selection: $slowModeDuration) {
-                        ForEach(slowModePresets(), id: \.self) {
-                            Text(formatFullDuration(seconds: $0))
-                        }
-                    }
-                }
-            }
-            if action == .followers {
-                Section {
-                    Picker("Minimum follow time", selection: $followersDuration) {
-                        ForEach(followersPresets, id: \.self) {
                             Text(formatFullDuration(seconds: $0))
                         }
                     }
@@ -854,19 +773,101 @@ private struct TwitchView: View {
     }
 }
 
+private struct KickUserModerationView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                ForEach(ModActionType.actions(for: .userModeration, platform: .kick), id: \.self) { action in
+                    ModActionRowView(model: model, action: action, platform: .kick)
+                }
+            }
+            .navigationTitle("User moderation")
+        } label: {
+            IconAndTextView(image: "person", text: String(localized: "User moderation"))
+        }
+    }
+}
+
+private struct KickChatModesView: View {
+    let model: Model
+
+    private func slowModeAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
+        if let duration {
+            model.enableKickSlowMode(messageInterval: duration) {
+                onComplete($0)
+            }
+        } else {
+            model.disableKickSlowMode {
+                onComplete($0)
+            }
+        }
+    }
+
+    private func followersOnlyAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
+        if let duration {
+            model.enableKickFollowersMode(followingMinDuration: duration) {
+                onComplete($0)
+            }
+        } else {
+            model.disableKickFollowersMode {
+                onComplete($0)
+            }
+        }
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                DurationActionView(text: String(localized: "Slow mode"),
+                                   image: "tortoise",
+                                   durations: [3, 5, 10, 30, 60, 120, 300],
+                                   action: slowModeAction)
+                DurationActionView(text: String(localized: "Followers only"),
+                                   image: "person.2",
+                                   durations: [1, 5, 10, 30, 60, 1440, 10080, 43200],
+                                   action: followersOnlyAction)
+                ToggleActionView(text: String(localized: "Subscribers only"),
+                                 image: "star",
+                                 action: model.setKickSubscribersOnlyMode)
+                ToggleActionView(text: String(localized: "Emotes only"),
+                                 image: "face.smiling",
+                                 action: model.setKickEmoteOnlyMode)
+            }
+            .navigationTitle("Chat modes")
+        } label: {
+            IconAndTextView(image: "bubble.left", text: String(localized: "Chat modes"))
+        }
+    }
+}
+
+private struct KickChannelManagementView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                ForEach(ModActionType.actions(for: .channelManagement, platform: .kick), id: \.self) { action in
+                    ModActionRowView(model: model, action: action, platform: .kick)
+                }
+            }
+            .navigationTitle("Channel management")
+        } label: {
+            IconAndTextView(image: "gearshape", text: String(localized: "Channel management"))
+        }
+    }
+}
+
 private struct KickView: View {
     let model: Model
 
     var body: some View {
         NavigationLink {
             Form {
-                ForEach(ModActionCategory.allCases, id: \.self) { category in
-                    NavigationLink {
-                        ModActionCategoryView(model: model, category: category, platform: .kick)
-                    } label: {
-                        IconAndTextView(image: category.icon, text: category.rawValue)
-                    }
-                }
+                KickUserModerationView(model: model)
+                KickChatModesView(model: model)
+                KickChannelManagementView(model: model)
             }
             .navigationTitle("Kick")
         } label: {

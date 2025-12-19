@@ -171,68 +171,31 @@ extension Model {
         }
     }
 
-    func enableKickSlowMode(messageInterval: Int) {
-        createKickApi(stream: stream)?.enableSlowMode(messageInterval: messageInterval) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Slow mode enabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to enable slow mode"))
-            }
-        }
+    func enableKickSlowMode(messageInterval: Int, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream)?.enableSlowMode(messageInterval: messageInterval, onComplete: onComplete)
     }
 
-    func disableKickSlowMode() {
-        createKickApi(stream: stream)?.disableSlowMode { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Slow mode disabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to disable slow mode"))
-            }
-        }
+    func disableKickSlowMode(onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream)?.disableSlowMode(onComplete: onComplete)
     }
 
-    func enableKickFollowersMode(followingMinDuration: Int) {
-        createKickApi(stream: stream)?.enableFollowersMode(minimumDuration: followingMinDuration) { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Followers mode enabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to enable followers mode"))
-            }
-        }
+    func enableKickFollowersMode(followingMinDuration: Int, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream)?.enableFollowersMode(
+            minimumDuration: followingMinDuration,
+            onComplete: onComplete
+        )
     }
 
-    func disableKickFollowersMode() {
-        createKickApi(stream: stream)?.disableFollowersMode { ok in
-            if ok {
-                self.makeToast(title: String(localized: "Followers mode disabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to update followers mode"))
-            }
-        }
+    func disableKickFollowersMode(onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream)?.disableFollowersMode(onComplete: onComplete)
     }
 
-    func setKickEmoteOnlyMode(enabled: Bool) {
-        createKickApi(stream: stream)?.setEmoteOnlyMode(enabled: enabled) { ok in
-            if ok {
-                self
-                    .makeToast(title: String(localized: enabled ? "Emote only mode enabled" :
-                            "Emote only mode disabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to update emote only mode"))
-            }
-        }
+    func setKickEmoteOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream)?.setEmoteOnlyMode(enabled: enabled, onComplete: onComplete)
     }
 
-    func setKickSubscribersOnlyMode(enabled: Bool) {
-        createKickApi(stream: stream)?.setSubscribersOnlyMode(enabled: enabled) { ok in
-            if ok {
-                self
-                    .makeToast(title: String(localized: enabled ? "Subscribers only mode enabled" :
-                            "Subscribers only mode disabled"))
-            } else {
-                self.makeErrorToast(title: String(localized: "Failed to update subscribers only mode"))
-            }
-        }
+    func setKickSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+        createKickApi(stream: stream)?.setSubscribersOnlyMode(enabled: enabled, onComplete: onComplete)
     }
 
     func createKickPoll(title: String, options: [String], duration: Int, resultDisplayDuration: Int) {
