@@ -23,34 +23,34 @@ public struct VideoEffectInfo {
     }
 }
 
-open class VideoEffect: NSObject {
+class VideoEffect: NSObject {
     var effects: [VideoEffect] = []
 
-    open func getName() -> String {
+    func getName() -> String {
         return ""
     }
 
-    open func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+    func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
         return (false, nil, nil)
     }
 
-    open func isEnabled() -> Bool {
+    func isEnabled() -> Bool {
         return true
     }
 
-    open func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+    func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         return image
     }
 
-    open func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+    func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         return image
     }
 
-    open func prepare(_: CIImage, _: VideoEffectInfo) {}
+    func prepare(_: CIImage, _: VideoEffectInfo) {}
 
-    open func removed() {}
+    func removed() {}
 
-    open func shouldRemove() -> Bool {
+    func shouldRemove() -> Bool {
         return false
     }
 
