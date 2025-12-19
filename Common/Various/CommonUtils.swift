@@ -106,14 +106,16 @@ func formatBytesPerSecond(speed: Int64) -> String {
     return "\(value) \(unit)"
 }
 
-var uptimeFormatter: DateComponentsFormatter {
+private func createUptimeFormatter() -> DateComponentsFormatter {
     let formatter = DateComponentsFormatter()
     formatter.allowedUnits = [.day, .hour, .minute, .second]
     formatter.unitsStyle = .abbreviated
     return formatter
 }
 
-var digitalClockFormatter: DateFormatter {
+let uptimeFormatter = createUptimeFormatter()
+
+private func createDigitalClockFormatter() -> DateFormatter {
     let formatter = DateFormatter()
     formatter.dateFormat = "HH:mm"
     formatter.amSymbol = ""
@@ -121,12 +123,16 @@ var digitalClockFormatter: DateFormatter {
     return formatter
 }
 
-var durationFormatter: DateComponentsFormatter {
+let digitalClockFormatter = createDigitalClockFormatter()
+
+private func createDurationFormatter() -> DateComponentsFormatter {
     let formatter = DateComponentsFormatter()
     formatter.allowedUnits = [.day, .hour, .minute]
     formatter.unitsStyle = .abbreviated
     return formatter
 }
+
+let durationFormatter = createDurationFormatter()
 
 extension Duration {
     func format() -> String {
@@ -138,28 +144,46 @@ extension Duration {
     }
 }
 
-private var speedFormatter: MeasurementFormatter {
+private func createFullDurationFormatter() -> DateComponentsFormatter {
+    let formatter = DateComponentsFormatter()
+    formatter.allowedUnits = [.day, .hour, .minute, .second]
+    formatter.unitsStyle = .full
+    formatter.referenceDate = Date(timeIntervalSince1970: 0)
+    return formatter
+}
+
+private let fullDurationFormatter = createFullDurationFormatter()
+
+func formatFullDuration(seconds: Int) -> String {
+    return fullDurationFormatter.string(from: Double(seconds)) ?? ""
+}
+
+private func createSpeedFormatter() -> MeasurementFormatter {
     let formatter = MeasurementFormatter()
     formatter.numberFormatter.maximumFractionDigits = 0
     return formatter
 }
+
+private let speedFormatter = createSpeedFormatter()
 
 func format(speed: Double) -> String {
     let measurement = Measurement(value: max(speed, 0), unit: UnitSpeed.metersPerSecond)
     return speedFormatter.string(from: measurement)
 }
 
-private var distanceFormatter: LengthFormatter {
+private func createDistanceFormatter() -> LengthFormatter {
     let formatter = LengthFormatter()
     formatter.numberFormatter.maximumFractionDigits = 1
     return formatter
 }
 
+private let distanceFormatter = createDistanceFormatter()
+
 func format(distance: Double) -> String {
     return distanceFormatter.string(fromMeters: distance)
 }
 
-private var altitudeFormatter: MeasurementFormatter {
+private func createAltitudeFormatter() -> MeasurementFormatter {
     let formatter = MeasurementFormatter()
     var options: MeasurementFormatter.UnitOptions = []
     options.insert(.providedUnit)
@@ -167,6 +191,8 @@ private var altitudeFormatter: MeasurementFormatter {
     formatter.numberFormatter.maximumFractionDigits = 0
     return formatter
 }
+
+private let altitudeFormatter = createAltitudeFormatter()
 
 func format(altitude: Double) -> String {
     var measurement = Measurement(value: altitude, unit: UnitLength.meters)

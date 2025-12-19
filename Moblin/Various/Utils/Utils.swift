@@ -128,19 +128,6 @@ func uploadImage(
     }
 }
 
-func formatSecondsAndMinutes(seconds: Int) -> String {
-    let minutes = seconds / 60
-    if minutes * 60 == seconds {
-        if minutes == 1 {
-            return "1 minute"
-        } else {
-            return "\(minutes) minutes"
-        }
-    } else {
-        return "\(seconds) seconds"
-    }
-}
-
 extension CGSize {
     func minimum() -> CGFloat {
         return min(height, width)
