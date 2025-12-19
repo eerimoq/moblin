@@ -687,6 +687,46 @@ private struct TwitchUserModerationView: View {
     }
 }
 
+private struct SlowModeView: View {
+    let durations: [Int]
+    let action: (Int?, @escaping (Bool) -> Void) -> Void
+
+    var body: some View {
+        DurationActionView(text: String(localized: "Slow mode"),
+                           image: "tortoise",
+                           durations: durations,
+                           action: action)
+    }
+}
+
+private struct FollowersOnlyView: View {
+    let durations: [Int]
+    let action: (Int?, @escaping (Bool) -> Void) -> Void
+
+    var body: some View {
+        DurationActionView(text: String(localized: "Followers only"),
+                           image: "person.2",
+                           durations: durations,
+                           action: action)
+    }
+}
+
+private struct SubscribersOnlyView: View {
+    let action: (Bool, @escaping (Bool) -> Void) -> Void
+
+    var body: some View {
+        ToggleActionView(text: String(localized: "Subscribers only"), image: "star", action: action)
+    }
+}
+
+private struct EmotesOnlyView: View {
+    let action: (Bool, @escaping (Bool) -> Void) -> Void
+
+    var body: some View {
+        ToggleActionView(text: String(localized: "Emotes only"), image: "face.smiling", action: action)
+    }
+}
+
 private struct TwitchChatModesView: View {
     let model: Model
 
@@ -705,20 +745,10 @@ private struct TwitchChatModesView: View {
     var body: some View {
         NavigationLink {
             Form {
-                DurationActionView(text: String(localized: "Slow mode"),
-                                   image: "tortoise",
-                                   durations: [3, 5, 10, 30, 60, 120],
-                                   action: slowModeAction)
-                DurationActionView(text: String(localized: "Followers only"),
-                                   image: "person.2",
-                                   durations: [60, 300, 600, 3600],
-                                   action: followersOnlyAction)
-                ToggleActionView(text: String(localized: "Subscribers only"),
-                                 image: "star",
-                                 action: model.setTwitchSubscribersOnlyMode)
-                ToggleActionView(text: String(localized: "Emotes only"),
-                                 image: "face.smiling",
-                                 action: model.setTwitchEmoteOnlyMode)
+                SlowModeView(durations: [3, 5, 10, 30, 60, 120], action: slowModeAction)
+                FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
+                SubscribersOnlyView(action: model.setTwitchSubscribersOnlyMode)
+                EmotesOnlyView(action: model.setTwitchEmoteOnlyMode)
             }
             .navigationTitle("Chat modes")
         } label: {
@@ -808,20 +838,10 @@ private struct KickChatModesView: View {
     var body: some View {
         NavigationLink {
             Form {
-                DurationActionView(text: String(localized: "Slow mode"),
-                                   image: "tortoise",
-                                   durations: [3, 5, 10, 30, 60, 120, 300],
-                                   action: slowModeAction)
-                DurationActionView(text: String(localized: "Followers only"),
-                                   image: "person.2",
-                                   durations: [1, 5, 10, 30, 60, 1440, 10080, 43200],
-                                   action: followersOnlyAction)
-                ToggleActionView(text: String(localized: "Subscribers only"),
-                                 image: "star",
-                                 action: model.setKickSubscribersOnlyMode)
-                ToggleActionView(text: String(localized: "Emotes only"),
-                                 image: "face.smiling",
-                                 action: model.setKickEmoteOnlyMode)
+                SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)
+                FollowersOnlyView(durations: [1, 5, 10, 30, 60, 1440, 10080, 43200], action: followersOnlyAction)
+                SubscribersOnlyView(action: model.setKickSubscribersOnlyMode)
+                EmotesOnlyView(action: model.setKickEmoteOnlyMode)
             }
             .navigationTitle("Chat modes")
         } label: {
