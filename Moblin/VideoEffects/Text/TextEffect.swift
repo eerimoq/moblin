@@ -871,4 +871,8 @@ final class TextEffect: VideoEffect {
             .cropped(to: image.extent)
             .composited(over: image) ?? image
     }
+
+    override func prepare(_ image: CIImage, _: VideoEffectInfo) {
+        updateOverlayIfNeeded(size: image.extent.size)
+    }
 }

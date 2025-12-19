@@ -46,6 +46,8 @@ open class VideoEffect: NSObject {
         return image
     }
 
+    open func prepare(_: CIImage, _: VideoEffectInfo) {}
+
     open func removed() {}
 
     open func shouldRemove() -> Bool {

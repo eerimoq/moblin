@@ -12,6 +12,7 @@ final class SlideshowEffect: VideoEffect {
     let slides: [SlideshowEffectSlide]
     private var currentSlideIndex: Int = 0
     private var currentSlideEndTime: Double?
+    private var preparedSlideIndex: Int = 0
 
     init(slides: [SlideshowEffectSlide]) {
         self.slides = slides
@@ -34,30 +35,38 @@ final class SlideshowEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        guard let effect = getCurrentEffect(info.presentationTimeStamp.seconds) else {
-            return image
-        }
-        return effect.execute(image, info)
+        let (effect, prepareEffect) = getEffects(info.presentationTimeStamp.seconds)
+        prepareEffect?.prepare(image, info)
+        return effect?.execute(image, info) ?? image
     }
 
-    private func getCurrentEffect(_ presentationTimeStamp: Double) -> VideoEffect? {
+    private func getEffects(_ presentationTimeStamp: Double) -> (VideoEffect?, VideoEffect?) {
         guard !slides.isEmpty else {
-            return nil
+            return (nil, nil)
         }
         if let currentSlideEndTime {
-            if presentationTimeStamp > currentSlideEndTime {
-                currentSlideIndex += 1
-                currentSlideIndex %= slides.count
-                let slide = slides[currentSlideIndex]
-                self.currentSlideEndTime = presentationTimeStamp + slide.time
-                return slide.effect
+            if presentationTimeStamp + 0.25 > currentSlideEndTime {
+                var prepareEffect: VideoEffect?
+                let nextSlideIndex = (currentSlideIndex + 1) % slides.count
+                if nextSlideIndex != preparedSlideIndex {
+                    prepareEffect = slides[nextSlideIndex].effect
+                    preparedSlideIndex = nextSlideIndex
+                }
+                if presentationTimeStamp > currentSlideEndTime {
+                    currentSlideIndex = nextSlideIndex
+                    let slide = slides[currentSlideIndex]
+                    self.currentSlideEndTime = presentationTimeStamp + slide.time
+                    return (slide.effect, prepareEffect)
+                } else {
+                    return (slides[currentSlideIndex].effect, prepareEffect)
+                }
             } else {
-                return slides[currentSlideIndex].effect
+                return (slides[currentSlideIndex].effect, nil)
             }
         } else {
             let slide = slides[currentSlideIndex]
             currentSlideEndTime = presentationTimeStamp + slide.time
-            return slide.effect
+            return (slide.effect, nil)
         }
     }
 }
