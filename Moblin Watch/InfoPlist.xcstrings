@@ -130,6 +130,12 @@
             "state" : "translated",
             "value" : "Moblin 可以在實況時顯示您的心率。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin能夠在直播顯示你的心跳率"
+          }
         }
       }
     },
@@ -178,6 +184,12 @@
             "state" : "translated",
             "value" : "Moblin 可以在實況時顯示您的心率。"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin能夠在直播顯示你的心跳率"
+          }
         }
       }
     },
@@ -225,6 +237,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moblin 可以在實況時顯示您的心率。"
+          }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin能夠在直播顯示你的心跳率"
           }
         }
       }
