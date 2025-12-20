@@ -98,7 +98,10 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
                     }
                 }
             } footer: {
-                Text("Use the Fast IRL algorithm unless you know what you are doing!")
+                Text("""
+                BELABOX and Fast IRL are the safest options. Choose the others only if \
+                you know what you are doing!
+                """)
             }
             if adaptiveBitrate.algorithm == .fastIrl {
                 Section {
