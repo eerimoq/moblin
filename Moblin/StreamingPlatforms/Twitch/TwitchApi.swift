@@ -5,21 +5,6 @@ private func serialize(_ value: Any) -> Data {
     return (try? JSONSerialization.data(withJSONObject: value))!
 }
 
-enum TwitchApiResponse<T> {
-    case success(T)
-    case authError
-    case error
-
-    func isSuccessful() -> Bool {
-        switch self {
-        case .success:
-            return true
-        default:
-            return false
-        }
-    }
-}
-
 struct TwitchApiUser: Decodable {
     let id: String
     let login: String
@@ -440,7 +425,7 @@ class TwitchApi {
         }
     }
 
-    func getStream(userId: String, onComplete: @escaping (TwitchApiResponse<TwitchApiStreamData?>) -> Void) {
+    func getStream(userId: String, onComplete: @escaping (NetworkResponse<TwitchApiStreamData?>) -> Void) {
         doGet(subPath: "streams?user_id=\(userId)&type=live") {
             switch $0 {
             case let .success(data):
@@ -473,7 +458,7 @@ class TwitchApi {
 
     func startRaid(broadcasterId: String,
                    toBroadcasterId: String,
-                   onComplete: @escaping (TwitchApiResponse<Data>) -> Void)
+                   onComplete: @escaping (NetworkResponse<Data>) -> Void)
     {
         var components = URLComponents()
         components.queryItems = [
@@ -602,7 +587,7 @@ class TwitchApi {
         }
     }
 
-    private func doGet(subPath: String, onComplete: @escaping ((TwitchApiResponse<Data>) -> Void)) {
+    private func doGet(subPath: String, onComplete: @escaping ((NetworkResponse<Data>) -> Void)) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -612,7 +597,7 @@ class TwitchApi {
 
     private func doPost(subPath: String,
                         body: Data,
-                        onComplete: @escaping (TwitchApiResponse<Data>) -> Void)
+                        onComplete: @escaping (NetworkResponse<Data>) -> Void)
     {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
@@ -624,7 +609,7 @@ class TwitchApi {
 
     private func doPatch(subPath: String,
                          body: Data,
-                         onComplete: @escaping (TwitchApiResponse<Data>) -> Void)
+                         onComplete: @escaping (NetworkResponse<Data>) -> Void)
     {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
@@ -634,7 +619,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doDelete(subPath: String, onComplete: @escaping (TwitchApiResponse<Data>) -> Void) {
+    private func doDelete(subPath: String, onComplete: @escaping (NetworkResponse<Data>) -> Void) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -642,7 +627,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (TwitchApiResponse<Data>) -> Void) {
+    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (NetworkResponse<Data>) -> Void) {
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {

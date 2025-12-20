@@ -51,3 +51,18 @@ extension NWConnection {
         send(content: data, contentContext: context, isComplete: true, completion: .idempotent)
     }
 }
+
+enum NetworkResponse<T> {
+    case success(T)
+    case authError
+    case error
+
+    func isSuccessful() -> Bool {
+        switch self {
+        case .success:
+            return true
+        default:
+            return false
+        }
+    }
+}
