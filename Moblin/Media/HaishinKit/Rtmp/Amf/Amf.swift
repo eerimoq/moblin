@@ -10,6 +10,10 @@ struct AsTypedObject: Equatable {
 struct AsEcmaArray: Equatable {
     private(set) var items: [String: AsValue] = [:]
 
+    init(_ items: [String: AsValue] = [:]) {
+        self.items = items
+    }
+
     mutating func set(key: String, value: AsValue) {
         items[key] = value
     }
@@ -50,7 +54,6 @@ enum AmfError: Error {
     case notNumber
     case notString
     case notObject
-    case ecmaArrayEnd
     case notAmf0
 }
 
@@ -246,16 +249,9 @@ final class Amf0Decoder: ByteReader {
     }
 
     private func decodeEcmaArrayValue() throws -> AsEcmaArray {
-        let numberOfElements = try readNumberOfArrayElements()
-        var array = AsEcmaArray()
-        for _ in 0 ..< numberOfElements {
-            try array.set(key: decodeStringValue(), value: decode())
-        }
-        guard try decodeStringValue() == "" else {
-            throw AmfError.ecmaArrayEnd
-        }
-        try parseObjectEnd()
-        return array
+        // The length is always 0 from DigitalOcean, so cannot be used. Bug in their code?
+        _ = try readNumberOfArrayElements()
+        return try AsEcmaArray(decodeObjectValue())
     }
 
     private func decodeStrictArrayValue() throws -> [AsValue] {
