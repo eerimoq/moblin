@@ -60,13 +60,10 @@ private struct ToggleActionView: View {
     @StateObject private var executor = Executor()
 
     private func button(text: LocalizedStringKey, on: Bool) -> some View {
-        Button {
+        BorderlessButtonView(text: text) {
             executor.startProgress()
             action(on, executor.completed)
-        } label: {
-            Text(text)
         }
-        .buttonStyle(.borderless)
     }
 
     var body: some View {
@@ -104,13 +101,10 @@ private struct DurationActionView: View {
                     }
                 }
                 .padding([.trailing], 15)
-                Button {
+                BorderlessButtonView(text: "Send") {
                     executor.startProgress()
                     action(duration, executor.completed)
-                } label: {
-                    Text("Send")
                 }
-                .buttonStyle(.borderless)
             }
         }
     }
@@ -369,13 +363,10 @@ private struct DeletePollView: View {
             IconAndTextLocalizedView(image: "chart.bar", text: "Delete poll")
             Spacer()
             ExecutorView(executor: executor) {
-                Button {
+                BorderlessButtonView(text: "Send") {
                     executor.startProgress()
                     model.deleteKickPoll(onComplete: executor.completed)
-                } label: {
-                    Text("Send")
                 }
-                .buttonStyle(.borderless)
             }
         }
     }
