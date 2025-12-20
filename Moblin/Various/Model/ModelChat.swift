@@ -288,21 +288,30 @@ extension Model {
     }
 
     func sendChatMessage(message: String) {
-        var messageSent = false
         if stream.twitchSendMessagesTo, stream.twitchLoggedIn {
-            sendTwitchChatMessage(message: message)
-            messageSent = true
+            sendTwitchChatMessage(message: message) { _ in }
         }
         if stream.kickSendMessagesTo, stream.kickLoggedIn {
             sendKickChatMessage(message: message)
-            messageSent = true
         }
-        if !messageSent {
-            if stream.twitchSendMessagesTo, stream.kickSendMessagesTo {
-                makeErrorToast(title: String(localized: "Please login to a streaming platform"))
-            } else if stream.twitchSendMessagesTo, !stream.twitchLoggedIn {
-                makeNotLoggedInToTwitchToast()
-            } else if stream.kickSendMessagesTo, !stream.kickLoggedIn {
+    }
+
+    func sendChatMessageShowLogin(message: String) {
+        if stream.twitchSendMessagesTo {
+            sendTwitchChatMessage(message: message) {
+                switch $0 {
+                case .authError:
+                    self.showTwitchAuth = true
+                    self.twitchLogin(stream: self.stream)
+                default:
+                    break
+                }
+            }
+        }
+        if stream.kickSendMessagesTo {
+            if stream.kickLoggedIn {
+                sendKickChatMessage(message: message)
+            } else {
                 makeNotLoggedInToKickToast()
             }
         }

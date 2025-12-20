@@ -509,7 +509,7 @@ private struct PredefinedMessageView: View {
                 Text(predefinedMessage.text)
                 Spacer()
                 BorderlessButtonView(text: "Send") {
-                    model.sendChatMessage(message: predefinedMessage.text)
+                    model.sendChatMessageShowLogin(message: predefinedMessage.text)
                     showingPredefinedMessages = false
                 }
                 .disabled(predefinedMessage.text.isEmpty)
@@ -741,7 +741,7 @@ private struct ControlView: View {
         .submitLabel(.send)
         .onSubmit {
             if !message.isEmpty {
-                model.sendChatMessage(message: message)
+                model.sendChatMessageShowLogin(message: message)
             }
             message = ""
         }

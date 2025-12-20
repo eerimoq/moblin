@@ -208,14 +208,10 @@ extension Model {
         getStream()
     }
 
-    func sendTwitchChatMessage(message: String) {
-        createTwitchApi(stream: stream).sendChatMessage(broadcasterId: stream.twitchChannelId, message: message) { ok in
-            if !ok {
-                DispatchQueue.main.async {
-                    self.makeErrorToast(title: "Failed to send to Twitch")
-                }
-            }
-        }
+    func sendTwitchChatMessage(message: String, onComplete: @escaping (OperationResult) -> Void) {
+        createTwitchApi(stream: stream).sendChatMessage(broadcasterId: stream.twitchChannelId,
+                                                        message: message,
+                                                        onComplete: onComplete)
     }
 
     func startAds(seconds: Int, onComplete: @escaping (OperationResult) -> Void) {
@@ -725,6 +721,5 @@ extension Model: TwitchChatDelegate {
 extension Model: TwitchApiDelegate {
     func twitchApiUnauthorized() {
         stream.twitchLoggedIn = false
-        makeNotLoggedInToTwitchToast()
     }
 }

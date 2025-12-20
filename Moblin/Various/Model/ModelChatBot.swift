@@ -647,7 +647,7 @@ extension Model {
     private func sendChatBotReply(message: String, platform: Platform) {
         switch platform {
         case .twitch:
-            sendTwitchChatMessage(message: message)
+            sendTwitchChatMessage(message: message) { _ in }
         case .kick:
             sendKickChatMessage(message: message)
         default:

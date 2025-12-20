@@ -196,15 +196,16 @@ class TwitchApi {
         self.accessToken = accessToken
     }
 
-    func sendChatMessage(broadcasterId: String, message: String, onComplete: @escaping (Bool) -> Void) {
+    func sendChatMessage(broadcasterId: String,
+                         message: String,
+                         onComplete: @escaping (OperationResult) -> Void)
+    {
         let body = [
             "broadcaster_id": broadcasterId,
             "sender_id": broadcasterId,
             "message": message,
         ]
-        doPost(subPath: "chat/messages", body: serialize(body)) {
-            onComplete($0.isSuccessful())
-        }
+        doPost(subPath: "chat/messages", body: serialize(body), onComplete: onComplete)
     }
 
     func getUsers(onComplete: @escaping (TwitchApiUsers?) -> Void) {
