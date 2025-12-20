@@ -592,15 +592,10 @@ struct MainView: View {
                 model.setup()
             }
             .sheet(isPresented: $model.showTwitchAuth) {
-                ZStack {
-                    ScrollView {
-                        TwitchAuthView(twitchAuth: model.twitchAuth)
-                            .frame(height: 2500)
-                    }
-                    CloseButtonTopRightView {
-                        model.showTwitchAuth = false
-                    }
-                }
+                TwitchLoginView(model: model, presenting: $model.showTwitchAuth)
+            }
+            .sheet(isPresented: $model.isPresentingModeration) {
+                QuickButtonChatModerationView(model: model, showingModeration: $model.isPresentingModeration)
             }
             .toast(isPresenting: $toast.showingToast, duration: 5) {
                 toast.toast

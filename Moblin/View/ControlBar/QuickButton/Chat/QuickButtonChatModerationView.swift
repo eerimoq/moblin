@@ -31,24 +31,33 @@ private class Executor: ObservableObject {
 }
 
 private struct ExecutorView<Content: View>: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var executor: Executor
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        switch executor.state {
-        case .idle:
-            content()
-        case .inProgress:
-            ProgressView()
-        case .success:
-            Text("Success")
-                .foregroundStyle(.green)
-        case .authError:
-            Text("Not logged in")
-                .foregroundStyle(.red)
-        case .error:
-            Text("Failed")
-                .foregroundStyle(.red)
+        Group {
+            switch executor.state {
+            case .idle:
+                content()
+            case .inProgress:
+                ProgressView()
+            case .success:
+                Text("Success")
+                    .foregroundStyle(.green)
+            case .authError:
+                Text("Not logged in")
+                    .foregroundStyle(.red)
+            case .error:
+                Text("Failed")
+                    .foregroundStyle(.red)
+            }
+        }
+        .onChange(of: executor.state) { _ in
+            if executor.state == .authError {
+                model.showModerationAuth = true
+                model.twitchLogin(stream: model.stream)
+            }
         }
     }
 }
@@ -667,6 +676,7 @@ private struct TwitchChannelManagementView: View {
 
 private struct TwitchView: View {
     let model: Model
+    @Binding var platform: Platform?
 
     var body: some View {
         NavigationLink {
@@ -676,6 +686,9 @@ private struct TwitchView: View {
                 TwitchChannelManagementView(model: model)
             }
             .navigationTitle("Twitch")
+            .onAppear {
+                platform = .twitch
+            }
         } label: {
             TwitchLogoAndNameView()
         }
@@ -738,6 +751,7 @@ private struct KickChannelManagementView: View {
 
 private struct KickView: View {
     let model: Model
+    @Binding var platform: Platform?
 
     var body: some View {
         NavigationLink {
@@ -747,6 +761,9 @@ private struct KickView: View {
                 KickChannelManagementView(model: model)
             }
             .navigationTitle("Kick")
+            .onAppear {
+                platform = .kick
+            }
         } label: {
             KickLogoAndNameView()
         }
@@ -754,15 +771,16 @@ private struct KickView: View {
 }
 
 struct QuickButtonChatModerationView: View {
-    let model: Model
+    @ObservedObject var model: Model
     @Binding var showingModeration: Bool
+    @State var platform: Platform?
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    TwitchView(model: model)
-                    KickView(model: model)
+                    TwitchView(model: model, platform: $platform)
+                    KickView(model: model, platform: $platform)
                 }
                 ShortcutSectionView {
                     StreamingPlatformsShortcutView(stream: model.stream)
@@ -771,6 +789,14 @@ struct QuickButtonChatModerationView: View {
             .navigationTitle("Moderation")
             .toolbar {
                 CloseToolbar(presenting: $showingModeration)
+            }
+        }
+        .sheet(isPresented: $model.showModerationAuth) {
+            switch platform {
+            case .twitch:
+                TwitchLoginView(model: model, presenting: $model.showModerationAuth)
+            default:
+                EmptyView()
             }
         }
     }

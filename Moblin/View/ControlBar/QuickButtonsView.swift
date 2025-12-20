@@ -133,7 +133,6 @@ struct QuickButtonsInnerView: View {
     let nameWidth: CGFloat
     @State private var isPresentingRecordConfirm = false
     @State private var isPresentingStartWorkoutTypePicker = false
-    @State private var isPresentingModeration = false
     @State private var isPresentingStopWorkoutConfirm = false
 
     private func torchAction(state: ButtonState) {
@@ -691,10 +690,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    isPresentingModeration = true
-                }
-                .sheet(isPresented: $isPresentingModeration) {
-                    QuickButtonChatModerationView(model: model, showingModeration: $isPresentingModeration)
+                    model.isPresentingModeration = true
                 }
             case .skipCurrentTts:
                 QuickButtonImage(model: model,

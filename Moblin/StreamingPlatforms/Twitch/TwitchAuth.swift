@@ -27,7 +27,7 @@ private let scopes = [
 private let redirectHost = "localhost"
 private let redirectUri = "https://\(redirectHost)"
 
-struct TwitchAuthView: UIViewRepresentable {
+private struct TwitchAuthView: UIViewRepresentable {
     let twitchAuth: TwitchAuth
 
     func makeUIView(context _: Context) -> WKWebView {
@@ -35,6 +35,23 @@ struct TwitchAuthView: UIViewRepresentable {
     }
 
     func updateUIView(_: WKWebView, context _: Context) {}
+}
+
+struct TwitchLoginView: View {
+    let model: Model
+    @Binding var presenting: Bool
+
+    var body: some View {
+        ZStack {
+            ScrollView {
+                TwitchAuthView(twitchAuth: model.twitchAuth)
+                    .frame(height: 2500)
+            }
+            CloseButtonTopRightView {
+                presenting = false
+            }
+        }
+    }
 }
 
 class TwitchAuth: NSObject {

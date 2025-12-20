@@ -155,6 +155,7 @@ extension Model {
             stream.twitchLoggedIn = true
             stream.twitchAccessToken = accessToken
             self.showTwitchAuth = false
+            self.showModerationAuth = false
             self.createStreamWizard.showTwitchAuth = false
             TwitchApi(accessToken).getUserInfo { info in
                 guard let info else {
