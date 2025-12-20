@@ -402,10 +402,12 @@ class MoblinkRelay: NSObject {
     }
 
     private func makeRelayId(_ interface: NWInterface) -> String {
-        if let value = Int(relayId.suffix(6), radix: 16) {
-            return relayId.prefix(30) + String(format: "%06X", (value + interface.index) & 0xFFFFFF)
+        if interface.type == .cellular {
+            return relayId
+        } else {
+            let value = Int(relayId.suffix(6), radix: 16) ?? 0
+            return relayId.prefix(30) + String(format: "%06X", (value + interface.index + 1) & 0xFFFFFF)
         }
-        return relayId
     }
 
     private func makeRelayName(_ interface: NWInterface) -> String {
