@@ -709,7 +709,7 @@ private struct KickChatModesView: View {
 
     private func followersOnlyAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
         if let duration {
-            model.enableKickFollowersMode(followingMinDuration: duration) {
+            model.enableKickFollowersMode(followingMinDuration: duration / 60) {
                 onComplete($0)
             }
         } else {
@@ -722,7 +722,7 @@ private struct KickChatModesView: View {
     var body: some View {
         ChatModesView {
             SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)
-            FollowersOnlyView(durations: [1, 5, 10, 30, 60, 1440, 10080, 43200], action: followersOnlyAction)
+            FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
             SubscribersOnlyView(action: model.setKickSubscribersOnlyMode)
             EmotesOnlyView(action: model.setKickEmoteOnlyMode)
         }
