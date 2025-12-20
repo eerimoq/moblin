@@ -109,18 +109,9 @@ private struct DurationActionView: View {
     }
 }
 
-private enum ModActionCategory: String, CaseIterable {
-    case userModeration = "User moderation"
-    case channelManagement = "Channel management"
-
-    var icon: String {
-        switch self {
-        case .userModeration:
-            return "person"
-        case .channelManagement:
-            return "gearshape"
-        }
-    }
+private enum ModActionCategory {
+    case userModeration
+    case channelManagement
 }
 
 private enum ModActionType: CaseIterable {
@@ -276,25 +267,6 @@ private enum AnnouncementColor: String, CaseIterable {
         case .purple:
             return "🟣"
         }
-    }
-}
-
-private struct ModActionCategoryView: View {
-    let model: Model
-    let category: ModActionCategory
-    let platform: Platform
-
-    private var actions: [ModActionType] {
-        ModActionType.actions(for: category, platform: platform)
-    }
-
-    var body: some View {
-        Form {
-            ForEach(actions, id: \.self) { action in
-                ModActionRowView(model: model, action: action, platform: platform)
-            }
-        }
-        .navigationTitle(category.rawValue)
     }
 }
 
