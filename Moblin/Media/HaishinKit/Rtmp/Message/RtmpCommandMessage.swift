@@ -73,14 +73,18 @@ final class RtmpCommandMessage: RtmpMessage {
                         decoder.position = 1
                     }
                     commandName = try RtmpCommandName(rawValue: decoder.decodeString()) ?? .unknown
+                    logger.debug("rtmp: commandName ok")
                     transactionId = try decoder.decodeInt()
+                    logger.debug("rtmp: transactionId ok")
                     commandObject = try decoder.decodeObject()
+                    logger.debug("rtmp: commandObject ok \(decoder.bytesAvailable)")
                     arguments.removeAll()
                     while decoder.bytesAvailable > 0 {
                         try arguments.append(decoder.decode())
+                        logger.debug("rtmp: argument ok \(decoder.bytesAvailable)")
                     }
                 } catch {
-                    logger.info("rtmp: \(error)")
+                    logger.info("rtmp: Command message error: \(error): \(newValue.hexString())")
                 }
             }
             super.encoded = newValue

@@ -44,9 +44,14 @@ enum AsValue: Equatable {
 }
 
 enum AmfError: Error {
-    case decode
     case arrayTooBig
     case notObjectEnd
+    case unexpectedObjectEnd
+    case notNumber
+    case notString
+    case notObject
+    case ecmaArrayEnd
+    case notAmf0
 }
 
 private enum Amf0Type: UInt8 {
@@ -186,13 +191,13 @@ final class Amf0Decoder: ByteReader {
         case .avmplush:
             return .avmplush
         case .objectEnd:
-            throw AmfError.decode
+            throw AmfError.unexpectedObjectEnd
         }
     }
 
     func decodeInt() throws -> Int {
         guard try readAmf0Type() == .number else {
-            throw AmfError.decode
+            throw AmfError.notNumber
         }
         return try Int(decodeDoubleValue())
     }
@@ -204,7 +209,7 @@ final class Amf0Decoder: ByteReader {
         case .longString:
             return try decodeLongStringValue()
         default:
-            throw AmfError.decode
+            throw AmfError.notString
         }
     }
 
@@ -215,7 +220,7 @@ final class Amf0Decoder: ByteReader {
         case .object:
             return try decodeObjectValue()
         default:
-            throw AmfError.decode
+            throw AmfError.notObject
         }
     }
 
@@ -247,7 +252,7 @@ final class Amf0Decoder: ByteReader {
             try array.set(key: decodeStringValue(), value: decode())
         }
         guard try decodeStringValue() == "" else {
-            throw AmfError.decode
+            throw AmfError.ecmaArrayEnd
         }
         try parseObjectEnd()
         return array
@@ -296,7 +301,7 @@ final class Amf0Decoder: ByteReader {
 
     private func readAmf0Type() throws -> Amf0Type {
         guard let value = try Amf0Type(rawValue: readUInt8()) else {
-            throw AmfError.decode
+            throw AmfError.notAmf0
         }
         return value
     }
