@@ -8,6 +8,30 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "30.1.0", date: "2025-12-20", changes: [
+        "• Korean translation updated. ✍️ Winter1l",
+        "• New speaker keep alive logic.",
+        "  • Based on when audio was last played, not periodic.",
+        "• Chinese (HK) translation updated. ✍️ tkg2222",
+        "• More recordings conversion help.",
+        "• Slideshow widget. 💡 mikeful and ROD",
+        "  • Can show a text or image widget per slide for configured time.",
+        "• Add center alignment option to text widget. 💡 ROD",
+        "• Text widget width and corner radius settings. 💡 Stream chat dec 18th",
+        "• Polish translation updated. ✍️ kowalski",
+        "• Chat and channel moderation. 🧑‍🏭 iChrisIRL",
+        "• Scoreboard positioning. 💡 Scyc",
+        "• Remove remove wind noise feature.",
+        "  • Seems not to work.",
+        "• Help the user understand why built-in and USB cameras does not work in background. 💡 xcopy94",
+        "• Delete confirmation for streams, scenes and widgets. 💡 FOJD",
+        "• Updated websocket 3rd party library.",
+        "  • Will chat, remote control and more still work?",
+        "• Replace Ads quick button with Moderation quick button.",
+        "• Various button changes.",
+        "• RTMP compatibility with SRS (bug in SRS imo). 🐛 bani",
+        "• Make Moblink relay reuse same id for cellular connection. 🐛 Djandrea",
+    ]),
     Version(version: "30.0.0", date: "2025-12-15", changes: [
         "• Add \"Remove wind noise\" toggle. 💡 OhItsLaz",
         "  • No idea if it works.",
