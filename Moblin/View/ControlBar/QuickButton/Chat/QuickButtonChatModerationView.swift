@@ -118,26 +118,26 @@ private enum ModActionType: CaseIterable {
     case vip
     case unvip
 
-    func title(for _: Platform) -> String {
+    func title() -> LocalizedStringKey {
         switch self {
         case .ban:
-            return String(localized: "Ban")
+            return "Ban"
         case .timeout:
-            return String(localized: "Timeout")
+            return "Timeout"
         case .unban:
-            return String(localized: "Unban")
+            return "Unban"
         case .mod:
-            return String(localized: "Mod")
+            return "Mod"
         case .unmod:
-            return String(localized: "Unmod")
+            return "Unmod"
         case .vip:
-            return String(localized: "VIP")
+            return "VIP"
         case .unvip:
-            return String(localized: "Unvip")
+            return "UnVIP"
         }
     }
 
-    var icon: String {
+    func image() -> String {
         switch self {
         case .ban:
             return "hand.raised"
@@ -155,43 +155,9 @@ private enum ModActionType: CaseIterable {
             return "crown"
         }
     }
-
-    var requiresReason: Bool {
-        return self == .ban
-    }
 }
 
-private struct ModActionRowView: View {
-    let model: Model
-    let action: ModActionType
-    let platform: Platform
-    @StateObject private var executor = Executor()
-
-    private func rowContent() -> some View {
-        return IconAndTextView(image: action.icon, text: action.title(for: platform))
-    }
-
-    var body: some View {
-        NavigationLink {
-            ModActionDetailView(model: model, action: action, platform: platform)
-        } label: {
-            rowContent()
-        }
-    }
-}
-
-private struct ModActionDetailView: View {
-    let model: Model
-    let action: ModActionType
-    let platform: Platform
-
-    var body: some View {
-        StandardActionFormView(model: model, action: action, platform: platform)
-            .navigationTitle(action.title(for: platform))
-    }
-}
-
-private struct StandardActionFormView: View {
+private struct UserModerationItemView: View {
     let model: Model
     let action: ModActionType
     let platform: Platform
@@ -199,12 +165,11 @@ private struct StandardActionFormView: View {
     @State private var reason = ""
     @State private var timeoutDuration = 60
     @StateObject var executor = Executor()
+    private let timeoutPresets = [60, 300, 600, 1800, 3600, 21600, 86400, 604_800]
 
     private func canExecute() -> Bool {
         return !username.trim().isEmpty
     }
-
-    private let timeoutPresets = [60, 300, 600, 1800, 3600, 21600, 86400, 604_800]
 
     private func executeAction(onComplete: @escaping (Bool) -> Void) {
         let user = username.trim()
@@ -266,7 +231,7 @@ private struct StandardActionFormView: View {
     }
 
     var body: some View {
-        Form {
+        NavigationLinkView(text: action.title(), image: action.image()) {
             Section {
                 TextField("Username", text: $username)
                     .autocapitalization(.none)
@@ -283,7 +248,7 @@ private struct StandardActionFormView: View {
                     }
                 }
             }
-            if action.requiresReason {
+            if action == .ban {
                 Section {
                     TextField("Reason", text: $reason)
                 } header: {
@@ -655,7 +620,7 @@ private struct TwitchUserModerationView: View {
     var body: some View {
         UserModerationView {
             ForEach(ModActionType.allCases, id: \.self) {
-                ModActionRowView(model: model, action: $0, platform: .twitch)
+                UserModerationItemView(model: model, action: $0, platform: .twitch)
             }
         }
     }
@@ -721,7 +686,7 @@ private struct KickUserModerationView: View {
     var body: some View {
         UserModerationView {
             ForEach(ModActionType.allCases, id: \.self) {
-                ModActionRowView(model: model, action: $0, platform: .kick)
+                UserModerationItemView(model: model, action: $0, platform: .kick)
             }
         }
     }
