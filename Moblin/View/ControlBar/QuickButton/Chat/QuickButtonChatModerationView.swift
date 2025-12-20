@@ -122,12 +122,11 @@ private enum ModActionType: CaseIterable {
     case unmod
     case vip
     case unvip
-    case raid
     case poll
     case deletepoll
     case prediction
 
-    func title(for platform: Platform) -> String {
+    func title(for _: Platform) -> String {
         switch self {
         case .ban:
             return String(localized: "Ban")
@@ -143,12 +142,6 @@ private enum ModActionType: CaseIterable {
             return String(localized: "VIP")
         case .unvip:
             return String(localized: "Unvip")
-        case .raid:
-            if platform == .kick {
-                return String(localized: "Host channel")
-            } else {
-                return String(localized: "Raid channel")
-            }
         case .poll:
             return String(localized: "Create poll")
         case .deletepoll:
@@ -174,8 +167,6 @@ private enum ModActionType: CaseIterable {
             return "crown"
         case .unvip:
             return "crown"
-        case .raid:
-            return "play.tv"
         case .poll:
             return "chart.bar"
         case .deletepoll:
@@ -189,14 +180,14 @@ private enum ModActionType: CaseIterable {
         switch self {
         case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip:
             return .userModeration
-        case .raid, .poll, .deletepoll, .prediction:
+        case .poll, .deletepoll, .prediction:
             return .channelManagement
         }
     }
 
     var requiresUsername: Bool {
         switch self {
-        case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip, .raid:
+        case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip:
             true
         default:
             false
@@ -357,8 +348,6 @@ private struct StandardActionFormView: View {
             model.vipKickUser(user: user, onComplete: onComplete)
         case .unvip:
             model.unvipKickUser(user: user, onComplete: onComplete)
-        case .raid:
-            model.hostKickChannel(channel: user, onComplete: onComplete)
         default:
             break
         }
@@ -385,8 +374,6 @@ private struct StandardActionFormView: View {
             model.vipTwitchUser(user: user, onComplete: onComplete)
         case .unvip:
             model.unvipTwitchUser(user: user, onComplete: onComplete)
-        case .raid:
-            model.raidTwitchChannelByName(channelName: user, onComplete: onComplete)
         default:
             break
         }
@@ -567,11 +554,13 @@ private struct CreatePredictionView: View {
 
 private struct StartRaidView: View {
     let model: Model
+    let text: LocalizedStringKey
+    let action: (String, @escaping (Bool) -> Void) -> Void
     @State private var username: String = ""
     @StateObject private var executor = Executor()
 
     var body: some View {
-        NavigationLinkView(text: "Raid", image: "play.tv") {
+        NavigationLinkView(text: text, image: "play.tv") {
             Section {
                 TextField("Username", text: $username)
                     .autocapitalization(.none)
@@ -584,7 +573,7 @@ private struct StartRaidView: View {
                     ExecutorView(executor: executor) {
                         TextButtonView("Send") {
                             executor.startProgress()
-                            model.raidTwitchChannelByName(channelName: username, onComplete: executor.completed)
+                            action(username, executor.completed)
                         }
                         .disabled(username.trim().isEmpty)
                     }
@@ -622,6 +611,24 @@ private struct RunCommercialView: View {
             }
         }
     }
+}
+
+private struct StartPollView: View {
+    let model: Model
+
+    var body: some View {}
+}
+
+private struct DeletePollView: View {
+    let model: Model
+
+    var body: some View {}
+}
+
+private struct StartPredictionView: View {
+    let model: Model
+
+    var body: some View {}
 }
 
 private struct SendAnnouncementView: View {
@@ -782,7 +789,7 @@ private struct TwitchChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            StartRaidView(model: model)
+            StartRaidView(model: model, text: "Raid channel", action: model.raidTwitchChannelByName)
             RunCommercialView(model: model)
             SendAnnouncementView(model: model)
         }
@@ -860,9 +867,10 @@ private struct KickChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            ForEach(ModActionType.actions(for: .channelManagement, platform: .kick), id: \.self) {
-                ModActionRowView(model: model, action: $0, platform: .kick)
-            }
+            StartRaidView(model: model, text: "Host channel", action: model.hostKickChannel)
+            StartPollView(model: model)
+            DeletePollView(model: model)
+            StartPredictionView(model: model)
         }
     }
 }

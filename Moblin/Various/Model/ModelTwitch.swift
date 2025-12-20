@@ -382,26 +382,31 @@ extension Model {
             }
     }
 
-    func raidTwitchChannel(channelName: String, channelId: String) {
-        createTwitchApi(stream: stream).startRaid(broadcasterId: stream.twitchChannelId, toBroadcasterId: channelId) {
+    func raidTwitchChannel(channelName: String, channelId: String, onComplete: @escaping (Bool) -> Void) {
+        createTwitchApi(stream: stream).startRaid(broadcasterId: stream.twitchChannelId,
+                                                  toBroadcasterId: channelId)
+        {
             switch $0 {
             case .success:
-                self.makeToast(title: String(localized: "Raiding \(channelName) in 90 seconds!"))
+                onComplete(true)
             case .error:
                 self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
+                onComplete(false)
             case .authError:
-                break
+                onComplete(false)
             }
         }
     }
 
-    func raidTwitchChannelByName(channelName: String, onComplete _: @escaping (Bool) -> Void) {
+    func raidTwitchChannelByName(channelName: String, onComplete: @escaping (Bool) -> Void) {
         createTwitchApi(stream: stream).searchChannel(channelName: channelName) { channel in
             guard let channel else {
-                self.makeErrorToast(title: String(localized: "Channel '\(channelName)' not found"))
+                onComplete(false)
                 return
             }
-            self.raidTwitchChannel(channelName: channel.broadcaster_login, channelId: channel.id)
+            self.raidTwitchChannel(channelName: channel.broadcaster_login,
+                                   channelId: channel.id,
+                                   onComplete: onComplete)
         }
     }
 

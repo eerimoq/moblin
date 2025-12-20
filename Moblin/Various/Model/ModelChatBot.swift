@@ -394,7 +394,13 @@ extension Model {
                                     subTitle: String(localized: "Channel \(channelName) not found"))
                 return
             }
-            self.raidTwitchChannel(channelName: channelName, channelId: channel.id)
+            self.raidTwitchChannel(channelName: channelName, channelId: channel.id) { ok in
+                if ok {
+                    self.makeToast(title: String(localized: "Raiding \(channelName) in 90 seconds!"))
+                } else {
+                    self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
+                }
+            }
         }
     }
 
