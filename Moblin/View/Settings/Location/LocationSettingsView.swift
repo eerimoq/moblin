@@ -66,7 +66,7 @@ struct LocationSettingsView: View {
                 Text("Resets distance, average speed and slope.")
             }
             if database.showAllSettings, stream !== fallbackStream {
-                Section {
+                ShortcutSectionView {
                     NavigationLink {
                         StreamRealtimeIrlSettingsView(stream: stream)
                     } label: {
@@ -77,8 +77,6 @@ struct LocationSettingsView: View {
                             model.reloadLocation()
                         }
                     }
-                } header: {
-                    Text("Shortcut")
                 }
             }
             Section {

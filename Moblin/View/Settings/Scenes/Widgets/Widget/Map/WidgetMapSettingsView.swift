@@ -18,7 +18,7 @@ struct WidgetMapSettingsView: View {
         } footer: {
             Text("The map will rotate based of movement direction if disabled.")
         }
-        Section {
+        ShortcutSectionView {
             NavigationLink {
                 LocationSettingsView(database: model.database,
                                      location: model.database.location,
@@ -26,8 +26,6 @@ struct WidgetMapSettingsView: View {
             } label: {
                 Label("Location", systemImage: "location")
             }
-        } header: {
-            Text("Shortcut")
         }
         Section {
             HStack {

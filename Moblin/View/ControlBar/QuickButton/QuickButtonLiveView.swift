@@ -99,15 +99,8 @@ private struct ShortcutView: View {
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
-        Section {
-            NavigationLink {
-                Form {
-                    StreamPlatformsSettingsView(stream: stream)
-                }
-                .navigationTitle("Streaming platforms")
-            } label: {
-                Label("Streaming platforms", systemImage: "dot.radiowaves.left.and.right")
-            }
+        ShortcutSectionView {
+            StreamingPlatformsShortcutView(stream: stream)
             if database.showAllSettings {
                 NavigationLink {
                     GoLiveNotificationSettingsView(stream: stream)
@@ -115,8 +108,6 @@ private struct ShortcutView: View {
                     Label("Go live notification", systemImage: "dot.radiowaves.left.and.right")
                 }
             }
-        } header: {
-            Text("Shortcut")
         }
     }
 }

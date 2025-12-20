@@ -30,14 +30,12 @@ struct QuickButtonBitrateView: View {
                     .labelsHidden()
                 }
             }
-            Section {
+            ShortcutSectionView {
                 NavigationLink {
                     BitratePresetsSettingsView(database: model.database)
                 } label: {
                     Label("Bitrate presets", systemImage: "dot.radiowaves.left.and.right")
                 }
-            } header: {
-                Text("Shortcut")
             }
         }
         .navigationTitle("Bitrate")

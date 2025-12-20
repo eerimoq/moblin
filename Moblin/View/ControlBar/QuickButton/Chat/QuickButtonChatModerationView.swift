@@ -769,8 +769,13 @@ struct QuickButtonChatModerationView: View {
     var body: some View {
         NavigationStack {
             Form {
-                TwitchView(model: model)
-                KickView(model: model)
+                Section {
+                    TwitchView(model: model)
+                    KickView(model: model)
+                }
+                ShortcutSectionView {
+                    StreamingPlatformsShortcutView(stream: model.stream)
+                }
             }
             .navigationTitle("Moderation")
             .toolbar {

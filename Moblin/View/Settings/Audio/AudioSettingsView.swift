@@ -58,7 +58,7 @@ struct AudioSettingsView: View {
     var body: some View {
         Form {
             if database.showAllSettings, stream !== fallbackStream {
-                Section {
+                ShortcutSectionView {
                     NavigationLink {
                         StreamAudioSettingsView(
                             stream: stream,
@@ -67,8 +67,6 @@ struct AudioSettingsView: View {
                     } label: {
                         Label("Audio", systemImage: "dot.radiowaves.left.and.right")
                     }
-                } header: {
-                    Text("Shortcut")
                 }
             }
             Section {

@@ -61,19 +61,6 @@ struct WidgetLayoutView: View {
     }
 }
 
-struct WidgetShortcutView: View {
-    let database: Database
-    let widget: SettingsWidget
-
-    var body: some View {
-        NavigationLink {
-            WidgetSettingsView(database: database, widget: widget)
-        } label: {
-            Text("Widget")
-        }
-    }
-}
-
 struct WidgetNameView: View {
     @ObservedObject var widget: SettingsWidget
 

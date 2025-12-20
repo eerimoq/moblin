@@ -306,14 +306,12 @@ struct QuickButtonObsView: View {
                 ObsConnectedView(stream: stream, obsQuickButton: obsQuickButton)
             }
             if stream !== fallbackStream {
-                Section {
+                ShortcutSectionView {
                     NavigationLink {
                         ObsSettingsView(model: model, stream: stream)
                     } label: {
                         Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
                     }
-                } header: {
-                    Text("Shortcut")
                 }
             }
         }

@@ -11,10 +11,8 @@ struct QuickButtonAutoSceneSwitcherView: View {
                     .pickerStyle(.inline)
                     .labelsHidden()
             }
-            Section {
+            ShortcutSectionView {
                 AutoSwitchersSettingsView(autoSceneSwitchers: autoSceneSwitchers, showSelector: false)
-            } header: {
-                Text("Shortcut")
             }
         }
         .navigationTitle("Auto scene switcher")

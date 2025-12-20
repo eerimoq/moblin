@@ -209,14 +209,12 @@ struct QuickButtonGoProView: View {
                         }
                     }
                 }
-                Section {
+                ShortcutSectionView {
                     NavigationLink {
                         GoProSettingsView()
                     } label: {
                         Label("GoPro", systemImage: "appletvremote.gen1")
                     }
-                } header: {
-                    Text("Shortcut")
                 }
             }
             .navigationTitle("GoPro")

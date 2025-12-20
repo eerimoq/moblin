@@ -82,22 +82,13 @@ struct ChatSettingsView: View {
                 ChatSettingsGeneralView(chat: chat)
             }
             if stream !== fallbackStream {
-                Section {
-                    NavigationLink {
-                        Form {
-                            StreamPlatformsSettingsView(stream: stream)
-                        }
-                        .navigationTitle("Streaming platforms")
-                    } label: {
-                        Label("Streaming platforms", systemImage: "dot.radiowaves.left.and.right")
-                    }
+                ShortcutSectionView {
+                    StreamingPlatformsShortcutView(stream: stream)
                     NavigationLink {
                         StreamEmotesSettingsView(stream: stream)
                     } label: {
                         Label("Emotes", systemImage: "dot.radiowaves.left.and.right")
                     }
-                } header: {
-                    Text("Shortcut")
                 }
             }
         }

@@ -183,14 +183,12 @@ struct CameraSettingsView: View {
     var body: some View {
         Form {
             if stream !== fallbackStream {
-                Section {
+                ShortcutSectionView {
                     NavigationLink {
                         StreamVideoSettingsView(database: database, stream: stream)
                     } label: {
                         Label("Video", systemImage: "dot.radiowaves.left.and.right")
                     }
-                } header: {
-                    Text("Shortcut")
                 }
             }
             Section {

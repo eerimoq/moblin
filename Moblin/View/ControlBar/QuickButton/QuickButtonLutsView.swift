@@ -23,14 +23,12 @@ struct QuickButtonLutsView: View {
                     LutView(model: model, lut: lut)
                 }
             }
-            Section {
+            ShortcutSectionView {
                 NavigationLink {
                     CameraSettingsLutsView(color: color)
                 } label: {
                     Label("LUTs", systemImage: "camera")
                 }
-            } header: {
-                Text("Shortcut")
             }
         }
         .navigationTitle("LUTs")

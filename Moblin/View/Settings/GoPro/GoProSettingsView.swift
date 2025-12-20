@@ -262,10 +262,8 @@ private struct GoProRtmpUrlSettingsView: View {
                         }
                     }
                 }
-                Section {
+                ShortcutSectionView {
                     RtmpServerSettingsView(rtmpServer: model.database.rtmpServer)
-                } header: {
-                    Text("Shortcut")
                 }
                 if let qrCode {
                     Section {

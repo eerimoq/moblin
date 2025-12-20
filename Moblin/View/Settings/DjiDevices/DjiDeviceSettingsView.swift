@@ -216,10 +216,8 @@ private struct DjiDeviceRtmpSettingsView: View {
                 }
             }
         }
-        Section {
+        ShortcutSectionView {
             RtmpServerSettingsView(rtmpServer: rtmpServer)
-        } header: {
-            Text("Shortcut")
         }
     }
 }

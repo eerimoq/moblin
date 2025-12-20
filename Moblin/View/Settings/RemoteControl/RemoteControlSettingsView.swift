@@ -387,7 +387,7 @@ struct RemoteControlSettingsView: View {
                 Text("Control and monitor Moblin from another device.")
             }
             if stream !== fallbackStream {
-                Section {
+                ShortcutSectionView {
                     NavigationLink {
                         StreamObsRemoteControlSettingsView(stream: stream)
                     } label: {
@@ -398,8 +398,6 @@ struct RemoteControlSettingsView: View {
                             model.obsWebSocketEnabledUpdated()
                         }
                     }
-                } header: {
-                    Text("Shortcut")
                 }
             }
             Section {
