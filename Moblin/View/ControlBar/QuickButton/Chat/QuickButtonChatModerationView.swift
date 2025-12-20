@@ -109,11 +109,6 @@ private struct DurationActionView: View {
     }
 }
 
-private enum ModActionCategory {
-    case userModeration
-    case channelManagement
-}
-
 private enum ModActionType: CaseIterable {
     case ban
     case timeout
@@ -122,9 +117,6 @@ private enum ModActionType: CaseIterable {
     case unmod
     case vip
     case unvip
-    case poll
-    case deletepoll
-    case prediction
 
     func title(for _: Platform) -> String {
         switch self {
@@ -142,12 +134,6 @@ private enum ModActionType: CaseIterable {
             return String(localized: "VIP")
         case .unvip:
             return String(localized: "Unvip")
-        case .poll:
-            return String(localized: "Create poll")
-        case .deletepoll:
-            return String(localized: "Delete poll")
-        case .prediction:
-            return String(localized: "Create prediction")
         }
     }
 
@@ -167,79 +153,11 @@ private enum ModActionType: CaseIterable {
             return "crown"
         case .unvip:
             return "crown"
-        case .poll:
-            return "chart.bar"
-        case .deletepoll:
-            return "chart.bar.xaxis"
-        case .prediction:
-            return "sparkles"
-        }
-    }
-
-    var category: ModActionCategory {
-        switch self {
-        case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip:
-            return .userModeration
-        case .poll, .deletepoll, .prediction:
-            return .channelManagement
-        }
-    }
-
-    var requiresUsername: Bool {
-        switch self {
-        case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip:
-            true
-        default:
-            false
         }
     }
 
     var requiresReason: Bool {
         return self == .ban
-    }
-
-    var needsDetailView: Bool {
-        return requiresUsername
-            || requiresReason
-            || self == .timeout
-            || self == .poll
-            || self == .prediction
-    }
-
-    func isSupported(by platform: Platform) -> Bool {
-        switch self {
-        case .poll, .deletepoll, .prediction:
-            return platform == .kick
-        default:
-            return true
-        }
-    }
-
-    static func actions(for category: ModActionCategory, platform: Platform) -> [ModActionType] {
-        return allCases.filter { $0.category == category && $0.isSupported(by: platform) }
-    }
-}
-
-private enum AnnouncementColor: String, CaseIterable {
-    case primary
-    case blue
-    case green
-    case orange
-    case purple
-
-    func name() -> String {
-        switch self {
-        case .primary:
-            return String(localized: "Primary")
-        case .blue:
-            return "🔵"
-        case .green:
-            return "🟢"
-        case .orange:
-            return "🟠"
-        case .purple:
-            return "🟣"
-        }
     }
 }
 
@@ -254,26 +172,10 @@ private struct ModActionRowView: View {
     }
 
     var body: some View {
-        if action.needsDetailView {
-            NavigationLink {
-                ModActionDetailView(model: model, action: action, platform: platform)
-            } label: {
-                rowContent()
-            }
-        } else {
-            HStack {
-                rowContent()
-                Spacer()
-                ExecutorView(executor: executor) {
-                    Button {
-                        executor.startProgress()
-                        model.deleteKickPoll(onComplete: executor.completed)
-                    } label: {
-                        Text("Send")
-                    }
-                    .buttonStyle(.borderless)
-                }
-            }
+        NavigationLink {
+            ModActionDetailView(model: model, action: action, platform: platform)
+        } label: {
+            rowContent()
         }
     }
 }
@@ -284,17 +186,8 @@ private struct ModActionDetailView: View {
     let platform: Platform
 
     var body: some View {
-        Group {
-            switch action {
-            case .poll:
-                CreatePollView(model: model)
-            case .prediction:
-                CreatePredictionView(model: model)
-            default:
-                StandardActionFormView(model: model, action: action, platform: platform)
-            }
-        }
-        .navigationTitle(action.title(for: platform))
+        StandardActionFormView(model: model, action: action, platform: platform)
+            .navigationTitle(action.title(for: platform))
     }
 }
 
@@ -308,10 +201,7 @@ private struct StandardActionFormView: View {
     @StateObject var executor = Executor()
 
     private func canExecute() -> Bool {
-        if action.requiresUsername && username.trim().isEmpty {
-            return false
-        }
-        return true
+        return !username.trim().isEmpty
     }
 
     private let timeoutPresets = [60, 300, 600, 1800, 3600, 21600, 86400, 604_800]
@@ -348,8 +238,6 @@ private struct StandardActionFormView: View {
             model.vipKickUser(user: user, onComplete: onComplete)
         case .unvip:
             model.unvipKickUser(user: user, onComplete: onComplete)
-        default:
-            break
         }
     }
 
@@ -374,21 +262,17 @@ private struct StandardActionFormView: View {
             model.vipTwitchUser(user: user, onComplete: onComplete)
         case .unvip:
             model.unvipTwitchUser(user: user, onComplete: onComplete)
-        default:
-            break
         }
     }
 
     var body: some View {
         Form {
-            if action.requiresUsername {
-                Section {
-                    TextField("Username", text: $username)
-                        .autocapitalization(.none)
-                        .autocorrectionDisabled()
-                } header: {
-                    Text("Username")
-                }
+            Section {
+                TextField("Username", text: $username)
+                    .autocapitalization(.none)
+                    .autocorrectionDisabled()
+            } header: {
+                Text("Username")
             }
             if action == .timeout {
                 Section {
@@ -440,19 +324,8 @@ private struct CreatePollView: View {
         return !trimmedTitle.isEmpty && filledOptions.count >= 2
     }
 
-    private func createPoll() {
-        executor.startProgress()
-        model.createKickPoll(
-            title: title.trim(),
-            options: options.map { $0.text.trim() }.filter { !$0.isEmpty },
-            duration: duration,
-            resultDisplayDuration: resultDisplayDuration,
-            onComplete: executor.completed
-        )
-    }
-
     var body: some View {
-        Form {
+        NavigationLinkView(text: "Create poll", image: "chart.bar") {
             Section("Title") {
                 TextField("Title", text: $title)
             }
@@ -492,11 +365,39 @@ private struct CreatePollView: View {
                 HCenter {
                     ExecutorView(executor: executor) {
                         CreateButtonView {
-                            createPoll()
+                            executor.startProgress()
+                            model.createKickPoll(
+                                title: title.trim(),
+                                options: options.map { $0.text.trim() }.filter { !$0.isEmpty },
+                                duration: duration,
+                                resultDisplayDuration: resultDisplayDuration,
+                                onComplete: executor.completed
+                            )
                         }
                         .disabled(!canExecute())
                     }
                 }
+            }
+        }
+    }
+}
+
+private struct DeletePollView: View {
+    let model: Model
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        HStack {
+            IconAndTextLocalizedView(image: "chart.bar", text: "Delete poll")
+            Spacer()
+            ExecutorView(executor: executor) {
+                Button {
+                    executor.startProgress()
+                    model.deleteKickPoll(onComplete: executor.completed)
+                } label: {
+                    Text("Send")
+                }
+                .buttonStyle(.borderless)
             }
         }
     }
@@ -514,16 +415,8 @@ private struct CreatePredictionView: View {
         return !title.trim().isEmpty && !outcome1.trim().isEmpty && !outcome2.trim().isEmpty
     }
 
-    private func createPrediction() {
-        executor.startProgress()
-        model.createKickPrediction(title: title.trim(),
-                                   outcomes: [outcome1.trim(), outcome2.trim()],
-                                   duration: duration,
-                                   onComplete: executor.completed)
-    }
-
     var body: some View {
-        Form {
+        NavigationLinkView(text: "Create prediction", image: "sparkles") {
             Section("Title") {
                 TextField("Title", text: $title)
             }
@@ -542,7 +435,11 @@ private struct CreatePredictionView: View {
                 HCenter {
                     ExecutorView(executor: executor) {
                         CreateButtonView {
-                            createPrediction()
+                            executor.startProgress()
+                            model.createKickPrediction(title: title.trim(),
+                                                       outcomes: [outcome1.trim(), outcome2.trim()],
+                                                       duration: duration,
+                                                       onComplete: executor.completed)
                         }
                         .disabled(!canExecute())
                     }
@@ -613,22 +510,27 @@ private struct RunCommercialView: View {
     }
 }
 
-private struct StartPollView: View {
-    let model: Model
+private enum AnnouncementColor: String, CaseIterable {
+    case primary
+    case blue
+    case green
+    case orange
+    case purple
 
-    var body: some View {}
-}
-
-private struct DeletePollView: View {
-    let model: Model
-
-    var body: some View {}
-}
-
-private struct StartPredictionView: View {
-    let model: Model
-
-    var body: some View {}
+    func toString() -> String {
+        switch self {
+        case .primary:
+            return String(localized: "Primary")
+        case .blue:
+            return "🔵"
+        case .green:
+            return "🟢"
+        case .orange:
+            return "🟠"
+        case .purple:
+            return "🟣"
+        }
+    }
 }
 
 private struct SendAnnouncementView: View {
@@ -651,7 +553,7 @@ private struct SendAnnouncementView: View {
             Section {
                 Picker("Color", selection: $color) {
                     ForEach(AnnouncementColor.allCases, id: \.self) {
-                        Text($0.name())
+                        Text($0.toString())
                     }
                 }
             }
@@ -702,7 +604,7 @@ private struct EmotesOnlyView: View {
     let action: (Bool, @escaping (Bool) -> Void) -> Void
 
     var body: some View {
-        ToggleActionView(text: "Emotes only", image: "face.smiling", action: action)
+        ToggleActionView(text: "Emotes only", image: "face.smiling.inverse", action: action)
     }
 }
 
@@ -752,7 +654,7 @@ private struct TwitchUserModerationView: View {
 
     var body: some View {
         UserModerationView {
-            ForEach(ModActionType.actions(for: .userModeration, platform: .twitch), id: \.self) {
+            ForEach(ModActionType.allCases, id: \.self) {
                 ModActionRowView(model: model, action: $0, platform: .twitch)
             }
         }
@@ -818,7 +720,7 @@ private struct KickUserModerationView: View {
 
     var body: some View {
         UserModerationView {
-            ForEach(ModActionType.actions(for: .userModeration, platform: .kick), id: \.self) {
+            ForEach(ModActionType.allCases, id: \.self) {
                 ModActionRowView(model: model, action: $0, platform: .kick)
             }
         }
@@ -868,9 +770,9 @@ private struct KickChannelManagementView: View {
     var body: some View {
         ChannelManagementView {
             StartRaidView(model: model, text: "Host channel", action: model.hostKickChannel)
-            StartPollView(model: model)
+            CreatePollView(model: model)
             DeletePollView(model: model)
-            StartPredictionView(model: model)
+            CreatePredictionView(model: model)
         }
     }
 }
