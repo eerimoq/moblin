@@ -126,8 +126,6 @@ private enum ModActionType: CaseIterable {
     case poll
     case deletepoll
     case prediction
-    case commercial
-    case announcement
 
     func title(for platform: Platform) -> String {
         switch self {
@@ -157,10 +155,6 @@ private enum ModActionType: CaseIterable {
             return String(localized: "Delete poll")
         case .prediction:
             return String(localized: "Create prediction")
-        case .commercial:
-            return String(localized: "Run commercial")
-        case .announcement:
-            return String(localized: "Send announcement")
         }
     }
 
@@ -188,10 +182,6 @@ private enum ModActionType: CaseIterable {
             return "chart.bar.xaxis"
         case .prediction:
             return "sparkles"
-        case .commercial:
-            return "cup.and.saucer"
-        case .announcement:
-            return "megaphone"
         }
     }
 
@@ -199,7 +189,7 @@ private enum ModActionType: CaseIterable {
         switch self {
         case .ban, .timeout, .unban, .mod, .unmod, .vip, .unvip:
             return .userModeration
-        case .raid, .poll, .deletepoll, .prediction, .commercial, .announcement:
+        case .raid, .poll, .deletepoll, .prediction:
             return .channelManagement
         }
     }
@@ -223,16 +213,12 @@ private enum ModActionType: CaseIterable {
             || self == .timeout
             || self == .poll
             || self == .prediction
-            || self == .commercial
-            || self == .announcement
     }
 
     func isSupported(by platform: Platform) -> Bool {
         switch self {
         case .poll, .deletepoll, .prediction:
             return platform == .kick
-        case .commercial, .announcement:
-            return platform == .twitch
         default:
             return true
         }
@@ -313,10 +299,6 @@ private struct ModActionDetailView: View {
                 CreatePollView(model: model)
             case .prediction:
                 CreatePredictionView(model: model)
-            case .commercial:
-                RunCommercialView(model: model)
-            case .announcement:
-                SendAnnouncementView(model: model)
             default:
                 StandardActionFormView(model: model, action: action, platform: platform)
             }
@@ -583,13 +565,42 @@ private struct CreatePredictionView: View {
     }
 }
 
+private struct StartRaidView: View {
+    let model: Model
+    @State private var username: String = ""
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        NavigationLinkView(text: "Raid", image: "play.tv") {
+            Section {
+                TextField("Username", text: $username)
+                    .autocapitalization(.none)
+                    .autocorrectionDisabled()
+            } header: {
+                Text("Username")
+            }
+            Section {
+                HCenter {
+                    ExecutorView(executor: executor) {
+                        TextButtonView("Send") {
+                            executor.startProgress()
+                            model.raidTwitchChannelByName(channelName: username, onComplete: executor.completed)
+                        }
+                        .disabled(username.trim().isEmpty)
+                    }
+                }
+            }
+        }
+    }
+}
+
 private struct RunCommercialView: View {
     let model: Model
     @State private var duration = 30
     @StateObject private var executor = Executor()
 
     var body: some View {
-        Form {
+        NavigationLinkView(text: "Run commercial", image: "cup.and.saucer") {
             Section {
                 Picker("Duration", selection: $duration) {
                     ForEach([30, 60, 90, 120, 180], id: \.self) {
@@ -617,7 +628,6 @@ private struct SendAnnouncementView: View {
     let model: Model
     @State private var message = ""
     @State private var color: AnnouncementColor = .primary
-    @FocusState var editingText: Bool
     @StateObject private var executor = Executor()
 
     private func canSend() -> Bool {
@@ -625,22 +635,11 @@ private struct SendAnnouncementView: View {
     }
 
     var body: some View {
-        Form {
+        NavigationLinkView(text: "Send announcement", image: "megaphone") {
             Section {
-                MultiLineTextFieldView(value: $message)
-                    .focused($editingText)
+                TextField("Message", text: $message)
             } header: {
                 Text("Message")
-            } footer: {
-                if isPhone() {
-                    HStack {
-                        Spacer()
-                        Button("Done") {
-                            editingText = false
-                        }
-                    }
-                    .disabled(!editingText)
-                }
             }
             Section {
                 Picker("Color", selection: $color) {
@@ -783,9 +782,9 @@ private struct TwitchChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            ForEach(ModActionType.actions(for: .channelManagement, platform: .twitch), id: \.self) {
-                ModActionRowView(model: model, action: $0, platform: .twitch)
-            }
+            StartRaidView(model: model)
+            RunCommercialView(model: model)
+            SendAnnouncementView(model: model)
         }
     }
 }
