@@ -17,6 +17,23 @@ struct IconAndTextView: View {
     }
 }
 
+struct IconAndTextLocalizedView: View {
+    let image: String
+    let text: LocalizedStringKey
+    var longDivider: Bool = false
+
+    var body: some View {
+        HStack {
+            if longDivider {
+                Text("")
+            }
+            Image(systemName: image)
+                .frame(width: iconWidth)
+            Text(text)
+        }
+    }
+}
+
 struct IconAndTextSettingView: View {
     let image: String
     let text: LocalizedStringKey

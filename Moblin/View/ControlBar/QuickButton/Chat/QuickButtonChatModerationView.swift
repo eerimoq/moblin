@@ -47,7 +47,7 @@ private struct ExecutorView<Content: View>: View {
 }
 
 private struct ToggleActionView: View {
-    let text: String
+    let text: LocalizedStringKey
     let image: String
     let action: (Bool, @escaping (Bool) -> Void) -> Void
     @StateObject private var executor = Executor()
@@ -64,7 +64,7 @@ private struct ToggleActionView: View {
 
     var body: some View {
         HStack {
-            IconAndTextView(image: image, text: text)
+            IconAndTextLocalizedView(image: image, text: text)
             Spacer()
             ExecutorView(executor: executor) {
                 button(text: "On", on: true)
@@ -76,7 +76,7 @@ private struct ToggleActionView: View {
 }
 
 private struct DurationActionView: View {
-    let text: String
+    let text: LocalizedStringKey
     let image: String
     let durations: [Int]
     let action: (Int?, @escaping (Bool) -> Void) -> Void
@@ -85,7 +85,7 @@ private struct DurationActionView: View {
 
     var body: some View {
         HStack {
-            IconAndTextView(image: image, text: text)
+            IconAndTextLocalizedView(image: image, text: text)
             Spacer()
             ExecutorView(executor: executor) {
                 Picker("", selection: $duration) {
@@ -217,14 +217,10 @@ private enum ModActionType: CaseIterable {
         return self == .ban
     }
 
-    var requiresDuration: Bool {
-        return self == .timeout
-    }
-
     var needsDetailView: Bool {
         return requiresUsername
             || requiresReason
-            || requiresDuration
+            || self == .timeout
             || self == .poll
             || self == .prediction
             || self == .commercial
@@ -675,10 +671,7 @@ private struct SlowModeView: View {
     let action: (Int?, @escaping (Bool) -> Void) -> Void
 
     var body: some View {
-        DurationActionView(text: String(localized: "Slow mode"),
-                           image: "tortoise",
-                           durations: durations,
-                           action: action)
+        DurationActionView(text: "Slow mode", image: "tortoise", durations: durations, action: action)
     }
 }
 
@@ -687,10 +680,7 @@ private struct FollowersOnlyView: View {
     let action: (Int?, @escaping (Bool) -> Void) -> Void
 
     var body: some View {
-        DurationActionView(text: String(localized: "Followers only"),
-                           image: "person.2",
-                           durations: durations,
-                           action: action)
+        DurationActionView(text: "Followers only", image: "person.2", durations: durations, action: action)
     }
 }
 
@@ -698,7 +688,7 @@ private struct SubscribersOnlyView: View {
     let action: (Bool, @escaping (Bool) -> Void) -> Void
 
     var body: some View {
-        ToggleActionView(text: String(localized: "Subscribers only"), image: "star", action: action)
+        ToggleActionView(text: "Subscribers only", image: "star", action: action)
     }
 }
 
@@ -706,12 +696,12 @@ private struct EmotesOnlyView: View {
     let action: (Bool, @escaping (Bool) -> Void) -> Void
 
     var body: some View {
-        ToggleActionView(text: String(localized: "Emotes only"), image: "face.smiling", action: action)
+        ToggleActionView(text: "Emotes only", image: "face.smiling", action: action)
     }
 }
 
 private struct NavigationLinkView<Content: View>: View {
-    let text: String
+    let text: LocalizedStringKey
     let image: String
     @ViewBuilder let content: () -> Content
 
@@ -722,7 +712,7 @@ private struct NavigationLinkView<Content: View>: View {
             }
             .navigationTitle(text)
         } label: {
-            IconAndTextView(image: image, text: text)
+            IconAndTextLocalizedView(image: image, text: text)
         }
     }
 }
@@ -731,7 +721,7 @@ private struct UserModerationView<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        NavigationLinkView(text: String(localized: "User moderation"), image: "person", content: content)
+        NavigationLinkView(text: "User moderation", image: "person", content: content)
     }
 }
 
@@ -739,7 +729,7 @@ private struct ChatModesView<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        NavigationLinkView(text: String(localized: "Chat modes"), image: "bubble.left", content: content)
+        NavigationLinkView(text: "Chat modes", image: "bubble.left", content: content)
     }
 }
 
@@ -747,7 +737,7 @@ private struct ChannelManagementView<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        NavigationLinkView(text: String(localized: "Channel management"), image: "gearshape", content: content)
+        NavigationLinkView(text: "Channel management", image: "gearshape", content: content)
     }
 }
 
