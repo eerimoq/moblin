@@ -217,17 +217,24 @@ extension Model {
         }
     }
 
-    func startAds(seconds: Int, onComplete: @escaping (Bool) -> Void) {
+    func startAds(seconds: Int, onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream)
             .startCommercial(broadcasterId: stream.twitchChannelId, length: seconds) {
-                onComplete($0 != nil)
+                switch $0 {
+                case .success:
+                    onComplete(.success(Data()))
+                case .authError:
+                    onComplete(.authError)
+                case .error:
+                    onComplete(.error)
+                }
             }
     }
 
     func banTwitchUser(user _: String, userId: String,
                        duration: Int?,
                        reason: String? = nil,
-                       onComplete: @escaping (Bool) -> Void)
+                       onComplete: @escaping (OperationResult) -> Void)
     {
         createTwitchApi(stream: stream).banUser(
             broadcasterId: stream.twitchChannelId,
@@ -238,10 +245,10 @@ extension Model {
         )
     }
 
-    func banTwitchUser(user: String, duration: Int?, reason: String?, onComplete: @escaping (Bool) -> Void) {
+    func banTwitchUser(user: String, duration: Int?, reason: String?, onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                onComplete(false)
+                onComplete(.error)
                 return
             }
             self.banTwitchUser(user: user,
@@ -252,11 +259,11 @@ extension Model {
         }
     }
 
-    func unbanTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func unbanTwitchUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                onComplete(false)
+                onComplete(.error)
                 return
             }
             twitchApi.unbanUser(
@@ -267,11 +274,11 @@ extension Model {
         }
     }
 
-    func modTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func modTwitchUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                onComplete(false)
+                onComplete(.error)
                 return
             }
             twitchApi.addModerator(
@@ -282,11 +289,11 @@ extension Model {
         }
     }
 
-    func unmodTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func unmodTwitchUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                onComplete(false)
+                onComplete(.error)
                 return
             }
             twitchApi.removeModerator(
@@ -297,11 +304,11 @@ extension Model {
         }
     }
 
-    func vipTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func vipTwitchUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                onComplete(false)
+                onComplete(.error)
                 return
             }
             twitchApi.addVip(
@@ -312,11 +319,11 @@ extension Model {
         }
     }
 
-    func unvipTwitchUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func unvipTwitchUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         let twitchApi = createTwitchApi(stream: stream)
         twitchApi.getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
-                onComplete(false)
+                onComplete(.error)
                 return
             }
             twitchApi.removeVip(
@@ -327,7 +334,7 @@ extension Model {
         }
     }
 
-    func sendTwitchAnnouncement(message: String, color: String, onComplete: @escaping (Bool) -> Void) {
+    func sendTwitchAnnouncement(message: String, color: String, onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream).sendAnnouncement(
             broadcasterId: stream.twitchChannelId,
             message: message,
@@ -336,7 +343,7 @@ extension Model {
         )
     }
 
-    func setTwitchSlowMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (Bool) -> Void) {
+    func setTwitchSlowMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (OperationResult) -> Void) {
         var settings: [String: Any] = ["slow_mode": enabled]
         if enabled, let duration {
             settings["slow_mode_wait_time"] = duration
@@ -348,7 +355,7 @@ extension Model {
         )
     }
 
-    func setTwitchFollowersMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (Bool) -> Void) {
+    func setTwitchFollowersMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (OperationResult) -> Void) {
         var settings: [String: Any] = ["follower_mode": enabled]
         if enabled, let duration {
             settings["follower_mode_duration"] = duration
@@ -360,7 +367,7 @@ extension Model {
         )
     }
 
-    func setTwitchEmoteOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+    func setTwitchEmoteOnlyMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
             settings: ["emote_mode": enabled],
@@ -368,7 +375,7 @@ extension Model {
         )
     }
 
-    func setTwitchSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+    func setTwitchSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream).updateChatSettings(
             broadcasterId: stream.twitchChannelId,
             settings: ["subscriber_mode": enabled],
@@ -382,26 +389,16 @@ extension Model {
             }
     }
 
-    func raidTwitchChannel(channelName: String, channelId: String, onComplete: @escaping (Bool) -> Void) {
+    func raidTwitchChannel(channelName _: String, channelId: String, onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream).startRaid(broadcasterId: stream.twitchChannelId,
-                                                  toBroadcasterId: channelId)
-        {
-            switch $0 {
-            case .success:
-                onComplete(true)
-            case .error:
-                self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
-                onComplete(false)
-            case .authError:
-                onComplete(false)
-            }
-        }
+                                                  toBroadcasterId: channelId,
+                                                  onComplete: onComplete)
     }
 
-    func raidTwitchChannelByName(channelName: String, onComplete: @escaping (Bool) -> Void) {
+    func raidTwitchChannelByName(channelName: String, onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream).searchChannel(channelName: channelName) { channel in
             guard let channel else {
-                onComplete(false)
+                onComplete(.error)
                 return
             }
             self.raidTwitchChannel(channelName: channel.broadcaster_login,

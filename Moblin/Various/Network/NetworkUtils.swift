@@ -66,3 +66,5 @@ enum NetworkResponse<T> {
         }
     }
 }
+
+typealias OperationResult = NetworkResponse<Data>

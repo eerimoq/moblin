@@ -100,58 +100,62 @@ extension Model {
         createKickApi(stream: stream).sendMessage(message: message)
     }
 
-    func banKickUser(user: String, duration: Int? = nil, reason: String? = nil, onComplete: @escaping (Bool) -> Void) {
+    func banKickUser(user: String,
+                     duration: Int? = nil,
+                     reason: String? = nil,
+                     onComplete: @escaping (OperationResult) -> Void)
+    {
         createKickApi(stream: stream).banUser(user: user, duration: duration, reason: reason, onComplete: onComplete)
     }
 
-    func unbanKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func unbanKickUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).unbanUser(user: user, onComplete: onComplete)
     }
 
-    func modKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func modKickUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).addModerator(user: user, onComplete: onComplete)
     }
 
-    func unmodKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func unmodKickUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).removeModerator(user: user, onComplete: onComplete)
     }
 
-    func vipKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func vipKickUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).addVip(user: user, onComplete: onComplete)
     }
 
-    func unvipKickUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func unvipKickUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).removeVip(user: user, onComplete: onComplete)
     }
 
-    func hostKickChannel(channel: String, onComplete: @escaping (Bool) -> Void) {
+    func hostKickChannel(channel: String, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).hostChannel(channel: channel, onComplete: onComplete)
     }
 
-    func enableKickSlowMode(messageInterval: Int, onComplete: @escaping (Bool) -> Void) {
+    func enableKickSlowMode(messageInterval: Int, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).enableSlowMode(messageInterval: messageInterval, onComplete: onComplete)
     }
 
-    func disableKickSlowMode(onComplete: @escaping (Bool) -> Void) {
+    func disableKickSlowMode(onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).disableSlowMode(onComplete: onComplete)
     }
 
-    func enableKickFollowersMode(followingMinDuration: Int, onComplete: @escaping (Bool) -> Void) {
+    func enableKickFollowersMode(followingMinDuration: Int, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).enableFollowersMode(
             minimumDuration: followingMinDuration,
             onComplete: onComplete
         )
     }
 
-    func disableKickFollowersMode(onComplete: @escaping (Bool) -> Void) {
+    func disableKickFollowersMode(onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).disableFollowersMode(onComplete: onComplete)
     }
 
-    func setKickEmoteOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+    func setKickEmoteOnlyMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).setEmoteOnlyMode(enabled: enabled, onComplete: onComplete)
     }
 
-    func setKickSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+    func setKickSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).setSubscribersOnlyMode(enabled: enabled, onComplete: onComplete)
     }
 
@@ -159,7 +163,7 @@ extension Model {
                         options: [String],
                         duration: Int,
                         resultDisplayDuration: Int,
-                        onComplete: @escaping (Bool) -> Void)
+                        onComplete: @escaping (OperationResult) -> Void)
     {
         createKickApi(stream: stream).createPoll(
             title: title,
@@ -170,7 +174,7 @@ extension Model {
         )
     }
 
-    func deleteKickPoll(onComplete: @escaping (Bool) -> Void) {
+    func deleteKickPoll(onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).deletePoll {
             onComplete($0)
         }
@@ -179,7 +183,7 @@ extension Model {
     func createKickPrediction(title: String,
                               outcomes: [String],
                               duration: Int,
-                              onComplete: @escaping (Bool) -> Void)
+                              onComplete: @escaping (OperationResult) -> Void)
     {
         createKickApi(stream: stream).createPrediction(title: title,
                                                        outcomes: outcomes,
@@ -191,11 +195,11 @@ extension Model {
         createKickApi(stream: stream).deleteMessage(messageId: messageId)
     }
 
-    func getKickStreamInfo(stream: SettingsStream, onComplete: @escaping (KickStreamInfo?) -> Void) {
+    func getKickStreamInfo(stream: SettingsStream, onComplete: @escaping (NetworkResponse<KickStreamInfo>) -> Void) {
         createKickApi(stream: stream).getStreamInfo(onComplete: onComplete)
     }
 
-    func setKickStreamTitle(stream: SettingsStream, title: String, onComplete: @escaping (String) -> Void) {
+    func setKickStreamTitle(stream: SettingsStream, title: String, onComplete: @escaping (OperationResult) -> Void) {
         createKickApi(stream: stream).setStreamTitle(title: title, onComplete: onComplete)
     }
 
@@ -210,8 +214,8 @@ extension Model {
     }
 
     func setKickStreamCategory(stream: SettingsStream, categoryId: Int) {
-        createKickApi(stream: stream).setStreamCategory(categoryId: categoryId) { ok in
-            if !ok {
+        createKickApi(stream: stream).setStreamCategory(categoryId: categoryId) {
+            if !$0.isSuccessful() {
                 self.makeErrorToast(title: "Failed to set stream category")
             }
         }

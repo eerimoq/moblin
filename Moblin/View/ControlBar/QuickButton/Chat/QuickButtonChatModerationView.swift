@@ -4,6 +4,7 @@ private enum ExecutorState {
     case idle
     case inProgress
     case success
+    case authError
     case error
 }
 
@@ -14,10 +15,13 @@ private class Executor: ObservableObject {
         state = .inProgress
     }
 
-    func completed(ok: Bool) {
-        if ok {
+    func completed(result: OperationResult) {
+        switch result {
+        case .success:
             state = .success
-        } else {
+        case .authError:
+            state = .authError
+        case .error:
             state = .error
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -39,6 +43,9 @@ private struct ExecutorView<Content: View>: View {
         case .success:
             Text("Success")
                 .foregroundStyle(.green)
+        case .authError:
+            Text("Not logged in")
+                .foregroundStyle(.red)
         case .error:
             Text("Failed")
                 .foregroundStyle(.red)
@@ -49,7 +56,7 @@ private struct ExecutorView<Content: View>: View {
 private struct ToggleActionView: View {
     let text: LocalizedStringKey
     let image: String
-    let action: (Bool, @escaping (Bool) -> Void) -> Void
+    let action: (Bool, @escaping (OperationResult) -> Void) -> Void
     @StateObject private var executor = Executor()
 
     private func button(text: LocalizedStringKey, on: Bool) -> some View {
@@ -79,7 +86,7 @@ private struct DurationActionView: View {
     let text: LocalizedStringKey
     let image: String
     let durations: [Int]
-    let action: (Int?, @escaping (Bool) -> Void) -> Void
+    let action: (Int?, @escaping (OperationResult) -> Void) -> Void
     @StateObject private var executor = Executor()
     @State private var duration: Int?
 
@@ -171,7 +178,7 @@ private struct UserModerationItemView: View {
         return !username.trim().isEmpty
     }
 
-    private func executeAction(onComplete: @escaping (Bool) -> Void) {
+    private func executeAction(onComplete: @escaping (OperationResult) -> Void) {
         let user = username.trim()
         let banReason = reason.trim()
         switch platform {
@@ -184,7 +191,10 @@ private struct UserModerationItemView: View {
         }
     }
 
-    private func executeKickAction(user: String, banReason: String, onComplete: @escaping (Bool) -> Void) {
+    private func executeKickAction(user: String,
+                                   banReason: String,
+                                   onComplete: @escaping (OperationResult) -> Void)
+    {
         switch action {
         case .ban:
             model.banKickUser(user: user,
@@ -206,7 +216,10 @@ private struct UserModerationItemView: View {
         }
     }
 
-    private func executeTwitchAction(user: String, banReason: String, onComplete: @escaping (Bool) -> Void) {
+    private func executeTwitchAction(user: String,
+                                     banReason: String,
+                                     onComplete: @escaping (OperationResult) -> Void)
+    {
         switch action {
         case .ban:
             model.banTwitchUser(
@@ -417,7 +430,7 @@ private struct CreatePredictionView: View {
 private struct StartRaidView: View {
     let model: Model
     let text: LocalizedStringKey
-    let action: (String, @escaping (Bool) -> Void) -> Void
+    let action: (String, @escaping (OperationResult) -> Void) -> Void
     @State private var username: String = ""
     @StateObject private var executor = Executor()
 
@@ -541,7 +554,7 @@ private struct SendAnnouncementView: View {
 
 private struct SlowModeView: View {
     let durations: [Int]
-    let action: (Int?, @escaping (Bool) -> Void) -> Void
+    let action: (Int?, @escaping (OperationResult) -> Void) -> Void
 
     var body: some View {
         DurationActionView(text: "Slow mode", image: "tortoise", durations: durations, action: action)
@@ -550,7 +563,7 @@ private struct SlowModeView: View {
 
 private struct FollowersOnlyView: View {
     let durations: [Int]
-    let action: (Int?, @escaping (Bool) -> Void) -> Void
+    let action: (Int?, @escaping (OperationResult) -> Void) -> Void
 
     var body: some View {
         DurationActionView(text: "Followers only", image: "person.2", durations: durations, action: action)
@@ -558,7 +571,7 @@ private struct FollowersOnlyView: View {
 }
 
 private struct SubscribersOnlyView: View {
-    let action: (Bool, @escaping (Bool) -> Void) -> Void
+    let action: (Bool, @escaping (OperationResult) -> Void) -> Void
 
     var body: some View {
         ToggleActionView(text: "Subscribers only", image: "star", action: action)
@@ -566,7 +579,7 @@ private struct SubscribersOnlyView: View {
 }
 
 private struct EmotesOnlyView: View {
-    let action: (Bool, @escaping (Bool) -> Void) -> Void
+    let action: (Bool, @escaping (OperationResult) -> Void) -> Void
 
     var body: some View {
         ToggleActionView(text: "Emotes only", image: "face.smiling.inverse", action: action)
@@ -629,16 +642,14 @@ private struct TwitchUserModerationView: View {
 private struct TwitchChatModesView: View {
     let model: Model
 
-    private func slowModeAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
-        model.setTwitchSlowMode(enabled: duration != nil, duration: duration) {
-            onComplete($0)
-        }
+    private func slowModeAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
+        model.setTwitchSlowMode(enabled: duration != nil, duration: duration, onComplete: onComplete)
     }
 
-    private func followersOnlyAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
-        model.setTwitchFollowersMode(enabled: duration != nil, duration: (duration ?? 0) / 60) {
-            onComplete($0)
-        }
+    private func followersOnlyAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
+        model.setTwitchFollowersMode(enabled: duration != nil,
+                                     duration: (duration ?? 0) / 60,
+                                     onComplete: onComplete)
     }
 
     var body: some View {
@@ -695,27 +706,19 @@ private struct KickUserModerationView: View {
 private struct KickChatModesView: View {
     let model: Model
 
-    private func slowModeAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
+    private func slowModeAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
         if let duration {
-            model.enableKickSlowMode(messageInterval: duration) {
-                onComplete($0)
-            }
+            model.enableKickSlowMode(messageInterval: duration, onComplete: onComplete)
         } else {
-            model.disableKickSlowMode {
-                onComplete($0)
-            }
+            model.disableKickSlowMode(onComplete: onComplete)
         }
     }
 
-    private func followersOnlyAction(duration: Int?, onComplete: @escaping (Bool) -> Void) {
+    private func followersOnlyAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
         if let duration {
-            model.enableKickFollowersMode(followingMinDuration: duration / 60) {
-                onComplete($0)
-            }
+            model.enableKickFollowersMode(followingMinDuration: duration / 60, onComplete: onComplete)
         } else {
-            model.disableKickFollowersMode {
-                onComplete($0)
-            }
+            model.disableKickFollowersMode(onComplete: onComplete)
         }
     }
 

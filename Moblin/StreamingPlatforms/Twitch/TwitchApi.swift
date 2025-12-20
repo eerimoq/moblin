@@ -291,7 +291,7 @@ class TwitchApi {
     func startCommercial(
         broadcasterId: String,
         length: Int,
-        onComplete: @escaping (TwitchApiStartCommercialData?) -> Void
+        onComplete: @escaping (NetworkResponse<TwitchApiStartCommercialData>) -> Void
     ) {
         let body: [String: Any] = [
             "broadcaster_id": broadcasterId,
@@ -300,10 +300,15 @@ class TwitchApi {
         doPost(subPath: "channels/commercial", body: serialize(body)) {
             switch $0 {
             case let .success(data):
-                let message = try? JSONDecoder().decode(TwitchApiStartCommercial.self, from: data)
-                onComplete(message?.data.first)
-            default:
-                onComplete(nil)
+                if let message = (try? JSONDecoder().decode(TwitchApiStartCommercial.self, from: data))?.data.first {
+                    onComplete(.success(message))
+                } else {
+                    onComplete(.error)
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
             }
         }
     }
@@ -313,7 +318,7 @@ class TwitchApi {
         userId: String,
         duration: Int?,
         reason: String?,
-        onComplete: @escaping (Bool) -> Void
+        onComplete: @escaping (OperationResult) -> Void
     ) {
         var data: [String: Any] = ["user_id": userId]
         if let duration {
@@ -323,73 +328,69 @@ class TwitchApi {
             data["reason"] = reason
         }
         doPost(subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
-               body: serialize(["data": data]))
-        {
-            onComplete($0.isSuccessful())
-        }
+               body: serialize(["data": data]),
+               onComplete: onComplete)
     }
 
-    func unbanUser(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
+    func unbanUser(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
         doDelete(
-            subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)&user_id=\(userId)"
-        ) {
-            onComplete($0.isSuccessful())
-        }
-    }
-
-    func addModerator(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
-        doPost(
-            subPath: "moderation/moderators?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            body: Data()
-        ) {
-            onComplete($0.isSuccessful())
-        }
-    }
-
-    func removeModerator(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
-        doDelete(
-            subPath: "moderation/moderators?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            onComplete: {
-                onComplete($0.isSuccessful())
-            }
+            subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)&user_id=\(userId)",
+            onComplete: onComplete
         )
     }
 
-    func addVip(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
+    func addModerator(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
+        doPost(
+            subPath: "moderation/moderators?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
+            body: Data(),
+            onComplete: onComplete
+        )
+    }
+
+    func removeModerator(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
+        doDelete(
+            subPath: "moderation/moderators?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
+            onComplete: onComplete
+        )
+    }
+
+    func addVip(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
         doPost(
             subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            body: Data()
-        ) {
-            onComplete($0.isSuccessful())
-        }
+            body: Data(),
+            onComplete: onComplete
+        )
     }
 
-    func removeVip(broadcasterId: String, userId: String, onComplete: @escaping (Bool) -> Void) {
-        doDelete(subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)") {
-            onComplete($0.isSuccessful())
-        }
+    func removeVip(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
+        doDelete(subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)", onComplete: onComplete)
     }
 
-    func sendAnnouncement(broadcasterId: String, message: String, color: String, onComplete: @escaping (Bool) -> Void) {
+    func sendAnnouncement(broadcasterId: String,
+                          message: String,
+                          color: String,
+                          onComplete: @escaping (OperationResult) -> Void)
+    {
         let body: [String: Any] = [
             "message": message,
             "color": color,
         ]
         doPost(
             subPath: "chat/announcements?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
-            body: serialize(body)
-        ) {
-            onComplete($0.isSuccessful())
-        }
+            body: serialize(body),
+            onComplete: onComplete
+        )
     }
 
-    func updateChatSettings(broadcasterId: String, settings: [String: Any], onComplete: @escaping (Bool) -> Void) {
+    func updateChatSettings(
+        broadcasterId: String,
+        settings: [String: Any],
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         doPatch(
             subPath: "chat/settings?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
             body: serialize(settings),
-            onComplete: {
-                onComplete($0.isSuccessful())
-            }
+            onComplete: onComplete
         )
     }
 
@@ -456,10 +457,7 @@ class TwitchApi {
         }
     }
 
-    func startRaid(broadcasterId: String,
-                   toBroadcasterId: String,
-                   onComplete: @escaping (NetworkResponse<Data>) -> Void)
-    {
+    func startRaid(broadcasterId: String, toBroadcasterId: String, onComplete: @escaping (OperationResult) -> Void) {
         var components = URLComponents()
         components.queryItems = [
             URLQueryItem(name: "from_broadcaster_id", value: broadcasterId),
@@ -587,7 +585,7 @@ class TwitchApi {
         }
     }
 
-    private func doGet(subPath: String, onComplete: @escaping ((NetworkResponse<Data>) -> Void)) {
+    private func doGet(subPath: String, onComplete: @escaping ((OperationResult) -> Void)) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -595,10 +593,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doPost(subPath: String,
-                        body: Data,
-                        onComplete: @escaping (NetworkResponse<Data>) -> Void)
-    {
+    private func doPost(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -607,10 +602,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doPatch(subPath: String,
-                         body: Data,
-                         onComplete: @escaping (NetworkResponse<Data>) -> Void)
-    {
+    private func doPatch(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -619,7 +611,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doDelete(subPath: String, onComplete: @escaping (NetworkResponse<Data>) -> Void) {
+    private func doDelete(subPath: String, onComplete: @escaping (OperationResult) -> Void) {
         guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
             return
         }
@@ -627,7 +619,7 @@ class TwitchApi {
         doRequest(request, onComplete)
     }
 
-    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (NetworkResponse<Data>) -> Void) {
+    private func doRequest(_ request: URLRequest, _ onComplete: @escaping (OperationResult) -> Void) {
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
                 guard error == nil, let data, response?.http?.isSuccessful == true else {

@@ -148,18 +148,20 @@ class KickApi {
         doV2Request(method: "POST",
                     subPath: "messages/send/\(channelId)",
                     body: ["type": "message", "content": message])
-        { _, _ in
-        }
+        { _ in }
     }
 
     func deleteMessage(messageId: String) {
         doV2Request(method: "DELETE",
                     subPath: "chatrooms/\(channelId)/messages/\(messageId)")
-        { _, _ in
-        }
+        { _ in }
     }
 
-    func banUser(user: String, duration: Int? = nil, reason: String? = nil, onComplete: @escaping (Bool) -> Void) {
+    func banUser(user: String,
+                 duration: Int? = nil,
+                 reason: String? = nil,
+                 onComplete: @escaping (OperationResult) -> Void)
+    {
         var body: [String: Any] = [
             "banned_username": user,
             "permanent": duration == nil,
@@ -172,92 +174,92 @@ class KickApi {
         }
         doV2Request(method: "POST",
                     subPath: "channels/\(slug)/bans",
-                    body: body)
-        { ok, _ in onComplete(ok) }
+                    body: body,
+                    onComplete: onComplete)
     }
 
-    func unbanUser(user: String, onComplete: @escaping (Bool) -> Void) {
+    func unbanUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "DELETE",
-                    subPath: "channels/\(slug)/bans/\(user)")
-        { ok, _ in onComplete(ok) }
+                    subPath: "channels/\(slug)/bans/\(user)",
+                    onComplete: onComplete)
     }
 
-    func addModerator(user: String, onComplete: @escaping (Bool) -> Void) {
+    func addModerator(user: String, onComplete: @escaping (OperationResult) -> Void) {
         doInternalV1Request(method: "POST",
                             subPath: "channels/\(slug)/community/moderators",
-                            body: ["username": user])
-        { ok, _ in onComplete(ok) }
+                            body: ["username": user],
+                            onComplete: onComplete)
     }
 
-    func removeModerator(user: String, onComplete: @escaping (Bool) -> Void) {
+    func removeModerator(user: String, onComplete: @escaping (OperationResult) -> Void) {
         doInternalV1Request(method: "DELETE",
-                            subPath: "channels/\(slug)/community/moderators/\(user)")
-        { ok, _ in onComplete(ok) }
+                            subPath: "channels/\(slug)/community/moderators/\(user)",
+                            onComplete: onComplete)
     }
 
-    func addVip(user: String, onComplete: @escaping (Bool) -> Void) {
+    func addVip(user: String, onComplete: @escaping (OperationResult) -> Void) {
         doInternalV1Request(method: "POST",
                             subPath: "channels/\(slug)/community/vips",
-                            body: ["username": user])
-        { ok, _ in onComplete(ok) }
+                            body: ["username": user],
+                            onComplete: onComplete)
     }
 
-    func removeVip(user: String, onComplete: @escaping (Bool) -> Void) {
+    func removeVip(user: String, onComplete: @escaping (OperationResult) -> Void) {
         doInternalV1Request(method: "DELETE",
-                            subPath: "channels/\(slug)/community/vips/\(user)")
-        { ok, _ in onComplete(ok) }
+                            subPath: "channels/\(slug)/community/vips/\(user)",
+                            onComplete: onComplete)
     }
 
-    func hostChannel(channel: String, onComplete: @escaping (Bool) -> Void) {
+    func hostChannel(channel: String, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "POST",
                     subPath: "channels/\(slug)/chat-commands",
-                    body: ["command": "host", "parameter": channel])
-        { ok, _ in onComplete(ok) }
+                    body: ["command": "host", "parameter": channel],
+                    onComplete: onComplete)
     }
 
-    func enableSlowMode(messageInterval: Int, onComplete: @escaping (Bool) -> Void) {
+    func enableSlowMode(messageInterval: Int, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
-                    body: ["slow_mode": true, "message_interval": messageInterval])
-        { ok, _ in onComplete(ok) }
+                    body: ["slow_mode": true, "message_interval": messageInterval],
+                    onComplete: onComplete)
     }
 
-    func disableSlowMode(onComplete: @escaping (Bool) -> Void) {
+    func disableSlowMode(onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
-                    body: ["slow_mode": false])
-        { ok, _ in onComplete(ok) }
+                    body: ["slow_mode": false],
+                    onComplete: onComplete)
     }
 
-    func enableFollowersMode(minimumDuration: Int, onComplete: @escaping (Bool) -> Void) {
+    func enableFollowersMode(minimumDuration: Int, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
                     body: [
                         "followers_mode": true,
                         "following_min_duration": minimumDuration,
-                    ])
-        { ok, _ in onComplete(ok) }
+                    ],
+                    onComplete: onComplete)
     }
 
-    func disableFollowersMode(onComplete: @escaping (Bool) -> Void) {
+    func disableFollowersMode(onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
-                    body: ["followers_mode": false])
-        { ok, _ in onComplete(ok) }
+                    body: ["followers_mode": false],
+                    onComplete: onComplete)
     }
 
-    func setEmoteOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+    func setEmoteOnlyMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
-                    body: ["emotes_mode": enabled])
-        { ok, _ in onComplete(ok) }
+                    body: ["emotes_mode": enabled],
+                    onComplete: onComplete)
     }
 
-    func setSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (Bool) -> Void) {
+    func setSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
-                    body: ["subscribers_mode": enabled])
-        { ok, _ in onComplete(ok) }
+                    body: ["subscribers_mode": enabled],
+                    onComplete: onComplete)
     }
 
     func createPoll(
@@ -265,7 +267,7 @@ class KickApi {
         options: [String],
         duration: Int,
         resultDisplayDuration: Int,
-        onComplete: @escaping (Bool) -> Void
+        onComplete: @escaping (OperationResult) -> Void
     ) {
         let body: [String: Any] = [
             "title": title,
@@ -275,17 +277,21 @@ class KickApi {
         ]
         doV2Request(method: "POST",
                     subPath: "channels/\(slug)/polls",
-                    body: body)
-        { ok, _ in onComplete(ok) }
+                    body: body,
+                    onComplete: onComplete)
     }
 
-    func deletePoll(onComplete: @escaping (Bool) -> Void) {
+    func deletePoll(onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "DELETE",
-                    subPath: "channels/\(slug)/polls")
-        { ok, _ in onComplete(ok) }
+                    subPath: "channels/\(slug)/polls",
+                    onComplete: onComplete)
     }
 
-    func createPrediction(title: String, outcomes: [String], duration: Int, onComplete: @escaping (Bool) -> Void) {
+    func createPrediction(title: String,
+                          outcomes: [String],
+                          duration: Int,
+                          onComplete: @escaping (OperationResult) -> Void)
+    {
         let body: [String: Any] = [
             "title": title,
             "outcomes": outcomes,
@@ -293,48 +299,45 @@ class KickApi {
         ]
         doV2Request(method: "POST",
                     subPath: "channels/\(slug)/predictions",
-                    body: body)
-        { ok, _ in onComplete(ok) }
+                    body: body,
+                    onComplete: onComplete)
     }
 
-    func getStreamInfo(onComplete: @escaping (KickStreamInfo?) -> Void) {
-        doV2Request(method: "GET",
-                    subPath: "channels/\(slug)/stream-info")
-        { ok, data in
-            guard ok,
-                  let data,
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let title = json["stream_title"] as? String
-            else {
-                onComplete(nil)
-                return
+    func getStreamInfo(onComplete: @escaping (NetworkResponse<KickStreamInfo>) -> Void) {
+        doV2Request(method: "GET", subPath: "channels/\(slug)/stream-info") { result in
+            switch result {
+            case let .success(data):
+                guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let title = json["stream_title"] as? String
+                else {
+                    onComplete(.error)
+                    return
+                }
+                var categoryName: String?
+                if let category = json["category"] as? [String: Any] {
+                    categoryName = category["name"] as? String
+                }
+                onComplete(.success(KickStreamInfo(title: title, categoryName: categoryName)))
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
             }
-            var categoryName: String?
-            if let category = json["category"] as? [String: Any] {
-                categoryName = category["name"] as? String
-            }
-            onComplete(KickStreamInfo(title: title, categoryName: categoryName))
         }
     }
 
-    func setStreamTitle(title: String, onComplete: @escaping (String) -> Void) {
+    func setStreamTitle(title: String, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PATCH",
                     subPath: "channels/\(slug)/stream-info",
-                    body: ["stream_title": title])
-        { ok, _ in
-            if ok {
-                onComplete(title)
-            }
-        }
+                    body: ["stream_title": title],
+                    onComplete: onComplete)
     }
 
-    func setStreamCategory(categoryId: Int, onComplete: @escaping (Bool) -> Void) {
+    func setStreamCategory(categoryId: Int, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PATCH",
                     subPath: "channels/\(slug)/stream-info",
-                    body: ["category_id": categoryId])
-        { ok, _ in
-            onComplete(ok)
-        }
+                    body: ["category_id": categoryId],
+                    onComplete: onComplete)
     }
 
     func searchCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
@@ -375,7 +378,7 @@ class KickApi {
     private func doV2Request(method: String,
                              subPath: String,
                              body: [String: Any]? = nil,
-                             onComplete: @escaping (Bool, Data?) -> Void)
+                             onComplete: @escaping (OperationResult) -> Void)
     {
         doRequest(method: method, subPath: "v2/\(subPath)", body: body, onComplete: onComplete)
     }
@@ -383,7 +386,7 @@ class KickApi {
     private func doInternalV1Request(method: String,
                                      subPath: String,
                                      body: [String: Any]? = nil,
-                                     onComplete: @escaping (Bool, Data?) -> Void)
+                                     onComplete: @escaping (OperationResult) -> Void)
     {
         doRequest(method: method, subPath: "internal/v1/\(subPath)", body: body, onComplete: onComplete)
     }
@@ -391,7 +394,7 @@ class KickApi {
     private func doRequest(method: String,
                            subPath: String,
                            body: [String: Any]? = nil,
-                           onComplete: @escaping (Bool, Data?) -> Void)
+                           onComplete: @escaping (OperationResult) -> Void)
     {
         guard let url = URL(string: "https://kick.com/api/\(subPath)") else {
             return
@@ -405,8 +408,18 @@ class KickApi {
         }
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
-                let ok = error == nil && response?.http?.isSuccessful == true
-                onComplete(ok, data)
+                guard error == nil, let data, response?.http?.isSuccessful == true else {
+                    if let data, let data = String(bytes: data, encoding: .utf8) {
+                        logger.info("kick-api: Error response body: \(data)")
+                    }
+                    if response?.http?.isUnauthorized == true {
+                        onComplete(.authError)
+                    } else {
+                        onComplete(.error)
+                    }
+                    return
+                }
+                onComplete(.success(data))
             }
         }
         .resume()

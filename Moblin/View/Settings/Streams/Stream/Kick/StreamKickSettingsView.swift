@@ -302,9 +302,14 @@ func loadKickStreamInfo(model: Model,
         return
     }
     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-        model.getKickStreamInfo(stream: stream) { info in
+        model.getKickStreamInfo(stream: stream) { result in
             DispatchQueue.main.async {
-                onChange(info?.title, info?.categoryName)
+                switch result {
+                case let .success(info):
+                    onChange(info.title, info.categoryName)
+                default:
+                    onChange(nil, nil)
+                }
             }
         }
     }
