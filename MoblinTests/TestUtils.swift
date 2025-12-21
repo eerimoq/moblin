@@ -1,3 +1,7 @@
+import Foundation
+
+private final class BundleToken {}
+
 func isEqual<T: FloatingPoint>(_ actual: T, _ expected: T, epsilon: T) -> Bool {
     return abs(actual - expected) < epsilon
 }
@@ -23,4 +27,14 @@ class MessageQueue<Message> {
             }
         }
     }
+}
+
+func readMainFile(name: String, suffix: String) throws -> Data {
+    let url = Bundle.main.url(forResource: name, withExtension: suffix)!
+    return try Data(contentsOf: url)
+}
+
+func readTestFile(name: String, suffix: String) throws -> Data {
+    let url = Bundle(for: BundleToken.self).url(forResource: name, withExtension: suffix)!
+    return try Data(contentsOf: url)
 }

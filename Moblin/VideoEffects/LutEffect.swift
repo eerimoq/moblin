@@ -48,7 +48,7 @@ private func convertLutTo64(bigLut: [SIMD3<Float>], bigDimension: Int) -> [SIMD3
     return lut64
 }
 
-private func convertLut(image: UIImage) throws -> (Float, Data) {
+func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
     let width = image.size.width * image.scale
     let height = image.size.height * image.scale
     let dimension = Int(cbrt(Double(width * height)))
@@ -82,6 +82,9 @@ private func convertLut(image: UIImage) throws -> (Float, Data) {
     let numberOutputOfComponents = numberOfPixels * 4
     var cube = UnsafeMutablePointer<Float>.allocate(capacity: numberOutputOfComponents)
     let componentsPerPixel = cgImage.bitsPerPixel / cgImage.bitsPerComponent
+    guard componentsPerPixel == 3 || componentsPerPixel == 4 else {
+        throw String(localized: "LUT image is not 3 or 4 components per pixel")
+    }
     let hasAlpha = componentsPerPixel == 4
     let originalCube = cube
     let rows = Int(height) / dimension
@@ -203,7 +206,7 @@ final class LutEffect: VideoEffect {
     }
 
     private func loadImageLut(image: UIImage) throws {
-        let (dimension, data) = try convertLut(image: image)
+        let (dimension, data) = try lutEffectConvertLut(image: image)
         let filter = CIFilter.colorCubeWithColorSpace()
         filter.cubeData = data
         filter.cubeDimension = dimension
