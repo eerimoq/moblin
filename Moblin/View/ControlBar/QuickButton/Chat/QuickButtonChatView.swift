@@ -694,17 +694,39 @@ private struct SendMessagesToSelectorView: View {
     }
 }
 
-private struct ControlMessagesButtonView: View {
+private struct ControlMenuButtonView: View {
     let model: Model
+    @State var showingMenu: Bool = false
     @State var showingPredefinedMessages: Bool = false
 
     var body: some View {
         Button {
-            showingPredefinedMessages = true
+            showingMenu = true
         } label: {
-            Image(systemName: "list.bullet")
+            Image(systemName: "ellipsis")
                 .font(.title)
-                .padding(5)
+                .rotationEffect(.degrees(90))
+                .padding([.trailing], 13)
+        }
+        .popover(isPresented: $showingMenu) {
+            VStack(alignment: .leading, spacing: 0) {
+                Button {
+                    showingMenu = false
+                    model.isPresentingModeration = true
+                } label: {
+                    IconAndTextLocalizedView(image: "shield", text: "Moderation")
+                        .padding()
+                }
+                Divider()
+                Button {
+                    showingMenu = false
+                    showingPredefinedMessages = true
+                } label: {
+                    IconAndTextLocalizedView(image: "list.bullet", text: "Predefined messages")
+                        .padding()
+                }
+            }
+            .presentationCompactAdaptation(.none)
         }
         .sheet(isPresented: $showingPredefinedMessages) {
             PredefinedMessagesView(model: model,
@@ -748,8 +770,8 @@ private struct ControlView: View {
         .padding(5)
         .foregroundStyle(.white)
         SendMessagesToSelectorView(stream: model.stream)
-        ControlMessagesButtonView(model: model)
         ControlAlertsButtonView(quickButtonChat: model.quickButtonChatState)
+        ControlMenuButtonView(model: model)
     }
 }
 
@@ -777,6 +799,7 @@ private struct AlertsControlView: View {
         }
         Spacer()
         ControlAlertsButtonView(quickButtonChat: quickButtonChat)
+        ControlMenuButtonView(model: model)
     }
 }
 
