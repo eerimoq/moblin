@@ -518,7 +518,7 @@ private struct PredefinedMessageView: View {
     }
 }
 
-private struct PredefinedMessagesView: View {
+struct PredefinedMessagesView: View {
     let model: Model
     @ObservedObject var chat: SettingsChat
     @ObservedObject var filter: SettingsChatPredefinedMessagesFilter
@@ -687,7 +687,6 @@ private struct SendMessagesToSelectorView: View {
 private struct ControlMenuButtonView: View {
     let model: Model
     @State var showingMenu: Bool = false
-    @State var showingPredefinedMessages: Bool = false
 
     var body: some View {
         Button {
@@ -710,19 +709,13 @@ private struct ControlMenuButtonView: View {
                 Divider()
                 Button {
                     showingMenu = false
-                    showingPredefinedMessages = true
+                    model.showingPredefinedMessages = true
                 } label: {
                     IconAndTextLocalizedView(image: "list.bullet", text: "Predefined messages")
                         .padding()
                 }
             }
             .presentationCompactAdaptation(.none)
-        }
-        .sheet(isPresented: $showingPredefinedMessages) {
-            PredefinedMessagesView(model: model,
-                                   chat: model.database.chat,
-                                   filter: model.database.chat.predefinedMessagesFilter,
-                                   showingPredefinedMessages: $showingPredefinedMessages)
         }
     }
 }

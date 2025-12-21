@@ -597,6 +597,12 @@ struct MainView: View {
             .sheet(isPresented: $model.isPresentingModeration) {
                 QuickButtonChatModerationView(model: model, showingModeration: $model.isPresentingModeration)
             }
+            .sheet(isPresented: $model.showingPredefinedMessages) {
+                PredefinedMessagesView(model: model,
+                                       chat: model.database.chat,
+                                       filter: model.database.chat.predefinedMessagesFilter,
+                                       showingPredefinedMessages: $model.showingPredefinedMessages)
+            }
             .toast(isPresenting: $toast.showingToast, duration: 5) {
                 toast.toast
             } onTap: {
