@@ -610,27 +610,22 @@ private struct PredefinedMessagesView: View {
 }
 
 private struct SendMessagesToView: View {
-    let image: String
-    let name: String
+    let platform: Platform
     @Binding var enabled: Bool
 
     var body: some View {
-        Button {
-            enabled.toggle()
-        } label: {
-            HStack {
-                Image(image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 24, height: 24)
-                Text(name)
-                    .foregroundStyle(.primary)
-                Spacer()
-                if enabled {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(.blue)
-                        .font(.title2)
-                }
+        HStack {
+            Image(platform.imageName())
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+            Text(platform.name())
+                .padding([.leading], 6)
+                .foregroundStyle(.primary)
+            Button {
+                enabled.toggle()
+            } label: {
+                Toggle("", isOn: $enabled)
             }
         }
     }
@@ -670,26 +665,21 @@ private struct SendMessagesToSelectorView: View {
             } else {
                 Image(systemName: "globe")
                     .font(.title)
-                    .padding(5)
             }
         }
-        .sheet(isPresented: $showingSelector) {
-            NavigationView {
-                Form {
-                    Section {
-                        SendMessagesToView(image: "TwitchLogo",
-                                           name: String(localized: "Twitch"),
-                                           enabled: $stream.twitchSendMessagesTo)
-                        SendMessagesToView(image: "KickLogo",
-                                           name: String(localized: "Kick"),
-                                           enabled: $stream.kickSendMessagesTo)
-                    }
-                }
-                .navigationTitle("Send messages to")
-                .toolbar {
-                    CloseToolbar(presenting: $showingSelector)
-                }
+        .frame(width: 30, height: 30)
+        .popover(isPresented: $showingSelector) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Send messages to")
+                    .bold()
+                    .padding()
+                Divider()
+                SendMessagesToView(platform: .twitch, enabled: $stream.twitchSendMessagesTo)
+                    .padding()
+                SendMessagesToView(platform: .kick, enabled: $stream.kickSendMessagesTo)
+                    .padding()
             }
+            .presentationCompactAdaptation(.none)
         }
     }
 }
