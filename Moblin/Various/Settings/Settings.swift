@@ -1627,6 +1627,11 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOn: "shield",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Predefined messages"),
+                                 type: .predefinedMessages,
+                                 imageOn: "list.bullet",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Stream marker"),
                                  type: .streamMarker,
                                  imageOn: "bookmark.fill",

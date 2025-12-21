@@ -37,6 +37,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case luts = "LUTs"
     case workout = "Workout"
     case moderation = "Moderation"
+    case predefinedMessages = "Predefined messages"
     case skipCurrentTts = "Skip current TTS"
     case streamMarker = "Stream marker"
     case reloadBrowserWidgets = "Reload browser widgets"
