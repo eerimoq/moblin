@@ -410,7 +410,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var currentFps: Int?
     var currentResolution: String?
     var lowLightBoost = false
-    var showBackgroudStreamingDisabledToast = false
+    var showBackgroundStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
     private var findFaceTimer: Timer?
     var streaming = false
@@ -1380,12 +1380,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartCyclingPowerDevices()
             autoStartHeartRateDevices()
             autoStartBlackSharkCoolerDevices()
-            if showBackgroudStreamingDisabledToast {
+            if showBackgroundStreamingDisabledToast {
                 makeStreamEndedToast(subTitle: String(localized: "Tap here to enable background streaming.")) {
                     self.stream.backgroundStreaming = true
                     self.makeToast(title: String(localized: "Background streaming enabled"))
                 }
-                showBackgroudStreamingDisabledToast = false
+                showBackgroundStreamingDisabledToast = false
             }
             reloadCameraLevel()
             updateKickChannelInfoIfNeeded()
@@ -1408,7 +1408,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isRecording {
             suspendRecording()
         }
-        showBackgroudStreamingDisabledToast = stopStream()
+        showBackgroundStreamingDisabledToast = stopStream()
         stopRtmpServer()
         stopSrtlaServer()
         stopRtspClient()
