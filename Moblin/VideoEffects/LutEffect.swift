@@ -164,15 +164,15 @@ final class LutEffect: VideoEffect {
     private func loadLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
         switch lut.type {
         case .bundled:
-            try loadBundledLut(lut: lut)
+            try loadBundledPngLut(lut: lut)
         case .disk:
-            try loadDiskLut(lut: lut, imageStorage: imageStorage)
+            try loadDiskPngLut(lut: lut, imageStorage: imageStorage)
         case .diskCube:
             try loadDiskCubeLut(lut: lut, imageStorage: imageStorage)
         }
     }
 
-    private func loadBundledLut(lut: SettingsColorLut) throws {
+    private func loadBundledPngLut(lut: SettingsColorLut) throws {
         guard let path = Bundle.main.path(forResource: "LUTs.bundle/\(lut.name).png", ofType: nil) else {
             return
         }
@@ -182,7 +182,7 @@ final class LutEffect: VideoEffect {
         try loadImageLut(image: image)
     }
 
-    private func loadDiskLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
+    private func loadDiskPngLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
         let data = try Data(contentsOf: imageStorage.makePath(id: lut.id))
         guard let image = UIImage(data: data) else {
             throw String(localized: "Failed to create LUT image")
