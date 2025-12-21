@@ -669,16 +669,15 @@ private struct SendMessagesToSelectorView: View {
         }
         .frame(width: 30, height: 30)
         .popover(isPresented: $showingSelector) {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(spacing: 0) {
                 Text("Send messages to")
-                    .bold()
-                    .padding()
-                Divider()
+                    .padding(11)
                 SendMessagesToView(platform: .twitch, enabled: $stream.twitchSendMessagesTo)
-                    .padding()
+                    .padding(11)
                 SendMessagesToView(platform: .kick, enabled: $stream.kickSendMessagesTo)
-                    .padding()
+                    .padding(11)
             }
+            .padding(5)
             .presentationCompactAdaptation(.none)
         }
     }
@@ -704,17 +703,17 @@ private struct ControlMenuButtonView: View {
                     model.isPresentingModeration = true
                 } label: {
                     IconAndTextLocalizedView(image: "shield", text: "Moderation")
-                        .padding()
+                        .padding(11)
                 }
-                Divider()
                 Button {
                     showingMenu = false
                     model.showingPredefinedMessages = true
                 } label: {
                     IconAndTextLocalizedView(image: "list.bullet", text: "Predefined messages")
-                        .padding()
+                        .padding(11)
                 }
             }
+            .padding(5)
             .presentationCompactAdaptation(.none)
         }
     }

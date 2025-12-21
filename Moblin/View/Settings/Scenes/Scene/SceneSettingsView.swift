@@ -281,52 +281,30 @@ private struct WidgetsView: View {
                     model.sceneUpdated(attachCamera: attachCamera)
                 }
             }
-            AddButtonView(action: {
+            AddButtonView {
                 showingAddWidget = true
-            })
+            }
+            .disabled(widgets.isEmpty)
             .popover(isPresented: $showingAddWidget) {
-                VStack {
-                    if isPhone() {
-                        HStack {
-                            Spacer()
+                ScrollView {
+                    VStack(spacing: 0) {
+                        ForEach(widgets) { widget in
                             Button {
+                                model.appendWidgetToScene(scene: scene, widget: widget)
                                 showingAddWidget = false
                             } label: {
-                                Text("Cancel")
-                                    .padding(5)
-                                    .foregroundStyle(.blue)
-                            }
-                        }
-                    }
-                    let form = Form {
-                        if widgets.isEmpty {
-                            Section {
-                                Text("No widgets found. Create widgets in Settings → Scenes → Widgets.")
-                            }
-                        } else {
-                            Section("Widget name") {
-                                ForEach(widgets) { widget in
-                                    Button {
-                                        model.appendWidgetToScene(scene: scene, widget: widget)
-                                        showingAddWidget = false
-                                    } label: {
-                                        IconAndTextView(
-                                            image: widget.image(),
-                                            text: widget.name,
-                                            longDivider: true
-                                        )
-                                    }
+                                HStack {
+                                    IconAndTextView(image: widget.image(), text: widget.name)
+                                    Spacer()
                                 }
                             }
+                            .padding(11)
                         }
                     }
-                    if !isPhone() {
-                        form
-                            .frame(width: 300, height: 400)
-                    } else {
-                        form
-                    }
                 }
+                .frame(minWidth: 220)
+                .padding(5)
+                .presentationCompactAdaptation(.none)
             }
         } header: {
             Text("Widgets")

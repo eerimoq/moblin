@@ -144,9 +144,9 @@ struct ChatFiltersSettingsView: View {
                             chat.filters.remove(atOffsets: offsets)
                         }
                     }
-                    AddButtonView(action: {
+                    AddButtonView {
                         chat.filters.append(SettingsChatFilter())
-                    })
+                    }
                 } footer: {
                     VStack(alignment: .leading) {
                         Text("The first filter that matches is used.")
