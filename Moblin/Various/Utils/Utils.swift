@@ -338,3 +338,45 @@ extension Array {
         }
     }
 }
+
+extension UUID {
+    func add(data: Data) -> UUID {
+        var bytes = Data([uuid.15,
+                          uuid.14,
+                          uuid.13,
+                          uuid.12,
+                          uuid.11,
+                          uuid.10,
+                          uuid.9,
+                          uuid.8,
+                          uuid.7,
+                          uuid.6,
+                          uuid.5,
+                          uuid.4,
+                          uuid.3,
+                          uuid.2,
+                          uuid.1,
+                          uuid.0])
+        for (index, value) in data.reversed().enumerated() {
+            bytes[index % 16] &+= value
+        }
+        return UUID(uuid: (
+            bytes[15],
+            bytes[14],
+            bytes[13],
+            bytes[12],
+            bytes[11],
+            bytes[10],
+            bytes[9],
+            bytes[8],
+            bytes[7],
+            bytes[6],
+            bytes[5],
+            bytes[4],
+            bytes[3],
+            bytes[2],
+            bytes[1],
+            bytes[0]
+        ))
+    }
+}

@@ -405,8 +405,7 @@ class MoblinkRelay: NSObject {
         if interface.type == .cellular {
             return relayId
         } else {
-            let value = Int(relayId.suffix(6), radix: 16) ?? 0
-            return relayId.prefix(30) + String(format: "%06X", (value + interface.index + 1) & 0xFFFFFF)
+            return UUID(uuidString: relayId)?.add(data: interface.name.utf8Data).uuidString ?? relayId
         }
     }
 
