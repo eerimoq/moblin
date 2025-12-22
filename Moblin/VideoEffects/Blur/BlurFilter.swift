@@ -9,7 +9,7 @@ class BlurFilter: CIFilter {
             return nil
         }
         return try? BlurKernel.apply(withExtent: inputImage.extent,
-                                                inputs: [inputImage],
-                                                arguments: ["radius": radius])
+                                     inputs: [inputImage],
+                                     arguments: ["radius": radius])
     }
 }
