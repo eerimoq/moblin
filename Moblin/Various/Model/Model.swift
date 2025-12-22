@@ -1250,12 +1250,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateFaceFilterSettings() {
-        let settings = database.debug.face
-        faceEffect.setSettings(settings: FaceEffectSettings(
-            showBlur: settings.showBlur,
-            showBlurBackground: settings.showBlurBackground,
-            showMouth: settings.showMoblin
-        ))
+        faceEffect.setSettings(settings: database.debug.face.toEffectSettings())
     }
 
     func updateFaceFilterButtonState() {

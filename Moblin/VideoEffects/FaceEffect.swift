@@ -6,11 +6,12 @@ struct FaceEffectSettings {
     var showBlur = true
     var showBlurBackground = true
     var showMouth = true
+    var privacyMode: FaceEffectPrivacyMode = .blur(strength: 1.0)
 }
 
 enum FaceEffectPrivacyMode {
-    case blur
-    case pixellate(scale: Float)
+    case blur(strength: Float)
+    case pixellate(strength: Float)
     case backgroundImage(CIImage)
     case faceImage(CIImage)
 }
@@ -18,7 +19,6 @@ enum FaceEffectPrivacyMode {
 final class FaceEffect: VideoEffect {
     private var settings = FaceEffectSettings()
     let moblinImage: CIImage?
-    private var privacyMode: FaceEffectPrivacyMode = .blur
 
     override init() {
         if let image = UIImage(named: "AppIconNoBackground"), let image = image.cgImage {
@@ -28,9 +28,9 @@ final class FaceEffect: VideoEffect {
         }
     }
 
-    func setPrivacyMode(mode: FaceEffectPrivacyMode) {
+    func setSettings(settings: FaceEffectSettings) {
         processorPipelineQueue.async {
-            self.privacyMode = mode
+            self.settings = settings
         }
     }
 
@@ -42,23 +42,17 @@ final class FaceEffect: VideoEffect {
         return .now(nil)
     }
 
-    func setSettings(settings: FaceEffectSettings) {
-        processorPipelineQueue.async {
-            self.settings = settings
-        }
-    }
-
     private func makePrivacyImage(image: CIImage) -> CIImage? {
-        switch privacyMode {
-        case .blur:
+        switch settings.privacyMode {
+        case let .blur(strength: strength):
             return image
-                .applyingGaussianBlur(sigma: image.extent.width / 50.0)
+                .applyingGaussianBlur(sigma: (image.extent.width / 50.0) * Double(strength))
                 .cropped(to: image.extent)
-        case let .pixellate(scale: scale):
+        case let .pixellate(strength: strength):
             let filter = CIFilter.pixellate()
             filter.inputImage = image
             filter.center = .zero
-            filter.scale = scale
+            filter.scale = calcScale(size: image.extent.size, strength: strength)
             return filter.outputImage?.cropped(to: image.extent) ?? image
         case let .backgroundImage(backgroundImage):
             return backgroundImage
@@ -78,12 +72,12 @@ final class FaceEffect: VideoEffect {
                                      y: faceBoundingBox.maxY - (faceBoundingBox.height / 2))
             let faceMask = CIFilter.radialGradient()
             faceMask.center = faceCenter
-            faceMask.radius0 = Float(faceBoundingBox.height / 2)
-            switch privacyMode {
+            faceMask.radius0 = Float(faceBoundingBox.height / 1.7)
+            switch settings.privacyMode {
             case .blur:
-                faceMask.radius1 = Float(faceBoundingBox.height)
+                faceMask.radius1 = faceMask.radius0 * 1.5
             case .pixellate:
-                faceMask.radius1 = faceMask.radius0
+                faceMask.radius1 = faceMask.radius0 * 1.5
             case .backgroundImage:
                 faceMask.radius1 = faceMask.radius0
             case .faceImage:
@@ -185,5 +179,11 @@ final class FaceEffect: VideoEffect {
             outputImage = addMouth(image: outputImage, detections: faceDetections)
         }
         return outputImage ?? image
+    }
+
+    private func calcScale(size: CGSize, strength: Float) -> Float {
+        let maximum = Float(size.maximum())
+        let sizeInPixels = 20 * (maximum / 1920) * (1 + 5 * strength)
+        return maximum / Float(Int(maximum / sizeInPixels))
     }
 }

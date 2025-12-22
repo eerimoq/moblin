@@ -37,8 +37,80 @@ struct FaceView: View {
     var body: some View {
         HStack {
             Spacer()
-            VStack(alignment: .trailing, spacing: 1) {
+            VStack(alignment: .trailing) {
                 Spacer()
+                if face.showBlur || face.showBlurBackground {
+                    switch face.privacyMode {
+                    case .blur:
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text("BLUR STRENGTH")
+                                .font(.footnote)
+                                .foregroundStyle(.white)
+                                .padding([.trailing], 7)
+                            HStack {
+                                Slider(
+                                    value: $face.blurStrength,
+                                    in: 0.15 ... 1,
+                                    step: 0.01
+                                )
+                                .onChange(of: face.blurStrength) { _ in
+                                    model.updateFaceFilterSettings()
+                                }
+                            }
+                            .padding([.top, .bottom], 5)
+                            .padding([.leading, .trailing], 7)
+                            .frame(width: sliderWidth, height: sliderHeight)
+                            .background(backgroundColor)
+                            .cornerRadius(7)
+                            .padding([.bottom], 5)
+                        }
+                    case .pixellate:
+                        VStack(alignment: .trailing, spacing: 1) {
+                            Text("PIXELLATE STRENGTH")
+                                .font(.footnote)
+                                .foregroundStyle(.white)
+                                .padding([.trailing], 7)
+                            HStack {
+                                Slider(
+                                    value: $face.pixellateStrength,
+                                    in: 0 ... 1,
+                                    step: 0.01
+                                )
+                                .onChange(of: face.pixellateStrength) { _ in
+                                    model.updateFaceFilterSettings()
+                                }
+                            }
+                            .padding([.top, .bottom], 5)
+                            .padding([.leading, .trailing], 7)
+                            .frame(width: sliderWidth, height: sliderHeight)
+                            .background(backgroundColor)
+                            .cornerRadius(7)
+                            .padding([.bottom], 5)
+                        }
+                    }
+                    HStack(spacing: 0) {
+                        Text("Mode")
+                            .foregroundStyle(.white)
+                            .padding([.leading], 10)
+                        Spacer()
+                        Picker("", selection: $face.privacyMode) {
+                            ForEach(SettingsFacePrivacyMode.allCases, id: \.self) {
+                                Text($0.toString())
+                            }
+                        }
+                        .tint(.white)
+                        .onChange(of: face.privacyMode) { _ in
+                            model.updateFaceFilterSettings()
+                        }
+                    }
+                    .frame(width: 226, height: height())
+                    .background(pickerBackgroundColor)
+                    .cornerRadius(7)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 7)
+                            .stroke(pickerBorderColor, lineWidth: 1)
+                    )
+                }
                 HStack {
                     Button {
                         face.showMoblin.toggle()

@@ -1,4 +1,5 @@
 import AVFoundation
+import SwiftUI
 
 enum SettingsLogLevel: String, Codable, CaseIterable {
     case error = "Error"
@@ -22,15 +23,39 @@ let pixelFormatTypes = [
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
 ]
 
+enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
+    case blur
+    case pixellate
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsFacePrivacyMode(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .blur
+    }
+
+    func toString() -> LocalizedStringKey {
+        switch self {
+        case .blur:
+            return "Blur"
+        case .pixellate:
+            return "Pixellate"
+        }
+    }
+}
+
 class SettingsFace: Codable, ObservableObject {
     @Published var showBlur = false
     @Published var showBlurBackground: Bool = false
     @Published var showMoblin = false
+    @Published var privacyMode: SettingsFacePrivacyMode = .blur
+    @Published var blurStrength: Float = 1.0
+    @Published var pixellateStrength: Float = 0.3
 
     enum CodingKeys: CodingKey {
         case showBlur,
              showBlurBackground,
-             showMoblin
+             showMoblin,
+             privacyMode,
+             blurStrength,
+             pixellateStrength
     }
 
     func encode(to encoder: Encoder) throws {
@@ -38,6 +63,9 @@ class SettingsFace: Codable, ObservableObject {
         try container.encode(.showBlur, showBlur)
         try container.encode(.showBlurBackground, showBlurBackground)
         try container.encode(.showMoblin, showMoblin)
+        try container.encode(.privacyMode, privacyMode)
+        try container.encode(.blurStrength, blurStrength)
+        try container.encode(.pixellateStrength, pixellateStrength)
     }
 
     init() {}
@@ -47,6 +75,23 @@ class SettingsFace: Codable, ObservableObject {
         showBlur = container.decode(.showBlur, Bool.self, false)
         showBlurBackground = container.decode(.showBlurBackground, Bool.self, false)
         showMoblin = container.decode(.showMoblin, Bool.self, false)
+        privacyMode = container.decode(.privacyMode, SettingsFacePrivacyMode.self, .blur)
+        blurStrength = container.decode(.blurStrength, Float.self, 1.0)
+        pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
+    }
+
+    func toEffectSettings() -> FaceEffectSettings {
+        let faceEffectPrivacyMode: FaceEffectPrivacyMode
+        switch privacyMode {
+        case .blur:
+            faceEffectPrivacyMode = .blur(strength: blurStrength)
+        case .pixellate:
+            faceEffectPrivacyMode = .pixellate(strength: pixellateStrength)
+        }
+        return FaceEffectSettings(showBlur: showBlur,
+                                  showBlurBackground: showBlurBackground,
+                                  showMouth: showMoblin,
+                                  privacyMode: faceEffectPrivacyMode)
     }
 }
 
