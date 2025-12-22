@@ -39,7 +39,6 @@ final class FaceEffect: VideoEffect {
             return image
         }
         return image
-            .clampedToExtent()
             .applyingGaussianBlur(sigma: image.extent.width / 50.0)
             .cropped(to: image.extent)
     }
