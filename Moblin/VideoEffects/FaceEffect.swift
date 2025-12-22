@@ -43,13 +43,13 @@ final class FaceEffect: VideoEffect {
             .cropped(to: image.extent)
     }
 
-    private func createFacesMaskImage(imageExtent: CGRect, detections: [VNFaceObservation]) -> CIImage? {
+    private func createFacesMaskImage(imageExtent: CGRect, faceDetections: [VNFaceObservation]) -> CIImage? {
         var facesMask = CIImage.empty().cropped(to: imageExtent)
-        for detection in detections {
-            let faceBoundingBox = CGRect(x: detection.boundingBox.minX * imageExtent.width,
-                                         y: detection.boundingBox.minY * imageExtent.height,
-                                         width: detection.boundingBox.width * imageExtent.width,
-                                         height: detection.boundingBox.height * imageExtent.height)
+        for faceDetection in faceDetections {
+            let faceBoundingBox = CGRect(x: faceDetection.boundingBox.minX * imageExtent.width,
+                                         y: faceDetection.boundingBox.minY * imageExtent.height,
+                                         width: faceDetection.boundingBox.width * imageExtent.width,
+                                         height: faceDetection.boundingBox.height * imageExtent.height)
             let faceCenter = CGPoint(x: faceBoundingBox.maxX - (faceBoundingBox.width / 2),
                                      y: faceBoundingBox.maxY - (faceBoundingBox.height / 2))
             let faceMask = CIFilter.radialGradient()
@@ -69,16 +69,13 @@ final class FaceEffect: VideoEffect {
         return facesMask
     }
 
-    private func applyFacesMask(image: CIImage?,
-                                detections: [VNFaceObservation]?,
+    private func applyFacesMask(image: CIImage,
+                                faceDetections: [VNFaceObservation],
                                 blurFaces: Bool,
                                 blurBackground: Bool) -> CIImage?
     {
-        guard let image, let detections else {
-            return image
-        }
         let blurredImage = addBlur(image: image)
-        let mask = createFacesMaskImage(imageExtent: image.extent, detections: detections)
+        let mask = createFacesMaskImage(imageExtent: image.extent, faceDetections: faceDetections)
         var outputImage: CIImage? = blurredImage
         if blurFaces {
             let faceBlender = CIFilter.blendWithMask()
@@ -143,10 +140,10 @@ final class FaceEffect: VideoEffect {
             return image
         }
         var outputImage: CIImage? = image
-        if settings.showBlur || settings.showBlurBackground {
+        if (settings.showBlur || settings.showBlurBackground) && !faceDetections.isEmpty {
             outputImage = applyFacesMask(
                 image: image,
-                detections: faceDetections,
+                faceDetections: faceDetections,
                 blurFaces: settings.showBlur,
                 blurBackground: settings.showBlurBackground
             )
