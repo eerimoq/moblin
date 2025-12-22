@@ -4,7 +4,6 @@ struct ImportSettingsView: View {
     @EnvironmentObject var model: Model
 
     private func succeeded() {
-        model.makeToast(title: String(localized: "Settings imported"))
         model.setCurrentStream()
         model.updateIconImageFromDatabase()
         model.reloadStream()

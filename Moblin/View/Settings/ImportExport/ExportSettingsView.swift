@@ -6,7 +6,6 @@ struct ExportSettingsView: View {
     var body: some View {
         TextButtonView("Export to clipboard") {
             model.settings.exportToClipboard()
-            model.makeToast(title: "Settings exported")
         }
     }
 }
