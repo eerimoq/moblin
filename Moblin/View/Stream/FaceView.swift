@@ -19,6 +19,30 @@ private struct FaceButtonView: View {
     }
 }
 
+struct EffectSlider: View {
+    let title: LocalizedStringKey
+    let range: ClosedRange<Float>
+    @Binding var value: Float
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 1) {
+            Text(title)
+                .font(.footnote)
+                .foregroundStyle(.white)
+                .padding([.trailing], 7)
+            HStack {
+                Slider(value: $value, in: range, step: 0.01)
+            }
+            .padding([.top, .bottom], 5)
+            .padding([.leading, .trailing], 7)
+            .frame(width: sliderWidth, height: sliderHeight)
+            .background(backgroundColor)
+            .cornerRadius(7)
+            .padding([.bottom], 5)
+        }
+    }
+}
+
 struct FaceView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -42,51 +66,15 @@ struct FaceView: View {
                 if face.showBlur || face.showBlurBackground {
                     switch face.privacyMode {
                     case .blur:
-                        VStack(alignment: .trailing, spacing: 1) {
-                            Text("BLUR STRENGTH")
-                                .font(.footnote)
-                                .foregroundStyle(.white)
-                                .padding([.trailing], 7)
-                            HStack {
-                                Slider(
-                                    value: $face.blurStrength,
-                                    in: 0.15 ... 1,
-                                    step: 0.01
-                                )
-                                .onChange(of: face.blurStrength) { _ in
-                                    model.updateFaceFilterSettings()
-                                }
+                        EffectSlider(title: "BLUR STRENGTH", range: 0.15 ... 1, value: $face.blurStrength)
+                            .onChange(of: face.blurStrength) { _ in
+                                model.updateFaceFilterSettings()
                             }
-                            .padding([.top, .bottom], 5)
-                            .padding([.leading, .trailing], 7)
-                            .frame(width: sliderWidth, height: sliderHeight)
-                            .background(backgroundColor)
-                            .cornerRadius(7)
-                            .padding([.bottom], 5)
-                        }
                     case .pixellate:
-                        VStack(alignment: .trailing, spacing: 1) {
-                            Text("PIXELLATE STRENGTH")
-                                .font(.footnote)
-                                .foregroundStyle(.white)
-                                .padding([.trailing], 7)
-                            HStack {
-                                Slider(
-                                    value: $face.pixellateStrength,
-                                    in: 0 ... 1,
-                                    step: 0.01
-                                )
-                                .onChange(of: face.pixellateStrength) { _ in
-                                    model.updateFaceFilterSettings()
-                                }
+                        EffectSlider(title: "PIXELLATE STRENGTH", range: 0 ... 1, value: $face.pixellateStrength)
+                            .onChange(of: face.pixellateStrength) { _ in
+                                model.updateFaceFilterSettings()
                             }
-                            .padding([.top, .bottom], 5)
-                            .padding([.leading, .trailing], 7)
-                            .frame(width: sliderWidth, height: sliderHeight)
-                            .background(backgroundColor)
-                            .cornerRadius(7)
-                            .padding([.bottom], 5)
-                        }
                     }
                     HStack(spacing: 0) {
                         Text("Mode")
