@@ -51,7 +51,7 @@ final class FaceEffect: VideoEffect {
         case let .pixellate(scale: scale):
             let filter = CIFilter.pixellate()
             filter.inputImage = image
-            filter.center = .init(x: 0, y: 0)
+            filter.center = .zero
             filter.scale = scale
             return filter.outputImage?.cropped(to: image.extent) ?? image
         case let .backgroundImage(backgroundImage):

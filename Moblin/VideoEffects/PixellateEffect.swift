@@ -22,7 +22,7 @@ final class PixellateEffect: VideoEffect {
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = image
-        filter.center = .init(x: 0, y: 0)
+        filter.center = .zero
         filter.scale = calcScale(size: image.extent.size)
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }
