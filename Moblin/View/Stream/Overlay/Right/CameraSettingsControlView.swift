@@ -55,31 +55,6 @@ private struct TitleView: View {
     }
 }
 
-private struct SettingSliderView: View {
-    @Binding var value: Float
-    let onEditingChanged: (Bool) -> Void
-
-    var body: some View {
-        Slider(
-            value: $value,
-            in: 0 ... 1,
-            step: 0.01,
-            label: { EmptyView() },
-            onEditingChanged: onEditingChanged
-        )
-    }
-}
-
-private struct LockImageView: View {
-    @Binding var locked: Bool
-
-    var body: some View {
-        Image(systemName: locked ? "lock" : "lock.open")
-            .font(.title2)
-            .foregroundStyle(.white)
-    }
-}
-
 private struct SliderAndLockView: View {
     let model: Model
     @Binding var value: Float
@@ -91,12 +66,18 @@ private struct SliderAndLockView: View {
 
     var body: some View {
         HStack {
-            SettingSliderView(value: $value, onEditingChanged: onEditingChanged)
-                .onChange(of: value) { _ in
-                    if editingLocked {
-                        setManual(value)
-                    }
+            Slider(
+                value: $value,
+                in: 0 ... 1,
+                step: 0.01,
+                label: { EmptyView() },
+                onEditingChanged: onEditingChanged
+            )
+            .onChange(of: value) { _ in
+                if editingLocked {
+                    setManual(value)
                 }
+            }
             Button {
                 if locked {
                     setAuto()
@@ -105,7 +86,9 @@ private struct SliderAndLockView: View {
                 }
                 model.updateImageButtonState()
             } label: {
-                LockImageView(locked: $locked)
+                Image(systemName: locked ? "lock" : "lock.open")
+                    .font(.title2)
+                    .foregroundStyle(.white)
             }
         }
         .padding([.top, .bottom], 5)
