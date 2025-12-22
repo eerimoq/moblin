@@ -65,6 +65,7 @@ struct FaceView: View {
     }
 
     var body: some View {
+        let height = height()
         HStack {
             Spacer()
             VStack(alignment: .trailing) {
@@ -97,7 +98,7 @@ struct FaceView: View {
                             model.updateFaceFilterSettings()
                         }
                     }
-                    .frame(width: 226, height: height())
+                    .frame(width: 226, height: height)
                     .background(pickerBackgroundColor)
                     .cornerRadius(7)
                     .overlay(
@@ -110,19 +111,19 @@ struct FaceView: View {
                         face.showMoblin.toggle()
                         update()
                     } label: {
-                        FaceButtonView(title: "Mouth", on: $face.showMoblin, height: height())
+                        FaceButtonView(title: "Mouth", on: $face.showMoblin, height: height)
                     }
                     Button {
                         face.showBlur.toggle()
                         update()
                     } label: {
-                        FaceButtonView(title: "Face", on: $face.showBlur, height: height())
+                        FaceButtonView(title: "Face", on: $face.showBlur, height: height)
                     }
                     Button {
                         face.showBlurBackground.toggle()
                         update()
                     } label: {
-                        FaceButtonView(title: "Privacy", on: $face.showBlurBackground, height: height())
+                        FaceButtonView(title: "Privacy", on: $face.showBlurBackground, height: height)
                     }
                 }
             }
