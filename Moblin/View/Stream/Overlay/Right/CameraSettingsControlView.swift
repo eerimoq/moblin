@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct CameraSettingButtonView: View {
-    var title: String
+    var title: LocalizedStringKey
     var value: String
     var locked: Bool
     var on: Bool
@@ -288,7 +288,7 @@ private struct ButtonsView: View {
                 show.toggle(buttonType: .bias)
             } label: {
                 CameraSettingButtonView(
-                    title: String(localized: "EXB"),
+                    title: "EXB",
                     value: formatExposureBias(),
                     locked: true,
                     on: show.type == .bias,
@@ -299,7 +299,7 @@ private struct ButtonsView: View {
                 show.toggle(buttonType: .whiteBalance)
             } label: {
                 CameraSettingButtonView(
-                    title: String(localized: "WB"),
+                    title: "WB",
                     value: formatWhiteBalance(),
                     locked: camera.isWhiteBalanceLocked,
                     on: show.type == .whiteBalance,
@@ -310,7 +310,7 @@ private struct ButtonsView: View {
                 show.toggle(buttonType: .iso)
             } label: {
                 CameraSettingButtonView(
-                    title: String(localized: "ISO"),
+                    title: "ISO",
                     value: formatIso(),
                     locked: camera.isExposureAndIsoLocked,
                     on: show.type == .iso,
@@ -321,7 +321,7 @@ private struct ButtonsView: View {
                 show.toggle(buttonType: .exposure)
             } label: {
                 CameraSettingButtonView(
-                    title: String(localized: "EXP"),
+                    title: "EXP",
                     value: formatExposure(),
                     locked: camera.isExposureAndIsoLocked,
                     on: show.type == .exposure,
@@ -332,7 +332,7 @@ private struct ButtonsView: View {
                 show.toggle(buttonType: .focus)
             } label: {
                 CameraSettingButtonView(
-                    title: String(localized: "FOC"),
+                    title: "FOC",
                     value: formatFocus(),
                     locked: camera.isFocusLocked,
                     on: show.type == .focus,
