@@ -28,6 +28,12 @@ final class FaceEffect: VideoEffect {
         }
     }
 
+    func setPrivacyMode(mode: FaceEffectPrivacyMode) {
+        processorPipelineQueue.async {
+            self.privacyMode = mode
+        }
+    }
+
     override func getName() -> String {
         return "Face filter"
     }
