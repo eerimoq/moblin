@@ -22,7 +22,7 @@ let pixelFormatTypes = [
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
 ]
 
-class SettingsDebugFace: Codable, ObservableObject {
+class SettingsFace: Codable, ObservableObject {
     @Published var showBlur = false
     @Published var showBlurBackground: Bool = false
     @Published var showMoblin = false
@@ -61,7 +61,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
     var pixelFormat: String = pixelFormats[1]
-    var face: SettingsDebugFace = .init()
+    var face: SettingsFace = .init()
     @Published var allowVideoRangePixelFormat: Bool = false
     var blurSceneSwitch: Bool = true
     @Published var preferStereoMic: Bool = false
@@ -162,7 +162,7 @@ class SettingsDebug: Codable, ObservableObject {
         bluetoothOutputOnly = container.decode(.bluetoothOutputOnly, Bool.self, true)
         maximumLogLines = container.decode(.maximumLogLines, Int.self, 500)
         pixelFormat = container.decode(.pixelFormat, String.self, pixelFormats[1])
-        face = container.decode(.beautyFilterSettings, SettingsDebugFace.self, .init())
+        face = container.decode(.beautyFilterSettings, SettingsFace.self, .init())
         allowVideoRangePixelFormat = container.decode(.allowVideoRangePixelFormat, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
         preferStereoMic = container.decode(.preferStereoMic, Bool.self, false)
