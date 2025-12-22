@@ -52,7 +52,7 @@ final class FaceEffect: VideoEffect {
             let filter = CIFilter.pixellate()
             filter.inputImage = image
             filter.center = .zero
-            filter.scale = calcScale(size: image.extent.size, strength: strength)
+            filter.scale = pixellateCalcScale(size: image.extent.size, strength: strength)
             return filter.outputImage?.cropped(to: image.extent) ?? image
         case let .backgroundImage(backgroundImage):
             return backgroundImage
@@ -179,11 +179,5 @@ final class FaceEffect: VideoEffect {
             outputImage = addMouth(image: outputImage, detections: faceDetections)
         }
         return outputImage ?? image
-    }
-
-    private func calcScale(size: CGSize, strength: Float) -> Float {
-        let maximum = Float(size.maximum())
-        let sizeInPixels = 20 * (maximum / 1920) * (1 + 5 * strength)
-        return maximum / Float(Int(maximum / sizeInPixels))
     }
 }
