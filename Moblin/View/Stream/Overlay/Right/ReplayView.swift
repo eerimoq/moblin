@@ -131,44 +131,12 @@ private struct ReplayControlsSaveButton: View {
     }
 }
 
-private struct ReplayControls: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var replay: ReplayProvider
-    @ObservedObject var orientation: Orientation
+private struct ControlRowView<Content: View>: View {
+    @ViewBuilder let content: () -> Content
 
-    private func portrait() -> some View {
-        VStack(alignment: .trailing) {
-            HStack {
-                ReplayControlsInterval(replay: replay)
-            }
-            .padding(4)
-            .padding([.trailing], 4)
-            .font(.title)
-            .frame(height: 45)
-            .background(backgroundColor)
-            .cornerRadius(5)
-            HStack {
-                ReplayControlsSpeedPicker(replay: replay)
-                ReplayControlsPlayPauseButton(replay: replay)
-                Divider().overlay(.white)
-                ReplayControlsSaveButton(replay: replay)
-            }
-            .padding(4)
-            .padding([.leading, .trailing], 4)
-            .font(.title)
-            .frame(height: 45)
-            .background(backgroundColor)
-            .cornerRadius(5)
-        }
-    }
-
-    private func landscape() -> some View {
+    var body: some View {
         HStack {
-            ReplayControlsInterval(replay: replay)
-            ReplayControlsSpeedPicker(replay: replay)
-            ReplayControlsPlayPauseButton(replay: replay)
-            Divider().overlay(.white)
-            ReplayControlsSaveButton(replay: replay)
+            content()
         }
         .padding(4)
         .padding([.trailing], 4)
@@ -177,12 +145,35 @@ private struct ReplayControls: View {
         .background(backgroundColor)
         .cornerRadius(5)
     }
+}
+
+private struct ReplayControls: View {
+    @ObservedObject var replay: ReplayProvider
+    @ObservedObject var orientation: Orientation
 
     var body: some View {
         if orientation.isPortrait {
-            portrait()
+            VStack(alignment: .trailing) {
+                ControlRowView {
+                    ReplayControlsInterval(replay: replay)
+                }
+                ControlRowView {
+                    ReplayControlsSpeedPicker(replay: replay)
+                    ReplayControlsPlayPauseButton(replay: replay)
+                    Divider()
+                        .overlay(.white)
+                    ReplayControlsSaveButton(replay: replay)
+                }
+            }
         } else {
-            landscape()
+            ControlRowView {
+                ReplayControlsInterval(replay: replay)
+                ReplayControlsSpeedPicker(replay: replay)
+                ReplayControlsPlayPauseButton(replay: replay)
+                Divider()
+                    .overlay(.white)
+                ReplayControlsSaveButton(replay: replay)
+            }
         }
     }
 }
