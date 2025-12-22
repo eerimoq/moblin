@@ -55,6 +55,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case pauseTts = "Pause TTS"
     case live = "Live"
     case navigation = "Navigation"
+    case blurFaces = "Blur faces"
 
     init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)

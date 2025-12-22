@@ -115,6 +115,7 @@ struct FaceView: View {
                     }
                     Button {
                         face.showBlur.toggle()
+                        model.toggleFilterQuickButton(type: .blurFaces)
                         update()
                     } label: {
                         FaceButtonView(title: "Face", on: $face.showBlur, height: height)

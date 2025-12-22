@@ -24,6 +24,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case pinch = "Pinch"
     case whirlpool = "Whirlpool"
     case poll = "Poll"
+    case blurFaces = "Blur faces"
 
     init(from decoder: Decoder) throws {
         self = try SettingsControllerFunction(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unused
@@ -77,6 +78,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Whirlpool")
         case .poll:
             return String(localized: "Poll")
+        case .blurFaces:
+            return String(localized: "Blur faces")
         }
     }
 }

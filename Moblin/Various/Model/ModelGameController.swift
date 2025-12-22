@@ -137,6 +137,10 @@ extension Model {
             if !pressed {
                 togglePollQuickButton()
             }
+        case .blurFaces:
+            if !pressed {
+                toggleBlurFaces()
+            }
         }
     }
 

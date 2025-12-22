@@ -367,6 +367,10 @@ struct QuickButtonsInnerView: View {
         model.updateAutoSceneSwitcherButtonState()
     }
 
+    private func blurFacesAction() {
+        model.toggleBlurFaces()
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             switch state.button.type {
@@ -819,6 +823,14 @@ struct QuickButtonsInnerView: View {
                                  buttonSize: size)
                 {
                     navigationAction()
+                }
+            case .blurFaces:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    blurFacesAction()
                 }
             }
             if quickButtonsSettings.showName && !orientation.isPortrait {

@@ -3018,6 +3018,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func isShowingStatusCpu() -> Bool {
         return database.show.systemMonitor
     }
+
+    func toggleBlurFaces() {
+        database.debug.face.showBlur.toggle()
+        toggleFilterQuickButton(type: .blurFaces)
+        updateFaceFilterSettings()
+        updateFaceFilterButtonState()
+    }
 }
 
 extension Model {
