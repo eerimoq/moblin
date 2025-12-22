@@ -23,9 +23,9 @@ class AdaptiveBitrateRistExperiment: AdaptiveBitrate {
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
-        currentBitrate = adaptiveBitrateStart
-        previousBitrate = adaptiveBitrateStart
-        currentMaximumBitrate = adaptiveBitrateStart
+        currentBitrate = self.targetBitrate
+        previousBitrate = self.targetBitrate
+        currentMaximumBitrate = self.targetBitrate
         super.init(delegate: delegate)
     }
 

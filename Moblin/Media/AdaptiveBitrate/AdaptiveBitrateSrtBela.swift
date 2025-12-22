@@ -40,6 +40,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
+        curBitrate = self.targetBitrate
         super.init(delegate: delegate)
     }
 
@@ -114,9 +115,6 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
     private func updateBitrate(stats: StreamStats) {
         if stats.rttMs == 0 {
             return
-        }
-        if curBitrate == 0 {
-            curBitrate = adaptiveBitrateStart
         }
         let sendBufferSize = stats.packetsInFlight
         updateSendBufferSizeAverage(sendBufferSize: sendBufferSize)
