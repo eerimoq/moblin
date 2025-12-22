@@ -784,13 +784,13 @@ struct RightOverlayBottomView: View {
                         StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
                     } else {
                         if streamOverlay.showingPixellate {
-                            StreamOverlayRightPixellateView(database: model.database)
+                            StreamOverlayRightPixellateView(model: model, database: model.database)
                         }
                         if streamOverlay.showingWhirlpool {
-                            StreamOverlayRightWhirlpoolView(database: model.database)
+                            StreamOverlayRightWhirlpoolView(model: model, database: model.database)
                         }
                         if streamOverlay.showingPinch {
-                            StreamOverlayRightPinchView(database: model.database)
+                            StreamOverlayRightPinchView(model: model, database: model.database)
                         }
                         if streamOverlay.showingCamera {
                             StreamOverlayRightCameraSettingsControlView(model: model,

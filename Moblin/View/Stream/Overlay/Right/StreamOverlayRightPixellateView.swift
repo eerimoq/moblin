@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamOverlayRightPixellateView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
 
     var body: some View {
