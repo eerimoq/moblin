@@ -148,11 +148,6 @@ class Bonding: ObservableObject {
 
 class Show: ObservableObject {
     @Published var cameraPreview = false
-    @Published var cameraBias = false
-    @Published var cameraWhiteBalance = false
-    @Published var cameraIso = false
-    @Published var cameraExposure = false
-    @Published var cameraFocus = false
 }
 
 class Battery: ObservableObject {

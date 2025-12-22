@@ -6,7 +6,28 @@ struct Camera: Identifiable, Equatable {
     var name: String
 }
 
+enum CameraShowType: Equatable {
+    case bias
+    case whiteBalance
+    case iso
+    case exposure
+    case focus
+}
+
+class CameraShow: ObservableObject {
+    @Published var type: CameraShowType?
+
+    func toggle(buttonType: CameraShowType) {
+        if type == buttonType {
+            type = nil
+        } else {
+            type = buttonType
+        }
+    }
+}
+
 class CameraState: ObservableObject {
+    let show = CameraShow()
     var isFocusesLocked: [AVCaptureDevice: Bool] = [:]
     var lockedFocuses: [AVCaptureDevice: Float] = [:]
     var editingLockedFocus = false
