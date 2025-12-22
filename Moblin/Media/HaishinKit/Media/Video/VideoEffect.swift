@@ -23,6 +23,12 @@ public struct VideoEffectInfo {
     }
 }
 
+enum VideoEffectFaceDetectionsMode {
+    case off
+    case now(UUID?)
+    case interval(UUID?, Double)
+}
+
 class VideoEffect: NSObject {
     var effects: [VideoEffect] = []
 
@@ -30,8 +36,8 @@ class VideoEffect: NSObject {
         return ""
     }
 
-    func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
-        return (false, nil, nil)
+    func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
+        return .off
     }
 
     func isEnabled() -> Bool {

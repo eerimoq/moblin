@@ -92,8 +92,12 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return "Alert widget"
     }
 
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
-        return (pipeline.landmarkSettings != nil, nil, nil)
+    override func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
+        if pipeline.landmarkSettings != nil {
+            return .now(nil)
+        } else {
+            return .off
+        }
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {

@@ -44,11 +44,11 @@ final class VideoSourceEffect: VideoEffect {
         return "Video source"
     }
 
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
+    override func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
         if settings.trackFaceEnabled {
-            return (false, videoSourceId, 0.5)
+            return .interval(videoSourceId, 0.5)
         } else {
-            return (false, nil, nil)
+            return .off
         }
     }
 

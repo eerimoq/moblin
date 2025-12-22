@@ -1474,9 +1474,15 @@ final class VideoUnit: NSObject {
         var faceDetectionsIntervals: [UUID: Double] = [:]
         var ids: Set<UUID> = []
         for effect in effects {
-            let (needsFaceDetectionsNow, videoSource, interval) = effect.needsFaceDetections(presentationTimeStamp)
-            let videoSourceId = videoSource ?? sceneVideoSourceId
-            if let interval {
+            switch effect.needsFaceDetections(presentationTimeStamp) {
+            case .off:
+                break
+            case let .now(videoSourceId):
+                let videoSourceId = videoSourceId ?? sceneVideoSourceId
+                ids.insert(videoSourceId)
+                previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
+            case let .interval(videoSourceId, interval):
+                let videoSourceId = videoSourceId ?? sceneVideoSourceId
                 if let currentInterval = faceDetectionsIntervals[videoSourceId] {
                     if interval < currentInterval {
                         faceDetectionsIntervals[videoSourceId] = interval
@@ -1484,10 +1490,6 @@ final class VideoUnit: NSObject {
                 } else {
                     faceDetectionsIntervals[videoSourceId] = interval
                 }
-            }
-            if needsFaceDetectionsNow {
-                ids.insert(videoSourceId)
-                previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
             }
         }
         for (videoSourceId, interval) in faceDetectionsIntervals {

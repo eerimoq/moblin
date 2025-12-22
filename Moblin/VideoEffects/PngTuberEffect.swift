@@ -203,7 +203,7 @@ final class PngTuberEffect: VideoEffect {
         }
     }
 
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
-        return (false, videoSourceId, 0.1)
+    override func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
+        return .interval(videoSourceId, 0.1)
     }
 }

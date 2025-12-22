@@ -24,8 +24,8 @@ final class FaceEffect: VideoEffect {
         return "Face filter"
     }
 
-    override func needsFaceDetections(_: Double) -> (Bool, UUID?, Double?) {
-        return (true, nil, nil)
+    override func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
+        return .now(nil)
     }
 
     func setSettings(settings: FaceEffectSettings) {
