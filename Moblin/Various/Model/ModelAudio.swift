@@ -281,12 +281,29 @@ extension Model {
             }
             if volume != initialVolume {
                 setSystemVolume(initialVolume)
-                switchToNextSceneRoundRobin()
+                executeSelfieStickAction()
             } else if isVolumeMinOrMax(volume), latestSetVolumeTime.duration(to: .now) > .seconds(1) {
-                switchToNextSceneRoundRobin()
+                executeSelfieStickAction()
             }
         } else {
             initialVolume = volume
+        }
+    }
+
+    private func executeSelfieStickAction() {
+        switch database.selfieStick.buttonFunction {
+        case .switchScene:
+            switchToNextSceneRoundRobin()
+        case .takeSnapshot:
+            takeSnapshot()
+        case .mute:
+            setMuted(value: true)
+        case .toggleMute:
+            toggleMute()
+        case .stopStream:
+            _ = stopStream()
+        case .startStream:
+            startStream()
         }
     }
 

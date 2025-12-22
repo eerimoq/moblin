@@ -468,6 +468,11 @@ let dnsLookupStrategies = SettingsDnsLookupStrategy.allCases.map { $0.rawValue }
 
 enum SettingsSelfieStickButtonFunction: String, Codable, CaseIterable {
     case switchScene
+    case takeSnapshot
+    case mute
+    case toggleMute
+    case stopStream
+    case startStream
 
     init(from decoder: Decoder) throws {
         do {
@@ -482,6 +487,16 @@ enum SettingsSelfieStickButtonFunction: String, Codable, CaseIterable {
         switch self {
         case .switchScene:
             return String(localized: "Switch scene")
+        case .takeSnapshot:
+            return String(localized: "Take snapshot")
+        case .mute:
+            return String(localized: "Mute")
+        case .toggleMute:
+            return String(localized: "Toggle mute")
+        case .stopStream:
+            return String(localized: "Stop stream")
+        case .startStream:
+            return String(localized: "Start stream")
         }
     }
 }
