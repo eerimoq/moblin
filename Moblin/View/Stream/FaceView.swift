@@ -1,8 +1,8 @@
 import SwiftUI
 
 private struct FaceButtonView: View {
-    let title: String
-    let on: Bool
+    let title: LocalizedStringKey
+    @Binding var on: Bool
     let height: Double
 
     var body: some View {
@@ -58,6 +58,12 @@ struct FaceView: View {
         }
     }
 
+    private func update() {
+        model.sceneUpdated(updateRemoteScene: false)
+        model.updateFaceFilterSettings()
+        model.updateFaceFilterButtonState()
+    }
+
     var body: some View {
         HStack {
             Spacer()
@@ -66,7 +72,7 @@ struct FaceView: View {
                 if face.showBlur || face.showBlurBackground {
                     switch face.privacyMode {
                     case .blur:
-                        EffectSlider(title: "BLUR STRENGTH", range: 0.15 ... 1, value: $face.blurStrength)
+                        EffectSlider(title: "BLUR STRENGTH", range: 0.1 ... 1, value: $face.blurStrength)
                             .onChange(of: face.blurStrength) { _ in
                                 model.updateFaceFilterSettings()
                             }
@@ -102,38 +108,21 @@ struct FaceView: View {
                 HStack {
                     Button {
                         face.showMoblin.toggle()
-                        model.sceneUpdated(updateRemoteScene: false)
-                        model.updateFaceFilterSettings()
-                        model.updateFaceFilterButtonState()
+                        update()
                     } label: {
-                        FaceButtonView(
-                            title: String(localized: "Mouth"),
-                            on: face.showMoblin,
-                            height: height()
-                        )
+                        FaceButtonView(title: "Mouth", on: $face.showMoblin, height: height())
                     }
                     Button {
                         face.showBlur.toggle()
-                        model.sceneUpdated(updateRemoteScene: false)
-                        model.updateFaceFilterSettings()
+                        update()
                     } label: {
-                        FaceButtonView(
-                            title: String(localized: "Blur"),
-                            on: face.showBlur,
-                            height: height()
-                        )
+                        FaceButtonView(title: "Face", on: $face.showBlur, height: height())
                     }
                     Button {
                         face.showBlurBackground.toggle()
-                        model.sceneUpdated(updateRemoteScene: false)
-                        model.updateFaceFilterSettings()
-                        model.updateFaceFilterButtonState()
+                        update()
                     } label: {
-                        FaceButtonView(
-                            title: String(localized: "Privacy"),
-                            on: face.showBlurBackground,
-                            height: height()
-                        )
+                        FaceButtonView(title: "Privacy", on: $face.showBlurBackground, height: height())
                     }
                 }
             }
