@@ -1,13 +1,5 @@
 import SwiftUI
 
-private func lockImage(locked: Bool) -> String {
-    if locked {
-        return "lock"
-    } else {
-        return "lock.open"
-    }
-}
-
 private struct CameraSettingButtonView: View {
     var title: String
     var value: String
@@ -52,15 +44,85 @@ private struct NotSupportedForThisCameraView: View {
     }
 }
 
+private struct TitleView: View {
+    let title: LocalizedStringKey
+
+    var body: some View {
+        Text(title)
+            .font(.footnote)
+            .foregroundStyle(.white)
+            .padding([.trailing], 7)
+    }
+}
+
+private struct SettingSliderView: View {
+    @Binding var value: Float
+    let onEditingChanged: (Bool) -> Void
+
+    var body: some View {
+        Slider(
+            value: $value,
+            in: 0 ... 1,
+            step: 0.01,
+            label: { EmptyView() },
+            onEditingChanged: onEditingChanged
+        )
+    }
+}
+
+private struct LockImageView: View {
+    @Binding var locked: Bool
+
+    var body: some View {
+        Image(systemName: locked ? "lock" : "lock.open")
+            .font(.title2)
+            .foregroundStyle(.white)
+    }
+}
+
+private struct SliderAndLockView: View {
+    let model: Model
+    @Binding var value: Float
+    @Binding var locked: Bool
+    @Binding var editingLocked: Bool
+    let onEditingChanged: (Bool) -> Void
+    let setManual: (Float) -> Void
+    let setAuto: () -> Void
+
+    var body: some View {
+        HStack {
+            SettingSliderView(value: $value, onEditingChanged: onEditingChanged)
+                .onChange(of: value) { _ in
+                    if editingLocked {
+                        setManual(value)
+                    }
+                }
+            Button {
+                if locked {
+                    setAuto()
+                } else {
+                    setManual(value)
+                }
+                model.updateImageButtonState()
+            } label: {
+                LockImageView(locked: $locked)
+            }
+        }
+        .padding([.top, .bottom], 5)
+        .padding([.leading, .trailing], 7)
+        .frame(width: sliderWidth, height: sliderHeight)
+        .background(backgroundColor)
+        .cornerRadius(7)
+        .padding([.bottom], 5)
+    }
+}
+
 private struct ExposureBiasView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var camera: CameraState
 
     var body: some View {
-        Text("EXPOSURE BIAS")
-            .font(.footnote)
-            .foregroundStyle(.white)
-            .padding([.trailing], 7)
+        TitleView(title: "EXPOSURE BIAS")
         Slider(
             value: $camera.bias,
             in: -2 ... 2,
@@ -92,49 +154,21 @@ private struct WhiteBalanceView: View {
     @ObservedObject var camera: CameraState
 
     var body: some View {
-        Text("WHITE BALANCE")
-            .font(.footnote)
-            .foregroundStyle(.white)
-            .padding([.trailing], 7)
+        TitleView(title: "WHITE BALANCE")
         if model.isCameraSupportingManualWhiteBalance() {
-            HStack {
-                Slider(
-                    value: $camera.lockedWhiteBalance,
-                    in: 0 ... 1,
-                    step: 0.01,
-                    label: { EmptyView() },
-                    onEditingChanged: { begin in
-                        model.camera.editingLockedWhiteBalance = begin
-                        guard !begin else {
-                            return
-                        }
-                        model.setManualWhiteBalance(factor: camera.lockedWhiteBalance)
-                    }
-                )
-                .onChange(of: camera.lockedWhiteBalance) { _ in
-                    if model.camera.editingLockedWhiteBalance {
-                        model.setManualWhiteBalance(factor: camera.lockedWhiteBalance)
-                    }
-                }
-                Button {
-                    if camera.isWhiteBalanceLocked {
-                        model.setAutoWhiteBalance()
-                    } else {
-                        model.setManualWhiteBalance(factor: camera.lockedWhiteBalance)
-                    }
-                    model.updateImageButtonState()
-                } label: {
-                    Image(systemName: lockImage(locked: camera.isWhiteBalanceLocked))
-                        .font(.title2)
-                        .foregroundStyle(.white)
-                }
-            }
-            .padding([.top, .bottom], 5)
-            .padding([.leading, .trailing], 7)
-            .frame(width: sliderWidth, height: sliderHeight)
-            .background(backgroundColor)
-            .cornerRadius(7)
-            .padding([.bottom], 5)
+            SliderAndLockView(model: model,
+                              value: $camera.lockedWhiteBalance,
+                              locked: $camera.isWhiteBalanceLocked,
+                              editingLocked: $camera.editingLockedWhiteBalance,
+                              onEditingChanged: { begin in
+                                  camera.editingLockedWhiteBalance = begin
+                                  guard !begin else {
+                                      return
+                                  }
+                                  model.setManualWhiteBalance(factor: camera.lockedWhiteBalance)
+                              },
+                              setManual: model.setManualWhiteBalance,
+                              setAuto: model.setAutoWhiteBalance)
         } else {
             NotSupportedForThisCameraView()
         }
@@ -146,49 +180,21 @@ private struct IsoView: View {
     @ObservedObject var camera: CameraState
 
     var body: some View {
-        Text("ISO")
-            .font(.footnote)
-            .foregroundStyle(.white)
-            .padding([.trailing], 7)
+        TitleView(title: "ISO")
         if model.isCameraSupportingManualExposureAndIso() {
-            HStack {
-                Slider(
-                    value: $camera.lockedIso,
-                    in: 0 ... 1,
-                    step: 0.01,
-                    label: { EmptyView() },
-                    onEditingChanged: { begin in
-                        camera.editingLockedIso = begin
-                        guard !begin else {
-                            return
-                        }
-                        model.setManualIso(factor: camera.lockedIso)
-                    }
-                )
-                .onChange(of: camera.lockedIso) { _ in
-                    if camera.editingLockedIso {
-                        model.setManualIso(factor: camera.lockedIso)
-                    }
-                }
-                Button {
-                    if camera.isExposureAndIsoLocked {
-                        model.setAutoExposureAndIso()
-                    } else {
-                        model.setManualIso(factor: camera.lockedIso)
-                    }
-                    model.updateImageButtonState()
-                } label: {
-                    Image(systemName: lockImage(locked: camera.isExposureAndIsoLocked))
-                        .font(.title2)
-                        .foregroundStyle(.white)
-                }
-            }
-            .padding([.top, .bottom], 5)
-            .padding([.leading, .trailing], 7)
-            .frame(width: sliderWidth, height: sliderHeight)
-            .background(backgroundColor)
-            .cornerRadius(7)
-            .padding([.bottom], 5)
+            SliderAndLockView(model: model,
+                              value: $camera.lockedIso,
+                              locked: $camera.isExposureAndIsoLocked,
+                              editingLocked: $camera.editingLockedIso,
+                              onEditingChanged: { begin in
+                                  camera.editingLockedIso = begin
+                                  guard !begin else {
+                                      return
+                                  }
+                                  model.setManualIso(factor: camera.lockedIso)
+                              },
+                              setManual: model.setManualIso,
+                              setAuto: model.setAutoExposureAndIso)
         } else {
             NotSupportedForThisCameraView()
         }
@@ -200,49 +206,21 @@ private struct ExposureView: View {
     @ObservedObject var camera: CameraState
 
     var body: some View {
-        Text("EXPOSURE")
-            .font(.footnote)
-            .foregroundStyle(.white)
-            .padding([.trailing], 7)
+        TitleView(title: "EXPOSURE")
         if model.isCameraSupportingManualExposureAndIso() {
-            HStack {
-                Slider(
-                    value: $camera.lockedExposure,
-                    in: 0 ... 1,
-                    step: 0.01,
-                    label: { EmptyView() },
-                    onEditingChanged: { begin in
-                        camera.editingLockedExposure = begin
-                        guard !begin else {
-                            return
-                        }
-                        model.setManualExposure(factor: camera.lockedExposure)
-                    }
-                )
-                .onChange(of: camera.lockedExposure) { _ in
-                    if camera.editingLockedExposure {
-                        model.setManualExposure(factor: camera.lockedExposure)
-                    }
-                }
-                Button {
-                    if camera.isExposureAndIsoLocked {
-                        model.setAutoExposureAndIso()
-                    } else {
-                        model.setManualExposure(factor: camera.lockedExposure)
-                    }
-                    model.updateImageButtonState()
-                } label: {
-                    Image(systemName: lockImage(locked: camera.isExposureAndIsoLocked))
-                        .font(.title2)
-                        .foregroundStyle(.white)
-                }
-            }
-            .padding([.top, .bottom], 5)
-            .padding([.leading, .trailing], 7)
-            .frame(width: sliderWidth, height: sliderHeight)
-            .background(backgroundColor)
-            .cornerRadius(7)
-            .padding([.bottom], 5)
+            SliderAndLockView(model: model,
+                              value: $camera.lockedExposure,
+                              locked: $camera.isExposureAndIsoLocked,
+                              editingLocked: $camera.editingLockedExposure,
+                              onEditingChanged: { begin in
+                                  camera.editingLockedExposure = begin
+                                  guard !begin else {
+                                      return
+                                  }
+                                  model.setManualExposure(factor: camera.lockedExposure)
+                              },
+                              setManual: model.setManualExposure,
+                              setAuto: model.setAutoExposureAndIso)
         } else {
             NotSupportedForThisCameraView()
         }
@@ -254,49 +232,21 @@ struct FocusView: View {
     @ObservedObject var camera: CameraState
 
     var body: some View {
-        Text("FOCUS")
-            .font(.footnote)
-            .foregroundStyle(.white)
-            .padding([.trailing], 7)
+        TitleView(title: "FOCUS")
         if model.isCameraSupportingManualFocus() {
-            HStack {
-                Slider(
-                    value: $camera.lockedFocus,
-                    in: 0 ... 1,
-                    step: 0.01,
-                    label: { EmptyView() },
-                    onEditingChanged: { begin in
-                        camera.editingLockedFocus = begin
-                        guard !begin else {
-                            return
-                        }
-                        model.setManualFocus(lensPosition: camera.lockedFocus)
-                    }
-                )
-                .onChange(of: camera.lockedFocus) { _ in
-                    if camera.editingLockedFocus {
-                        model.setManualFocus(lensPosition: camera.lockedFocus)
-                    }
-                }
-                Button {
-                    if camera.isFocusLocked {
-                        model.setAutoFocus()
-                    } else {
-                        model.setManualFocus(lensPosition: camera.lockedFocus)
-                    }
-                    model.updateImageButtonState()
-                } label: {
-                    Image(systemName: lockImage(locked: camera.isFocusLocked))
-                        .font(.title2)
-                        .foregroundStyle(.white)
-                }
-            }
-            .padding([.top, .bottom], 5)
-            .padding([.leading, .trailing], 7)
-            .frame(width: sliderWidth, height: sliderHeight)
-            .background(backgroundColor)
-            .cornerRadius(7)
-            .padding([.bottom], 5)
+            SliderAndLockView(model: model,
+                              value: $camera.lockedFocus,
+                              locked: $camera.isFocusLocked,
+                              editingLocked: $camera.editingLockedFocus,
+                              onEditingChanged: { begin in
+                                  camera.editingLockedFocus = begin
+                                  guard !begin else {
+                                      return
+                                  }
+                                  model.setManualFocus(lensPosition: camera.lockedFocus)
+                              },
+                              setManual: model.setManualFocus,
+                              setAuto: model.setAutoFocus)
         } else {
             NotSupportedForThisCameraView()
         }
