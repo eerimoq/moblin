@@ -58,12 +58,6 @@ struct FaceView: View {
         }
     }
 
-    private func update() {
-        model.sceneUpdated(updateRemoteScene: false)
-        model.updateFaceFilterSettings()
-        model.updateFaceFilterButtonState()
-    }
-
     var body: some View {
         let height = height()
         HStack {
@@ -109,20 +103,19 @@ struct FaceView: View {
                 HStack {
                     Button {
                         face.showMoblin.toggle()
-                        update()
+                        model.sceneUpdated(updateRemoteScene: false)
+                        model.updateFaceFilterSettings()
+                        model.updateFaceFilterButtonState()
                     } label: {
                         FaceButtonView(title: "Mouth", on: $face.showMoblin, height: height)
                     }
                     Button {
-                        face.showBlur.toggle()
-                        model.toggleFilterQuickButton(type: .blurFaces)
-                        update()
+                        model.toggleBlurFaces()
                     } label: {
                         FaceButtonView(title: "Face", on: $face.showBlur, height: height)
                     }
                     Button {
-                        face.showBlurBackground.toggle()
-                        update()
+                        model.togglePrivacy()
                     } label: {
                         FaceButtonView(title: "Privacy", on: $face.showBlurBackground, height: height)
                     }

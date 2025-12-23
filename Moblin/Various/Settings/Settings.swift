@@ -1512,10 +1512,22 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  imageOff: "theatermask.and.paintbrush",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Pinch"),
+                                 type: .pinch,
+                                 imageOn: "hand.pinch.fill",
+                                 imageOff: "hand.pinch",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Blur faces"),
                                  type: .blurFaces,
                                  imageOn: "face.dashed",
                                  imageOff: "face.dashed",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Privacy"),
+                                 type: .privacy,
+                                 imageOn: "circle.rectangle.dashed",
+                                 imageOff: "circle.rectangle.dashed",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Pixellate"),
@@ -1562,12 +1574,6 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  type: .twin,
                                  imageOn: "person.2.fill",
                                  imageOff: "person.2",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Pinch"),
-                                 type: .pinch,
-                                 imageOn: "hand.pinch.fill",
-                                 imageOff: "hand.pinch",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }

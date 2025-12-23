@@ -1076,6 +1076,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
         updateFaceFilterButtonState()
+        setGlobalButtonState(type: .blurFaces, isOn: database.debug.face.showBlur)
+        setGlobalButtonState(type: .privacy, isOn: database.debug.face.showBlurBackground)
         updateLutsButtonState()
         updateAutoSceneSwitcherButtonState()
         reloadNtpClient()
@@ -3022,6 +3024,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func toggleBlurFaces() {
         database.debug.face.showBlur.toggle()
         toggleFilterQuickButton(type: .blurFaces)
+        updateFaceFilterSettings()
+        updateFaceFilterButtonState()
+    }
+
+    func togglePrivacy() {
+        database.debug.face.showBlurBackground.toggle()
+        toggleFilterQuickButton(type: .privacy)
         updateFaceFilterSettings()
         updateFaceFilterButtonState()
     }

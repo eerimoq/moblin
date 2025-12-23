@@ -141,6 +141,10 @@ extension Model {
             if !pressed {
                 toggleBlurFaces()
             }
+        case .privacy:
+            if !pressed {
+                togglePrivacy()
+            }
         }
     }
 

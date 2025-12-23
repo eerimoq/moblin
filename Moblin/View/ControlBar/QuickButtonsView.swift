@@ -371,6 +371,10 @@ struct QuickButtonsInnerView: View {
         model.toggleBlurFaces()
     }
 
+    private func privacyAction() {
+        model.togglePrivacy()
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             switch state.button.type {
@@ -831,6 +835,14 @@ struct QuickButtonsInnerView: View {
                                  buttonSize: size)
                 {
                     blurFacesAction()
+                }
+            case .privacy:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    privacyAction()
                 }
             }
             if quickButtonsSettings.showName && !orientation.isPortrait {
