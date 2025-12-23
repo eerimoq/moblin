@@ -31,17 +31,11 @@ struct AboutSettingsView: View {
                     }
                 }
             }
-            Section {
-                Button {
-                    openUrl(url: "https://eerimoq.github.io/moblin/privacy-policy/en.html")
-                } label: {
-                    Text("Privacy policy")
-                }
-                Button {
-                    openUrl(url: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
-                } label: {
-                    Text("End-user license agreement (EULA)")
-                }
+            ExternalUrlButtonView(url: "https://eerimoq.github.io/moblin/privacy-policy/en.html") {
+                Text("Privacy policy")
+            }
+            ExternalUrlButtonView(url: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/") {
+                Text("End-user license agreement (EULA)")
             }
         }
         .navigationTitle("About")

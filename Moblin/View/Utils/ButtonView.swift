@@ -37,3 +37,37 @@ struct TextButtonView: View {
         }
     }
 }
+
+struct ExternalButtonView<Content: View>: View {
+    let action: () -> Void
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        Section {
+            HStack {
+                content()
+                Spacer()
+                Button {
+                    action()
+                } label: {
+                    Image(systemName: "arrow.turn.up.right")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.blue)
+            }
+        }
+    }
+}
+
+struct ExternalUrlButtonView<Content: View>: View {
+    let url: String
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        ExternalButtonView {
+            openUrl(url: url)
+        } content: {
+            content()
+        }
+    }
+}

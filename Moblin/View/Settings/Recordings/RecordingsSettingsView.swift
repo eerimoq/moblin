@@ -38,28 +38,14 @@ private struct RecordingsLocationView: View {
     }
 
     var body: some View {
-        Section {
-            HStack {
-                text
-                Spacer()
-                if let sharedUrl = makeSharedUrl(path: path) {
-                    Button {
-                        openInFilesApp(sharedUrl: sharedUrl)
-                    } label: {
-                        Image(systemName: "arrow.turn.up.right")
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
-                } else {
-                    Button {
-                        copyPathToClipboard(path: path)
-                    } label: {
-                        Image(systemName: "document.on.document")
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
-                }
+        ExternalButtonView {
+            if let sharedUrl = makeSharedUrl(path: path) {
+                openInFilesApp(sharedUrl: sharedUrl)
+            } else {
+                copyPathToClipboard(path: path)
             }
+        } content: {
+            text
         }
     }
 }

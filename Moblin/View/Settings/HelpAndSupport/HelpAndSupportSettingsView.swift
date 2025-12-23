@@ -4,14 +4,10 @@ struct HelpAndSupportSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Button {
-                    openUrl(url: "https://discord.gg/kh3KMng4JV")
-                } label: {
+                ExternalUrlButtonView(url: "https://discord.gg/kh3KMng4JV") {
                     DiscordLogoAndNameView()
                 }
-                Button {
-                    openUrl(url: "https://github.com/eerimoq/moblin")
-                } label: {
+                ExternalUrlButtonView(url: "https://github.com/eerimoq/moblin") {
                     Text("Github")
                 }
             } footer: {
