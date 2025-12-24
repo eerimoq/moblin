@@ -52,8 +52,7 @@ struct ExternalButtonView<Content: View>: View {
                 } label: {
                     Image(systemName: "arrow.turn.up.right")
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(.blue)
+                .buttonStyle(.borderless)
             }
         }
     }

@@ -1,35 +1,5 @@
 import SwiftUI
 
-private struct InterfaceViewUrl: View {
-    @EnvironmentObject var model: Model
-    let url: String
-    let image: String
-
-    var body: some View {
-        HStack {
-            Image(systemName: image)
-            Text(url)
-            Spacer()
-            Button {
-                UIPasteboard.general.string = url
-                model.makeToast(title: "URL copied to clipboard")
-            } label: {
-                Image(systemName: "doc.on.doc")
-            }
-        }
-    }
-}
-
-private struct InterfaceView: View {
-    let ip: String
-    let port: UInt16
-    let image: String
-
-    var body: some View {
-        InterfaceViewUrl(url: "ws://\(ip):\(port)", image: image)
-    }
-}
-
 private struct PasswordView: View {
     @EnvironmentObject var model: Model
     @State var value: String
@@ -79,12 +49,7 @@ private struct PasswordView: View {
                             }
                         }
                         .disabled(model.isLive)
-                    Button {
-                        UIPasteboard.general.string = value
-                        model.makeToast(title: "Password copied to clipboard")
-                    } label: {
-                        Image(systemName: "doc.on.doc")
-                    }
+                    CopyToClipboardButtonView(text: value)
                 }
             } footer: {
                 if let message {

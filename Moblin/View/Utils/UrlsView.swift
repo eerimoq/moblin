@@ -10,12 +10,7 @@ struct UrlCopyView: View {
             Image(systemName: image)
             Text(url)
             Spacer()
-            Button {
-                UIPasteboard.general.string = url
-                model.makeToast(title: "URL copied to clipboard")
-            } label: {
-                Image(systemName: "doc.on.doc")
-            }
+            CopyToClipboardButtonView(text: url)
         }
     }
 }

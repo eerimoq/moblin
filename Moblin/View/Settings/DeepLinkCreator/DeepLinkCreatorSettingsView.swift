@@ -150,7 +150,6 @@ struct DeepLinkCreatorSettingsView: View {
                     Section {
                         TextButtonView("Copy to clipboard") {
                             UIPasteboard.general.string = deepLink
-                            model.makeToast(title: String(localized: "Deep link copied to clipboard"))
                         }
                     }
                     Section {

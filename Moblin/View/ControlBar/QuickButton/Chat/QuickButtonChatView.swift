@@ -787,7 +787,7 @@ private struct AlertsControlView: View {
 
 private struct ActionButtonView: View {
     var image: String
-    var text: String
+    var text: LocalizedStringKey
     var foreground: Color = .blue
     var action: () -> Void
 
@@ -824,7 +824,7 @@ private struct ActionButtonsView: View {
     }
 
     private func banButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "nosign", text: String(localized: "Ban"), foreground: .red) {
+        ActionButtonView(image: "nosign", text: "Ban", foreground: .red) {
             isPresentingBanConfirm = true
         }
         .confirmationDialog("", isPresented: $isPresentingBanConfirm) {
@@ -836,7 +836,7 @@ private struct ActionButtonsView: View {
     }
 
     private func timeoutButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "timer", text: String(localized: "Timeout")) {
+        ActionButtonView(image: "timer", text: "Timeout") {
             isPresentingTimeoutConfirm = true
         }
         .confirmationDialog("", isPresented: $isPresentingTimeoutConfirm) {
@@ -856,7 +856,7 @@ private struct ActionButtonsView: View {
     }
 
     private func deleteButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "trash", text: String(localized: "Delete")) {
+        ActionButtonView(image: "trash", text: "Delete") {
             isPresentingDeleteConfirm = true
         }
         .confirmationDialog("", isPresented: $isPresentingDeleteConfirm) {
@@ -868,14 +868,14 @@ private struct ActionButtonsView: View {
     }
 
     private func copyButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "document.on.document", text: String(localized: "Copy")) {
+        ActionButtonView(image: "document.on.document", text: "Copy") {
             model.copyMessage(post: selectedPost)
             dismiss()
         }
     }
 
     private func nicknameButton(selectedPost: ChatPost) -> some View {
-        ActionButtonView(image: "person.badge.plus", text: String(localized: "Nickname")) {
+        ActionButtonView(image: "person.badge.plus", text: "Nickname") {
             if let user = selectedPost.user {
                 nicknameText = chat.nicknames.getNickname(user: user) ?? ""
             } else {

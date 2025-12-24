@@ -571,7 +571,6 @@ extension Model {
 
     func copyMessage(post: ChatPost) {
         UIPasteboard.general.string = post.text()
-        makeToast(title: String(localized: "Message copied to clipboard"))
     }
 
     func deleteChatMessage(messageId: String) {

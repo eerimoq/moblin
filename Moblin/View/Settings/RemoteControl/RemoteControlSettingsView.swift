@@ -44,12 +44,7 @@ private struct PasswordView: View {
                                 submit()
                             }
                         }
-                    Button {
-                        UIPasteboard.general.string = value
-                        model.makeToast(title: "Password copied to clipboard")
-                    } label: {
-                        Image(systemName: "doc.on.doc")
-                    }
+                    CopyToClipboardButtonView(text: value)
                 }
             } footer: {
                 if let message {
