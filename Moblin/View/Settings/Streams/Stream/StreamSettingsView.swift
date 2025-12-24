@@ -1,8 +1,8 @@
 import SwiftUI
 
-struct PlatformLogoAndNameView: View {
+private struct PlatformLogoAndNameView: View {
     let logo: String
-    let name: LocalizedStringKey
+    let name: String
     var channel: String = ""
 
     var body: some View {
@@ -24,7 +24,7 @@ struct TwitchLogoAndNameView: View {
     var channel: String = ""
 
     var body: some View {
-        PlatformLogoAndNameView(logo: "TwitchLogo", name: "Twitch", channel: channel)
+        PlatformLogoAndNameView(logo: "TwitchLogo", name: String(localized: "Twitch"), channel: channel)
     }
 }
 
@@ -32,7 +32,7 @@ struct KickLogoAndNameView: View {
     var channel: String = ""
 
     var body: some View {
-        PlatformLogoAndNameView(logo: "KickLogo", name: "Kick", channel: channel)
+        PlatformLogoAndNameView(logo: "KickLogo", name: String(localized: "Kick"), channel: channel)
     }
 }
 
@@ -40,7 +40,7 @@ struct YouTubeLogoAndNameView: View {
     var handle: String = ""
 
     var body: some View {
-        PlatformLogoAndNameView(logo: "YouTubeLogo", name: "YouTube", channel: handle)
+        PlatformLogoAndNameView(logo: "YouTubeLogo", name: String(localized: "YouTube"), channel: handle)
     }
 }
 
@@ -48,13 +48,13 @@ struct DLiveLogoAndNameView: View {
     var username: String = ""
 
     var body: some View {
-        PlatformLogoAndNameView(logo: "DLiveLogo", name: "DLive", channel: username)
+        PlatformLogoAndNameView(logo: "DLiveLogo", name: String(localized: "DLive"), channel: username)
     }
 }
 
 struct OpenStreamingPlatformLogoAndNameView: View {
     var body: some View {
-        PlatformLogoAndNameView(logo: "OpenStreamingPlatform", name: "Open Streaming Platform")
+        PlatformLogoAndNameView(logo: "OpenStreamingPlatform", name: String(localized: "Open Streaming Platform"))
     }
 }
 
@@ -62,31 +62,31 @@ struct SoopLogoAndNameView: View {
     var channel: String = ""
 
     var body: some View {
-        PlatformLogoAndNameView(logo: "SoopLogo", name: "SOOP", channel: channel)
+        PlatformLogoAndNameView(logo: "SoopLogo", name: String(localized: "SOOP"), channel: channel)
     }
 }
 
 struct ObsLogoAndNameView: View {
     var body: some View {
-        PlatformLogoAndNameView(logo: "ObsLogo", name: "OBS")
+        PlatformLogoAndNameView(logo: "ObsLogo", name: String(localized: "OBS"))
     }
 }
 
 struct DiscordLogoAndNameView: View {
     var body: some View {
-        PlatformLogoAndNameView(logo: "DiscordLogo", name: "Discord")
+        PlatformLogoAndNameView(logo: "DiscordLogo", name: String(localized: "Discord"))
     }
 }
 
 struct TtsMonsterLogoAndNameView: View {
     var body: some View {
-        PlatformLogoAndNameView(logo: "TtsMonster", name: "TTS.Monster")
+        PlatformLogoAndNameView(logo: "TtsMonster", name: String(localized: "TTS.Monster"))
     }
 }
 
 struct GithubLogoAndNameView: View {
     var body: some View {
-        PlatformLogoAndNameView(logo: "GithubLogo", name: "Github")
+        PlatformLogoAndNameView(logo: "GithubLogo", name: String(localized: "Github"))
     }
 }
 
