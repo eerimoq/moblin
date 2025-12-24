@@ -62,9 +62,7 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
                     )
                 )
             } label: {
-                Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                    .foregroundStyle(.gray)
-                    .lineLimit(1)
+                GrayTextView(text: device.bluetoothPeripheralName ?? String(localized: "Select device"))
             }
             .disabled(device.isStarted)
         } header: {

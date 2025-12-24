@@ -93,9 +93,8 @@ struct BlackSharkCoolerDeviceSettingsView: View {
                                 .uuidString ?? String(localized: "Select device")
                         )
                     } label: {
-                        Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))
-                            .foregroundStyle(.gray)
-                            .lineLimit(1)
+                        GrayTextView(
+                            text: device.bluetoothPeripheralName ?? String(localized: "Select device"))
                     }
                     .disabled(device.enabled)
                 } header: {

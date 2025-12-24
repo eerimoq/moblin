@@ -160,8 +160,7 @@ struct ChatFiltersSettingsView: View {
             HStack {
                 Text("Filters")
                 Spacer()
-                Text(String(chat.filters.count))
-                    .foregroundStyle(.gray)
+                GrayTextView(text: String(chat.filters.count))
             }
         }
     }

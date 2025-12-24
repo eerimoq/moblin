@@ -239,8 +239,7 @@ struct KickStreamLiveSettingsView: View {
                 Text("Title")
                 Spacer()
                 if let title {
-                    Text(title)
-                        .foregroundStyle(.gray)
+                    GrayTextView(text: title)
                 } else {
                     ProgressView()
                 }
@@ -253,8 +252,7 @@ struct KickStreamLiveSettingsView: View {
                 Text("Category")
                 Spacer()
                 if let category {
-                    Text(category)
-                        .foregroundStyle(.gray)
+                    GrayTextView(text: category)
                 } else {
                     ProgressView()
                 }

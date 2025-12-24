@@ -104,8 +104,7 @@ struct RtmpServerSettingsView: View {
             HStack {
                 Text("RTMP server")
                 Spacer()
-                Text(status())
-                    .foregroundStyle(.gray)
+                GrayTextView(text: status())
             }
         }
     }

@@ -457,9 +457,7 @@ private struct ChatBotAliasSettingsView: View {
             HStack {
                 Text(alias.alias)
                 Spacer()
-                Text(alias.replacement)
-                    .lineLimit(1)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: alias.replacement)
             }
         }
     }

@@ -96,8 +96,7 @@ struct RistServerSettingsView: View {
             HStack {
                 Text("RIST server")
                 Spacer()
-                Text(status())
-                    .foregroundStyle(.gray)
+                GrayTextView(text: status())
             }
         }
     }

@@ -840,8 +840,7 @@ struct WidgetTextSettingsView: View {
                     Spacer(minLength: 0)
                     Toggle(isOn: $text.widthEnabled) {}
                         .padding([.trailing], 2)
-                    Text(String(text.width))
-                        .foregroundStyle(.gray)
+                    GrayTextView(text: String(text.width))
                 }
                 .onChange(of: text.widthEnabled) { _ in
                     setLayout()

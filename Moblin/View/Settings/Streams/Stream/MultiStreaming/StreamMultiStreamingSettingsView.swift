@@ -85,8 +85,7 @@ struct StreamMultiStreamingSettingsView: View {
             HStack {
                 Text("Multi streaming")
                 Spacer()
-                Text(numberOfEnabledDestinations())
-                    .foregroundStyle(.gray)
+                GrayTextView(text: numberOfEnabledDestinations())
             }
         }
     }

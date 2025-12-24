@@ -43,9 +43,7 @@ private struct MicView: View {
             HStack {
                 Text("Mic")
                 Spacer()
-                Text(model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
-                    .foregroundStyle(.gray)
-                    .lineLimit(1)
+                GrayTextView(text: model.getMicById(id: scene.micId)?.name ?? "Unknown 😢")
             }
         }
         .onAppear {
@@ -137,9 +135,7 @@ private struct VideoSourceView: View {
                         if !model.isSceneVideoSourceActive(scene: scene) {
                             Image(systemName: "cable.connector.slash")
                         }
-                        Text(model.getCameraPositionName(scene: scene))
-                            .foregroundStyle(.gray)
-                            .lineLimit(1)
+                        GrayTextView(text: model.getCameraPositionName(scene: scene))
                     }
                 } icon: {
                     Image(systemName: "camera")

@@ -50,8 +50,7 @@ private struct LineView: View {
             fitContentWidth: true
         ) {
             if chat.timestampColorEnabled {
-                Text("\(post.timestamp) ")
-                    .foregroundStyle(.gray)
+                GrayTextView(text: "\(post.timestamp) ")
             }
             if chat.platform, platform, let image = post.platform?.imageName() {
                 Image(image)

@@ -122,8 +122,7 @@ struct SrtlaServerSettingsView: View {
             HStack {
                 Text("SRT(LA) server")
                 Spacer()
-                Text(status())
-                    .foregroundStyle(.gray)
+                GrayTextView(text: status())
             }
         }
     }

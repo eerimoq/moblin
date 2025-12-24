@@ -17,8 +17,7 @@ private struct DeviceView: View {
             HStack {
                 Text(device.name)
                 Spacer()
-                Text(formatDjiDeviceState(state: device.state))
-                    .foregroundStyle(.gray)
+                GrayTextView(text: formatDjiDeviceState(state: device.state))
             }
         }
         .disabled(!device.canStartLive())

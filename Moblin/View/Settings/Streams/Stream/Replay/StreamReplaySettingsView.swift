@@ -95,8 +95,7 @@ private struct StingerView: View {
             HStack {
                 Text(title)
                 Spacer()
-                Text(stinger.name)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: stinger.name)
             }
         }
     }

@@ -80,9 +80,7 @@ struct WidgetVTuberSettingsView: View {
                 HStack {
                     Text("Video source")
                     Spacer()
-                    Text(model.getCameraPositionName(vTuberWidget: vTuber))
-                        .foregroundStyle(.gray)
-                        .lineLimit(1)
+                    GrayTextView(text: model.getCameraPositionName(vTuberWidget: vTuber))
                 }
             }
         }

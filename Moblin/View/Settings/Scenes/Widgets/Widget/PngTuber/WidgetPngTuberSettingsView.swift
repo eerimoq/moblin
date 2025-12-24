@@ -77,9 +77,7 @@ struct WidgetPngTuberSettingsView: View {
                 HStack {
                     Text("Video source")
                     Spacer()
-                    Text(model.getCameraPositionName(pngTuberWidget: pngTuber))
-                        .foregroundStyle(.gray)
-                        .lineLimit(1)
+                    GrayTextView(text: model.getCameraPositionName(pngTuberWidget: pngTuber))
                 }
             }
         }

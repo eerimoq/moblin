@@ -37,8 +37,7 @@ private struct NicknameView: View {
                 DraggableItemPrefixView()
                 Text(nickname.user)
                 Spacer()
-                Text(nickname.nickname)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: nickname.nickname)
             }
         }
     }
@@ -76,8 +75,7 @@ struct ChatNicknamesSettingsView: View {
             HStack {
                 Text("Nicknames")
                 Spacer()
-                Text(String(nicknames.nicknames.count))
-                    .foregroundStyle(.gray)
+                GrayTextView(text: String(nicknames.nicknames.count))
             }
         }
     }

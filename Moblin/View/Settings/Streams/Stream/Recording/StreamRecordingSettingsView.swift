@@ -72,10 +72,8 @@ private struct RecordingPathView: View {
                 Text("Recording path")
                 Spacer()
                 if let recordingPath = recording.recordingPath {
-                    Text(getRecordingPath(recordingPath: recordingPath))
-                        .lineLimit(1)
+                    GrayTextView(text: getRecordingPath(recordingPath: recordingPath))
                         .truncationMode(.head)
-                        .foregroundStyle(.gray)
                 }
             }
         }

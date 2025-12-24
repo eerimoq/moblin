@@ -96,6 +96,16 @@ struct GithubLogoAndNameView: View {
     }
 }
 
+struct GrayTextView: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .foregroundStyle(.gray)
+            .lineLimit(1)
+    }
+}
+
 struct StreamPlatformsSettingsView: View {
     @ObservedObject var stream: SettingsStream
 
@@ -106,8 +116,7 @@ struct StreamPlatformsSettingsView: View {
             HStack {
                 TwitchLogoAndNameView()
                 Spacer()
-                Text(stream.twitchChannelName)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: stream.twitchChannelName)
             }
         }
         NavigationLink {
@@ -116,8 +125,7 @@ struct StreamPlatformsSettingsView: View {
             HStack {
                 KickLogoAndNameView()
                 Spacer()
-                Text(stream.kickChannelName)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: stream.kickChannelName)
             }
         }
         NavigationLink {
@@ -126,8 +134,7 @@ struct StreamPlatformsSettingsView: View {
             HStack {
                 YouTubeLogoAndNameView()
                 Spacer()
-                Text(stream.youTubeHandle)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: stream.youTubeHandle)
             }
         }
         NavigationLink {
@@ -136,8 +143,7 @@ struct StreamPlatformsSettingsView: View {
             HStack {
                 DLiveLogoAndNameView()
                 Spacer()
-                Text(stream.dLiveUsername)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: stream.dLiveUsername)
             }
         }
         NavigationLink {
@@ -146,8 +152,7 @@ struct StreamPlatformsSettingsView: View {
             HStack {
                 SoopLogoAndNameView()
                 Spacer()
-                Text(stream.soopChannelName)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: stream.soopChannelName)
             }
         }
         NavigationLink {

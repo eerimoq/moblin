@@ -39,8 +39,7 @@ struct RtspClientSettingsView: View {
             HStack {
                 Text("RTSP client")
                 Spacer()
-                Text(status())
-                    .foregroundStyle(.gray)
+                GrayTextView(text: status())
             }
         }
         .onAppear {

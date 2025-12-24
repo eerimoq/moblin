@@ -147,8 +147,7 @@ private struct VideoView: View {
             HStack {
                 Text("Video")
                 Spacer()
-                Text(alert.videoName)
-                    .foregroundStyle(.gray)
+                GrayTextView(text: alert.videoName)
             }
         }
     }

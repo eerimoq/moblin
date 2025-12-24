@@ -173,9 +173,7 @@ struct WidgetVideoSourceSettingsView: View {
                 HStack {
                     Text("Video source")
                     Spacer()
-                    Text(model.getCameraPositionName(videoSourceWidget: videoSource))
-                        .foregroundStyle(.gray)
-                        .lineLimit(1)
+                    GrayTextView(text: model.getCameraPositionName(videoSourceWidget: videoSource))
                 }
             }
             .alert(
