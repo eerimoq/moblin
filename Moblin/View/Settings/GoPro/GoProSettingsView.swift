@@ -70,7 +70,10 @@ private struct GoProWifiCredentialsSettingsView: View {
     @State var qrCode: UIImage?
 
     private func generate() {
-        qrCode = GoPro.generateWifiCredentialsQrCode(ssid: wifiCredentials.ssid, password: wifiCredentials.password)
+        qrCode = GoPro.generateWifiCredentialsQrCode(
+            ssid: wifiCredentials.ssid,
+            password: wifiCredentials.password
+        )
     }
 
     var body: some View {
@@ -408,7 +411,10 @@ private struct GoProRtmpUrls: View {
             }
             CreateButtonView {
                 let rtmpUrl = SettingsGoProRtmpUrl()
-                rtmpUrl.name = makeUniqueName(name: SettingsGoProRtmpUrl.baseName, existingNames: goPro.rtmpUrls)
+                rtmpUrl.name = makeUniqueName(
+                    name: SettingsGoProRtmpUrl.baseName,
+                    existingNames: goPro.rtmpUrls
+                )
                 if goPro.rtmpUrls.isEmpty {
                     goPro.selectedRtmpUrl = rtmpUrl.id
                     goProState.rtmpUrlSelection = goPro.selectedRtmpUrl

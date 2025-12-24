@@ -238,7 +238,11 @@ class RemoteControlStreamer {
             delegate.remoteControlStreamerReloadBrowserWidgets()
             sendEmptyOkResponse(id: id)
         case let .setSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled):
-            delegate.remoteControlStreamerSetSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled)
+            delegate.remoteControlStreamerSetSrtConnectionPriority(
+                id: priorityId,
+                priority: priority,
+                enabled: enabled
+            )
             sendEmptyOkResponse(id: id)
         case let .setSrtConnectionPrioritiesEnabled(enabled: enabled):
             delegate.remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: enabled)

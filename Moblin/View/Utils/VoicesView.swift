@@ -278,7 +278,10 @@ struct VoicesView: View {
         guard let selectedVoice = language.selectedVoice else {
             return nil
         }
-        return VoicePickerItem(flagEmoji: emojiFlag(countryCode: language.code), voice: Voice(voice: selectedVoice))
+        return VoicePickerItem(
+            flagEmoji: emojiFlag(countryCode: language.code),
+            voice: Voice(voice: selectedVoice)
+        )
     }
 
     var body: some View {

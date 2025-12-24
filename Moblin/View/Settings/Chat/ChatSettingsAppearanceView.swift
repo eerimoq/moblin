@@ -94,14 +94,18 @@ struct ChatSettingsAppearanceView: View {
                             }
                     }
                     Toggle(isOn: $chat.backgroundColorEnabled) {
-                        ColorPicker("Background", selection: $chat.backgroundColorColor, supportsOpacity: false)
-                            .onChange(of: chat.backgroundColorColor) { _ in
-                                guard let color = chat.backgroundColorColor.toRgb() else {
-                                    return
-                                }
-                                chat.backgroundColor = color
-                                model.reloadChatMessages()
+                        ColorPicker(
+                            "Background",
+                            selection: $chat.backgroundColorColor,
+                            supportsOpacity: false
+                        )
+                        .onChange(of: chat.backgroundColorColor) { _ in
+                            guard let color = chat.backgroundColorColor.toRgb() else {
+                                return
                             }
+                            chat.backgroundColor = color
+                            model.reloadChatMessages()
+                        }
                     }
                     .onChange(of: chat.backgroundColorEnabled) { _ in
                         model.reloadChatMessages()

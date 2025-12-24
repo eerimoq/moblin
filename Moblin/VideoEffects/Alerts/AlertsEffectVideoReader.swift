@@ -72,7 +72,9 @@ class AlertsEffectVideoReader {
         }
         var newImages: [VideoImage] = []
         for _ in 0 ... 10 {
-            if let sampleBuffer = trackOutput.copyNextSampleBuffer(), let imageBuffer = sampleBuffer.imageBuffer {
+            if let sampleBuffer = trackOutput.copyNextSampleBuffer(),
+               let imageBuffer = sampleBuffer.imageBuffer
+            {
                 newImages.append(VideoImage(image: CIImage(cvImageBuffer: imageBuffer),
                                             offset: sampleBuffer.presentationTimeStamp.seconds))
             }

@@ -23,7 +23,10 @@ protocol ProcessorDelegate: AnyObject {
 }
 
 let processorControlQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Control")
-let processorPipelineQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Processor.Pipeline", qos: .userInteractive)
+let processorPipelineQueue = DispatchQueue(
+    label: "com.haishinkit.HaishinKit.Processor.Pipeline",
+    qos: .userInteractive
+)
 
 private class Stream {
     weak var delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)?

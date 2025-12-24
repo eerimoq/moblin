@@ -86,7 +86,11 @@ class RtmpConnection {
         socket = RtmpSocket(name: name, queue: queue)
     }
 
-    func call(_ commandName: RtmpCommandName, arguments: [AsValue], onCompleted: (([AsValue]) -> Void)? = nil) {
+    func call(
+        _ commandName: RtmpCommandName,
+        arguments: [AsValue],
+        onCompleted: (([AsValue]) -> Void)? = nil
+    ) {
         let message = RtmpCommandMessage(
             streamId: 0,
             transactionId: getNextTransactionId(),
@@ -303,7 +307,8 @@ extension RtmpConnection: RtmpSocketDelegate {
     }
 
     func socketDataReceived(data: Data) -> Data {
-        guard let chunk = currentChunk ?? RtmpChunk(data: data, size: socket.maximumChunkSizeFromServer) else {
+        guard let chunk = currentChunk ?? RtmpChunk(data: data, size: socket.maximumChunkSizeFromServer)
+        else {
             return data
         }
         let encoded = chunk.encode()

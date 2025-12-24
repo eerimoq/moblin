@@ -167,7 +167,8 @@ extension Model {
         guard shouldSendRemoteScene() else {
             return
         }
-        let data = RemoteControlRemoteSceneData(textStats: RemoteControlRemoteSceneDataTextStats(stats: stats))
+        let data =
+            RemoteControlRemoteSceneData(textStats: RemoteControlRemoteSceneDataTextStats(stats: stats))
         remoteControlAssistant?.setRemoteSceneData(data: data) {}
     }
 
@@ -175,7 +176,8 @@ extension Model {
         guard shouldSendRemoteScene() else {
             return
         }
-        let data = RemoteControlRemoteSceneData(location: RemoteControlRemoteSceneDataLocation(location: location))
+        let data =
+            RemoteControlRemoteSceneData(location: RemoteControlRemoteSceneDataLocation(location: location))
         remoteControlAssistant?.setRemoteSceneData(data: data) {}
     }
 
@@ -446,7 +448,8 @@ extension Model {
         }
         let (general,
              topLeft,
-             topRight) = remoteControlStreamerCreateStatus(filter: remoteControlAssistantRequestingStatusFilter)
+             topRight) =
+            remoteControlStreamerCreateStatus(filter: remoteControlAssistantRequestingStatusFilter)
         remoteControlStreamer?.sendStatus(general: general, topLeft: topLeft, topRight: topRight)
     }
 
@@ -482,7 +485,8 @@ extension Model: RemoteControlStreamerDelegate {
         }
         switch cameraPosition {
         case .front:
-            state.zoomPresets = zoom.frontZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
+            state.zoomPresets = zoom.frontZoomPresets
+                .map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
             state.zoomPreset = zoom.frontPresetId
         case .back:
             state.zoomPresets = zoom.backZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }

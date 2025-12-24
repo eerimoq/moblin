@@ -458,7 +458,8 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
     case ipv4AndIpv6 = "IPv4 and IPv6"
 
     init(from decoder: Decoder) throws {
-        self = try SettingsDnsLookupStrategy(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+        self = try SettingsDnsLookupStrategy(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
             .system
     }
 }
@@ -842,7 +843,8 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     case mirror = "Mirror"
 
     init(from decoder: Decoder) throws {
-        self = try SettingsExternalDisplayContent(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+        self = try SettingsExternalDisplayContent(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
             .stream
     }
 
@@ -1057,7 +1059,9 @@ class Database: Codable, ObservableObject {
             addDefaultBitratePresets(database: database)
         }
         addMissingQuickButtons(database: database)
-        for button in database.quickButtons where button.type != .interactiveChat && button.type != .cameraPreview {
+        for button in database.quickButtons
+            where button.type != .interactiveChat && button.type != .cameraPreview
+        {
             button.isOn = false
         }
         addMissingDeepLinkQuickButtons(database: database)
@@ -1222,7 +1226,11 @@ class Database: Codable, ObservableObject {
         tapToFocus = container.decode(.tapToFocus, Bool.self, false)
         bitratePresets = container.decode(.bitratePresets, [SettingsBitratePreset].self, [])
         iconImage = container.decode(.iconImage, String.self, plainIcon.image())
-        videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
+        videoStabilizationMode = container.decode(
+            .videoStabilizationMode,
+            SettingsVideoStabilizationMode.self,
+            .off
+        )
         chat = container.decode(.chat, SettingsChat.self, .init())
         mic = container.decode(.mic, SettingsMic.self, getDefaultMic())
         mics = container.decode(.mics, SettingsMics.self, .init())
@@ -1230,7 +1238,11 @@ class Database: Codable, ObservableObject {
         quickButtonsGeneral = container.decode(.quickButtons, SettingsQuickButtons.self, .init())
         quickButtons = container.decode(.globalButtons, [SettingsQuickButton].self, [])
         rtmpServer = container.decode(.rtmpServer, SettingsRtmpServer.self, .init())
-        networkInterfaceNames = container.decode(.networkInterfaceNames, [SettingsNetworkInterfaceName].self, [])
+        networkInterfaceNames = container.decode(
+            .networkInterfaceNames,
+            [SettingsNetworkInterfaceName].self,
+            []
+        )
         lowBitrateWarning = container.decode(.lowBitrateWarning, Bool.self, true)
         vibrate = container.decode(.vibrate, Bool.self, false)
         gameControllers = container.decode(.gameControllers, [SettingsGameController].self, [.init()])
@@ -1253,19 +1265,39 @@ class Database: Codable, ObservableObject {
         alertsMediaGallery = container.decode(.alertsMediaGallery, SettingsAlertsMediaGallery.self, .init())
         catPrinters = container.decode(.catPrinters, SettingsCatPrinters.self, .init())
         verboseStatuses = container.decode(.verboseStatuses, Bool.self, false)
-        scoreboardPlayers = container.decode(.scoreboardPlayers, [SettingsWidgetScoreboardPlayer].self, .init())
+        scoreboardPlayers = container.decode(
+            .scoreboardPlayers,
+            [SettingsWidgetScoreboardPlayer].self,
+            .init()
+        )
         keyboard = container.decode(.keyboard, SettingsKeyboard.self, .init())
         tesla = container.decode(.tesla, SettingsTesla.self, .init())
         srtlaRelay = container.decode(.srtlaRelay, SettingsMoblink.self, .init())
         pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
         moblink = container.decode(.moblink, SettingsMoblink.self, srtlaRelay)
-        sceneSwitchTransition = container.decode(.sceneSwitchTransition, SettingsSceneSwitchTransition.self, .blur)
+        sceneSwitchTransition = container.decode(
+            .sceneSwitchTransition,
+            SettingsSceneSwitchTransition.self,
+            .blur
+        )
         forceSceneSwitchTransition = container.decode(.forceSceneSwitchTransition, Bool.self, false)
         cameraControlsEnabled = container.decode(.cameraControlsEnabled, Bool.self, false)
-        externalDisplayContent = container.decode(.externalDisplayContent, SettingsExternalDisplayContent.self, .stream)
-        cyclingPowerDevices = container.decode(.cyclingPowerDevices, SettingsCyclingPowerDevices.self, .init())
+        externalDisplayContent = container.decode(
+            .externalDisplayContent,
+            SettingsExternalDisplayContent.self,
+            .stream
+        )
+        cyclingPowerDevices = container.decode(
+            .cyclingPowerDevices,
+            SettingsCyclingPowerDevices.self,
+            .init()
+        )
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
-        blackSharkCoolerDevices = container.decode(.phoneCoolerDevices, SettingsBlackSharkCoolerDevices.self, .init())
+        blackSharkCoolerDevices = container.decode(
+            .phoneCoolerDevices,
+            SettingsBlackSharkCoolerDevices.self,
+            .init()
+        )
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())
@@ -1278,7 +1310,11 @@ class Database: Codable, ObservableObject {
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
         bigButtons = container.decode(.bigButtons, Bool.self, false)
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
-        disconnectProtection = container.decode(.disconnectProtection, SettingsDisconnectProtection.self, .init())
+        disconnectProtection = container.decode(
+            .disconnectProtection,
+            SettingsDisconnectProtection.self,
+            .init()
+        )
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
     }
@@ -1740,7 +1776,9 @@ private func updateBundledAlertsMediaGallery(database: Database) {
     database.alertsMediaGallery.bundledImages = bundledImages
     var bundledSounds: [SettingsAlertsMediaGalleryItem] = []
     for sound in allBundledAlertsMediaGallerySounds {
-        if let existingSound = database.alertsMediaGallery.bundledSounds.first(where: { $0.name == sound.name }) {
+        if let existingSound = database.alertsMediaGallery.bundledSounds
+            .first(where: { $0.name == sound.name })
+        {
             bundledSounds.append(existingSound)
         } else {
             bundledSounds.append(sound)
@@ -1912,11 +1950,15 @@ final class Settings {
                     sceneWidget.layout.updateXString()
                     sceneWidget.layout.y = 100 - sceneWidget.layout.y
                     sceneWidget.layout.updateYString()
-                } else if widget.text.verticalAlignment == .top, widget.text.horizontalAlignment == .trailing {
+                } else if widget.text.verticalAlignment == .top,
+                          widget.text.horizontalAlignment == .trailing
+                {
                     sceneWidget.layout.alignment = .topRight
                     sceneWidget.layout.x = 100 - sceneWidget.layout.x
                     sceneWidget.layout.updateXString()
-                } else if widget.text.verticalAlignment == .bottom, widget.text.horizontalAlignment == .leading {
+                } else if widget.text.verticalAlignment == .bottom,
+                          widget.text.horizontalAlignment == .leading
+                {
                     sceneWidget.layout.alignment = .bottomLeft
                     sceneWidget.layout.y = 100 - sceneWidget.layout.y
                     sceneWidget.layout.updateYString()
@@ -1937,8 +1979,10 @@ final class Settings {
                     continue
                 }
                 let resolution = stream.resolution.dimensions(portrait: stream.portrait)
-                let width = (100 * Double(widget.browser.width) / Double(resolution.width)).clamped(to: 1 ... 100)
-                let height = (100 * Double(widget.browser.height) / Double(resolution.height)).clamped(to: 1 ... 100)
+                let width = (100 * Double(widget.browser.width) / Double(resolution.width))
+                    .clamped(to: 1 ... 100)
+                let height = (100 * Double(widget.browser.height) / Double(resolution.height))
+                    .clamped(to: 1 ... 100)
                 sceneWidget.layout.size = max(width, height)
                 sceneWidget.layout.updateSizeString()
             }

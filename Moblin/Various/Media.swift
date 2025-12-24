@@ -141,11 +141,19 @@ final class Media: NSObject {
             ristStream = nil
         case .srt:
             if newSrt {
-                srtStreamNew = SrtStreamNew(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
+                srtStreamNew = SrtStreamNew(
+                    processor: processor,
+                    timecodesEnabled: timecodesEnabled,
+                    delegate: self
+                )
                 srtStreamOld = nil
             } else {
                 srtStreamNew = nil
-                srtStreamOld = SrtStreamOld(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
+                srtStreamOld = SrtStreamOld(
+                    processor: processor,
+                    timecodesEnabled: timecodesEnabled,
+                    delegate: self
+                )
             }
             rtmpStreams.removeAll()
             ristStream = nil
@@ -294,7 +302,9 @@ final class Media: NSObject {
         return nil
     }
 
-    private func updateAdaptiveBitrateSrt(overlay: Bool, relaxed: Bool, is200MsTick: Bool) -> ([String], [String])? {
+    private func updateAdaptiveBitrateSrt(overlay: Bool, relaxed: Bool,
+                                          is200MsTick: Bool) -> ([String], [String])?
+    {
         guard srtConnected else {
             return nil
         }

@@ -15,8 +15,14 @@ final class AudioEncoderRingBuffer {
         guard
             inputBasicDescription.mFormatID == kAudioFormatLinearPCM,
             let format = AudioEncoder.makeAudioFormat(&inputBasicDescription),
-            let outputBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: UInt32(numSamplesPerBuffer)),
-            let workingBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: UInt32(numSamplesPerBuffer))
+            let outputBuffer = AVAudioPCMBuffer(
+                pcmFormat: format,
+                frameCapacity: UInt32(numSamplesPerBuffer)
+            ),
+            let workingBuffer = AVAudioPCMBuffer(
+                pcmFormat: format,
+                frameCapacity: UInt32(numSamplesPerBuffer)
+            )
         else {
             return nil
         }

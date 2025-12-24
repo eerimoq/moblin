@@ -28,7 +28,10 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case privacy = "Privacy"
 
     init(from decoder: Decoder) throws {
-        self = try SettingsControllerFunction(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unused
+        self = try SettingsControllerFunction(
+            rawValue: decoder.singleValueContainer().decode(RawValue.self)
+        ) ??
+            .unused
     }
 
     func toString() -> String {

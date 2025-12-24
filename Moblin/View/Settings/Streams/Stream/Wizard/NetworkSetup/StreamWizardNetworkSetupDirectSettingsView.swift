@@ -6,7 +6,8 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
     @State var ingestError = ""
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.directIngest.isEmpty || createStreamWizard.directStreamKey.isEmpty || !ingestError
+        return createStreamWizard.directIngest.isEmpty || createStreamWizard.directStreamKey
+            .isEmpty || !ingestError
             .isEmpty
     }
 
@@ -28,12 +29,15 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             switch createStreamWizard.platform {
             case .twitch:
                 Section {
-                    TextField("rtmp://arn03.contribute.live-video.net/app", text: $createStreamWizard.directIngest)
-                        .textInputAutocapitalization(.never)
-                        .disableAutocorrection(true)
-                        .onChange(of: createStreamWizard.directIngest) { _ in
-                            updateIngestError()
-                        }
+                    TextField(
+                        "rtmp://arn03.contribute.live-video.net/app",
+                        text: $createStreamWizard.directIngest
+                    )
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .onChange(of: createStreamWizard.directIngest) { _ in
+                        updateIngestError()
+                    }
                 } header: {
                     Text("Nearby ingest endpoint")
                 } footer: {

@@ -54,7 +54,10 @@ struct DLiveLogoAndNameView: View {
 
 struct OpenStreamingPlatformLogoAndNameView: View {
     var body: some View {
-        PlatformLogoAndNameView(logo: "OpenStreamingPlatform", name: String(localized: "Open Streaming Platform"))
+        PlatformLogoAndNameView(
+            logo: "OpenStreamingPlatform",
+            name: String(localized: "Open Streaming Platform")
+        )
     }
 }
 
@@ -236,7 +239,10 @@ struct StreamSettingsView: View {
                         } label: {
                             Text("RTMP")
                         }
-                        StreamMultiStreamingSettingsView(stream: stream, multiStreaming: stream.multiStreaming)
+                        StreamMultiStreamingSettingsView(
+                            stream: stream,
+                            multiStreaming: stream.multiStreaming
+                        )
                     case .rist:
                         NavigationLink {
                             StreamRistSettingsView(stream: stream)

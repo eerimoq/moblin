@@ -127,7 +127,8 @@ struct ChatTextToSpeechSettingsView: View {
                             guard !begin else {
                                 return
                             }
-                            model.chatTextToSpeech.setPauseBetweenMessages(value: chat.textToSpeechPauseBetweenMessages)
+                            model.chatTextToSpeech
+                                .setPauseBetweenMessages(value: chat.textToSpeechPauseBetweenMessages)
                         }
                     )
                     Text("\(formatOneDecimal(Float(chat.textToSpeechPauseBetweenMessages))) s")

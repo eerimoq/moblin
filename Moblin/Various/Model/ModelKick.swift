@@ -74,7 +74,8 @@ extension Model {
         guard !stream.kickChannelName.isEmpty else {
             return
         }
-        guard stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil else {
+        guard stream.kickChannelId == nil || stream.kickSlug == nil || stream.kickChatroomChannelId == nil
+        else {
             return
         }
         getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
@@ -105,7 +106,12 @@ extension Model {
                      reason: String? = nil,
                      onComplete: @escaping (OperationResult) -> Void)
     {
-        createKickApi(stream: stream).banUser(user: user, duration: duration, reason: reason, onComplete: onComplete)
+        createKickApi(stream: stream).banUser(
+            user: user,
+            duration: duration,
+            reason: reason,
+            onComplete: onComplete
+        )
     }
 
     func unbanKickUser(user: String, onComplete: @escaping (OperationResult) -> Void) {
@@ -195,15 +201,26 @@ extension Model {
         createKickApi(stream: stream).deleteMessage(messageId: messageId)
     }
 
-    func getKickStreamInfo(stream: SettingsStream, onComplete: @escaping (NetworkResponse<KickStreamInfo>) -> Void) {
+    func getKickStreamInfo(
+        stream: SettingsStream,
+        onComplete: @escaping (NetworkResponse<KickStreamInfo>) -> Void
+    ) {
         createKickApi(stream: stream).getStreamInfo(onComplete: onComplete)
     }
 
-    func setKickStreamTitle(stream: SettingsStream, title: String, onComplete: @escaping (OperationResult) -> Void) {
+    func setKickStreamTitle(
+        stream: SettingsStream,
+        title: String,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         createKickApi(stream: stream).setStreamTitle(title: title, onComplete: onComplete)
     }
 
-    func searchKickCategories(stream: SettingsStream, query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
+    func searchKickCategories(
+        stream: SettingsStream,
+        query: String,
+        onComplete: @escaping ([KickCategory]?) -> Void
+    ) {
         kickSearchCategoriesTimer.startSingleShot(timeout: 0.5) {
             self.createKickApi(stream: stream).searchCategories(query: query, onComplete: onComplete)
         }

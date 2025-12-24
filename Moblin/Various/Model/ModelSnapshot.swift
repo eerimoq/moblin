@@ -90,7 +90,9 @@ extension Model {
     }
 
     private func tryUploadSnapshotToDiscord(_ image: Data, _ message: String?, _ isChatBot: Bool) {
-        guard !stream.discordSnapshotWebhookOnlyWhenLive || isLive, let url = getDiscordWebhookUrl(isChatBot) else {
+        guard !stream.discordSnapshotWebhookOnlyWhenLive || isLive,
+              let url = getDiscordWebhookUrl(isChatBot)
+        else {
             return
         }
         uploadImage(

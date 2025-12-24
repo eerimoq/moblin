@@ -99,7 +99,8 @@ final class VideoSourceEffect: VideoEffect {
         {
             var anyFaceUsed = false
             for faceDetection in faceDetections {
-                guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize) else {
+                guard let boundingBox = faceDetection.stableBoundingBox(imageSize: videoSourceImageSize)
+                else {
                     continue
                 }
                 guard shouldUseFace(boundingBox, biggestBoundingBox, videoSourceImageSize) else {

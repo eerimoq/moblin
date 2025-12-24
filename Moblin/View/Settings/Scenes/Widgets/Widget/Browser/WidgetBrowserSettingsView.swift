@@ -119,7 +119,9 @@ struct WidgetBrowserSettingsView: View {
                     model.resetSelectedScene(changeScene: false)
                 }
         } footer: {
-            Text("Give the webpage access to various data in Moblin, for example chat messages and your location.")
+            Text(
+                "Give the webpage access to various data in Moblin, for example chat messages and your location."
+            )
         }
         WidgetEffectsView(widget: widget)
     }

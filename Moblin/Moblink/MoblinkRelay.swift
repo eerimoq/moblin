@@ -239,7 +239,10 @@ private class Relay: NSObject {
         }
         send(message: .response(id: id,
                                 result: .ok,
-                                data: .status(batteryPercentage: batteryPercentage, thermalState: thermalState)))
+                                data: .status(
+                                    batteryPercentage: batteryPercentage,
+                                    thermalState: thermalState
+                                )))
     }
 
     private func stopTunnel() {
@@ -261,7 +264,9 @@ private class Relay: NSObject {
             case .setup:
                 break
             case .ready:
-                guard let streamerListener = self.streamerListener, let startTunnelId = self.startTunnelId else {
+                guard let streamerListener = self.streamerListener,
+                      let startTunnelId = self.startTunnelId
+                else {
                     return
                 }
                 let port = streamerListener.port!.rawValue

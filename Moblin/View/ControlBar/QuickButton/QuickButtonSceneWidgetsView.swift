@@ -152,7 +152,13 @@ struct StopwatchWidgetView: View {
     private var indented: Bool
     @State private var presentingSetTime: Bool = false
 
-    init(name: String, stopwatch: SettingsWidgetTextStopwatch, index: Int, textEffects: [TextEffect], indented: Bool) {
+    init(
+        name: String,
+        stopwatch: SettingsWidgetTextStopwatch,
+        index: Int,
+        textEffects: [TextEffect],
+        indented: Bool
+    ) {
         self.name = name
         self.stopwatch = stopwatch
         self.index = index

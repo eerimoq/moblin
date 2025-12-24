@@ -27,7 +27,8 @@ enum SettingsStreamH264Profile: String, Codable, CaseIterable {
     case high = "High"
 
     init(from decoder: Decoder) throws {
-        self = try SettingsStreamH264Profile(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+        self = try SettingsStreamH264Profile(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
             .main
     }
 }
@@ -408,7 +409,11 @@ class SettingsStreamSrtAdaptiveBitrate: Codable {
             SettingsStreamSrtAdaptiveBitrateFastIrlSettings.self,
             .init()
         )
-        customSettings = container.decode(.customSettings, SettingsStreamSrtAdaptiveBitrateCustomSettings.self, .init())
+        customSettings = container.decode(
+            .customSettings,
+            SettingsStreamSrtAdaptiveBitrateCustomSettings.self,
+            .init()
+        )
         belaboxSettings = container.decode(
             .belaboxSettings,
             SettingsStreamSrtAdaptiveBitrateBelaboxSettings.self,
@@ -575,7 +580,11 @@ class SettingsStreamRecording: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         overrideStream = container.decode(.overrideStream, Bool.self, false)
-        resolution = container.decode(.resolution, SettingsStreamResolution.self, SettingsStream.defaultResolution)
+        resolution = container.decode(
+            .resolution,
+            SettingsStreamResolution.self,
+            SettingsStream.defaultResolution
+        )
         fps = container.decode(.fps, Int.self, SettingsStream.defaultFps)
         videoCodec = container.decode(.videoCodec, SettingsStreamCodec.self, .h265hevc)
         videoBitrate = container.decode(.videoBitrate, UInt32.self, 0)
@@ -637,7 +646,8 @@ enum SettingsStreamReplayTransitionType: String, Codable, CaseIterable {
     case none
 
     init(from decoder: Decoder) throws {
-        self = try SettingsStreamReplayTransitionType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+        self = try SettingsStreamReplayTransitionType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
             .fade
     }
 
@@ -1209,7 +1219,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         obsAutoStopRecording = container.decode(.obsAutoStopRecording, Bool.self, false)
         discordSnapshotWebhook = container.decode(.discordSnapshotWebhook, String.self, "")
         discordChatBotSnapshotWebhook = container.decode(.discordChatBotSnapshotWebhook, String.self, "")
-        discordSnapshotWebhookOnlyWhenLive = container.decode(.discordSnapshotWebhookOnlyWhenLive, Bool.self, true)
+        discordSnapshotWebhookOnlyWhenLive = container.decode(
+            .discordSnapshotWebhookOnlyWhenLive,
+            Bool.self,
+            true
+        )
         resolution = container.decode(.resolution, SettingsStreamResolution.self, Self.defaultResolution)
         fps = container.decode(.fps, Int.self, Self.defaultFps)
         lowLightBoost = container.decode(.autoFps, Bool.self, false)
@@ -1228,7 +1242,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         chat = container.decode(.chat, SettingsStreamChat.self, .init())
         recording = container.decode(.recording, SettingsStreamRecording.self, .init())
         realtimeIrlEnabled = container.decode(.realtimeIrlEnabled, Bool.self, false)
-        realtimeIrlBaseUrl = container.decode(.realtimeIrlBaseUrl, String.self, Self.defaultRealtimeIrlBaseUrl)
+        realtimeIrlBaseUrl = container.decode(
+            .realtimeIrlBaseUrl,
+            String.self,
+            Self.defaultRealtimeIrlBaseUrl
+        )
         realtimeIrlPushKey = container.decode(.realtimeIrlPushKey, String.self, "")
         portrait = container.decode(.portrait, Bool.self, false)
         backgroundStreaming = container.decode(.backgroundStreaming, Bool.self, false)
@@ -1236,8 +1254,16 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         ntpPoolAddress = container.decode(.ntpPoolAddress, String.self, "time.apple.com")
         timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)
         replay = container.decode(.replay, SettingsStreamReplay.self, .init())
-        goLiveNotificationDiscordMessage = container.decode(.goLiveNotificationDiscordMessage, String.self, "")
-        goLiveNotificationDiscordWebhookUrl = container.decode(.goLiveNotificationDiscordWebhookUrl, String.self, "")
+        goLiveNotificationDiscordMessage = container.decode(
+            .goLiveNotificationDiscordMessage,
+            String.self,
+            ""
+        )
+        goLiveNotificationDiscordWebhookUrl = container.decode(
+            .goLiveNotificationDiscordWebhookUrl,
+            String.self,
+            ""
+        )
         multiStreaming = container.decode(.multiStreaming, SettingsStreamMultiStreaming.self, .init())
     }
 

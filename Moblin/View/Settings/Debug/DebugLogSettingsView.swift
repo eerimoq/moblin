@@ -39,7 +39,8 @@ struct DebugLogSettingsView: View {
             .navigationTitle("Log")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    ShareLink(item: model.formatLog(log: log.filter { isMessageVisible(message: $0.message) }))
+                    ShareLink(item: model
+                        .formatLog(log: log.filter { isMessageVisible(message: $0.message) }))
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {

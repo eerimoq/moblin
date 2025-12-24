@@ -614,7 +614,10 @@ private struct AutoSceneSwitcherStatusView: View {
         if let autoSceneSwitcher = autoSceneSwitchers.switchers
             .first(where: { $0.id == autoSceneSwitchers.switcherId })
         {
-            AutoSceneSwitcherStatusInnerView(autoSceneSwitcher: autoSceneSwitcher, textPlacement: textPlacement)
+            AutoSceneSwitcherStatusInnerView(
+                autoSceneSwitcher: autoSceneSwitcher,
+                textPlacement: textPlacement
+            )
         }
     }
 }
@@ -751,7 +754,11 @@ struct RightOverlayTopView: View {
             VStack(alignment: .trailing, spacing: 1) {
                 if database.verboseStatuses {
                     AudioView(model: model, show: database.show)
-                    StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .beforeIcon)
+                    StatusesView(
+                        show: database.show,
+                        status: model.statusTopRight,
+                        textPlacement: .beforeIcon
+                    )
                 } else {
                     HStack(spacing: 1) {
                         StatusesView(show: database.show, status: model.statusTopRight, textPlacement: .hide)

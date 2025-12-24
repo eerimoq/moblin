@@ -52,11 +52,17 @@ extension SrtServerClient: VideoDecoderDelegate {
 
 extension SrtServerClient: MpegTsReaderDelegate {
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
-        server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(streamId: streamId, sampleBuffer: sampleBuffer)
+        server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(
+            streamId: streamId,
+            sampleBuffer: sampleBuffer
+        )
     }
 
     func mpegTsReaderVideoBuffer(_ sampleBuffer: CMSampleBuffer) {
-        server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(streamId: streamId, sampleBuffer: sampleBuffer)
+        server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
+            streamId: streamId,
+            sampleBuffer: sampleBuffer
+        )
     }
 
     func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double) {

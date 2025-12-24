@@ -429,7 +429,11 @@ private struct ChatBotAliasSettingsView: View {
             Form {
                 Section {
                     NavigationLink {
-                        TextEditView(title: String(localized: "Alias"), value: alias.alias, onChange: onAliasChange) {
+                        TextEditView(
+                            title: String(localized: "Alias"),
+                            value: alias.alias,
+                            onChange: onAliasChange
+                        ) {
                             alias.alias = $0
                         }
                     } label: {

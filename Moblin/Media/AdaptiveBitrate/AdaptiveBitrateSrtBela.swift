@@ -131,8 +131,14 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         let currentTime = ContinuousClock.now
         var bitrate = curBitrate
         let sendBufferSizeTh3 = (sendBufferSizeAvg + sendBufferSizeJitter) * 4
-        var sendBufferSizeTh2 = max(50, sendBufferSizeAvg + max(sendBufferSizeJitter * 3.0, sendBufferSizeAvg))
-        sendBufferSizeTh2 = min(sendBufferSizeTh2, rttToSendBufferSize(rtt: srtLatency / 2, throughput: throughput))
+        var sendBufferSizeTh2 = max(
+            50,
+            sendBufferSizeAvg + max(sendBufferSizeJitter * 3.0, sendBufferSizeAvg)
+        )
+        sendBufferSizeTh2 = min(
+            sendBufferSizeTh2,
+            rttToSendBufferSize(rtt: srtLatency / 2, throughput: throughput)
+        )
         if stats.relaxed ?? false {
             sendBufferSizeTh2 *= 2
         }
@@ -148,7 +154,9 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
                 or bs: \(sendBufferSize) > bs_th3: \(formatTwoDecimals(sendBufferSizeTh3))
                 """
             )
-        } else if currentTime > nextBitrateDecrTime, rtt > (srtLatency / 5) || sendBufferSize > sendBufferSizeTh2 {
+        } else if currentTime > nextBitrateDecrTime,
+                  rtt > (srtLatency / 5) || sendBufferSize > sendBufferSizeTh2
+        {
             bitrate -= (bitrateDecrMin + bitrate / bitrateDecrScale)
             nextBitrateDecrTime = currentTime.advanced(by: bitrateDecrFastInterval)
             logAdaptiveAcion(

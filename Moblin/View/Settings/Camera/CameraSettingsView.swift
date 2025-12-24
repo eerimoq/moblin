@@ -217,7 +217,9 @@ struct CameraSettingsView: View {
                 Section {
                     CameraControlsView(database: database)
                 } footer: {
-                    Text("⚠️ Hijacks volume buttons. You can only change volume in Control Center when enabled.")
+                    Text(
+                        "⚠️ Hijacks volume buttons. You can only change volume in Control Center when enabled."
+                    )
                 }
             }
             if database.showAllSettings {

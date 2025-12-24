@@ -23,7 +23,10 @@ private struct NicknameView: View {
                 }
                 Section {
                     TextButtonView("Test") {
-                        model.previewTextToSpeech(username: nickname.nickname, message: "This is a test message")
+                        model.previewTextToSpeech(
+                            username: nickname.nickname,
+                            message: "This is a test message"
+                        )
                     }
                     .disabled(nickname.nickname.isEmpty)
                 }

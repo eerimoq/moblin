@@ -7,9 +7,12 @@ struct QuickButtonAutoSceneSwitcherView: View {
     var body: some View {
         Form {
             Section {
-                AutoSwitchersSelectView(autoSceneSwitcher: autoSceneSwitcher, autoSceneSwitchers: autoSceneSwitchers)
-                    .pickerStyle(.inline)
-                    .labelsHidden()
+                AutoSwitchersSelectView(
+                    autoSceneSwitcher: autoSceneSwitcher,
+                    autoSceneSwitchers: autoSceneSwitchers
+                )
+                .pickerStyle(.inline)
+                .labelsHidden()
             }
             ShortcutSectionView {
                 AutoSwitchersSettingsView(autoSceneSwitchers: autoSceneSwitchers, showSelector: false)

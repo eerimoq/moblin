@@ -72,10 +72,14 @@ struct FaceView: View {
                                 model.updateFaceFilterSettings()
                             }
                     case .pixellate:
-                        EffectSlider(title: "PIXELLATE STRENGTH", range: 0 ... 1, value: $face.pixellateStrength)
-                            .onChange(of: face.pixellateStrength) { _ in
-                                model.updateFaceFilterSettings()
-                            }
+                        EffectSlider(
+                            title: "PIXELLATE STRENGTH",
+                            range: 0 ... 1,
+                            value: $face.pixellateStrength
+                        )
+                        .onChange(of: face.pixellateStrength) { _ in
+                            model.updateFaceFilterSettings()
+                        }
                     }
                     HStack(spacing: 0) {
                         Text("Mode")

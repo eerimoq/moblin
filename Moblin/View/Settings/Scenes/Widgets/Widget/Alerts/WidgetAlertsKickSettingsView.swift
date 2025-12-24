@@ -232,7 +232,8 @@ private struct KickGiftView: View {
                 }
             }
             .onChange(of: comparisonOperator) { _ in
-                let comparisonOperator = SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: comparisonOperator)
+                let comparisonOperator =
+                    SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: comparisonOperator)
                 kickGift.comparisonOperator = comparisonOperator ?? .greaterEqual
                 model.updateAlertsSettings()
             }

@@ -14,14 +14,18 @@ private struct RtmpHelpView: View {
                     """)
                     if !stream.twitchChannelName.isEmpty,
                        let url =
-                       URL(string: "https://dashboard.twitch.tv/u/\(stream.twitchChannelName)/settings/stream")
+                       URL(
+                           string: "https://dashboard.twitch.tv/u/\(stream.twitchChannelName)/settings/stream"
+                       )
                     {
                         Link("my_stream_key", destination: url)
                     } else {
                         Text("my_stream_key")
                     }
                 }
-                Text("Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef")
+                Text(
+                    "Example:  rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"
+                )
             }
         } header: {
             Text("Twitch")

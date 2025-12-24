@@ -190,7 +190,8 @@ private struct TwitchCheerView: View {
                 }
             }
             .onChange(of: comparisonOperator) { _ in
-                let comparisonOperator = SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: comparisonOperator)
+                let comparisonOperator =
+                    SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: comparisonOperator)
                 cheerBit.comparisonOperator = comparisonOperator ?? .greaterEqual
                 model.updateAlertsSettings()
             }

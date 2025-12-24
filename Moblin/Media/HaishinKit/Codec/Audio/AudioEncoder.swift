@@ -124,7 +124,9 @@ class AudioEncoder {
         }
     }
 
-    private func makeAudioConverter(_ inSourceFormat: inout AudioStreamBasicDescription) -> AVAudioConverter? {
+    private func makeAudioConverter(_ inSourceFormat: inout AudioStreamBasicDescription)
+        -> AVAudioConverter?
+    {
         guard
             let inputFormat = Self.makeAudioFormat(&inSourceFormat),
             let outputFormat = settings.format.makeAudioFormat(inSourceFormat)

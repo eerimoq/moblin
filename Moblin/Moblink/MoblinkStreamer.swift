@@ -129,7 +129,11 @@ private class Relay {
                     port: NWEndpoint.Port(integerLiteral: port)
                 )
                 self.tunnelEndpoint = endpoint
-                self.streamer?.delegate?.moblinkStreamerTunnelAdded(endpoint: endpoint, relayId: id, relayName: name)
+                self.streamer?.delegate?.moblinkStreamerTunnelAdded(
+                    endpoint: endpoint,
+                    relayId: id,
+                    relayName: name
+                )
             default:
                 logger.info("moblink-streamer: \(name): Missing relay host")
             }

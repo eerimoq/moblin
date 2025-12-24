@@ -48,7 +48,8 @@ struct HttpClientSuite {
     func responseParserHalfBody() async throws {
         let parser = HttpResponseParser()
         let body = "1234567890".utf8Data
-        parser.append(data: "HTTP/1.1 200 OK\r\nContent-Length: \(body.count)\r\n\r\n".utf8Data + body[0 ..< 5])
+        parser
+            .append(data: "HTTP/1.1 200 OK\r\nContent-Length: \(body.count)\r\n\r\n".utf8Data + body[0 ..< 5])
         var (done, data) = parser.parse()
         #expect(!done)
         #expect(data == nil)

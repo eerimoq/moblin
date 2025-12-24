@@ -45,7 +45,8 @@ extension FileManager {
 }
 
 func getAvailableDiskSpace() -> UInt64? {
-    guard let attributes = try? FileManager.default.attributesOfFileSystem(forPath: URL.homeDirectory.path()) else {
+    guard let attributes = try? FileManager.default.attributesOfFileSystem(forPath: URL.homeDirectory.path())
+    else {
         return nil
     }
     return attributes[.systemFreeSize] as? UInt64

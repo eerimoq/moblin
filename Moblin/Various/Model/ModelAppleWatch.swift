@@ -427,7 +427,10 @@ extension Model {
                     }
                     widget.scoreboard.generic.tickClock()
                     DispatchQueue.main.async {
-                        scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+                        scoreboardEffect.update(
+                            scoreboard: widget.scoreboard,
+                            players: self.database.scoreboardPlayers
+                        )
                     }
                     sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
                 }
@@ -640,7 +643,8 @@ extension Model: WCSessionDelegate {
         guard let data = data as? Data else {
             return
         }
-        guard let action = try? JSONDecoder().decode(WatchProtocolPadelScoreboardAction.self, from: data) else {
+        guard let action = try? JSONDecoder().decode(WatchProtocolPadelScoreboardAction.self, from: data)
+        else {
             return
         }
         DispatchQueue.main.async {
@@ -744,7 +748,8 @@ extension Model: WCSessionDelegate {
         guard let data = data as? Data else {
             return
         }
-        guard let action = try? JSONDecoder().decode(WatchProtocolGenericScoreboardAction.self, from: data) else {
+        guard let action = try? JSONDecoder().decode(WatchProtocolGenericScoreboardAction.self, from: data)
+        else {
             return
         }
         DispatchQueue.main.async {
@@ -764,7 +769,10 @@ extension Model: WCSessionDelegate {
             case .incrementAway:
                 self.handleUpdateGenericScoreboardIncrementAway(scoreboard: widget.scoreboard.generic)
             case let .setTitle(title):
-                self.handleUpdateGenericScoreboardSetTitle(scoreboard: widget.scoreboard.generic, title: title)
+                self.handleUpdateGenericScoreboardSetTitle(
+                    scoreboard: widget.scoreboard.generic,
+                    title: title
+                )
             case let .setClock(minutes, seconds):
                 self.handleUpdateGenericScoreboardSetClock(scoreboard: widget.scoreboard.generic,
                                                            minutes: minutes,
@@ -891,7 +899,8 @@ extension Model: WCSessionDelegate {
         guard let data = data as? Data else {
             return
         }
-        guard let instantReplay = try? JSONDecoder().decode(WatchProtocolInstantReplay.self, from: data) else {
+        guard let instantReplay = try? JSONDecoder().decode(WatchProtocolInstantReplay.self, from: data)
+        else {
             return
         }
         DispatchQueue.main.async {

@@ -473,7 +473,10 @@ private class Formatter {
                     text = "🏁 Finished 🏁"
                     lap = 1
                 } else {
-                    let time = ContinuousClock.Duration(secondsComponent: Int64(time), attosecondsComponent: 0)
+                    let time = ContinuousClock.Duration(
+                        secondsComponent: Int64(time),
+                        attosecondsComponent: 0
+                    )
                     text = "Lap \(lap) \(time.formatWithSeconds())"
                     lap += 1
                 }
@@ -581,7 +584,10 @@ private struct TextView: View {
                         Spacer(minLength: 0)
                     }
                 }
-                .padding([.leading, .trailing], 7 * fontSize / 30 + min(CGFloat(cornerRadius / 5), fontSize / 7.5))
+                .padding(
+                    [.leading, .trailing],
+                    7 * fontSize / 30 + min(CGFloat(cornerRadius / 5), fontSize / 7.5)
+                )
                 .frame(minWidth: minWidth)
                 .background(backgroundColor)
                 .cornerRadius(cornerRadius)

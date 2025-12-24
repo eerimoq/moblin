@@ -229,7 +229,10 @@ private struct StreamTimecodesSettingsView: View {
                 Form {
                     Section {
                         NavigationLink {
-                            TextEditView(title: String(localized: "NTP pool address"), value: stream.ntpPoolAddress) {
+                            TextEditView(
+                                title: String(localized: "NTP pool address"),
+                                value: stream.ntpPoolAddress
+                            ) {
                                 stream.ntpPoolAddress = $0
                                 if stream.enabled {
                                     model.reloadNtpClient()

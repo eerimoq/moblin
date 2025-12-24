@@ -158,7 +158,10 @@ struct AutoSwitchersView: View {
             }
             Section {
                 ForEach(autoSceneSwitchers.switchers) { autoSwitcher in
-                    AutoSwitcherSettingsItemView(autoSceneSwitchers: autoSceneSwitchers, autoSwitcher: autoSwitcher)
+                    AutoSwitcherSettingsItemView(
+                        autoSceneSwitchers: autoSceneSwitchers,
+                        autoSwitcher: autoSwitcher
+                    )
                 }
                 .onMove { froms, to in
                     autoSceneSwitchers.switchers.move(fromOffsets: froms, toOffset: to)

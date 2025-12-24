@@ -165,7 +165,11 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
         serverRtmpUrl = container.decode(.serverRtmpUrl, String.self, "")
         customRtmpUrl = container.decode(.customRtmpUrl, String.self, "")
         autoRestartStream = container.decode(.autoRestartStream, Bool.self, false)
-        imageStabilization = container.decode(.imageStabilization, SettingsDjiDeviceImageStabilization.self, .off)
+        imageStabilization = container.decode(
+            .imageStabilization,
+            SettingsDjiDeviceImageStabilization.self,
+            .off
+        )
         resolution = container.decode(.resolution, SettingsDjiDeviceResolution.self, .r1080p)
         fps = container.decode(.fps, Int.self, 30)
         bitrate = container.decode(.bitrate, UInt32.self, 6_000_000)

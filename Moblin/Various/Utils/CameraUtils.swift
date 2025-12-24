@@ -74,11 +74,14 @@ func cameraName(device: AVCaptureDevice?) -> String {
     }
 }
 
-let hasUltraWideBackCamera = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back) != nil
+let hasUltraWideBackCamera = AVCaptureDevice
+    .default(.builtInUltraWideCamera, for: .video, position: .back) != nil
 let hasTripleBackCamera = AVCaptureDevice.default(.builtInTripleCamera, for: .video, position: .back) != nil
 let hasDualBackCamera = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) != nil
-let hasWideDualBackCamera = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: .back) != nil
-let hasUltraWideFrontCamera = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .front) != nil
+let hasWideDualBackCamera = AVCaptureDevice
+    .default(.builtInDualWideCamera, for: .video, position: .back) != nil
+let hasUltraWideFrontCamera = AVCaptureDevice
+    .default(.builtInUltraWideCamera, for: .video, position: .front) != nil
 
 func hasUltraWideCamera(position: AVCaptureDevice.Position) -> Bool {
     switch position {

@@ -360,7 +360,8 @@ extension Model {
                 }
                 let recognizer = NLLanguageRecognizer()
                 recognizer.processString(question)
-                let language = recognizer.dominantLanguage?.rawValue ?? Locale.current.language.languageCode?.identifier
+                let language = recognizer.dominantLanguage?.rawValue ?? Locale.current.language.languageCode?
+                    .identifier
                 guard let language else {
                     return
                 }
@@ -673,13 +674,16 @@ extension Model {
             return
         }
         let onCompleted = {
-            if let cooldown = permissions.cooldown, let latestExecutionTime = permissions.latestExecutionTime {
+            if let cooldown = permissions.cooldown,
+               let latestExecutionTime = permissions.latestExecutionTime
+            {
                 let elapsed = latestExecutionTime.duration(to: now)
                 let timeLeftOfCooldown = .seconds(cooldown) - elapsed
                 guard timeLeftOfCooldown < .seconds(0) else {
                     if permissions.sendChatMessages, let user = command.user() {
                         self.sendChatBotReply(message: String(localized: """
-                        \(user) Sorry, but this chat bot command is on cooldown for \(Int(timeLeftOfCooldown.seconds)) \
+                        \(user) Sorry, but this chat bot command is on cooldown for \(Int(timeLeftOfCooldown
+                                .seconds)) \
                         seconds. 😢
                         """), platform: command.message.platform)
                     }
@@ -708,7 +712,9 @@ extension Model {
                             userId: userId
                         ) { data in
                             DispatchQueue.main.async {
-                                if let tier = data?.tierAsNumber(), tier >= permissions.minimumSubscriberTier {
+                                if let tier = data?.tierAsNumber(),
+                                   tier >= permissions.minimumSubscriberTier
+                                {
                                     onCompleted()
                                     return
                                 }

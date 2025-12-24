@@ -84,7 +84,9 @@ private struct DeepLinkCreatorStreamVideoView: View {
                         title: String(localized: "Key frame interval"),
                         value: String(video.maxKeyFrameInterval),
                         footers: [
-                            String(localized: "Maximum key frame interval in seconds. Set to 0 for automatic."),
+                            String(
+                                localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
+                            ),
                         ],
                         keyboardType: .numbersAndPunctuation
                     ) {

@@ -29,7 +29,9 @@ struct WidgetVTuberPickerView: View {
 
     var body: some View {
         Section {
-            TextButtonView(title: vTuber.modelName.isEmpty ? String(localized: "Select model") : vTuber.modelName) {
+            TextButtonView(title: vTuber.modelName.isEmpty ? String(localized: "Select model") : vTuber
+                .modelName)
+            {
                 showPicker = true
                 model.onDocumentPickerUrl = onUrl
             }

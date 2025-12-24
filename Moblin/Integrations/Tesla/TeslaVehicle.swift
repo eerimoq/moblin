@@ -183,7 +183,8 @@ class TeslaVehicle: NSObject {
             let privateKey = try P256.KeyAgreement.PrivateKey(pemRepresentation: privateKeyPem)
             let clientPublicKeyBytes = privateKey.publicKey.toBytes()
             var message = VCSEC_UnsignedMessage()
-            message.whitelistOperation.addKeyToWhitelistAndAddPermissions.key.publicKeyRaw = clientPublicKeyBytes
+            message.whitelistOperation.addKeyToWhitelistAndAddPermissions.key
+                .publicKeyRaw = clientPublicKeyBytes
             message.whitelistOperation.addKeyToWhitelistAndAddPermissions.keyRole = .owner
             message.whitelistOperation.metadataForKey.keyFormFactor = .cloudKey
             var encoded = try message.serializedData()
@@ -505,7 +506,10 @@ class TeslaVehicle: NSObject {
 
     private func createRequestMetadata(_ message: UniversalMessage_RoutableMessage) throws -> Data {
         let metadata = Metadata()
-        try metadata.addUInt8(tag: .signatureType, UInt8(Signatures_SignatureType.aesGcmPersonalized.rawValue))
+        try metadata.addUInt8(
+            tag: .signatureType,
+            UInt8(Signatures_SignatureType.aesGcmPersonalized.rawValue)
+        )
         try metadata.addUInt8(tag: .domain, UInt8(message.toDestination.domain.rawValue))
         try metadata.add(tag: .personalization, vin.utf8Data)
         try metadata.add(tag: .epoch, message.signatureData.aesGcmPersonalizedData.epoch)
@@ -589,7 +593,11 @@ extension TeslaVehicle: CBPeripheralDelegate {
         }
     }
 
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error _: Error?) {
+    func peripheral(
+        _ peripheral: CBPeripheral,
+        didDiscoverCharacteristicsFor service: CBService,
+        error _: Error?
+    ) {
         for characteristic in service.characteristics ?? [] {
             if characteristic.uuid == toVehicleUuid {
                 toVehicleCharacteristic = characteristic

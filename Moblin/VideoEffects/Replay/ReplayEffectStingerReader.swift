@@ -55,7 +55,9 @@ class ReplayEffectStingerReader {
         }
         var newImages: [ReplayImage] = []
         for _ in 0 ... 10 {
-            if let sampleBuffer = trackOutput.copyNextSampleBuffer(), let imageBuffer = sampleBuffer.imageBuffer {
+            if let sampleBuffer = trackOutput.copyNextSampleBuffer(),
+               let imageBuffer = sampleBuffer.imageBuffer
+            {
                 let image = CIImage(cvImageBuffer: imageBuffer)
                     .scaledTo(size: size)
                     .centered(size: size)

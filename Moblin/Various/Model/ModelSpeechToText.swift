@@ -92,7 +92,11 @@ extension Model {
         Translator.translators.append(translator)
     }
 
-    private func speechToTextPartialResultTextWidgets(position: Int, text: String, languageIdentifier: String?) {
+    private func speechToTextPartialResultTextWidgets(
+        position: Int,
+        text: String,
+        languageIdentifier: String?
+    ) {
         for textEffect in textEffects.values {
             textEffect.updateSubtitles(position: position, text: text, languageIdentifier: languageIdentifier)
         }
@@ -156,6 +160,10 @@ extension Model: TranslatorDelegate {
             speechToTextTextAligners[languageIdentifier] = textAligner
             position = textAligner.position
         }
-        speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: languageIdentifier)
+        speechToTextPartialResultTextWidgets(
+            position: position,
+            text: text,
+            languageIdentifier: languageIdentifier
+        )
     }
 }

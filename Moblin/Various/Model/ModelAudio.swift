@@ -92,7 +92,9 @@ extension Model {
     func switchMicIfNeededAfterSceneSwitch() {
         updateMicsList()
         if database.mics.autoSwitch {
-            if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
+            if let scene = getSelectedScene(), scene.overrideMic,
+               let mic = getConnectedMicById(id: scene.micId)
+            {
                 selectMic(mic: mic)
             } else {
                 if defaultMic.connected {
@@ -107,7 +109,9 @@ extension Model {
     func switchMicIfNeededAfterNetworkCameraChange() {
         if database.mics.autoSwitch {
             updateMicsList()
-            if let scene = getSelectedScene(), scene.overrideMic, let mic = getConnectedMicById(id: scene.micId) {
+            if let scene = getSelectedScene(), scene.overrideMic,
+               let mic = getConnectedMicById(id: scene.micId)
+            {
                 selectMic(mic: mic)
                 if let highestPrioMic = getHighestPriorityConnectedMic() {
                     defaultMic = highestPrioMic
@@ -141,7 +145,9 @@ extension Model {
     private func updateMicsListDatabase(foundMics: [SettingsMicsMic]) {
         var databaseMics: [SettingsMicsMic] = []
         for mic in database.mics.mics {
-            if mic.isRtmp() || mic.isSrtla() || mic.isRist() || mic.isMediaPlayer(), !foundMics.contains(mic) {
+            if mic.isRtmp() || mic.isSrtla() || mic.isRist() || mic.isMediaPlayer(),
+               !foundMics.contains(mic)
+            {
                 continue
             }
             if mic.isExternal() {
@@ -632,7 +638,10 @@ extension Model {
     }
 }
 
-private func setBuiltInMicAudioMode(dataSource: AVAudioSessionDataSourceDescription, preferStereoMic: Bool) throws {
+private func setBuiltInMicAudioMode(
+    dataSource: AVAudioSessionDataSourceDescription,
+    preferStereoMic: Bool
+) throws {
     if preferStereoMic {
         if dataSource.supportedPolarPatterns?.contains(.stereo) == true {
             try dataSource.setPreferredPolarPattern(.stereo)

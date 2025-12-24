@@ -40,7 +40,8 @@ struct BlackSharkCoolerDeviceSettingsView: View {
         guard let deviceId = UUID(uuidString: value) else {
             return
         }
-        guard let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId }) else {
+        guard let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId })
+        else {
             return
         }
         device.bluetoothPeripheralName = peripheral.name
@@ -69,7 +70,10 @@ struct BlackSharkCoolerDeviceSettingsView: View {
             return
         }
         if device.rgbLightEnabled {
-            blackSharkCoolerDevice.setLedColor(color: device.rgbLightColor, brightness: Int(device.rgbLightBrightness))
+            blackSharkCoolerDevice.setLedColor(
+                color: device.rgbLightColor,
+                brightness: Int(device.rgbLightBrightness)
+            )
         } else {
             blackSharkCoolerDevice.turnLedOff()
         }
@@ -85,7 +89,8 @@ struct BlackSharkCoolerDeviceSettingsView: View {
                     NavigationLink {
                         BlackSharkCoolerDeviceScannerSettingsView(
                             onChange: onDeviceChange,
-                            selectedId: device.bluetoothPeripheralId?.uuidString ?? String(localized: "Select device")
+                            selectedId: device.bluetoothPeripheralId?
+                                .uuidString ?? String(localized: "Select device")
                         )
                     } label: {
                         Text(device.bluetoothPeripheralName ?? String(localized: "Select device"))

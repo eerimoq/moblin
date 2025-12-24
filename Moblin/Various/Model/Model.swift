@@ -750,7 +750,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
 
-    func makeToast(title: String, subTitle: String? = nil, vibrate: Bool = false, onTapped: (() -> Void)? = nil) {
+    func makeToast(
+        title: String,
+        subTitle: String? = nil,
+        vibrate: Bool = false,
+        onTapped: (() -> Void)? = nil
+    ) {
         toast.toast = AlertToast(type: .regular,
                                  title: title,
                                  subTitle: subTitle,
@@ -789,7 +794,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func makeErrorToastMain(title: String, font: Font? = nil, subTitle: String? = nil, vibrate: Bool = false) {
+    func makeErrorToastMain(title: String, font: Font? = nil, subTitle: String? = nil,
+                            vibrate: Bool = false)
+    {
         DispatchQueue.main.async {
             self.makeErrorToast(title: title, font: font, subTitle: subTitle, vibrate: vibrate)
         }
@@ -1374,7 +1381,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartHeartRateDevices()
             autoStartBlackSharkCoolerDevices()
             if showBackgroundStreamingDisabledToast {
-                makeStreamEndedToast(subTitle: String(localized: "Tap here to enable background streaming.")) {
+                makeStreamEndedToast(subTitle: String(
+                    localized: "Tap here to enable background streaming."
+                )) {
                     self.stream.backgroundStreaming = true
                     self.makeToast(title: String(localized: "Background streaming enabled"))
                 }
@@ -1886,7 +1895,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateAlertsSettings() {
         for widget in database.widgets where widget.type == .alerts {
-            widget.alerts.needsSubtitles = !widget.alerts.speechToText.strings.filter { $0.alert.enabled }.isEmpty
+            widget.alerts.needsSubtitles = !widget.alerts.speechToText.strings.filter { $0.alert.enabled }
+                .isEmpty
             getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts.clone())
         }
         if isSpeechToTextNeeded() {
@@ -2586,7 +2596,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         cameraDevice = device
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice.getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
         attachCameraFinalize(scene: scene)
     }
 
@@ -2615,7 +2626,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         cameraDevice = device
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice.getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
         attachCameraFinalize(scene: scene)
     }
 
@@ -2644,7 +2656,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         cameraDevice = device
         cameraZoomLevelToXScale = device.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
-        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice.getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
+        (cameraZoomXMinimum, cameraZoomXMaximum) = bestDevice
+            .getUIZoomRange(hasUltraWideCamera: hasUltraWideBackCamera)
         attachCameraFinalize(scene: scene)
     }
 
@@ -2672,17 +2685,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func attachCameraFinalize(scene: SettingsScene) {
         lastAttachCompletedTime = nil
         let isMirrored = getVideoMirroredOnScreen()
-        let params = VideoUnitAttachParams(devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
-                                           builtinDelay: database.debug.builtinAudioAndVideoDelay,
-                                           cameraPreviewLayer: cameraPreviewLayer!,
-                                           showCameraPreview: updateShowCameraPreview(),
-                                           externalDisplayPreview: externalDisplayPreview,
-                                           bufferedVideo: nil,
-                                           preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
-                                           ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
-                                           fillFrame: getFillFrame(scene: scene),
-                                           isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
-                                           forceSceneTransition: database.forceSceneSwitchTransition)
+        let params = VideoUnitAttachParams(
+            devices: getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice),
+            builtinDelay: database.debug.builtinAudioAndVideoDelay,
+            cameraPreviewLayer: cameraPreviewLayer!,
+            showCameraPreview: updateShowCameraPreview(),
+            externalDisplayPreview: externalDisplayPreview,
+            bufferedVideo: nil,
+            preferredVideoStabilizationMode: getVideoStabilizationMode(scene: scene),
+            ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
+            fillFrame: getFillFrame(scene: scene),
+            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
+            forceSceneTransition: database.forceSceneSwitchTransition
+        )
         media.attachCamera(
             params: params,
             onSuccess: {
@@ -2753,7 +2768,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func getVideoStabilization(mode: SettingsVideoStabilizationMode) -> AVCaptureVideoStabilizationMode {
+    private func getVideoStabilization(mode: SettingsVideoStabilizationMode)
+        -> AVCaptureVideoStabilizationMode
+    {
         if #available(iOS 18.0, *) {
             switch mode {
             case .off:

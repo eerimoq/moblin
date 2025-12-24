@@ -15,10 +15,12 @@ struct VTSessionPropertyKey {
     static let expectedDuration = VTSessionPropertyKey(value: kVTCompressionPropertyKey_ExpectedDuration)
     static let expectedFrameRate = VTSessionPropertyKey(value: kVTCompressionPropertyKey_ExpectedFrameRate)
     static let sourceFrameCount = VTSessionPropertyKey(value: kVTCompressionPropertyKey_SourceFrameCount)
-    static let allowFrameReordering = VTSessionPropertyKey(value: kVTCompressionPropertyKey_AllowFrameReordering)
+    static let allowFrameReordering =
+        VTSessionPropertyKey(value: kVTCompressionPropertyKey_AllowFrameReordering)
     static let maxKeyFrameIntervalDuration =
         VTSessionPropertyKey(value: kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration)
-    static let pixelTransferProperties = VTSessionPropertyKey(value: kVTCompressionPropertyKey_PixelTransferProperties)
+    static let pixelTransferProperties =
+        VTSessionPropertyKey(value: kVTCompressionPropertyKey_PixelTransferProperties)
     static let averageBitRate = VTSessionPropertyKey(value: kVTCompressionPropertyKey_AverageBitRate)
     static let dataRateLimits = VTSessionPropertyKey(value: kVTCompressionPropertyKey_DataRateLimits)
     static let realTime = VTSessionPropertyKey(value: kVTCompressionPropertyKey_RealTime)

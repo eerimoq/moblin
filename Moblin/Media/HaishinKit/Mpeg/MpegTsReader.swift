@@ -73,7 +73,8 @@ class MpegTsReader {
             if let (isAudio, sampleBuffer) = tryMakeSampleBuffer(packetId: packet.id, data: data) {
                 handleSampleBuffer(isAudio, sampleBuffer)
             }
-            packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet.payload)
+            packetizedElementaryStreams[packet.id] = try MpegTsPacketizedElementaryStream(data: packet
+                .payload)
         } else {
             packetizedElementaryStreams[packet.id]?.append(data: packet.payload)
         }
@@ -88,7 +89,8 @@ class MpegTsReader {
     }
 
     private func handleAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        targetLatenciesSynchronizer.setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        targetLatenciesSynchronizer
+            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         updateTargetLatencies()
         guard let audioDecoder, let pcmAudioFormat, let audioBuffer, let pcmAudioBuffer else {
             return
@@ -184,7 +186,9 @@ class MpegTsReader {
     }
 
     private func handleAudioFormatDescription(_ formatDescription: CMFormatDescription) {
-        guard let streamBasicDescription = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) else {
+        guard let streamBasicDescription =
+            CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription)
+        else {
             return
         }
         guard let audioFormat = AVAudioFormat(streamDescription: streamBasicDescription) else {
@@ -226,7 +230,9 @@ class MpegTsReader {
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
 
-    private func tryMakeSampleBuffer(packetId: UInt16, data: ElementaryStreamSpecificData) -> (Bool, CMSampleBuffer)? {
+    private func tryMakeSampleBuffer(packetId: UInt16,
+                                     data: ElementaryStreamSpecificData) -> (Bool, CMSampleBuffer)?
+    {
         guard var packetizedElementaryStream = packetizedElementaryStreams[packetId] else {
             return nil
         }
@@ -458,7 +464,8 @@ class MpegTsReader {
     ) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         let basePresentationTimeStamp = getBasePresentationTimeStamp()
-        let receivedPresentationTimeStamp = wrappingTimestamp.update(optionalHeader.getPresentationTimeStamp())
+        let receivedPresentationTimeStamp = wrappingTimestamp
+            .update(optionalHeader.getPresentationTimeStamp())
         let receivedDecodeTimeStamp = wrappingTimestamp.update(optionalHeader.getDecodeTimeStamp())
         var timing = CMSampleTimingInfo()
         var firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp

@@ -215,7 +215,11 @@ final class AudioUnit: NSObject {
         }
     }
 
-    private func updateAudioLevel(sampleBuffer: CMSampleBuffer, audioLevel: Float, numberOfAudioChannels: Int) {
+    private func updateAudioLevel(
+        sampleBuffer: CMSampleBuffer,
+        audioLevel: Float,
+        numberOfAudioChannels: Int
+    ) {
         let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
         processor?.delegate?.stream(audioLevel: audioLevel,
                                     numberOfAudioChannels: numberOfAudioChannels,

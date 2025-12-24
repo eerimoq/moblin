@@ -124,7 +124,8 @@ class VideoEncoder {
     }
 
     private func setFormatDescription(formatDescription: CMFormatDescription?) {
-        guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: self.formatDescription) else {
+        guard !CMFormatDescriptionEqual(formatDescription, otherFormatDescription: self.formatDescription)
+        else {
             return
         }
         self.formatDescription = formatDescription
@@ -144,7 +145,10 @@ class VideoEncoder {
         if let status = session?.setProperty(option), status != noErr {
             logger.info("video-encoder: Failed to set option \(status) \(option)")
         }
-        let optionLimit = VTSessionProperty(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate))
+        let optionLimit = VTSessionProperty(
+            key: .dataRateLimits,
+            value: createDataRateLimits(bitRate: bitRate)
+        )
         if let status = session?.setProperty(optionLimit), status != noErr {
             logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
         }

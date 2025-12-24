@@ -41,7 +41,11 @@ final class VTuberEffect: VideoEffect {
                 self.renderer.scene = scene
                 let node = scene.vrmNode
                 node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, 40 * CGFloat.pi / 180)
-                node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -40 * CGFloat.pi / 180)
+                node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(
+                    0,
+                    0,
+                    -40 * CGFloat.pi / 180
+                )
                 self.scene = scene
                 self.cameraNode = cameraNode
             }

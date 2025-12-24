@@ -179,7 +179,8 @@ final class RtmpChunk {
         let header = RtmpChunkType.three.toBasicHeader(chunkStreamId)
         var chunks = [data.subdata(in: 0 ..< startIndex)]
         for index in stride(from: startIndex, to: data.count, by: maximumSize) {
-            let endIndex = index.advanced(by: index + maximumSize < data.count ? maximumSize : data.count - index)
+            let endIndex = index
+                .advanced(by: index + maximumSize < data.count ? maximumSize : data.count - index)
             chunks.append(header + data.subdata(in: index ..< endIndex))
         }
         return chunks

@@ -88,7 +88,11 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        baseUrl = container.decode(.baseUrl, String.self, "wss://moblin.mys-lang.org/moblin-remote-control-relay")
+        baseUrl = container.decode(
+            .baseUrl,
+            String.self,
+            "wss://moblin.mys-lang.org/moblin-remote-control-relay"
+        )
         bridgeId = container.decode(.bridgeId, String.self, UUID().uuidString.lowercased())
     }
 }

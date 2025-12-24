@@ -12,19 +12,28 @@ private struct PlatformView: View {
                     name: String(localized: "Channel name"),
                     value: createStreamWizard.twitchChannelName
                 )
-                TextValueView(name: String(localized: "Channel id"), value: createStreamWizard.twitchChannelId)
+                TextValueView(
+                    name: String(localized: "Channel id"),
+                    value: createStreamWizard.twitchChannelId
+                )
             } header: {
                 Text("Twitch")
             }
         case .kick:
             Section {
-                TextValueView(name: String(localized: "Channel name"), value: createStreamWizard.kickChannelName)
+                TextValueView(
+                    name: String(localized: "Channel name"),
+                    value: createStreamWizard.kickChannelName
+                )
             } header: {
                 Text("Kick")
             }
         case .youTube:
             Section {
-                TextValueView(name: String(localized: "Channel handle"), value: createStreamWizard.youTubeHandle)
+                TextValueView(
+                    name: String(localized: "Channel handle"),
+                    value: createStreamWizard.youTubeHandle
+                )
             } header: {
                 Text("YouTube")
             }
@@ -179,7 +188,10 @@ struct StreamWizardSummarySettingsView: View {
                         name: String(localized: "BTTV emotes"),
                         value: yesOrNo(createStreamWizard.chatBttv)
                     )
-                    TextValueView(name: String(localized: "FFZ emotes"), value: yesOrNo(createStreamWizard.chatFfz))
+                    TextValueView(
+                        name: String(localized: "FFZ emotes"),
+                        value: yesOrNo(createStreamWizard.chatFfz)
+                    )
                     TextValueView(
                         name: String(localized: "7TV emotes"),
                         value: yesOrNo(createStreamWizard.chatSeventv)

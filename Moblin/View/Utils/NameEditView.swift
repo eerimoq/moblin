@@ -16,7 +16,9 @@ struct NameEditView: View {
 
     var body: some View {
         NavigationLink {
-            TextEditView(title: String(localized: "Name"), value: name, capitalize: true, onChange: onChange) {
+            TextEditView(title: String(localized: "Name"), value: name, capitalize: true,
+                         onChange: onChange)
+            {
                 name = $0
             }
         } label: {

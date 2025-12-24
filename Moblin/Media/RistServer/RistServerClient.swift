@@ -31,11 +31,17 @@ class RistServerClient {
 
 extension RistServerClient: MpegTsReaderDelegate {
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
-        server?.delegate?.ristServerOnAudioBuffer(virtualDestinationPort: virtualDestinationPort, sampleBuffer)
+        server?.delegate?.ristServerOnAudioBuffer(
+            virtualDestinationPort: virtualDestinationPort,
+            sampleBuffer
+        )
     }
 
     func mpegTsReaderVideoBuffer(_ sampleBuffer: CMSampleBuffer) {
-        server?.delegate?.ristServerOnVideoBuffer(virtualDestinationPort: virtualDestinationPort, sampleBuffer)
+        server?.delegate?.ristServerOnVideoBuffer(
+            virtualDestinationPort: virtualDestinationPort,
+            sampleBuffer
+        )
     }
 
     func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double) {

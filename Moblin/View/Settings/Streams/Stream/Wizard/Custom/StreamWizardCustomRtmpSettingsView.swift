@@ -6,7 +6,8 @@ struct StreamWizardCustomRtmpSettingsView: View {
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.customRtmpUrl.isEmpty || createStreamWizard.customRtmpStreamKey.isEmpty || !urlError
+        return createStreamWizard.customRtmpUrl.isEmpty || createStreamWizard.customRtmpStreamKey
+            .isEmpty || !urlError
             .isEmpty
     }
 
@@ -27,12 +28,15 @@ struct StreamWizardCustomRtmpSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("rtmp://arn03.contribute.live-video.net/app/", text: $createStreamWizard.customRtmpUrl)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .onChange(of: createStreamWizard.customRtmpUrl) { _ in
-                        updateUrlError()
-                    }
+                TextField(
+                    "rtmp://arn03.contribute.live-video.net/app/",
+                    text: $createStreamWizard.customRtmpUrl
+                )
+                .textInputAutocapitalization(.never)
+                .disableAutocorrection(true)
+                .onChange(of: createStreamWizard.customRtmpUrl) { _ in
+                    updateUrlError()
+                }
             } header: {
                 Text("Url")
             } footer: {

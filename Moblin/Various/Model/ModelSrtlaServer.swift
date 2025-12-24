@@ -10,7 +10,10 @@ extension Model {
     func reloadSrtlaServer() {
         stopSrtlaServer()
         if database.srtlaServer.enabled {
-            ingests.srtla = SrtlaServer(settings: database.srtlaServer, timecodesEnabled: isTimecodesEnabled())
+            ingests.srtla = SrtlaServer(
+                settings: database.srtlaServer,
+                timecodesEnabled: isTimecodesEnabled()
+            )
             ingests.srtla?.delegate = self
             ingests.srtla?.start()
         }

@@ -43,7 +43,9 @@ struct MpegTsVideoConfigAvc {
         self.init(avcC: data)
     }
 
-    func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>) -> OSStatus {
+    func makeFormatDescription(_ formatDescriptionOut: UnsafeMutablePointer<CMFormatDescription?>)
+        -> OSStatus
+    {
         guard let pictureParameterSet, let sequenceParameterSet else {
             return kCMFormatDescriptionBridgeError_InvalidParameter
         }

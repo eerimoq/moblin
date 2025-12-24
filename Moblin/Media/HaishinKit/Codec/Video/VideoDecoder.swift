@@ -47,7 +47,9 @@ class VideoDecoder {
             session = makeSession()
         }
         let err = session?
-            .decodeFrame(sampleBuffer) { [weak self] status, _, imageBuffer, presentationTimeStamp, duration in
+            .decodeFrame(sampleBuffer) { [
+                weak self
+            ] status, _, imageBuffer, presentationTimeStamp, duration in
                 guard let self else {
                     return
                 }

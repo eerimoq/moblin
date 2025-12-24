@@ -165,7 +165,14 @@ struct MpegTsPacketizedElementaryStream {
         let payload = encode()
         var packets: [MpegTsPacket] = []
         var payloadOffset = 0
-        appendFirstPacket(packetId, randomAccessIndicator, programClockReference, &packets, &payloadOffset, payload)
+        appendFirstPacket(
+            packetId,
+            randomAccessIndicator,
+            programClockReference,
+            &packets,
+            &payloadOffset,
+            payload
+        )
         appendMiddlePackets(packetId, &packets, &payloadOffset, payload)
         appendLastPackets(packetId, &packets, &payloadOffset, payload)
         return packets

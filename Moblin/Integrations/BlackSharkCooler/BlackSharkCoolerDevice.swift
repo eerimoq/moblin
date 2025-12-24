@@ -8,7 +8,8 @@ import BlackSharkLib
 import CoreBluetooth
 import Foundation
 
-private let blackSharkCoolerDeviceDispatchQueue = DispatchQueue(label: "com.eerimoq.black-shark-cooler-device")
+private let blackSharkCoolerDeviceDispatchQueue =
+    DispatchQueue(label: "com.eerimoq.black-shark-cooler-device")
 
 protocol BlackSharkCoolerDeviceDelegate: AnyObject {
     func blackSharkCoolerDeviceState(_ device: BlackSharkCoolerDevice, state: BlackSharkCoolerDeviceState)
@@ -197,8 +198,9 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
             fanSpeedTarget = 100
             logger.info("black-shark-cooler-device: Thermal state is unknown value")
         }
-        // Since we do not know the fan and cooler-state we have to assume that it can be out of sync. sending the
-        // commands to update the cooling power and fan speed on every interval will make sure that its in sync.
+        // Since we do not know the fan and cooler-state we have to assume that it can be out of sync. sending
+        // the commands to update the cooling power and fan speed on every interval will make sure that its in
+        // sync.
         let coolingPower = updatedPercentageScale(coolingPower, target: coolingPowerTarget)
         logger.debug("black-shark-cooler-device: Adjusting cooling power to \(coolingPower)%")
         peripheral.writeValue(
@@ -239,7 +241,11 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         guard let peripheral, let writeCharacteristic else {
             return
         }
-        peripheral.writeValue(BlackSharkLib.getTurnOffLEDCommand(), for: writeCharacteristic, type: .withoutResponse)
+        peripheral.writeValue(
+            BlackSharkLib.getTurnOffLEDCommand(),
+            for: writeCharacteristic,
+            type: .withoutResponse
+        )
     }
 
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {

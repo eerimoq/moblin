@@ -48,7 +48,8 @@ class SrtServer {
             logger.info("srt-server: \(port): Waiting for client to connect.")
             let clientSocket = try accept()
             guard let srtlaServer,
-                  let stream = srtlaServer.settings.streams.first(where: { $0.streamId == acceptedStreamId.value }),
+                  let stream = srtlaServer.settings.streams
+                  .first(where: { $0.streamId == acceptedStreamId.value }),
                   !srtlaServer.connectedStreamIds.value.contains(acceptedStreamId.value)
             else {
                 srt_close(clientSocket)

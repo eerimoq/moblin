@@ -112,7 +112,9 @@ final class MapEffect: VideoEffect {
         location = newLocation
     }
 
-    private func createSnapshotter(newLocation: CLLocation, zoomOutFactor: Int?) -> (MKMapSnapshotter, Double) {
+    private func createSnapshotter(newLocation: CLLocation,
+                                   zoomOutFactor: Int?) -> (MKMapSnapshotter, Double)
+    {
         var zoomOutFactor = zoomOutFactor
         if zoomOutFactor == 10 {
             zoomOutFactor = nil

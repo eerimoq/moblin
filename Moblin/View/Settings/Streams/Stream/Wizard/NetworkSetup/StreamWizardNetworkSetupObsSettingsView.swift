@@ -5,7 +5,8 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
     @State var portError = ""
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.obsAddress.trim().isEmpty || createStreamWizard.obsPort.trim().isEmpty || !portError
+        return createStreamWizard.obsAddress.trim().isEmpty || createStreamWizard.obsPort.trim()
+            .isEmpty || !portError
             .isEmpty
     }
 

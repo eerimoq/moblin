@@ -83,7 +83,10 @@ struct LocationSettingsView: View {
                 List {
                     ForEach(location.privacyRegions) { region in
                         PrivacyRegionView(region: region, current: MKCoordinateRegion(
-                            center: CLLocationCoordinate2D(latitude: region.latitude, longitude: region.longitude),
+                            center: CLLocationCoordinate2D(
+                                latitude: region.latitude,
+                                longitude: region.longitude
+                            ),
                             span: MKCoordinateSpan(
                                 latitudeDelta: region.latitudeDelta,
                                 longitudeDelta: region.longitudeDelta

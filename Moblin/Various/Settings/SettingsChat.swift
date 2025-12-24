@@ -428,7 +428,11 @@ class SettingsOpenAi: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        baseUrl = container.decode(.baseUrl, String.self, "https://generativelanguage.googleapis.com/v1beta/openai")
+        baseUrl = container.decode(
+            .baseUrl,
+            String.self,
+            "https://generativelanguage.googleapis.com/v1beta/openai"
+        )
         apiKey = container.decode(.apiKey, String.self, "")
         model = container.decode(.model, String.self, "gemini-2.0-flash")
         personality = container.decode(.role, String.self, SettingsOpenAi.defaultPersonality)
@@ -697,7 +701,11 @@ class SettingsChat: Codable, ObservableObject {
         boldUsername = container.decode(.boldUsername, Bool.self, true)
         boldMessage = container.decode(.boldMessage, Bool.self, true)
         animatedEmotes = container.decode(.animatedEmotes, Bool.self, false)
-        timestampColor = container.decode(.timestampColor, RgbColor.self, .init(red: 180, green: 180, blue: 180))
+        timestampColor = container.decode(
+            .timestampColor,
+            RgbColor.self,
+            .init(red: 180, green: 180, blue: 180)
+        )
         timestampColorColor = timestampColor.color()
         timestampColorEnabled = container.decode(.timestampColorEnabled, Bool.self, false)
         height = container.decode(.height, Double.self, 0.7)
@@ -709,14 +717,22 @@ class SettingsChat: Codable, ObservableObject {
         filters = container.decode(.usernamesToIgnore, [SettingsChatFilter].self, [])
         textToSpeechEnabled = container.decode(.textToSpeechEnabled, Bool.self, false)
         textToSpeechDefaultLanguage = container.decode(.textToSpeechDefaultLanguage, String?.self, nil)
-        textToSpeechDetectLanguagePerMessage = container.decode(.textToSpeechDetectLanguagePerMessage, Bool.self, false)
+        textToSpeechDetectLanguagePerMessage = container.decode(
+            .textToSpeechDetectLanguagePerMessage,
+            Bool.self,
+            false
+        )
         textToSpeechSayUsername = container.decode(.textToSpeechSayUsername, Bool.self, true)
         textToSpeechRate = container.decode(.textToSpeechRate, Float.self, 0.4)
         textToSpeechSayVolume = container.decode(.textToSpeechSayVolume, Float.self, 0.6)
         textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices,
                                                       [String: SettingsVoice].self,
                                                       .init())
-        for (languageCode, voice) in container.decode(.textToSpeechLanguageVoices, [String: String].self, .init()) {
+        for (languageCode, voice) in container.decode(
+            .textToSpeechLanguageVoices,
+            [String: String].self,
+            .init()
+        ) {
             let settingsVoice = SettingsVoice()
             settingsVoice.apple.voice = voice
             textToSpeechLanguageVoices[languageCode] = settingsVoice
@@ -727,7 +743,11 @@ class SettingsChat: Codable, ObservableObject {
         ttsMonster = container.decode(.ttsMonster, SettingsTtsMonster.self, .init())
         mirrored = container.decode(.mirrored, Bool.self, false)
         botEnabled = container.decode(.botEnabled, Bool.self, false)
-        botCommandPermissions = container.decode(.botCommandPermissions, SettingsChatBotPermissions.self, .init())
+        botCommandPermissions = container.decode(
+            .botCommandPermissions,
+            SettingsChatBotPermissions.self,
+            .init()
+        )
         botSendLowBatteryWarning = container.decode(.botSendLowBatteryWarning, Bool.self, false)
         botCommandAi = container.decode(.botCommandAi, SettingsOpenAi.self, .init())
         badges = container.decode(.badges, Bool.self, true)
@@ -739,7 +759,11 @@ class SettingsChat: Codable, ObservableObject {
             200
         )
         newMessagesAtTop = container.decode(.newMessagesAtTop, Bool.self, false)
-        textToSpeechPauseBetweenMessages = container.decode(.textToSpeechPauseBetweenMessages, Double.self, 1.0)
+        textToSpeechPauseBetweenMessages = container.decode(
+            .textToSpeechPauseBetweenMessages,
+            Double.self,
+            1.0
+        )
         platform = container.decode(.platform, Bool.self, true)
         showDeletedMessages = container.decode(.showDeletedMessages, Bool.self, false)
         aliases = container.decode(.aliases, [SettingsChatBotAlias].self, [])

@@ -42,7 +42,11 @@ class SrtlaServer {
 
     init(settings: SettingsSrtlaServer, timecodesEnabled: Bool) {
         self.settings = settings.clone()
-        srtServer = SrtServer(timecodesEnabled: timecodesEnabled, port: settings.srtlaSrtPort(), srtlaPatches: true)
+        srtServer = SrtServer(
+            timecodesEnabled: timecodesEnabled,
+            port: settings.srtlaSrtPort(),
+            srtlaPatches: true
+        )
         srtServerNoSrtlaPatches = SrtServer(
             timecodesEnabled: timecodesEnabled,
             port: settings.srtPort,

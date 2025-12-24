@@ -488,7 +488,8 @@ class RemoteControlAssistant: NSObject {
         if channelName != nil {
             sendChatMessageHistory()
         }
-        guard channelName != twitchChannelName || channelId != twitchChannelId || accessToken != twitchAccessToken ||
+        guard channelName != twitchChannelName || channelId != twitchChannelId || accessToken !=
+            twitchAccessToken ||
             twitchEventSub?
             .isConnected() == false
         else {

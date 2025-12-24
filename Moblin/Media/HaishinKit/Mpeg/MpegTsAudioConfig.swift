@@ -155,7 +155,8 @@ struct MpegTsAudioConfig: Equatable {
         case kAudioFormatOpus:
             type = .opus
         default:
-            type = AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(streamBasicDescription.mFormatFlags))!)
+            type =
+                AudioObjectType(objectID: MPEG4ObjectID(rawValue: Int(streamBasicDescription.mFormatFlags))!)
         }
         frequency = SamplingFrequency(sampleRate: streamBasicDescription.mSampleRate)
         channel = ChannelConfiguration(rawValue: UInt8(streamBasicDescription.mChannelsPerFrame))!

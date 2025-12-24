@@ -246,7 +246,10 @@ extension Model {
             camera.lockedExposures[device] = exposureFactor
         } else {
             exposure = AVCaptureDevice.currentExposureDuration
-            camera.lockedExposures[device] = factorFromExposure(device: device, exposure: device.exposureDuration)
+            camera.lockedExposures[device] = factorFromExposure(
+                device: device,
+                exposure: device.exposureDuration
+            )
         }
         camera.isExposuresAndIsosLocked[device] = true
         camera.isExposureAndIsoLocked = true

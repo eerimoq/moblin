@@ -106,7 +106,8 @@ class MpegTsWriter {
                     encodedAdaptationField.withUnsafeBytes {
                         pointer.copyMemory(from: $0)
                     }
-                    pointer = UnsafeMutableRawBufferPointer(rebasing: pointer[encodedAdaptationField.count...])
+                    pointer =
+                        UnsafeMutableRawBufferPointer(rebasing: pointer[encodedAdaptationField.count...])
                 }
                 packet.payload.withUnsafeBytes {
                     pointer.copyMemory(from: $0)
@@ -315,7 +316,10 @@ class MpegTsWriter {
         return programClockReference
     }
 
-    private func addStreamSpecificDatasToProgramMappingTable(packetId: UInt16, data: ElementaryStreamSpecificData) {
+    private func addStreamSpecificDatasToProgramMappingTable(
+        packetId: UInt16,
+        data: ElementaryStreamSpecificData
+    ) {
         if let index = programMappingTable.elementaryStreamSpecificDatas.firstIndex(where: {
             $0.elementaryPacketId == packetId
         }) {
@@ -513,7 +517,8 @@ extension MpegTsWriter: VideoEncoderDelegate {
             data += nalUnitStartCode
             let timecode = HevcSeiPayloadTimeCode(clock: timecode.clock, frame: timecode.frame)
             let sei = HevcNalUnitSei(payload: .timeCode(timecode))
-            data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei)).encode()
+            data += HevcNalUnit(type: .prefixSeiNut, temporalIdPlusOne: 1, payload: .prefixSeiNut(sei))
+                .encode()
         }
         var payload = Data(bytesNoCopy: bytes, count: length, deallocator: .none)
         addNalUnitStartCodes(&payload)
@@ -547,7 +552,8 @@ extension MpegTsWriter: VideoEncoderDelegate {
             decodeTimeStamp = presentationTimeStamp
         }
         if let previousDecodeTimeStamp {
-            estimatedFrameDuration = 0.7 * estimatedFrameDuration + 0.3 * (decodeTimeStamp - previousDecodeTimeStamp)
+            estimatedFrameDuration = 0.7 * estimatedFrameDuration + 0.3 *
+                (decodeTimeStamp - previousDecodeTimeStamp)
         }
         previousDecodeTimeStamp = decodeTimeStamp
         let now = Date(timeIntervalSince1970: presentationTimeStampBase

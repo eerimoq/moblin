@@ -352,7 +352,9 @@ private func sendS2(server: RtmpServerMock) async {
     await server.send(data: Data(count: RtmpHandshake.sigSize))
 }
 
-private func sendWindowAcknowledgementSize(server: RtmpServerMock, chunkStreamId: UInt16, size: UInt32) async {
+private func sendWindowAcknowledgementSize(server: RtmpServerMock, chunkStreamId: UInt16,
+                                           size: UInt32) async
+{
     await server.send(chunk: RtmpChunk(
         type: .zero,
         chunkStreamId: chunkStreamId,

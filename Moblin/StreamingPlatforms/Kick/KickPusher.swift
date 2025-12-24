@@ -355,7 +355,10 @@ final class KickPusher: NSObject {
                 logger.debug("kick: pusher: \(channelId): Unsupported type: \(type)")
             }
         } catch {
-            logger.info("kick: pusher: \(channelId): Failed to process message \"\(message)\" with error \(error)")
+            logger
+                .info(
+                    "kick: pusher: \(channelId): Failed to process message \"\(message)\" with error \(error)"
+                )
         }
     }
 
@@ -440,7 +443,10 @@ final class KickPusher: NSObject {
             if let username = message.metadata?.original_sender?.username,
                let content = message.metadata?.original_message?.content
             {
-                return ChatHighlight.makeReply(user: username, segments: makeChatPostSegments(content: content))
+                return ChatHighlight.makeReply(
+                    user: username,
+                    segments: makeChatPostSegments(content: content)
+                )
             }
         }
         return nil

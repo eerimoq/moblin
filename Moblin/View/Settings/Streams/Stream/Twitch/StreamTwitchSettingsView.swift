@@ -66,7 +66,9 @@ private struct TwitchCategoryPickerView: View {
             dismiss()
         } label: {
             HStack {
-                if let boxArtUrl = category.boxArtUrl(width: 80, height: 100), let url = URL(string: boxArtUrl) {
+                if let boxArtUrl = category.boxArtUrl(width: 80, height: 100),
+                   let url = URL(string: boxArtUrl)
+                {
                     CacheAsyncImage(url: url) { image in
                         image
                             .resizable()
@@ -231,12 +233,18 @@ struct StreamTwitchSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    TwitchAlertsSettingsView(title: String(localized: "Chat"), alerts: stream.twitchChatAlerts)
+                    TwitchAlertsSettingsView(
+                        title: String(localized: "Chat"),
+                        alerts: stream.twitchChatAlerts
+                    )
                 } label: {
                     Text("Chat")
                 }
                 NavigationLink {
-                    TwitchAlertsSettingsView(title: String(localized: "Toasts"), alerts: stream.twitchToastAlerts)
+                    TwitchAlertsSettingsView(
+                        title: String(localized: "Toasts"),
+                        alerts: stream.twitchToastAlerts
+                    )
                 } label: {
                     Text("Toasts")
                 }

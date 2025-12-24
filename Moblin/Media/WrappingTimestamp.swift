@@ -10,7 +10,10 @@ class WrappingTimestamp {
     init(name: String, maximumTimestamp: CMTime) {
         self.name = name
         self.maximumTimestamp = maximumTimestamp
-        halfMaximumTimestamp = CMTime(value: maximumTimestamp.value / 2, timescale: maximumTimestamp.timescale)
+        halfMaximumTimestamp = CMTime(
+            value: maximumTimestamp.value / 2,
+            timescale: maximumTimestamp.timescale
+        )
     }
 
     func update(_ timestamp: CMTime) -> CMTime {

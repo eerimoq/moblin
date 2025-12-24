@@ -126,7 +126,11 @@ final class LutEffect: VideoEffect {
         return "LUT"
     }
 
-    func setLut(lut: SettingsColorLut, imageStorage: ImageStorage, onError: @escaping (String, String?) -> Void) {
+    func setLut(
+        lut: SettingsColorLut,
+        imageStorage: ImageStorage,
+        onError: @escaping (String, String?) -> Void
+    ) {
         DispatchQueue.global().async {
             do {
                 try self.loadLut(lut: lut, imageStorage: imageStorage)

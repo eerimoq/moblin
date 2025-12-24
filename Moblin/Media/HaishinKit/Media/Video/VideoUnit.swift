@@ -76,7 +76,10 @@ struct CaptureDevices {
 
 var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
 var allowVideoRangePixelFormat = false
-private let detectionsQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.Detections", attributes: .concurrent)
+private let detectionsQueue = DispatchQueue(
+    label: "com.haishinkit.HaishinKit.Detections",
+    attributes: .concurrent
+)
 private let lowFpsImageQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.VideoIOComponent.small")
 
 private func setOrientation(
@@ -87,7 +90,9 @@ private func setOrientation(
 ) {
     if #available(iOS 17.0, *), device?.deviceType == .external {
         connection.videoOrientation = .landscapeRight
-    } else if #available(iOS 26, *), isLandscapeStreamAndPortraitUi, device?.dynamicAspectRatio == .ratio9x16 {
+    } else if #available(iOS 26, *), isLandscapeStreamAndPortraitUi,
+              device?.dynamicAspectRatio == .ratio9x16
+    {
         connection.videoOrientation = .portrait
     } else {
         connection.videoOrientation = orientation
@@ -653,7 +658,9 @@ final class VideoUnit: NSObject {
         for bufferedVideoBuiltin in bufferedVideoBuiltins.values where bufferedVideoBuiltin.latency > 0 {
             bufferedVideoBuiltin.updateSampleBuffer(presentationTimeStamp.seconds, true)
         }
-        if let sampleBuffer = bufferedVideos[selectedBufferedVideoCameraId]?.getSampleBuffer(presentationTimeStamp) {
+        if let sampleBuffer = bufferedVideos[selectedBufferedVideoCameraId]?
+            .getSampleBuffer(presentationTimeStamp)
+        {
             appendNewSampleBuffer(sampleBuffer: sampleBuffer)
         } else if let sampleBuffer = makeBlackSampleBuffer(
             duration: .invalid,
@@ -685,7 +692,8 @@ final class VideoUnit: NSObject {
         }
         let timeDelta = CMTime(seconds: delta.seconds)
         let newPresentationTimeStamp = latestSampleBuffer.presentationTimeStamp + timeDelta
-        guard let sampleBuffer = latestSampleBuffer.replacePresentationTimeStamp(newPresentationTimeStamp) else {
+        guard let sampleBuffer = latestSampleBuffer.replacePresentationTimeStamp(newPresentationTimeStamp)
+        else {
             return
         }
         _ = appendSampleBuffer(
@@ -1207,7 +1215,8 @@ final class VideoUnit: NSObject {
         if !faceDetectionJobs.isEmpty {
             for faceDetectionJob in faceDetectionJobs {
                 detectionsQueue.async {
-                    let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: faceDetectionJob.imageBuffer)
+                    let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: faceDetectionJob
+                        .imageBuffer)
                     let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
                         processorPipelineQueue.async {
                             guard error == nil else {
@@ -1269,7 +1278,9 @@ final class VideoUnit: NSObject {
             return
         }
         completedFaceDetections[completion.sequenceNumber] = completion
-        while let completion = completedFaceDetections.removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber) {
+        while let completion = completedFaceDetections
+            .removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber)
+        {
             appendSampleBufferWithFaceDetections(
                 completion.sampleBuffer,
                 completion.isFirstAfterAttach,
@@ -1435,9 +1446,12 @@ final class VideoUnit: NSObject {
     {
         Task {
             var bestSampleBuffer = preferredSampleBuffer
-            var bestResult = try? await CalculateImageAestheticsScoresRequest().perform(on: preferredSampleBuffer)
+            var bestResult = try? await CalculateImageAestheticsScoresRequest()
+                .perform(on: preferredSampleBuffer)
             for sampleBuffer in sampleBuffers {
-                guard let result = try? await CalculateImageAestheticsScoresRequest().perform(on: sampleBuffer) else {
+                guard let result = try? await CalculateImageAestheticsScoresRequest()
+                    .perform(on: sampleBuffer)
+                else {
                     continue
                 }
                 if bestResult == nil || result.overallScore > bestResult!.overallScore + 0.2 {
@@ -1517,7 +1531,8 @@ final class VideoUnit: NSObject {
             if videoSourceId == sceneVideoSourceId {
                 videoSourceImageBuffer = imageBuffer
             } else {
-                videoSourceImageBuffer = bufferedVideos[videoSourceId]?.getSampleBuffer(presentationTimeStamp)?
+                videoSourceImageBuffer = bufferedVideos[videoSourceId]?
+                    .getSampleBuffer(presentationTimeStamp)?
                     .imageBuffer
             }
             guard let videoSourceImageBuffer else {
@@ -1787,7 +1802,11 @@ final class VideoUnit: NSObject {
         latestSampleBuffer = sampleBuffer
         latestSampleBufferTime = now
         sceneSwitchEndRendered = false
-        if appendSampleBuffer(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach, isSceneSwitchTransition: false) {
+        if appendSampleBuffer(
+            sampleBuffer,
+            isFirstAfterAttach: isFirstAfterAttach,
+            isSceneSwitchTransition: false
+        ) {
             isFirstAfterAttach = false
         }
     }
@@ -1832,9 +1851,10 @@ final class VideoUnit: NSObject {
         if session.canAddControl(zoomSlider) {
             session.addControl(zoomSlider)
         }
-        let exposureBiasSlider = AVCaptureSystemExposureBiasSlider(device: device) { [weak self] exposureBias in
-            self?.processor?.delegate?.streamSetExposureBias(bias: exposureBias)
-        }
+        let exposureBiasSlider =
+            AVCaptureSystemExposureBiasSlider(device: device) { [weak self] exposureBias in
+                self?.processor?.delegate?.streamSetExposureBias(bias: exposureBias)
+            }
         if session.canAddControl(exposureBiasSlider) {
             session.addControl(exposureBiasSlider)
         }
@@ -1865,14 +1885,17 @@ final class VideoUnit: NSObject {
         } else {
             sampleBufferCopy = sampleBuffer
         }
-        let presentationTimeStamp = sampleBufferCopy.presentationTimeStamp + CMTime(seconds: bufferedVideo.latency)
-        sampleBufferCopy = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) ?? sampleBufferCopy
+        let presentationTimeStamp = sampleBufferCopy
+            .presentationTimeStamp + CMTime(seconds: bufferedVideo.latency)
+        sampleBufferCopy = sampleBufferCopy
+            .replacePresentationTimeStamp(presentationTimeStamp) ?? sampleBufferCopy
         bufferedVideo.appendSampleBuffer(sampleBufferCopy)
         return bufferedVideo
     }
 
     private func isSceneVideoSource(device: AVCaptureDevice) -> Bool {
-        return captureSessionDevices.first(where: { $0.device.device == device })?.device.id == sceneVideoSourceId
+        return captureSessionDevices.first(where: { $0.device.device == device })?.device
+            .id == sceneVideoSourceId
     }
 }
 
@@ -1891,7 +1914,8 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
                 for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
                     bufferedVideoBuiltin.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
                 }
-                sampleBuffer = bufferedVideo.getSampleBuffer(sampleBuffer.presentationTimeStamp) ?? sampleBuffer
+                sampleBuffer = bufferedVideo
+                    .getSampleBuffer(sampleBuffer.presentationTimeStamp) ?? sampleBuffer
             }
             guard selectedBufferedVideoCameraId == nil else {
                 return

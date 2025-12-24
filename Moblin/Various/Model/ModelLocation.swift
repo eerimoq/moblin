@@ -64,7 +64,8 @@ extension Model {
     }
 
     func isRealtimeIrlConfigured() -> Bool {
-        return stream.realtimeIrlEnabled && !stream.realtimeIrlBaseUrl.isEmpty && !stream.realtimeIrlPushKey.isEmpty
+        return stream.realtimeIrlEnabled && !stream.realtimeIrlBaseUrl.isEmpty && !stream.realtimeIrlPushKey
+            .isEmpty
     }
 
     func reloadRealtimeIrl() {

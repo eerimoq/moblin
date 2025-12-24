@@ -370,7 +370,8 @@ extension Data {
     }
 
     func getInt64Be(offset: Int = 0) -> Int64 {
-        return Int64(UInt64(getFourBytesBe(offset: offset)) << 32 | UInt64(getFourBytesBe(offset: offset + 4)))
+        return Int64(UInt64(getFourBytesBe(offset: offset)) << 32 |
+            UInt64(getFourBytesBe(offset: offset + 4)))
     }
 
     func getUInt32Be(offset: Int = 0) -> UInt32 {
@@ -697,7 +698,9 @@ extension KeyedEncodingContainer {
 }
 
 extension KeyedDecodingContainer {
-    func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T where T: Decodable {
+    func decode<T>(_ key: KeyedDecodingContainer<K>.Key, _ type: T.Type, _ defaultValue: T) -> T
+        where T: Decodable
+    {
         return (try? decode(type, forKey: key)) ?? defaultValue
     }
 }

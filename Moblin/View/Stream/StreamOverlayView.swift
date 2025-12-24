@@ -51,7 +51,12 @@ struct ChatOverlayView: View {
         if orientation.isPortrait {
             VStack {
                 ZStack {
-                    StreamOverlayChatView(model: model, chatSettings: chatSettings, chat: chat, fullSize: fullSize)
+                    StreamOverlayChatView(
+                        model: model,
+                        chatSettings: chatSettings,
+                        chat: chat,
+                        fullSize: fullSize
+                    )
                     ChatPausedView(chat: chat)
                 }
                 if !fullSize {

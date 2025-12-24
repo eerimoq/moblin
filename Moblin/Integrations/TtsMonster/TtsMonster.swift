@@ -68,7 +68,10 @@ class TtsMonster {
 
     func generateTts(voiceId: String, message: String) async -> Data? {
         var request = createRequest(component: "generate")
-        request.httpBody = try? JSONEncoder().encode(TtsMonsterGenerateRequest(voice_id: voiceId, message: message))
+        request.httpBody = try? JSONEncoder().encode(TtsMonsterGenerateRequest(
+            voice_id: voiceId,
+            message: message
+        ))
         guard let (data, response) = try? await httpGet(request: request) else {
             return nil
         }

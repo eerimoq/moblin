@@ -217,7 +217,9 @@ extension Model {
     }
 
     func updateObsSceneSwitcher(now: ContinuousClock.Instant) {
-        guard isLive, !stream.obsBrbScene.isEmpty, !obsQuickButton.currentScene.isEmpty, isObsConnected() else {
+        guard isLive, !stream.obsBrbScene.isEmpty, !obsQuickButton.currentScene.isEmpty,
+              isObsConnected()
+        else {
             return
         }
         if isStreamLikelyBroken(now: now) {

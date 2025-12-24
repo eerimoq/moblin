@@ -124,7 +124,11 @@ private struct RelayStreamerUrlView: View {
             } else {
                 List {
                     ForEach(moblink.scannerDiscoveredStreamers) { server in
-                        RelayStreamerServerView(server: server, streamerUrl: $streamerUrl, submitUrl: submitUrl)
+                        RelayStreamerServerView(
+                            server: server,
+                            streamerUrl: $streamerUrl,
+                            submitUrl: submitUrl
+                        )
                     }
                 }
             }
@@ -281,7 +285,9 @@ struct MoblinkSettingsView: View {
                     )
                 }
             } footer: {
-                Text("Used by both relay and streamer devices. Copy the streamer's password to the relay device.")
+                Text(
+                    "Used by both relay and streamer devices. Copy the streamer's password to the relay device."
+                )
             }
             RelayView(relay: model.database.moblink.relay)
             StreamerView(streamer: streamer)

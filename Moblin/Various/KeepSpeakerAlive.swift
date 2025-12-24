@@ -13,7 +13,8 @@ class KeepSpeakerAlivePlayer {
         guard latestPlayTime.value.duration(to: now) > .seconds(5 * 60) else {
             return
         }
-        guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Silence", withExtension: "mp3") else {
+        guard let soundUrl = Bundle.main.url(forResource: "Alerts.bundle/Silence", withExtension: "mp3")
+        else {
             return
         }
         keepSpeakerAlivePlayer = try? AudioPlayer(contentsOf: soundUrl)

@@ -234,8 +234,18 @@ struct PadelScoreboardView: View {
                 }
                 Spacer()
             }
-            TeamPickerView(model: model, padel: padel, side: String(localized: "Home"), team: $padel.scoreboard.home)
-            TeamPickerView(model: model, padel: padel, side: String(localized: "Away"), team: $padel.scoreboard.away)
+            TeamPickerView(
+                model: model,
+                padel: padel,
+                side: String(localized: "Home"),
+                team: $padel.scoreboard.home
+            )
+            TeamPickerView(
+                model: model,
+                padel: padel,
+                side: String(localized: "Away"),
+                team: $padel.scoreboard.away
+            )
         }
         .tabViewStyle(.verticalPage)
     }

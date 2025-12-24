@@ -14,7 +14,8 @@ private func decodeCameraId<T>(_ container: KeyedDecodingContainer<T>,
 
 private func decodeCameraPosition<T>(_ container: KeyedDecodingContainer<T>,
                                      _ key: KeyedDecodingContainer<T>.Key,
-                                     _ defaultValue: SettingsSceneCameraPosition) -> SettingsSceneCameraPosition
+                                     _ defaultValue: SettingsSceneCameraPosition)
+    -> SettingsSceneCameraPosition
 {
     var position = container.decode(key, SettingsSceneCameraPosition.self, defaultValue)
     if (position == .backTripleLowEnergy && !hasTripleBackCamera)
@@ -271,7 +272,11 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         type = container.decode(.type, SettingsVideoEffectType.self, .shape)
-        removeBackground = container.decode(.removeBackground, SettingsVideoEffectRemoveBackground.self, .init())
+        removeBackground = container.decode(
+            .removeBackground,
+            SettingsVideoEffectRemoveBackground.self,
+            .init()
+        )
         shape = container.decode(.shape, SettingsVideoEffectShape.self, .init())
         dewarp360 = container.decode(.dewarp360, SettingsVideoEffectDewarp360.self, .init())
         anamorphicLens = container.decode(
@@ -448,7 +453,8 @@ enum SettingsAlignment: String, Codable, CaseIterable {
     case bottomRight = "BottomRight"
 
     init(from decoder: Decoder) throws {
-        self = try SettingsAlignment(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .topLeft
+        self = try SettingsAlignment(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .topLeft
     }
 
     func isLeft() -> Bool {
@@ -512,7 +518,8 @@ class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
     }
 
     func format() -> String {
-        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0).formatWithSeconds()
+        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0)
+            .formatWithSeconds()
     }
 
     func textEffectEndTime() -> ContinuousClock.Instant {
@@ -698,7 +705,11 @@ class SettingsWidgetText: Codable, ObservableObject {
         )
         backgroundColorColor = backgroundColor.color()
         clearBackgroundColor = container.decode(.clearBackgroundColor, Bool.self, false)
-        foregroundColor = container.decode(.foregroundColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
+        foregroundColor = container.decode(
+            .foregroundColor,
+            RgbColor.self,
+            .init(red: 255, green: 255, blue: 255)
+        )
         foregroundColorColor = foregroundColor.color()
         clearForegroundColor = container.decode(.clearForegroundColor, Bool.self, false)
         fontSize = container.decode(.fontSize, Int.self, 30)
@@ -707,7 +718,11 @@ class SettingsWidgetText: Codable, ObservableObject {
         fontWeight = container.decode(.fontWeight, SettingsFontWeight.self, .regular)
         fontMonospacedDigits = container.decode(.fontMonospacedDigits, Bool.self, false)
         alignment = container.decode(.alignment, SettingsHorizontalAlignment.self, .leading)
-        horizontalAlignment = container.decode(.horizontalAlignment, SettingsHorizontalAlignment.self, .leading)
+        horizontalAlignment = container.decode(
+            .horizontalAlignment,
+            SettingsHorizontalAlignment.self,
+            .leading
+        )
         verticalAlignment = container.decode(.verticalAlignment, SettingsVerticalAlignment.self, .top)
         delay = container.decode(.delay, Double.self, 0.0)
         timers = container.decode(.timers, [SettingsWidgetTextTimer].self, [])
@@ -960,7 +975,11 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
         textToSpeechLanguageVoices = container.decode(.textToSpeechLanguageVoices,
                                                       [String: SettingsVoice].self,
                                                       .init())
-        for (languageCode, voice) in container.decode(.textToSpeechLanguageVoices, [String: String].self, .init()) {
+        for (languageCode, voice) in container.decode(
+            .textToSpeechLanguageVoices,
+            [String: String].self,
+            .init()
+        ) {
             let settingsVoice = SettingsVoice()
             settingsVoice.apple.voice = voice
             textToSpeechLanguageVoices[languageCode] = settingsVoice
@@ -1100,7 +1119,11 @@ class SettingsWidgetAlertsTwitch: Codable {
         subscriptions = container.decode(.subscriptions, SettingsWidgetAlertsAlert.self, .init())
         raids = container.decode(.raids, SettingsWidgetAlertsAlert.self, .init())
         cheers = container.decode(.cheers, SettingsWidgetAlertsAlert.self, .init())
-        cheerBits = container.decode(.cheerBits, [SettingsWidgetAlertsCheerBitsAlert].self, createDefaultCheerBits())
+        cheerBits = container.decode(
+            .cheerBits,
+            [SettingsWidgetAlertsCheerBitsAlert].self,
+            createDefaultCheerBits()
+        )
     }
 
     func clone() -> SettingsWidgetAlertsTwitch {
@@ -1146,7 +1169,11 @@ class SettingsWidgetAlertsKick: Codable {
         giftedSubscriptions = container.decode(.giftedSubscriptions, SettingsWidgetAlertsAlert.self, .init())
         hosts = container.decode(.hosts, SettingsWidgetAlertsAlert.self, .init())
         rewards = container.decode(.rewards, SettingsWidgetAlertsAlert.self, .init())
-        kickGifts = container.decode(.kickGifts, [SettingsWidgetAlertsKickGiftsAlert].self, createDefaultKickGifts())
+        kickGifts = container.decode(
+            .kickGifts,
+            [SettingsWidgetAlertsKickGiftsAlert].self,
+            createDefaultKickGifts()
+        )
     }
 
     func clone() -> SettingsWidgetAlertsKick {
@@ -1356,7 +1383,11 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         chatBot = container.decode(.chatBot, SettingsWidgetAlertsChatBot.self, .init())
         speechToText = container.decode(.speechToText, SettingsWidgetAlertsSpeechToText.self, .init())
         needsSubtitles = container.decode(.needsSubtitles, Bool.self, false)
-        ai = container.decode(.ai, SettingsOpenAi.self, .init(personality: SettingsWidgetAlerts.aiPersonality))
+        ai = container.decode(
+            .ai,
+            SettingsOpenAi.self,
+            .init(personality: SettingsWidgetAlerts.aiPersonality)
+        )
         aiEnabled = container.decode(.aiEnabled, Bool.self, false)
         ttsMonster = container.decode(.ttsMonster, SettingsTtsMonster.self, .init())
     }
@@ -1381,7 +1412,8 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
     case blurAndZoom = "Blur & zoom"
 
     init(from decoder: Decoder) throws {
-        self = try SettingsSceneSwitchTransition(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+        self = try SettingsSceneSwitchTransition(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
             .blur
     }
 
@@ -2712,13 +2744,19 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
         case .slideshow:
             return String(localized: "A slideshow widget shows a slideshow of widgets.")
         case .vTuber:
-            return String(localized: "A VTuber widget shows a VTuber model that imitates your facial movements.")
+            return String(
+                localized: "A VTuber widget shows a VTuber model that imitates your facial movements."
+            )
         case .pngTuber:
-            return String(localized: "A PNGTuber widget shows a PNGTuber model that imitates your facial movements.")
+            return String(
+                localized: "A PNGTuber widget shows a PNGTuber model that imitates your facial movements."
+            )
         case .qrCode:
             return String(localized: "A QR code widget shows a QR code of any text.")
         case .scoreboard:
-            return String(localized: "A scoreboard widget shows a sports scoreboard, controlled with an Apple Watch.")
+            return String(
+                localized: "A scoreboard widget shows a sports scoreboard, controlled with an Apple Watch."
+            )
         case .crop:
             return String(localized: "A crop widget shows parts of a browser widget.")
         }
@@ -2805,7 +2843,11 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
-        videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, defaultBackCameraPosition)
+        videoSource.cameraPosition = decodeCameraPosition(
+            container,
+            .cameraPosition,
+            defaultBackCameraPosition
+        )
         videoSource.backCameraId = decodeCameraId(container, .backCameraId, bestBackCameraId)
         videoSource.frontCameraId = decodeCameraId(container, .frontCameraId, bestFrontCameraId)
         videoSource.rtmpCameraId = container.decode(.rtmpCameraId, UUID.self, .init())
@@ -2817,7 +2859,11 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
         widgets = container.decode(.widgets, [SettingsSceneWidget].self, [])
         videoSourceRotation = container.decode(.videoSourceRotation, Double.self, 0.0)
-        videoStabilizationMode = container.decode(.videoStabilizationMode, SettingsVideoStabilizationMode.self, .off)
+        videoStabilizationMode = container.decode(
+            .videoStabilizationMode,
+            SettingsVideoStabilizationMode.self,
+            .off
+        )
         overrideVideoStabilizationMode = container.decode(.overrideVideoStabilizationMode, Bool.self, false)
         fillFrame = container.decode(.fillFrame, Bool.self, false)
         overrideMic = container.decode(.overrideMic, Bool.self, false)

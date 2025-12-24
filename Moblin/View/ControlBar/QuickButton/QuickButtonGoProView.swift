@@ -63,7 +63,9 @@ private struct QuickButtonGoProWifiCredentialsView: View {
     @State var entries: [PickerEntry] = []
 
     private func generate() {
-        if let wifiCredentials = goPro.wifiCredentials.first(where: { $0.id == goProState.wifiCredentialsSelection }) {
+        if let wifiCredentials = goPro.wifiCredentials
+            .first(where: { $0.id == goProState.wifiCredentialsSelection })
+        {
             qrCode = GoPro.generateWifiCredentialsQrCode(
                 ssid: wifiCredentials.ssid,
                 password: wifiCredentials.password

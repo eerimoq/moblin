@@ -17,7 +17,9 @@ extension Model {
 
     func deleteAutoSceneSwitchers(offsets: IndexSet) {
         database.autoSceneSwitchers.switchers.remove(atOffsets: offsets)
-        if !database.autoSceneSwitchers.switchers.contains(where: { $0.id == autoSceneSwitcher.currentSwitcherId }) {
+        if !database.autoSceneSwitchers.switchers
+            .contains(where: { $0.id == autoSceneSwitcher.currentSwitcherId })
+        {
             autoSceneSwitcher.currentSwitcherId = nil
             setAutoSceneSwitcher(id: nil)
         }
@@ -32,7 +34,8 @@ extension Model {
                 return
             }
         }
-        guard let autoSwitcher = database.autoSceneSwitchers.switchers.first(where: { $0.id == switcherId }) else {
+        guard let autoSwitcher = database.autoSceneSwitchers.switchers.first(where: { $0.id == switcherId })
+        else {
             return
         }
         fillAutoSceneSwitcherIfNeeded(autoSwitcher: autoSwitcher)
@@ -58,7 +61,9 @@ extension Model {
         }
     }
 
-    private func trySwitchToNextScene(autoSwitcher: SettingsAutoSceneSwitcher, now: ContinuousClock.Instant) -> Bool {
+    private func trySwitchToNextScene(autoSwitcher: SettingsAutoSceneSwitcher,
+                                      now: ContinuousClock.Instant) -> Bool
+    {
         while let switcherSceneId = autoSceneSwitcher.sceneIds.popLast() {
             guard let switcherScene = autoSwitcher.scenes.first(where: { $0.id == switcherSceneId }) else {
                 continue

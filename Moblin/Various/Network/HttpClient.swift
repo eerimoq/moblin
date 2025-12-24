@@ -26,7 +26,9 @@ class HttpResponseParser {
         var contentLength = 0
         while let (line, nextLineOffset) = getLine(data: data, offset: offset) {
             let parts = line.lowercased().split(separator: " ")
-            if parts.count == 2, parts.first == "content-length:", let length = parts.last, let length = Int(length) {
+            if parts.count == 2, parts.first == "content-length:", let length = parts.last,
+               let length = Int(length)
+            {
                 contentLength = length
             } else if line.isEmpty {
                 let body = data.advanced(by: nextLineOffset)
@@ -52,7 +54,11 @@ class HttpResponseParser {
 }
 
 private class InterfaceTypeHttpClient {
-    private static var interfaceTypes: Atomic<[NWInterface.InterfaceType]> = .init([.cellular, .wifi, .wiredEthernet])
+    private static var interfaceTypes: Atomic<[NWInterface.InterfaceType]> = .init([
+        .cellular,
+        .wifi,
+        .wiredEthernet,
+    ])
     private var interfaceTypes: [NWInterface.InterfaceType] = []
     private var interfaceTypeIndex: Int = 0
     private var connection: NWConnection?

@@ -38,7 +38,8 @@ final class NWConnectionWithId: Hashable, Equatable {
 
 extension NWConnection.ContentContext {
     func webSocketOperation() -> NWProtocolWebSocket.Opcode? {
-        let definitions = protocolMetadata(definition: NWProtocolWebSocket.definition) as? Network.NWProtocolWebSocket
+        let definitions = protocolMetadata(definition: NWProtocolWebSocket.definition) as? Network
+            .NWProtocolWebSocket
             .Metadata
         return definitions?.opcode
     }

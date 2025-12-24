@@ -28,7 +28,8 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
     case pixellate
 
     init(from decoder: Decoder) throws {
-        self = try SettingsFacePrivacyMode(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .blur
+        self = try SettingsFacePrivacyMode(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .blur
     }
 
     func toString() -> LocalizedStringKey {

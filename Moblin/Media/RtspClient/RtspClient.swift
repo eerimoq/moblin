@@ -503,7 +503,10 @@ private class Rtp {
     private var nextExpectedSequenceNumber: UInt16?
     var processor: RtpProcessor?
     weak var client: RtspClient?
-    private let wrappingTimestamp = WrappingTimestamp(name: "RTP", maximumTimestamp: CMTime(seconds: 0x1_0000_0000))
+    private let wrappingTimestamp = WrappingTimestamp(
+        name: "RTP",
+        maximumTimestamp: CMTime(seconds: 0x1_0000_0000)
+    )
 
     func handlePacket(packet: Data) throws {
         guard packet.count >= 12 else {
@@ -878,7 +881,8 @@ class RtspClient {
             throw "Missing authenticate field when authentication failed."
         }
         guard wwwAuthenticate.starts(with: "Digest ") else {
-            delegate?.rtspClientErrorToast(title: String(localized: "RTSP only supports Digest authentication"))
+            delegate?
+                .rtspClientErrorToast(title: String(localized: "RTSP only supports Digest authentication"))
             throw "Only Digest authentication is supported."
         }
         let index = wwwAuthenticate.index(wwwAuthenticate.startIndex, offsetBy: 7)

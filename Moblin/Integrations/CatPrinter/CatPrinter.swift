@@ -555,7 +555,10 @@ extension CatPrinter: CBPeripheralDelegate {
         }
     }
 
-    private func handleMessageMxw01WaitingForPrintResponse(command: CatPrinterCommandMxw01, currentJob: CurrentJob) {
+    private func handleMessageMxw01WaitingForPrintResponse(
+        command: CatPrinterCommandMxw01,
+        currentJob: CurrentJob
+    ) {
         switch command {
         case let .printResponse(status: status):
             if status == 0 {

@@ -33,7 +33,8 @@ struct HeartRateDeviceSettingsView: View {
         guard let deviceId = UUID(uuidString: value) else {
             return
         }
-        guard let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId }) else {
+        guard let peripheral = scanner.discoveredPeripherals.first(where: { $0.identifier == deviceId })
+        else {
             return
         }
         device.bluetoothPeripheralName = peripheral.name

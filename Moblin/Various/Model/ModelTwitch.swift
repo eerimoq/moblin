@@ -242,7 +242,12 @@ extension Model {
         )
     }
 
-    func banTwitchUser(user: String, duration: Int?, reason: String?, onComplete: @escaping (OperationResult) -> Void) {
+    func banTwitchUser(
+        user: String,
+        duration: Int?,
+        reason: String?,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         createTwitchApi(stream: stream).getUserByLogin(login: user) { twitchUser in
             guard let twitchUser else {
                 onComplete(.error)
@@ -331,7 +336,11 @@ extension Model {
         }
     }
 
-    func sendTwitchAnnouncement(message: String, color: String, onComplete: @escaping (OperationResult) -> Void) {
+    func sendTwitchAnnouncement(
+        message: String,
+        color: String,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         createTwitchApi(stream: stream).sendAnnouncement(
             broadcasterId: stream.twitchChannelId,
             message: message,
@@ -340,7 +349,11 @@ extension Model {
         )
     }
 
-    func setTwitchSlowMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (OperationResult) -> Void) {
+    func setTwitchSlowMode(
+        enabled: Bool,
+        duration: Int? = nil,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         var settings: [String: Any] = ["slow_mode": enabled]
         if enabled, let duration {
             settings["slow_mode_wait_time"] = duration
@@ -352,7 +365,11 @@ extension Model {
         )
     }
 
-    func setTwitchFollowersMode(enabled: Bool, duration: Int? = nil, onComplete: @escaping (OperationResult) -> Void) {
+    func setTwitchFollowersMode(
+        enabled: Bool,
+        duration: Int? = nil,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         var settings: [String: Any] = ["follower_mode": enabled]
         if enabled, let duration {
             settings["follower_mode_duration"] = duration
@@ -386,7 +403,11 @@ extension Model {
             }
     }
 
-    func raidTwitchChannel(channelName _: String, channelId: String, onComplete: @escaping (OperationResult) -> Void) {
+    func raidTwitchChannel(
+        channelName _: String,
+        channelId: String,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         createTwitchApi(stream: stream).startRaid(broadcasterId: stream.twitchChannelId,
                                                   toBroadcasterId: channelId,
                                                   onComplete: onComplete)

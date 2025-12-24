@@ -107,7 +107,8 @@ extension Model {
             obsStartRecording()
         }
         streamingHistoryStream = StreamingHistoryStream(settings: stream.clone())
-        streamingHistoryStream!.updateHighestThermalState(thermalState: ThermalState(from: statusOther.thermalState))
+        streamingHistoryStream!
+            .updateHighestThermalState(thermalState: ThermalState(from: statusOther.thermalState))
         streamingHistoryStream!.updateLowestBatteryLevel(level: battery.level)
     }
 

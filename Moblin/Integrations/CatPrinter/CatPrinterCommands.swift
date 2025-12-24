@@ -154,7 +154,9 @@ enum CatPrinterCommand {
 }
 
 // One bit per pixel, often 384 pixels wide.
-func catPrinterPackPrintImageCommands(image: [[UInt8]], feedPaper: Bool, printMode: CatPrinterPrintMode) -> Data {
+func catPrinterPackPrintImageCommands(image: [[UInt8]], feedPaper: Bool,
+                                      printMode: CatPrinterPrintMode) -> Data
+{
     var commands: [CatPrinterCommand] = [
         .setQuality(level: 0x35),
         .lattice(data: CatPrinterCommand.latticeStartData),

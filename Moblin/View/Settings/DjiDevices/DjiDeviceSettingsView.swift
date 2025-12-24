@@ -42,7 +42,9 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
         guard let deviceId = UUID(uuidString: value) else {
             return
         }
-        guard let djiDevice = djiScanner.discoveredDevices.first(where: { $0.peripheral.identifier == deviceId }) else {
+        guard let djiDevice = djiScanner.discoveredDevices
+            .first(where: { $0.peripheral.identifier == deviceId })
+        else {
             return
         }
         device.bluetoothPeripheralName = djiDevice.peripheral.name
@@ -240,7 +242,9 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
             }
             .disabled(device.isStarted)
-            if device.model == .osmoAction4 || device.model == .osmoAction5Pro || device.model == .osmoAction6 {
+            if device.model == .osmoAction4 || device.model == .osmoAction5Pro || device
+                .model == .osmoAction6
+            {
                 Picker("Image stabilization", selection: $device.imageStabilization) {
                     ForEach(SettingsDjiDeviceImageStabilization.allCases, id: \.self) {
                         Text($0.toString())
@@ -320,7 +324,11 @@ struct DjiDeviceSettingsView: View {
             }
             DjiDeviceSelectDeviceSettingsView(device: device)
             DjiDeviceWiFiSettingsView(device: device)
-            DjiDeviceRtmpSettingsView(device: device, status: model.statusOther, rtmpServer: model.database.rtmpServer)
+            DjiDeviceRtmpSettingsView(
+                device: device,
+                status: model.statusOther,
+                rtmpServer: model.database.rtmpServer
+            )
             DjiDeviceSettingsSettingsView(device: device)
             DjiDeviceAutoRestartSettingsView(device: device)
             Section {

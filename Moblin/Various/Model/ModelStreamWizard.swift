@@ -93,7 +93,8 @@ extension Model {
             case .belaboxCloudObs:
                 url = createStreamWizard.belaboxUrl
             case .direct:
-                let ingestUrl = createStreamWizard.directIngest.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                let ingestUrl = createStreamWizard.directIngest
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
                 url = "\(ingestUrl)/\(createStreamWizard.directStreamKey)"
             case .myServers:
                 if let customUrl = createStreamFromWizardCustomUrl() {

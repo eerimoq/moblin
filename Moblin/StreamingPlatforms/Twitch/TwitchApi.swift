@@ -301,7 +301,9 @@ class TwitchApi {
         doPost(subPath: "channels/commercial", body: serialize(body)) {
             switch $0 {
             case let .success(data):
-                if let message = (try? JSONDecoder().decode(TwitchApiStartCommercial.self, from: data))?.data.first {
+                if let message = (try? JSONDecoder().decode(TwitchApiStartCommercial.self, from: data))?.data
+                    .first
+                {
                     onComplete(.success(message))
                 } else {
                     onComplete(.error)
@@ -340,7 +342,9 @@ class TwitchApi {
         )
     }
 
-    func addModerator(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
+    func addModerator(broadcasterId: String, userId: String,
+                      onComplete: @escaping (OperationResult) -> Void)
+    {
         doPost(
             subPath: "moderation/moderators?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
             body: Data(),
@@ -348,7 +352,11 @@ class TwitchApi {
         )
     }
 
-    func removeModerator(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
+    func removeModerator(
+        broadcasterId: String,
+        userId: String,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         doDelete(
             subPath: "moderation/moderators?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
             onComplete: onComplete
@@ -364,7 +372,10 @@ class TwitchApi {
     }
 
     func removeVip(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
-        doDelete(subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)", onComplete: onComplete)
+        doDelete(
+            subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
+            onComplete: onComplete
+        )
     }
 
     func sendAnnouncement(broadcasterId: String,
@@ -458,7 +469,11 @@ class TwitchApi {
         }
     }
 
-    func startRaid(broadcasterId: String, toBroadcasterId: String, onComplete: @escaping (OperationResult) -> Void) {
+    func startRaid(
+        broadcasterId: String,
+        toBroadcasterId: String,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
         var components = URLComponents()
         components.queryItems = [
             URLQueryItem(name: "from_broadcaster_id", value: broadcasterId),

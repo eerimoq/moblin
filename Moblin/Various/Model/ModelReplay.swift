@@ -185,7 +185,12 @@ extension Model {
 }
 
 extension Model: ReplayDelegate {
-    func replayOutputFrame(image: UIImage, offset _: Double, video: ReplayBufferFile, completion: (() -> Void)?) {
+    func replayOutputFrame(
+        image: UIImage,
+        offset _: Double,
+        video: ReplayBufferFile,
+        completion: (() -> Void)?
+    ) {
         DispatchQueue.main.async {
             self.replay.previewImage = image
             self.replayVideo = video

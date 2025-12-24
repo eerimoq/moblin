@@ -328,7 +328,9 @@ class RtmpServerChunkStream {
     }
 
     private func processMessageAudioTypeSeq(client _: RtmpServerClient, codec: FlvAudioCodec) {
-        guard let config = MpegTsAudioConfig(data: [UInt8](messageBody[codec.headerSize ..< messageBody.count])) else {
+        guard let config =
+            MpegTsAudioConfig(data: [UInt8](messageBody[codec.headerSize ..< messageBody.count]))
+        else {
             return
         }
         var streamDescription = config.audioStreamBasicDescription()
@@ -590,7 +592,8 @@ class RtmpServerChunkStream {
         videoTimestamp = mediaTimestamp - mediaTimestampZero
         let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp(client)) +
             Int64(compositionTime + client.latency)
-        let decodeTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp(client)) + Int64(client.latency)
+        let decodeTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp(client)) +
+            Int64(client.latency)
         var timing = CMSampleTimingInfo(
             duration: CMTimeMake(value: duration, timescale: 1000),
             presentationTimeStamp: CMTimeMake(value: presentationTimeStamp, timescale: 1000),
@@ -619,7 +622,9 @@ class RtmpServerChunkStream {
         return sampleBuffer
     }
 
-    private func makeAudioSampleBuffer(client: RtmpServerClient, audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer? {
+    private func makeAudioSampleBuffer(client: RtmpServerClient,
+                                       audioBuffer: AVAudioPCMBuffer) -> CMSampleBuffer?
+    {
         let audioTimestamp = mediaTimestamp - mediaTimestampZero
         let presentationTimeStamp = CMTimeMake(
             value: Int64(audioTimestamp + getBasePresentationTimeStamp(client)) + Int64(client.latency),

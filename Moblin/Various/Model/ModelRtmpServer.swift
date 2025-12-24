@@ -72,7 +72,11 @@ extension Model {
         }
     }
 
-    private func stopRtmpServerStream(stream: SettingsRtmpServerStream, showToast: Bool, reason: String? = nil) {
+    private func stopRtmpServerStream(
+        stream: SettingsRtmpServerStream,
+        showToast: Bool,
+        reason: String? = nil
+    ) {
         if showToast {
             makeToast(title: String(localized: "\(stream.camera()) disconnected"), subTitle: reason)
         }

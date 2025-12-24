@@ -218,7 +218,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func playSpeechToTextString(id: UUID) {
-        guard let stringIndex = settings.speechToText.strings.firstIndex(where: { $0.id == id && $0.alert.enabled })
+        guard let stringIndex = settings.speechToText.strings
+            .firstIndex(where: { $0.id == id && $0.alert.enabled })
         else {
             return
         }
@@ -256,7 +257,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                         if let answer {
                             message += ". " + answer
                         } else {
-                            self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
+                            self.delegate?
+                                .alertsMakeErrorToast(title: String(localized: "Got no AI response"))
                         }
                         self.play(player: player,
                                   username: username,
@@ -360,7 +362,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return CIImage(image: image)
     }
 
-    private func isInRectangle(_ x: Double, _ y: Double, _ rectangle: AlertsEffectBackgroundLandmarkRectangle) -> Bool {
+    private func isInRectangle(_ x: Double, _ y: Double,
+                               _ rectangle: AlertsEffectBackgroundLandmarkRectangle) -> Bool
+    {
         return x > rectangle.topLeftX && x < rectangle.bottomRightX && y > rectangle.topLeftY && y < rectangle
             .bottomRightY
     }
@@ -379,7 +383,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func calculateLandmarkSettings(settings: SettingsWidgetAlertsAlert) -> AlertsEffectLandmarkSettings? {
+    private func calculateLandmarkSettings(settings: SettingsWidgetAlertsAlert)
+        -> AlertsEffectLandmarkSettings?
+    {
         if settings.positionType == .face {
             let landmark = calculateLandmark(settings: settings)
             let centerX = settings.facePosition.x + settings.facePosition.width / 2
@@ -651,7 +657,12 @@ extension AlertsEffect {
 extension AlertsEffect {
     private func setKickSettings(kick: SettingsWidgetAlertsKick) {
         kickSubscriptionMedia.update(kick.subscriptions, mediaStorage, bundledImages, bundledSounds)
-        kickGiftedSubscriptionsMedias.update(kick.giftedSubscriptions, mediaStorage, bundledImages, bundledSounds)
+        kickGiftedSubscriptionsMedias.update(
+            kick.giftedSubscriptions,
+            mediaStorage,
+            bundledImages,
+            bundledSounds
+        )
         kickHostMedia.update(kick.hosts, mediaStorage, bundledImages, bundledSounds)
         kickRewardMedia.update(kick.rewards, mediaStorage, bundledImages, bundledSounds)
         kickGiftsMedias.removeAll()
@@ -669,7 +680,9 @@ extension AlertsEffect {
         }
         play(media: kickSubscriptionMedia,
              username: event.username,
-             message: String(localized: "just subscribed! They've been subscribed for \(event.months) months!"),
+             message: String(
+                 localized: "just subscribed! They've been subscribed for \(event.months) months!"
+             ),
              settings: settings.kick.subscriptions)
     }
 

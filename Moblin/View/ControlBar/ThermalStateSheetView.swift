@@ -35,8 +35,14 @@ struct ThermalStateSheetView: View {
             Form {
                 Section {
                     VStack(alignment: .leading) {
-                        FlameStateView(color: .white, text: "Your device is cold and should function normally.")
-                        FlameStateView(color: .yellow, text: "Your device is warm, but should function normally.")
+                        FlameStateView(
+                            color: .white,
+                            text: "Your device is cold and should function normally."
+                        )
+                        FlameStateView(
+                            color: .yellow,
+                            text: "Your device is warm, but should function normally."
+                        )
                         FlameStateView(color: .red, text: "Your device is hot and may overheat.")
                     }
                 }

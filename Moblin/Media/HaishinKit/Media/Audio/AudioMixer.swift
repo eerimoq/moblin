@@ -14,9 +14,16 @@ class AudioMixer {
     private var inputs: [UUID: Input] = [:]
     private let outputSamplesPerBuffer: AVAudioFrameCount
 
-    init(outputSampleRate: Double, outputChannels: AVAudioChannelCount, outputSamplesPerBuffer: AVAudioFrameCount) {
+    init(
+        outputSampleRate: Double,
+        outputChannels: AVAudioChannelCount,
+        outputSamplesPerBuffer: AVAudioFrameCount
+    ) {
         self.outputSamplesPerBuffer = outputSamplesPerBuffer
-        outputFormat = AVAudioFormat(standardFormatWithSampleRate: outputSampleRate, channels: outputChannels)!
+        outputFormat = AVAudioFormat(
+            standardFormatWithSampleRate: outputSampleRate,
+            channels: outputChannels
+        )!
         do {
             try engine.enableManualRenderingMode(
                 .offline,
@@ -71,7 +78,10 @@ class AudioMixer {
     }
 
     func process() -> AVAudioPCMBuffer? {
-        guard let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: outputSamplesPerBuffer) else {
+        guard let outputBuffer = AVAudioPCMBuffer(
+            pcmFormat: outputFormat,
+            frameCapacity: outputSamplesPerBuffer
+        ) else {
             return nil
         }
         do {

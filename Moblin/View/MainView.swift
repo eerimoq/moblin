@@ -437,7 +437,8 @@ struct MainView: View {
                 if model.showingPanel != .none {
                     MenuView()
                         .opacity(model.panelHidden ? 0 : 1)
-                    let backgroundColor = model.panelHidden ? model.showingPanel.buttonsBackgroundColor() : .clear
+                    let backgroundColor = model.panelHidden ? model.showingPanel
+                        .buttonsBackgroundColor() : .clear
                     PanelButtonsView(backgroundColor: backgroundColor)
                         .padding([.trailing], 10)
                         .padding([.top], -7)

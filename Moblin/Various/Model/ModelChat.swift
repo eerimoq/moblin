@@ -179,7 +179,10 @@ extension Model {
             externalDisplayChat.update()
         }
         if quickButtonChatState.chatAlertsPaused {
-            quickButtonChatState.pausedChatAlertsPostsCount = max(pausedQuickButtonChatAlertsPosts.count - 1, 0)
+            quickButtonChatState.pausedChatAlertsPostsCount = max(
+                pausedQuickButtonChatAlertsPosts.count - 1,
+                0
+            )
         } else {
             while let post = newQuickButtonChatAlertsPosts.popFirst() {
                 if quickButtonChatState.chatAlertsPosts.count > maximumNumberOfInteractiveChatMessages - 1 {

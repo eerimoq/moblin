@@ -43,7 +43,8 @@ struct KeyboardKeySettingsView: View {
                         InlinePickerView(
                             title: String(localized: "Function"),
                             onChange: onFunctionChange,
-                            items: SettingsControllerFunction.allCases.filter { $0 != .zoomIn && $0 != .zoomOut }
+                            items: SettingsControllerFunction.allCases
+                                .filter { $0 != .zoomIn && $0 != .zoomOut }
                                 .map { .init(id: $0.rawValue, text: $0.toString()) },
                             selectedId: key.function.rawValue
                         )

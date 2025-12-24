@@ -252,7 +252,8 @@ private struct ButtonsView: View {
 
     private func formatWhiteBalance() -> String {
         return String(Int(minimumWhiteBalanceTemperature +
-                (maximumWhiteBalanceTemperature - minimumWhiteBalanceTemperature) * camera.lockedWhiteBalance))
+                (maximumWhiteBalanceTemperature - minimumWhiteBalanceTemperature) * camera
+                .lockedWhiteBalance))
     }
 
     private func formatIso() -> String {

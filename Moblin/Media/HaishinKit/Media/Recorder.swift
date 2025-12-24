@@ -35,7 +35,12 @@ class Recorder: NSObject {
         }
     }
 
-    func startRunning(url: URL?, replay: Bool, audioOutputSettings: [String: Any], videoOutputSettings: [String: Any]) {
+    func startRunning(
+        url: URL?,
+        replay: Bool,
+        audioOutputSettings: [String: Any],
+        videoOutputSettings: [String: Any]
+    ) {
         processorPipelineQueue.async {
             self.startRunningInner(
                 url: url,
@@ -114,7 +119,9 @@ class Recorder: NSObject {
         }
     }
 
-    private func convertAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
+    private func convertAudio(_ sampleBuffer: CMSampleBuffer,
+                              _ presentationTimeStamp: CMTime) -> CMSampleBuffer?
+    {
         return tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: false)
             ?? tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: true)
     }
@@ -214,7 +221,9 @@ class Recorder: NSObject {
                                  _ presentationTimeStamp: CMTime) -> AVAssetWriterInput
     {
         if let audioStreamBasicDescription = sampleBuffer.formatDescription?.audioStreamBasicDescription {
-            logger.info("recorder: Make writer: Output: \(outputSettings), Input: \(audioStreamBasicDescription)")
+            logger.info("""
+            recorder: Make writer: Output: \(outputSettings), Input: \(audioStreamBasicDescription)
+            """)
         }
         let input = AVAssetWriterInput(
             mediaType: mediaType,

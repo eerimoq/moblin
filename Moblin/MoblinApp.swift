@@ -78,7 +78,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             for scene in UIApplication.shared.connectedScenes {
                 if let windowScene = scene as? UIWindowScene {
                     windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: orientationLock))
-                    windowScene.windows.first?.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
+                    windowScene.windows.first?.rootViewController?
+                        .setNeedsUpdateOfSupportedInterfaceOrientations()
                 }
             }
         }

@@ -229,8 +229,16 @@ private struct GeneralVariablesView: View {
     var body: some View {
         NavigationLink {
             Form {
-                VariableView(title: "{checkbox}", description: String(localized: "Show a checkbox"), text: $value)
-                VariableView(title: "{rating}", description: String(localized: "Show a 0-5 rating"), text: $value)
+                VariableView(
+                    title: "{checkbox}",
+                    description: String(localized: "Show a checkbox"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{rating}",
+                    description: String(localized: "Show a 0-5 rating"),
+                    text: $value
+                )
                 VariableView(title: "{muted}", description: String(localized: "Show muted"), text: $value)
                 VariableView(
                     title: "{browserTitle}",
@@ -289,7 +297,11 @@ private struct TimeVariablesView: View {
                     description: String(localized: "Show a stopwatch"),
                     text: $value
                 )
-                VariableView(title: "{lapTimes}", description: String(localized: "Show lap times"), text: $value)
+                VariableView(
+                    title: "{lapTimes}",
+                    description: String(localized: "Show lap times"),
+                    text: $value
+                )
             }
             .navigationTitle("Time")
         } label: {
@@ -318,8 +330,16 @@ private struct LocationVariablesView: View {
                     description: String(localized: "Show average speed"),
                     text: $value
                 )
-                VariableView(title: "{altitude}", description: String(localized: "Show altitude"), text: $value)
-                VariableView(title: "{distance}", description: String(localized: "Show distance"), text: $value)
+                VariableView(
+                    title: "{altitude}",
+                    description: String(localized: "Show altitude"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{distance}",
+                    description: String(localized: "Show distance"),
+                    text: $value
+                )
                 VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
             }
             .navigationTitle("Location")

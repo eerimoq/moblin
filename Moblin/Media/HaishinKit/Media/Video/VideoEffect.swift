@@ -15,7 +15,8 @@ public struct VideoEffectInfo {
     }
 
     func getCiImage(_ videoSourceId: UUID) -> CIImage? {
-        guard let imageBuffer = faceDetectionJobs.first(where: { $0.videoSourceId == videoSourceId })?.imageBuffer
+        guard let imageBuffer = faceDetectionJobs.first(where: { $0.videoSourceId == videoSourceId })?
+            .imageBuffer
         else {
             return videoUnit.getCiImage(videoSourceId, presentationTimeStamp)
         }

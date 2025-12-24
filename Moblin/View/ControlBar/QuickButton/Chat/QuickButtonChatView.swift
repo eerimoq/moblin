@@ -480,8 +480,14 @@ private struct PredefinedMessageView: View {
                 Section {
                     HStack {
                         Spacer()
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $predefinedMessage.blueTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $predefinedMessage.greenTag)
+                        TagButtonView(
+                            tag: SettingsChatPredefinedMessage.tagBlue,
+                            enabled: $predefinedMessage.blueTag
+                        )
+                        TagButtonView(
+                            tag: SettingsChatPredefinedMessage.tagGreen,
+                            enabled: $predefinedMessage.greenTag
+                        )
                         TagButtonView(
                             tag: SettingsChatPredefinedMessage.tagYellow,
                             enabled: $predefinedMessage.yellowTag
@@ -490,7 +496,10 @@ private struct PredefinedMessageView: View {
                             tag: SettingsChatPredefinedMessage.tagOrange,
                             enabled: $predefinedMessage.orangeTag
                         )
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $predefinedMessage.redTag)
+                        TagButtonView(
+                            tag: SettingsChatPredefinedMessage.tagRed,
+                            enabled: $predefinedMessage.redTag
+                        )
                     }
                 } header: {
                     Text("Tags")
@@ -526,7 +535,8 @@ struct PredefinedMessagesView: View {
     @State var messageToSend: UUID?
 
     private func filteredMessages() -> [SettingsChatPredefinedMessage] {
-        guard filter.blueTag || filter.greenTag || filter.yellowTag || filter.orangeTag || filter.redTag else {
+        guard filter.blueTag || filter.greenTag || filter.yellowTag || filter.orangeTag || filter.redTag
+        else {
             return chat.predefinedMessages
         }
         var messages: [SettingsChatPredefinedMessage] = []
@@ -563,8 +573,14 @@ struct PredefinedMessagesView: View {
                         Spacer()
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagBlue, enabled: $filter.blueTag)
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagGreen, enabled: $filter.greenTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagYellow, enabled: $filter.yellowTag)
-                        TagButtonView(tag: SettingsChatPredefinedMessage.tagOrange, enabled: $filter.orangeTag)
+                        TagButtonView(
+                            tag: SettingsChatPredefinedMessage.tagYellow,
+                            enabled: $filter.yellowTag
+                        )
+                        TagButtonView(
+                            tag: SettingsChatPredefinedMessage.tagOrange,
+                            enabled: $filter.orangeTag
+                        )
                         TagButtonView(tag: SettingsChatPredefinedMessage.tagRed, enabled: $filter.redTag)
                     }
                 }
@@ -767,7 +783,8 @@ private struct AlertsControlView: View {
             quickButtonChat.showFirstTimeChatterMessage.toggle()
             model.database.chat.showFirstTimeChatterMessage = quickButtonChat.showFirstTimeChatterMessage
         } label: {
-            Image(systemName: quickButtonChat.showFirstTimeChatterMessage ? "bubble.left.fill" : "bubble.left")
+            Image(systemName: quickButtonChat
+                .showFirstTimeChatterMessage ? "bubble.left.fill" : "bubble.left")
                 .font(.title)
                 .padding(5)
         }
@@ -968,7 +985,11 @@ struct QuickButtonChatView: View {
                 if quickButtonChat.showAllChatMessages {
                     ChatView(model: model, chat: model.quickButtonChat, selectedPost: $selectedPost)
                 } else {
-                    ChatAlertsView(model: model, quickButtonChat: quickButtonChat, selectedPost: $selectedPost)
+                    ChatAlertsView(
+                        model: model,
+                        quickButtonChat: quickButtonChat,
+                        selectedPost: $selectedPost
+                    )
                 }
                 HStack {
                     if quickButtonChat.showAllChatMessages {

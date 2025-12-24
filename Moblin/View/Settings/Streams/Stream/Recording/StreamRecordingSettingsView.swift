@@ -31,7 +31,8 @@ private struct RecordingPathView: View {
     }
 
     private func getRecordingPath(recordingPath: Data) -> String {
-        return makeRecordingPath(recordingPath: recordingPath)?.path() ?? String(localized: "Disk not connected?")
+        return makeRecordingPath(recordingPath: recordingPath)?
+            .path() ?? String(localized: "Disk not connected?")
     }
 
     var body: some View {
@@ -184,7 +185,9 @@ struct StreamRecordingSettingsView: View {
                         title: String(localized: "Key frame interval"),
                         value: String(recording.maxKeyFrameInterval),
                         footers: [
-                            String(localized: "Maximum key frame interval in seconds. Set to 0 for automatic."),
+                            String(
+                                localized: "Maximum key frame interval in seconds. Set to 0 for automatic."
+                            ),
                         ],
                         keyboardType: .numbersAndPunctuation
                     ) {

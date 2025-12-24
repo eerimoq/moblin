@@ -178,9 +178,10 @@ struct WidgetVideoSourceSettingsView: View {
                         .lineLimit(1)
                 }
             }
-            .alert("Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.",
-                   isPresented: $showingScreenCaptureAlert)
-            {
+            .alert(
+                "Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.",
+                isPresented: $showingScreenCaptureAlert
+            ) {
                 Button("Got it") {
                     showingScreenCaptureAlert = false
                 }

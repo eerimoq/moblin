@@ -363,7 +363,10 @@ class KickApi {
                 guard error == nil,
                       let data,
                       response?.http?.isSuccessful == true,
-                      let searchResponse = try? JSONDecoder().decode(KickCategorySearchResponse.self, from: data)
+                      let searchResponse = try? JSONDecoder().decode(
+                          KickCategorySearchResponse.self,
+                          from: data
+                      )
                 else {
                     onComplete(nil)
                     return

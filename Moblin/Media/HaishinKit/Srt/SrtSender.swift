@@ -269,12 +269,16 @@ class SrtSender {
     }
 
     private func dropOldPackets(now: ContinuousClock.Instant) {
-        while let packet = packetsInFlight.first, packet.createdAt.duration(to: now) > packetsInFlightDropThreshold {
+        while let packet = packetsInFlight.first,
+              packet.createdAt.duration(to: now) > packetsInFlightDropThreshold
+        {
             packetsInFlight.removeFirst()
             packetsInFlightBySequenceNumber.removeValue(forKey: packet.sequenceNumber)
             pktSndDropTotal += 1
         }
-        while let packet = packetsToSend.first, packet.createdAt.duration(to: now) > packetsToSendDropThreshold {
+        while let packet = packetsToSend.first,
+              packet.createdAt.duration(to: now) > packetsToSendDropThreshold
+        {
             packetsToSend.removeFirst()
             pktSndDropTotal += 1
         }
@@ -303,7 +307,8 @@ class SrtSender {
         }
         latestOutputPacketsTime = now
         var numberOfPacketsToSend = sequenceNumbersToRetransmit.count + packetsToSend.count
-        // if let packet = packetsToSend.first, packet.createdAt.duration(to: now) > leakyBucketSmoothingTime {
+        // if let packet = packetsToSend.first, packet.createdAt.duration(to: now) > leakyBucketSmoothingTime
+        // {
         //     let count = sequenceNumbersToRetransmit.count + packetsToSend.count
         //     let duration = packet.createdAt.duration(to: now)
         //     logger.info("xxx are we falling behind? age: \(duration) packets: \(count)")
@@ -328,7 +333,9 @@ class SrtSender {
             guard let packet = packetsInFlightBySequenceNumber[packetSequenceNumber] else {
                 continue
             }
-            if let retransmittedAt = packet.retransmittedAt, retransmittedAt.duration(to: now) < .microseconds(rttUs) {
+            if let retransmittedAt = packet.retransmittedAt,
+               retransmittedAt.duration(to: now) < .microseconds(rttUs)
+            {
                 continue
             }
             // logger.info("xxx RETX  \(packetSequenceNumber) RTT: \(rttUs)")

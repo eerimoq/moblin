@@ -31,7 +31,11 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        resolution = container.decode(.resolution, SettingsStreamResolution.self, SettingsStream.defaultResolution)
+        resolution = container.decode(
+            .resolution,
+            SettingsStreamResolution.self,
+            SettingsStream.defaultResolution
+        )
         fps = container.decode(.fps, Int.self, SettingsStream.defaultFps)
         bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
         codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)

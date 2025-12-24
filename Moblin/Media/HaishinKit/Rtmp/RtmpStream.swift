@@ -395,7 +395,10 @@ class RtmpStream {
         default:
             buffer = Data([aac, FlvAacPacketType.raw.rawValue])
         }
-        buffer.append(audioBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(audioBuffer.byteLength))
+        buffer.append(
+            audioBuffer.data.assumingMemoryBound(to: UInt8.self),
+            count: Int(audioBuffer.byteLength)
+        )
         prevRebasedAudioTimeStamp = rebasedTimestamp
         handleEncodedAudioBuffer(buffer, UInt32(audioTimeStampDelta))
         audioTimeStampDelta -= floor(audioTimeStampDelta)

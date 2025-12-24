@@ -372,7 +372,11 @@ extension CyclingPowerDevice: CBPeripheralDelegate {
         } else if latestAverageCadenceUpdateTime.duration(to: now) > .seconds(3) {
             averageCadence.update(value: 0)
         }
-        delegate?.cyclingPowerStatus(self, power: averagePower.average(), cadence: averageCadence.averageIngoreZeros())
+        delegate?.cyclingPowerStatus(
+            self,
+            power: averagePower.average(),
+            cadence: averageCadence.averageIngoreZeros()
+        )
     }
 
     private func handlePowerVector(value: Data) throws {

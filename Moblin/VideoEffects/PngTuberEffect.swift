@@ -71,8 +71,9 @@ private class PngTuberImage: Decodable {
             throw "Not 10 costumes: \(costumeLayers.count)"
         }
         identification = try container.decode(Int.self, forKey: .identification)
-        guard let imageDataData = try Data(base64Encoded: container.decode(String.self, forKey: .imageData).utf8Data),
-              let cgImage = UIImage(data: imageDataData)?.cgImage
+        guard let imageDataData = try Data(base64Encoded: container.decode(String.self, forKey: .imageData)
+            .utf8Data),
+            let cgImage = UIImage(data: imageDataData)?.cgImage
         else {
             throw "Failed to decode image data"
         }

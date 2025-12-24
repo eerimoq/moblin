@@ -941,7 +941,9 @@ extension Model {
         _ addedScenes: inout [SettingsScene],
         _ needsSpeechToText: inout Bool
     ) {
-        guard let sceneWidgetScene = getLocalAndRemoteScenes().first(where: { $0.id == widget.scene.sceneId }) else {
+        guard let sceneWidgetScene = getLocalAndRemoteScenes()
+            .first(where: { $0.id == widget.scene.sceneId })
+        else {
             return
         }
         addSceneEffects(sceneWidgetScene, &effects, &addedScenes, &needsSpeechToText)
@@ -1298,7 +1300,9 @@ extension Model {
     }
 
     private func getBuiltinCameraDevices(videoSource: SettingsVideoSource, devices: inout [CaptureDevice]) {
-        if let cameraId = videoSource.getCaptureDeviceCameraId(), let device = AVCaptureDevice(uniqueID: cameraId) {
+        if let cameraId = videoSource.getCaptureDeviceCameraId(),
+           let device = AVCaptureDevice(uniqueID: cameraId)
+        {
             if !devices.contains(where: { $0.device == device }) {
                 devices.append(makeCaptureDevice(device: device))
             }
@@ -1346,7 +1350,11 @@ extension Model {
         return sceneWidget
     }
 
-    private func updateTimers(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+    private func updateTimers(
+        _ text: SettingsWidgetText,
+        _ textEffect: TextEffect,
+        _ parts: [TextFormatPart]
+    ) {
         let length = parts.filter { $0 == .timer }.count
         text.timers.truncate(length: length, create: { .init() })
         textEffect.setTimersEndTime(endTimes: text.timers.map {
@@ -1354,25 +1362,41 @@ extension Model {
         })
     }
 
-    private func updateStopwatches(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+    private func updateStopwatches(
+        _ text: SettingsWidgetText,
+        _ textEffect: TextEffect,
+        _ parts: [TextFormatPart]
+    ) {
         let length = parts.filter { $0 == .stopwatch }.count
         text.timers.truncate(length: length, create: { .init() })
         textEffect.setStopwatches(stopwatches: text.stopwatches.map { $0.clone() })
     }
 
-    private func updateCheckboxes(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+    private func updateCheckboxes(
+        _ text: SettingsWidgetText,
+        _ textEffect: TextEffect,
+        _ parts: [TextFormatPart]
+    ) {
         let length = parts.filter { $0 == .checkbox }.count
         text.checkboxes.truncate(length: length, create: { .init() })
         textEffect.setCheckboxes(checkboxes: text.checkboxes.map { $0.checked })
     }
 
-    private func updateRatings(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+    private func updateRatings(
+        _ text: SettingsWidgetText,
+        _ textEffect: TextEffect,
+        _ parts: [TextFormatPart]
+    ) {
         let length = parts.filter { $0 == .rating }.count
         text.ratings.truncate(length: length, create: { .init() })
         textEffect.setRatings(ratings: text.ratings.map { $0.rating })
     }
 
-    private func updateLapTimes(_ text: SettingsWidgetText, _ textEffect: TextEffect, _ parts: [TextFormatPart]) {
+    private func updateLapTimes(
+        _ text: SettingsWidgetText,
+        _ textEffect: TextEffect,
+        _ parts: [TextFormatPart]
+    ) {
         let length = parts.filter { $0 == .lapTimes }.count
         text.lapTimes.truncate(length: length, create: { .init() })
         textEffect.setLapTimes(lapTimes: text.lapTimes.map { $0.lapTimes })
