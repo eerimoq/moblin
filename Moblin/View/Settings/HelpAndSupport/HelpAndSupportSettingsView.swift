@@ -8,7 +8,7 @@ struct HelpAndSupportSettingsView: View {
                     DiscordLogoAndNameView()
                 }
                 ExternalUrlButtonView(url: "https://github.com/eerimoq/moblin") {
-                    Text("Github")
+                    GithubLogoAndNameView()
                 }
             } footer: {
                 Text("""
