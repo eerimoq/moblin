@@ -231,14 +231,7 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
             )
         }
         let pifDiffThing = settings.packetsInFlight - pifSpikeDiff
-        // To not push too high bitrate after static scene. The encoder may output way
-        // lower bitrate than configured.
-        if let transportBitrate = stats.transportBitrate {
-            let maximumBitrate = max(transportBitrate + adaptiveBitrateTransportMinimum, (17 * transportBitrate) / 10)
-            if currentMaximumBitrate > maximumBitrate {
-                currentMaximumBitrate = maximumBitrate
-            }
-        }
+        currentMaximumBitrate = stats.limitByTransportBitrate(bitrate: currentMaximumBitrate)
         let minimumBitrate = max(50000, settings.minimumBitrate)
         if currentMaximumBitrate < minimumBitrate {
             currentMaximumBitrate = minimumBitrate

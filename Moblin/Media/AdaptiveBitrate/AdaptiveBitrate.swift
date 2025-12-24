@@ -15,6 +15,17 @@ struct StreamStats {
     let latency: Int32?
     let mbpsSendRate: Double?
     let relaxed: Bool?
+
+    // To not push too high bitrate after static scene. The encoder may output way
+    // lower bitrate than configured.
+    func limitByTransportBitrate(bitrate: Int64) -> Int64 {
+        guard let transportBitrate else {
+            return bitrate
+        }
+        let maximumBitrate = max(transportBitrate + adaptiveBitrateTransportMinimum,
+                                 (17 * transportBitrate) / 10)
+        return min(bitrate, maximumBitrate)
+    }
 }
 
 struct AdaptiveBitrateSettings {

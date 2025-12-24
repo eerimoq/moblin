@@ -177,14 +177,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
             //      and rtt_avg_delta: \(String(format:"%.2f",rtt_avg_delta)) < 0.01
             //      """)
         }
-        // To not push too high bitrate after static scene. The encoder may output way
-        // lower bitrate than configured.
-        if let transportBitrate = stats.transportBitrate {
-            let maximumBitrate = max(transportBitrate + adaptiveBitrateTransportMinimum, (17 * transportBitrate) / 10)
-            if bitrate > maximumBitrate {
-                bitrate = maximumBitrate
-            }
-        }
+        bitrate = stats.limitByTransportBitrate(bitrate: bitrate)
         bitrate = max(min(bitrate, targetBitrate), settings.minimumBitrate)
         if bitrate != curBitrate {
             curBitrate = bitrate
