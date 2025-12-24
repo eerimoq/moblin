@@ -579,10 +579,13 @@ private struct SubscribersOnlyView: View {
 }
 
 private struct EmotesOnlyView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let action: (Bool, @escaping (OperationResult) -> Void) -> Void
 
     var body: some View {
-        ToggleActionView(text: "Emotes only", image: "face.smiling.inverse", action: action)
+        ToggleActionView(text: "Emotes only",
+                         image: colorScheme == .light ? "face.smiling" : "face.smiling.inverse",
+                         action: action)
     }
 }
 

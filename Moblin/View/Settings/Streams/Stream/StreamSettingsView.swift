@@ -85,8 +85,11 @@ struct TtsMonsterLogoAndNameView: View {
 }
 
 struct GithubLogoAndNameView: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
-        PlatformLogoAndNameView(logo: "GithubLogo", name: String(localized: "Github"))
+        PlatformLogoAndNameView(logo: colorScheme == .light ? "GithubLogo" : "GithubWhiteLogo",
+                                name: String(localized: "Github"))
     }
 }
 
