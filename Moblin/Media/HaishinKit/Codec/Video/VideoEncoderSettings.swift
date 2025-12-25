@@ -31,7 +31,7 @@ struct VideoEncoderSettings {
     }
 
     var videoSize: CMVideoDimensions
-    var bitRate: UInt32
+    var bitrate: UInt32
     var maxKeyFrameIntervalDuration: Int32
     var allowFrameReordering: Bool
     var profileLevel: String {
@@ -51,7 +51,7 @@ struct VideoEncoderSettings {
     init() {
         videoSize = .init(width: 854, height: 480)
         profileLevel = kVTProfileLevel_H264_Baseline_3_1 as String
-        bitRate = 640 * 1000
+        bitrate = 640 * 1000
         maxKeyFrameIntervalDuration = 2
         allowFrameReordering = false
     }
@@ -68,8 +68,8 @@ struct VideoEncoderSettings {
         var properties: [VTSessionProperty] = [
             .init(key: .realTime, value: kCFBooleanTrue),
             .init(key: .profileLevel, value: profileLevel as NSObject),
-            .init(key: .averageBitRate, value: bitRate as CFNumber),
-            .init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitRate)),
+            .init(key: .averageBitRate, value: bitrate as CFNumber),
+            .init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitrate)),
             .init(key: .expectedFrameRate, value: VideoUnit.defaultFrameRate as CFNumber),
             .init(key: .maxKeyFrameIntervalDuration, value: maxKeyFrameIntervalDuration as CFNumber),
             .init(key: .allowFrameReordering, value: allowFrameReordering as NSObject),

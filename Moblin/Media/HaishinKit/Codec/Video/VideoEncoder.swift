@@ -136,18 +136,18 @@ class VideoEncoder {
     }
 
     private func updateBitrate(settings: VideoEncoderSettings) {
-        guard currentBitrate != settings.bitRate else {
+        guard currentBitrate != settings.bitrate else {
             return
         }
-        currentBitrate = settings.bitRate
-        let bitRate = currentBitrate
-        let option = VTSessionProperty(key: .averageBitRate, value: NSNumber(value: bitRate))
+        currentBitrate = settings.bitrate
+        let bitrate = currentBitrate
+        let option = VTSessionProperty(key: .averageBitRate, value: NSNumber(value: bitrate))
         if let status = session?.setProperty(option), status != noErr {
             logger.info("video-encoder: Failed to set option \(status) \(option)")
         }
         let optionLimit = VTSessionProperty(
             key: .dataRateLimits,
-            value: createDataRateLimits(bitRate: bitRate)
+            value: createDataRateLimits(bitRate: bitrate)
         )
         if let status = session?.setProperty(optionLimit), status != noErr {
             logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
@@ -155,15 +155,15 @@ class VideoEncoder {
     }
 
     private func getVideoSize(settings: VideoEncoderSettings) -> CMVideoDimensions? {
-        if settings.bitRate < 100_000 {
+        if settings.bitrate < 100_000 {
             return settings.videoSize.convertTo(dimension: 160)
-        } else if settings.bitRate < 250_000 {
+        } else if settings.bitrate < 250_000 {
             return settings.videoSize.convertTo(dimension: 360)
-        } else if settings.bitRate < 500_000 {
+        } else if settings.bitrate < 500_000 {
             return settings.videoSize.convertTo(dimension: 480)
-        } else if settings.bitRate < 750_000 {
+        } else if settings.bitrate < 750_000 {
             return settings.videoSize.convertTo(dimension: 720)
-        } else if settings.bitRate < 1_500_000 {
+        } else if settings.bitrate < 1_500_000 {
             return settings.videoSize.convertTo(dimension: 1080)
         } else {
             return settings.videoSize

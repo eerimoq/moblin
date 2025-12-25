@@ -232,7 +232,7 @@ class RtmpStream {
         case .hevc:
             metadata["videocodecid"] = .number(Double(FlvVideoFourCC.hevc.rawValue))
         }
-        metadata["videodatarate"] = .number(Double(settings.bitRate / 1000))
+        metadata["videodatarate"] = .number(Double(settings.bitrate / 1000))
         metadata["audiocodecid"] = .number(Double(FlvAudioCodec.aac.rawValue))
         metadata["audiodatarate"] = .number(Double(audioEncoder.getBitrate() / 1000))
         if let sampleRate = audioEncoder.getSampleRate() {

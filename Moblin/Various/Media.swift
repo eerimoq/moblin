@@ -700,7 +700,7 @@ final class Media: NSObject {
     func updateVideoStreamBitrate(bitrate: UInt32) {
         multiplier ^= 1
         let bitRate = getVideoStreamBitrate(bitrate: bitrate)
-        videoEncoderSettings.bitRate = bitRate + multiplier * (bitRate / 10)
+        videoEncoderSettings.bitrate = bitRate + multiplier * (bitRate / 10)
         commitVideoEncoderSettings()
     }
 
@@ -716,7 +716,7 @@ final class Media: NSObject {
         if let adaptiveBitrate {
             adaptiveBitrate.setTargetBitrate(bitrate: bitrate)
         } else {
-            videoEncoderSettings.bitRate = bitrate
+            videoEncoderSettings.bitrate = bitrate
             commitVideoEncoderSettings()
         }
     }
@@ -1117,7 +1117,7 @@ extension Media: SrtlaDelegate {
 
 extension Media: AdaptiveBitrateDelegate {
     func adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32) {
-        videoEncoderSettings.bitRate = bitrate
+        videoEncoderSettings.bitrate = bitrate
         commitVideoEncoderSettings()
     }
 }
