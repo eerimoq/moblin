@@ -36,11 +36,11 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
     private var throughput: Double = 0.0
     private var nextBitrateIncrTime: ContinuousClock.Instant = .now
     private var nextBitrateDecrTime: ContinuousClock.Instant = .now
-    private var curBitrate: Int64 = 0
+    private var currentBitrate: Int64 = 0
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
-        curBitrate = Int64(targetBitrate)
+        currentBitrate = Int64(targetBitrate)
         super.init(delegate: delegate)
     }
 
@@ -54,11 +54,11 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
     }
 
     override func getCurrentBitrate() -> UInt32 {
-        return UInt32(curBitrate)
+        return UInt32(currentBitrate)
     }
 
     override func getCurrentMaximumBitrateInKbps() -> Int64 {
-        return Int64(curBitrate) / 1000
+        return Int64(currentBitrate) / 1000
     }
 
     private func rttToSendBufferSize(rtt: Double, throughput: Double) -> Double {
@@ -127,7 +127,7 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
         updateThroughput(mbpsSendRate: stats.mbpsSendRate!)
         let srtLatency = Double(stats.latency ?? defaultSrtLatency)
         let currentTime = ContinuousClock.now
-        var bitrate = curBitrate
+        var bitrate = currentBitrate
         let sendBufferSizeTh3 = (sendBufferSizeAverage + sendBufferSizeJitter) * 4
         var sendBufferSizeTh2 = max(
             50,
@@ -180,8 +180,8 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
         }
         bitrate = stats.limitByTransportBitrate(bitrate: bitrate)
         bitrate = max(min(bitrate, targetBitrate), settings.minimumBitrate)
-        if bitrate != curBitrate {
-            curBitrate = bitrate
+        if bitrate != currentBitrate {
+            currentBitrate = bitrate
             delegate?.adaptiveBitrateSetVideoStreamBitrate(bitrate: UInt32(bitrate))
         }
     }
