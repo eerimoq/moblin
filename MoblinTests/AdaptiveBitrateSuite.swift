@@ -13,14 +13,56 @@ extension Handler: AdaptiveBitrateDelegate {
     }
 }
 
+private func makeStats(bitrate: Int64) -> StreamStats {
+    return StreamStats(rttMs: 30,
+                       packetsInFlight: 15,
+                       transportBitrate: bitrate,
+                       latency: 3000,
+                       mbpsSendRate: Double(bitrate),
+                       relaxed: false)
+}
+
+private func update(belabox: AdaptiveBitrateSrtBela, bitrate: Int64) async throws {
+    try await sleep(milliSeconds: 20)
+    belabox.update(stats: makeStats(bitrate: bitrate))
+}
+
 struct AdaptiveBitrateSuite {
     @Test
-    func belaboxBasic() async throws {
+    func belaboxTransportBitrateLimit() async throws {
         let handler = Handler()
         let belabox = AdaptiveBitrateSrtBela(targetBitrate: 5_000_000, delegate: handler)
         belabox.setSettings(settings: adaptiveBitrateBelaboxSettings)
-        #expect(belabox.getCurrentBitrate() == 0)
-        #expect(belabox.getCurrentMaximumBitrateInKbps() == 0)
+        #expect(belabox.getCurrentBitrate() == 1_000_000)
+        #expect(belabox.getCurrentMaximumBitrateInKbps() == 1000)
         #expect(handler.bitrates.isEmpty)
+        let transportBitrate1Mbps: Int64 = 1_000_000
+        try await update(belabox: belabox, bitrate: transportBitrate1Mbps)
+        #expect(handler.bitrates.popFirst() == 1_133_333)
+        while belabox.getCurrentBitrate() != 2_000_000 {
+            try await update(belabox: belabox, bitrate: transportBitrate1Mbps)
+        }
+        try await update(belabox: belabox, bitrate: transportBitrate1Mbps)
+        #expect(belabox.getCurrentBitrate() == 2_000_000)
+        let transportBitrate5Mbps: Int64 = 5_000_000
+        while belabox.getCurrentBitrate() != 5_000_000 {
+            try await update(belabox: belabox, bitrate: transportBitrate5Mbps)
+        }
+        try await update(belabox: belabox, bitrate: transportBitrate5Mbps)
+        #expect(belabox.getCurrentBitrate() == 5_000_000)
+        #expect(handler.bitrates.last == 5_000_000)
+    }
+
+    @Test
+    func belaboxStartAtTarget() async throws {
+        let handler = Handler()
+        let belabox = AdaptiveBitrateSrtBela(targetBitrate: 1_000_000, delegate: handler)
+        belabox.setSettings(settings: adaptiveBitrateBelaboxSettings)
+        #expect(belabox.getCurrentBitrate() == 1_000_000)
+        #expect(belabox.getCurrentMaximumBitrateInKbps() == 1000)
+        #expect(handler.bitrates.isEmpty)
+        let transportBitrate1Mbps: Int64 = 1_000_000
+        try await update(belabox: belabox, bitrate: transportBitrate1Mbps)
+        #expect(handler.bitrates.popFirst() == 1_000_000)
     }
 }
