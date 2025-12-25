@@ -349,7 +349,7 @@ final class Media: NSObject {
         adaptiveBitrate.update(stats: StreamStats(
             rttMs: stats.msRtt,
             packetsInFlight: Double(sndData),
-            transportBitrate: streamSpeed(),
+            transportBitrate: streamTransportBitrate(),
             latency: latency,
             mbpsSendRate: stats.mbpsSendRate,
             relaxed: relaxed
@@ -380,7 +380,7 @@ final class Media: NSObject {
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.msRtt,
             packetsInFlight: Double(stats.pktFlightSize),
-            transportBitrate: streamSpeed(),
+            transportBitrate: streamTransportBitrate(),
             latency: latency,
             mbpsSendRate: stats.mbpsSendRate,
             relaxed: false
@@ -422,7 +422,7 @@ final class Media: NSObject {
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: stats.rttMs,
             packetsInFlight: Double(stats.packetsInFlight),
-            transportBitrate: streamSpeed(),
+            transportBitrate: streamTransportBitrate(),
             latency: nil,
             mbpsSendRate: nil,
             relaxed: nil
@@ -495,7 +495,7 @@ final class Media: NSObject {
         srtPreviousTotalByteCount = srtTotalByteCount
     }
 
-    func streamSpeed() -> Int64 {
+    func streamTransportBitrate() -> Int64 {
         if let rtmpStream {
             return Int64(8 * rtmpStream.info.currentBytesPerSecond.value)
         } else if isSrtStreamActive() {
