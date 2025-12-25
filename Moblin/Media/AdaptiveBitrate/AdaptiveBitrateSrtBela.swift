@@ -179,11 +179,6 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
         } else if currentTime > nextBitrateIncrTime, rtt < rttThMin, rttAvgDelta < 0.01 {
             bitrate += bitrateIncrMin + bitrate / bitrateIncrScale
             nextBitrateIncrTime = currentTime.advanced(by: bitrateIncrInterval)
-            // logAdaptiveAcion(actionTaken: """
-            //      Incr: \(bitrate_incr_min + bitrate / bitrate_incr_scale), \
-            //      rtt: \(String(format:"%.2f", rtt)) < rtt_th_min: \(String(format:"%.2f",rtt_th_min)) \
-            //      and rtt_avg_delta: \(String(format:"%.2f",rtt_avg_delta)) < 0.01
-            //      """)
         }
         bitrate = stats.limitByTransportBitrate(bitrate: bitrate)
         bitrate = max(min(bitrate, targetBitrate), settings.minimumBitrate)
