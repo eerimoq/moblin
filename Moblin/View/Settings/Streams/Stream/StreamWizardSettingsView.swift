@@ -24,8 +24,8 @@ struct CreateStreamWizardToolbar: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             Button {
-                createStreamWizard.isPresenting = false
-                createStreamWizard.isPresentingSetup = false
+                createStreamWizard.presenting = false
+                createStreamWizard.presentingSetup = false
             } label: {
                 Image(systemName: "xmark")
             }

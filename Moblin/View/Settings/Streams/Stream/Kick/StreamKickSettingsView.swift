@@ -8,14 +8,14 @@ private let sessionTokenCookieName = "session_token"
 private struct AuthenticationView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
-    @State private var showingWebView = false
+    @State private var presentingWebView = false
     let onLoggedIn: () -> Void
 
     var body: some View {
         Section {
             if !stream.kickLoggedIn {
                 TextButtonView("Login") {
-                    showingWebView = true
+                    presentingWebView = true
                 }
             } else {
                 TextButtonView("Logout") {
@@ -23,19 +23,19 @@ private struct AuthenticationView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingWebView) {
+        .sheet(isPresented: $presentingWebView) {
             NavigationView {
                 VStack(spacing: 0) {
                     HStack {
                         Spacer()
                         Button("Close") {
-                            showingWebView = false
+                            presentingWebView = false
                         }
                     }
                     .padding()
                     KickWebView {
                         handleAccessToken(accessToken: $0)
-                        showingWebView = false
+                        presentingWebView = false
                     }
                 }
                 .ignoresSafeArea(.keyboard)

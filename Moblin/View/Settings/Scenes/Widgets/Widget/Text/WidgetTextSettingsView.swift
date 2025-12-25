@@ -62,7 +62,7 @@ private struct SuggestionView: View {
     let suggestion: Suggestion
     @Binding var text: String
     let dismiss: () -> Void
-    @State private var isPresentingConfirmation = false
+    @State private var presentingConfirmation = false
 
     private func submit() {
         text = suggestion.text
@@ -75,13 +75,13 @@ private struct SuggestionView: View {
                 if text.isEmpty {
                     submit()
                 } else {
-                    isPresentingConfirmation = true
+                    presentingConfirmation = true
                 }
             } label: {
                 Text(suggestion.name)
                     .font(.title3)
             }
-            .confirmationDialog("", isPresented: $isPresentingConfirmation) {
+            .confirmationDialog("", isPresented: $presentingConfirmation) {
                 Button("Yes", role: .destructive) {
                     submit()
                 }

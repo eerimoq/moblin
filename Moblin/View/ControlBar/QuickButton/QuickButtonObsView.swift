@@ -7,17 +7,17 @@ private struct ObsStartStopButtonView: View {
     let stopAction: () -> Void
     let startText: LocalizedStringKey
     let stopText: LocalizedStringKey
-    @State private var isPresentingStartConfirm = false
-    @State private var isPresentingStopConfirm = false
+    @State private var presentingStartConfirm = false
+    @State private var presentingStopConfirm = false
 
     var body: some View {
         switch state {
         case .stopped:
             Section {
                 TextButtonView(startText) {
-                    isPresentingStartConfirm = true
+                    presentingStartConfirm = true
                 }
-                .confirmationDialog("", isPresented: $isPresentingStartConfirm) {
+                .confirmationDialog("", isPresented: $presentingStartConfirm) {
                     Button(startText) {
                         startAction()
                     }
@@ -34,9 +34,9 @@ private struct ObsStartStopButtonView: View {
         case .started:
             Section {
                 TextButtonView(stopText) {
-                    isPresentingStopConfirm = true
+                    presentingStopConfirm = true
                 }
-                .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
+                .confirmationDialog("", isPresented: $presentingStopConfirm) {
                     Button(stopText) {
                         stopAction()
                     }

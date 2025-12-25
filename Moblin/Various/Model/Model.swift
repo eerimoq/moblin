@@ -338,7 +338,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var currentStreamId = UUID()
     @Published var showTwitchAuth = false
     @Published var showModerationAuth = false
-    @Published var isPresentingModeration = false
+    @Published var presentingModeration = false
     @Published var showingPredefinedMessages: Bool = false
     @Published var showDrawOnStream = false
     @Published var showFace = false

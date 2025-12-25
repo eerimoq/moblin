@@ -209,8 +209,8 @@ struct StreamWizardSummarySettingsView: View {
             Section {
                 TextButtonView("Create") {
                     model.createStreamFromWizard()
-                    createStreamWizard.isPresenting = false
-                    createStreamWizard.isPresentingSetup = false
+                    createStreamWizard.presenting = false
+                    createStreamWizard.presentingSetup = false
                 }
                 .disabled(createStreamWizard.name.isEmpty)
             }

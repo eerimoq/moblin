@@ -18,8 +18,8 @@ private struct StreamButtonText: View {
 
 private struct EndButtonView: View {
     @EnvironmentObject var model: Model
-    @Binding var isPresentingGoLiveNotificationConfirm: Bool
-    @State private var isPresentingStopConfirm = false
+    @Binding var presentingGoLiveNotificationConfirm: Bool
+    @State private var presentingStopConfirm = false
 
     var body: some View {
         StreamButtonText(database: model.database, text: String(localized: "End"))
@@ -28,17 +28,17 @@ private struct EndButtonView: View {
                     .stroke(.white)
             )
             .onTapGesture {
-                isPresentingStopConfirm = true
+                presentingStopConfirm = true
             }
             .onLongPressGesture {
                 model.toggleShowingPanel(type: nil, panel: .streamingButtonSettings)
             }
-            .confirmationDialog("", isPresented: $isPresentingGoLiveNotificationConfirm) {
+            .confirmationDialog("", isPresented: $presentingGoLiveNotificationConfirm) {
                 Button("Send Go live notification") {
                     model.sendGoLiveNotification()
                 }
             }
-            .confirmationDialog("", isPresented: $isPresentingStopConfirm) {
+            .confirmationDialog("", isPresented: $presentingStopConfirm) {
                 if model.stream.obsAutoStopStream && model.stream.obsAutoStopRecording {
                     Button("End but leave OBS streaming and recording") {
                         _ = model.stopStream(stopObsStreamIfEnabled: false, stopObsRecordingIfEnabled: false)
@@ -61,22 +61,22 @@ private struct EndButtonView: View {
 
 private struct GoLiveButtonView: View {
     @EnvironmentObject var model: Model
-    @State private var isPresentingGoLiveConfirm = false
-    @Binding var isPresentingGoLiveNotificationConfirm: Bool
+    @Binding var presentingGoLiveNotificationConfirm: Bool
+    @State private var presentingGoLiveConfirm = false
 
     var body: some View {
         StreamButtonText(database: model.database, text: String(localized: "Go Live"))
             .onTapGesture {
-                isPresentingGoLiveConfirm = true
+                presentingGoLiveConfirm = true
             }
             .onLongPressGesture {
                 model.toggleShowingPanel(type: nil, panel: .streamingButtonSettings)
             }
-            .confirmationDialog("", isPresented: $isPresentingGoLiveConfirm) {
+            .confirmationDialog("", isPresented: $presentingGoLiveConfirm) {
                 Button("Go Live") {
                     model.startStream()
                     if model.isGoLiveNotificationConfigured() {
-                        isPresentingGoLiveNotificationConfirm = true
+                        presentingGoLiveNotificationConfirm = true
                     }
                 }
             } message: {
@@ -93,12 +93,12 @@ private struct SetupButtonView: View {
         StreamButtonText(database: model.database, text: String(localized: "Setup"))
             .onTapGesture {
                 model.resetWizard()
-                createStreamWizard.isPresentingSetup = true
+                createStreamWizard.presentingSetup = true
             }
             .onLongPressGesture {
                 model.toggleShowingPanel(type: nil, panel: .streamingButtonSettings)
             }
-            .sheet(isPresented: $createStreamWizard.isPresentingSetup) {
+            .sheet(isPresented: $createStreamWizard.presentingSetup) {
                 NavigationStack {
                     StreamWizardSettingsView(model: model, createStreamWizard: createStreamWizard)
                 }
@@ -108,13 +108,13 @@ private struct SetupButtonView: View {
 
 struct StreamButton: View {
     @EnvironmentObject var model: Model
-    @State private var isPresentingGoLiveNotificationConfirm = false
+    @State private var presentingGoLiveNotificationConfirm = false
 
     var body: some View {
         if model.isLive {
-            EndButtonView(isPresentingGoLiveNotificationConfirm: $isPresentingGoLiveNotificationConfirm)
+            EndButtonView(presentingGoLiveNotificationConfirm: $presentingGoLiveNotificationConfirm)
         } else if model.isStreamConfigured() {
-            GoLiveButtonView(isPresentingGoLiveNotificationConfirm: $isPresentingGoLiveNotificationConfirm)
+            GoLiveButtonView(presentingGoLiveNotificationConfirm: $presentingGoLiveNotificationConfirm)
         } else {
             SetupButtonView(createStreamWizard: model.createStreamWizard)
         }

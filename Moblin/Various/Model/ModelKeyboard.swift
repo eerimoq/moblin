@@ -14,10 +14,10 @@ extension Model {
         if showModerationAuth {
             return false
         }
-        if createStreamWizard.isPresenting {
+        if createStreamWizard.presenting {
             return false
         }
-        if createStreamWizard.isPresentingSetup {
+        if createStreamWizard.presentingSetup {
             return false
         }
         if createStreamWizard.showTwitchAuth {

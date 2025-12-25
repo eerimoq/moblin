@@ -131,9 +131,9 @@ struct QuickButtonsInnerView: View {
     let size: CGFloat
     let nameSize: CGFloat
     let nameWidth: CGFloat
-    @State private var isPresentingRecordConfirm = false
-    @State private var isPresentingStartWorkoutTypePicker = false
-    @State private var isPresentingStopWorkoutConfirm = false
+    @State private var presentingRecordConfirm = false
+    @State private var presentingStartWorkoutTypePicker = false
+    @State private var presentingStopWorkoutConfirm = false
 
     private func torchAction(state: ButtonState) {
         state.button.isOn.toggle()
@@ -459,12 +459,12 @@ struct QuickButtonsInnerView: View {
                                  buttonSize: size)
                 {
                     if model.database.startStopRecordingConfirmations {
-                        isPresentingRecordConfirm = true
+                        presentingRecordConfirm = true
                     } else {
                         recordAction()
                     }
                 }
-                .confirmationDialog("", isPresented: $isPresentingRecordConfirm) {
+                .confirmationDialog("", isPresented: $presentingRecordConfirm) {
                     Button(state.isOn ? "Stop recording" : "Start recording") {
                         recordAction()
                     }
@@ -665,9 +665,9 @@ struct QuickButtonsInnerView: View {
                                      state: state,
                                      buttonSize: size)
                     {
-                        isPresentingStopWorkoutConfirm = true
+                        presentingStopWorkoutConfirm = true
                     }
-                    .confirmationDialog("", isPresented: $isPresentingStopWorkoutConfirm) {
+                    .confirmationDialog("", isPresented: $presentingStopWorkoutConfirm) {
                         Button("End workout") {
                             model.stopWorkout()
                         }
@@ -678,9 +678,9 @@ struct QuickButtonsInnerView: View {
                                      state: state,
                                      buttonSize: size)
                     {
-                        isPresentingStartWorkoutTypePicker = true
+                        presentingStartWorkoutTypePicker = true
                     }
-                    .confirmationDialog("", isPresented: $isPresentingStartWorkoutTypePicker) {
+                    .confirmationDialog("", isPresented: $presentingStartWorkoutTypePicker) {
                         Button("Start walking workout") {
                             model.startWorkout(type: .walking)
                         }
@@ -698,7 +698,7 @@ struct QuickButtonsInnerView: View {
                                  state: state,
                                  buttonSize: size)
                 {
-                    model.isPresentingModeration = true
+                    model.presentingModeration = true
                 }
             case .predefinedMessages:
                 QuickButtonImage(model: model,

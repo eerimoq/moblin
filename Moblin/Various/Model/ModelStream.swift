@@ -23,8 +23,8 @@ class CreateStreamWizard: ObservableObject {
     let twitchStream = SettingsStream(name: "")
     var twitchAccessToken = ""
     var twitchLoggedIn: Bool = false
-    @Published var isPresenting = false
-    @Published var isPresentingSetup = false
+    @Published var presenting = false
+    @Published var presentingSetup = false
     @Published var showTwitchAuth = false
     @Published var name = ""
     @Published var twitchChannelName = ""

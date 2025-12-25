@@ -775,7 +775,7 @@ private struct KickView: View {
 
 struct QuickButtonChatModerationView: View {
     @ObservedObject var model: Model
-    @Binding var showingModeration: Bool
+    @Binding var presentingModeration: Bool
     @State var platform: Platform?
 
     var body: some View {
@@ -791,7 +791,7 @@ struct QuickButtonChatModerationView: View {
             }
             .navigationTitle("Moderation")
             .toolbar {
-                CloseToolbar(presenting: $showingModeration)
+                CloseToolbar(presenting: $presentingModeration)
             }
         }
         .sheet(isPresented: $model.showModerationAuth) {

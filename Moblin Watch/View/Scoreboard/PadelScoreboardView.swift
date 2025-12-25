@@ -112,15 +112,15 @@ private struct PlayerPickerView: View {
     let model: Model
     @ObservedObject var padel: Padel
     @Binding var player: PadelScoreboardPlayer
-    @State var isPresentingPlayerPicker = false
+    @State private var presentingPlayerPicker = false
 
     var body: some View {
         Button {
-            isPresentingPlayerPicker = true
+            presentingPlayerPicker = true
         } label: {
             Text(model.findScoreboardPlayer(id: player.id))
         }
-        .sheet(isPresented: $isPresentingPlayerPicker) {
+        .sheet(isPresented: $presentingPlayerPicker) {
             List {
                 Picker("", selection: $player.id) {
                     ForEach(padel.players) { player in
@@ -131,7 +131,7 @@ private struct PlayerPickerView: View {
                 .labelsHidden()
             }
             .onChange(of: player.id) { _, _ in
-                isPresentingPlayerPicker = false
+                presentingPlayerPicker = false
                 model.padelScoreboardUpdatePlayers()
             }
         }
@@ -198,15 +198,15 @@ private struct ScoreboardIncrementAwayButtonView: View {
 
 private struct ScoreboardResetScoreButtonView: View {
     let model: Model
-    @State var isPresentingResetConfirimation = false
+    @State private var presentingResetConfirimation = false
 
     var body: some View {
         Button {
-            isPresentingResetConfirimation = true
+            presentingResetConfirimation = true
         } label: {
             Image(systemName: "trash")
         }
-        .confirmationDialog("", isPresented: $isPresentingResetConfirimation) {
+        .confirmationDialog("", isPresented: $presentingResetConfirimation) {
             Button("Reset score") {
                 model.padelScoreBoardResetScore()
             }

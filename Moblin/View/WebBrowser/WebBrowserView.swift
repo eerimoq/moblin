@@ -86,7 +86,7 @@ private struct RefreshBookmarksView: View {
 private struct BookmarksView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowser: WebBrowserSettings
-    @Binding var showingBookmarks: Bool
+    @Binding var presentingBookmarks: Bool
 
     var body: some View {
         NavigationStack {
@@ -98,7 +98,7 @@ private struct BookmarksView: View {
                                 DraggableItemPrefixView()
                                 Button {
                                     model.loadWebBrowserPage(url: bookmark.url)
-                                    showingBookmarks = false
+                                    presentingBookmarks = false
                                 } label: {
                                     Text(bookmark.url)
                                 }
@@ -124,7 +124,7 @@ private struct BookmarksView: View {
             }
             .navigationTitle("Bookmarks")
             .toolbar {
-                CloseToolbar(presenting: $showingBookmarks)
+                CloseToolbar(presenting: $presentingBookmarks)
             }
         }
     }
@@ -195,7 +195,7 @@ private struct WebBrowserBigView: View {
     @ObservedObject var database: Database
     @ObservedObject var orientation: Orientation
     @ObservedObject var webBrowserState: WebBrowserState
-    @State var showingBookmarks = false
+    @State private var presentingBookmarks = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -206,7 +206,7 @@ private struct WebBrowserBigView: View {
                         NextPrevView()
                         Spacer()
                         RefreshBookmarksView(webBrowser: database.webBrowser,
-                                             showingBookmarks: $showingBookmarks,
+                                             showingBookmarks: $presentingBookmarks,
                                              isSmall: $webBrowserState.isSmall)
                     }
                 }
@@ -217,16 +217,16 @@ private struct WebBrowserBigView: View {
                     NextPrevView()
                     UrlView()
                     RefreshBookmarksView(webBrowser: database.webBrowser,
-                                         showingBookmarks: $showingBookmarks,
+                                         showingBookmarks: $presentingBookmarks,
                                          isSmall: $webBrowserState.isSmall)
                 }
                 .padding(3)
                 .background(ignoresSafeAreaEdges: .bottom)
             }
             WebView()
-                .sheet(isPresented: $showingBookmarks) {
+                .sheet(isPresented: $presentingBookmarks) {
                     BookmarksView(webBrowser: database.webBrowser,
-                                  showingBookmarks: $showingBookmarks)
+                                  presentingBookmarks: $presentingBookmarks)
                 }
         }
         .background(.clear, ignoresSafeAreaEdges: .bottom)

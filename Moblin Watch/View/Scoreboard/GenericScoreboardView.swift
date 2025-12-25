@@ -116,15 +116,15 @@ private struct ScoreboardIncrementAwayButtonView: View {
 
 private struct ScoreboardResetScoreButtonView: View {
     let model: Model
-    @State var isPresentingResetConfirimation = false
+    @State private var presentingResetConfirimation = false
 
     var body: some View {
         Button {
-            isPresentingResetConfirimation = true
+            presentingResetConfirimation = true
         } label: {
             Image(systemName: "trash")
         }
-        .confirmationDialog("", isPresented: $isPresentingResetConfirimation) {
+        .confirmationDialog("", isPresented: $presentingResetConfirimation) {
             Button("Reset score") {
                 model.genericScoreboardResetScore()
             }

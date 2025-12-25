@@ -3,7 +3,7 @@ import SwiftUI
 private struct ControlLiveView: View {
     let model: Model
     @ObservedObject var control: Control
-    @State private var isPresentingConfirm: Bool = false
+    @State private var presentingConfirm: Bool = false
     @State private var pendingValue = false
 
     var body: some View {
@@ -11,11 +11,11 @@ private struct ControlLiveView: View {
             control.isLive
         }, set: { value in
             pendingValue = value
-            isPresentingConfirm = true
+            presentingConfirm = true
         })) {
             Text("Live")
         }
-        .confirmationDialog("", isPresented: $isPresentingConfirm) {
+        .confirmationDialog("", isPresented: $presentingConfirm) {
             Button(pendingValue ? "Go Live" : "End") {
                 model.setIsLive(value: pendingValue)
             }
@@ -27,7 +27,7 @@ private struct ControlLiveView: View {
 private struct ControlRecordingView: View {
     let model: Model
     @ObservedObject var control: Control
-    @State private var isPresentingConfirm: Bool = false
+    @State private var presentingConfirm: Bool = false
     @State private var pendingValue = false
 
     var body: some View {
@@ -35,11 +35,11 @@ private struct ControlRecordingView: View {
             control.isRecording
         }, set: { value in
             pendingValue = value
-            isPresentingConfirm = true
+            presentingConfirm = true
         })) {
             Text("Recording")
         }
-        .confirmationDialog("", isPresented: $isPresentingConfirm) {
+        .confirmationDialog("", isPresented: $presentingConfirm) {
             Button(pendingValue ? "Start recording" : "Stop recording") {
                 model.setIsRecording(value: pendingValue)
             }
@@ -77,15 +77,15 @@ private struct ControlSkipCurrentTtsView: View {
 
 private struct ControlInstantReplayView: View {
     @EnvironmentObject var model: Model
-    @State private var isPresentingSelect: Bool = false
+    @State private var presentingSelect: Bool = false
 
     var body: some View {
         Button {
-            isPresentingSelect = true
+            presentingSelect = true
         } label: {
             Text("Instant replay")
         }
-        .confirmationDialog("", isPresented: $isPresentingSelect) {
+        .confirmationDialog("", isPresented: $presentingSelect) {
             ForEach([10, 15, 20], id: \.self) { duration in
                 Button(String(localized: "\(duration) seconds")) {
                     model.instantReplay(duration: duration)

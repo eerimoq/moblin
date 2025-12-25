@@ -94,13 +94,13 @@ private struct VideoSourceView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
-    @State private var showingScreenCaptureAlert = false
+    @State private var presentingScreenCaptureAlert = false
 
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
         if model.isScreenCaptureCamera(cameraId: cameraId) {
-            showingScreenCaptureAlert = true
+            presentingScreenCaptureAlert = true
         }
     }
 
@@ -145,10 +145,10 @@ private struct VideoSourceView: View {
                 """
                 Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.
                 """,
-                isPresented: $showingScreenCaptureAlert
+                isPresented: $presentingScreenCaptureAlert
             ) {
                 Button("Got it") {
-                    showingScreenCaptureAlert = false
+                    presentingScreenCaptureAlert = false
                 }
             }
             if database.showAllSettings {
@@ -248,7 +248,7 @@ private struct WidgetsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
-    @State private var showingAddWidget = false
+    @State private var presentingAddWidget = false
 
     private var widgets: [SettingsWidget] {
         database.widgets
@@ -278,16 +278,16 @@ private struct WidgetsView: View {
                 }
             }
             AddButtonView {
-                showingAddWidget = true
+                presentingAddWidget = true
             }
             .disabled(widgets.isEmpty)
-            .popover(isPresented: $showingAddWidget) {
+            .popover(isPresented: $presentingAddWidget) {
                 ScrollView {
                     VStack(spacing: 0) {
                         ForEach(widgets) { widget in
                             Button {
                                 model.appendWidgetToScene(scene: scene, widget: widget)
-                                showingAddWidget = false
+                                presentingAddWidget = false
                             } label: {
                                 HStack {
                                     IconAndTextView(image: widget.image(), text: widget.name)

@@ -2,14 +2,14 @@ import SwiftUI
 
 struct ResetSettingsView: View {
     @EnvironmentObject var model: Model
-    @State private var isPresentingResetConfirm: Bool = false
+    @State private var presentingResetConfirm: Bool = false
 
     var body: some View {
         HCenter {
             Button("Reset settings", role: .destructive) {
-                isPresentingResetConfirm = true
+                presentingResetConfirm = true
             }
-            .confirmationDialog("Are you sure?", isPresented: $isPresentingResetConfirm) {
+            .confirmationDialog("Are you sure?", isPresented: $presentingResetConfirm) {
                 Button("Reset settings", role: .destructive) {
                     model.settings.reset()
                     model.setCurrentStream()

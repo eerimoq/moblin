@@ -530,7 +530,7 @@ struct PredefinedMessagesView: View {
     let model: Model
     @ObservedObject var chat: SettingsChat
     @ObservedObject var filter: SettingsChatPredefinedMessagesFilter
-    @Binding var showingPredefinedMessages: Bool
+    @Binding var presentingPredefinedMessages: Bool
     @State var messageToSend: UUID?
 
     private func filteredMessages() -> [SettingsChatPredefinedMessage] {
@@ -589,7 +589,7 @@ struct PredefinedMessagesView: View {
                             PredefinedMessageView(model: model,
                                                   filter: filter,
                                                   predefinedMessage: predefinedMessage,
-                                                  showingPredefinedMessages: $showingPredefinedMessages)
+                                                  showingPredefinedMessages: $presentingPredefinedMessages)
                         }
                         if filter.isEnabled() {
                             items
@@ -618,7 +618,7 @@ struct PredefinedMessagesView: View {
             }
             .navigationTitle("Predefined messages")
             .toolbar {
-                CloseToolbar(presenting: $showingPredefinedMessages)
+                CloseToolbar(presenting: $presentingPredefinedMessages)
             }
         }
     }
@@ -659,7 +659,7 @@ private struct PlatformIconView: View {
 
 private struct SendMessagesToSelectorView: View {
     @ObservedObject var stream: SettingsStream
-    @State var showingSelector = false
+    @State var presentingSelector = false
 
     private func isTwitchOnly() -> Bool {
         return stream.twitchSendMessagesTo && !stream.kickSendMessagesTo
@@ -671,7 +671,7 @@ private struct SendMessagesToSelectorView: View {
 
     var body: some View {
         Button {
-            showingSelector = true
+            presentingSelector = true
         } label: {
             if isTwitchOnly() {
                 PlatformIconView(image: "TwitchLogo")
@@ -683,7 +683,7 @@ private struct SendMessagesToSelectorView: View {
             }
         }
         .frame(width: 30, height: 30)
-        .popover(isPresented: $showingSelector) {
+        .popover(isPresented: $presentingSelector) {
             VStack(spacing: 0) {
                 Text("Send messages to")
                     .padding(11)
@@ -700,28 +700,28 @@ private struct SendMessagesToSelectorView: View {
 
 private struct ControlMenuButtonView: View {
     let model: Model
-    @State var showingMenu: Bool = false
+    @State var presentingMenu: Bool = false
 
     var body: some View {
         Button {
-            showingMenu = true
+            presentingMenu = true
         } label: {
             Image(systemName: "ellipsis")
                 .font(.title)
                 .rotationEffect(.degrees(90))
                 .padding([.trailing], 13)
         }
-        .popover(isPresented: $showingMenu) {
+        .popover(isPresented: $presentingMenu) {
             VStack(alignment: .leading, spacing: 0) {
                 Button {
-                    showingMenu = false
-                    model.isPresentingModeration = true
+                    presentingMenu = false
+                    model.presentingModeration = true
                 } label: {
                     IconAndTextLocalizedView(image: "shield", text: "Moderation")
                         .padding(11)
                 }
                 Button {
-                    showingMenu = false
+                    presentingMenu = false
                     model.showingPredefinedMessages = true
                 } label: {
                     IconAndTextLocalizedView(image: "list.bullet", text: "Predefined messages")
@@ -825,11 +825,11 @@ private struct ActionButtonView: View {
 private struct ActionButtonsView: View {
     let model: Model
     @Binding var selectedPost: ChatPost?
-    @State var isPresentingBanConfirm = false
-    @State var isPresentingTimeoutConfirm = false
-    @State var isPresentingDeleteConfirm = false
-    @State var isPresentingNicknameDialog = false
-    @State var nicknameText = ""
+    @State private var presentingBanConfirm = false
+    @State private var presentingTimeoutConfirm = false
+    @State private var presentingDeleteConfirm = false
+    @State private var presentingNicknameDialog = false
+    @State private var nicknameText = ""
 
     private func dismiss() {
         selectedPost = nil
@@ -841,9 +841,9 @@ private struct ActionButtonsView: View {
 
     private func banButton(selectedPost: ChatPost) -> some View {
         ActionButtonView(image: "nosign", text: "Ban", foreground: .red) {
-            isPresentingBanConfirm = true
+            presentingBanConfirm = true
         }
-        .confirmationDialog("", isPresented: $isPresentingBanConfirm) {
+        .confirmationDialog("", isPresented: $presentingBanConfirm) {
             Button("Ban", role: .destructive) {
                 model.banUser(post: selectedPost)
                 dismiss()
@@ -853,9 +853,9 @@ private struct ActionButtonsView: View {
 
     private func timeoutButton(selectedPost: ChatPost) -> some View {
         ActionButtonView(image: "timer", text: "Timeout") {
-            isPresentingTimeoutConfirm = true
+            presentingTimeoutConfirm = true
         }
-        .confirmationDialog("", isPresented: $isPresentingTimeoutConfirm) {
+        .confirmationDialog("", isPresented: $presentingTimeoutConfirm) {
             Button("5 minutes timeout", role: .destructive) {
                 model.timeoutUser(post: selectedPost, duration: 5 * 60)
                 dismiss()
@@ -873,9 +873,9 @@ private struct ActionButtonsView: View {
 
     private func deleteButton(selectedPost: ChatPost) -> some View {
         ActionButtonView(image: "trash", text: "Delete") {
-            isPresentingDeleteConfirm = true
+            presentingDeleteConfirm = true
         }
-        .confirmationDialog("", isPresented: $isPresentingDeleteConfirm) {
+        .confirmationDialog("", isPresented: $presentingDeleteConfirm) {
             Button("Delete message", role: .destructive) {
                 model.deleteMessage(post: selectedPost)
                 dismiss()
@@ -897,9 +897,9 @@ private struct ActionButtonsView: View {
             } else {
                 nicknameText = ""
             }
-            isPresentingNicknameDialog = true
+            presentingNicknameDialog = true
         }
-        .alert("Nickname for \(selectedPost.user ?? "")", isPresented: $isPresentingNicknameDialog) {
+        .alert("Nickname for \(selectedPost.user ?? "")", isPresented: $presentingNicknameDialog) {
             TextField("Nickname", text: $nicknameText)
             Button("Save") {
                 saveNickname(selectedPost: selectedPost)

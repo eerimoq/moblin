@@ -332,7 +332,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
 private struct LiveView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
-    @State private var isPresentingConfirm: Bool = false
+    @State private var presentingConfirm: Bool = false
     @State private var pendingValue = false
 
     var body: some View {
@@ -340,11 +340,11 @@ private struct LiveView: View {
             model.remoteControlState.streaming ?? false
         }, set: {
             pendingValue = $0
-            isPresentingConfirm = true
+            presentingConfirm = true
         })) {
             Text("Live")
         }
-        .confirmationDialog("", isPresented: $isPresentingConfirm) {
+        .confirmationDialog("", isPresented: $presentingConfirm) {
             Button(pendingValue ? "Go Live" : "End") {
                 model.remoteControlAssistantSetStream(on: pendingValue)
             }
@@ -355,7 +355,7 @@ private struct LiveView: View {
 private struct RecordingView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
-    @State private var isPresentingConfirm: Bool = false
+    @State private var presentingConfirm: Bool = false
     @State private var pendingValue = false
 
     var body: some View {
@@ -363,11 +363,11 @@ private struct RecordingView: View {
             model.remoteControlState.recording ?? false
         }, set: {
             pendingValue = $0
-            isPresentingConfirm = true
+            presentingConfirm = true
         })) {
             Text("Recording")
         }
-        .confirmationDialog("", isPresented: $isPresentingConfirm) {
+        .confirmationDialog("", isPresented: $presentingConfirm) {
             Button(pendingValue ? "Start recording" : "Stop recording") {
                 model.remoteControlAssistantSetRecord(on: pendingValue)
             }

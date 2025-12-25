@@ -55,10 +55,10 @@ struct StreamsSettingsView: View {
                 }
                 CreateButtonView {
                     model.resetWizard()
-                    createStreamWizard.isPresenting = true
+                    createStreamWizard.presenting = true
                 }
                 .disabled(model.isLive || model.isRecording)
-                .sheet(isPresented: $createStreamWizard.isPresenting) {
+                .sheet(isPresented: $createStreamWizard.presenting) {
                     NavigationStack {
                         StreamWizardSettingsView(model: model, createStreamWizard: createStreamWizard)
                     }

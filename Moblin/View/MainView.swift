@@ -595,14 +595,14 @@ struct MainView: View {
             .sheet(isPresented: $model.showTwitchAuth) {
                 TwitchLoginView(model: model, presenting: $model.showTwitchAuth)
             }
-            .sheet(isPresented: $model.isPresentingModeration) {
-                QuickButtonChatModerationView(model: model, showingModeration: $model.isPresentingModeration)
+            .sheet(isPresented: $model.presentingModeration) {
+                QuickButtonChatModerationView(model: model, presentingModeration: $model.presentingModeration)
             }
             .sheet(isPresented: $model.showingPredefinedMessages) {
                 PredefinedMessagesView(model: model,
                                        chat: model.database.chat,
                                        filter: model.database.chat.predefinedMessagesFilter,
-                                       showingPredefinedMessages: $model.showingPredefinedMessages)
+                                       presentingPredefinedMessages: $model.showingPredefinedMessages)
             }
             .toast(isPresenting: $toast.showingToast, duration: 5) {
                 toast.toast
@@ -626,10 +626,10 @@ struct MainView: View {
                     .onChange(of: model.showTwitchAuth) { _ in
                         focused = model.isKeyboardActive()
                     }
-                    .onChange(of: createStreamWizard.isPresenting) { _ in
+                    .onChange(of: createStreamWizard.presenting) { _ in
                         focused = model.isKeyboardActive()
                     }
-                    .onChange(of: createStreamWizard.isPresentingSetup) { _ in
+                    .onChange(of: createStreamWizard.presentingSetup) { _ in
                         focused = model.isKeyboardActive()
                     }
                     .onChange(of: createStreamWizard.showTwitchAuth) { _ in
