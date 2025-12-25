@@ -179,7 +179,6 @@ struct StreamSettingsView: View {
                 } label: {
                     TextItemView(name: String(localized: "URL"), value: stream.url, sensitive: true)
                 }
-                .disabled(stream.enabled && model.isLive)
                 NavigationLink {
                     StreamVideoSettingsView(database: database, stream: stream)
                 } label: {

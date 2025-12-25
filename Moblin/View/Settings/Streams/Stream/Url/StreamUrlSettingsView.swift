@@ -154,6 +154,7 @@ private struct UrlSettingsView: View {
                         }
                     }
                     .disableAutocorrection(true)
+                    .disabled(stream.enabled && model.isLive)
             } footer: {
                 if let error {
                     FormFieldError(error: error)
