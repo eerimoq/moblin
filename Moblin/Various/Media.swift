@@ -270,7 +270,7 @@ final class Media: NSObject {
         case .fastIrl, .slowIrl, .customIrl:
             adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
         case .belabox:
-            adaptiveBitrate = AdaptiveBitrateSrtBela(targetBitrate: targetBitrate, delegate: self)
+            adaptiveBitrate = AdaptiveBitrateSrtBelabox(targetBitrate: targetBitrate, delegate: self)
         case nil:
             adaptiveBitrate = nil
         }
@@ -309,7 +309,7 @@ final class Media: NSObject {
         guard srtConnected else {
             return nil
         }
-        if adaptiveBitrate is AdaptiveBitrateSrtBela {
+        if adaptiveBitrate is AdaptiveBitrateSrtBelabox {
             return updateAdaptiveBitrateSrtBela(overlay: overlay, relaxed: relaxed, is200MsTick: is200MsTick)
         } else if is200MsTick {
             return updateAdaptiveBitrateSrtFight(overlay: overlay)

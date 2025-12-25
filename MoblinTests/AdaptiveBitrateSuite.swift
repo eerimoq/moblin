@@ -22,7 +22,7 @@ private func makeStats(bitrate: Int64) -> StreamStats {
                        relaxed: false)
 }
 
-private func update(belabox: AdaptiveBitrateSrtBela, bitrate: Int64) async throws {
+private func update(belabox: AdaptiveBitrateSrtBelabox, bitrate: Int64) async throws {
     try await sleep(milliSeconds: 20)
     belabox.update(stats: makeStats(bitrate: bitrate))
 }
@@ -31,7 +31,7 @@ struct AdaptiveBitrateSuite {
     @Test
     func belaboxStartAtTarget() async throws {
         let handler = Handler()
-        let belabox = AdaptiveBitrateSrtBela(targetBitrate: 5_000_000, delegate: handler)
+        let belabox = AdaptiveBitrateSrtBelabox(targetBitrate: 5_000_000, delegate: handler)
         belabox.setSettings(settings: adaptiveBitrateBelaboxSettings)
         #expect(belabox.getCurrentBitrate() == 5_000_000)
         #expect(belabox.getCurrentMaximumBitrateInKbps() == 5000)
@@ -43,7 +43,7 @@ struct AdaptiveBitrateSuite {
     @Test
     func belaboxTransportBitrateLimit() async throws {
         let handler = Handler()
-        let belabox = AdaptiveBitrateSrtBela(targetBitrate: 5_000_000, delegate: handler)
+        let belabox = AdaptiveBitrateSrtBelabox(targetBitrate: 5_000_000, delegate: handler)
         belabox.setSettings(settings: adaptiveBitrateBelaboxSettings)
         #expect(belabox.getCurrentBitrate() == 5_000_000)
         #expect(belabox.getCurrentMaximumBitrateInKbps() == 5000)

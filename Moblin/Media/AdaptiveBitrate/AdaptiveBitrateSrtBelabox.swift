@@ -22,7 +22,7 @@ let adaptiveBitrateBelaboxSettings = AdaptiveBitrateSettings(
     minimumBitrate: 250_000
 )
 
-class AdaptiveBitrateSrtBela: AdaptiveBitrate {
+class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
     private var targetBitrate: Int64
     private var settings = adaptiveBitrateBelaboxSettings
     private var sendBufferSizeAvg: Double = 0
