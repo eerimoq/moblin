@@ -625,7 +625,7 @@ private struct StreamerSelectionButtonView: View {
         } label: {
             if #available(iOS 26, *) {
                 Image(systemName: "person")
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(.foreground)
                     .frame(width: 12, height: 12)
                     .padding()
                     .glassEffect()
