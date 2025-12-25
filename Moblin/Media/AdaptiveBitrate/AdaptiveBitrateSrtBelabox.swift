@@ -25,11 +25,11 @@ let adaptiveBitrateBelaboxSettings = AdaptiveBitrateSettings(
 class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
     private var targetBitrate: Int64
     private var settings = adaptiveBitrateBelaboxSettings
-    private var sendBufferSizeAvg: Double = 0
+    private var sendBufferSizeAverage: Double = 0
     private var sendBufferSizeJitter: Double = 0
     private var prevSendBufferSize: Double = 0
-    private var rttAvg: Double = 0
-    private var rttAvgDelta: Double = 0
+    private var rttAverage: Double = 0
+    private var rttAverageDelta: Double = 0
     private var prevRtt: Double = 300.0
     private var rttMin: Double = 200.0
     private var rttJitter: Double = 0.0
@@ -66,7 +66,7 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
     }
 
     private func updateSendBufferSizeAverage(sendBufferSize: Double) {
-        sendBufferSizeAvg = sendBufferSizeAvg * 0.99 + sendBufferSize * 0.01
+        sendBufferSizeAverage = sendBufferSizeAverage * 0.99 + sendBufferSize * 0.01
     }
 
     private func updateSendBufferSizeJitter(sendBufferSize: Double) {
@@ -79,23 +79,23 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
     }
 
     private func updateRttAverage(rtt: Double) {
-        if rttAvg == 0.0 {
-            rttAvg = rtt
+        if rttAverage == 0.0 {
+            rttAverage = rtt
         } else {
-            rttAvg = rttAvg * 0.99 + 0.01 * rtt
+            rttAverage = rttAverage * 0.99 + 0.01 * rtt
         }
     }
 
     private func updateAverageRttDelta(rtt: Double) -> Double {
         let deltaRtt = rtt - prevRtt
-        rttAvgDelta = rttAvgDelta * 0.8 + deltaRtt * 0.2
+        rttAverageDelta = rttAverageDelta * 0.8 + deltaRtt * 0.2
         prevRtt = rtt
         return deltaRtt
     }
 
     private func updateRttMin(rtt: Double) {
         rttMin *= 1.001
-        if rtt != 100, rtt < rttMin, rttAvgDelta < 1.0 {
+        if rtt != 100, rtt < rttMin, rttAverageDelta < 1.0 {
             rttMin = rtt
         }
     }
@@ -128,10 +128,10 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
         let srtLatency = Double(stats.latency ?? defaultSrtLatency)
         let currentTime = ContinuousClock.now
         var bitrate = curBitrate
-        let sendBufferSizeTh3 = (sendBufferSizeAvg + sendBufferSizeJitter) * 4
+        let sendBufferSizeTh3 = (sendBufferSizeAverage + sendBufferSizeJitter) * 4
         var sendBufferSizeTh2 = max(
             50,
-            sendBufferSizeAvg + max(sendBufferSizeJitter * 3.0, sendBufferSizeAvg)
+            sendBufferSizeAverage + max(sendBufferSizeJitter * 3.0, sendBufferSizeAverage)
         )
         sendBufferSizeTh2 = min(
             sendBufferSizeTh2,
@@ -140,8 +140,8 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
         if stats.relaxed ?? false {
             sendBufferSizeTh2 *= 2
         }
-        let sendBufferSizeTh1 = max(50, sendBufferSizeAvg + sendBufferSizeJitter * 2.5)
-        let rttThMax = rttAvg + max(rttJitter * 4, rttAvg * 15 / 100)
+        let sendBufferSizeTh1 = max(50, sendBufferSizeAverage + sendBufferSizeJitter * 2.5)
+        let rttThMax = rttAverage + max(rttJitter * 4, rttAverage * 15 / 100)
         let rttThMin = rttMin + max(1, rttJitter * 2)
         if bitrate > settings.minimumBitrate, rtt >= (srtLatency / 3) || sendBufferSize > sendBufferSizeTh3 {
             bitrate = settings.minimumBitrate
@@ -174,7 +174,7 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
                 \(formatTwoDecimals(sendBufferSizeTh1))
                 """
             )
-        } else if currentTime > nextBitrateIncrTime, rtt < rttThMin, rttAvgDelta < 0.01 {
+        } else if currentTime > nextBitrateIncrTime, rtt < rttThMin, rttAverageDelta < 0.01 {
             bitrate += bitrateIncrMin + bitrate / bitrateIncrScale
             nextBitrateIncrTime = currentTime.advanced(by: bitrateIncrInterval)
         }
