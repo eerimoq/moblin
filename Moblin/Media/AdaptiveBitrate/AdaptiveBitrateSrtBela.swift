@@ -40,7 +40,7 @@ class AdaptiveBitrateSrtBela: AdaptiveBitrate {
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
-        curBitrate = adaptiveBitrateStart
+        curBitrate = Int64(targetBitrate)
         super.init(delegate: delegate)
     }
 

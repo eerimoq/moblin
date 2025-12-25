@@ -57,7 +57,7 @@ final class Media: NSObject {
     private var processor: Processor?
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
-    private var srtSpeed: Int64 = 0
+    private var srtTransportBitrate: Int64 = 0
     private var currentAudioLevel: Float = defaultAudioLevel
     private var numberOfAudioChannels: Int = 0
     private var audioSampleRate: Double = 0
@@ -208,6 +208,7 @@ final class Media: NSObject {
             connectionPriorities: connectionPriorities
         )
         srtlaClient!.start(uri: url, timeout: reconnectTime + 1, dnsLookupStrategy: dnsLookupStrategy)
+        srtTransportBitrate = Int64(targetBitrate)
     }
 
     private func srtInitStream(
@@ -488,10 +489,10 @@ final class Media: NSObject {
         }
     }
 
-    func updateSrtSpeed() {
+    func updateSrtTransportBitrate() {
         srtTotalByteCount = srtlaClient?.getTotalByteCount() ?? 0
         let byteCount = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
-        srtSpeed = Int64(Double(srtSpeed) * 0.7 + Double(byteCount) * 0.3)
+        srtTransportBitrate = Int64(Double(srtTransportBitrate) * 0.7 + Double(byteCount) * 0.3)
         srtPreviousTotalByteCount = srtTotalByteCount
     }
 
@@ -499,7 +500,7 @@ final class Media: NSObject {
         if let rtmpStream {
             return Int64(8 * rtmpStream.info.currentBytesPerSecond.value)
         } else if isSrtStreamActive() {
-            return 8 * srtSpeed
+            return 8 * srtTransportBitrate
         } else if ristStream != nil {
             return Int64(ristStream?.getSpeed() ?? 0)
         } else {

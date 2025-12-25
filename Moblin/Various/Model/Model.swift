@@ -1554,7 +1554,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateStreamUptime(now: monotonicNow)
             self.updateRecordingLength(now: now)
             self.updateDigitalClock(now: now)
-            self.media.updateSrtSpeed()
+            self.media.updateSrtTransportBitrate()
             self.updateSpeed(now: monotonicNow)
             self.updateIngestsSpeed()
             self.updateBondingStatistics()
