@@ -30,7 +30,7 @@ extension Model {
     func reloadTwitchChat() {
         twitchChat?.stop()
         setTextToSpeechStreamerMentions()
-        if isTwitchChatConfigured(), !isChatRemoteControl(platform: .twitch) {
+        if isTwitchChatConfigured(), !isRemoteControlChatAndEvents(platform: .twitch) {
             twitchChat?.start(
                 channelName: stream.twitchChannelName,
                 channelId: stream.twitchChannelId,

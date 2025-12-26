@@ -251,7 +251,7 @@ extension Model {
             isDLiveChatConfigured() || isOpenStreamingPlatformChatConfigured()
     }
 
-    func isChatRemoteControl(platform: Platform?) -> Bool {
+    func isRemoteControlChatAndEvents(platform: Platform?) -> Bool {
         switch platform {
         case .twitch, nil:
             break
@@ -457,7 +457,7 @@ extension Model {
         let status: String
         if !isChatConfigured() {
             status = String(localized: "Not configured")
-        } else if isChatRemoteControl(platform: nil) {
+        } else if isRemoteControlChatAndEvents(platform: nil) {
             if isRemoteControlStreamerConnected() {
                 status = String(localized: "Connected (remote control)")
             } else {

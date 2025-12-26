@@ -109,7 +109,7 @@ private struct StatusesView: View {
     func eventsColor() -> Color {
         if !model.isEventsConfigured() {
             return .white
-        } else if model.isEventsRemoteControl(platform: nil) {
+        } else if model.isRemoteControlChatAndEvents(platform: nil) {
             if model.isRemoteControlStreamerConnected() {
                 return .white
             } else {
@@ -125,7 +125,7 @@ private struct StatusesView: View {
     func chatColor() -> Color {
         if !model.isChatConfigured() {
             return .white
-        } else if model.isChatRemoteControl(platform: nil) {
+        } else if model.isRemoteControlChatAndEvents(platform: nil) {
             if model.isRemoteControlStreamerConnected() {
                 return .white
             } else {
