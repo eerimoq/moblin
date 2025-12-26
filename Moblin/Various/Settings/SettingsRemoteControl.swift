@@ -41,7 +41,7 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var url: String = ""
     @Published var previewFps: Float = 1.0
-    @Published var reliableChatAndEvents: Bool = true
+    @Published var reliableChatAndEvents: Bool = false
 
     enum CodingKeys: CodingKey {
         case enabled,
@@ -65,7 +65,7 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         enabled = container.decode(.enabled, Bool.self, false)
         url = container.decode(.url, String.self, "")
         previewFps = container.decode(.previewFps, Float.self, 1.0)
-        reliableChatAndEvents = container.decode(.reliableChatAndEvents, Bool.self, true)
+        reliableChatAndEvents = container.decode(.reliableChatAndEvents, Bool.self, false)
     }
 }
 
