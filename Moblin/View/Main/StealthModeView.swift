@@ -48,19 +48,19 @@ struct StealthModeView: View {
     }
 
     private func statusButton() -> some View {
-        StealthButtonView(image: quickButtons.blackScreenShowStatus ? "chart.bar.fill" : "chart.bar",
+        StealthButtonView(image: quickButtons.stealthModeShowStatus ? "chart.bar.fill" : "chart.bar",
                           text: "Status")
         {
-            quickButtons.blackScreenShowStatus.toggle()
+            quickButtons.stealthModeShowStatus.toggle()
             showButtons()
         }
     }
 
     private func chatButton() -> some View {
-        StealthButtonView(image: quickButtons.blackScreenShowChat ? "message.fill" : "message",
+        StealthButtonView(image: quickButtons.stealthModeShowChat ? "message.fill" : "message",
                           text: "Chat")
         {
-            quickButtons.blackScreenShowChat.toggle()
+            quickButtons.stealthModeShowChat.toggle()
             showButtons()
         }
     }
@@ -101,14 +101,14 @@ struct StealthModeView: View {
                 self.tryUnpause()
             }
         }
-        if quickButtons.blackScreenShowChat {
+        if quickButtons.stealthModeShowChat {
             ChatOverlayView(chatSettings: model.database.chat,
                             chat: model.chat,
                             orientation: orientation,
                             quickButtons: quickButtons,
                             fullSize: true)
         }
-        if quickButtons.blackScreenShowStatus {
+        if quickButtons.stealthModeShowStatus {
             HStack(spacing: 0) {
                 Spacer()
                 RightOverlayTopView(model: model, database: model.database)

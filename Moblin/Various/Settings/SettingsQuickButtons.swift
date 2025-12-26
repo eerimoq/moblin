@@ -140,8 +140,8 @@ class SettingsQuickButtons: Codable, ObservableObject {
     @Published var bigButtons: Bool = false
     @Published var showName: Bool = true
     @Published var enableScroll: Bool = true
-    @Published var blackScreenShowChat: Bool = false
-    @Published var blackScreenShowStatus: Bool = false
+    @Published var stealthModeShowChat: Bool = false
+    @Published var stealthModeShowStatus: Bool = false
 
     enum CodingKeys: CodingKey {
         case twoColumns,
@@ -158,8 +158,8 @@ class SettingsQuickButtons: Codable, ObservableObject {
         try container.encode(.bigButtons, bigButtons)
         try container.encode(.showName, showName)
         try container.encode(.enableScroll, enableScroll)
-        try container.encode(.blackScreenShowChat, blackScreenShowChat)
-        try container.encode(.blackScreenShowStatus, blackScreenShowStatus)
+        try container.encode(.blackScreenShowChat, stealthModeShowChat)
+        try container.encode(.blackScreenShowStatus, stealthModeShowStatus)
     }
 
     init() {}
@@ -170,7 +170,7 @@ class SettingsQuickButtons: Codable, ObservableObject {
         bigButtons = container.decode(.bigButtons, Bool.self, false)
         showName = container.decode(.showName, Bool.self, true)
         enableScroll = container.decode(.enableScroll, Bool.self, true)
-        blackScreenShowChat = container.decode(.blackScreenShowChat, Bool.self, false)
-        blackScreenShowStatus = container.decode(.blackScreenShowStatus, Bool.self, false)
+        stealthModeShowChat = container.decode(.blackScreenShowChat, Bool.self, false)
+        stealthModeShowStatus = container.decode(.blackScreenShowStatus, Bool.self, false)
     }
 }
