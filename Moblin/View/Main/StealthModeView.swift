@@ -1,14 +1,16 @@
 import SwiftUI
 
-private struct ReturnButtonView: View {
-    let model: Model
+private struct StealthButtonView: View {
+    let image: String
+    let text: LocalizedStringKey
+    let action: () -> Void
 
     var body: some View {
         VStack {
-            Image(systemName: "arrowshape.turn.up.backward")
+            Image(systemName: image)
                 .font(.system(size: 20))
                 .padding([.bottom], 2)
-            Text("Return")
+            Text(text)
                 .font(.body)
         }
         .frame(width: stealthModeButtonSize, height: stealthModeButtonSize)
@@ -16,6 +18,16 @@ private struct ReturnButtonView: View {
         .background(.black)
         .clipShape(Circle())
         .onTapGesture { _ in
+            action()
+        }
+    }
+}
+
+private struct ReturnButtonView: View {
+    let model: Model
+
+    var body: some View {
+        StealthButtonView(image: "arrowshape.turn.up.backward", text: "Return") {
             model.toggleStealthMode()
         }
     }
@@ -26,18 +38,9 @@ private struct ChatButtonView: View {
     let showButtons: () -> Void
 
     var body: some View {
-        VStack {
-            Image(systemName: quickButtons.blackScreenShowChat ? "message.fill" : "message")
-                .font(.system(size: 20))
-                .padding([.bottom], 2)
-            Text("Chat")
-                .font(.body)
-        }
-        .frame(width: stealthModeButtonSize, height: stealthModeButtonSize)
-        .foregroundStyle(.white)
-        .background(.black)
-        .clipShape(Circle())
-        .onTapGesture { _ in
+        StealthButtonView(image: quickButtons.blackScreenShowChat ? "message.fill" : "message",
+                          text: "Chat")
+        {
             quickButtons.blackScreenShowChat.toggle()
             showButtons()
         }
