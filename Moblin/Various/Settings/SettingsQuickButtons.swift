@@ -141,13 +141,15 @@ class SettingsQuickButtons: Codable, ObservableObject {
     @Published var showName: Bool = true
     @Published var enableScroll: Bool = true
     @Published var blackScreenShowChat: Bool = false
+    @Published var blackScreenShowStatus: Bool = false
 
     enum CodingKeys: CodingKey {
         case twoColumns,
              bigButtons,
              showName,
              enableScroll,
-             blackScreenShowChat
+             blackScreenShowChat,
+             blackScreenShowStatus
     }
 
     func encode(to encoder: Encoder) throws {
@@ -157,6 +159,7 @@ class SettingsQuickButtons: Codable, ObservableObject {
         try container.encode(.showName, showName)
         try container.encode(.enableScroll, enableScroll)
         try container.encode(.blackScreenShowChat, blackScreenShowChat)
+        try container.encode(.blackScreenShowStatus, blackScreenShowStatus)
     }
 
     init() {}
@@ -168,5 +171,6 @@ class SettingsQuickButtons: Codable, ObservableObject {
         showName = container.decode(.showName, Bool.self, true)
         enableScroll = container.decode(.enableScroll, Bool.self, true)
         blackScreenShowChat = container.decode(.blackScreenShowChat, Bool.self, false)
+        blackScreenShowStatus = container.decode(.blackScreenShowStatus, Bool.self, false)
     }
 }

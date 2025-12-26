@@ -260,9 +260,7 @@ class DrawOnStream: ObservableObject {
 
 class StealthMode: ObservableObject {
     var hideButtonsTimer = SimpleTimer(queue: .main)
-    @Published var showChat = false
     @Published var showButtons = true
-    @Published var showStatus = false
     @Published var image: UIImage?
 }
 
