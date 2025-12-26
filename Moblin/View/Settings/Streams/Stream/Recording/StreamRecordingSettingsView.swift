@@ -91,9 +91,10 @@ private struct ResolutionSettingsView: View {
                 Text($0.shortString())
             }
         }
-        .disabled(!recording.overrideStream)
         .onChange(of: recording.resolution) { _ in
-            model.reloadStreamIfEnabled(stream: stream)
+            if recording.overrideStream {
+                model.reloadStreamIfEnabled(stream: stream)
+            }
         }
     }
 }
@@ -147,14 +148,22 @@ struct StreamRecordingSettingsView: View {
                     .onChange(of: recording.overrideStream) { _ in
                         model.reloadStreamIfEnabled(stream: stream)
                     }
-                    .disabled(stream.enabled && (model.isLive || model.isRecording))
                 ResolutionSettingsView(stream: stream, recording: recording)
                 if false {
                     FpsSettingsView(stream: stream, recording: recording)
                 }
             } footer: {
-                Text("Resolution and FPS are same as for live stream if not overridden.")
+                VStack(alignment: .leading) {
+                    Text("Resolution and FPS are same as for live stream if not overridden.")
+                    Text("")
+                    Text("""
+                    The overall energy consumption will be higher and the live stream \
+                    image quality will be worse when the override is enabled, regardless \
+                    of if you are recording or not.
+                    """)
+                }
             }
+            .disabled(stream.enabled && (model.isLive || model.isRecording))
             Section {
                 Picker("Video codec", selection: $recording.videoCodec) {
                     ForEach(SettingsStreamCodec.allCases, id: \.self) {
