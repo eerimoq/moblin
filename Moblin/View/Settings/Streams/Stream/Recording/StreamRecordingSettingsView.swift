@@ -99,24 +99,6 @@ private struct ResolutionSettingsView: View {
     }
 }
 
-private struct FpsSettingsView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var stream: SettingsStream
-    @ObservedObject var recording: SettingsStreamRecording
-
-    var body: some View {
-        Picker("FPS", selection: $recording.fps) {
-            ForEach(fpss, id: \.self) {
-                Text(String($0))
-            }
-        }
-        .disabled(!recording.overrideStream)
-        .onChange(of: recording.fps) { _ in
-            model.reloadStreamIfEnabled(stream: stream)
-        }
-    }
-}
-
 struct StreamRecordingSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
@@ -149,9 +131,6 @@ struct StreamRecordingSettingsView: View {
                         model.reloadStreamIfEnabled(stream: stream)
                     }
                 ResolutionSettingsView(stream: stream, recording: recording)
-                if false {
-                    FpsSettingsView(stream: stream, recording: recording)
-                }
             } footer: {
                 VStack(alignment: .leading) {
                     Text("Resolution and FPS are same as for live stream if not overridden.")
