@@ -23,30 +23,6 @@ private struct StealthButtonView: View {
     }
 }
 
-private struct ReturnButtonView: View {
-    let model: Model
-
-    var body: some View {
-        StealthButtonView(image: "arrowshape.turn.up.backward", text: "Return") {
-            model.toggleStealthMode()
-        }
-    }
-}
-
-private struct ChatButtonView: View {
-    @ObservedObject var quickButtons: SettingsQuickButtons
-    let showButtons: () -> Void
-
-    var body: some View {
-        StealthButtonView(image: quickButtons.blackScreenShowChat ? "message.fill" : "message",
-                          text: "Chat")
-        {
-            quickButtons.blackScreenShowChat.toggle()
-            showButtons()
-        }
-    }
-}
-
 struct StealthModeView: View {
     let model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
@@ -68,6 +44,30 @@ struct StealthModeView: View {
         if chat.paused {
             model.endOfChatReachedWhenPaused()
             chat.triggerScrollToBottom.toggle()
+        }
+    }
+
+    private func statusButton() -> some View {
+        StealthButtonView(image: stealthMode.showStatus ? "chart.bar.fill" : "chart.bar",
+                          text: "Status")
+        {
+            stealthMode.showStatus.toggle()
+            showButtons()
+        }
+    }
+
+    private func chatButton() -> some View {
+        StealthButtonView(image: quickButtons.blackScreenShowChat ? "message.fill" : "message",
+                          text: "Chat")
+        {
+            quickButtons.blackScreenShowChat.toggle()
+            showButtons()
+        }
+    }
+
+    private func returnButton() -> some View {
+        StealthButtonView(image: "arrowshape.turn.up.backward", text: "Return") {
+            model.toggleStealthMode()
         }
     }
 
@@ -101,38 +101,50 @@ struct StealthModeView: View {
                 self.tryUnpause()
             }
         }
+        ChatOverlayView(chatSettings: model.database.chat,
+                        chat: model.chat,
+                        orientation: orientation,
+                        quickButtons: quickButtons,
+                        fullSize: true)
+        if stealthMode.showStatus {
+            HStack(spacing: 0) {
+                Spacer()
+                RightOverlayTopView(model: model, database: model.database)
+                    .padding([.top, .trailing])
+                if !orientation.isPortrait {
+                    Rectangle()
+                        .foregroundStyle(.clear)
+                        .frame(width: controlBarWidth(quickButtons: quickButtons))
+                }
+            }
+        }
         if stealthMode.showButtons {
             if orientation.isPortrait {
                 VStack {
                     Spacer()
                     HStack {
-                        ChatButtonView(quickButtons: quickButtons, showButtons: showButtons)
+                        chatButton()
+                        statusButton()
                         Spacer()
-                        ReturnButtonView(model: model)
+                        returnButton()
                     }
-                    .padding([.horizontal], 50)
+                    .padding([.horizontal], 30)
                     .frame(height: controlBarWidthDefault)
                 }
             } else {
                 HStack {
                     Spacer()
                     VStack {
-                        ChatButtonView(quickButtons: quickButtons, showButtons: showButtons)
+                        chatButton()
+                        statusButton()
                         Spacer()
-                        ReturnButtonView(model: model)
+                        returnButton()
                     }
-                    .padding([.top], 50)
-                    .padding([.bottom], 25)
+                    .padding([.top], 30)
+                    .padding([.bottom], 5)
                     .frame(width: controlBarWidth(quickButtons: quickButtons))
                 }
             }
-        }
-        if quickButtons.blackScreenShowChat {
-            ChatOverlayView(chatSettings: model.database.chat,
-                            chat: model.chat,
-                            orientation: orientation,
-                            quickButtons: quickButtons,
-                            fullSize: true)
         }
     }
 }
