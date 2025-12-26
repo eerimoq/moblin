@@ -41,11 +41,13 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var url: String = ""
     @Published var previewFps: Float = 1.0
+    @Published var reliableChatAndEvents: Bool = true
 
     enum CodingKeys: CodingKey {
         case enabled,
              url,
-             previewFps
+             previewFps,
+             reliableChatAndEvents
     }
 
     func encode(to encoder: Encoder) throws {
@@ -53,6 +55,7 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         try container.encode(.enabled, enabled)
         try container.encode(.url, url)
         try container.encode(.previewFps, previewFps)
+        try container.encode(.reliableChatAndEvents, reliableChatAndEvents)
     }
 
     init() {}
@@ -62,6 +65,7 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         enabled = container.decode(.enabled, Bool.self, false)
         url = container.decode(.url, String.self, "")
         previewFps = container.decode(.previewFps, Float.self, 1.0)
+        reliableChatAndEvents = container.decode(.reliableChatAndEvents, Bool.self, true)
     }
 }
 

@@ -40,7 +40,7 @@ extension Model {
         kickPusher = nil
         setTextToSpeechStreamerMentions()
         if isKickPusherConfigured(),
-           !isChatRemoteControl(),
+           !isChatRemoteControl(platform: .kick),
            let channelId = stream.kickChannelId,
            let chatroomChannelId = stream.kickChatroomChannelId
         {

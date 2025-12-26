@@ -65,7 +65,7 @@ extension Model {
 
     private func remoteControlStreamerSendTwitchStart() {
         remoteControlStreamer?.twitchStart(
-            channelName: database.debug.reliableChat ? stream.twitchChannelName : nil,
+            channelName: stream.twitchChannelName,
             channelId: stream.twitchChannelId,
             accessToken: stream.twitchAccessToken
         )
@@ -462,16 +462,19 @@ extension Model {
 
 extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerConnected() {
-        makeToast(
-            title: String(localized: "Remote control assistant connected"),
-            subTitle: String(localized: "Reliable alerts and chat messages activated")
-        )
-        useRemoteControlForChatAndEvents = true
-        reloadTwitchEventSub()
-        reloadChats()
+        useRemoteControlForChatAndEvents = database.remoteControl.streamer.reliableChatAndEvents
+        let subTitle: String?
+        if useRemoteControlForChatAndEvents {
+            reloadTwitchEventSub()
+            reloadTwitchChat()
+            remoteControlStreamerSendTwitchStart()
+            subTitle = String(localized: "Reliable alerts and chat messages activated")
+        } else {
+            subTitle = nil
+        }
+        makeToast(title: String(localized: "Remote control assistant connected"), subTitle: subTitle)
         isRemoteControlAssistantRequestingPreview = false
         isRemoteControlAssistantRequestingStatus = false
-        remoteControlStreamerSendTwitchStart()
         setLowFpsImage()
         updateRemoteControlStatus()
         var state = RemoteControlState()

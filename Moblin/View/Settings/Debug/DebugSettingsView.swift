@@ -94,7 +94,6 @@ struct DebugSettingsView: View {
                 }
                 Toggle("Relaxed bitrate decrement after scene switch", isOn: $debug.relaxedBitrate)
                 Toggle("Twitch rewards", isOn: $debug.twitchRewards)
-                Toggle("Reliable chat", isOn: $debug.reliableChat)
                 VStack(alignment: .leading) {
                     Text("Builtin audio and video delay")
                     HStack {

@@ -74,6 +74,7 @@ private struct RemoteControlSettingsStreamerView: View {
         }
         streamer.url = value
         model.reloadRemoteControlStreamer()
+        model.reloadConnections()
     }
 
     private func submitStreamerPreviewFps(value: Float) {
@@ -90,6 +91,7 @@ private struct RemoteControlSettingsStreamerView: View {
             Toggle("Enabled", isOn: $streamer.enabled)
                 .onChange(of: streamer.enabled) { _ in
                     model.reloadRemoteControlStreamer()
+                    model.reloadConnections()
                 }
             TextEditNavigationView(
                 title: String(localized: "Assistant URL"),
@@ -103,6 +105,28 @@ private struct RemoteControlSettingsStreamerView: View {
                 ],
                 placeholder: "ws://32.143.32.12:2345"
             )
+        } footer: {
+            Text("""
+            Enable to allow an assistant to monitor and control this device from a \
+            different device.
+            """)
+        }
+        Section {
+            Toggle("Reliable chat and events", isOn: $streamer.reliableChatAndEvents)
+                .onChange(of: streamer.reliableChatAndEvents) { _ in
+                    model.reloadRemoteControlStreamer()
+                    model.reloadConnections()
+                }
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("""
+                Receive chat and events from the assistant instead of directly from the streaming platform.
+                """)
+                Text("")
+                Text("Only works for Twitch.")
+            }
+        }
+        Section {
             HStack {
                 Text("Preview FPS")
                 SliderView(
@@ -115,13 +139,6 @@ private struct RemoteControlSettingsStreamerView: View {
                     format: formatStreamerPreviewFps
                 )
             }
-        } header: {
-            Text("Streamer")
-        } footer: {
-            Text("""
-            Enable to allow an assistant to monitor and control this device from a \
-            different device.
-            """)
         }
     }
 }
@@ -413,8 +430,18 @@ struct RemoteControlSettingsView: View {
             } footer: {
                 Text("Used by both streamer and assistant.")
             }
-            RemoteControlSettingsStreamerView(model: model, streamer: database.remoteControl.streamer)
             Section {
+                NavigationLink {
+                    Form {
+                        RemoteControlSettingsStreamerView(
+                            model: model,
+                            streamer: database.remoteControl.streamer
+                        )
+                    }
+                    .navigationTitle("Streamer")
+                } label: {
+                    Text("Streamer")
+                }
                 NavigationLink {
                     Form {
                         RemoteControlStreamersView(remoteControlSettings: database.remoteControl,

@@ -18,7 +18,7 @@ extension Model {
         dliveChat?.stop()
         dliveChat = nil
         setTextToSpeechStreamerMentions()
-        if isDLiveChatConfigured(), !isChatRemoteControl() {
+        if isDLiveChatConfigured(), !isChatRemoteControl(platform: .dlive) {
             dliveChat = DLiveChat(delegate: self)
             dliveChat?.start(streamerUsername: stream.dLiveUsername)
         }

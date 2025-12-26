@@ -2088,7 +2088,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return isTwitchEventsConnected()
     }
 
-    func isEventsRemoteControl() -> Bool {
+    func isEventsRemoteControl(platform: Platform?) -> Bool {
+        switch platform {
+        case .twitch, nil:
+            break
+        default:
+            return false
+        }
         return useRemoteControlForChatAndEvents
     }
 
@@ -2136,7 +2142,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadYouTubeLiveChat() {
         youTubeLiveChat?.stop()
         youTubeLiveChat = nil
-        if isYouTubeLiveChatConfigured(), !isChatRemoteControl() {
+        if isYouTubeLiveChatConfigured(), !isChatRemoteControl(platform: .youTube) {
             youTubeLiveChat = YouTubeLiveChat(
                 model: self,
                 videoId: stream.youTubeVideoId,
@@ -2151,7 +2157,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         soopChat?.stop()
         soopChat = nil
         setTextToSpeechStreamerMentions()
-        if isSoopChatConfigured(), !isChatRemoteControl() {
+        if isSoopChatConfigured(), !isChatRemoteControl(platform: .soop) {
             soopChat = SoopChat(
                 model: self,
                 channelName: stream.soopChannelName,
@@ -2165,7 +2171,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadOpenStreamingPlatformChat() {
         openStreamingPlatformChat?.stop()
         openStreamingPlatformChat = nil
-        if isOpenStreamingPlatformChatConfigured(), !isChatRemoteControl() {
+        if isOpenStreamingPlatformChatConfigured(), !isChatRemoteControl(platform: .openStreamingPlatform) {
             openStreamingPlatformChat = OpenStreamingPlatformChat(
                 model: self,
                 url: stream.openStreamingPlatformUrl,
@@ -2924,7 +2930,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let status: String
         if !isEventsConfigured() {
             status = String(localized: "Not configured")
-        } else if isEventsRemoteControl() {
+        } else if isEventsRemoteControl(platform: nil) {
             if isRemoteControlStreamerConnected() {
                 status = String(localized: "Connected (remote control)")
             } else {

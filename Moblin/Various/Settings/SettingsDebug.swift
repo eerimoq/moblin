@@ -113,7 +113,6 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var preferStereoMic: Bool = false
     @Published var twitchRewards: Bool = false
     var tesla: SettingsTesla = .init()
-    @Published var reliableChat: Bool = false
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
     @Published var dataRateLimitFactor: Float = 2.0
     @Published var bitrateDropFix: Bool = false
@@ -179,7 +178,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.preferStereoMic, preferStereoMic)
         try container.encode(.twitchRewards, twitchRewards)
         try container.encode(.tesla, tesla)
-        try container.encode(.reliableChat, reliableChat)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
         try container.encode(.dataRateLimitFactor, dataRateLimitFactor)
         try container.encode(.bitrateDropFix, bitrateDropFix)
@@ -214,7 +212,6 @@ class SettingsDebug: Codable, ObservableObject {
         preferStereoMic = container.decode(.preferStereoMic, Bool.self, false)
         twitchRewards = container.decode(.twitchRewards, Bool.self, false)
         tesla = container.decode(.tesla, SettingsTesla.self, .init())
-        reliableChat = container.decode(.reliableChat, Bool.self, false)
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
         dataRateLimitFactor = container.decode(.dataRateLimitFactor, Float.self, 2.0)
         bitrateDropFix = container.decode(.bitrateDropFix, Bool.self, false)
