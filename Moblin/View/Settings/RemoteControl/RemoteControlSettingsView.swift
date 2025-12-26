@@ -398,20 +398,6 @@ struct RemoteControlSettingsView: View {
             Section {
                 Text("Control and monitor Moblin from another device.")
             }
-            if stream !== fallbackStream {
-                ShortcutSectionView {
-                    NavigationLink {
-                        StreamObsRemoteControlSettingsView(stream: stream)
-                    } label: {
-                        Toggle(isOn: $stream.obsWebSocketEnabled) {
-                            Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
-                        }
-                        .onChange(of: stream.obsWebSocketEnabled) { _ in
-                            model.obsWebSocketEnabledUpdated()
-                        }
-                    }
-                }
-            }
             Section {
                 NavigationLink {
                     PasswordView(
@@ -450,6 +436,20 @@ struct RemoteControlSettingsView: View {
                     .navigationTitle("Assistant")
                 } label: {
                     Text("Assistant")
+                }
+            }
+            if stream !== fallbackStream {
+                ShortcutSectionView {
+                    NavigationLink {
+                        StreamObsRemoteControlSettingsView(stream: stream)
+                    } label: {
+                        Toggle(isOn: $stream.obsWebSocketEnabled) {
+                            Label("OBS remote control", systemImage: "dot.radiowaves.left.and.right")
+                        }
+                        .onChange(of: stream.obsWebSocketEnabled) { _ in
+                            model.obsWebSocketEnabledUpdated()
+                        }
+                    }
                 }
             }
         }
