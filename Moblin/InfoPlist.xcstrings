@@ -638,7 +638,7 @@
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Moblin能夠在畫面及直播中顯示你的位置或速度"
+            "value" : "Moblin能夠在畫面及直播中顯示你的定位或速度"
           }
         }
       }
