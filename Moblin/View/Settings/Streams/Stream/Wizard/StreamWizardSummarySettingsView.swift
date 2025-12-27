@@ -1,7 +1,6 @@
 import SwiftUI
 
 private struct PlatformView: View {
-    @EnvironmentObject private var model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
@@ -41,7 +40,6 @@ private struct PlatformView: View {
 }
 
 private struct NetworkSetupDirectView: View {
-    @EnvironmentObject private var model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
@@ -67,7 +65,6 @@ private struct NetworkSetupDirectView: View {
 }
 
 private struct NetworkSetupView: View {
-    @EnvironmentObject private var model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {

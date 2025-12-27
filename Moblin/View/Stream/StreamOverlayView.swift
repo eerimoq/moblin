@@ -109,7 +109,6 @@ struct ChatOverlayView: View {
 }
 
 private struct FrontTorchView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var orientation: Orientation
 
     var body: some View {

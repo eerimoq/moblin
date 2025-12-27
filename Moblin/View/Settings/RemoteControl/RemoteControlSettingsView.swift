@@ -159,8 +159,7 @@ private struct UrlsView: View {
                 Form {
                     if relay.enabled {
                         Section {
-                            UrlCopyView(model: model,
-                                        url: "\(relay.baseUrl)/streamer/\(relay.bridgeId)",
+                            UrlCopyView(url: "\(relay.baseUrl)/streamer/\(relay.bridgeId)",
                                         image: "globe")
                         } header: {
                             Text("Relay")

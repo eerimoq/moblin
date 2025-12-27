@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct UrlCopyView: View {
-    let model: Model
     let url: String
     let image: String
 
@@ -24,13 +23,11 @@ struct UrlsIpv4View: View {
         Section {
             ForEach(status.ipStatuses.filter { $0.ipType == .ipv4 }) { status in
                 UrlCopyView(
-                    model: model,
                     url: formatUrl(status.ipType.formatAddress(status.ip)),
                     image: urlImage(interfaceType: status.interfaceType)
                 )
             }
             UrlCopyView(
-                model: model,
                 url: formatUrl(personalHotspotLocalAddress),
                 image: "personalhotspot"
             )
@@ -49,7 +46,6 @@ struct UrlsIpv6View: View {
         Section {
             ForEach(status.ipStatuses.filter { $0.ipType == .ipv6 }) { status in
                 UrlCopyView(
-                    model: model,
                     url: formatUrl(status.ipType.formatAddress(status.ip)),
                     image: urlImage(interfaceType: status.interfaceType)
                 )

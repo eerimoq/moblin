@@ -420,7 +420,8 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    WebBrowserView(database: model.database,
+                    WebBrowserView(model: model,
+                                   database: model.database,
                                    orientation: orientation,
                                    webBrowserState: model.webBrowserState)
                 }
@@ -498,7 +499,8 @@ struct MainView: View {
                     face()
                 }
                 if model.showBrowser {
-                    WebBrowserView(database: model.database,
+                    WebBrowserView(model: model,
+                                   database: model.database,
                                    orientation: orientation,
                                    webBrowserState: model.webBrowserState)
                 }

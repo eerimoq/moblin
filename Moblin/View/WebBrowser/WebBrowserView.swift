@@ -4,7 +4,7 @@ import WebKit
 private let smallBrowserSide = 250.0
 
 struct WebView: UIViewRepresentable {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     func makeUIView(context _: Context) -> WKWebView {
         return model.getWebBrowser()
@@ -54,8 +54,7 @@ private struct NextPrevView: View {
 }
 
 private struct RefreshBookmarksView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var webBrowser: WebBrowserSettings
+    let model: Model
     @Binding var showingBookmarks: Bool
     @Binding var isSmall: Bool
 
@@ -131,6 +130,7 @@ private struct BookmarksView: View {
 }
 
 private struct WebBrowserSmallView: View {
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var webBrowserState: WebBrowserState
 
@@ -153,7 +153,7 @@ private struct WebBrowserSmallView: View {
                     Spacer()
                     HStack {
                         Spacer()
-                        WebView()
+                        WebView(model: model)
                             .background(.clear)
                             .frame(maxWidth: mapSide(maximum: metrics.size.width),
                                    maxHeight: mapSide(maximum: metrics.size.height))
@@ -192,6 +192,7 @@ private struct WebBrowserSmallView: View {
 }
 
 private struct WebBrowserBigView: View {
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var orientation: Orientation
     @ObservedObject var webBrowserState: WebBrowserState
@@ -205,7 +206,7 @@ private struct WebBrowserBigView: View {
                     HStack {
                         NextPrevView()
                         Spacer()
-                        RefreshBookmarksView(webBrowser: database.webBrowser,
+                        RefreshBookmarksView(model: model,
                                              showingBookmarks: $presentingBookmarks,
                                              isSmall: $webBrowserState.isSmall)
                     }
@@ -216,14 +217,14 @@ private struct WebBrowserBigView: View {
                 HStack {
                     NextPrevView()
                     UrlView()
-                    RefreshBookmarksView(webBrowser: database.webBrowser,
+                    RefreshBookmarksView(model: model,
                                          showingBookmarks: $presentingBookmarks,
                                          isSmall: $webBrowserState.isSmall)
                 }
                 .padding(3)
                 .background(ignoresSafeAreaEdges: .bottom)
             }
-            WebView()
+            WebView(model: model)
                 .sheet(isPresented: $presentingBookmarks) {
                     BookmarksView(webBrowser: database.webBrowser,
                                   presentingBookmarks: $presentingBookmarks)
@@ -234,15 +235,21 @@ private struct WebBrowserBigView: View {
 }
 
 struct WebBrowserView: View {
+    let model: Model
     let database: Database
     let orientation: Orientation
     @ObservedObject var webBrowserState: WebBrowserState
 
     var body: some View {
         if webBrowserState.isSmall {
-            WebBrowserSmallView(database: database, webBrowserState: webBrowserState)
+            WebBrowserSmallView(model: model,
+                                database: database,
+                                webBrowserState: webBrowserState)
         } else {
-            WebBrowserBigView(database: database, orientation: orientation, webBrowserState: webBrowserState)
+            WebBrowserBigView(model: model,
+                              database: database,
+                              orientation: orientation,
+                              webBrowserState: webBrowserState)
         }
     }
 }
