@@ -8,6 +8,32 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "30.2.0", date: "2025-12-27", changes: [
+        "• Interface name instead of index in Moblink ethernet relay id. 🐛 Djandrea",
+        "  • Should make Ethernet relay ids more stable.",
+        "• Moderation and predefined messages in new chat menu. 💡 iChrisIRL 🧑‍🏭 iChrisIRL 👏 xcopy94",
+        "• Predefined messages quick button.",
+        "• New design of \"Send messages to\" selector.",
+        "• Make .png LUT loading more robust. 🐛 mikeful",
+        "• Face blur and pixellate strength sliders. 💡 BoostedBen",
+        "• Blur faces quick button. 💡 Bittersweet1987",
+        "  • Can be toggled using keyboard and game controller.",
+        "• Privacy quick button. 💡 BoostedBen",
+        "  • Can be toggled using keyboard and game controller.",
+        "• External link button style consistency.",
+        "• Animate copy buttons and remove copy toasts.",
+        "• Github icon in help and support.",
+        "• Adaptive bitrate refactoring.",
+        "• Make adaptive bitrate algorithms start at target bitrate. 💡 xcopy94",
+        "• Make it possible to see stream URL when live. 💡 JohannesLiv",
+        "• Remote control reliable chat and events redesign.",
+        "  • Only for Twitch.",
+        "• Move OBS remote control shortcut to bottom of remote control page.",
+        "• Optionally show status in top left in stealth mode. 💡 AUTdany",
+        "• Fix stealth mode buttons. 🐛 AUTdany",
+        "• Recording resolution override help/warning.",
+        "• Allow short remote control passwords. 💡 Let me know",
+    ]),
     Version(version: "30.1.0", date: "2025-12-20", changes: [
         "• Korean translation updated. ✍️ Winter1l",
         "• New speaker keep alive logic.",
