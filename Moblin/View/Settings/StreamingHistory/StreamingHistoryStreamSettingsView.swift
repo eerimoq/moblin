@@ -5,34 +5,19 @@ private struct StreamingHistoryStreamSettingsGeneralView: View {
 
     var body: some View {
         Section {
-            TextValueView(name: String(localized: "Start time"), value: stream.startTime.formatted())
-            TextValueView(
-                name: String(localized: "Duration"),
-                value: stream.duration().formatWithSeconds()
-            )
-            TextValueView(
-                name: String(localized: "Total sent"),
-                value: stream.totalBytes.formatBytes()
-            )
-            TextValueView(
-                name: String(localized: "Average bitrate"),
-                value: stream.averageBitrateString()
-            )
-            TextValueView(
-                name: String(localized: "Highest bitrate"),
-                value: stream.highestBitrateString()
-            )
+            TextValueLocalizedView(name: "Start time", value: stream.startTime.formatted())
+            TextValueLocalizedView(name: "Duration", value: stream.duration().formatWithSeconds())
+            TextValueLocalizedView(name: "Total sent", value: stream.totalBytes.formatBytes())
+            TextValueLocalizedView(name: "Average bitrate", value: stream.averageBitrateString())
+            TextValueLocalizedView(name: "Highest bitrate", value: stream.highestBitrateString())
             HStack {
                 if stream.numberOfFffffs! != 0 {
                     Image(systemName: "exclamationmark.circle")
                         .foregroundStyle(.red)
                 }
-                TextValueView(name: String(localized: "FFFFF:s"), value: "\(stream.numberOfFffffs!)")
+                TextValueLocalizedView(name: "FFFFF:s", value: "\(stream.numberOfFffffs!)")
             }
-            TextValueView(
-                name: String(localized: "Chat messages"),
-                value: stream.numberOfChatMessagesString()
-            )
+            TextValueLocalizedView(name: "Chat messages", value: stream.numberOfChatMessagesString())
         } header: {
             Text("General")
         }
@@ -58,8 +43,8 @@ private struct StreamingHistoryStreamSettingsDeviceHealthView: View {
                             .stroke(.secondary)
                     )
             }
-            TextValueView(
-                name: String(localized: "Lowest battery percentage"),
+            TextValueLocalizedView(
+                name: "Lowest battery percentage",
                 value: stream.lowestBatteryPercentageString()
             )
         } header: {
@@ -73,26 +58,14 @@ private struct StreamingHistoryStreamSettingsSettingsView: View {
 
     var body: some View {
         Section {
-            TextValueView(name: String(localized: "Name"), value: stream.settings.name)
-            TextValueView(
-                name: String(localized: "Resolution"),
-                value: stream.settings.resolutionString()
-            )
-            TextValueView(name: String(localized: "FPS"), value: "\(stream.settings.fps)")
-            TextValueView(
-                name: String(localized: "Protocol"),
-                value: stream.settings.protocolString()
-            )
-            TextValueView(name: String(localized: "Codec"), value: stream.settings.codecString())
-            TextValueView(name: String(localized: "Bitrate"), value: stream.settings.bitrateString())
-            TextValueView(
-                name: String(localized: "Audio codec"),
-                value: stream.settings.audioCodecString()
-            )
-            TextValueView(
-                name: String(localized: "Audio bitrate"),
-                value: stream.settings.audioBitrateString()
-            )
+            TextValueLocalizedView(name: "Name", value: stream.settings.name)
+            TextValueLocalizedView(name: "Resolution", value: stream.settings.resolutionString())
+            TextValueLocalizedView(name: "FPS", value: "\(stream.settings.fps)")
+            TextValueLocalizedView(name: "Protocol", value: stream.settings.protocolString())
+            TextValueLocalizedView(name: "Codec", value: stream.settings.codecString())
+            TextValueLocalizedView(name: "Bitrate", value: stream.settings.bitrateString())
+            TextValueLocalizedView(name: "Audio codec", value: stream.settings.audioCodecString())
+            TextValueLocalizedView(name: "Audio bitrate", value: stream.settings.audioBitrateString())
         } header: {
             Text("Settings")
         }
