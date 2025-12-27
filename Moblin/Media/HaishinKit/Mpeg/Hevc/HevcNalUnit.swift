@@ -159,16 +159,6 @@ let calendar: Calendar = {
     return utcCalender
 }()
 
-func readRbspTrailingBits(reader: NalUnitReader) throws {
-    let rbspStopOneBit = try reader.readBit()
-    if !rbspStopOneBit {
-        throw "Trailing stop bit is false"
-    }
-    while !reader.isByteAligned() {
-        try reader.skipBits(count: 1)
-    }
-}
-
 func writeRbspTrailingBits(writer: NalUnitWriter) {
     writer.writeBit(true)
     while writer.bitOffset != 0 {

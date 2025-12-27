@@ -63,13 +63,6 @@ struct AvcSeiPayloadPictureTiming {
         writeMoreDataInPayload(writer: writer)
         return writer.data
     }
-
-    func makeClock() -> (Date, UInt32) {
-        let clockTimestamp = Double(seconds) + Double(minutes) * 60 + Double(hours) * 3600
-        // Not good if close to new day
-        let startOfDay = calendar.startOfDay(for: .now)
-        return (startOfDay.addingTimeInterval(clockTimestamp), frame)
-    }
 }
 
 enum AvcSeiPayloadType: UInt8 {

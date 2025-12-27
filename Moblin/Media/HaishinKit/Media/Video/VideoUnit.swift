@@ -188,7 +188,6 @@ final class VideoUnit: NSObject {
     private var poolColorSpace: CGColorSpace?
     private var poolFormatDescriptionExtension: CFDictionary?
     private var bufferedPool: CVPixelBufferPool?
-    private var bufferedPoolColorSpace: CGColorSpace?
     private var bufferedPoolFormatDescriptionExtension: CFDictionary?
     private var cameraControlsEnabled = false
     private var isRunning = false
@@ -580,19 +579,6 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func getBufferedVideoForDevice(device: CaptureDevice?) -> BufferedVideo? {
-        switch device?.device?.position {
-        case .back:
-            return bufferedVideos[builtinBackCameraId]!
-        case .front:
-            return bufferedVideos[builtinFrontCameraId]!
-        case .unspecified:
-            return bufferedVideos[externalCameraId]!
-        default:
-            return nil
-        }
-    }
-
     private func setBufferedVideoDriftInner(cameraId: UUID, drift: Double) {
         bufferedVideos[cameraId]?.setDrift(drift: drift)
     }
@@ -836,7 +822,6 @@ final class VideoUnit: NSObject {
         attributes[kCVPixelBufferMetalCompatibilityKey] = kCFBooleanTrue
         attributes[kCVPixelBufferWidthKey] = NSNumber(value: canvasSize.width)
         attributes[kCVPixelBufferHeightKey] = NSNumber(value: canvasSize.height)
-        bufferedPoolColorSpace = nil
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
         if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
             let colorPrimaries = formatDescriptionExtension[kCVImageBufferColorPrimariesKey]
@@ -850,21 +835,6 @@ final class VideoUnit: NSObject {
                     colorSpaceProperties[kCVImageBufferTransferFunctionKey] = transferFunction
                 }
                 attributes[kCVBufferPropagatedAttachmentsKey] = colorSpaceProperties as AnyObject
-            }
-            if let colorSpace = formatDescriptionExtension[kCVImageBufferCGColorSpaceKey] {
-                bufferedPoolColorSpace = (colorSpace as! CGColorSpace)
-            } else if let colorPrimaries = colorPrimaries as? String {
-                if colorPrimaries == (kCVImageBufferColorPrimaries_P3_D65 as String) {
-                    bufferedPoolColorSpace = CGColorSpace(name: CGColorSpace.displayP3)
-                } else if #available(iOS 17.2, *),
-                          formatDescriptionExtension[kCVImageBufferLogTransferFunctionKey] as? String ==
-                          kCVImageBufferLogTransferFunction_AppleLog as String
-                {
-                    bufferedPoolColorSpace = CGColorSpace(name: CGColorSpace.itur_2020)
-                    // bufferedPoolColorSpace = CGColorSpace(name: CGColorSpace.extendedITUR_2020)
-                    // bufferedPoolColorSpace = CGColorSpace(name: CGColorSpace.displayP3)
-                    // bufferedPoolColorSpace = nil
-                }
             }
         }
         bufferedPoolFormatDescriptionExtension = formatDescriptionExtension
