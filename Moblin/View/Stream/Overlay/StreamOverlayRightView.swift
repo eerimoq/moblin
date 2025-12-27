@@ -35,7 +35,7 @@ private struct CollapsedBondingView: View {
 
 private struct BondingStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var bonding: Bonding
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -69,8 +69,9 @@ private struct BondingStatusView: View {
 
 private struct ReplayStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
+    // periphery:ignore
     @ObservedObject var replay: SettingsStreamReplay
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -186,7 +187,7 @@ private struct CollapsedBitrateView: View {
 
 private struct BitrateStatusView: View {
     let model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var bitrate: Bitrate
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -225,7 +226,7 @@ private func netStreamColor(model: Model) -> Color {
 
 private struct StreamUptimeStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var streamUptime: StreamUptimeProvider
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -244,6 +245,7 @@ private struct StreamUptimeStatusView: View {
 
 private struct CpuStatusView: View {
     let model: Model
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var systemMonitor: SystemMonitor
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -299,12 +301,12 @@ private struct HypeTrainStatusView: View {
 
 private struct MoblinkStatusView: View {
     let model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var moblink: Moblink
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var streamer: SettingsMoblinkStreamer
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var relay: SettingsMoblinkRelay
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -332,12 +334,12 @@ private struct MoblinkStatusView: View {
 
 private struct RemoteControlStatusView: View {
     let model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var streamer: SettingsRemoteControlStreamer
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var assistant: SettingsRemoteControlAssistant
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -364,7 +366,7 @@ private struct RemoteControlStatusView: View {
 
 private struct DjiDevicesStatusView: View {
     let model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -383,7 +385,7 @@ private struct DjiDevicesStatusView: View {
 
 private struct GameControllersStatusView: View {
     let model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -401,12 +403,12 @@ private struct GameControllersStatusView: View {
 
 private struct IngestsStatusView: View {
     let model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var ingests: Ingests
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var rtmpServer: SettingsRtmpServer
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var srtlaServer: SettingsSrtlaServer
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -423,8 +425,9 @@ private struct IngestsStatusView: View {
 
 private struct LocationStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
+    // periphery:ignore
     @ObservedObject var location: SettingsLocation
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -442,7 +445,7 @@ private struct LocationStatusView: View {
 
 private struct RecordingStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var recording: RecordingProvider
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -460,7 +463,7 @@ private struct RecordingStatusView: View {
 
 private struct BrowserWidgetsStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -478,7 +481,7 @@ private struct BrowserWidgetsStatusView: View {
 
 private struct CatPrinterStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -504,7 +507,7 @@ private struct CatPrinterStatusView: View {
 
 private struct CyclingPowerDeviceStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -530,7 +533,7 @@ private struct CyclingPowerDeviceStatusView: View {
 
 private struct HeartRateDeviceStatusView: View {
     @EnvironmentObject var model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -556,7 +559,7 @@ private struct HeartRateDeviceStatusView: View {
 
 private struct FixedHorizonStatusView: View {
     let model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -573,8 +576,7 @@ private struct FixedHorizonStatusView: View {
 }
 
 private struct BlackSharkCoolerDeviceStatusView: View {
-    let model: Model
-    // To trigger updates.
+    // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -625,6 +627,7 @@ private struct AutoSceneSwitcherStatusView: View {
 private struct StatusesView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
+    // periphery:ignore
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -712,7 +715,6 @@ private struct StatusesView: View {
             textPlacement: textPlacement
         )
         BlackSharkCoolerDeviceStatusView(
-            model: model,
             show: model.database.show,
             status: model.statusTopRight,
             textPlacement: textPlacement

@@ -218,7 +218,6 @@ private let startId = UUID()
 private struct PostView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
-    let fullSize: Bool
     let post: ChatPost
     @ObservedObject var state: ChatPostState
     let size: CGSize
@@ -324,7 +323,6 @@ struct StreamOverlayChatView: View {
                             ForEach(chat.posts) { post in
                                 PostView(chatSettings: chatSettings,
                                          chat: chat,
-                                         fullSize: fullSize,
                                          post: post,
                                          state: post.state,
                                          size: metrics.size)

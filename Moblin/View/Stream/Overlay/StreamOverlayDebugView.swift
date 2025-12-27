@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct StreamOverlayDebugView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var debugOverlay: DebugOverlayProvider
 
     var body: some View {

@@ -4,7 +4,6 @@ private let barWidthPerDb: Float = 1.0
 private let barHeight: CGFloat = 5
 
 private struct AudioBarView: View {
-    @ObservedObject var audio: AudioProvider
     @ObservedObject var level: AudioLevel
 
     private func clippingBar() -> CGFloat? {
@@ -103,7 +102,7 @@ struct AudioLevelView: View {
     var body: some View {
         HStack(spacing: 1) {
             HStack(spacing: 1) {
-                AudioBarView(audio: model.audio, level: model.audio.level)
+                AudioBarView(level: model.audio.level)
                 ChannelsView(audio: model.audio)
                 SampleRateView(audio: model.audio)
             }
