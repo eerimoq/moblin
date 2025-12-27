@@ -358,10 +358,7 @@ struct MainView: View {
     }
 
     private func face() -> some View {
-        FaceView(database: model.database,
-                 debug: model.database.debug,
-                 face: model.database.debug.face,
-                 show: model.show)
+        FaceView(model: model, database: model.database, face: model.database.debug.face)
     }
 
     private func streamAspectRatio() -> CGFloat {

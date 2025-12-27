@@ -44,11 +44,9 @@ struct EffectSlider: View {
 }
 
 struct FaceView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
-    @ObservedObject var debug: SettingsDebug
     @ObservedObject var face: SettingsFace
-    @ObservedObject var show: Show
 
     private func height() -> Double {
         if database.bigButtons {
