@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct BitratePresetsSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var database: Database
 
     var body: some View {

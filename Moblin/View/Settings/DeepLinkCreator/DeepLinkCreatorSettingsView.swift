@@ -3,7 +3,6 @@ import SwiftUI
 private let defaultDeepLink = "moblin://?{}"
 
 struct DeepLinkCreatorSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var deepLinkCreator: DeepLinkCreator
     @State var deepLink = defaultDeepLink
 

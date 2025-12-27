@@ -24,7 +24,6 @@ private struct DeepLinkCreatorQuickButtonSettingsView: View {
 }
 
 struct DeepLinkCreatorQuickButtonsSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var quickButtons: DeepLinkCreatorQuickButtons
 
     var body: some View {
