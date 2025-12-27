@@ -139,7 +139,6 @@ private struct DeepLinkCreatorStreamAudioView: View {
 }
 
 private struct DeepLinkCreatorStreamSrtView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var srt: DeepLinkCreatorStreamSrt
 
     private func changeLatency(value: String) -> String? {
@@ -277,7 +276,6 @@ private struct DeepLinkCreatorStreamKickView: View {
 }
 
 struct DeepLinkCreatorStreamSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var deepLinkCreator: DeepLinkCreator
     @ObservedObject var stream: DeepLinkCreatorStream
 

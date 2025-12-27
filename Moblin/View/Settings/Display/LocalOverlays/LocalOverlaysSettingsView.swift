@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct LocalOverlaysSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var show: SettingsShow
 
     var body: some View {

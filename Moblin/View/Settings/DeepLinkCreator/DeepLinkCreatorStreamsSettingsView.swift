@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct DeepLinkCreatorStreamsSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var deepLinkCreator: DeepLinkCreator
 
     var body: some View {

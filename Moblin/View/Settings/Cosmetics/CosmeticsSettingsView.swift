@@ -132,7 +132,6 @@ private struct CosmeticsSettingsMyIconsView: View {
 }
 
 struct CosmeticsSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var cosmetics: Cosmetics
     @State var disabledPurchaseButtons: Set<String> = []
 
