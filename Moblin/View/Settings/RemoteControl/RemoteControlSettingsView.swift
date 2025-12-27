@@ -142,8 +142,8 @@ private struct UrlsView: View {
                             Text("Relay")
                         }
                     }
-                    UrlsIpv4View(model: model, status: status, formatUrl: formatUrl)
-                    UrlsIpv6View(model: model, status: status, formatUrl: formatUrl)
+                    UrlsIpv4View(status: status, formatUrl: formatUrl)
+                    UrlsIpv6View(status: status, formatUrl: formatUrl)
                 }
                 .navigationTitle("URLs")
             } label: {

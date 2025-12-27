@@ -162,7 +162,6 @@ struct StreamOverlayView: View {
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var orientation: Orientation
     let width: CGFloat
-    let height: CGFloat
 
     private func leadingPadding() -> CGFloat {
         if UIDevice.current.userInterfaceIdiom == .pad || orientation.isPortrait {

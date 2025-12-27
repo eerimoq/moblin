@@ -14,7 +14,7 @@ private struct UrlsView: View {
     var body: some View {
         NavigationLink {
             Form {
-                UrlsIpv4View(model: model, status: status, formatUrl: formatUrl)
+                UrlsIpv4View(status: status, formatUrl: formatUrl)
             }
             .navigationTitle("URLs")
         } label: {

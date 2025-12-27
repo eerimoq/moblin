@@ -15,7 +15,6 @@ struct UrlCopyView: View {
 }
 
 struct UrlsIpv4View: View {
-    let model: Model
     @ObservedObject var status: StatusOther
     let formatUrl: (String) -> String
 
@@ -38,7 +37,6 @@ struct UrlsIpv4View: View {
 }
 
 struct UrlsIpv6View: View {
-    let model: Model
     @ObservedObject var status: StatusOther
     let formatUrl: (String) -> String
 

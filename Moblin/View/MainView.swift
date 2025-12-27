@@ -408,8 +408,7 @@ struct MainView: View {
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
                                       orientation: orientation,
-                                      width: metrics.size.width,
-                                      height: metrics.size.height)
+                                      width: metrics.size.width)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
                 if model.showDrawOnStream, model.stream.portrait {
@@ -487,8 +486,7 @@ struct MainView: View {
                     StreamOverlayView(streamOverlay: model.streamOverlay,
                                       chatSettings: model.database.chat,
                                       orientation: orientation,
-                                      width: metrics.size.width,
-                                      height: metrics.size.height)
+                                      width: metrics.size.width)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
                 if model.showDrawOnStream {
