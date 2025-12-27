@@ -1,37 +1,5 @@
 import SwiftUI
 
-private struct UsernameEditView: View {
-    @State var value: String
-    let onSubmit: (String) -> Void
-    @State private var changed = false
-    @State private var submitted = false
-
-    private func submit() {
-        submitted = true
-        value = value.trim()
-        onSubmit(value)
-    }
-
-    var body: some View {
-        TextField("", text: $value)
-            .keyboardType(.default)
-            .textInputAutocapitalization(.never)
-            .disableAutocorrection(true)
-            .onChange(of: value) { _ in
-                changed = true
-            }
-            .onSubmit {
-                submit()
-            }
-            .submitLabel(.done)
-            .onDisappear {
-                if changed && !submitted {
-                    submit()
-                }
-            }
-    }
-}
-
 private struct ChatFilterFilterSettingsView: View {
     @ObservedObject var filter: SettingsChatFilter
 
@@ -123,7 +91,6 @@ private struct ChatFilterSettingsView: View {
 }
 
 struct ChatFiltersSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var chat: SettingsChat
 
     var body: some View {
