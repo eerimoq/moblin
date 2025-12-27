@@ -18,32 +18,6 @@ func randomName() -> String {
     return colors.randomElement() ?? "Black"
 }
 
-func isGoodPassword(password: String) -> Bool {
-    guard password.count >= 16 else {
-        return false
-    }
-    var seenCharacters = ""
-    for character in password {
-        if seenCharacters.contains(character) {
-            return false
-        }
-        seenCharacters.append(character)
-    }
-    guard password.contains(/\d/) else {
-        return false
-    }
-    return true
-}
-
-func randomGoodPassword() -> String {
-    while true {
-        let password = randomHumanString()
-        if isGoodPassword(password: password) {
-            return password
-        }
-    }
-}
-
 func openUrl(url: String) {
     return UIApplication.shared.open(URL(string: url)!)
 }

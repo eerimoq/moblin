@@ -1,27 +1,17 @@
 import SwiftUI
 
 private struct PasswordView: View {
-    @EnvironmentObject var model: Model
     @State var value: String
     let onSubmit: (String) -> Void
     @State private var changed = false
     @State private var submitted = false
-    @State private var message: String?
+    @Environment(\.dismiss) private var dismiss
 
     private func submit() {
         value = value.trim()
-        if isGoodPassword(password: value) {
-            submitted = true
-            onSubmit(value)
-        }
-    }
-
-    private func createMessage() -> String? {
-        if isGoodPassword(password: value) {
-            return nil
-        } else {
-            return "Not long and random enough"
-        }
+        submitted = true
+        onSubmit(value)
+        dismiss()
     }
 
     var body: some View {
@@ -33,7 +23,6 @@ private struct PasswordView: View {
                         .disableAutocorrection(true)
                         .onChange(of: value) { _ in
                             changed = true
-                            message = createMessage()
                         }
                         .onSubmit {
                             submit()
@@ -45,18 +34,6 @@ private struct PasswordView: View {
                             }
                         }
                     CopyToClipboardButtonView(text: value)
-                }
-            } footer: {
-                if let message {
-                    Text(message)
-                        .foregroundStyle(.red)
-                        .bold()
-                }
-            }
-            Section {
-                TextButtonView("Generate") {
-                    value = randomGoodPassword()
-                    submit()
                 }
             }
         }

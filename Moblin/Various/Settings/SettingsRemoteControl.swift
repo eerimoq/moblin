@@ -104,7 +104,7 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
 class SettingsRemoteControl: Codable, ObservableObject {
     var assistant: SettingsRemoteControlAssistant = .init()
     var streamer: SettingsRemoteControlStreamer = .init()
-    var password: String = randomGoodPassword()
+    var password: String = randomHumanString()
     @Published var streamers: [SettingsRemoteControlAssistant] = []
     @Published var selectedStreamer: UUID?
     var hasMigratedAssistant: Bool = true
@@ -134,7 +134,7 @@ class SettingsRemoteControl: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         assistant = container.decode(.client, SettingsRemoteControlAssistant.self, .init())
         streamer = container.decode(.server, SettingsRemoteControlStreamer.self, .init())
-        password = container.decode(.password, String.self, randomGoodPassword())
+        password = container.decode(.password, String.self, randomHumanString())
         streamers = container.decode(.streamers, [SettingsRemoteControlAssistant].self, [])
         selectedStreamer = container.decode(.selectedStreamer, UUID?.self, nil)
         hasMigratedAssistant = container.decode(.hasMigratedAssistant, Bool.self, false)
