@@ -231,7 +231,6 @@ private struct StreamerView: View {
 }
 
 private struct UrlsView: View {
-    let model: Model
     @ObservedObject var status: StatusOther
     let port: UInt16
 
@@ -293,7 +292,7 @@ struct MoblinkSettingsView: View {
             StreamerView(streamer: streamer)
             if streamer.enabled {
                 Section {
-                    UrlsView(model: model, status: status, port: streamer.port)
+                    UrlsView(status: status, port: streamer.port)
                 } footer: {
                     Text("""
                     Enter one of the URL:s as "Streamer URL" in the relay device to \

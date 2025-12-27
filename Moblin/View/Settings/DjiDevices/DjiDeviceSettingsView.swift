@@ -71,7 +71,6 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
 }
 
 private struct DjiDeviceWiFiSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {

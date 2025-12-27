@@ -557,7 +557,6 @@ private struct TextSelectionView: View {
     let widget: SettingsWidget
     @State var value: String
     @State var suggestion: Int = 0
-    @FocusState var editingText: Bool
 
     var body: some View {
         Form {

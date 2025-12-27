@@ -52,7 +52,6 @@ private struct QuickButtonStealthModeView: View {
 
 struct QuickButtonsButtonSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var quickButtons: SettingsQuickButtons
     @ObservedObject var button: SettingsQuickButton
     let shortcut: Bool
 
@@ -83,7 +82,6 @@ struct QuickButtonsButtonSettingsView: View {
                     Picker(selection: $button.page) {
                         ForEach(1 ... controlBarPages, id: \.self) { page in
                             Text(String(page))
-                                .tag(page)
                         }
                     } label: {
                         Text("Page")

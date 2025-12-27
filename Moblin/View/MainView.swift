@@ -185,9 +185,7 @@ private struct MenuView: View {
         case .quickButtonSettings:
             NavigationStack {
                 if let button = model.quickButtonSettingsButton {
-                    QuickButtonsButtonSettingsView(quickButtons: model.database.quickButtonsGeneral,
-                                                   button: button,
-                                                   shortcut: true)
+                    QuickButtonsButtonSettingsView(button: button, shortcut: true)
                 }
             }
         case .streamingButtonSettings:

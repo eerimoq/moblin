@@ -307,7 +307,6 @@ private struct GoProRtmpUrlSettingsEntryView: View {
 }
 
 private struct GoProLaunchLiveStream: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var goProState: GoProState
 
@@ -347,7 +346,6 @@ private struct GoProLaunchLiveStream: View {
 }
 
 private struct GoProWifiCredentials: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var goProState: GoProState
 
@@ -387,7 +385,6 @@ private struct GoProWifiCredentials: View {
 }
 
 private struct GoProRtmpUrls: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
     @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var goProState: GoProState

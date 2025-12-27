@@ -121,7 +121,6 @@ private struct RemoteControlSettingsStreamerView: View {
 }
 
 private struct UrlsView: View {
-    let model: Model
     @ObservedObject var relay: SettingsRemoteControlServerRelay
     @Binding var port: UInt16
     let status: StatusOther
@@ -163,7 +162,6 @@ private struct UrlsView: View {
 private struct StreamerView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
-    @ObservedObject var remoteControl: RemoteControl
     @ObservedObject var streamer: SettingsRemoteControlAssistant
 
     private func reloadIfEnabled() {
@@ -251,8 +249,7 @@ private struct StreamerView: View {
                     Text("Use a relay server when the assistant is behind CGNAT or similar.")
                 }
                 if streamer.enabled {
-                    UrlsView(model: model,
-                             relay: streamer.relay,
+                    UrlsView(relay: streamer.relay,
                              port: $streamer.port,
                              status: model.statusOther)
                 }
@@ -321,9 +318,7 @@ struct RemoteControlStreamersView: View {
         Section {
             List {
                 ForEach(remoteControlSettings.streamers) { streamer in
-                    StreamerView(remoteControlSettings: remoteControlSettings,
-                                 remoteControl: remoteControl,
-                                 streamer: streamer)
+                    StreamerView(remoteControlSettings: remoteControlSettings, streamer: streamer)
                 }
                 .onDelete {
                     remoteControlSettings.streamers.remove(atOffsets: $0)
@@ -359,8 +354,6 @@ struct RemoteControlStreamersView: View {
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
-    @ObservedObject var status: StatusOther
-    @ObservedObject var assistant: SettingsRemoteControlAssistant
     @Binding var stream: SettingsStream
 
     private func submitPassword(value: String) {

@@ -105,10 +105,7 @@ struct SettingsView: View {
                         }
                     }
                     NavigationLink {
-                        RemoteControlSettingsView(database: database,
-                                                  status: model.statusOther,
-                                                  assistant: database.remoteControl.assistant,
-                                                  stream: $model.stream)
+                        RemoteControlSettingsView(database: database, stream: $model.stream)
                     } label: {
                         Label("Remote control", systemImage: "appletvremote.gen1")
                     }
