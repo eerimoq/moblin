@@ -140,6 +140,7 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setMute(on: on), onSuccess: onSuccess)
     }
 
+    // periphery:ignore
     func setTorch(on: Bool, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setTorch(on: on), onSuccess: onSuccess)
     }

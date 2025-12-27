@@ -15,13 +15,13 @@ class RemoteControl: ObservableObject {
     @Published var zoomPresets: [RemoteControlZoomPreset] = []
     @Published var zoomPreset = UUID()
     @Published var debugLogging = false
-    @Published var assistantShowPreview = true
-    @Published var assistantShowPreviewFullScreen = false
-    @Published var assistantShowStreamers = false
     @Published var preview: UIImage?
     @Published var recording: Bool = false
     @Published var streaming: Bool = false
     @Published var muted: Bool = false
+    @Published var presentingPreview = true
+    @Published var presentingPreviewFullScreen = false
+    @Published var presentingStreamers = false
 }
 
 enum RemoteControlAssistantPreviewUser {

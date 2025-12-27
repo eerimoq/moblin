@@ -2,7 +2,6 @@ import SwiftUI
 
 struct BatteryView: View {
     let model: Model
-    @ObservedObject var database: Database
     @ObservedObject var battery: Battery
 
     private func percentage(level: Double) -> String {

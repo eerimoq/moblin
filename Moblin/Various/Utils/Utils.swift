@@ -110,10 +110,6 @@ extension CGSize {
     func maximum() -> CGFloat {
         return max(height, width)
     }
-
-    func isPortrait() -> Bool {
-        return height > width
-    }
 }
 
 class ResourceUsage {
@@ -204,10 +200,6 @@ extension Data {
 }
 
 extension UnsafeMutableRawBufferPointer {
-    func writeUInt8(_ value: UInt8, offset: Int) {
-        self[offset + 0] = value
-    }
-
     func writeUInt16(_ value: UInt16, offset: Int) {
         self[offset + 0] = UInt8((value >> 8) & 0xFF)
         self[offset + 1] = UInt8(value & 0xFF)

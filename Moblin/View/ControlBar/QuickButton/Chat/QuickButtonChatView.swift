@@ -8,10 +8,6 @@ private struct HighlightMessageView: View {
     @ObservedObject var chat: SettingsChat
     let highlight: ChatHighlight
 
-    private func frameHeightEmotes() -> CGFloat {
-        return CGFloat(20 * 1.7) // Using default font size
-    }
-
     private func imageOpacity() -> Double {
         return postState.deleted ? 0.25 : 1
     }
@@ -149,7 +145,6 @@ private struct LineView: View {
 }
 
 private struct PostView: View {
-    let model: Model
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var chat: ChatProvider
     @Binding var selectedPost: ChatPost?
@@ -223,8 +218,7 @@ private struct MessagesView: View {
                         }
                         .frame(height: 1)
                     ForEach(chat.posts) { post in
-                        PostView(model: model,
-                                 chatSettings: chatSettings,
+                        PostView(chatSettings: chatSettings,
                                  chat: chat,
                                  selectedPost: $selectedPost,
                                  post: post,

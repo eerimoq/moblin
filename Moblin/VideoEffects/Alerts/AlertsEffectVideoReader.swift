@@ -2,12 +2,6 @@ import AVFoundation
 import Collections
 import CoreImage
 
-enum AlertsEffectVideoReaderSetupState {
-    case working
-    case ok
-    case failed
-}
-
 private struct VideoImage {
     let image: CIImage
     let offset: Double

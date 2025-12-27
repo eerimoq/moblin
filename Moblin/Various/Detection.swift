@@ -71,10 +71,6 @@ extension VNFaceObservation {
         return isEyeOpen(eye: landmarks?.leftEye, rotationAngle: rotationAngle)
     }
 
-    func isRightEyeOpen(rotationAngle: Double) -> Double {
-        return isEyeOpen(eye: landmarks?.rightEye, rotationAngle: rotationAngle)
-    }
-
     //     1   2
     // 0           3
     //     5   4

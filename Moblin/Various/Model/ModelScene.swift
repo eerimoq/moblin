@@ -77,10 +77,6 @@ extension Model {
             ?? getQrCodeEffect(id: id)
     }
 
-    func getVideoSourceSettings(id: UUID) -> SettingsWidget? {
-        return database.widgets.first(where: { $0.id == id })
-    }
-
     func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
         return database.fixedHorizon && scene.videoSource.cameraPosition.isBuiltin()
     }

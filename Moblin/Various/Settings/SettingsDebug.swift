@@ -11,11 +11,6 @@ enum SettingsLogLevel: String, Codable, CaseIterable {
     }
 }
 
-class SettingsDebugAudioOutputToInputChannelsMap: Codable {
-    var channel0: Int = 0
-    var channel1: Int = 1
-}
-
 let pixelFormats = ["32BGRA", "420YpCbCr8BiPlanarFullRange", "420YpCbCr8BiPlanarVideoRange"]
 let pixelFormatTypes = [
     kCVPixelFormatType_32BGRA,
@@ -103,7 +98,6 @@ class SettingsDebug: Codable, ObservableObject {
     var srtOverheadBandwidth: Int32 = 25
     @Published var cameraSwitchRemoveBlackish: Float = 0.3
     var maximumBandwidthFollowInput: Bool = true
-    var audioOutputToInputChannelsMap: SettingsDebugAudioOutputToInputChannelsMap = .init()
     @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
     var pixelFormat: String = pixelFormats[1]
@@ -131,7 +125,6 @@ class SettingsDebug: Codable, ObservableObject {
              srtOverheadBandwidth,
              cameraSwitchRemoveBlackish,
              maximumBandwidthFollowInput,
-             audioOutputToInputChannelsMap,
              bluetoothOutputOnly,
              maximumLogLines,
              pixelFormat,
@@ -168,7 +161,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.srtOverheadBandwidth, srtOverheadBandwidth)
         try container.encode(.cameraSwitchRemoveBlackish, cameraSwitchRemoveBlackish)
         try container.encode(.maximumBandwidthFollowInput, maximumBandwidthFollowInput)
-        try container.encode(.audioOutputToInputChannelsMap, audioOutputToInputChannelsMap)
         try container.encode(.bluetoothOutputOnly, bluetoothOutputOnly)
         try container.encode(.maximumLogLines, maximumLogLines)
         try container.encode(.pixelFormat, pixelFormat)
@@ -200,9 +192,6 @@ class SettingsDebug: Codable, ObservableObject {
         srtOverheadBandwidth = container.decode(.srtOverheadBandwidth, Int32.self, 25)
         cameraSwitchRemoveBlackish = container.decode(.cameraSwitchRemoveBlackish, Float.self, 0.3)
         maximumBandwidthFollowInput = container.decode(.maximumBandwidthFollowInput, Bool.self, true)
-        audioOutputToInputChannelsMap = container.decode(.audioOutputToInputChannelsMap,
-                                                         SettingsDebugAudioOutputToInputChannelsMap.self,
-                                                         .init())
         bluetoothOutputOnly = container.decode(.bluetoothOutputOnly, Bool.self, true)
         maximumLogLines = container.decode(.maximumLogLines, Int.self, 500)
         pixelFormat = container.decode(.pixelFormat, String.self, pixelFormats[1])

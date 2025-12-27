@@ -428,7 +428,6 @@ private struct CreatePredictionView: View {
 }
 
 private struct StartRaidView: View {
-    let model: Model
     let text: LocalizedStringKey
     let action: (String, @escaping (OperationResult) -> Void) -> Void
     @State private var username: String = ""
@@ -670,7 +669,7 @@ private struct TwitchChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            StartRaidView(model: model, text: "Raid channel", action: model.raidTwitchChannelByName)
+            StartRaidView(text: "Raid channel", action: model.raidTwitchChannelByName)
             RunCommercialView(model: model)
             SendAnnouncementView(model: model)
         }
@@ -744,7 +743,7 @@ private struct KickChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            StartRaidView(model: model, text: "Host channel", action: model.hostKickChannel)
+            StartRaidView(text: "Host channel", action: model.hostKickChannel)
             CreatePollView(model: model)
             DeletePollView(model: model)
             CreatePredictionView(model: model)

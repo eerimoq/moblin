@@ -16,12 +16,6 @@ class ChatProvider: ObservableObject {
         self.maximumNumberOfMessages = maximumNumberOfMessages
     }
 
-    func reset() {
-        posts = []
-        pausedPosts = []
-        newPosts = []
-    }
-
     func appendMessage(post: ChatPost) {
         if paused {
             if pausedPosts.count < 2 * maximumNumberOfMessages {

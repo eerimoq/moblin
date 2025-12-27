@@ -226,7 +226,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
 
     var body: some View {
         Section {
-            if remoteControl.assistantShowPreview {
+            if remoteControl.presentingPreview {
                 if let preview = remoteControl.preview {
                     Image(uiImage: preview)
                         .resizable()
@@ -234,11 +234,11 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                         .frame(maxWidth: .infinity)
                         .padding([.bottom], 3)
                         .onTapGesture(count: 2) { _ in
-                            remoteControl.assistantShowPreviewFullScreen = true
+                            remoteControl.presentingPreviewFullScreen = true
                         }
                         .onTapGesture(count: 1) { _ in
                             model.remoteControlAssistantStopPreview(user: .panel)
-                            remoteControl.assistantShowPreview = false
+                            remoteControl.presentingPreview = false
                         }
                 } else {
                     Text("No preview received yet.")
@@ -246,13 +246,13 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
             } else {
                 TextButtonView("Show") {
                     model.remoteControlAssistantStartPreview(user: .panel)
-                    remoteControl.assistantShowPreview = true
+                    remoteControl.presentingPreview = true
                 }
             }
         } header: {
             Text("Preview")
         } footer: {
-            if remoteControl.assistantShowPreview {
+            if remoteControl.presentingPreview {
                 Text("Tap the preview to hide it. Double tap to toggle full screen.")
             }
         }
@@ -619,7 +619,7 @@ private struct StreamerSelectionButtonView: View {
 
     var body: some View {
         Button {
-            remoteControl.assistantShowStreamers = true
+            remoteControl.presentingStreamers = true
         } label: {
             if #available(iOS 26, *) {
                 Image(systemName: "person")
@@ -692,7 +692,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
 
     var body: some View {
         ZStack {
-            if remoteControl.assistantShowPreviewFullScreen {
+            if remoteControl.presentingPreviewFullScreen {
                 if !model.isRemoteControlAssistantConfigured() {
                     StreamerNotConfiguredView()
                 } else if model.isRemoteControlAssistantConnected() {
@@ -702,7 +702,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity)
                             .onTapGesture(count: 2) { _ in
-                                remoteControl.assistantShowPreviewFullScreen = false
+                                remoteControl.presentingPreviewFullScreen = false
                             }
                     } else {
                         Text("No preview received yet.")
@@ -743,7 +743,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                 model.detachCamera()
             }
             model.updateScreenAutoOff()
-            if remoteControl.assistantShowPreview {
+            if remoteControl.presentingPreview {
                 model.remoteControlAssistantStartPreview(user: .panel)
             }
             model.remoteControlAssistantStartStatus()
@@ -756,7 +756,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
             model.remoteControlAssistantStopPreview(user: .panel)
             model.remoteControlAssistantStopStatus()
         }
-        .sheet(isPresented: $remoteControl.assistantShowStreamers) {
+        .sheet(isPresented: $remoteControl.presentingStreamers) {
             NavigationStack {
                 Form {
                     RemoteControlStreamersView(remoteControlSettings: model.database.remoteControl,
@@ -764,7 +764,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                 }
                 .navigationTitle("Streamers")
                 .toolbar {
-                    CloseToolbar(presenting: $remoteControl.assistantShowStreamers)
+                    CloseToolbar(presenting: $remoteControl.presentingStreamers)
                 }
             }
         }

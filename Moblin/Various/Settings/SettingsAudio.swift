@@ -57,16 +57,6 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
         return true
     }
 
-    func isAlwaysConnected() -> Bool {
-        if builtInOrientation != nil {
-            return true
-        }
-        if isMediaPlayerCameraOrMic(camera: name) {
-            return true
-        }
-        return false
-    }
-
     func isRtmp() -> Bool {
         return isRtmpCameraOrMic(camera: name)
     }

@@ -735,6 +735,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
 
 class SettingsStreamTwitchReward: Codable, Identifiable {
     var id: UUID = .init()
+    // periphery:ignore
     var rewardId: String = ""
     var title: String = ""
     var alert: SettingsWidgetAlertsAlert = .init()

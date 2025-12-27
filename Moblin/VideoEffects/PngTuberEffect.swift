@@ -4,7 +4,9 @@ import Vision
 import VRMSceneKit
 
 private class PngCoordinate: Decodable {
+    // periphery:ignore
     let x: Double
+    // periphery:ignore
     let y: Double
 
     required init(from decoder: Decoder) throws {
@@ -30,12 +32,16 @@ private class PngTuberImage: Decodable {
     let costumeLayers: [Int]
     // var drag: Int
     // var frames: Int
+    // periphery:ignore
     let identification: Int
     // var ignoreBounce: Bool
     let imageData: CIImage
+    // periphery:ignore
     let offset: PngCoordinate
+    // periphery:ignore
     let parentId: Int?
     // var path: String
+    // periphery:ignore
     let pos: PngCoordinate
     // var rLimitMax: Int
     // var rLimitMin: Int

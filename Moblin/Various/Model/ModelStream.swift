@@ -654,12 +654,10 @@ extension Model {
     private func handleBufferedVideoReady(cameraId: UUID) {
         activeBufferedVideoIds.insert(cameraId)
         var isNetwork = false
-        if let stream = getRtmpStream(id: cameraId) {
+        if getRtmpStream(id: cameraId) != nil {
             isNetwork = true
-            stream.connected = true
-        } else if let stream = getSrtlaStream(id: cameraId) {
+        } else if getSrtlaStream(id: cameraId) != nil {
             isNetwork = true
-            stream.connected = true
         } else if let stream = getRistStream(id: cameraId) {
             isNetwork = true
             stream.connected = true
@@ -674,12 +672,10 @@ extension Model {
     private func handleBufferedVideoRemoved(cameraId: UUID) {
         activeBufferedVideoIds.remove(cameraId)
         var isNetwork = false
-        if let stream = getRtmpStream(id: cameraId) {
+        if getRtmpStream(id: cameraId) != nil {
             isNetwork = true
-            stream.connected = false
-        } else if let stream = getSrtlaStream(id: cameraId) {
+        } else if getSrtlaStream(id: cameraId) != nil {
             isNetwork = true
-            stream.connected = false
         } else if let stream = getRistStream(id: cameraId) {
             isNetwork = true
             stream.connected = false

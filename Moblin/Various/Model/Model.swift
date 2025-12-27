@@ -346,7 +346,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showNavigation = false
     @Published var webBrowserUrl: String = ""
     @Published var quickButtonSettingsButton: SettingsQuickButton?
-    @Published var selectedChatPlatform: ChatPlatformSelection = .all
     @Published var bluetoothAllowed = false
     @Published var sceneSettingsPanelSceneId = 1
     @Published var cameraControlEnabled = false
@@ -407,9 +406,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var lowLightBoost = false
     var showBackgroundStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
-    private var findFaceTimer: Timer?
     var streaming = false
-    var micChange = noMic
     var streamStartTime: ContinuousClock.Instant?
     var isRecorderRecording = false
     var workoutType: WatchProtocolWorkoutType?
@@ -542,7 +539,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let periodicTimerBatteryLevel = SimpleTimer(queue: .main)
     var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
-    var currentBlackSharkCoolerDeviceSettings: SettingsBlackSharkCoolerDevice?
     var blackSharkCoolerDevices: [UUID: BlackSharkCoolerDevice] = [:]
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -556,6 +552,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var externalCameras: [Camera] = []
     var recordingsStorage = RecordingsStorage()
     var latestLowBitrateTime = ContinuousClock.now
+    // periphery:ignore
     var bluetoothCentralManger: CBCentralManager?
     var sceneSettingsPanelScene = SettingsScene(name: "")
     var snapshotJobs: Deque<SnapshotJob> = []

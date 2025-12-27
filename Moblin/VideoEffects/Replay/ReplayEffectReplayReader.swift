@@ -14,9 +14,7 @@ class ReplayEffectReplayReader {
     private let startTime: Double
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
-    private let context = CIContext()
     private var images: Deque<ReplayImage> = []
-    private var completed = false
     private var overlay: CIImage?
     private let size: CGSize
 

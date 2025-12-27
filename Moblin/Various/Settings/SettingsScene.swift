@@ -426,24 +426,6 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
         self = try SettingsVerticalAlignment(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .top
     }
-
-    func toString() -> String {
-        switch self {
-        case .top:
-            return String(localized: "Top")
-        case .bottom:
-            return String(localized: "Bottom")
-        }
-    }
-
-    func toSystem() -> VerticalAlignment {
-        switch self {
-        case .top:
-            return .top
-        case .bottom:
-            return .bottom
-        }
-    }
 }
 
 enum SettingsAlignment: String, Codable, CaseIterable {
@@ -1194,13 +1176,6 @@ enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable 
         self = try SettingsWidgetAlertsChatBotCommandImageType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ??
             .file
-    }
-
-    func toString() -> String {
-        switch self {
-        case .file:
-            return String(localized: "File")
-        }
     }
 }
 

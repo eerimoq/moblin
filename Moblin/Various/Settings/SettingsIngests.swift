@@ -8,7 +8,6 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var streamKey: String = ""
     @Published var latency: Int32 = defaultRtmpLatency
-    var connected: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
@@ -92,7 +91,6 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var streamId: String = ""
-    var connected: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,

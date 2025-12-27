@@ -17,7 +17,9 @@ private enum Message: Codable {
 }
 
 private struct ChatMessage: Codable {
+    // periphery:ignore
     var user: String
+    // periphery:ignore
     var segments: [ChatPostSegment]
 
     init(message: ChatPost) {

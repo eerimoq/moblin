@@ -237,10 +237,6 @@ struct ControlBarPortraitView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var quickButtons: SettingsQuickButtons
 
-    private func controlBarHeight() -> CGFloat {
-        return controlBarWidthDefault
-    }
-
     var body: some View {
         PagesView(model: model,
                   quickButtons: model.quickButtons,
