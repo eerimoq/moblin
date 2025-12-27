@@ -326,8 +326,7 @@ struct SceneShortcutView: View {
 }
 
 struct SceneSettingsView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var database: Database
+    let database: Database
     @ObservedObject var scene: SettingsScene
 
     var body: some View {

@@ -41,7 +41,6 @@ private struct SceneItemView: View {
 }
 
 private struct ScenesListView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var database: Database
 
     var body: some View {

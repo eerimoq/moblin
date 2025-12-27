@@ -34,7 +34,6 @@ func formatDjiDeviceState(state: DjiDeviceState?) -> String {
 }
 
 private struct DjiDeviceSelectDeviceSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject private var djiScanner: DjiDeviceScanner = .shared
     @ObservedObject var device: SettingsDjiDevice
 
@@ -219,7 +218,6 @@ private struct DjiDeviceRtmpSettingsView: View {
 }
 
 private struct DjiDeviceSettingsSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
@@ -263,7 +261,6 @@ private struct DjiDeviceSettingsSettingsView: View {
 }
 
 private struct DjiDeviceAutoRestartSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
