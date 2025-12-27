@@ -41,10 +41,8 @@ private func addScript(_ configuration: WKWebViewConfiguration,
 }
 
 final class BrowserEffect: VideoEffect {
-    private let filter = CIFilter.sourceOverCompositing()
     let webView: WKWebView
     private var snapshot: CIImage?
-    private let videoSize: CGSize
     let width: Double
     let height: Double
     private let url: URL
@@ -67,7 +65,6 @@ final class BrowserEffect: VideoEffect {
         url: URL,
         styleSheet: String,
         widget: SettingsWidgetBrowser,
-        videoSize: CGSize,
         settingName: String,
         moblinAccess: Bool
     ) {
@@ -77,7 +74,6 @@ final class BrowserEffect: VideoEffect {
             scale = UIScreen().scale
         }
         self.url = url
-        self.videoSize = videoSize
         self.settingName = settingName
         baseFps = Double(widget.baseFps)
         fps = baseFps

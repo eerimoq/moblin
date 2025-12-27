@@ -529,7 +529,6 @@ private struct BitrateView: View {
 }
 
 private struct SrtConnectionPrioritiesView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
@@ -616,7 +615,6 @@ private struct ControlBarRemoteControlAssistantControlView: View {
 }
 
 private struct StreamerSelectionButtonView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
@@ -775,7 +773,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
 }
 
 struct ControlBarRemoteControlAssistantView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     var body: some View {
         ZStack {

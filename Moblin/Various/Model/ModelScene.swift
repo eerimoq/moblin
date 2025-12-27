@@ -584,7 +584,6 @@ extension Model {
         }
         browserEffects.removeAll()
         for widget in widgets where widget.type == .browser {
-            let videoSize = media.getCanvasSize()
             guard let url = URL(string: widget.browser.url) else {
                 continue
             }
@@ -592,7 +591,6 @@ extension Model {
                 url: url,
                 styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
-                videoSize: videoSize,
                 settingName: widget.name,
                 moblinAccess: widget.browser.moblinAccess
             )
