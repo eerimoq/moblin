@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
-    @EnvironmentObject private var model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var urlError = ""
 

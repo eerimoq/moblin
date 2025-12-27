@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupDirectSettingsView: View {
-    @EnvironmentObject private var model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var ingestError = ""
 
