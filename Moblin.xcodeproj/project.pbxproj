@@ -132,7 +132,6 @@
 		037D9ECC2E38AC1B00C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Localizable.xcstrings,
 				View/StreamOverlayIconAndTextView.swift,
 				View/StreamOverlayTextView.swift,
 				View/ThermalStateView.swift,
