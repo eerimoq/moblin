@@ -7,27 +7,27 @@ private struct PlatformView: View {
         switch createStreamWizard.platform {
         case .twitch:
             Section {
-                TextValueLocalizedView(name: "Channel name", value: createStreamWizard.twitchChannelName)
-                TextValueLocalizedView(name: "Channel id", value: createStreamWizard.twitchChannelId)
+                TextValueView(name: "Channel name", value: createStreamWizard.twitchChannelName)
+                TextValueView(name: "Channel id", value: createStreamWizard.twitchChannelId)
             } header: {
                 Text("Twitch")
             }
         case .kick:
             Section {
-                TextValueLocalizedView(name: "Channel name", value: createStreamWizard.kickChannelName)
+                TextValueView(name: "Channel name", value: createStreamWizard.kickChannelName)
             } header: {
                 Text("Kick")
             }
         case .youTube:
             Section {
-                TextValueLocalizedView(name: "Channel handle", value: createStreamWizard.youTubeHandle)
+                TextValueView(name: "Channel handle", value: createStreamWizard.youTubeHandle)
             } header: {
                 Text("YouTube")
             }
         case .soop:
             Section {
-                TextValueLocalizedView(name: "Channel name", value: createStreamWizard.soopChannelName)
-                TextValueLocalizedView(name: "Video id", value: createStreamWizard.soopStreamId)
+                TextValueView(name: "Channel name", value: createStreamWizard.soopChannelName)
+                TextValueView(name: "Video id", value: createStreamWizard.soopStreamId)
             } header: {
                 Text("SOOP")
             }
@@ -45,17 +45,17 @@ private struct NetworkSetupDirectView: View {
     var body: some View {
         switch createStreamWizard.platform {
         case .twitch:
-            TextValueLocalizedView(name: "Nearby ingest endpoint", value: createStreamWizard.directIngest)
-            TextValueLocalizedView(name: "Stream key", value: createStreamWizard.directStreamKey)
+            TextValueView(name: "Nearby ingest endpoint", value: createStreamWizard.directIngest)
+            TextValueView(name: "Stream key", value: createStreamWizard.directStreamKey)
         case .kick:
-            TextValueLocalizedView(name: "Stream URL", value: createStreamWizard.directIngest)
-            TextValueLocalizedView(name: "Stream key", value: createStreamWizard.directStreamKey)
+            TextValueView(name: "Stream URL", value: createStreamWizard.directIngest)
+            TextValueView(name: "Stream key", value: createStreamWizard.directStreamKey)
         case .youTube:
-            TextValueLocalizedView(name: "Stream URL", value: createStreamWizard.directIngest)
-            TextValueLocalizedView(name: "Stream key", value: createStreamWizard.directStreamKey)
+            TextValueView(name: "Stream URL", value: createStreamWizard.directIngest)
+            TextValueView(name: "Stream key", value: createStreamWizard.directStreamKey)
         case .soop:
-            TextValueLocalizedView(name: "Stream URL", value: createStreamWizard.directIngest)
-            TextValueLocalizedView(name: "Stream key", value: createStreamWizard.directStreamKey)
+            TextValueView(name: "Stream URL", value: createStreamWizard.directIngest)
+            TextValueView(name: "Stream key", value: createStreamWizard.directStreamKey)
         case .custom:
             EmptyView()
         case .obs:
@@ -70,17 +70,14 @@ private struct NetworkSetupView: View {
     var body: some View {
         if createStreamWizard.networkSetup == .obs {
             Section {
-                TextValueLocalizedView(
-                    name: "IP address or domain name",
-                    value: createStreamWizard.obsAddress
-                )
-                TextValueLocalizedView(name: "Port", value: createStreamWizard.obsPort)
+                TextValueView(name: "IP address or domain name", value: createStreamWizard.obsAddress)
+                TextValueView(name: "Port", value: createStreamWizard.obsPort)
             } header: {
                 Text("OBS")
             }
         } else if createStreamWizard.networkSetup == .belaboxCloudObs {
             Section {
-                TextValueLocalizedView(name: "Ingest URL", value: createStreamWizard.belaboxUrl)
+                TextValueView(name: "Ingest URL", value: createStreamWizard.belaboxUrl)
             } header: {
                 Text("BELABOX cloud")
             }
@@ -105,18 +102,15 @@ struct StreamWizardSummarySettingsView: View {
             if createStreamWizard.platform == .custom || createStreamWizard.networkSetup == .myServers {
                 if createStreamWizard.customProtocol == .srt {
                     Section {
-                        TextValueLocalizedView(name: "URL", value: createStreamWizard.customSrtUrl)
-                        TextValueLocalizedView(name: "Stream id", value: createStreamWizard.customSrtStreamId)
+                        TextValueView(name: "URL", value: createStreamWizard.customSrtUrl)
+                        TextValueView(name: "Stream id", value: createStreamWizard.customSrtStreamId)
                     } header: {
                         Text("SRT(LA)")
                     }
                 } else if createStreamWizard.customProtocol == .rtmp {
                     Section {
-                        TextValueLocalizedView(name: "URL", value: createStreamWizard.customRtmpUrl)
-                        TextValueLocalizedView(
-                            name: "Stream key",
-                            value: createStreamWizard.customRtmpStreamKey
-                        )
+                        TextValueView(name: "URL", value: createStreamWizard.customRtmpUrl)
+                        TextValueView(name: "Stream key", value: createStreamWizard.customRtmpStreamKey)
                     } header: {
                         Text("RTMP(S)")
                     }
@@ -126,16 +120,16 @@ struct StreamWizardSummarySettingsView: View {
                 if createStreamWizard.networkSetup != .direct {
                     if createStreamWizard.obsRemoteControlEnabled {
                         Section {
-                            TextValueLocalizedView(name: "URL", value: createStreamWizard.obsRemoteControlUrl)
-                            TextValueLocalizedView(
+                            TextValueView(name: "URL", value: createStreamWizard.obsRemoteControlUrl)
+                            TextValueView(
                                 name: "Password",
                                 value: createStreamWizard.obsRemoteControlPassword
                             )
-                            TextValueLocalizedView(
+                            TextValueView(
                                 name: "BRB scene",
                                 value: createStreamWizard.obsRemoteControlBrbScene
                             )
-                            TextValueLocalizedView(
+                            TextValueView(
                                 name: "Source name",
                                 value: createStreamWizard.obsRemoteControlSourceName
                             )
@@ -145,9 +139,9 @@ struct StreamWizardSummarySettingsView: View {
                     }
                 }
                 Section {
-                    TextValueLocalizedView(name: "BTTV emotes", value: yesOrNo(createStreamWizard.chatBttv))
-                    TextValueLocalizedView(name: "FFZ emotes", value: yesOrNo(createStreamWizard.chatFfz))
-                    TextValueLocalizedView(name: "7TV emotes", value: yesOrNo(createStreamWizard.chatSeventv))
+                    TextValueView(name: "BTTV emotes", value: yesOrNo(createStreamWizard.chatBttv))
+                    TextValueView(name: "FFZ emotes", value: yesOrNo(createStreamWizard.chatFfz))
+                    TextValueView(name: "7TV emotes", value: yesOrNo(createStreamWizard.chatSeventv))
                 } header: {
                     Text("Chat")
                 }

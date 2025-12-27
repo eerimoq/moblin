@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct TextValueLocalizedView: View {
+struct TextValueView: View {
     let name: LocalizedStringKey
     let value: String
     var sensitive: Bool = false

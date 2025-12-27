@@ -5,19 +5,19 @@ private struct StreamingHistoryStreamSettingsGeneralView: View {
 
     var body: some View {
         Section {
-            TextValueLocalizedView(name: "Start time", value: stream.startTime.formatted())
-            TextValueLocalizedView(name: "Duration", value: stream.duration().formatWithSeconds())
-            TextValueLocalizedView(name: "Total sent", value: stream.totalBytes.formatBytes())
-            TextValueLocalizedView(name: "Average bitrate", value: stream.averageBitrateString())
-            TextValueLocalizedView(name: "Highest bitrate", value: stream.highestBitrateString())
+            TextValueView(name: "Start time", value: stream.startTime.formatted())
+            TextValueView(name: "Duration", value: stream.duration().formatWithSeconds())
+            TextValueView(name: "Total sent", value: stream.totalBytes.formatBytes())
+            TextValueView(name: "Average bitrate", value: stream.averageBitrateString())
+            TextValueView(name: "Highest bitrate", value: stream.highestBitrateString())
             HStack {
                 if stream.numberOfFffffs! != 0 {
                     Image(systemName: "exclamationmark.circle")
                         .foregroundStyle(.red)
                 }
-                TextValueLocalizedView(name: "FFFFF:s", value: "\(stream.numberOfFffffs!)")
+                TextValueView(name: "FFFFF:s", value: "\(stream.numberOfFffffs!)")
             }
-            TextValueLocalizedView(name: "Chat messages", value: stream.numberOfChatMessagesString())
+            TextValueView(name: "Chat messages", value: stream.numberOfChatMessagesString())
         } header: {
             Text("General")
         }
@@ -43,7 +43,7 @@ private struct StreamingHistoryStreamSettingsDeviceHealthView: View {
                             .stroke(.secondary)
                     )
             }
-            TextValueLocalizedView(
+            TextValueView(
                 name: "Lowest battery percentage",
                 value: stream.lowestBatteryPercentageString()
             )
@@ -58,14 +58,14 @@ private struct StreamingHistoryStreamSettingsSettingsView: View {
 
     var body: some View {
         Section {
-            TextValueLocalizedView(name: "Name", value: stream.settings.name)
-            TextValueLocalizedView(name: "Resolution", value: stream.settings.resolutionString())
-            TextValueLocalizedView(name: "FPS", value: "\(stream.settings.fps)")
-            TextValueLocalizedView(name: "Protocol", value: stream.settings.protocolString())
-            TextValueLocalizedView(name: "Codec", value: stream.settings.codecString())
-            TextValueLocalizedView(name: "Bitrate", value: stream.settings.bitrateString())
-            TextValueLocalizedView(name: "Audio codec", value: stream.settings.audioCodecString())
-            TextValueLocalizedView(name: "Audio bitrate", value: stream.settings.audioBitrateString())
+            TextValueView(name: "Name", value: stream.settings.name)
+            TextValueView(name: "Resolution", value: stream.settings.resolutionString())
+            TextValueView(name: "FPS", value: "\(stream.settings.fps)")
+            TextValueView(name: "Protocol", value: stream.settings.protocolString())
+            TextValueView(name: "Codec", value: stream.settings.codecString())
+            TextValueView(name: "Bitrate", value: stream.settings.bitrateString())
+            TextValueView(name: "Audio codec", value: stream.settings.audioCodecString())
+            TextValueView(name: "Audio bitrate", value: stream.settings.audioBitrateString())
         } header: {
             Text("Settings")
         }
