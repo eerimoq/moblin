@@ -209,7 +209,6 @@ private struct NotificationChannelAdBreakBeginMessage: Decodable {
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
-    func twitchEventSubMakeErrorToast(title: String)
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent)
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent)
     func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent)
@@ -241,7 +240,6 @@ private let subTypeChannelHypeTrainBegin = "channel.hype_train.begin"
 private let subTypeChannelHypeTrainProgress = "channel.hype_train.progress"
 private let subTypeChannelHypeTrainEnd = "channel.hype_train.end"
 private let subTypeChannelAdBreakBegin = "channel.ad_break.begin"
-private let subTypeChannelChatMessageDelete = "channel.chat.message_delete"
 
 final class TwitchEventSub: NSObject {
     private var webSocket: WebSocketClient

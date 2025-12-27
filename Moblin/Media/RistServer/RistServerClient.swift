@@ -9,7 +9,6 @@ class RistServerClient {
                                       timecodesEnabled: false,
                                       targetLatency: ristServerClientLatency)
     private let timecodesEnabled: Bool
-    private var connected = false
     private let virtualDestinationPort: UInt16
 
     init?(virtualDestinationPort: UInt16, timecodesEnabled: Bool) {

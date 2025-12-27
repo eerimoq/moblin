@@ -16,7 +16,6 @@ final class VTuberEffect: VideoEffect {
     private var latestNeckZAngle = 0.0
     private var cameraNode: SCNNode?
     private var sceneWidget: SettingsSceneWidget?
-    private var needsDetectionsPresentationTimeStamp = 0.0
     private var renderedImagePresentationTimeStamp = 0.0
     private var renderedImage: CIImage?
 

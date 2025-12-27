@@ -2,41 +2,14 @@ import AVFoundation
 import UIKit
 import Vision
 
-extension CGImagePropertyOrientation {
-    init(_ uiOrientation: UIImage.Orientation) {
-        switch uiOrientation {
-        case .up:
-            self = .up
-        case .upMirrored:
-            self = .upMirrored
-        case .down:
-            self = .down
-        case .downMirrored:
-            self = .downMirrored
-        case .left:
-            self = .left
-        case .leftMirrored:
-            self = .leftMirrored
-        case .right:
-            self = .right
-        case .rightMirrored:
-            self = .rightMirrored
-        @unknown default:
-            self = .up
-        }
-    }
-}
-
 final class ImageEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var originalImage: CIImage?
     private var sceneWidget: SettingsSceneWidget?
     private let settingName: String
-    let widgetId: UUID
 
     init(imageStorage: ImageStorage, settingName: String, widgetId: UUID) {
         self.settingName = settingName
-        self.widgetId = widgetId
         super.init()
         DispatchQueue.global().async {
             guard let data = imageStorage.read(id: widgetId) else {

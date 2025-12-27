@@ -62,8 +62,6 @@ class CameraState: ObservableObject {
 
 let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
 let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
-let builtinBackCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000000")!
-let builtinFrontCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000001")!
 let externalCameraId = UUID(uuidString: "00000000-cafe-dead-beef-000000000002")!
 let noneCamera = "None"
 let screenCaptureCamera = "Screen capture"

@@ -11,11 +11,6 @@ struct RtmpServerStats {
     var speed: UInt64
 }
 
-struct RtmpServerClientInfo {
-    var audioSamplesPerSecond: Double
-    var videoFps: Double
-}
-
 protocol RtmpServerDelegate: AnyObject {
     func rtmpServerOnPublishStart(streamKey: String)
     func rtmpServerOnPublishStop(streamKey: String, reason: String)

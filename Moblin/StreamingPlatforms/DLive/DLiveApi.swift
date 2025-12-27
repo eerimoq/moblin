@@ -14,12 +14,6 @@ struct DLiveUserResponse: Codable {
     let data: DLiveUserData
 }
 
-enum DLiveApiError: Error {
-    case networkError
-    case invalidResponse
-    case userNotFound
-}
-
 private let userInfoQuery = """
 query UserByDisplayName($displayname: String!) {
   userByDisplayName(displayname: $displayname) {

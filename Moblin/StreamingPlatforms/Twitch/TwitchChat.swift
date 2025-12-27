@@ -65,10 +65,6 @@ private enum TwitchEmote {
     }
 }
 
-private enum EmoteError: Error {
-    case invalidImageURL
-}
-
 private struct ChatMessage {
     let id: String?
     let emotes: [ChatMessageEmote]

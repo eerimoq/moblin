@@ -53,40 +53,6 @@ final class ShapeEffect: VideoEffect {
         return roundedRectangleGenerator.outputImage
     }
 
-    private func makeScale(
-        _ videoSourceImage: CIImage,
-        _ sceneWidget: SettingsSceneWidget,
-        _ size: CGSize,
-        _ mirror: Bool
-    ) -> (Double, Double) {
-        var scaleX = toPixels(sceneWidget.layout.size, size.width) / videoSourceImage.extent.size.width
-        let scaleY = toPixels(sceneWidget.layout.size, size.height) / videoSourceImage.extent.size.height
-        let scale = min(scaleX, scaleY)
-        if mirror {
-            scaleX = -1 * scale
-        } else {
-            scaleX = scale
-        }
-        return (scaleX, scale)
-    }
-
-    private func makeTranslation(
-        _ videoSourceImage: CIImage,
-        _ sceneWidget: SettingsSceneWidget,
-        _ size: CGSize,
-        _ scaleX: Double,
-        _ scaleY: Double,
-        _ mirror: Bool
-    ) -> CGAffineTransform {
-        var x = toPixels(sceneWidget.layout.x, size.width)
-        if mirror {
-            x -= videoSourceImage.extent.width * scaleX
-        }
-        let y = size.height - toPixels(sceneWidget.layout.y, size.height) - videoSourceImage.extent
-            .height * scaleY
-        return CGAffineTransform(translationX: x, y: y)
-    }
-
     private func makeSharpCornersImage(_ image: CIImage, _ settings: ShapeEffectSettings) -> CIImage {
         if settings.borderWidth == 0 {
             return image

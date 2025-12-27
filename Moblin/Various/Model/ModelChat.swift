@@ -13,29 +13,6 @@ enum ChatPlatformSelection: CaseIterable {
 }
 
 extension Model {
-    func getAvailableChatPlatforms() -> [ChatPlatformSelection] {
-        var platforms: [ChatPlatformSelection] = []
-        let hasTwitch = stream.twitchLoggedIn
-        let hasKick = stream.kickLoggedIn
-        if hasTwitch, hasKick {
-            platforms.append(.all)
-        }
-        if hasTwitch {
-            platforms.append(.twitch)
-        }
-        if hasKick {
-            platforms.append(.kick)
-        }
-        if !platforms.contains(selectedChatPlatform) {
-            if platforms.contains(.all) {
-                selectedChatPlatform = .all
-            } else if let firstPlatform = platforms.first {
-                selectedChatPlatform = firstPlatform
-            }
-        }
-        return platforms
-    }
-
     func pauseChat() {
         chat.paused = true
         chat.pausedPostsCount = 0

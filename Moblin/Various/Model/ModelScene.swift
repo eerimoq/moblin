@@ -52,10 +52,6 @@ extension Model {
         return pngTuberEffects.first(where: { $0.key == id })?.value
     }
 
-    func getSlideshowEffect(id: UUID) -> SlideshowEffect? {
-        return slideshowEffects.first(where: { $0.key == id })?.value
-    }
-
     func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
         return snapshotEffects.first(where: { $0.key == id })?.value
     }

@@ -2,7 +2,7 @@ import AVFoundation
 import CoreImage.CIFilterBuiltins
 import Vision
 
-public struct VideoEffectInfo {
+struct VideoEffectInfo {
     let sceneVideoSourceId: UUID
     let faceDetectionJobs: [FaceDetectionJob]
     let faceDetections: [UUID: [VNFaceObservation]]

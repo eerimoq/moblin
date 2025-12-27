@@ -574,8 +574,6 @@ class RemoteControlAssistant: NSObject {
 extension RemoteControlAssistant: TwitchEventSubDelegate {
     func twitchEventSubChannelAdBreakBegin(event _: TwitchEventSubChannelAdBreakBeginEvent) {}
 
-    func twitchEventSubMakeErrorToast(title _: String) {}
-
     func twitchEventSubChannelFollow(event _: TwitchEventSubNotificationChannelFollowEvent) {}
 
     func twitchEventSubChannelSubscribe(event _: TwitchEventSubNotificationChannelSubscribeEvent) {}

@@ -5,13 +5,6 @@ import VideoToolbox
 
 private let lowPowerBitrate: UInt32 = 2_000_000
 
-private let iAmLiveWebhookUrl =
-    URL(
-        string: """
-        https://discord.com/api/webhooks/1383532422573985822/\
-        jI3eX5CLADDvhWa93guXttqHCZ_uOalfsYQi2AeYcu6IhFSFw1StNIWPTKTIuFzrWn-q
-        """
-    )!
 let fffffMessage = String(localized: "😢 FFFFF 😢")
 let lowBitrateMessage = String(localized: "Low bitrate")
 let lowBatteryMessage = String(localized: "Low battery")
@@ -30,8 +23,6 @@ class CreateStreamWizard: ObservableObject {
     @Published var twitchChannelName = ""
     @Published var twitchChannelId = ""
     @Published var kickChannelName = ""
-    var kickAccessToken = ""
-    var kickLoggedIn: Bool = false
     @Published var youTubeHandle = ""
     @Published var soopChannelName = ""
     @Published var soopStreamId = ""

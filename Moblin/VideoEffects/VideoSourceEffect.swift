@@ -38,7 +38,6 @@ final class VideoSourceEffect: VideoEffect {
     private let trackFaceTop = PositionInterpolator()
     private let trackFaceBottom = PositionInterpolator()
     private var trackFacePresentationTimeStamp = 0.0
-    private var trackFaceNeedsDetectionsPresentationTimeStamp = 0.0
 
     override func getName() -> String {
         return "Video source"

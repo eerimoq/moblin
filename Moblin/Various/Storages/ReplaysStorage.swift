@@ -118,10 +118,6 @@ final class ReplaysStorage {
         database.replays.insert(replay, at: 0)
     }
 
-    func numberOfRecordingsString() -> String {
-        return String(database.replays.count)
-    }
-
     func isFull() -> Bool {
         return database.replays.count > 499
     }

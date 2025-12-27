@@ -33,12 +33,6 @@ final class SnapshotEffect: VideoEffect {
         }
     }
 
-    func removeSnapshots() {
-        processorPipelineQueue.async {
-            self.removeSnapshotsInner()
-        }
-    }
-
     override func getName() -> String {
         return "Snapshot widget"
     }
@@ -71,12 +65,6 @@ final class SnapshotEffect: VideoEffect {
             return
         }
         currentSnapshot = snapshots.popFirst()
-        hideSnapshotTime = nil
-    }
-
-    private func removeSnapshotsInner() {
-        snapshots.removeAll()
-        currentSnapshot = nil
         hideSnapshotTime = nil
     }
 }

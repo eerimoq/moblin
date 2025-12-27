@@ -114,14 +114,6 @@ class RtmpConnection {
         return nextTransactionId
     }
 
-    func handleWindowSizeFromServer() {
-        _ = socket.write(chunk: RtmpChunk(
-            type: .zero,
-            chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
-            message: RtmpWindowAcknowledgementSizeMessage(100_000)
-        ))
-    }
-
     private func on(data: AsObject) {
         queue.async {
             self.onInternal(data: data)

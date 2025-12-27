@@ -118,13 +118,6 @@ extension Model {
         createTwitchApi(stream: stream).searchChannel(channelName: channelName, onComplete: onComplete)
     }
 
-    func makeNotLoggedInToTwitchToast() {
-        makeErrorToast(
-            title: String(localized: "Not logged in to Twitch"),
-            subTitle: String(localized: "Please login again")
-        )
-    }
-
     func getTwitchChannelInformation(
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void
@@ -448,13 +441,6 @@ extension Model {
 }
 
 extension Model: TwitchEventSubDelegate {
-    func twitchEventSubMakeErrorToast(title: String) {
-        makeErrorToast(
-            title: title,
-            subTitle: String(localized: "Re-login to Twitch probably fixes this error")
-        )
-    }
-
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
         let text = String(localized: "just followed!")
         if stream.twitchToastAlerts.follows {

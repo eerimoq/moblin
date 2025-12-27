@@ -1,15 +1,6 @@
 import Foundation
 import SwiftUI
 
-private enum KickSendError: Error {
-    case notLoggedIn
-    case channelNotSet
-    case channelInfoFailed
-    case invalidURL
-    case invalidResponse
-    case httpError(Int)
-}
-
 extension Model {
     func isKickPusherConfigured() -> Bool {
         return database.chat.enabled && stream.kickChannelName != ""

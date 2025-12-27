@@ -65,24 +65,6 @@ final class NalUnitReader {
         return value
     }
 
-    func readExponentialGolomb() throws -> UInt32 {
-        var numberOfLeadingZeroBits = 0
-        while true {
-            let bit = try readBit()
-            if bit {
-                break
-            }
-            numberOfLeadingZeroBits += 1
-        }
-        var value: UInt32 = 1 << numberOfLeadingZeroBits
-        value |= try readBitsU32(count: numberOfLeadingZeroBits)
-        return value - 1
-    }
-
-    func skipExponentialGolomb() throws {
-        _ = try readExponentialGolomb()
-    }
-
     private func checkOutOfData() throws {
         if byteOffset >= data.count {
             throw "Out of data"

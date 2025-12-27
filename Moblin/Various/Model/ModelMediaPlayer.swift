@@ -111,10 +111,6 @@ extension Model {
             $0.id == id
         }
     }
-
-    func mediaPlayerCameras() -> [String] {
-        return database.mediaPlayers.players.map { $0.camera() }
-    }
 }
 
 extension Model: MediaPlayerDelegate {

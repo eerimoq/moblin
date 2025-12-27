@@ -607,7 +607,6 @@ private struct TextView: View {
 }
 
 final class TextEffect: VideoEffect {
-    private let filter = CIFilter.sourceOverCompositing()
     private var backgroundColor: Color
     private var foregroundColor: Color
     private var fontSize: CGFloat

@@ -31,10 +31,6 @@ private enum MessageToMoblin: Codable {
     case publish(message: PublishMessage)
     case subscribe(topic: SubscribeTopic)
 
-    func toJson() -> String? {
-        return try? String(bytes: JSONEncoder().encode(self), encoding: .utf8)
-    }
-
     static func fromJson(data: String) throws -> MessageToMoblin {
         guard let data = data.data(using: .utf8) else {
             throw "Not a UTF-8 string"
@@ -48,13 +44,6 @@ private enum MessageToBrowser: Codable {
 
     func toJson() -> String? {
         return try? String(bytes: JSONEncoder().encode(self), encoding: .utf8)
-    }
-
-    static func fromJson(data: String) throws -> MessageToBrowser {
-        guard let data = data.data(using: .utf8) else {
-            throw "Not a UTF-8 string"
-        }
-        return try JSONDecoder().decode(MessageToBrowser.self, from: data)
     }
 }
 

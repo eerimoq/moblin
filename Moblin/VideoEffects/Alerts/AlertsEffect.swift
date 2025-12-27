@@ -525,30 +525,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 }
 
-private func makeRoundedRectangleMask(_ image: CIImage) -> CIImage? {
-    let roundedRectangleGenerator = CIFilter.roundedRectangleGenerator()
-    roundedRectangleGenerator.color = .green
-    // Slightly smaller to remove ~1px black line around image.
-    var extent = image.extent
-    extent.origin.x += 1
-    extent.origin.y += 1
-    extent.size.width -= 2
-    extent.size.height -= 2
-    roundedRectangleGenerator.extent = extent
-    var radiusPixels = Float(min(image.extent.height, image.extent.width))
-    radiusPixels /= 2
-    radiusPixels *= 100
-    roundedRectangleGenerator.radius = radiusPixels
-    return roundedRectangleGenerator.outputImage
-}
-
-private func makeCircle(_ image: CIImage) -> CIImage {
-    let roundedCornersBlender = CIFilter.blendWithMask()
-    roundedCornersBlender.inputImage = image
-    roundedCornersBlender.maskImage = makeRoundedRectangleMask(image)
-    return roundedCornersBlender.outputImage ?? image
-}
-
 extension AlertsEffect {
     private func setTwitchSettings(twitch: SettingsWidgetAlertsTwitch) {
         twitchFollowMedia.update(twitch.follows, mediaStorage, bundledImages, bundledSounds)

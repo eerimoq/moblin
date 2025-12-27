@@ -12,7 +12,6 @@ final class Dewarp360Effect: VideoEffect {
     private var currentPan: Float = 0
     private var currentTilt: Float = 0
     private var currentFieldOfView: Float = .pi / 2
-    private var currentSpeed: Float = 0
     private var latestPresentationTimeStamp: CMTime?
 
     override func getName() -> String {
@@ -58,9 +57,5 @@ final class Dewarp360Effect: VideoEffect {
             currentFieldOfView = fieldOfView
         }
         latestPresentationTimeStamp = info.presentationTimeStamp
-    }
-
-    private func calcElapsedTime(presentationTimeStamp: CMTime) -> Float {
-        return Float((presentationTimeStamp - (latestPresentationTimeStamp ?? presentationTimeStamp)).seconds)
     }
 }
