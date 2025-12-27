@@ -160,10 +160,7 @@ private struct KeyFrameIntervalSettingsView: View {
                     submitMaxKeyFrameInterval(value: $0)
                 }
             } label: {
-                TextItemView(
-                    name: String(localized: "Key frame interval"),
-                    value: stream.maxKeyFrameIntervalString()
-                )
+                TextItemLocalizedView(name: "Key frame interval", value: stream.maxKeyFrameIntervalString())
             }
             .disabled(stream.enabled && model.isLive)
         }
@@ -240,10 +237,7 @@ private struct StreamTimecodesSettingsView: View {
                                 }
                             }
                         } label: {
-                            TextItemView(
-                                name: String(localized: "NTP pool address"),
-                                value: stream.ntpPoolAddress
-                            )
+                            TextItemLocalizedView(name: "NTP pool address", value: stream.ntpPoolAddress)
                         }
                         .disabled(stream.codec != .h265hevc || (stream.enabled && model.isLive))
                     }

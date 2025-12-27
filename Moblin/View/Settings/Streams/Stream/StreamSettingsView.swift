@@ -177,7 +177,7 @@ struct StreamSettingsView: View {
                 NavigationLink {
                     StreamUrlSettingsView(stream: stream)
                 } label: {
-                    TextItemView(name: String(localized: "URL"), value: stream.url, sensitive: true)
+                    TextItemLocalizedView(name: "URL", value: stream.url, sensitive: true)
                 }
                 NavigationLink {
                     StreamVideoSettingsView(database: database, stream: stream)
@@ -327,8 +327,8 @@ struct StreamSettingsView: View {
                             stream.estimatedViewerDelay = latency
                         }
                     } label: {
-                        TextItemView(
-                            name: String(localized: "Estimated viewer delay"),
+                        TextItemLocalizedView(
+                            name: "Estimated viewer delay",
                             value: "\(formatOneDecimal(stream.estimatedViewerDelay)) s"
                         )
                     }

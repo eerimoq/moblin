@@ -22,10 +22,7 @@ struct DebugVideoSettingsView: View {
                         selectedId: model.database.debug.pixelFormat
                     )
                 } label: {
-                    TextItemView(
-                        name: String(localized: "Pixel format"),
-                        value: model.database.debug.pixelFormat
-                    )
+                    TextItemLocalizedView(name: "Pixel format", value: model.database.debug.pixelFormat)
                 }
                 Toggle("Allow video range pixel format", isOn: $debug.allowVideoRangePixelFormat)
                     .onChange(of: debug.allowVideoRangePixelFormat) { _ in

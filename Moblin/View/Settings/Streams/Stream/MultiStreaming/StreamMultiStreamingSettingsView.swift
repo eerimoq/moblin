@@ -16,7 +16,7 @@ private struct DestinationView: View {
                         StreamMultiStreamingUrlView(stream: stream, destination: destination)
                             .disabled(stream.enabled && (model.isLive || model.isRecording))
                     } label: {
-                        TextItemView(name: String(localized: "URL"), value: destination.url, sensitive: true)
+                        TextItemLocalizedView(name: "URL", value: destination.url, sensitive: true)
                     }
                 }
             }

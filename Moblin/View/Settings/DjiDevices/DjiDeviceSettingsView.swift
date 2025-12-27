@@ -86,7 +86,7 @@ private struct DjiDeviceWiFiSettingsView: View {
                     }
                 )
             } label: {
-                TextItemView(name: String(localized: "SSID"), value: device.wifiSsid)
+                TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
             }
             .disabled(device.isStarted)
             NavigationLink {
@@ -98,11 +98,7 @@ private struct DjiDeviceWiFiSettingsView: View {
                     }
                 )
             } label: {
-                TextItemView(
-                    name: String(localized: "Password"),
-                    value: device.wifiPassword,
-                    sensitive: true
-                )
+                TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
             }
             .disabled(device.isStarted)
         } header: {

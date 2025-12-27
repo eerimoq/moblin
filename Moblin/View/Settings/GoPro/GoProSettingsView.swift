@@ -93,7 +93,7 @@ private struct GoProWifiCredentialsSettingsView: View {
                             }
                         )
                     } label: {
-                        TextItemView(name: String(localized: "SSID"), value: wifiCredentials.ssid)
+                        TextItemLocalizedView(name: "SSID", value: wifiCredentials.ssid)
                     }
                     NavigationLink {
                         TextEditView(
@@ -105,8 +105,8 @@ private struct GoProWifiCredentialsSettingsView: View {
                             }
                         )
                     } label: {
-                        TextItemView(
-                            name: String(localized: "Password"),
+                        TextItemLocalizedView(
+                            name: "Password",
                             value: wifiCredentials.password,
                             sensitive: true
                         )

@@ -22,7 +22,7 @@ struct NameEditView: View {
                 name = $0
             }
         } label: {
-            TextItemView(name: String(localized: "Name"), value: name)
+            TextItemLocalizedView(name: "Name", value: name)
         }
     }
 }

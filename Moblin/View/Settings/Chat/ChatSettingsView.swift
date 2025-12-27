@@ -49,10 +49,7 @@ private struct ChatSettingsGeneralView: View {
                 }
             } label: {
                 Toggle(isOn: $chat.maximumAgeEnabled) {
-                    TextItemView(
-                        name: String(localized: "Maximum age"),
-                        value: String(chat.maximumAge)
-                    )
+                    TextItemLocalizedView(name: "Maximum age", value: String(chat.maximumAge))
                 }
             }
             Toggle("Show deleted messages", isOn: $chat.showDeletedMessages)

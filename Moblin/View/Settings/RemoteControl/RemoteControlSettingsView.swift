@@ -405,8 +405,8 @@ struct RemoteControlSettingsView: View {
                         onSubmit: submitPassword
                     )
                 } label: {
-                    TextItemView(
-                        name: String(localized: "Password"),
+                    TextItemLocalizedView(
+                        name: "Password",
                         value: database.remoteControl.password,
                         sensitive: true
                     )

@@ -40,10 +40,7 @@ struct ZoomPresetSettingsView: View {
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                TextItemView(
-                    name: preset.name,
-                    value: String(preset.x)
-                )
+                TextItemView(name: preset.name, value: String(preset.x))
             }
         }
     }

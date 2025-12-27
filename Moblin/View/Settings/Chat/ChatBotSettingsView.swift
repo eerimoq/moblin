@@ -437,7 +437,7 @@ private struct ChatBotAliasSettingsView: View {
                             alias.alias = $0
                         }
                     } label: {
-                        TextItemView(name: String(localized: "Alias"), value: alias.alias)
+                        TextItemLocalizedView(name: "Alias", value: alias.alias)
                     }
                     NavigationLink {
                         TextEditView(
@@ -448,7 +448,7 @@ private struct ChatBotAliasSettingsView: View {
                             alias.replacement = $0
                         }
                     } label: {
-                        TextItemView(name: String(localized: "Replacement"), value: alias.replacement)
+                        TextItemLocalizedView(name: "Replacement", value: alias.replacement)
                     }
                 }
             }

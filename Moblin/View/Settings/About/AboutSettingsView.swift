@@ -6,7 +6,7 @@ struct AboutSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextItemView(name: String(localized: "Version"), value: appVersion())
+                TextItemLocalizedView(name: "Version", value: appVersion())
                 NavigationLink {
                     AboutLicensesSettingsView()
                 } label: {

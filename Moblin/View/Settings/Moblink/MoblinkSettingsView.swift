@@ -163,7 +163,7 @@ private struct RelayView: View {
                 NavigationLink {
                     RelayStreamerUrlView(moblink: model.moblink, streamerUrl: $relay.url)
                 } label: {
-                    TextItemView(name: String(localized: "Streamer URL"), value: relay.url)
+                    TextItemLocalizedView(name: "Streamer URL", value: relay.url)
                 }
             }
             TextButtonView("Reset id") {
@@ -278,8 +278,8 @@ struct MoblinkSettingsView: View {
                         onSubmit: submitPassword
                     )
                 } label: {
-                    TextItemView(
-                        name: String(localized: "Password"),
+                    TextItemLocalizedView(
+                        name: "Password",
                         value: model.database.moblink.password,
                         sensitive: true
                     )

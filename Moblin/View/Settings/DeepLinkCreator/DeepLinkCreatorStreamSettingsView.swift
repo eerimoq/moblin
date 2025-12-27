@@ -49,7 +49,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
                         selectedId: video.resolution.rawValue
                     )
                 } label: {
-                    TextItemView(name: String(localized: "Resolution"), value: video.resolution.shortString())
+                    TextItemLocalizedView(name: "Resolution", value: video.resolution.shortString())
                 }
                 NavigationLink {
                     InlinePickerView(
@@ -59,7 +59,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
                         selectedId: String(video.fps)
                     )
                 } label: {
-                    TextItemView(name: "FPS", value: String(video.fps))
+                    TextItemLocalizedView(name: "FPS", value: String(video.fps))
                 }
                 NavigationLink {
                     InlinePickerView(
@@ -69,13 +69,13 @@ private struct DeepLinkCreatorStreamVideoView: View {
                         selectedId: video.codec.rawValue
                     )
                 } label: {
-                    TextItemView(name: String(localized: "Codec"), value: video.codec.rawValue)
+                    TextItemLocalizedView(name: "Codec", value: video.codec.rawValue)
                 }
                 NavigationLink {
                     DeepLinkCreatorStreamVideoBitrateView(video: video)
                 } label: {
-                    TextItemView(
-                        name: String(localized: "Bitrate"),
+                    TextItemLocalizedView(
+                        name: "Bitrate",
                         value: formatBytesPerSecond(speed: Int64(video.bitrate))
                     )
                 }
@@ -93,10 +93,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
                         submitMaxKeyFrameInterval(value: $0)
                     }
                 } label: {
-                    TextItemView(
-                        name: String(localized: "Key frame interval"),
-                        value: "\(video.maxKeyFrameInterval) s"
-                    )
+                    TextItemView(name: "Key frame interval", value: "\(video.maxKeyFrameInterval) s")
                 }
                 Toggle(isOn: $video.bFrames) {
                     Text("B-frames")

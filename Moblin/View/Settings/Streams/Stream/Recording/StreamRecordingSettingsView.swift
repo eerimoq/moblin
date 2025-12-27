@@ -160,10 +160,7 @@ struct StreamRecordingSettingsView: View {
                         submitVideoBitrateChange(value: $0)
                     }
                 } label: {
-                    TextItemView(
-                        name: String(localized: "Video bitrate"),
-                        value: recording.videoBitrateString()
-                    )
+                    TextItemLocalizedView(name: "Video bitrate", value: recording.videoBitrateString())
                 }
                 .disabled(stream.enabled && model.isRecording)
                 NavigationLink {
@@ -180,8 +177,8 @@ struct StreamRecordingSettingsView: View {
                         submitMaxKeyFrameInterval(value: $0)
                     }
                 } label: {
-                    TextItemView(
-                        name: String(localized: "Key frame interval"),
+                    TextItemLocalizedView(
+                        name: "Key frame interval",
                         value: recording.maxKeyFrameIntervalString()
                     )
                 }
@@ -192,10 +189,7 @@ struct StreamRecordingSettingsView: View {
                         bitrate: Float(recording.audioBitrate / 1000)
                     )
                 } label: {
-                    TextItemView(
-                        name: String(localized: "Audio bitrate"),
-                        value: recording.audioBitrateString()
-                    )
+                    TextItemLocalizedView(name: "Audio bitrate", value: recording.audioBitrateString())
                 }
                 .disabled(stream.enabled && model.isRecording)
             }

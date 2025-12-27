@@ -46,7 +46,7 @@ private struct ChatFilterFilterSettingsView: View {
                     }
                 )
             } label: {
-                TextItemView(name: String(localized: "Username"), value: filter.username())
+                TextItemLocalizedView(name: "Username", value: filter.username())
             }
             NavigationLink {
                 TextEditView(
@@ -62,7 +62,7 @@ private struct ChatFilterFilterSettingsView: View {
                     }
                 )
             } label: {
-                TextItemView(name: String(localized: "Message starts with"), value: filter.message())
+                TextItemLocalizedView(name: "Message starts with", value: filter.message())
             }
         } header: {
             Text("Condition")
@@ -116,10 +116,7 @@ private struct ChatFilterSettingsView: View {
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                TextItemView(
-                    name: String(localized: "Username"),
-                    value: filter.username()
-                )
+                TextItemLocalizedView(name: "Username", value: filter.username())
             }
         }
     }

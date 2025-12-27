@@ -648,7 +648,7 @@ struct WidgetTextSettingsView: View {
             NavigationLink {
                 TextSelectionView(widget: widget, value: text.formatString)
             } label: {
-                TextItemView(name: String(localized: "Text"), value: widget.text.formatString)
+                TextItemLocalizedView(name: "Text", value: widget.text.formatString)
             }
         }
         let textEffects = model.getTextEffects(id: widget.id)

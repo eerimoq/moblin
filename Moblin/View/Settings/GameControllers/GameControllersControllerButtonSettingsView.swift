@@ -43,7 +43,7 @@ struct GameControllersControllerButtonSettingsView: View {
                             selectedId: button.function.rawValue
                         )
                     } label: {
-                        TextItemView(name: String(localized: "Function"), value: button.function.toString())
+                        TextItemLocalizedView(name: "Function", value: button.function.toString())
                     }
                 }
                 switch button.function {

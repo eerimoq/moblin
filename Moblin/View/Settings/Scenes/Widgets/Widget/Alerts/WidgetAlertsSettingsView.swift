@@ -180,14 +180,12 @@ struct AlertMediaView: View {
                         loopCount: Float(alert.imageLoopCount)
                     )
                 } label: {
-                    TextItemView(name: String(localized: "Image"),
-                                 value: getImageName(model: model, id: alert.imageId))
+                    TextItemLocalizedView(name: "Image", value: getImageName(model: model, id: alert.imageId))
                 }
                 NavigationLink {
                     AlertSoundSelectorView(alert: alert, soundId: $alert.soundId)
                 } label: {
-                    TextItemView(name: String(localized: "Sound"),
-                                 value: getSoundName(model: model, id: alert.soundId))
+                    TextItemLocalizedView(name: "Sound", value: getSoundName(model: model, id: alert.soundId))
                 }
             case .video:
                 VideoView(model: model, alert: alert)

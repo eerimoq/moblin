@@ -49,7 +49,7 @@ struct KeyboardKeySettingsView: View {
                             selectedId: key.function.rawValue
                         )
                     } label: {
-                        TextItemView(name: String(localized: "Function"), value: key.function.toString())
+                        TextItemLocalizedView(name: "Function", value: key.function.toString())
                     }
                 }
                 switch key.function {

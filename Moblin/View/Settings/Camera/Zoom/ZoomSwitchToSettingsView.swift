@@ -38,10 +38,7 @@ struct ZoomSwitchToSettingsView: View {
             }, set: { value in
                 defaultZoom.enabled = value
             })) {
-                TextItemView(
-                    name: String(localized: "To \(name) camera"),
-                    value: formatX(x: x())
-                )
+                TextItemLocalizedView(name: "To \(name) camera", value: formatX(x: x()))
             }
         }
     }
