@@ -82,9 +82,4 @@ struct CacheImage<Content>: View where Content: View {
             EmptyView()
         }
     }
-
-    private func cacheAndRender(image: Image) -> some View {
-        cache.set(url, image)
-        return content(image)
-    }
 }

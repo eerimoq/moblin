@@ -100,6 +100,7 @@ private func setOrientation(
 }
 
 private class FaceDetectionsCompletion {
+    // periphery:ignore
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool

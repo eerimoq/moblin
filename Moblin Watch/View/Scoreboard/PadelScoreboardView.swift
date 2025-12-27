@@ -48,7 +48,7 @@ struct PadelScoreboard {
 }
 
 private struct TeamPlayersView: View {
-    let model: Model
+    let model: WatchModel
     @Binding var players: [PadelScoreboardPlayer]
 
     var body: some View {
@@ -79,7 +79,7 @@ private struct TeamScoreView: View {
 }
 
 private struct ScoreboardScoreboardView: View {
-    let model: Model
+    let model: WatchModel
     @Binding var scoreboard: PadelScoreboard
 
     var body: some View {
@@ -109,7 +109,7 @@ private struct ScoreboardScoreboardView: View {
 }
 
 private struct PlayerPickerView: View {
-    let model: Model
+    let model: WatchModel
     @ObservedObject var padel: Padel
     @Binding var player: PadelScoreboardPlayer
     @State private var presentingPlayerPicker = false
@@ -139,7 +139,7 @@ private struct PlayerPickerView: View {
 }
 
 private struct TeamPickerView: View {
-    let model: Model
+    let model: WatchModel
     let padel: Padel
     let side: String
     @Binding var team: PadelScoreboardTeam
@@ -157,7 +157,7 @@ private struct TeamPickerView: View {
 }
 
 private struct ScoreboardUndoButtonView: View {
-    let model: Model
+    let model: WatchModel
 
     var body: some View {
         Button {
@@ -169,7 +169,7 @@ private struct ScoreboardUndoButtonView: View {
 }
 
 private struct ScoreboardIncrementHomeButtonView: View {
-    let model: Model
+    let model: WatchModel
     @ObservedObject var padel: Padel
 
     var body: some View {
@@ -183,7 +183,7 @@ private struct ScoreboardIncrementHomeButtonView: View {
 }
 
 private struct ScoreboardIncrementAwayButtonView: View {
-    let model: Model
+    let model: WatchModel
     @ObservedObject var padel: Padel
 
     var body: some View {
@@ -197,7 +197,7 @@ private struct ScoreboardIncrementAwayButtonView: View {
 }
 
 private struct ScoreboardResetScoreButtonView: View {
-    let model: Model
+    let model: WatchModel
     @State private var presentingResetConfirimation = false
 
     var body: some View {
@@ -217,7 +217,7 @@ private struct ScoreboardResetScoreButtonView: View {
 }
 
 struct PadelScoreboardView: View {
-    let model: Model
+    let model: WatchModel
     @ObservedObject var padel: Padel
 
     var body: some View {

@@ -3,11 +3,10 @@ import Foundation
 private let baseUrl = URL(string: "https://api.console.tts.monster")!
 
 struct TtsMonsterVoice: Codable {
-    var voice_id: String
-    var name: String
-    var sample: String
-    var language: String?
-    var metadata: String?
+    let voice_id: String
+    let name: String
+    let language: String?
+    let metadata: String?
 
     func countryCode() -> String? {
         guard let part = metadata?.split(separator: "|").first else {
@@ -31,8 +30,8 @@ struct TtsMonsterVoice: Codable {
 }
 
 struct TtsMonsterVoicesResponse: Codable {
-    var voices: [TtsMonsterVoice]
-    var customVoices: [TtsMonsterVoice]
+    let voices: [TtsMonsterVoice]
+    let customVoices: [TtsMonsterVoice]
 
     func allVoices() -> [TtsMonsterVoice] {
         return customVoices + voices
@@ -40,8 +39,10 @@ struct TtsMonsterVoicesResponse: Codable {
 }
 
 struct TtsMonsterGenerateRequest: Codable {
-    var voice_id: String
-    var message: String
+    // periphery:ignore
+    let voice_id: String
+    // periphery:ignore
+    let message: String
 }
 
 struct TtsMonsterGenerateResponse: Codable {

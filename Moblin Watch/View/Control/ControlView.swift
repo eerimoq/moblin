@@ -1,7 +1,7 @@
 import SwiftUI
 
 private struct ControlLiveView: View {
-    let model: Model
+    let model: WatchModel
     @ObservedObject var control: Control
     @State private var presentingConfirm: Bool = false
     @State private var pendingValue = false
@@ -25,7 +25,7 @@ private struct ControlLiveView: View {
 }
 
 private struct ControlRecordingView: View {
-    let model: Model
+    let model: WatchModel
     @ObservedObject var control: Control
     @State private var presentingConfirm: Bool = false
     @State private var pendingValue = false
@@ -49,7 +49,7 @@ private struct ControlRecordingView: View {
 }
 
 private struct ControlMutedView: View {
-    let model: Model
+    let model: WatchModel
     @ObservedObject var control: Control
 
     var body: some View {
@@ -64,7 +64,7 @@ private struct ControlMutedView: View {
 }
 
 private struct ControlSkipCurrentTtsView: View {
-    @EnvironmentObject var model: Model
+    @EnvironmentObject var model: WatchModel
 
     var body: some View {
         Button {
@@ -76,7 +76,7 @@ private struct ControlSkipCurrentTtsView: View {
 }
 
 private struct ControlInstantReplayView: View {
-    @EnvironmentObject var model: Model
+    @EnvironmentObject var model: WatchModel
     @State private var presentingSelect: Bool = false
 
     var body: some View {
@@ -96,7 +96,7 @@ private struct ControlInstantReplayView: View {
 }
 
 private struct ControlSaveReplayView: View {
-    @EnvironmentObject var model: Model
+    @EnvironmentObject var model: WatchModel
 
     var body: some View {
         Button {
@@ -108,7 +108,7 @@ private struct ControlSaveReplayView: View {
 }
 
 private struct ControlCreateStreamMarkersView: View {
-    @EnvironmentObject var model: Model
+    @EnvironmentObject var model: WatchModel
 
     var body: some View {
         Button {
@@ -126,8 +126,7 @@ class Control: ObservableObject {
 }
 
 struct ControlView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var preview: Preview
+    @EnvironmentObject var model: WatchModel
 
     var body: some View {
         ScrollView {

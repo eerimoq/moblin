@@ -79,7 +79,7 @@ private struct ScoreboardScoreboardView: View {
 }
 
 private struct ScoreboardUndoButtonView: View {
-    let model: Model
+    let model: WatchModel
 
     var body: some View {
         Button {
@@ -91,7 +91,7 @@ private struct ScoreboardUndoButtonView: View {
 }
 
 private struct ScoreboardIncrementHomeButtonView: View {
-    let model: Model
+    let model: WatchModel
 
     var body: some View {
         Button {
@@ -103,7 +103,7 @@ private struct ScoreboardIncrementHomeButtonView: View {
 }
 
 private struct ScoreboardIncrementAwayButtonView: View {
-    let model: Model
+    let model: WatchModel
 
     var body: some View {
         Button {
@@ -115,7 +115,7 @@ private struct ScoreboardIncrementAwayButtonView: View {
 }
 
 private struct ScoreboardResetScoreButtonView: View {
-    let model: Model
+    let model: WatchModel
     @State private var presentingResetConfirimation = false
 
     var body: some View {
@@ -135,7 +135,7 @@ private struct ScoreboardResetScoreButtonView: View {
 }
 
 private struct ScoreboardTabView: View {
-    let model: Model
+    let model: WatchModel
 
     var body: some View {
         VStack(spacing: 5) {
@@ -154,7 +154,7 @@ private struct ScoreboardTabView: View {
 }
 
 private struct ClockTabView: View {
-    let model: Model
+    let model: WatchModel
     @ObservedObject var generic: Generic
     @State var editingMinutes: Int = 0
     @State var editingSeconds: Int = 0
@@ -257,8 +257,7 @@ private struct ClockTabView: View {
 }
 
 struct GenericScoreboardView: View {
-    let model: Model
-    @ObservedObject var generic: Padel
+    let model: WatchModel
 
     var body: some View {
         TabView {

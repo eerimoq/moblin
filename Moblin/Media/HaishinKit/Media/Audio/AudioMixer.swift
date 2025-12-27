@@ -3,7 +3,6 @@ import Collections
 import CoreMedia
 
 private struct Input {
-    let format: AVAudioFormat
     let player: AVAudioPlayerNode
     let converter: AVAudioConverter?
 }
@@ -49,7 +48,7 @@ class AudioMixer {
         } else {
             converter = nil
         }
-        inputs[inputId] = Input(format: format, player: player, converter: converter)
+        inputs[inputId] = Input(player: player, converter: converter)
     }
 
     func remove(inputId: UUID) {

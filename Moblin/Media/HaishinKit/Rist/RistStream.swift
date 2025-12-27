@@ -371,8 +371,6 @@ extension RistStream: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutputPointer dataPointer: UnsafeRawBufferPointer, count: Int) {
         send(dataPointer: dataPointer, count: count)
     }
-
-    func writer(_: MpegTsWriter, doOutputBuffers _: [(UnsafeRawBufferPointer, Int)]) {}
 }
 
 extension RistStream: RistSenderContextDelegate {

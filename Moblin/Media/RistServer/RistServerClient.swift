@@ -8,12 +8,10 @@ class RistServerClient {
     private var reader = MpegTsReader(decoderQueue: ristServerQueue,
                                       timecodesEnabled: false,
                                       targetLatency: ristServerClientLatency)
-    private let timecodesEnabled: Bool
     private let virtualDestinationPort: UInt16
 
-    init?(virtualDestinationPort: UInt16, timecodesEnabled: Bool) {
+    init?(virtualDestinationPort: UInt16) {
         self.virtualDestinationPort = virtualDestinationPort
-        self.timecodesEnabled = timecodesEnabled
         reader.delegate = self
     }
 

@@ -3,12 +3,12 @@ import SwiftUI
 import WrappingHStack
 
 class Chat: ObservableObject {
-    @Published var posts = Deque<ChatPost>()
+    @Published var posts = Deque<WatchChatPost>()
 }
 
 private struct LineView: View {
     @ObservedObject var chatSettings: WatchSettingsChat
-    let post: ChatPost
+    let post: WatchChatPost
 
     var body: some View {
         WrappingHStack(
@@ -79,7 +79,7 @@ private struct HighlightView: View {
 
 private struct NormalView: View {
     @ObservedObject var chatSettings: WatchSettingsChat
-    let post: ChatPost
+    let post: WatchChatPost
 
     func highlightColor(highlight: ChatPostHighlight) -> Color {
         if highlight.kind == .reply {
@@ -119,7 +119,7 @@ private struct RedLineView: View {
 }
 
 private struct InfoView: View {
-    let post: ChatPost
+    let post: WatchChatPost
 
     var body: some View {
         WrappingHStack(

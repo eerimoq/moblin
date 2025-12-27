@@ -3,7 +3,9 @@ import Foundation
 typealias AsObject = [String: AsValue]
 
 struct AsTypedObject: Equatable {
+    // periphery:ignore
     let type: String
+    // periphery:ignore
     let value: AsObject
 }
 
@@ -12,10 +14,6 @@ struct AsEcmaArray: Equatable {
 
     init(_ items: [String: AsValue] = [:]) {
         self.items = items
-    }
-
-    mutating func set(key: String, value: AsValue) {
-        items[key] = value
     }
 
     func get(key: String) throws -> AsValue {
@@ -27,6 +25,7 @@ struct AsEcmaArray: Equatable {
 }
 
 struct AsXmlDocument: Equatable {
+    // periphery:ignore
     let data: String
 }
 
@@ -138,10 +137,6 @@ final class Amf0Encoder: ByteWriter {
 
     private func encodeShortString(_ value: String) {
         encodeShortString(data: value.utf8Data)
-    }
-
-    private func encodeLongString(_ value: String) {
-        encodeLongString(data: value.utf8Data)
     }
 
     private func encodeShortString(data: Data) {

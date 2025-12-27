@@ -18,9 +18,13 @@ private enum CatPrinterCommandId: UInt8 {
 }
 
 struct CatPrinterDeviceState {
+    // periphery:ignore
     let noPaper: Bool
+    // periphery:ignore
     let coverIsOpen: Bool
+    // periphery:ignore
     let isOverheated: Bool
+    // periphery:ignore
     let batteryIsLow: Bool
 }
 

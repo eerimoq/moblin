@@ -12,8 +12,7 @@ extension Model {
         if database.ristServer.enabled {
             let virtualDestinationPorts = database.ristServer.streams.map { $0.virtualDestinationPort }
             ingests.rist = RistServer(port: database.ristServer.port,
-                                      virtualDestinationPorts: virtualDestinationPorts,
-                                      timecodesEnabled: isTimecodesEnabled())
+                                      virtualDestinationPorts: virtualDestinationPorts)
             ingests.rist?.delegate = self
             ingests.rist?.start()
         }

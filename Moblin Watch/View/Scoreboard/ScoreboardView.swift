@@ -6,14 +6,14 @@ enum ScoreboardType {
 }
 
 struct ScoreboardView: View {
-    @EnvironmentObject var model: Model
+    @EnvironmentObject var model: WatchModel
 
     var body: some View {
         switch model.scoreboardType {
         case .padel:
             PadelScoreboardView(model: model, padel: model.padel)
         case .generic:
-            GenericScoreboardView(model: model, generic: model.padel)
+            GenericScoreboardView(model: model)
         case nil:
             EmptyView()
         }

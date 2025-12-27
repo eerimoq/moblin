@@ -30,7 +30,6 @@ struct SimpleEntry: TimelineEntry {
 
 struct MoblinWidgetAppEntryView: View {
     @Environment(\.widgetRenderingMode) var renderingMode
-    var entry: Provider.Entry
 
     var body: some View {
         switch renderingMode {
@@ -54,8 +53,8 @@ struct MoblinWidgetApp: Widget {
     let kind: String = "MoblinWidgetApp"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            MoblinWidgetAppEntryView(entry: entry)
+        StaticConfiguration(kind: kind, provider: Provider()) { _ in
+            MoblinWidgetAppEntryView()
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Moblin")

@@ -24,6 +24,9 @@ style-check:
 lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_FOLDERS)
 
+periphery:
+	periphery scan --index-exclude "Moblin/Integrations/Tesla/Protobuf/*"
+
 spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_FOLDERS)
 

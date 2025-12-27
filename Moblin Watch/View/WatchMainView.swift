@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct MainView: View {
-    @EnvironmentObject var model: Model
+struct WatchMainView: View {
+    @EnvironmentObject var model: WatchModel
 
     var body: some View {
         TabView {
@@ -12,7 +12,7 @@ struct MainView: View {
             if model.scoreboardType != nil && !model.viaRemoteControl {
                 ScoreboardView()
             }
-            ControlView(preview: model.preview)
+            ControlView()
         }
         .onAppear {
             model.setup()

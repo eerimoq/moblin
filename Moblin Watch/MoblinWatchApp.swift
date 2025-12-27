@@ -2,17 +2,17 @@ import SwiftUI
 
 @main
 struct MoblinWatchApp: App {
-    @StateObject var model: Model
-    static var globalModel: Model?
+    @StateObject var model: WatchModel
+    static var globalModel: WatchModel?
 
     init() {
-        MoblinWatchApp.globalModel = Model()
+        MoblinWatchApp.globalModel = WatchModel()
         _model = StateObject(wrappedValue: MoblinWatchApp.globalModel!)
     }
 
     var body: some Scene {
         WindowGroup {
-            MainView()
+            WatchMainView()
                 .environmentObject(model)
         }
     }

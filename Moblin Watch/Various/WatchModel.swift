@@ -7,18 +7,7 @@ import WatchConnectivity
 // Remote control assistant polls status every 5 seconds.
 private let previewTimeout = Duration.seconds(6)
 
-struct TextWidgetNumber: Identifiable {
-    let id: UUID = .init()
-    let value: Int
-}
-
-struct TextWidgetNumberPair: Identifiable {
-    let id: UUID = .init()
-    let title: String
-    let numbers: [TextWidgetNumber]
-}
-
-struct ChatPostSegment: Identifiable {
+struct WatchChatPostSegment: Identifiable {
     let id = UUID()
     let text: String?
     var url: URL?
@@ -63,13 +52,13 @@ struct ChatPostHighlight {
     }
 }
 
-struct ChatPost: Identifiable {
+struct WatchChatPost: Identifiable {
     let id: Int
     let kind: ChatPostKind
     let displayName: String
     let userColor: Color
     let userBadges: [URL]
-    let segments: [ChatPostSegment]
+    let segments: [WatchChatPostSegment]
     let timestamp: String
     var highlight: ChatPostHighlight?
 
@@ -78,7 +67,7 @@ struct ChatPost: Identifiable {
     }
 }
 
-class Model: NSObject, ObservableObject {
+class WatchModel: NSObject, ObservableObject {
     let chat = Chat()
     let preview = Preview()
     let control = Control()
@@ -96,7 +85,6 @@ class Model: NSObject, ObservableObject {
     private var numberOfNormalPostsInChat = 0
     private var nextExpectedWatchChatPostId = 1
     private var nextNonNormalChatLineId = -1
-    private var logId = 1
     var numberOfMessagesReceived = 0
     private var latestThermalStateTime = ContinuousClock.now
     private var healthStore = HKHealthStore()
@@ -145,26 +133,26 @@ class Model: NSObject, ObservableObject {
         return URL(string: url)
     }
 
-    private func appendInfoMessage(message: WatchProtocolChatMessage, segments: [ChatPostSegment]) {
+    private func appendInfoMessage(message: WatchProtocolChatMessage, segments: [WatchChatPostSegment]) {
         nextNonNormalChatLineId -= 1
-        chat.posts.prepend(ChatPost(id: nextNonNormalChatLineId,
-                                    kind: .info,
-                                    displayName: "",
-                                    userColor: .white,
-                                    userBadges: [],
-                                    segments: segments,
-                                    timestamp: message.timestamp))
+        chat.posts.prepend(WatchChatPost(id: nextNonNormalChatLineId,
+                                         kind: .info,
+                                         displayName: "",
+                                         userColor: .white,
+                                         userBadges: [],
+                                         segments: segments,
+                                         timestamp: message.timestamp))
     }
 
     private func appendRedLineMessage(message: WatchProtocolChatMessage) {
         nextNonNormalChatLineId -= 1
-        chat.posts.prepend(ChatPost(id: nextNonNormalChatLineId,
-                                    kind: .redLine,
-                                    displayName: "",
-                                    userColor: .red,
-                                    userBadges: [],
-                                    segments: [],
-                                    timestamp: message.timestamp))
+        chat.posts.prepend(WatchChatPost(id: nextNonNormalChatLineId,
+                                         kind: .redLine,
+                                         displayName: "",
+                                         userColor: .red,
+                                         userBadges: [],
+                                         segments: [],
+                                         timestamp: message.timestamp))
     }
 
     private func handleChatMessage(_ data: Any) throws {
@@ -203,17 +191,18 @@ class Model: NSObject, ObservableObject {
         }
         latestChatMessageTime = now
         chat.posts.prepend(
-            ChatPost(id: message.id,
-                     kind: .normal,
-                     displayName: message.displayName,
-                     userColor: message.userColor.color(),
-                     userBadges: message.userBadges,
-                     segments: message.segments.map { ChatPostSegment(
-                         text: $0.text,
-                         url: makeUrl(url: $0.url)
-                     ) },
-                     timestamp: message.timestamp,
-                     highlight: message.highlight.map { ChatPostHighlight.fromWatchProtocol(highlight: $0) })
+            WatchChatPost(id: message.id,
+                          kind: .normal,
+                          displayName: message.displayName,
+                          userColor: message.userColor.color(),
+                          userBadges: message.userBadges,
+                          segments: message.segments.map { WatchChatPostSegment(
+                              text: $0.text,
+                              url: makeUrl(url: $0.url)
+                          ) },
+                          timestamp: message.timestamp,
+                          highlight: message.highlight
+                              .map { ChatPostHighlight.fromWatchProtocol(highlight: $0) })
         )
         numberOfNormalPostsInChat += 1
         while numberOfNormalPostsInChat > maximumNumberOfWatchChatMessages {
@@ -493,7 +482,7 @@ class Model: NSObject, ObservableObject {
     }
 }
 
-extension Model: WCSessionDelegate {
+extension WatchModel: WCSessionDelegate {
     func session(
         _: WCSession,
         activationDidCompleteWith _: WCSessionActivationState,
@@ -566,7 +555,7 @@ extension Model: WCSessionDelegate {
     ) {}
 }
 
-extension Model: HKWorkoutSessionDelegate {
+extension WatchModel: HKWorkoutSessionDelegate {
     func workoutSession(
         _: HKWorkoutSession,
         didChangeTo _: HKWorkoutSessionState,
@@ -577,7 +566,7 @@ extension Model: HKWorkoutSessionDelegate {
     func workoutSession(_: HKWorkoutSession, didFailWithError _: any Error) {}
 }
 
-extension Model: HKLiveWorkoutBuilderDelegate {
+extension WatchModel: HKLiveWorkoutBuilderDelegate {
     func workoutBuilder(
         _ workoutBuilder: HKLiveWorkoutBuilder,
         didCollectDataOf collectedTypes: Set<HKSampleType>

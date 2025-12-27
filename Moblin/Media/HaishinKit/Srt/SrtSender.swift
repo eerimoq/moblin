@@ -94,7 +94,9 @@ private enum SrtSenderState {
 private struct CommonControlPacketHeader {
     var controlType: ControlPacketType
     var typeSpecificInformation: UInt32
+    // periphery:ignore
     var timestamp: UInt32
+    // periphery:ignore
     var destinationSrtSocketId: UInt32
 
     init(reader: ByteReader) throws {
@@ -196,6 +198,7 @@ class SrtSender {
     private var latestReceivedPacketTime = ContinuousClock.now
     private let packetsInFlightDropThreshold: ContinuousClock.Duration
     private let packetsToSendDropThreshold: ContinuousClock.Duration
+    // periphery:ignore
     private let leakyBucketSmoothingTime: ContinuousClock.Duration
     private var clock = SrtClock()
     private let connectTimer = SimpleTimer(queue: srtlaClientQueue)

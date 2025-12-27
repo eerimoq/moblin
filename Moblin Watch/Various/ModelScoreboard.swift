@@ -4,7 +4,7 @@ import HealthKit
 import SwiftUI
 import WatchConnectivity
 
-extension Model {
+extension WatchModel {
     func handlePadelScoreboard(_ data: Any) throws {
         guard let data = data as? Data else {
             return

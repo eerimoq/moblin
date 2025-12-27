@@ -22,7 +22,7 @@ private struct AudioLevelView: View {
 }
 
 private struct StatusesView: View {
-    @EnvironmentObject var model: Model
+    @EnvironmentObject var model: WatchModel
     @ObservedObject var preview: Preview
     let textPlacement: StreamOverlayIconAndTextPlacement
 
@@ -84,7 +84,7 @@ class Preview: ObservableObject {
 }
 
 struct PreviewView: View {
-    @EnvironmentObject var model: Model
+    @EnvironmentObject var model: WatchModel
     @ObservedObject var preview: Preview
 
     var body: some View {

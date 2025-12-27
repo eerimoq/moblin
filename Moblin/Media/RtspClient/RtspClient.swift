@@ -63,9 +63,11 @@ private class SdpLinesReader {
 }
 
 private struct SdpMediaDescription {
-    var media: String
-    var port: String
-    var proto: String
+    let media: String
+    // periphery:ignore
+    let port: String
+    // periphery:ignore
+    let proto: String
     var attributes: [SdpAttribute] = []
 
     func getValue(for attributeName: String) throws -> String {
@@ -254,6 +256,7 @@ private class Request {
     let method: String
     let url: URL
     var headers: [String: String]
+    // periphery:ignore
     let content: Data?
     let completion: (Response) throws -> Void
     var dueToAuthenticationFailure = false
@@ -331,6 +334,7 @@ private class RtpVideoProcessor: RtpProcessor {
     private var formatDescription: CMFormatDescription?
     private weak var client: RtspClient?
 
+    // periphery:ignore
     init(formatDescription: CMFormatDescription, client: RtspClient) {
         self.formatDescription = formatDescription
         self.client = client
@@ -502,6 +506,7 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
 private class Rtp {
     private var nextExpectedSequenceNumber: UInt16?
     var processor: RtpProcessor?
+    // periphery:ignore
     weak var client: RtspClient?
     private let wrappingTimestamp = WrappingTimestamp(
         name: "RTP",

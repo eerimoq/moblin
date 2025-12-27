@@ -27,14 +27,12 @@ class RistServer {
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
     weak var delegate: (any RistServerDelegate)?
     private let virtualDestinationPorts: [UInt16]
-    private let timecodesEnabled: Bool
     var totalBytesReceived: UInt64 = 0
     private var prevTotalBytesReceived: UInt64 = 0
 
-    init?(port: UInt16, virtualDestinationPorts: [UInt16], timecodesEnabled: Bool) {
+    init?(port: UInt16, virtualDestinationPorts: [UInt16]) {
         self.port = port
         self.virtualDestinationPorts = virtualDestinationPorts
-        self.timecodesEnabled = timecodesEnabled
     }
 
     func start() {
@@ -85,8 +83,7 @@ class RistServer {
             logger.info("rist-server: Ignoring unknown virtual destination port \(virtualDestinationPort)")
             return
         }
-        let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
-                                      timecodesEnabled: timecodesEnabled)
+        let client = RistServerClient(virtualDestinationPort: virtualDestinationPort)
         client?.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
         delegate?.ristServerOnConnected(port: virtualDestinationPort)

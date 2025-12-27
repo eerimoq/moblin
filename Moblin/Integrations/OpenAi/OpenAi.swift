@@ -1,8 +1,9 @@
 import Foundation
 
 private struct Message: Codable {
-    var role: String
-    var content: String
+    // periphery:ignore
+    let role: String
+    let content: String
 }
 
 private struct Choice: Codable {
@@ -10,12 +11,14 @@ private struct Choice: Codable {
 }
 
 private struct Request: Codable {
-    var model: String
-    var messages: [Message]
+    // periphery:ignore
+    let model: String
+    // periphery:ignore
+    let messages: [Message]
 }
 
 private struct Response: Codable {
-    var choices: [Choice]
+    let choices: [Choice]
 }
 
 class OpenAi {
