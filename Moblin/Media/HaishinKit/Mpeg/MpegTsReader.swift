@@ -225,7 +225,7 @@ class MpegTsReader {
         let dimensions = CMVideoFormatDescriptionGetDimensions(formatDescription)
         logger.info("mpeg-ts-reader: Got new video dimensions \(dimensions)")
         videoDecoder?.stopRunning()
-        videoDecoder = VideoDecoder(lockQueue: ristServerQueue)
+        videoDecoder = VideoDecoder(lockQueue: decoderQueue)
         videoDecoder?.delegate = self
         videoDecoder?.startRunning(formatDescription: formatDescription)
     }
