@@ -178,10 +178,6 @@ class MpegTsWriter {
         writeBytesOld(data)
     }
 
-    private func writePacketOld(_ data: Data) {
-        delegate?.writer(self, doOutput: data)
-    }
-
     private func writePacketPointerOld(pointer: UnsafeRawBufferPointer, count: Int) {
         delegate?.writer(self, doOutputPointer: pointer, count: count)
     }

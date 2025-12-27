@@ -7,11 +7,6 @@ protocol SrtStreamNewDelegate: AnyObject {
     func srtStreamOutput(packet: Data)
 }
 
-private enum ReadyState: UInt8 {
-    case initialized
-    case publishing
-}
-
 class SrtStreamNew {
     private let writer: MpegTsWriter
     weak var srtStreamDelegate: SrtStreamNewDelegate?

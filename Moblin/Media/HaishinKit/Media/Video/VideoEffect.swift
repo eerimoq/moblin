@@ -3,7 +3,6 @@ import CoreImage.CIFilterBuiltins
 import Vision
 
 public struct VideoEffectInfo {
-    let isFirstAfterAttach: Bool
     let sceneVideoSourceId: UUID
     let faceDetectionJobs: [FaceDetectionJob]
     let faceDetections: [UUID: [VNFaceObservation]]

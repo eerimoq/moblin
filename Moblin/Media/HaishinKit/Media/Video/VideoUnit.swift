@@ -863,11 +863,9 @@ final class VideoUnit: NSObject {
                               _ sampleBuffer: CMSampleBuffer,
                               _ faceDetectionJobs: [FaceDetectionJob],
                               _ faceDetections: [UUID: [VNFaceObservation]],
-                              _ isSceneSwitchTransition: Bool,
-                              _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                              _ isSceneSwitchTransition: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let info = VideoEffectInfo(
-            isFirstAfterAttach: isFirstAfterAttach,
             sceneVideoSourceId: sceneVideoSourceId,
             faceDetectionJobs: faceDetectionJobs,
             faceDetections: faceDetections,
@@ -1294,8 +1292,7 @@ final class VideoUnit: NSObject {
                 sampleBuffer,
                 faceDetectionJobs,
                 faceDetections,
-                isSceneSwitchTransition,
-                isFirstAfterAttach
+                isSceneSwitchTransition
             )
             removeEffects()
         }

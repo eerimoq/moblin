@@ -10,10 +10,6 @@ final class NalUnitReader {
         byteOffset = offset
     }
 
-    func isByteAligned() -> Bool {
-        return bitOffset == 7
-    }
-
     func available() -> Int {
         return 8 * (data.count - byteOffset) - (7 - bitOffset)
     }
