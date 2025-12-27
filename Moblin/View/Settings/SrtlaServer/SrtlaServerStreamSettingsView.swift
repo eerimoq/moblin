@@ -2,7 +2,6 @@ import Network
 import SwiftUI
 
 private struct UrlsView: View {
-    let model: Model
     @ObservedObject var status: StatusOther
     let proto: String
     let port: UInt16
@@ -80,14 +79,12 @@ struct SrtlaServerStreamSettingsView: View {
                 }
                 Section {
                     UrlsView(
-                        model: model,
                         status: status,
                         proto: "srt",
                         port: srtlaServer.srtPort,
                         streamId: stream.streamId
                     )
                     UrlsView(
-                        model: model,
                         status: status,
                         proto: "srtla",
                         port: srtlaServer.srtlaPort,

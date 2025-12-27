@@ -1,27 +1,5 @@
 import SwiftUI
 
-private class SceneItem: ObservableObject, Identifiable {
-    var id: UUID {
-        scene.id
-    }
-
-    let scene: SettingsScene
-    @Published var enabled: Bool
-
-    init(scene: SettingsScene) {
-        self.scene = scene
-        enabled = false
-    }
-}
-
-private struct SceneItemView: View {
-    @Binding var scene: SceneItem
-
-    var body: some View {
-        Toggle(scene.scene.name, isOn: $scene.enabled)
-    }
-}
-
 private struct WidgetsSettingsItemView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database

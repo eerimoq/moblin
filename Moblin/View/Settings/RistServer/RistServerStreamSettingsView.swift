@@ -2,7 +2,6 @@ import Network
 import SwiftUI
 
 private struct UrlsView: View {
-    let model: Model
     @ObservedObject var status: StatusOther
     let port: UInt16
     let virtualDestinationPort: UInt16
@@ -59,8 +58,7 @@ struct RistServerStreamSettingsView: View {
                     Text("The virtual destination port for this stream.")
                 }
                 Section {
-                    UrlsView(model: model,
-                             status: status,
+                    UrlsView(status: status,
                              port: ristServer.port,
                              virtualDestinationPort: stream.virtualDestinationPort)
                 } header: {

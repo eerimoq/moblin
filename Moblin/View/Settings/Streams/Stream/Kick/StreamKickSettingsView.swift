@@ -221,10 +221,6 @@ struct KickStreamLiveSettingsView: View {
     @Binding var title: String?
     @Binding var category: String?
 
-    private func submitStreamTitle(value: String) {
-        model.setKickStreamTitle(stream: stream, title: value) { _ in }
-    }
-
     var body: some View {
         NavigationLink {
             TextEditView(

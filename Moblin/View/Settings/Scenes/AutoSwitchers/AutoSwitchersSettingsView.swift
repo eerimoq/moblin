@@ -98,7 +98,6 @@ private struct AutoSwitcherSettingsView: View {
 }
 
 private struct AutoSwitcherSettingsItemView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var autoSceneSwitchers: SettingsAutoSceneSwitchers
     @ObservedObject var autoSwitcher: SettingsAutoSceneSwitcher
 
@@ -184,7 +183,6 @@ struct AutoSwitchersView: View {
 }
 
 struct AutoSwitchersSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var autoSceneSwitchers: SettingsAutoSceneSwitchers
     let showSelector: Bool
 

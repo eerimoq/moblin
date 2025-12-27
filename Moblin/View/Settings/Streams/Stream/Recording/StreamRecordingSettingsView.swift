@@ -14,7 +14,6 @@ private struct PickerView: UIViewControllerRepresentable {
 
 private struct RecordingPathView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var stream: SettingsStream
     @ObservedObject var recording: SettingsStreamRecording
     @State var showPicker = false
 
@@ -193,7 +192,7 @@ struct StreamRecordingSettingsView: View {
                 }
                 .disabled(stream.enabled && model.isRecording)
             }
-            RecordingPathView(stream: stream, recording: recording)
+            RecordingPathView(recording: recording)
             Section {
                 Toggle("Clean recordings", isOn: $recording.cleanRecordings)
                     .onChange(of: recording.cleanRecordings) { _ in

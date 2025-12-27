@@ -2,7 +2,6 @@ import Network
 import SwiftUI
 
 private struct UrlsView: View {
-    let model: Model
     @ObservedObject var status: StatusOther
     let port: UInt16
     let streamKey: String
@@ -96,7 +95,7 @@ struct RtmpServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
-                    UrlsView(model: model, status: status, port: rtmpServer.port, streamKey: stream.streamKey)
+                    UrlsView(status: status, port: rtmpServer.port, streamKey: stream.streamKey)
                 } header: {
                     Text("Publish URLs")
                 } footer: {
