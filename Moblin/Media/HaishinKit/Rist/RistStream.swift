@@ -130,7 +130,7 @@ class RistStream {
 
     func addMoblink(endpoint: NWEndpoint, id: UUID, name: String) {
         ristQueue.async {
-            self.addRelayInner(endpoint: endpoint, id: id, name: name)
+            self.addRelayInner(endpoint: endpoint, moblinkId: id, name: name)
         }
     }
 
@@ -242,11 +242,11 @@ class RistStream {
         context = nil
     }
 
-    private func addRelayInner(endpoint: NWEndpoint, id _: UUID, name: String) {
+    private func addRelayInner(endpoint: NWEndpoint, moblinkId _: UUID, name: String) {
         guard bonding else {
             return
         }
-        addPeer(url: makeBondingUrl("rist://\(endpoint)"),
+        addPeer(url: makeRistMoblinkBondingUrl(url, endpoint),
                 interfaceName: name,
                 interfaceType: nil,
                 relayEndpoint: endpoint)
@@ -298,27 +298,10 @@ class RistStream {
             if peers.contains(where: { $0.interfaceName == interface.name }) {
                 continue
             }
-            addPeer(url: makeBondingUrl(url, interface.name),
+            addPeer(url: makeRistBondingUrl(url, interface.name),
                     interfaceName: interface.name,
                     interfaceType: interface.type)
         }
-    }
-
-    private func makeBondingUrl(_ url: String, _ interfaceName: String? = nil) -> String? {
-        guard let url = URL(string: url) else {
-            return nil
-        }
-        guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
-            return nil
-        }
-        urlComponents.query = url.query
-        var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
-        if let interfaceName {
-            queryItems.append(URLQueryItem(name: "miface", value: interfaceName))
-        }
-        queryItems.append(URLQueryItem(name: "weight", value: "1"))
-        urlComponents.queryItems = queryItems
-        return urlComponents.url?.absoluteString
     }
 
     private func handleStatsInner(stats: RistStats) {
@@ -403,4 +386,36 @@ extension RistStream: RistSenderContextDelegate {
         getPeerById(peerId: peerId)?.setDisconnected()
         checkDisconnected()
     }
+}
+
+func makeRistBondingUrl(_ url: String, _ interfaceName: String? = nil) -> String? {
+    guard let url = URL(string: url) else {
+        return nil
+    }
+    guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+        return nil
+    }
+    urlComponents.query = url.query
+    var queryItems: [URLQueryItem] = urlComponents.queryItems ?? []
+    if let interfaceName {
+        queryItems.append(URLQueryItem(name: "miface", value: interfaceName))
+    }
+    queryItems.append(URLQueryItem(name: "weight", value: "1"))
+    urlComponents.queryItems = queryItems
+    return urlComponents.url?.absoluteString
+}
+
+func makeRistMoblinkBondingUrl(_ url: String, _ endpoint: NWEndpoint) -> String? {
+    guard var url = URLComponents(string: url) else {
+        return nil
+    }
+    guard case let .hostPort(host, port) = endpoint else {
+        return nil
+    }
+    url.host = "\(host)"
+    url.port = Int(port.rawValue)
+    guard let url = url.url?.absoluteString else {
+        return nil
+    }
+    return makeRistBondingUrl(url)
 }
