@@ -2,7 +2,9 @@ import Foundation
 
 struct DLiveUserInfo: Codable {
     let id: String
+    // periphery:ignore
     let username: String
+    // periphery:ignore
     let displayname: String
 }
 

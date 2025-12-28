@@ -3,16 +3,22 @@ import Foundation
 private struct Sender: Decodable {
     let id: String?
     let username: String
+    // periphery:ignore
     let displayname: String
+    // periphery:ignore
     let avatar: String?
+    // periphery:ignore
     let badges: [String]?
 }
 
 private struct ChatTextMessage: Decodable {
+    // periphery:ignore
     let __typename: String
+    // periphery:ignore
     let type: String
     let id: String
     let content: String
+    // periphery:ignore
     let createdAt: String
     let sender: Sender
     let role: String?

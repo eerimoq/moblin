@@ -147,15 +147,19 @@ private enum EventType: String, Codable {
 }
 
 private struct Identify: Codable {
+    // periphery:ignore
     let rpcVersion: Int
+    // periphery:ignore
     let authentication: String?
 }
 
 private struct Identified: Codable {
+    // periphery:ignore
     let negotiatedRpcVersion: Int
 }
 
 private struct Reidentify: Codable {
+    // periphery:ignore
     let eventSubscriptions: UInt64
 }
 
@@ -182,6 +186,7 @@ struct GetSceneListResponse: Decodable {
 }
 
 struct GetSceneItemList: Codable {
+    // periphery:ignore
     let sceneName: String
 }
 
@@ -195,7 +200,9 @@ struct GetSceneItemListResponse: Decodable {
 }
 
 struct GetSpecialInputsResponse: Decodable {
+    // periphery:ignore
     let desktop1: String?
+    // periphery:ignore
     let desktop2: String?
     let mic1: String?
     let mic2: String?
@@ -229,6 +236,7 @@ struct GetInputListResponse: Decodable {
 }
 
 struct SetCurrentProgramSceneRequest: Codable {
+    // periphery:ignore
     let sceneName: String
 }
 
@@ -241,9 +249,13 @@ struct GetRecordStatusResponse: Codable {
 }
 
 struct GetSourceScreenshot: Codable {
+    // periphery:ignore
     let sourceName: String
+    // periphery:ignore
     let imageFormat: String
+    // periphery:ignore
     let imageWidth: Int
+    // periphery:ignore
     let imageCompressionQuality: Int
 }
 
@@ -252,11 +264,14 @@ struct GetSourceScreenshotResponse: Codable {
 }
 
 struct SetInputAudioSyncOffset: Codable {
+    // periphery:ignore
     let inputName: String
+    // periphery:ignore
     let inputAudioSyncOffset: Int
 }
 
 struct GetInputAudioSyncOffset: Codable {
+    // periphery:ignore
     let inputName: String
 }
 
@@ -264,30 +279,24 @@ struct GetInputAudioSyncOffsetResponse: Codable {
     let inputAudioSyncOffset: Int
 }
 
-struct SetSceneItemEnabled: Codable {
-    let sceneName: String
-    let sceneItemId: Int
-    let sceneItemEnabled: Bool
-}
-
-struct GetSceneItemId: Codable {
-    let sceneName: String
-    let sourceName: String
-}
-
 struct InputSettings: Codable {}
 
 struct SetInputSettings: Codable {
+    // periphery:ignore
     let inputName: String
+    // periphery:ignore
     let inputSettings: InputSettings
 }
 
 struct SetInputMute: Codable {
+    // periphery:ignore
     let inputName: String
+    // periphery:ignore
     let inputMuted: Bool
 }
 
 struct GetInputMute: Codable {
+    // periphery:ignore
     let inputName: String
 }
 
