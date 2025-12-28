@@ -29,7 +29,7 @@ private let versions = [
         "• Remote control reliable chat and events redesign.",
         "  • Only for Twitch.",
         "• Move OBS remote control shortcut to bottom of remote control page.",
-        "• Optionally show status in top left in stealth mode. 💡 AUTdany",
+        "• Optionally show status in top right in stealth mode. 💡 AUTdany",
         "• Fix stealth mode buttons. 🐛 AUTdany",
         "• Recording resolution override help/warning.",
         "• Allow short remote control passwords. 💡 Let me know",
