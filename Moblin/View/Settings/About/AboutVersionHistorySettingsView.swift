@@ -35,7 +35,7 @@ private let versions = [
         "• Allow short remote control passwords. 💡 Let me know",
         "• German translation updated. ✍️ MaurisonX",
         "• Chinese (HK) translation updated. ✍️ tkg2222",
-        "• Remove control assistant refactoring.",
+        "• Remote control assistant refactoring.",
     ]),
     Version(version: "30.1.0", date: "2025-12-20", changes: [
         "• Korean translation updated. ✍️ Winter1l",
