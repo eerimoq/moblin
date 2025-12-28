@@ -1,11 +1,12 @@
 import SwiftUI
 
 private struct ReplayPreview: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var orientation: Orientation
     @ObservedObject var replay: ReplayProvider
 
     private func width() -> Double {
-        if model.stream.portrait {
+        if orientation.isPortrait {
             return 200
         } else {
             return 300
@@ -14,14 +15,42 @@ private struct ReplayPreview: View {
 
     var body: some View {
         if !replay.isPlaying, let image = replay.previewImage {
-            Image(uiImage: image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: width())
-                .cornerRadius(7)
-                .onTapGesture {
-                    replay.previewImage = nil
-                }
+            ZStack {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: width())
+                    .cornerRadius(7)
+                    .onTapGesture {
+                        replay.previewImage = nil
+                    }
+                    .overlay(
+                        Button {
+                            model.deleteSelectedReplay()
+                            replay.selectedId = nil
+                            replay.previewImage = nil
+                        } label: {
+                            if #available(iOS 26, *) {
+                                Image(systemName: "trash")
+                                    .foregroundStyle(.red)
+                                    .frame(width: 12, height: 12)
+                                    .padding()
+                                    .glassEffect()
+                                    .padding(2)
+                            } else {
+                                Image(systemName: "trash")
+                                    .frame(width: 30, height: 30)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(.gray)
+                                    )
+                                    .foregroundStyle(.red)
+                                    .padding(7)
+                            }
+                        },
+                        alignment: .topLeading
+                    )
+            }
         }
     }
 }
@@ -179,13 +208,15 @@ private struct ReplayControls: View {
 }
 
 private struct ReplayHistoryItem: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var orientation: Orientation
     @ObservedObject var replay: ReplayProvider
     let video: ReplaySettings
     @State var image: UIImage?
+    @State var presentingMenu: Bool = false
 
     private func height() -> Double {
-        if model.stream.portrait {
+        if orientation.isPortrait {
             return 118
         } else {
             return 68
@@ -222,11 +253,13 @@ private struct ReplayHistoryItem: View {
 }
 
 private struct ReplayHistory: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var orientation: Orientation
+    @ObservedObject var replayDatabase: ReplaysDatabase
     @ObservedObject var replay: ReplayProvider
 
     private func height() -> Double {
-        if model.stream.portrait {
+        if orientation.isPortrait {
             return 120
         } else {
             return 70
@@ -236,13 +269,13 @@ private struct ReplayHistory: View {
     var body: some View {
         ScrollView(.horizontal) {
             LazyHStack {
-                if model.replaysStorage.database.replays.isEmpty {
+                if replayDatabase.replays.isEmpty {
                     Text("No replays saved")
                         .padding([.leading], 30)
                         .foregroundStyle(.white)
                 }
-                ForEach(model.replaysStorage.database.replays) {
-                    ReplayHistoryItem(replay: replay, video: $0)
+                ForEach(replayDatabase.replays) {
+                    ReplayHistoryItem(model: model, orientation: orientation, replay: replay, video: $0)
                 }
             }
             .frame(height: height())
@@ -255,14 +288,18 @@ private struct ReplayHistory: View {
 }
 
 struct StreamOverlayRightReplayView: View {
+    let model: Model
     @ObservedObject var replay: ReplayProvider
     let orientation: Orientation
 
     var body: some View {
         VStack(alignment: .trailing) {
-            ReplayPreview(replay: replay)
+            ReplayPreview(model: model, orientation: orientation, replay: replay)
             ReplayControls(replay: replay, orientation: orientation)
-            ReplayHistory(replay: replay)
+            ReplayHistory(model: model,
+                          orientation: orientation,
+                          replayDatabase: model.replaysStorage.database,
+                          replay: replay)
         }
     }
 }

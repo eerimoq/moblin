@@ -52,6 +52,13 @@ extension Model {
         )
     }
 
+    func deleteSelectedReplay() {
+        guard let replayId = replay.selectedId else {
+            return
+        }
+        replaysStorage.delete(id: replayId)
+    }
+
     func replaySpeedChanged() {
         database.replay.speed = replay.speed ?? .one
     }

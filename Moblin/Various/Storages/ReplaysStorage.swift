@@ -40,8 +40,24 @@ class ReplaySettings: Identifiable, Codable {
     }
 }
 
-class ReplaysDatabase: Codable {
-    var replays: [ReplaySettings] = []
+class ReplaysDatabase: Codable, ObservableObject {
+    @Published var replays: [ReplaySettings] = []
+
+    enum CodingKeys: CodingKey {
+        case replays
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.replays, replays)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        replays = container.decode(.replays, [ReplaySettings].self, [])
+    }
 
     static func fromString(settings: String) throws -> ReplaysDatabase {
         let database = try JSONDecoder().decode(
@@ -72,6 +88,10 @@ final class ReplaysStorage {
             realDatabase = ReplaysDatabase()
         }
         cleanup()
+    }
+
+    func delete(id: UUID) {
+        database.replays.removeAll { $0.id == id }
     }
 
     private func cleanup() {
