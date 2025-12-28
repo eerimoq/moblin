@@ -47,7 +47,7 @@ enum RemoteControlResponse: Codable {
 }
 
 enum RemoteControlEvent: Codable {
-    case state(data: RemoteControlState)
+    case state(data: RemoteControlAssistantStreamerState)
     case log(entry: String)
     case mediaShareSegmentReceived(fileId: UUID)
     case status(general: RemoteControlStatusGeneral?,
@@ -587,7 +587,7 @@ struct RemoteControlZoomPreset: Codable, Identifiable {
     var name: String
 }
 
-struct RemoteControlState: Codable {
+struct RemoteControlAssistantStreamerState: Codable {
     var scene: UUID?
     var autoSceneSwitcher: RemoteControlStateAutoSceneSwitcher?
     var mic: String?

@@ -45,13 +45,10 @@ struct DebugSettingsView: View {
                 }
             }
             Section {
-                Toggle(isOn: Binding(get: {
-                    debug.logLevel == .debug
-                }, set: { value in
-                    model.setDebugLogging(on: value)
-                })) {
-                    Text("Debug logging")
-                }
+                Toggle("Debug logging", isOn: $debug.debugLogging)
+                    .onChange(of: debug.debugLogging) { _ in
+                        model.setDebugLogging(on: debug.debugLogging)
+                    }
                 TextEditNavigationView(
                     title: "Maximum log lines",
                     value: String(debug.maximumLogLines),

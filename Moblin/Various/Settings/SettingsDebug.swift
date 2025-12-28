@@ -94,6 +94,8 @@ class SettingsFace: Codable, ObservableObject {
 class SettingsDebug: Codable, ObservableObject {
     static let builtinAudioAndVideoDelayDefault: Double = 0.07
     var logLevel: SettingsLogLevel = .error
+    @Published var debugLogging: Bool = false
+    var debugLoggingMigrated: Bool = false
     @Published var debugOverlay: Bool = false
     var srtOverheadBandwidth: Int32 = 25
     @Published var cameraSwitchRemoveBlackish: Float = 0.3
@@ -121,6 +123,8 @@ class SettingsDebug: Codable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case logLevel,
+             debugLogging,
+             debugLoggingMigrated,
              srtOverlay,
              srtOverheadBandwidth,
              cameraSwitchRemoveBlackish,
@@ -157,6 +161,8 @@ class SettingsDebug: Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.logLevel, logLevel)
+        try container.encode(.debugLogging, debugLogging)
+        try container.encode(.debugLoggingMigrated, debugLoggingMigrated)
         try container.encode(.srtOverlay, debugOverlay)
         try container.encode(.srtOverheadBandwidth, srtOverheadBandwidth)
         try container.encode(.cameraSwitchRemoveBlackish, cameraSwitchRemoveBlackish)
@@ -188,6 +194,12 @@ class SettingsDebug: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         logLevel = container.decode(.logLevel, SettingsLogLevel.self, .error)
+        debugLogging = container.decode(.debugLogging, Bool.self, false)
+        debugLoggingMigrated = container.decode(.debugLoggingMigrated, Bool.self, false)
+        if !debugLoggingMigrated {
+            debugLogging = logLevel == .debug
+            debugLoggingMigrated = true
+        }
         debugOverlay = container.decode(.srtOverlay, Bool.self, false)
         srtOverheadBandwidth = container.decode(.srtOverheadBandwidth, Int32.self, 25)
         cameraSwitchRemoveBlackish = container.decode(.cameraSwitchRemoveBlackish, Float.self, 0.3)

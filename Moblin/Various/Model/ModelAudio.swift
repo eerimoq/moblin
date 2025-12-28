@@ -207,7 +207,7 @@ extension Model {
             try? session.setInputDataSource(dataSource)
         }
         media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: mic.id))
+        remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(mic: mic.id))
     }
 
     func keepSpeakerAlive(now: ContinuousClock.Instant) {
@@ -637,7 +637,7 @@ extension Model {
             return
         }
         media.attachBufferedAudio(cameraId: cameraId)
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(mic: micId))
+        remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(mic: micId))
     }
 }
 

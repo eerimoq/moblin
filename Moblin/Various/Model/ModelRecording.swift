@@ -109,7 +109,8 @@ extension Model {
         if isWatchLocal() {
             sendIsRecordingToWatch(isRecording: isRecording)
         }
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(recording: isRecording))
+        remoteControlStreamer?
+            .stateChanged(state: RemoteControlAssistantStreamerState(recording: isRecording))
     }
 
     func setCleanRecordings() {

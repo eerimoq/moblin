@@ -80,7 +80,7 @@ class RemoteControlStreamer {
         return connected
     }
 
-    func stateChanged(state: RemoteControlState) {
+    func stateChanged(state: RemoteControlAssistantStreamerState) {
         guard connected else {
             return
         }

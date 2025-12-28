@@ -7,7 +7,7 @@ protocol RemoteControlAssistantDelegate: AnyObject {
     func remoteControlAssistantConnected()
     func remoteControlAssistantDisconnected()
     func remoteControlAssistantPreview(preview: Data)
-    func remoteControlAssistantStateChanged(state: RemoteControlState)
+    func remoteControlAssistantStateChanged(state: RemoteControlAssistantStreamerState)
     func remoteControlAssistantLog(entry: String)
     func remoteControlAssistantStatus(general: RemoteControlStatusGeneral?,
                                       topLeft: RemoteControlStatusTopLeft?,
@@ -522,7 +522,7 @@ class RemoteControlAssistant: NSObject {
         gotPing = true
     }
 
-    private func handleStateEvent(state: RemoteControlState) {
+    private func handleStateEvent(state: RemoteControlAssistantStreamerState) {
         delegate?.remoteControlAssistantStateChanged(state: state)
     }
 
@@ -567,7 +567,6 @@ class RemoteControlAssistant: NSObject {
         guard let text = message.toJson() else {
             return
         }
-        // logger.debug("remote-control-assistant: Sending \(text)")
         streamerWebSocket?.sendWebSocket(data: text.data(using: .utf8), opcode: .text)
     }
 }

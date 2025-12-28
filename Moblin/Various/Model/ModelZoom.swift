@@ -68,7 +68,7 @@ extension Model {
             break
         }
         zoom.x = x
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(zoom: x))
+        remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(zoom: x))
         if isWatchLocal() {
             sendZoomToWatch(x: x)
         }
@@ -105,7 +105,8 @@ extension Model {
     private func setBackZoomPreset(presetId: UUID) {
         zoom.backPresetId = presetId
         if cameraPosition == .back {
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(zoomPreset: presetId))
+            remoteControlStreamer?
+                .stateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
@@ -115,7 +116,8 @@ extension Model {
     private func setFrontZoomPreset(presetId: UUID) {
         zoom.frontPresetId = presetId
         if cameraPosition == .front {
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(zoomPreset: presetId))
+            remoteControlStreamer?
+                .stateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
@@ -152,7 +154,7 @@ extension Model {
         if cameraPosition == .front {
             let presets = zoom.frontZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
             remoteControlStreamer?
-                .stateChanged(state: RemoteControlState(zoomPresets: presets))
+                .stateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: presets))
             if isWatchLocal() {
                 sendZoomPresetsToWatch()
             }
@@ -163,7 +165,8 @@ extension Model {
         zoom.backZoomPresets = database.zoom.back.filter { showPreset(preset: $0) }
         if cameraPosition == .back {
             let presets = zoom.backZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-            remoteControlStreamer?.stateChanged(state: RemoteControlState(zoomPresets: presets))
+            remoteControlStreamer?
+                .stateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: presets))
             if isWatchLocal() {
                 sendZoomPresetsToWatch()
             }

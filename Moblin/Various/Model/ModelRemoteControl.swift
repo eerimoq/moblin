@@ -477,7 +477,7 @@ extension Model: RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingStatus = false
         setLowFpsImage()
         updateRemoteControlStatus()
-        var state = RemoteControlState()
+        var state = RemoteControlAssistantStreamerState()
         if sceneSelector.sceneIndex < enabledScenes.count {
             state.scene = enabledScenes[sceneSelector.sceneIndex].id
         }
@@ -498,7 +498,7 @@ extension Model: RemoteControlStreamerDelegate {
             state.zoomPresets = []
         }
         state.zoom = zoom.x
-        state.debugLogging = database.debug.logLevel == .debug
+        state.debugLogging = database.debug.debugLogging
         state.streaming = isLive
         state.recording = isRecording
         state.muted = isMuteOn
@@ -598,6 +598,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetDebugLogging(on: Bool) {
+        database.debug.debugLogging = on
         setDebugLogging(on: on)
     }
 
@@ -758,49 +759,49 @@ extension Model: RemoteControlAssistantDelegate {
         updateRemoteControlStatus()
     }
 
-    func remoteControlAssistantStateChanged(state: RemoteControlState) {
+    func remoteControlAssistantStateChanged(state: RemoteControlAssistantStreamerState) {
         if let scene = state.scene {
-            remoteControlState.scene = scene
+            remoteControlAssistantStreamerState.scene = scene
             remoteControl.scene = scene
         }
         if let autoSceneSwitcher = state.autoSceneSwitcher {
-            remoteControlState.autoSceneSwitcher = autoSceneSwitcher
+            remoteControlAssistantStreamerState.autoSceneSwitcher = autoSceneSwitcher
             remoteControl.autoSceneSwitcher = autoSceneSwitcher.id
         }
         if let mic = state.mic {
-            remoteControlState.mic = mic
+            remoteControlAssistantStreamerState.mic = mic
             remoteControl.mic = mic
         }
         if let bitrate = state.bitrate {
-            remoteControlState.bitrate = bitrate
+            remoteControlAssistantStreamerState.bitrate = bitrate
             remoteControl.bitrate = bitrate
         }
         if let zoomPresets = state.zoomPresets {
-            remoteControlState.zoomPresets = zoomPresets
+            remoteControlAssistantStreamerState.zoomPresets = zoomPresets
             remoteControl.zoomPresets = zoomPresets
         }
         if let zoomPreset = state.zoomPreset {
-            remoteControlState.zoomPreset = zoomPreset
+            remoteControlAssistantStreamerState.zoomPreset = zoomPreset
             remoteControl.zoomPreset = zoomPreset
         }
         if let zoom = state.zoom {
-            remoteControlState.zoom = zoom
+            remoteControlAssistantStreamerState.zoom = zoom
             remoteControl.zoom = String(zoom)
         }
         if let debugLogging = state.debugLogging {
-            remoteControlState.debugLogging = debugLogging
+            remoteControlAssistantStreamerState.debugLogging = debugLogging
             remoteControl.debugLogging = debugLogging
         }
         if let streaming = state.streaming {
-            remoteControlState.streaming = streaming
+            remoteControlAssistantStreamerState.streaming = streaming
             remoteControl.streaming = streaming
         }
         if let recording = state.recording {
-            remoteControlState.recording = recording
+            remoteControlAssistantStreamerState.recording = recording
             remoteControl.recording = recording
         }
         if let muted = state.muted {
-            remoteControlState.muted = muted
+            remoteControlAssistantStreamerState.muted = muted
             remoteControl.muted = muted
         }
         if isWatchRemoteControl() {

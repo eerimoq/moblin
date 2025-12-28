@@ -509,7 +509,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var lastAttachCompletedTime: ContinuousClock.Instant?
     private var relaxedBitrateStartTime: ContinuousClock.Instant?
     var relaxedBitrate = false
-    var remoteControlState = RemoteControlState()
+    var remoteControlAssistantStreamerState = RemoteControlAssistantStreamerState()
     var remoteControlStreamer: RemoteControlStreamer?
     var remoteControlAssistant: RemoteControlAssistant?
     var remoteControlRelay: RemoteControlRelay?
@@ -2068,12 +2068,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setDebugLogging(on: Bool) {
         logger.debugEnabled = on
-        if on {
-            database.debug.logLevel = .debug
-        } else {
-            database.debug.logLevel = .error
-        }
-        remoteControlStreamer?.stateChanged(state: RemoteControlState(debugLogging: on))
+        remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(debugLogging: on))
     }
 
     func isEventsConfigured() -> Bool {

@@ -70,21 +70,19 @@ private struct RemoteControlSrtConnectionPriorityView: View {
 }
 
 private struct RemoteControlSrtConnectionPrioritiesView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     var srt: RemoteControlSettingsSrt
     @State var enabled: Bool
 
     var body: some View {
         Form {
             Section {
-                Toggle(isOn: Binding(get: {
+                Toggle("Enabled", isOn: Binding(get: {
                     enabled
                 }, set: {
                     enabled = $0
                     model.remoteControlAssistantSetSrtConnectionPriorityEnabled(enabled: $0)
-                })) {
-                    Text("Enabled")
-                }
+                }))
             }
             Section {
                 ForEach(srt.connectionPriorities) { priority in
@@ -330,73 +328,73 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
 }
 
 private struct LiveView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
     @State private var presentingConfirm: Bool = false
-    @State private var pendingValue = false
+    @State private var pendingValue: Bool = false
 
     var body: some View {
-        Toggle(isOn: Binding(get: {
-            model.remoteControlState.streaming ?? false
-        }, set: {
-            pendingValue = $0
-            presentingConfirm = true
-        })) {
-            Text("Live")
-        }
-        .confirmationDialog("", isPresented: $presentingConfirm) {
-            Button(pendingValue ? "Go Live" : "End") {
-                model.remoteControlAssistantSetStream(on: pendingValue)
+        Toggle("Live", isOn: $remoteControl.streaming)
+            .onChange(of: remoteControl.streaming) {
+                guard remoteControl.streaming != model.remoteControlAssistantStreamerState.streaming else {
+                    return
+                }
+                pendingValue = $0
+                presentingConfirm = true
             }
-        }
+            .confirmationDialog("", isPresented: $presentingConfirm) {
+                Button(pendingValue ? "Go Live" : "End") {
+                    model.remoteControlAssistantSetStream(on: pendingValue)
+                }
+            }
     }
 }
 
 private struct RecordingView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
     @State private var presentingConfirm: Bool = false
-    @State private var pendingValue = false
+    @State private var pendingValue: Bool = false
 
     var body: some View {
-        Toggle(isOn: Binding(get: {
-            model.remoteControlState.recording ?? false
-        }, set: {
-            pendingValue = $0
-            presentingConfirm = true
-        })) {
-            Text("Recording")
-        }
-        .confirmationDialog("", isPresented: $presentingConfirm) {
-            Button(pendingValue ? "Start recording" : "Stop recording") {
-                model.remoteControlAssistantSetRecord(on: pendingValue)
+        Toggle("Recording", isOn: $remoteControl.recording)
+            .onChange(of: remoteControl.recording) {
+                guard remoteControl.recording != model.remoteControlAssistantStreamerState.recording else {
+                    return
+                }
+                pendingValue = $0
+                presentingConfirm = true
             }
-        }
+            .confirmationDialog("", isPresented: $presentingConfirm) {
+                Button(pendingValue ? "Start recording" : "Stop recording") {
+                    model.remoteControlAssistantSetRecord(on: pendingValue)
+                }
+            }
     }
 }
 
 private struct MutedView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
-        Toggle(isOn: Binding(get: {
-            remoteControl.muted
-        }, set: {
-            model.remoteControlAssistantSetMute(on: $0)
-        })) {
-            Text("Muted")
-        }
+        Toggle("Muted", isOn: $remoteControl.muted)
+            .onChange(of: remoteControl.muted) {
+                guard remoteControl.muted != model.remoteControlAssistantStreamerState.muted else {
+                    return
+                }
+                model.remoteControlAssistantSetMute(on: $0)
+            }
     }
 }
 
 private struct ZoomView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     private func submitZoom(value: String) {
         guard let x = Float(value) else {
-            if let zoom = model.remoteControlState.zoom {
+            if let zoom = model.remoteControlAssistantStreamerState.zoom {
                 remoteControl.zoom = String(zoom)
             }
             return
@@ -412,7 +410,7 @@ private struct ZoomView: View {
                 .multilineTextAlignment(.trailing)
                 .disableAutocorrection(true)
                 .onSubmit {
-                    guard let zoom = model.remoteControlState.zoom else {
+                    guard let zoom = model.remoteControlAssistantStreamerState.zoom else {
                         return
                     }
                     guard remoteControl.zoom != String(zoom) else {
@@ -422,11 +420,11 @@ private struct ZoomView: View {
                 }
         }
         Picker("", selection: $remoteControl.zoomPreset) {
-            ForEach(remoteControl.zoomPresets) { preset in
-                Text(preset.name)
+            ForEach(remoteControl.zoomPresets) {
+                Text($0.name)
             }
             .onChange(of: remoteControl.zoomPreset) { _ in
-                guard remoteControl.zoomPreset != model.remoteControlState.zoomPreset else {
+                guard remoteControl.zoomPreset != model.remoteControlAssistantStreamerState.zoomPreset else {
                     return
                 }
                 model.remoteControlAssistantSetZoomPreset(id: remoteControl.zoomPreset)
@@ -437,20 +435,20 @@ private struct ZoomView: View {
 }
 
 private struct ScenePickerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
         Picker(selection: $remoteControl.scene) {
-            ForEach(remoteControl.settings?.scenes ?? []) { scene in
-                Text(scene.name)
-                    .tag(scene.id)
+            ForEach(remoteControl.settings?.scenes ?? []) {
+                Text($0.name)
+                    .tag($0.id)
             }
         } label: {
             Text("Scene")
         }
         .onChange(of: remoteControl.scene) { _ in
-            guard remoteControl.scene != model.remoteControlState.scene else {
+            guard remoteControl.scene != model.remoteControlAssistantStreamerState.scene else {
                 return
             }
             model.remoteControlAssistantSetScene(id: remoteControl.scene)
@@ -459,22 +457,24 @@ private struct ScenePickerView: View {
 }
 
 private struct AutoSceneSwitcherPickerView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
         Picker(selection: $remoteControl.autoSceneSwitcher) {
             Text("-- None --")
                 .tag(nil as UUID?)
-            ForEach(remoteControl.settings?.autoSceneSwitchers ?? []) { autoSceneSwitcher in
-                Text(autoSceneSwitcher.name)
-                    .tag(autoSceneSwitcher.id as UUID?)
+            ForEach(remoteControl.settings?.autoSceneSwitchers ?? []) {
+                Text($0.name)
+                    .tag($0.id as UUID?)
             }
         } label: {
             Text("Auto scene switcher")
         }
         .onChange(of: remoteControl.autoSceneSwitcher) { _ in
-            guard remoteControl.autoSceneSwitcher != model.remoteControlState.autoSceneSwitcher?.id else {
+            guard remoteControl.autoSceneSwitcher
+                != model.remoteControlAssistantStreamerState.autoSceneSwitcher?.id
+            else {
                 return
             }
             model.remoteControlAssistantSetAutoSceneSwitcher(id: remoteControl.autoSceneSwitcher)
@@ -483,20 +483,20 @@ private struct AutoSceneSwitcherPickerView: View {
 }
 
 private struct MicView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
         Picker(selection: $remoteControl.mic) {
-            ForEach(remoteControl.settings?.mics ?? []) { mic in
-                Text(mic.name)
-                    .tag(mic.id)
+            ForEach(remoteControl.settings?.mics ?? []) {
+                Text($0.name)
+                    .tag($0.id)
             }
         } label: {
             Text("Mic")
         }
         .onChange(of: remoteControl.mic) { _ in
-            guard remoteControl.mic != model.remoteControlState.mic else {
+            guard remoteControl.mic != model.remoteControlAssistantStreamerState.mic else {
                 return
             }
             model.remoteControlAssistantSetMic(id: remoteControl.mic)
@@ -505,22 +505,20 @@ private struct MicView: View {
 }
 
 private struct BitrateView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
         Picker(selection: $remoteControl.bitrate) {
             ForEach(remoteControl.settings?.bitratePresets ?? []) { preset in
-                Text(preset.bitrate > 0 ?
-                    formatBytesPerSecond(speed: Int64(preset.bitrate)) :
-                    "Unknown")
+                Text(preset.bitrate > 0 ? formatBytesPerSecond(speed: Int64(preset.bitrate)) : "Unknown")
                     .tag(preset.id)
             }
         } label: {
             Text("Bitrate")
         }
         .onChange(of: remoteControl.bitrate) { _ in
-            guard remoteControl.bitrate != model.remoteControlState.bitrate else {
+            guard remoteControl.bitrate != model.remoteControlAssistantStreamerState.bitrate else {
                 return
             }
             model.remoteControlAssistantSetBitratePreset(id: remoteControl.bitrate)
@@ -529,12 +527,14 @@ private struct BitrateView: View {
 }
 
 private struct SrtConnectionPrioritiesView: View {
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
         if let settings = remoteControl.settings {
             NavigationLink {
                 RemoteControlSrtConnectionPrioritiesView(
+                    model: model,
                     srt: settings.srt,
                     enabled: settings.srt.connectionPrioritiesEnabled
                 )
@@ -546,21 +546,18 @@ private struct SrtConnectionPrioritiesView: View {
 }
 
 private struct DebugLoggingView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
 
     var body: some View {
-        Toggle(isOn: Binding(get: {
-            remoteControl.debugLogging
-        }, set: {
-            remoteControl.debugLogging = $0
-            guard remoteControl.debugLogging != model.remoteControlState.debugLogging else {
-                return
+        Toggle("Debug logging", isOn: $remoteControl.debugLogging)
+            .onChange(of: remoteControl.debugLogging) { _ in
+                guard remoteControl.debugLogging != model.remoteControlAssistantStreamerState.debugLogging
+                else {
+                    return
+                }
+                model.remoteControlAssistantSetDebugLogging(on: remoteControl.debugLogging)
             }
-            model.remoteControlAssistantSetDebugLogging(on: remoteControl.debugLogging)
-        })) {
-            Text("Debug logging")
-        }
     }
 }
 
@@ -573,16 +570,16 @@ private struct ControlBarRemoteControlAssistantControlView: View {
     var body: some View {
         Section {
             if remoteControl.settings != nil {
-                LiveView(remoteControl: remoteControl)
-                RecordingView(remoteControl: remoteControl)
-                MutedView(remoteControl: remoteControl)
-                ZoomView(remoteControl: remoteControl)
-                ScenePickerView(remoteControl: remoteControl)
-                AutoSceneSwitcherPickerView(remoteControl: remoteControl)
-                MicView(remoteControl: remoteControl)
-                BitrateView(remoteControl: remoteControl)
-                SrtConnectionPrioritiesView(remoteControl: remoteControl)
-                DebugLoggingView(remoteControl: remoteControl)
+                LiveView(model: model, remoteControl: remoteControl)
+                RecordingView(model: model, remoteControl: remoteControl)
+                MutedView(model: model, remoteControl: remoteControl)
+                ZoomView(model: model, remoteControl: remoteControl)
+                ScenePickerView(model: model, remoteControl: remoteControl)
+                AutoSceneSwitcherPickerView(model: model, remoteControl: remoteControl)
+                MicView(model: model, remoteControl: remoteControl)
+                BitrateView(model: model, remoteControl: remoteControl)
+                SrtConnectionPrioritiesView(model: model, remoteControl: remoteControl)
+                DebugLoggingView(model: model, remoteControl: remoteControl)
             } else {
                 HCenter {
                     ProgressView()
