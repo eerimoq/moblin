@@ -23,17 +23,24 @@ struct TwitchApiStreamKey: Decodable {
 }
 
 struct TwitchApiUrls: Decodable {
+    // periphery:ignore
     let url_1x: String
+    // periphery:ignore
     let url_2x: String
+    // periphery:ignore
     let url_4x: String
 }
 
 struct TwitchApiChannelPointsCustomRewardsData: Decodable {
     let id: String
     let title: String
+    // periphery:ignore
     let cost: Int
+    // periphery:ignore
     let image: TwitchApiUrls?
+    // periphery:ignore
     let default_image: TwitchApiUrls
+    // periphery:ignore
     let background_color: String
 }
 
@@ -51,8 +58,11 @@ struct TwitchApiChannelInformation: Decodable {
 }
 
 struct TwitchApiStartCommercialData: Decodable {
+    // periphery:ignore
     let message: String
+    // periphery:ignore
     let length: Int
+    // periphery:ignore
     let retry_after: Int
 }
 
@@ -100,7 +110,9 @@ struct TwitchApiSearchChannels: Decodable {
 }
 
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
+    // periphery:ignore
     let user_id: String
+    // periphery:ignore
     let user_login: String
     let tier: String
 
@@ -131,17 +143,21 @@ struct TwitchApiGetCheermotesDataTiersImagesTheme: Decodable {
 
 struct TwitchApiGetCheermotesDataTiersImages: Decodable {
     let dark: TwitchApiGetCheermotesDataTiersImagesTheme
+    // periphery:ignore
     let light: TwitchApiGetCheermotesDataTiersImagesTheme
 }
 
 struct TwitchApiGetCheermotesDataTier: Decodable {
     let min_bits: Int
+    // periphery:ignore
     let id: String
+    // periphery:ignore
     let color: String
     let images: TwitchApiGetCheermotesDataTiersImages
 }
 
 struct TwitchApiGetCheermotesData: Decodable {
+    // periphery:ignore
     let prefix: String
     let tiers: [TwitchApiGetCheermotesDataTier]
 }
@@ -151,11 +167,13 @@ struct TwitchApiGetCheermotes: Decodable {
 }
 
 struct TwitchApiChatBadgesVersion: Decodable {
+    // periphery:ignore
     let id: String
     let image_url_2x: String
 }
 
 struct TwitchApiChatBadgesData: Decodable {
+    // periphery:ignore
     let set_id: String
     let versions: [TwitchApiChatBadgesVersion]
 }

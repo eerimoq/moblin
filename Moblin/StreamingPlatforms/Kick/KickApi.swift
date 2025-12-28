@@ -3,19 +3,24 @@ import UIKit
 
 struct BadgeImage: Codable {
     let src: String
+    // periphery:ignore
     let srcset: String
 }
 
 struct SubscriberBadge: Codable {
+    // periphery:ignore
     let id: Int
+    // periphery:ignore
     let channel_id: Int
     let months: Int
     let badge_image: BadgeImage
 }
 
 struct KickLivestream: Codable {
+    // periphery:ignore
     let id: Int
     let viewers: Int
+    // periphery:ignore
     let session_title: String?
 }
 
@@ -42,10 +47,13 @@ struct KickUser: Codable {
 
 struct KickCategory: Codable, Identifiable {
     let id: String
+    // periphery:ignore
     let category_id: Int
     let name: String
+    // periphery:ignore
     let slug: String
     let src: String?
+    // periphery:ignore
     let srcset: String?
 }
 
@@ -54,6 +62,7 @@ struct KickCategorySearchHit: Codable {
 }
 
 struct KickCategorySearchResponse: Codable {
+    // periphery:ignore
     let found: Int
     let hits: [KickCategorySearchHit]
 }

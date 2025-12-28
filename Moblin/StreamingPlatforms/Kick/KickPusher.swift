@@ -2,6 +2,7 @@ import Foundation
 
 private struct Badge: Decodable {
     var type: String
+    // periphery:ignore
     var text: String?
     var count: Int?
 }
@@ -108,19 +109,25 @@ private struct MessageDeletedEvent: Decodable {
 
 struct User: Decodable {
     var id: Int
+    // periphery:ignore
     var slug: String
     var username: String
 }
 
 struct Moderator: Decodable {
+    // periphery:ignore
     var id: Int
+    // periphery:ignore
     var slug: String
+    // periphery:ignore
     var username: String
 }
 
 struct KickPusherUserBannedEvent: Decodable {
+    // periphery:ignore
     var id: String
     var user: User
+    // periphery:ignore
     var banned_by: Moderator
     var permanent: Bool
 }
@@ -148,6 +155,7 @@ struct KickPusherStreamHostEvent: Decodable {
 }
 
 struct KickPusherKickSender: Decodable {
+    // periphery:ignore
     var id: Int
     var username: String
 }

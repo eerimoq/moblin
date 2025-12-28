@@ -78,6 +78,7 @@ private struct ChatMessage {
     let firstMessage: Bool
     let subscriber: Bool
     let moderator: Bool
+    // periphery:ignore
     let turbo: Bool
     let bits: String?
     let replySender: String?

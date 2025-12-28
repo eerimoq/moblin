@@ -18,10 +18,15 @@ private struct MessageContainer: Codable {
 }
 
 private struct Open: Codable, DynamicNodeEncoding {
+    // periphery:ignore
     let xmlns: String
+    // periphery:ignore
     let to: String?
+    // periphery:ignore
     let from: String?
+    // periphery:ignore
     let version: String
+    // periphery:ignore
     let id: String?
 
     static func nodeEncoding(for _: CodingKey) -> XMLEncoder.NodeEncoding {
@@ -36,6 +41,7 @@ private struct OpenContainer: Codable {
 private struct Success: Codable {}
 
 private struct SuccessContainer: Codable {
+    // periphery:ignore
     let success: Success
 }
 
@@ -52,8 +58,11 @@ private struct IqContainer: Codable {
 }
 
 private struct Auth: Codable, DynamicNodeEncoding {
+    // periphery:ignore
     let xmlns: String
+    // periphery:ignore
     let mechanism: String
+    // periphery:ignore
     let value: String
 
     enum CodingKeys: String, CodingKey {
@@ -73,10 +82,12 @@ private struct Auth: Codable, DynamicNodeEncoding {
 }
 
 private struct Mechanisms: Codable {
+    // periphery:ignore
     let mechanism: [String]
 }
 
 private struct Features: Codable {
+    // periphery:ignore
     let mechanisms: Mechanisms?
 }
 
