@@ -29,7 +29,7 @@ final class SnapshotEffect: VideoEffect {
 
     func appendSnapshot(image: CIImage) {
         processorPipelineQueue.async {
-            self.appendSnapshotInner(image: image)
+            self.appendSnapshotInternal(image: image)
         }
     }
 
@@ -59,7 +59,7 @@ final class SnapshotEffect: VideoEffect {
         return currentSnapshot != nil
     }
 
-    private func appendSnapshotInner(image: CIImage) {
+    private func appendSnapshotInternal(image: CIImage) {
         snapshots.append(image)
         guard currentSnapshot == nil else {
             return

@@ -37,13 +37,13 @@ class RistServer {
 
     func start() {
         ristServerQueue.async {
-            self.startInner()
+            self.startInternal()
         }
     }
 
     func stop() {
         ristServerQueue.async {
-            self.stopInner()
+            self.stopInternal()
         }
     }
 
@@ -61,14 +61,14 @@ class RistServer {
         }
     }
 
-    private func startInner() {
+    private func startInternal() {
         logger.info("rist-server: Starting")
         context = RistReceiverContext(inputUrl: "rist://@0.0.0.0:\(port)?rtt-min=100")
         context?.delegate = self
         _ = context?.start()
     }
 
-    private func stopInner() {
+    private func stopInternal() {
         logger.info("rist-server: Stopping")
         context = nil
         for virtualDestinationPort in clientsByVirtualDestinationPort.keys {

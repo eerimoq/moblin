@@ -118,25 +118,25 @@ class RistStream {
 
     func start(url: String, bonding: Bool) {
         ristQueue.async {
-            self.startInner(url: url, bonding: bonding)
+            self.startInternal(url: url, bonding: bonding)
         }
     }
 
     func stop() {
         ristQueue.async {
-            self.stopInner()
+            self.stopInternal()
         }
     }
 
     func addMoblink(endpoint: NWEndpoint, id: UUID, name: String) {
         ristQueue.async {
-            self.addRelayInner(endpoint: endpoint, moblinkId: id, name: name)
+            self.addMoblinkInternal(endpoint: endpoint, moblinkId: id, name: name)
         }
     }
 
     func removeMoblink(endpoint: NWEndpoint) {
         ristQueue.async {
-            self.removeRelayInner(endpoint: endpoint)
+            self.removeMoblinkInternal(endpoint: endpoint)
         }
     }
 
@@ -175,7 +175,7 @@ class RistStream {
 
     func updateConnectionsWeights() {
         ristQueue.async {
-            self.updateConnectionsWeightsInner()
+            self.updateConnectionsWeightsInternal()
         }
     }
 
@@ -199,7 +199,7 @@ class RistStream {
         ristDelegate?.ristStreamOnDisconnected()
     }
 
-    private func startInner(url: String, bonding: Bool) {
+    private func startInternal(url: String, bonding: Bool) {
         state = .connecting
         self.url = url
         self.bonding = bonding
@@ -230,7 +230,7 @@ class RistStream {
         ristDelegate?.ristStreamRelayDestinationAddress(address: host, port: UInt16(clamping: port))
     }
 
-    private func stopInner() {
+    private func stopInternal() {
         state = .disconnected
         networkPathMonitor?.cancel()
         networkPathMonitor = nil
@@ -242,7 +242,7 @@ class RistStream {
         context = nil
     }
 
-    private func addRelayInner(endpoint: NWEndpoint, moblinkId _: UUID, name: String) {
+    private func addMoblinkInternal(endpoint: NWEndpoint, moblinkId _: UUID, name: String) {
         guard bonding else {
             return
         }
@@ -252,14 +252,14 @@ class RistStream {
                 relayEndpoint: endpoint)
     }
 
-    private func removeRelayInner(endpoint: NWEndpoint) {
+    private func removeMoblinkInternal(endpoint: NWEndpoint) {
         guard bonding else {
             return
         }
         peers.removeAll(where: { $0.relayEndpoint == endpoint })
     }
 
-    private func updateConnectionsWeightsInner() {
+    private func updateConnectionsWeightsInternal() {
         for peer in peers {
             guard let stats = peer.stats, let adaptiveWeight = peer.adaptiveWeight else {
                 continue
@@ -304,7 +304,7 @@ class RistStream {
         }
     }
 
-    private func handleStatsInner(stats: RistStats) {
+    private func handleStatsInternal(stats: RistStats) {
         logger.debug("""
         rist: peer \(stats.sender.peerId), rtt \(stats.sender.rtt), \
         sent \(stats.sender.sentPackets), received \(stats.sender.receivedPackets), \
@@ -359,29 +359,29 @@ extension RistStream: MpegTsWriterDelegate {
 extension RistStream: RistSenderContextDelegate {
     func ristSenderContextStats(_: RistSenderContext, stats: RistStats) {
         ristQueue.async {
-            self.handleStatsInner(stats: stats)
+            self.handleStatsInternal(stats: stats)
         }
     }
 
     func ristSenderContextPeerConnected(_: RistSenderContext, peerId: UInt32) {
         ristQueue.async {
-            self.handlePeerConnectedInner(peerId: peerId)
+            self.handlePeerConnectedInternal(peerId: peerId)
         }
     }
 
     func ristSenderContextPeerDisconnected(_: RistSenderContext, peerId: UInt32) {
         ristQueue.async {
-            self.handlePeerDisconnectedInner(peerId: peerId)
+            self.handlePeerDisconnectedInternal(peerId: peerId)
         }
     }
 
-    private func handlePeerConnectedInner(peerId: UInt32) {
+    private func handlePeerConnectedInternal(peerId: UInt32) {
         logger.info("rist: Peer \(peerId) connected")
         getPeerById(peerId: peerId)?.setConnected()
         checkConnected()
     }
 
-    private func handlePeerDisconnectedInner(peerId: UInt32) {
+    private func handlePeerDisconnectedInternal(peerId: UInt32) {
         logger.info("rist: Peer \(peerId) disconnected")
         getPeerById(peerId: peerId)?.setDisconnected()
         checkDisconnected()

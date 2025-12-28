@@ -248,7 +248,7 @@ extension Model {
 
     func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
         var addedSceneIds: Set<UUID> = []
-        return isCaptureDeviceWidgetInner(widget: widget, addedSceneIds: &addedSceneIds)
+        return isCaptureDeviceWidgetInternal(widget: widget, addedSceneIds: &addedSceneIds)
     }
 
     func getFillFrame(scene: SettingsScene) -> Bool {
@@ -272,7 +272,7 @@ extension Model {
 
     func getSceneWidgets(scene: SettingsScene, onlyEnabled: Bool) -> [WidgetInScene] {
         var addedSceneIds: Set<UUID> = []
-        return getSceneWidgetsInner(scene, onlyEnabled, &addedSceneIds)
+        return getSceneWidgetsInternal(scene, onlyEnabled, &addedSceneIds)
     }
 
     func switchToNextSceneRoundRobin() {
@@ -1120,7 +1120,9 @@ extension Model {
         return crops
     }
 
-    private func isCaptureDeviceWidgetInner(widget: SettingsWidget, addedSceneIds: inout Set<UUID>) -> Bool {
+    private func isCaptureDeviceWidgetInternal(widget: SettingsWidget,
+                                               addedSceneIds: inout Set<UUID>) -> Bool
+    {
         switch widget.type {
         case .scene:
             if addedSceneIds.contains(widget.scene.sceneId) {
@@ -1129,7 +1131,7 @@ extension Model {
             addedSceneIds.insert(widget.scene.sceneId)
             if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
                 for widget in getSceneWidgets(scene: scene, onlyEnabled: false) where
-                    isCaptureDeviceWidgetInner(widget: widget.widget, addedSceneIds: &addedSceneIds)
+                    isCaptureDeviceWidgetInternal(widget: widget.widget, addedSceneIds: &addedSceneIds)
                 {
                     return true
                 }
@@ -1146,9 +1148,9 @@ extension Model {
         }
     }
 
-    private func getSceneWidgetsInner(_ scene: SettingsScene,
-                                      _ onlyEnabled: Bool,
-                                      _ addedSceneIds: inout Set<UUID>) -> [WidgetInScene]
+    private func getSceneWidgetsInternal(_ scene: SettingsScene,
+                                         _ onlyEnabled: Bool,
+                                         _ addedSceneIds: inout Set<UUID>) -> [WidgetInScene]
     {
         var widgets: [WidgetInScene] = []
         for sceneWidget in scene.widgets {
@@ -1165,7 +1167,7 @@ extension Model {
                 widgets.append(WidgetInScene(widget: widget, sceneWidget: sceneWidget))
                 addedSceneIds.insert(widget.scene.sceneId)
                 if let scene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                    widgets += getSceneWidgetsInner(scene, onlyEnabled, &addedSceneIds)
+                    widgets += getSceneWidgetsInternal(scene, onlyEnabled, &addedSceneIds)
                 }
             } else {
                 widgets.append(WidgetInScene(widget: widget, sceneWidget: sceneWidget))

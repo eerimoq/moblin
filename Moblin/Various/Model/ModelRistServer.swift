@@ -54,13 +54,13 @@ extension Model {
 extension Model: RistServerDelegate {
     func ristServerOnConnected(port: UInt16) {
         DispatchQueue.main.async {
-            self.ristServerOnConnectedInner(virtualDestinationPort: port)
+            self.ristServerOnConnectedInternal(virtualDestinationPort: port)
         }
     }
 
     func ristServerOnDisconnected(port: UInt16, reason: String) {
         DispatchQueue.main.async {
-            self.ristServerOnDisconnectedInner(virtualDestinationPort: port, reason: reason)
+            self.ristServerOnDisconnectedInternal(virtualDestinationPort: port, reason: reason)
         }
     }
 
@@ -90,7 +90,7 @@ extension Model: RistServerDelegate {
         media.setBufferedAudioTargetLatency(cameraId: cameraId, latency: audioTargetLatency)
     }
 
-    private func ristServerOnConnectedInner(virtualDestinationPort: UInt16) {
+    private func ristServerOnConnectedInternal(virtualDestinationPort: UInt16) {
         guard let stream = getRistStream(virtualDestinationPort: virtualDestinationPort) else {
             return
         }
@@ -100,7 +100,7 @@ extension Model: RistServerDelegate {
         media.addBufferedAudio(cameraId: stream.id, name: camera, latency: ristServerClientLatency)
     }
 
-    private func ristServerOnDisconnectedInner(virtualDestinationPort: UInt16, reason _: String) {
+    private func ristServerOnDisconnectedInternal(virtualDestinationPort: UInt16, reason _: String) {
         guard let stream = getRistStream(virtualDestinationPort: virtualDestinationPort) else {
             return
         }

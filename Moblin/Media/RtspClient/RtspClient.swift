@@ -595,7 +595,7 @@ class RtspClient {
         logger.debug("rtsp-client: Start")
         rtspClientQueue.async {
             self.started = true
-            self.startInner()
+            self.startInternal()
         }
     }
 
@@ -603,7 +603,7 @@ class RtspClient {
         logger.debug("rtsp-client: Stop")
         rtspClientQueue.async {
             self.started = false
-            self.stopInner()
+            self.stopInternal()
         }
     }
 
@@ -633,11 +633,11 @@ class RtspClient {
         state = newState
     }
 
-    private func startInner() {
+    private func startInternal() {
         guard started else {
             return
         }
-        stopInner()
+        stopInternal()
         guard let host = url.host() else {
             return
         }
@@ -653,7 +653,7 @@ class RtspClient {
         rtpVideo.client = self
         setState(newState: .connecting)
         connectTimer.startSingleShot(timeout: 5) { [weak self] in
-            self?.startInner()
+            self?.startInternal()
         }
         isAlive = true
         realm = nil
@@ -664,7 +664,7 @@ class RtspClient {
         videoSession = nil
     }
 
-    private func stopInner() {
+    private func stopInternal() {
         connectTimer.stop()
         keepAliveTimer.stop()
         connection?.cancel()
@@ -906,7 +906,7 @@ class RtspClient {
 
     private func keepAlive() {
         guard isAlive else {
-            startInner()
+            startInternal()
             return
         }
         isAlive = false

@@ -45,7 +45,7 @@ class MediaPlayer {
 
     func activate() {
         mediaPlayerQueue.async {
-            self.activateInner()
+            self.activateInternal()
         }
     }
 
@@ -58,7 +58,7 @@ class MediaPlayer {
     func updateSettings(settings: SettingsMediaPlayer) {
         let settings = settings.clone()
         mediaPlayerQueue.async {
-            self.updateSettingsInner(settings: settings)
+            self.updateSettingsInternal(settings: settings)
         }
     }
 
@@ -79,19 +79,19 @@ class MediaPlayer {
 
     func next() {
         mediaPlayerQueue.async {
-            self.nextInner()
+            self.nextInternal()
         }
     }
 
     func previous() {
         mediaPlayerQueue.async {
-            self.previousInner()
+            self.previousInternal()
         }
     }
 
     func seek(position: Double) {
         mediaPlayerQueue.async {
-            self.seekInner(position: position)
+            self.seekInternal(position: position)
         }
     }
 
@@ -101,11 +101,11 @@ class MediaPlayer {
         }
     }
 
-    private func updateSettingsInner(settings: SettingsMediaPlayer) {
+    private func updateSettingsInternal(settings: SettingsMediaPlayer) {
         self.settings = settings
     }
 
-    private func activateInner() {
+    private func activateInternal() {
         active = true
         reportState()
     }
@@ -124,7 +124,7 @@ class MediaPlayer {
         )
     }
 
-    private func nextInner() {
+    private func nextInternal() {
         currentFileIndex += 1
         if currentFileIndex >= settings.playlist.count {
             currentFileIndex = 0
@@ -132,7 +132,7 @@ class MediaPlayer {
         loadCurrentFile()
     }
 
-    private func previousInner() {
+    private func previousInternal() {
         currentFileIndex -= 1
         if currentFileIndex == -1 {
             currentFileIndex = settings.playlist.count - 1
@@ -140,7 +140,7 @@ class MediaPlayer {
         loadCurrentFile()
     }
 
-    private func seekInner(position: Double) {
+    private func seekInternal(position: Double) {
         guard let currentFile = getCurrentFile() else {
             return
         }
@@ -290,7 +290,7 @@ class MediaPlayer {
                     break
                 }
             } else {
-                nextInner()
+                nextInternal()
                 break
             }
         }
@@ -301,7 +301,7 @@ class MediaPlayer {
                         break
                     }
                 } else {
-                    nextInner()
+                    nextInternal()
                     break
                 }
             }

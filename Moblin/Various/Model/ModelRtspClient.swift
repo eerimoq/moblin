@@ -40,7 +40,7 @@ extension Model {
         ingests.rtsp = []
     }
 
-    func rtspClientConnectedInner(cameraId: UUID) {
+    func rtspClientConnectedInternal(cameraId: UUID) {
         guard let stream = getRtspStream(id: cameraId) else {
             return
         }
@@ -49,7 +49,7 @@ extension Model {
         media.addBufferedVideo(cameraId: cameraId, name: camera, latency: stream.latencySeconds())
     }
 
-    func rtspClientDisconnectedInner(cameraId: UUID) {
+    func rtspClientDisconnectedInternal(cameraId: UUID) {
         guard let stream = getRtspStream(id: cameraId) else {
             return
         }
@@ -65,13 +65,13 @@ extension Model: RtspClientDelegate {
 
     func rtspClientConnected(cameraId: UUID) {
         DispatchQueue.main.async {
-            self.rtspClientConnectedInner(cameraId: cameraId)
+            self.rtspClientConnectedInternal(cameraId: cameraId)
         }
     }
 
     func rtspClientDisconnected(cameraId: UUID) {
         DispatchQueue.main.async {
-            self.rtspClientDisconnectedInner(cameraId: cameraId)
+            self.rtspClientDisconnectedInternal(cameraId: cameraId)
         }
     }
 

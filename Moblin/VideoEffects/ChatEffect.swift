@@ -246,7 +246,7 @@ final class ChatEffect: VideoEffect, ObservableObject {
         }
         started = true
         DispatchQueue.main.async {
-            self.startInner()
+            self.startInternal()
         }
     }
 
@@ -256,7 +256,7 @@ final class ChatEffect: VideoEffect, ObservableObject {
         }
         started = false
         DispatchQueue.main.async {
-            self.stopInner()
+            self.stopInternal()
         }
     }
 
@@ -271,7 +271,7 @@ final class ChatEffect: VideoEffect, ObservableObject {
     }
 
     @MainActor
-    private func startInner() {
+    private func startInternal() {
         renderer = ImageRenderer(content: ChatView(settings: settings, chat: chat))
         cancellable = renderer?.objectWillChange.sink { [weak self] in
             guard let self else {
@@ -282,7 +282,7 @@ final class ChatEffect: VideoEffect, ObservableObject {
         setChatImage(image: renderer?.ciImage())
     }
 
-    private func stopInner() {
+    private func stopInternal() {
         renderer = nil
         cancellable = nil
     }

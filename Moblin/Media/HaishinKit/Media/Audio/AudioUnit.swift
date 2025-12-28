@@ -113,35 +113,35 @@ final class AudioUnit: NSObject {
 
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
         processorPipelineQueue.async {
-            self.addBufferedAudioInner(cameraId: cameraId, name: name, latency: latency)
+            self.addBufferedAudioInternal(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
     func removeBufferedAudio(cameraId: UUID) {
         processorPipelineQueue.async {
-            self.removeBufferedAudioInner(cameraId: cameraId)
+            self.removeBufferedAudioInternal(cameraId: cameraId)
         }
     }
 
     func appendBufferedAudioSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         processorPipelineQueue.async {
-            self.appendBufferedAudioSampleBufferInner(cameraId: cameraId, sampleBuffer)
+            self.appendBufferedAudioSampleBufferInternal(cameraId: cameraId, sampleBuffer)
         }
     }
 
     func setBufferedAudioDrift(cameraId: UUID, drift: Double) {
         processorPipelineQueue.async {
-            self.setBufferedAudioDriftInner(cameraId: cameraId, drift: drift)
+            self.setBufferedAudioDriftInternal(cameraId: cameraId, drift: drift)
         }
     }
 
     func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
         processorPipelineQueue.async {
-            self.setBufferedAudioTargetLatencyInner(cameraId: cameraId, latency: latency)
+            self.setBufferedAudioTargetLatencyInternal(cameraId: cameraId, latency: latency)
         }
     }
 
-    private func addBufferedAudioInner(cameraId: UUID, name: String, latency: Double) {
+    private func addBufferedAudioInternal(cameraId: UUID, name: String, latency: Double) {
         let bufferedAudio = BufferedAudio(
             cameraId: cameraId,
             name: name,
@@ -153,19 +153,19 @@ final class AudioUnit: NSObject {
         bufferedAudios[cameraId] = bufferedAudio
     }
 
-    private func removeBufferedAudioInner(cameraId: UUID) {
+    private func removeBufferedAudioInternal(cameraId: UUID) {
         bufferedAudios.removeValue(forKey: cameraId)?.stopOutput()
     }
 
-    private func appendBufferedAudioSampleBufferInner(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    private func appendBufferedAudioSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         bufferedAudios[cameraId]?.appendSampleBuffer(sampleBuffer)
     }
 
-    private func setBufferedAudioDriftInner(cameraId: UUID, drift: Double) {
+    private func setBufferedAudioDriftInternal(cameraId: UUID, drift: Double) {
         bufferedAudios[cameraId]?.setDrift(drift: drift)
     }
 
-    private func setBufferedAudioTargetLatencyInner(cameraId: UUID, latency: Double) {
+    private func setBufferedAudioTargetLatencyInternal(cameraId: UUID, latency: Double) {
         bufferedAudios[cameraId]?.setTargetLatency(latency: latency)
     }
 

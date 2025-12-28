@@ -291,32 +291,32 @@ final class VideoUnit: NSObject {
 
     func registerEffect(_ effect: VideoEffect) {
         processorPipelineQueue.async {
-            self.registerEffectInner(effect)
+            self.registerEffectInternal(effect)
         }
     }
 
     func registerEffectBack(_ effect: VideoEffect) {
         processorPipelineQueue.async {
-            self.registerEffectBackInner(effect)
+            self.registerEffectBackInternal(effect)
         }
     }
 
     func unregisterEffect(_ effect: VideoEffect) {
         processorPipelineQueue.async {
-            self.unregisterEffectInner(effect)
+            self.unregisterEffectInternal(effect)
         }
     }
 
     func unregisterAllEffects() {
         processorPipelineQueue.async {
-            self.unregisterAllEffectsInner()
+            self.unregisterAllEffectsInternal()
         }
     }
 
     func setPendingAfterAttachEffects(effects: [VideoEffect], rotation: Double) {
         processorControlQueue.async {
             processorPipelineQueue.async {
-                self.setPendingAfterAttachEffectsInner(effects: effects, rotation: rotation)
+                self.setPendingAfterAttachEffectsInternal(effects: effects, rotation: rotation)
             }
         }
     }
@@ -324,7 +324,7 @@ final class VideoUnit: NSObject {
     func usePendingAfterAttachEffects() {
         processorControlQueue.async {
             processorPipelineQueue.async {
-                self.usePendingAfterAttachEffectsInner()
+                self.usePendingAfterAttachEffectsInternal()
             }
         }
     }
@@ -339,7 +339,7 @@ final class VideoUnit: NSObject {
 
     func setLowFpsImage(fps: Float) {
         processorPipelineQueue.async {
-            self.setLowFpsImageInner(fps: fps)
+            self.setLowFpsImageInternal(fps: fps)
         }
     }
 
@@ -376,31 +376,31 @@ final class VideoUnit: NSObject {
 
     func appendBufferedVideoSampleBuffer(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         processorPipelineQueue.async {
-            self.appendBufferedVideoSampleBufferInner(cameraId: cameraId, sampleBuffer)
+            self.appendBufferedVideoSampleBufferInternal(cameraId: cameraId, sampleBuffer)
         }
     }
 
     func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
         processorPipelineQueue.async {
-            self.addBufferedVideoInner(cameraId: cameraId, name: name, latency: latency)
+            self.addBufferedVideoInternal(cameraId: cameraId, name: name, latency: latency)
         }
     }
 
     func removeBufferedVideo(cameraId: UUID) {
         processorPipelineQueue.async {
-            self.removeBufferedVideoInner(cameraId: cameraId)
+            self.removeBufferedVideoInternal(cameraId: cameraId)
         }
     }
 
     func setBufferedVideoDrift(cameraId: UUID, drift: Double) {
         processorPipelineQueue.async {
-            self.setBufferedVideoDriftInner(cameraId: cameraId, drift: drift)
+            self.setBufferedVideoDriftInternal(cameraId: cameraId, drift: drift)
         }
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {
         processorPipelineQueue.async {
-            self.setBufferedVideoTargetLatencyInner(cameraId: cameraId, latency: latency)
+            self.setBufferedVideoTargetLatencyInternal(cameraId: cameraId, latency: latency)
         }
     }
 
@@ -462,7 +462,7 @@ final class VideoUnit: NSObject {
                 self.pendingAfterAttachEffects = self.effects
             }
             for effect in self.effects where effect is VideoSourceEffect {
-                self.unregisterEffectInner(effect)
+                self.unregisterEffectInternal(effect)
             }
         }
     }
@@ -501,7 +501,7 @@ final class VideoUnit: NSObject {
                 self.pendingAfterAttachEffects = self.effects
             }
             for effect in self.effects where effect is VideoSourceEffect {
-                self.unregisterEffectInner(effect)
+                self.unregisterEffectInternal(effect)
             }
         }
         isLandscapeStreamAndPortraitUi = params.isLandscapeStreamAndPortraitUi
@@ -580,11 +580,11 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func setBufferedVideoDriftInner(cameraId: UUID, drift: Double) {
+    private func setBufferedVideoDriftInternal(cameraId: UUID, drift: Double) {
         bufferedVideos[cameraId]?.setDrift(drift: drift)
     }
 
-    private func setBufferedVideoTargetLatencyInner(cameraId: UUID, latency: Double) {
+    private func setBufferedVideoTargetLatencyInternal(cameraId: UUID, latency: Double) {
         bufferedVideos[cameraId]?.setTargetLatency(latency: latency)
     }
 
@@ -887,7 +887,7 @@ final class VideoUnit: NSObject {
             effectsToRemove.append(effect)
         }
         for effect in effectsToRemove {
-            unregisterEffectInner(effect)
+            unregisterEffectInternal(effect)
         }
     }
 
@@ -1037,38 +1037,38 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func registerEffectInner(_ effect: VideoEffect) {
+    private func registerEffectInternal(_ effect: VideoEffect) {
         if !effects.contains(effect) {
             effects.append(effect)
         }
     }
 
-    private func registerEffectBackInner(_ effect: VideoEffect) {
+    private func registerEffectBackInternal(_ effect: VideoEffect) {
         if !effects.contains(effect) {
             effects.insert(effect, at: 0)
         }
     }
 
-    private func unregisterEffectInner(_ effect: VideoEffect) {
+    private func unregisterEffectInternal(_ effect: VideoEffect) {
         effect.removed()
         if let index = effects.firstIndex(of: effect) {
             effects.remove(at: index)
         }
     }
 
-    private func unregisterAllEffectsInner() {
+    private func unregisterAllEffectsInternal() {
         for effect in effects {
             effect.removed()
         }
         effects.removeAll()
     }
 
-    private func setPendingAfterAttachEffectsInner(effects: [VideoEffect], rotation: Double) {
+    private func setPendingAfterAttachEffectsInternal(effects: [VideoEffect], rotation: Double) {
         pendingAfterAttachEffects = effects
         pendingAfterAttachRotation = rotation
     }
 
-    private func usePendingAfterAttachEffectsInner() {
+    private func usePendingAfterAttachEffectsInternal() {
         if let pendingAfterAttachEffects {
             effects = pendingAfterAttachEffects
             self.pendingAfterAttachEffects = nil
@@ -1079,20 +1079,20 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func setLowFpsImageInner(fps: Float) {
+    private func setLowFpsImageInternal(fps: Float) {
         lowFpsImageInterval = Double(1 / fps).clamped(to: 0.2 ... 1.0)
         lowFpsImageEnabled = fps != 0.0
         lowFpsImageLatest = 0.0
     }
 
-    private func appendBufferedVideoSampleBufferInner(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    private func appendBufferedVideoSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         guard let bufferedVideo = bufferedVideos[cameraId] else {
             return
         }
         bufferedVideo.appendSampleBuffer(sampleBuffer)
     }
 
-    private func addBufferedVideoInner(cameraId: UUID, name: String, latency: Double) {
+    private func addBufferedVideoInternal(cameraId: UUID, name: String, latency: Double) {
         bufferedVideos[cameraId] = BufferedVideo(
             cameraId: cameraId,
             name: name,
@@ -1102,7 +1102,7 @@ final class VideoUnit: NSObject {
         )
     }
 
-    private func removeBufferedVideoInner(cameraId: UUID) {
+    private func removeBufferedVideoInternal(cameraId: UUID) {
         bufferedVideos.removeValue(forKey: cameraId)
     }
 
@@ -1281,7 +1281,7 @@ final class VideoUnit: NSObject {
         var newImageBuffer: CVImageBuffer?
         var newSampleBuffer: CMSampleBuffer?
         if isFirstAfterAttach {
-            usePendingAfterAttachEffectsInner()
+            usePendingAfterAttachEffectsInternal()
         }
         if isAnyEffectEnabled()
             || isSceneSwitchTransition

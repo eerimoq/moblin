@@ -25,7 +25,7 @@ func openUrl(url: String) {
 private var thumbnails: [URL: UIImage] = [:]
 private let thumbnailQueue = DispatchQueue(label: "com.eerimoq.moblin.thumbnail")
 
-private func createThumbnailInner(path: URL, offset: Double) -> UIImage? {
+private func createThumbnailInternal(path: URL, offset: Double) -> UIImage? {
     if let thumbnail = thumbnails[path] {
         return thumbnail
     }
@@ -45,7 +45,7 @@ private func createThumbnailInner(path: URL, offset: Double) -> UIImage? {
 
 func createThumbnail(path: URL, offset: Double = 0, onComplete: @escaping (UIImage?) -> Void) {
     thumbnailQueue.async {
-        let image = createThumbnailInner(path: path, offset: offset)
+        let image = createThumbnailInternal(path: path, offset: offset)
         DispatchQueue.main.async {
             onComplete(image)
         }

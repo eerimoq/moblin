@@ -838,12 +838,12 @@ final class TextEffect: VideoEffect {
             nextUpdateTime += .seconds(1)
         }
         DispatchQueue.main.async {
-            self.updateOverlayInner(size: size, now: now)
+            self.updateOverlayInternal(size: size, now: now)
         }
     }
 
     @MainActor
-    private func updateOverlayInner(size: CGSize, now: ContinuousClock.Instant) {
+    private func updateOverlayInternal(size: CGSize, now: ContinuousClock.Instant) {
         let lines = formatted(now: now)
         guard lines != previousLines else {
             return

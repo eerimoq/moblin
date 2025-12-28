@@ -42,7 +42,7 @@ class Recorder: NSObject {
         videoOutputSettings: [String: Any]
     ) {
         processorPipelineQueue.async {
-            self.startRunningInner(
+            self.startRunningInternal(
                 url: url,
                 replay: replay,
                 audioOutputSettings: audioOutputSettings,
@@ -53,7 +53,7 @@ class Recorder: NSObject {
 
     func stopRunning() {
         processorPipelineQueue.async {
-            self.stopRunningInner()
+            self.stopRunningInternal()
         }
     }
 
@@ -96,7 +96,7 @@ class Recorder: NSObject {
             recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
-            stopRunningInner()
+            stopRunningInternal()
         }
     }
 
@@ -115,7 +115,7 @@ class Recorder: NSObject {
             recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
-            stopRunningInner()
+            stopRunningInternal()
         }
     }
 
@@ -305,7 +305,7 @@ class Recorder: NSObject {
         return AVAudioFormat(streamDescription: &basicDescription)
     }
 
-    private func startRunningInner(
+    private func startRunningInternal(
         url: URL?,
         replay: Bool,
         audioOutputSettings: [String: Any],
@@ -328,7 +328,7 @@ class Recorder: NSObject {
         setUrl(url: url)
     }
 
-    private func stopRunningInner() {
+    private func stopRunningInternal() {
         guard let writer else {
             logger.info("recorder: Will not stop recording as it is not running")
             return
