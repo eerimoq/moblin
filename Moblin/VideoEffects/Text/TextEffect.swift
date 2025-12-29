@@ -1,5 +1,6 @@
 import AVFoundation
 import Collections
+import Combine
 import SwiftUI
 import UIKit
 import Vision
@@ -527,104 +528,129 @@ private class Formatter {
     }
 }
 
+private class TextState: ObservableObject {
+    @Published var fontSize: CGFloat
+    @Published var fontDesign: Font.Design
+    @Published var fontWeight: Font.Weight
+    @Published var fontMonospacedDigits: Bool
+    @Published var horizontalAlignment: HorizontalAlignment
+    @Published var minWidth: Double
+    @Published var cornerRadius: Double
+    @Published var foregroundColor: Color
+    @Published var backgroundColor: Color
+    @Published var size: CGSize?
+    @Published var lines: [Line]
+
+    init(fontSize: CGFloat,
+         fontDesign: Font.Design,
+         fontWeight: Font.Weight,
+         fontMonospacedDigits: Bool,
+         horizontalAlignment: HorizontalAlignment,
+         minWidth: Double,
+         cornerRadius: Double,
+         foregroundColor: Color,
+         backgroundColor: Color,
+         size: CGSize,
+         lines: [Line])
+    {
+        self.fontSize = fontSize
+        self.fontDesign = fontDesign
+        self.fontWeight = fontWeight
+        self.fontMonospacedDigits = fontMonospacedDigits
+        self.horizontalAlignment = horizontalAlignment
+        self.minWidth = minWidth
+        self.cornerRadius = cornerRadius
+        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor
+        self.size = size
+        self.lines = lines
+    }
+}
+
 private struct TextView: View {
-    let fontSize: CGFloat
-    let fontDesign: Font.Design
-    let fontWeight: Font.Weight
-    let fontMonospacedDigits: Bool
-    let horizontalAlignment: HorizontalAlignment
-    let minWidth: Double
-    let cornerRadius: Double
-    let foregroundColor: Color
-    let backgroundColor: Color
-    let size: CGSize
-    let lines: [Line]
+    @ObservedObject var state: TextState
 
     private func scaledFontSize(size: CGSize) -> CGFloat {
-        return fontSize * (size.maximum() / 1920)
+        return state.fontSize * (size.maximum() / 1920)
     }
 
     var body: some View {
-        let fontSize = scaledFontSize(size: size)
-        let stack = VStack(alignment: horizontalAlignment, spacing: 2) {
-            ForEach(lines) { line in
-                HStack(spacing: 0) {
-                    if horizontalAlignment != .leading, minWidth != 0 {
-                        Spacer(minLength: 0)
-                    }
-                    ForEach(line.parts) { part in
-                        switch part.data {
-                        case let .text(text):
-                            Text(text)
-                                .foregroundStyle(foregroundColor)
-                        case let .imageSystemName(name):
-                            Image(systemName: name)
-                                .foregroundStyle(foregroundColor)
-                        case let .imageSystemNameTryFill(name):
-                            if UIImage(systemName: "\(name).fill") != nil {
-                                Image(systemName: "\(name).fill")
-                                    .symbolRenderingMode(.multicolor)
-                            } else {
+        if let size = state.size {
+            let fontSize = scaledFontSize(size: size)
+            let stack = VStack(alignment: state.horizontalAlignment, spacing: 2) {
+                ForEach(state.lines) { line in
+                    HStack(spacing: 0) {
+                        if state.horizontalAlignment != .leading, state.minWidth != 0 {
+                            Spacer(minLength: 0)
+                        }
+                        ForEach(line.parts) { part in
+                            switch part.data {
+                            case let .text(text):
+                                Text(text)
+                                    .foregroundStyle(state.foregroundColor)
+                            case let .imageSystemName(name):
                                 Image(systemName: name)
-                                    .foregroundStyle(foregroundColor)
-                            }
-                        case let .rating(rating):
-                            ForEach(0 ..< 5) { index in
-                                if index < rating {
-                                    Text("★")
-                                        .foregroundStyle(.yellow)
+                                    .foregroundStyle(state.foregroundColor)
+                            case let .imageSystemNameTryFill(name):
+                                if UIImage(systemName: "\(name).fill") != nil {
+                                    Image(systemName: "\(name).fill")
+                                        .symbolRenderingMode(.multicolor)
                                 } else {
-                                    Text("☆")
-                                        .foregroundStyle(foregroundColor)
+                                    Image(systemName: name)
+                                        .foregroundStyle(state.foregroundColor)
+                                }
+                            case let .rating(rating):
+                                ForEach(0 ..< 5) { index in
+                                    if index < rating {
+                                        Text("★")
+                                            .foregroundStyle(.yellow)
+                                    } else {
+                                        Text("☆")
+                                            .foregroundStyle(state.foregroundColor)
+                                    }
                                 }
                             }
                         }
+                        if state.horizontalAlignment != .trailing, state.minWidth != 0 {
+                            Spacer(minLength: 0)
+                        }
                     }
-                    if horizontalAlignment != .trailing, minWidth != 0 {
-                        Spacer(minLength: 0)
-                    }
+                    .padding(
+                        [.leading, .trailing],
+                        7 * fontSize / 30 + min(CGFloat(state.cornerRadius / 5), fontSize / 7.5)
+                    )
+                    .frame(minWidth: state.minWidth)
+                    .background(state.backgroundColor)
+                    .cornerRadius(state.cornerRadius)
                 }
-                .padding(
-                    [.leading, .trailing],
-                    7 * fontSize / 30 + min(CGFloat(cornerRadius / 5), fontSize / 7.5)
-                )
-                .frame(minWidth: minWidth)
-                .background(backgroundColor)
-                .cornerRadius(cornerRadius)
             }
-        }
-        .font(.system(
-            size: fontSize,
-            weight: fontWeight,
-            design: fontDesign
-        ))
-        if fontMonospacedDigits {
-            stack.monospacedDigit()
-        } else {
-            stack
+            .font(.system(
+                size: fontSize,
+                weight: state.fontWeight,
+                design: state.fontDesign
+            ))
+            if state.fontMonospacedDigits {
+                stack.monospacedDigit()
+            } else {
+                stack
+            }
         }
     }
 }
 
 final class TextEffect: VideoEffect {
-    private var backgroundColor: Color
-    private var foregroundColor: Color
-    private var fontSize: CGFloat
-    private var fontDesign: Font.Design
-    private var fontWeight: Font.Weight
-    private var fontMonospacedDigits: Bool
-    private var horizontalAlignment: HorizontalAlignment
-    private var width: Int?
-    private var cornerRadius: Double
     private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
     private var nextUpdateTime = ContinuousClock.now
-    private var previousLines: [Line]?
     private var delay: Double
-    private var forceUpdate = true
     private let formatter = Formatter()
     private var sceneWidget: SettingsSceneWidget
+    private let state: TextState
+    private var renderer: ImageRenderer<TextView>?
+    private var cancellable: AnyCancellable?
+    private var forceUpdate: Bool = false
+    private var previousLines: [Line]?
 
     init(
         format: String,
@@ -647,15 +673,17 @@ final class TextEffect: VideoEffect {
     ) {
         formatter.formatParts = loadTextFormat(format: format)
         sceneWidget = SettingsSceneWidget(widgetId: .init())
-        self.backgroundColor = backgroundColor.color()
-        self.foregroundColor = foregroundColor.color()
-        self.fontSize = fontSize
-        self.fontDesign = fontDesign
-        self.fontWeight = fontWeight
-        self.fontMonospacedDigits = fontMonospacedDigits
-        self.horizontalAlignment = horizontalAlignment
-        self.width = width
-        self.cornerRadius = cornerRadius
+        state = TextState(fontSize: fontSize,
+                          fontDesign: fontDesign,
+                          fontWeight: fontWeight,
+                          fontMonospacedDigits: fontMonospacedDigits,
+                          horizontalAlignment: horizontalAlignment,
+                          minWidth: Double(width ?? 0),
+                          cornerRadius: cornerRadius,
+                          foregroundColor: foregroundColor.color(),
+                          backgroundColor: backgroundColor.color(),
+                          size: .zero,
+                          lines: [])
         self.settingName = settingName
         self.delay = delay
         formatter.timersEndTime = timersEndTime
@@ -665,6 +693,16 @@ final class TextEffect: VideoEffect {
         formatter.lapTimes = lapTimes
         formatter.temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         super.init()
+        DispatchQueue.main.async {
+            self.renderer = ImageRenderer(content: TextView(state: self.state))
+            self.cancellable = self.renderer?.objectWillChange.sink { [weak self] in
+                guard let self else {
+                    return
+                }
+                self.setOverlay(image: self.renderer?.ciImage())
+            }
+            self.setOverlay(image: self.renderer?.ciImage())
+        }
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
@@ -688,40 +726,33 @@ final class TextEffect: VideoEffect {
     }
 
     func setBackgroundColor(color: RgbColor) {
-        backgroundColor = color.color()
-        forceImageUpdate()
+        state.backgroundColor = color.color()
     }
 
     func setForegroundColor(color: RgbColor) {
-        foregroundColor = color.color()
-        forceImageUpdate()
+        state.foregroundColor = color.color()
     }
 
     func setFontSize(size: CGFloat) {
-        fontSize = size
-        forceImageUpdate()
+        state.fontSize = size
     }
 
     func setFontDesign(design: Font.Design) {
-        fontDesign = design
-        forceImageUpdate()
+        state.fontDesign = design
     }
 
     func setFontWeight(weight: Font.Weight) {
-        fontWeight = weight
-        forceImageUpdate()
+        state.fontWeight = weight
     }
 
     func setFontMonospacedDigits(enabled: Bool) {
-        fontMonospacedDigits = enabled
-        forceImageUpdate()
+        state.fontMonospacedDigits = enabled
     }
 
     func setLayout(alignment: HorizontalAlignment, width: Int?, cornerRadius: Double) {
-        horizontalAlignment = alignment
-        self.width = width
-        self.cornerRadius = cornerRadius
-        forceImageUpdate()
+        state.horizontalAlignment = alignment
+        state.minWidth = Double(width ?? 0)
+        state.cornerRadius = cornerRadius
     }
 
     func setTimersEndTime(endTimes: [ContinuousClock.Instant]) {
@@ -845,22 +876,12 @@ final class TextEffect: VideoEffect {
     @MainActor
     private func updateOverlayInternal(size: CGSize, now: ContinuousClock.Instant) {
         let lines = formatted(now: now)
-        guard lines != previousLines else {
+        guard lines != previousLines || size != state.size else {
             return
         }
         previousLines = lines
-        let text = TextView(fontSize: fontSize,
-                            fontDesign: fontDesign,
-                            fontWeight: fontWeight,
-                            fontMonospacedDigits: fontMonospacedDigits,
-                            horizontalAlignment: horizontalAlignment,
-                            minWidth: Double(width ?? 0),
-                            cornerRadius: cornerRadius,
-                            foregroundColor: foregroundColor,
-                            backgroundColor: backgroundColor,
-                            size: size,
-                            lines: lines)
-        setOverlay(image: ImageRenderer(content: text).ciImage())
+        state.size = size
+        state.lines = lines
     }
 
     private func setOverlay(image: CIImage?) {
