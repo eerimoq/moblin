@@ -603,6 +603,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pixellateEffect = PixellateEffect(strength: 0.0)
     var pollEffect: PollEffect?
     var fixedHorizonEffect = FixedHorizonEffect()
+    var glassesEffect: AlertsEffect?
+    var starEffect: AlertsEffect?
     var replayEffect: ReplayEffect?
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
@@ -3039,6 +3041,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         toggleFilterQuickButton(type: .privacy)
         updateFaceFilterSettings()
         updateFaceFilterButtonState()
+    }
+
+    func triggerGlasses() {
+        DispatchQueue.main.async {
+            self.glassesEffect?.play(alert: .quickButton)
+        }
+    }
+
+    func triggerStar() {
+        DispatchQueue.main.async {
+            self.starEffect?.play(alert: .quickButton)
+        }
     }
 }
 

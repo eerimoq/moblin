@@ -431,6 +431,44 @@ extension Model {
         whirlpoolEffect = WhirlpoolEffect(angle: database.whirlpoolAngle)
         pinchEffect = PinchEffect(scale: database.pinchScale)
         fixedHorizonEffect = FixedHorizonEffect()
+        glassesEffect = createGlassesEffect()
+        starEffect = createStarEffect()
+    }
+
+    private func createGlassesEffect() -> AlertsEffect {
+        let settings = SettingsWidgetAlerts()
+        settings.disableAll()
+        settings.quickButton.enabled = true
+        settings.quickButton.positionType = .face
+        settings.quickButton.facePosition.x = 0.24
+        settings.quickButton.facePosition.y = 0.30
+        settings.quickButton.facePosition.width = 0.49
+        settings.quickButton.facePosition.height = 0.49
+        settings.quickButton.imageId = database.alertsMediaGallery.getGlassesImageId()
+        settings.quickButton.imageLoopCount = 3
+        return AlertsEffect(settings: settings,
+                            delegate: self,
+                            mediaStorage: alertMediaStorage,
+                            bundledImages: database.alertsMediaGallery.bundledImages,
+                            bundledSounds: database.alertsMediaGallery.bundledSounds)
+    }
+
+    private func createStarEffect() -> AlertsEffect {
+        let settings = SettingsWidgetAlerts()
+        settings.disableAll()
+        settings.quickButton.enabled = true
+        settings.quickButton.positionType = .face
+        settings.quickButton.facePosition.x = (alertsEffectBackgroundRightEyeRectangle.topLeftX
+            + alertsEffectBackgroundRightEyeRectangle.bottomRightX) / 2 + 0.01
+        settings.quickButton.facePosition.y = alertsEffectBackgroundRightEyeRectangle.topLeftY + 0.03
+        settings.quickButton.facePosition.width = alertsEffectBackgroundRightEyeRectangle.width() * 0.8
+        settings.quickButton.facePosition.height = alertsEffectBackgroundRightEyeRectangle.height() * 0.8
+        settings.quickButton.imageId = database.alertsMediaGallery.getWhiteStarImageId()
+        return AlertsEffect(settings: settings,
+                            delegate: self,
+                            mediaStorage: alertMediaStorage,
+                            bundledImages: database.alertsMediaGallery.bundledImages,
+                            bundledSounds: database.alertsMediaGallery.bundledSounds)
     }
 
     private func registerGlobalVideoEffects(scene: SettingsScene) -> [VideoEffect] {
@@ -477,6 +515,12 @@ extension Model {
         if isQuickButtonOn(type: .pixellate) {
             pixellateEffect.setSettings(strength: database.pixellateStrength)
             effects.append(pixellateEffect)
+        }
+        if let starEffect {
+            effects.append(starEffect)
+        }
+        if let glassesEffect {
+            effects.append(glassesEffect)
         }
         return effects
     }

@@ -949,6 +949,14 @@ class SettingsAlertsMediaGallery: Codable {
     var customImages: [SettingsAlertsMediaGalleryItem] = []
     var bundledSounds = allBundledAlertsMediaGallerySounds
     var customSounds: [SettingsAlertsMediaGalleryItem] = []
+
+    func getWhiteStarImageId() -> UUID {
+        return bundledImages[3].id
+    }
+
+    func getGlassesImageId() -> UUID {
+        return bundledImages[5].id
+    }
 }
 
 class SettingsDisconnectProtection: Codable, ObservableObject {
@@ -1564,6 +1572,18 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  type: .privacy,
                                  imageOn: "circle.rectangle.dashed",
                                  imageOff: "circle.rectangle.dashed",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Glasses"),
+                                 type: .glasses,
+                                 imageOn: "sunglasses",
+                                 imageOff: "sunglasses",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Star"),
+                                 type: .star,
+                                 imageOn: "star",
+                                 imageOff: "star",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Pixellate"),

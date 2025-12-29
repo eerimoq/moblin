@@ -375,6 +375,14 @@ struct QuickButtonsInnerView: View {
         model.togglePrivacy()
     }
 
+    private func glassesAction() {
+        model.triggerGlasses()
+    }
+
+    private func starAction() {
+        model.triggerStar()
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             switch state.button.type {
@@ -843,6 +851,22 @@ struct QuickButtonsInnerView: View {
                                  buttonSize: size)
                 {
                     privacyAction()
+                }
+            case .glasses:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    glassesAction()
+                }
+            case .star:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    starAction()
                 }
             }
             if quickButtonsSettings.showName && !orientation.isPortrait {

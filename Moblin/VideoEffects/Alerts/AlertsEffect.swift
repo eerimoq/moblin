@@ -23,6 +23,7 @@ enum AlertsEffectAlert {
     case kickKicks(event: KickPusherKicksGiftedEvent)
     case chatBotCommand(String, String)
     case speechToTextString(UUID)
+    case quickButton
 }
 
 protocol AlertsEffectDelegate: AnyObject {
@@ -67,6 +68,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var kickGiftsMedias: [AlertsEffectMedia] = []
     private var chatBotCommandsMedias: [AlertsEffectMedia] = []
     private var speechToTextStringsMedias: [AlertsEffectMedia] = []
+    private var quickButtonMedias = AlertsEffectMedia()
     private let bundledImages: [SettingsAlertsMediaGalleryItem]
     private let bundledSounds: [SettingsAlertsMediaGalleryItem]
     private var aiBaseUrl: URL?
@@ -121,6 +123,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         setKickSettings(kick: settings.kick)
         setChatBotSettings(settings: settings)
         setSpeechToTextSettings(settings: settings)
+        setQuickButtonSettings(alert: settings.quickButton)
         aiBaseUrl = URL(string: settings.ai.baseUrl)
         self.settings = settings
     }
@@ -138,8 +141,18 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     func play(alert: AlertsEffectAlert) {
+        guard shouldAppendAlert(alert: alert) else {
+            return
+        }
         alertsQueue.append(alert)
         tryPlayNextAlert()
+    }
+
+    private func shouldAppendAlert(alert: AlertsEffectAlert) -> Bool {
+        guard case .quickButton = alert else {
+            return true
+        }
+        return !isPlaying
     }
 
     private func setChatBotSettings(settings: SettingsWidgetAlerts) {
@@ -195,6 +208,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playChatBotCommand(command: command, name: name)
         case let .speechToTextString(id):
             playSpeechToTextString(id: id)
+        case .quickButton:
+            playQuickButton()
         }
     }
 
@@ -729,5 +744,23 @@ extension AlertsEffect {
             )
             break
         }
+    }
+}
+
+extension AlertsEffect {
+    private func setQuickButtonSettings(alert: SettingsWidgetAlertsAlert) {
+        quickButtonMedias.update(alert, mediaStorage, bundledImages, bundledSounds)
+    }
+
+    @MainActor
+    private func playQuickButton() {
+        guard settings.quickButton.enabled else {
+            return
+        }
+        play(media: quickButtonMedias,
+             username: "",
+             message: "",
+             settings: settings.quickButton,
+             delayAfterPlaying: 0)
     }
 }

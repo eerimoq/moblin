@@ -41,6 +41,9 @@ class AlertsEffectMedia: @unchecked Sendable {
                 _ bundledImages: [SettingsAlertsMediaGalleryItem],
                 _ bundledSounds: [SettingsAlertsMediaGalleryItem])
     {
+        guard alert.enabled else {
+            return
+        }
         mediaType = alert.mediaType
         switch alert.mediaType {
         case .gifAndSound:

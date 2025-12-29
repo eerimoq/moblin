@@ -1117,6 +1117,16 @@ class SettingsWidgetAlertsTwitch: Codable {
         new.cheerBits = cheerBits.map { $0.clone() }
         return new
     }
+
+    func disableAll() {
+        follows.enabled = false
+        subscriptions.enabled = false
+        raids.enabled = false
+        cheers.enabled = false
+        for cheerBit in cheerBits {
+            cheerBit.alert.enabled = false
+        }
+    }
 }
 
 class SettingsWidgetAlertsKick: Codable {
@@ -1166,6 +1176,16 @@ class SettingsWidgetAlertsKick: Codable {
         new.rewards = rewards.clone()
         new.kickGifts = kickGifts.map { $0.clone() }
         return new
+    }
+
+    func disableAll() {
+        subscriptions.enabled = false
+        giftedSubscriptions.enabled = false
+        hosts.enabled = false
+        rewards.enabled = false
+        for kickGift in kickGifts {
+            kickGift.alert.enabled = false
+        }
     }
 }
 
@@ -1245,6 +1265,12 @@ class SettingsWidgetAlertsChatBot: Codable, ObservableObject {
         }
         return new
     }
+
+    func disableAll() {
+        for command in commands {
+            command.alert.enabled = false
+        }
+    }
 }
 
 class SettingsWidgetAlertsSpeechToTextString: Codable, Identifiable {
@@ -1287,6 +1313,12 @@ class SettingsWidgetAlertsSpeechToText: Codable, ObservableObject {
         }
         return new
     }
+
+    func disableAll() {
+        for string in strings {
+            string.alert.enabled = false
+        }
+    }
 }
 
 class SettingsTtsMonster: Codable, ObservableObject {
@@ -1321,6 +1353,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
     var kick: SettingsWidgetAlertsKick = .init()
     var chatBot: SettingsWidgetAlertsChatBot = .init()
     var speechToText: SettingsWidgetAlertsSpeechToText = .init()
+    var quickButton: SettingsWidgetAlertsAlert = .init()
     var needsSubtitles: Bool = false
     var ai: SettingsOpenAi = .init(personality: aiPersonality)
     @Published var aiEnabled: Bool = false
@@ -1378,6 +1411,14 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         new.aiEnabled = aiEnabled
         new.ttsMonster = ttsMonster.clone()
         return new
+    }
+
+    func disableAll() {
+        twitch.disableAll()
+        kick.disableAll()
+        chatBot.disableAll()
+        speechToText.disableAll()
+        quickButton.enabled = false
     }
 }
 
