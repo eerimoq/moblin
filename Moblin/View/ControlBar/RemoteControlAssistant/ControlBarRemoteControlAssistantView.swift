@@ -756,8 +756,10 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
         .sheet(isPresented: $remoteControl.presentingStreamers) {
             NavigationStack {
                 Form {
-                    RemoteControlStreamersView(remoteControlSettings: model.database.remoteControl,
-                                               remoteControl: model.remoteControl)
+                    RemoteControlStreamersView(
+                        model: model,
+                        remoteControlSettings: model.database.remoteControl
+                    )
                 }
                 .navigationTitle("Streamers")
                 .toolbar {

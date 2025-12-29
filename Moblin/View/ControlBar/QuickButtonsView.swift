@@ -124,6 +124,7 @@ private struct ButtonTextOverlayView: View {
 
 struct QuickButtonsInnerView: View {
     @EnvironmentObject var model: Model
+    // periphery:ignore
     @ObservedObject var quickButtons: QuickButtons
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var orientation: Orientation

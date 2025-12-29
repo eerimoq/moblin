@@ -599,7 +599,9 @@ struct RemoteControlAssistantStreamerState: Codable {
     var streaming: Bool?
     var recording: Bool?
     var muted: Bool?
+    // periphery:ignore
     var torchOn: Bool?
+    // periphery:ignore
     var batteryCharging: Bool?
 }
 

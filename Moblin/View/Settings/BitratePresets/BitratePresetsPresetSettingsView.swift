@@ -2,7 +2,6 @@ import AVFoundation
 import SwiftUI
 
 struct BitratePresetsPresetSettingsView: View {
-    @EnvironmentObject var model: Model
     @ObservedObject var preset: SettingsBitratePreset
 
     func submit(bitrate: String) {

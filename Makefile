@@ -3,6 +3,9 @@ PRETTIER_ARGS=--log-level silent "Moblin/**/*.js"
 SWIFTLINT_ARGS=--strict --quiet
 CODESPELL_ARGS=--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
 		 --ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
+PERIPHERY_ARGS=--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
+		--index-exclude "**/PrepareLicenseList/**" \
+		--disable-update-check
 
 CODE_FOLDERS += "Common"
 CODE_FOLDERS += "Moblin"
@@ -25,7 +28,7 @@ lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_FOLDERS)
 
 periphery:
-	periphery scan --index-exclude "Moblin/Integrations/Tesla/Protobuf/*"
+	periphery scan $(PERIPHERY_ARGS)
 
 spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_FOLDERS)

@@ -1,3 +1,4 @@
+// periphery:ignore
 import LicenseList
 import SwiftUI
 

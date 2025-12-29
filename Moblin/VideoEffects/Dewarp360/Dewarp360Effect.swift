@@ -12,7 +12,6 @@ final class Dewarp360Effect: VideoEffect {
     private var currentPan: Float = 0
     private var currentTilt: Float = 0
     private var currentFieldOfView: Float = .pi / 2
-    private var latestPresentationTimeStamp: CMTime?
 
     override func getName() -> String {
         return "Dewarp 360 filter"
@@ -25,7 +24,7 @@ final class Dewarp360Effect: VideoEffect {
     }
 
     override func executeEarly(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        updateParameters(info: info)
+        updateParameters()
         filter.inputImage = image
         filter.outputSize = info.videoUnit.canvasSize
         filter.pan = currentPan
@@ -46,7 +45,7 @@ final class Dewarp360Effect: VideoEffect {
         }
     }
 
-    private func updateParameters(info: VideoEffectInfo) {
+    private func updateParameters() {
         switch settings {
         case .direct:
             break
@@ -56,6 +55,5 @@ final class Dewarp360Effect: VideoEffect {
             currentTilt = tilt
             currentFieldOfView = fieldOfView
         }
-        latestPresentationTimeStamp = info.presentationTimeStamp
     }
 }

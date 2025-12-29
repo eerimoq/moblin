@@ -507,6 +507,7 @@ private struct WidgetView: View {
 
 struct QuickButtonSceneWidgetsView: View {
     let model: Model
+    // periphery:ignore
     @ObservedObject var sceneSelector: SceneSelector
 
     var body: some View {

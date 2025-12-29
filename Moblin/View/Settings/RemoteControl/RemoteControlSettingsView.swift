@@ -275,9 +275,8 @@ private struct StreamerItemView: View {
 }
 
 struct RemoteControlStreamersView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControlSettings: SettingsRemoteControl
-    @ObservedObject var remoteControl: RemoteControl
 
     private func onStreamerChanged() {
         let assistant = model.database.remoteControl.assistant
@@ -399,8 +398,10 @@ struct RemoteControlSettingsView: View {
                 }
                 NavigationLink {
                     Form {
-                        RemoteControlStreamersView(remoteControlSettings: database.remoteControl,
-                                                   remoteControl: model.remoteControl)
+                        RemoteControlStreamersView(
+                            model: model,
+                            remoteControlSettings: database.remoteControl
+                        )
                     }
                     .navigationTitle("Assistant")
                 } label: {

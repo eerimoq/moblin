@@ -10,6 +10,7 @@ struct ReplayImage {
 }
 
 class ReplayEffectReplayReader {
+    // periphery:ignore
     private let video: ReplayBufferFile
     private let startTime: Double
     private var reader: AVAssetReader?
