@@ -2241,6 +2241,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isKickViewersConfigured() {
             statusTopLeft.streamingPlatformStatuses.append(.init(platform: .kick, status: .unknown))
         }
+        twitchPlatformStatus = .unknown
+        twitchStreamUpdateTime = .now.advanced(by: .seconds(15))
     }
 
     private func logStatus() {
