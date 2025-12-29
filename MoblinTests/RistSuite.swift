@@ -8,6 +8,11 @@ struct RistSuite {
     }
 
     @Test
+    func makeBondingUrlWithPort() async throws {
+        #expect(makeRistBondingUrl("rist://a.com:54") == "rist://a.com:54?weight=1")
+    }
+
+    @Test
     func makeMoblinkBondingUrl() async throws {
         #expect(makeRistMoblinkBondingUrl(
             "rist://foobar?secret=1234",
