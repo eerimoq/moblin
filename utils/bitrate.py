@@ -6,23 +6,36 @@ import subprocess
 import argparse
 
 
-def set_speed(speed):
+def set_bitrate_and_loss(bitrate, loss):
+    if bitrate is None and loss is None:
+        print('Neither bitrate nor loss given. Aborting...')
+        return
+
     print(time.ctime())
-    print(f" - {speed} Mbit")
-    subprocess.run(f'sudo tc qdisc replace dev eno1 root netem rate {speed}Mbit',
+    args = ''
+
+    if bitrate is not None:
+        print(f" - Bitrate {bitrate} Mbit")
+        args += f' rate {bitrate}Mbit'
+
+    if loss is not None:
+        print(f" - Loss {loss} %")
+        args += f' loss {loss}%'
+
+    subprocess.run(f'sudo tc qdisc replace dev eno1 root netem' + args,
                    shell=True,
                    check=True)
 
 
 def do_constant(args):
-    set_speed(args.bitrate)
+    set_bitrate_and_loss(args.bitrate, args.loss)
 
 
 def do_square(args):
     while True:
-        set_speed(args.low_bitrate)
+        set_bitrate_and_loss(args.low_bitrate, args.loss)
         time.sleep(args.low_time)
-        set_speed(args.high_bitrate)
+        set_bitrate_and_loss(args.high_bitrate, args.loss)
         time.sleep(args.high_time)
 
 
@@ -30,8 +43,8 @@ def do_random(args):
     minimum = 1.0
 
     while True:
-        speed = round(random.random() * 10 + minimum, 1)
-        set_speed(speed)
+        bitrate = round(random.random() * 10 + minimum, 1)
+        set_bitrate_and_loss(bitrate, args.loss)
         time.sleep(15)
 
 
@@ -51,7 +64,8 @@ def main():
     subparser.set_defaults(func=do_reset)
 
     subparser = subparsers.add_parser('constant')
-    subparser.add_argument('bitrate', type=float, help='Bitrate in Mbps.')
+    subparser.add_argument('--bitrate', type=float, help='Bitrate in Mbps.')
+    subparser.add_argument('--loss', type=float, help='Loss in %%.')
     subparser.set_defaults(func=do_constant)
 
     subparser = subparsers.add_parser('square')
@@ -71,9 +85,11 @@ def main():
                            default=15,
                            type=float,
                            help='High bitrate time in seconds.')
+    subparser.add_argument('--loss', type=float, help='Loss in %%.')
     subparser.set_defaults(func=do_square)
 
     subparser = subparsers.add_parser('random')
+    subparser.add_argument('--loss', type=float, help='Loss in %%.')
     subparser.set_defaults(func=do_random)
 
     args = parser.parse_args()
