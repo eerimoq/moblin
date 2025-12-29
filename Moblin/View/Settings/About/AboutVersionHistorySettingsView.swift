@@ -36,6 +36,9 @@ private let versions = [
         "• German translation updated. ✍️ MaurisonX",
         "• Chinese (HK) translation updated. ✍️ tkg2222",
         "• Remote control assistant refactoring.",
+        "• Button to delete selected replay. 💡 AndreyEng",
+        "• Make alerts widget only request face detections when playing.",
+        "• Star and glasses effects quick buttons.",
     ]),
     Version(version: "30.1.0", date: "2025-12-20", changes: [
         "• Korean translation updated. ✍️ Winter1l",
