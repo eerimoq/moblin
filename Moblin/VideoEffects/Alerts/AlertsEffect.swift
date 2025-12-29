@@ -362,7 +362,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         return CIImage(image: image)
     }
 
-    private func isInRectangle(_ x: Double, _ y: Double,
+    private func isInRectangle(_ x: Double,
+                               _ y: Double,
                                _ rectangle: AlertsEffectBackgroundLandmarkRectangle) -> Bool
     {
         return x > rectangle.topLeftX && x < rectangle.bottomRightX && y > rectangle.topLeftY && y < rectangle
@@ -413,6 +414,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private func getNext(_ presentationTimeStamp: Double) -> (CIImage?, CIImage?) {
         defer {
             if !pipeline.playing {
+                pipeline.landmarkSettings = nil
                 DispatchQueue.main.asyncAfter(deadline: .now() + delayAfterPlaying) {
                     self.isPlaying = false
                     self.tryPlayNextAlert()
