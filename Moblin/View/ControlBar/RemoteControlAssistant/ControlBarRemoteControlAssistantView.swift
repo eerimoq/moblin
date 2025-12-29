@@ -650,7 +650,7 @@ private struct ButtonsView: View {
                     StreamerSelectionButtonView(remoteControl: model.remoteControl)
                     CloseButtonView {
                         model.showingRemoteControl = false
-                        model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
+                        model.setQuickButtonState(type: .remote, isOn: model.showingRemoteControl)
                         model.updateQuickButtonStates()
                     }
                 }

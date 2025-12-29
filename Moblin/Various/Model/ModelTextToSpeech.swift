@@ -1,6 +1,6 @@
 extension Model {
     func toggleTextToSpeechPaused() {
-        if getGlobalButton(type: .pauseTts)?.isOn == false {
+        if getQuickButton(type: .pauseTts)?.isOn == false {
             chatTextToSpeech.pause()
         } else {
             chatTextToSpeech.play()

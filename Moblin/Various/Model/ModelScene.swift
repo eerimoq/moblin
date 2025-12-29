@@ -450,31 +450,31 @@ extension Model {
         if isFaceEnabled() {
             effects.append(faceEffect)
         }
-        if isGlobalButtonOn(type: .whirlpool) {
+        if isQuickButtonOn(type: .whirlpool) {
             effects.append(whirlpoolEffect)
         }
-        if isGlobalButtonOn(type: .pinch) {
+        if isQuickButtonOn(type: .pinch) {
             effects.append(pinchEffect)
         }
-        if isGlobalButtonOn(type: .movie) {
+        if isQuickButtonOn(type: .movie) {
             effects.append(movieEffect)
         }
-        if isGlobalButtonOn(type: .fourThree) {
+        if isQuickButtonOn(type: .fourThree) {
             effects.append(fourThreeEffect)
         }
-        if isGlobalButtonOn(type: .grayScale) {
+        if isQuickButtonOn(type: .grayScale) {
             effects.append(grayScaleEffect)
         }
-        if isGlobalButtonOn(type: .sepia) {
+        if isQuickButtonOn(type: .sepia) {
             effects.append(sepiaEffect)
         }
-        if isGlobalButtonOn(type: .triple) {
+        if isQuickButtonOn(type: .triple) {
             effects.append(tripleEffect)
         }
-        if isGlobalButtonOn(type: .twin) {
+        if isQuickButtonOn(type: .twin) {
             effects.append(twinEffect)
         }
-        if isGlobalButtonOn(type: .pixellate) {
+        if isQuickButtonOn(type: .pixellate) {
             pixellateEffect.setSettings(strength: database.pixellateStrength)
             effects.append(pixellateEffect)
         }
@@ -483,7 +483,7 @@ extension Model {
 
     private func registerGlobalVideoEffectsOnTop() -> [VideoEffect] {
         var effects: [VideoEffect] = []
-        if isGlobalButtonOn(type: .poll) {
+        if isQuickButtonOn(type: .poll) {
             if let pollEffect {
                 effects.append(pollEffect)
             }
@@ -702,7 +702,7 @@ extension Model {
         }
     }
 
-    private func isGlobalButtonOn(type: SettingsQuickButtonType) -> Bool {
+    private func isQuickButtonOn(type: SettingsQuickButtonType) -> Bool {
         return database.quickButtons.first(where: { $0.type == type })?.isOn ?? false
     }
 

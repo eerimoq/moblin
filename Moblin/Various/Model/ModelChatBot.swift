@@ -307,7 +307,7 @@ extension Model {
                 subTitle: String(localized: "Muting audio")
             )
             self.setMuted(value: true)
-            self.setGlobalButtonState(type: .mute, isOn: true)
+            self.setQuickButtonState(type: .mute, isOn: true)
             self.updateQuickButtonStates()
         }
     }
@@ -325,7 +325,7 @@ extension Model {
                 subTitle: String(localized: "Unmuting audio")
             )
             self.setMuted(value: false)
-            self.setGlobalButtonState(type: .mute, isOn: false)
+            self.setQuickButtonState(type: .mute, isOn: false)
             self.updateQuickButtonStates()
         }
     }
@@ -599,7 +599,7 @@ extension Model {
             default:
                 return
             }
-            self.setGlobalButtonState(type: type, isOn: state == "on")
+            self.setQuickButtonState(type: type, isOn: state == "on")
             self.sceneUpdated(updateRemoteScene: false)
             self.updateQuickButtonStates()
         }

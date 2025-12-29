@@ -490,7 +490,7 @@ extension Model {
         for lut in allLuts() where lut.enabled {
             isOn = true
         }
-        setGlobalButtonState(type: .luts, isOn: isOn)
+        setQuickButtonState(type: .luts, isOn: isOn)
         updateQuickButtonStates()
     }
 
@@ -503,7 +503,7 @@ extension Model {
     }
 
     private func shouldShowCameraPreview() -> Bool {
-        if !(getGlobalButton(type: .cameraPreview)?.isOn ?? false) {
+        if !(getQuickButton(type: .cameraPreview)?.isOn ?? false) {
             return false
         }
         return cameraDevice != nil

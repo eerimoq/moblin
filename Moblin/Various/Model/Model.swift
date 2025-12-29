@@ -699,7 +699,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.verboseStatuses.toggle()
     }
 
-    private func isShowingPanelGlobalButton(type: SettingsQuickButtonType) -> Bool {
+    private func isShowingPanelQuickButton(type: SettingsQuickButtonType) -> Bool {
         return [
             .widgets,
             .luts,
@@ -726,18 +726,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         panelHidden = false
         for pageButtonPairs in quickButtons.pairs {
             for pair in pageButtonPairs {
-                if isShowingPanelGlobalButton(type: pair.first.button.type) {
-                    setGlobalButtonState(type: pair.first.button.type, isOn: false)
+                if isShowingPanelQuickButton(type: pair.first.button.type) {
+                    setQuickButtonState(type: pair.first.button.type, isOn: false)
                 }
                 if let state = pair.second {
-                    if isShowingPanelGlobalButton(type: state.button.type) {
-                        setGlobalButtonState(type: state.button.type, isOn: false)
+                    if isShowingPanelQuickButton(type: state.button.type) {
+                        setQuickButtonState(type: state.button.type, isOn: false)
                     }
                 }
             }
         }
         if let type {
-            setGlobalButtonState(type: type, isOn: showingPanel == panel)
+            setQuickButtonState(type: type, isOn: showingPanel == panel)
         }
         updateQuickButtonStates()
     }
@@ -929,7 +929,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         quickButtonChatState.showNewFollowerMessage = database.chat.showNewFollowerMessage
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
         supportsAppleLog = hasAppleLog()
-        chat.interactiveChat = getGlobalButton(type: .interactiveChat)?.isOn ?? false
+        chat.interactiveChat = getQuickButton(type: .interactiveChat)?.isOn ?? false
         _ = updateShowCameraPreview()
         setDisplayPortrait(portrait: database.portrait)
         setBitrateDropFix()
@@ -1079,8 +1079,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
         updateFaceFilterButtonState()
-        setGlobalButtonState(type: .blurFaces, isOn: database.debug.face.showBlur)
-        setGlobalButtonState(type: .privacy, isOn: database.debug.face.showBlurBackground)
+        setQuickButtonState(type: .blurFaces, isOn: database.debug.face.showBlur)
+        setQuickButtonState(type: .privacy, isOn: database.debug.face.showBlurBackground)
         updateLutsButtonState()
         updateAutoSceneSwitcherButtonState()
         reloadNtpClient()
@@ -1267,7 +1267,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if database.debug.face.showMoblin {
             isOn = true
         }
-        setGlobalButtonState(type: .face, isOn: isOn)
+        setQuickButtonState(type: .face, isOn: isOn)
         updateQuickButtonStates()
     }
 
@@ -1285,8 +1285,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if camera.isFocusLocked {
             isOn = true
         }
-        if isOn != getGlobalButton(type: .image)?.isOn {
-            setGlobalButtonState(type: .image, isOn: isOn)
+        if isOn != getQuickButton(type: .image)?.isOn {
+            setQuickButtonState(type: .image, isOn: isOn)
             updateQuickButtonStates()
         }
     }
@@ -1954,19 +1954,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func setGlobalButtonState(type: SettingsQuickButtonType, isOn: Bool) {
+    func setQuickButtonState(type: SettingsQuickButtonType, isOn: Bool) {
         for button in database.quickButtons where button.type == type {
             button.isOn = isOn
         }
         getQuickButtonState(type: type)?.isOn = isOn
     }
 
-    func getGlobalButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
+    func getQuickButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
         return database.quickButtons.first(where: { $0.type == type })
     }
 
     func showQuickButtonSettings(type: SettingsQuickButtonType) {
-        quickButtonSettingsButton = getGlobalButton(type: type)
+        quickButtonSettingsButton = getQuickButton(type: type)
         toggleShowingPanel(type: nil, panel: .none)
         toggleShowingPanel(type: nil, panel: .quickButtonSettings)
     }
@@ -2007,14 +2007,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setDisplayPortrait(portrait: Bool) {
         database.portrait = portrait
         updateIsPortrait()
-        setGlobalButtonState(type: .portrait, isOn: portrait)
+        setQuickButtonState(type: .portrait, isOn: portrait)
         updateQuickButtonStates()
         updateOrientationLock()
     }
 
     func setIsWorkout(type: WatchProtocolWorkoutType?) {
         workoutType = type
-        setGlobalButtonState(type: .workout, isOn: type != nil)
+        setQuickButtonState(type: .workout, isOn: type != nil)
         updateQuickButtonStates()
     }
 
@@ -2025,7 +2025,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             isMuteOn = false
         }
         updateMute()
-        setGlobalButtonState(type: .mute, isOn: value)
+        setQuickButtonState(type: .mute, isOn: value)
         updateQuickButtonStates()
     }
 
@@ -2291,7 +2291,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleLockScreen() {
         lockScreen.toggle()
-        setGlobalButtonState(type: .lockScreen, isOn: lockScreen)
+        setQuickButtonState(type: .lockScreen, isOn: lockScreen)
         updateQuickButtonStates()
         if lockScreen {
             makeToast(
@@ -3089,7 +3089,7 @@ extension Model {
     }
 
     func drawOnStreamUpdateButtonState() {
-        setGlobalButtonState(type: .draw, isOn: showDrawOnStream || !drawOnStream.lines.isEmpty)
+        setQuickButtonState(type: .draw, isOn: showDrawOnStream || !drawOnStream.lines.isEmpty)
         updateQuickButtonStates()
     }
 }

@@ -8,10 +8,10 @@ private struct DeepLinkCreatorQuickButtonSettingsView: View {
         Toggle(isOn: $button.enabled) {
             HStack {
                 DraggableItemPrefixView()
-                if let globalButton = model.getGlobalButton(type: button.type) {
+                if let quickButton = model.getQuickButton(type: button.type) {
                     IconAndTextView(
-                        image: globalButton.imageOff,
-                        text: globalButton.name,
+                        image: quickButton.imageOff,
+                        text: quickButton.name,
                         longDivider: true
                     )
                 } else {

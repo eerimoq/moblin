@@ -239,7 +239,7 @@ struct QuickButtonsInnerView: View {
 
     private func remoteAction() {
         model.showingRemoteControl.toggle()
-        model.setGlobalButtonState(type: .remote, isOn: model.showingRemoteControl)
+        model.setQuickButtonState(type: .remote, isOn: model.showingRemoteControl)
         model.updateQuickButtonStates()
     }
 
@@ -249,21 +249,21 @@ struct QuickButtonsInnerView: View {
 
     private func localOverlaysAction() {
         state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .localOverlays, isOn: state.button.isOn)
+        model.setQuickButtonState(type: .localOverlays, isOn: state.button.isOn)
         model.updateQuickButtonStates()
         model.toggleLocalOverlays()
     }
 
     private func browserAction() {
         state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .browser, isOn: state.button.isOn)
+        model.setQuickButtonState(type: .browser, isOn: state.button.isOn)
         model.updateQuickButtonStates()
         model.toggleBrowser()
     }
 
     private func navigationAction() {
         state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .navigation, isOn: state.button.isOn)
+        model.setQuickButtonState(type: .navigation, isOn: state.button.isOn)
         model.updateQuickButtonStates()
         model.toggleNavigation()
     }
@@ -298,7 +298,7 @@ struct QuickButtonsInnerView: View {
 
     private func interactiveChatAction(state: ButtonState) {
         state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .interactiveChat, isOn: state.button.isOn)
+        model.setQuickButtonState(type: .interactiveChat, isOn: state.button.isOn)
         model.updateQuickButtonStates()
         model.chat.interactiveChat = state.button.isOn
         if !state.button.isOn {
@@ -350,7 +350,7 @@ struct QuickButtonsInnerView: View {
     private func replayAction(state: ButtonState) {
         model.streamOverlay.showingReplay.toggle()
         state.button.isOn.toggle()
-        model.setGlobalButtonState(type: .replay, isOn: state.button.isOn)
+        model.setQuickButtonState(type: .replay, isOn: state.button.isOn)
         model.updateQuickButtonStates()
     }
 

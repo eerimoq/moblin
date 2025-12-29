@@ -106,7 +106,7 @@ extension Model {
         if showingPanel == .autoSceneSwitcher {
             isOn = true
         }
-        setGlobalButtonState(type: .autoSceneSwitcher, isOn: isOn)
+        setQuickButtonState(type: .autoSceneSwitcher, isOn: isOn)
         updateQuickButtonStates()
     }
 }
