@@ -130,6 +130,12 @@
             "state" : "translated",
             "value" : "是"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
         }
       }
     },
@@ -184,6 +190,12 @@
             "state" : "translated",
             "value" : "是"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
         }
       }
     },
@@ -226,6 +238,12 @@
             "state" : "translated",
             "value" : "是"
           }
+        },
+        "zh-HK" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
         }
       }
     },
@@ -264,6 +282,12 @@
           }
         },
         "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
+        },
+        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "是"
