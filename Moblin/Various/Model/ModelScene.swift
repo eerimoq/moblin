@@ -473,6 +473,12 @@ extension Model {
 
     private func registerGlobalVideoEffects(scene: SettingsScene) -> [VideoEffect] {
         var effects: [VideoEffect] = []
+        if let starEffect {
+            effects.append(starEffect)
+        }
+        if let glassesEffect {
+            effects.append(glassesEffect)
+        }
         let fixedHorizonStatus: String
         if isFixedHorizonEnabled(scene: scene) {
             fixedHorizonEffect.start(portrait: stream.portrait)
@@ -515,12 +521,6 @@ extension Model {
         if isQuickButtonOn(type: .pixellate) {
             pixellateEffect.setSettings(strength: database.pixellateStrength)
             effects.append(pixellateEffect)
-        }
-        if let starEffect {
-            effects.append(starEffect)
-        }
-        if let glassesEffect {
-            effects.append(glassesEffect)
         }
         return effects
     }
