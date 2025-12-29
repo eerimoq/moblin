@@ -11,7 +11,7 @@ struct InlinePickerItem: Identifiable {
 
 struct InlinePickerView: View {
     @Environment(\.dismiss) var dismiss
-    var title: String
+    var title: LocalizedStringKey
     var onChange: (String) -> Void
     var footers: [String] = []
     var items: [InlinePickerItem]

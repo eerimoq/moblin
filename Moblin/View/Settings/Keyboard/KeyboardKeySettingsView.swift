@@ -90,7 +90,7 @@ struct KeyboardKeySettingsView: View {
                 Section {
                     NavigationLink {
                         InlinePickerView(
-                            title: String(localized: "Function"),
+                            title: "Function",
                             onChange: onFunctionChange,
                             items: SettingsControllerFunction.allCases
                                 .filter { $0 != .zoomIn && $0 != .zoomOut }

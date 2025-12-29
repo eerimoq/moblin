@@ -43,7 +43,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
             Section {
                 NavigationLink {
                     InlinePickerView(
-                        title: String(localized: "Resolution"),
+                        title: "Resolution",
                         onChange: { video.resolution = SettingsStreamResolution(rawValue: $0)! },
                         items: resolutions.map { .init(id: $0.rawValue, text: $0.shortString()) },
                         selectedId: video.resolution.rawValue
@@ -53,7 +53,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 }
                 NavigationLink {
                     InlinePickerView(
-                        title: String(localized: "FPS"),
+                        title: "FPS",
                         onChange: { video.fps = Int($0)! },
                         items: InlinePickerItem.fromStrings(values: fpss.map { String($0) }),
                         selectedId: String(video.fps)
@@ -63,7 +63,7 @@ private struct DeepLinkCreatorStreamVideoView: View {
                 }
                 NavigationLink {
                     InlinePickerView(
-                        title: String(localized: "Codec"),
+                        title: "Codec",
                         onChange: { video.codec = SettingsStreamCodec(rawValue: $0)! },
                         items: InlinePickerItem.fromStrings(values: codecs),
                         selectedId: video.codec.rawValue

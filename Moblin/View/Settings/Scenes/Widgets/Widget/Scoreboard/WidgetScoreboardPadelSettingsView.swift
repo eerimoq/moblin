@@ -56,7 +56,7 @@ private struct PlayerView: View {
 
     var body: some View {
         NavigationLink {
-            InlinePickerView(title: String(localized: "Name"),
+            InlinePickerView(title: "Name",
                              onChange: {
                                  playerId = UUID(uuidString: $0) ?? .init()
                              },

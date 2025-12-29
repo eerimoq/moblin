@@ -34,7 +34,7 @@ struct GameControllersControllerButtonSettingsView: View {
                 Section {
                     NavigationLink {
                         InlinePickerView(
-                            title: String(localized: "Function"),
+                            title: "Function",
                             onChange: onFunctionChange,
                             items: SettingsControllerFunction.allCases.map { .init(
                                 id: $0.rawValue,

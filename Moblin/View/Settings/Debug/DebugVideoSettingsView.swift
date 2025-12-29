@@ -16,7 +16,7 @@ struct DebugVideoSettingsView: View {
             Section {
                 NavigationLink {
                     InlinePickerView(
-                        title: String(localized: "Pixel format"),
+                        title: "Pixel format",
                         onChange: onPixelFormatChange,
                         items: InlinePickerItem.fromStrings(values: pixelFormats),
                         selectedId: model.database.debug.pixelFormat

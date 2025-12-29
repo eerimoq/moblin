@@ -66,7 +66,7 @@ struct WidgetPngTuberSettingsView: View {
         Section {
             NavigationLink {
                 InlinePickerView(
-                    title: String(localized: "Video source"),
+                    title: "Video source",
                     onChange: onCameraChange,
                     items: model.listCameraPositions(excludeBuiltin: false).map { id, name in
                         InlinePickerItem(id: id, text: name)

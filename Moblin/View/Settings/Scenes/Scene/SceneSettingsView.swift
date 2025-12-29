@@ -32,7 +32,7 @@ private struct MicView: View {
     var body: some View {
         NavigationLink {
             InlinePickerView(
-                title: String(localized: "Mic"),
+                title: "Mic",
                 onChange: onMicChange,
                 items: model.database.mics.mics.map {
                     InlinePickerItem(id: $0.id, text: $0.name)
@@ -108,7 +108,7 @@ private struct VideoSourceView: View {
         Section {
             NavigationLink {
                 InlinePickerView(
-                    title: String(localized: "Name"),
+                    title: "Name",
                     onChange: onCameraChange,
                     footers: [
                         String(localized: """
