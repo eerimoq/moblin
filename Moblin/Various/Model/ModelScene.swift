@@ -333,12 +333,12 @@ extension Model {
 
     func forceUpdateTextEffects() {
         for effect in textEffects.values {
-            effect.forceImageUpdate()
+            effect.forceOverlayUpdate()
         }
         for effect in slideshowEffects.values {
             for slide in effect.slides {
                 if let textEffect = slide.effect as? TextEffect {
-                    textEffect.forceImageUpdate()
+                    textEffect.forceOverlayUpdate()
                 }
             }
         }

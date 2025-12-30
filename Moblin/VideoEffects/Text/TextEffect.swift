@@ -75,14 +75,14 @@ private struct Line: Equatable, Identifiable {
 }
 
 private class Formatter {
-    var formatParts: [TextFormatPart] = []
-    var timersEndTime: [ContinuousClock.Instant] = []
-    var stopwatches: [SettingsWidgetTextStopwatch] = []
+    var formatParts: [TextFormatPart]
+    var timersEndTime: [ContinuousClock.Instant]
+    var stopwatches: [SettingsWidgetTextStopwatch]
     var temperatureFormatter = MeasurementFormatter()
-    var checkboxes: [Bool] = []
-    var ratings: [Int] = []
+    var checkboxes: [Bool]
+    var ratings: [Int]
     var subtitles: [String?: Subtitles] = [:]
-    var lapTimes: [[Double]] = []
+    var lapTimes: [[Double]]
     var timerIndex = 0
     var stopwatchIndex = 0
     var checkboxIndex = 0
@@ -92,6 +92,22 @@ private class Formatter {
     var parts: [Part] = []
     var lineId = 0
     var partId = 0
+
+    init(formatParts: [TextFormatPart],
+         timersEndTime: [ContinuousClock.Instant],
+         stopwatches: [SettingsWidgetTextStopwatch],
+         checkboxes: [Bool],
+         ratings: [Int],
+         lapTimes: [[Double]])
+    {
+        self.formatParts = formatParts
+        self.timersEndTime = timersEndTime
+        self.stopwatches = stopwatches
+        self.checkboxes = checkboxes
+        self.ratings = ratings
+        self.lapTimes = lapTimes
+        temperatureFormatter.numberFormatter.maximumFractionDigits = 0
+    }
 
     func format(stats: TextEffectStats, now: ContinuousClock.Instant) -> [Line] {
         timerIndex = 0
@@ -528,7 +544,7 @@ private class Formatter {
     }
 }
 
-private class TextState: ObservableObject {
+private class TextViewState: ObservableObject {
     @Published var fontSize: CGFloat
     @Published var fontDesign: Font.Design
     @Published var fontWeight: Font.Weight
@@ -550,7 +566,6 @@ private class TextState: ObservableObject {
          cornerRadius: Double,
          foregroundColor: Color,
          backgroundColor: Color,
-         size: CGSize,
          lines: [Line])
     {
         self.fontSize = fontSize
@@ -562,13 +577,12 @@ private class TextState: ObservableObject {
         self.cornerRadius = cornerRadius
         self.foregroundColor = foregroundColor
         self.backgroundColor = backgroundColor
-        self.size = size
         self.lines = lines
     }
 }
 
 private struct TextView: View {
-    @ObservedObject var state: TextState
+    @ObservedObject var state: TextViewState
 
     private func scaledFontSize(size: CGSize) -> CGFloat {
         return state.fontSize * (size.maximum() / 1920)
@@ -644,9 +658,9 @@ final class TextEffect: VideoEffect {
     private var overlay: CIImage?
     private var nextUpdateTime = ContinuousClock.now
     private var delay: Double
-    private let formatter = Formatter()
+    private let formatter: Formatter
     private var sceneWidget: SettingsSceneWidget
-    private let state: TextState
+    private let state: TextViewState
     private var renderer: ImageRenderer<TextView>?
     private var cancellable: AnyCancellable?
     private var forceUpdate: Bool = false
@@ -671,27 +685,25 @@ final class TextEffect: VideoEffect {
         ratings: [Int],
         lapTimes: [[Double]]
     ) {
-        formatter.formatParts = loadTextFormat(format: format)
+        formatter = Formatter(formatParts: loadTextFormat(format: format),
+                              timersEndTime: timersEndTime,
+                              stopwatches: stopwatches,
+                              checkboxes: checkboxes,
+                              ratings: ratings,
+                              lapTimes: lapTimes)
         sceneWidget = SettingsSceneWidget(widgetId: .init())
-        state = TextState(fontSize: fontSize,
-                          fontDesign: fontDesign,
-                          fontWeight: fontWeight,
-                          fontMonospacedDigits: fontMonospacedDigits,
-                          horizontalAlignment: horizontalAlignment,
-                          minWidth: Double(width ?? 0),
-                          cornerRadius: cornerRadius,
-                          foregroundColor: foregroundColor.color(),
-                          backgroundColor: backgroundColor.color(),
-                          size: .zero,
-                          lines: [])
+        state = TextViewState(fontSize: fontSize,
+                              fontDesign: fontDesign,
+                              fontWeight: fontWeight,
+                              fontMonospacedDigits: fontMonospacedDigits,
+                              horizontalAlignment: horizontalAlignment,
+                              minWidth: Double(width ?? 0),
+                              cornerRadius: cornerRadius,
+                              foregroundColor: foregroundColor.color(),
+                              backgroundColor: backgroundColor.color(),
+                              lines: [])
         self.settingName = settingName
         self.delay = delay
-        formatter.timersEndTime = timersEndTime
-        formatter.stopwatches = stopwatches
-        formatter.checkboxes = checkboxes
-        formatter.ratings = ratings
-        formatter.lapTimes = lapTimes
-        formatter.temperatureFormatter.numberFormatter.maximumFractionDigits = 0
         super.init()
         DispatchQueue.main.async {
             self.renderer = ImageRenderer(content: TextView(state: self.state))
@@ -713,7 +725,7 @@ final class TextEffect: VideoEffect {
         previousLines = nil
     }
 
-    func forceImageUpdate() {
+    func forceOverlayUpdate() {
         processorPipelineQueue.async {
             self.forceUpdate = true
         }
@@ -722,7 +734,7 @@ final class TextEffect: VideoEffect {
 
     func setFormat(format: String) {
         formatter.formatParts = loadTextFormat(format: format)
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setBackgroundColor(color: RgbColor) {
@@ -757,7 +769,7 @@ final class TextEffect: VideoEffect {
 
     func setTimersEndTime(endTimes: [ContinuousClock.Instant]) {
         formatter.timersEndTime = endTimes
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setEndTime(index: Int, endTime: ContinuousClock.Instant) {
@@ -765,12 +777,12 @@ final class TextEffect: VideoEffect {
             return
         }
         formatter.timersEndTime[index] = endTime
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setStopwatches(stopwatches: [SettingsWidgetTextStopwatch]) {
         formatter.stopwatches = stopwatches
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setStopwatch(index: Int, stopwatch: SettingsWidgetTextStopwatch) {
@@ -778,12 +790,12 @@ final class TextEffect: VideoEffect {
             return
         }
         formatter.stopwatches[index] = stopwatch
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setCheckboxes(checkboxes: [Bool]) {
         formatter.checkboxes = checkboxes
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setCheckbox(index: Int, checked: Bool) {
@@ -791,12 +803,12 @@ final class TextEffect: VideoEffect {
             return
         }
         formatter.checkboxes[index] = checked
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setRatings(ratings: [Int]) {
         formatter.ratings = ratings
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setRating(index: Int, rating: Int) {
@@ -804,12 +816,12 @@ final class TextEffect: VideoEffect {
             return
         }
         formatter.ratings[index] = rating
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setLapTimes(lapTimes: [[Double]]) {
         formatter.lapTimes = lapTimes
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func setLapTimes(index: Int, lapTimes: [Double]) {
@@ -817,19 +829,12 @@ final class TextEffect: VideoEffect {
             return
         }
         formatter.lapTimes[index] = lapTimes
-        forceImageUpdate()
-    }
-
-    func updateStats(stats: TextEffectStats) {
-        self.stats.append(stats)
-        if self.stats.count > 10 {
-            self.stats.removeFirst()
-        }
+        forceOverlayUpdate()
     }
 
     func clearSubtitles() {
         formatter.subtitles.removeAll()
-        forceImageUpdate()
+        forceOverlayUpdate()
     }
 
     func updateSubtitles(position: Int, text: String, languageIdentifier: String?) {
@@ -840,11 +845,30 @@ final class TextEffect: VideoEffect {
             subtitles.updateSubtitles(position: position, text: text)
             formatter.subtitles[languageIdentifier] = subtitles
         }
-        forceImageUpdate()
+        forceOverlayUpdate()
+    }
+
+    func updateStats(stats: TextEffectStats) {
+        self.stats.append(stats)
+        if self.stats.count > 10 {
+            self.stats.removeFirst()
+        }
     }
 
     override func getName() -> String {
         return "\(settingName) text widget"
+    }
+
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+        updateOverlayIfNeeded(size: image.extent.size)
+        return overlay?
+            .move(sceneWidget.layout, image.extent.size)
+            .cropped(to: image.extent)
+            .composited(over: image) ?? image
+    }
+
+    override func prepare(_ image: CIImage, _: VideoEffectInfo) {
+        updateOverlayIfNeeded(size: image.extent.size)
     }
 
     private func formatted(now: ContinuousClock.Instant) -> [Line] {
@@ -888,17 +912,5 @@ final class TextEffect: VideoEffect {
         processorPipelineQueue.async {
             self.overlay = image
         }
-    }
-
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        updateOverlayIfNeeded(size: image.extent.size)
-        return overlay?
-            .move(sceneWidget.layout, image.extent.size)
-            .cropped(to: image.extent)
-            .composited(over: image) ?? image
-    }
-
-    override func prepare(_ image: CIImage, _: VideoEffectInfo) {
-        updateOverlayIfNeeded(size: image.extent.size)
     }
 }
