@@ -176,40 +176,39 @@ extension Model {
         streamState = .connecting
         latestLowBitrateTime = .now
         moblink.streamer?.stopTunnels()
-        startNetStreamSingleTrack()
-    }
-
-    private func startNetStreamSingleTrack() {
         switch stream.getProtocol() {
         case .rtmp:
+            let rtmp = stream.rtmp
             media.rtmpStartStream(url: stream.url,
                                   targetBitrate: getBitrate(),
-                                  adaptiveBitrate: stream.rtmp.adaptiveBitrateEnabled)
+                                  adaptiveBitrate: rtmp.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRtmpIfEnabled()
         case .srt:
-            payloadSize = stream.srt.mpegtsPacketsPerPacket() * MpegTsPacket.size
+            let srt = stream.srt
+            payloadSize = srt.mpegtsPacketsPerPacket() * MpegTsPacket.size
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
                 reconnectTime: 5,
                 targetBitrate: getBitrate(),
-                adaptiveBitrateAlgorithm: stream.srt.adaptiveBitrateEnabled
-                    ? stream.srt.adaptiveBitrate.algorithm
+                adaptiveBitrateAlgorithm: srt.adaptiveBitrateEnabled
+                    ? srt.adaptiveBitrate.algorithm
                     : nil,
-                latency: stream.srt.latency,
+                latency: srt.latency,
                 overheadBandwidth: database.debug.srtOverheadBandwidth,
                 maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
-                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket(),
+                mpegtsPacketsPerPacket: srt.mpegtsPacketsPerPacket(),
                 networkInterfaceNames: database.networkInterfaceNames,
-                connectionPriorities: stream.srt.connectionPriorities,
-                dnsLookupStrategy: stream.srt.dnsLookupStrategy
+                connectionPriorities: srt.connectionPriorities,
+                dnsLookupStrategy: srt.dnsLookupStrategy
             )
-            updateAdaptiveBitrateSrt(srt: stream.srt)
+            updateAdaptiveBitrateSrt(srt: srt)
         case .rist:
+            let rist = stream.rist
             media.ristStartStream(url: stream.url,
-                                  bonding: stream.rist.bonding,
+                                  bonding: rist.bonding,
                                   targetBitrate: getBitrate(),
-                                  adaptiveBitrate: stream.rist.adaptiveBitrateEnabled)
+                                  adaptiveBitrate: rist.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRistIfEnabled()
         }
         updateSpeed(now: .now)
