@@ -47,7 +47,6 @@ struct WidgetLayoutView: View {
                     Picker("Alignment", selection: $layout.alignment) {
                         ForEach(SettingsAlignment.allCases, id: \.self) {
                             Text($0.toString())
-                                .tag($0)
                         }
                     }
                     .onChange(of: layout.alignment) { _ in
