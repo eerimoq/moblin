@@ -455,7 +455,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
     var latency: Int32 = defaultSrtLatency
     var maximumBandwidthFollowInput: Bool = true
     var overheadBandwidth: Int32 = 25
-    var adaptiveBitrateEnabled: Bool = true
+    @Published var adaptiveBitrateEnabled: Bool = true
     var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate = .init()
     var connectionPriorities: SettingsStreamSrtConnectionPriorities = .init()
     var mpegtsPacketsPerPacket: Int = 7

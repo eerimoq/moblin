@@ -204,7 +204,7 @@ extension Model {
                 connectionPriorities: stream.srt.connectionPriorities,
                 dnsLookupStrategy: stream.srt.dnsLookupStrategy
             )
-            updateAdaptiveBitrateSrt(stream: stream)
+            updateAdaptiveBitrateSrt(srt: stream.srt)
         case .rist:
             media.ristStartStream(url: stream.url,
                                   bonding: stream.rist.bonding,

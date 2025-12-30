@@ -20,7 +20,7 @@ struct StreamSrtSettingsView: View {
         guard let latency = Int32(value) else {
             return
         }
-        stream.srt.latency = latency
+        srt.latency = latency
         model.reloadStreamIfEnabled(stream: stream)
     }
 
@@ -41,7 +41,7 @@ struct StreamSrtSettingsView: View {
         guard let overheadBandwidth = Int32(value) else {
             return
         }
-        stream.srt.overheadBandwidth = overheadBandwidth
+        srt.overheadBandwidth = overheadBandwidth
     }
 
     var body: some View {
@@ -63,15 +63,13 @@ struct StreamSrtSettingsView: View {
                 )
                 .disabled(stream.enabled && model.isLive)
                 NavigationLink {
-                    StreamSrtAdaptiveBitrateSettingsView(stream: stream)
+                    StreamSrtAdaptiveBitrateSettingsView(stream: stream, srt: srt)
                 } label: {
-                    Toggle("Adaptive bitrate", isOn: Binding(get: {
-                        stream.srt.adaptiveBitrateEnabled
-                    }, set: { value in
-                        stream.srt.adaptiveBitrateEnabled = value
-                        model.reloadStreamIfEnabled(stream: stream)
-                    }))
-                    .disabled(stream.enabled && model.isLive)
+                    Toggle("Adaptive bitrate", isOn: $srt.adaptiveBitrateEnabled)
+                        .onChange(of: srt.adaptiveBitrateEnabled) { _ in
+                            model.reloadStreamIfEnabled(stream: stream)
+                        }
+                        .disabled(stream.enabled && model.isLive)
                 }
                 NavigationLink {
                     StreamSrtConnectionPriorityView(stream: stream)
@@ -81,15 +79,15 @@ struct StreamSrtSettingsView: View {
                 switch srt.implementation {
                 case .official:
                     Toggle("Max bandwidth follows input", isOn: Binding(get: {
-                        stream.srt.maximumBandwidthFollowInput
+                        srt.maximumBandwidthFollowInput
                     }, set: { value in
-                        stream.srt.maximumBandwidthFollowInput = value
+                        srt.maximumBandwidthFollowInput = value
                         model.reloadStreamIfEnabled(stream: stream)
                     }))
                     .disabled(stream.enabled && model.isLive)
                     TextEditNavigationView(
                         title: String(localized: "Overhead bandwidth"),
-                        value: String(stream.srt.overheadBandwidth),
+                        value: String(srt.overheadBandwidth),
                         onChange: changeOverheadBandwidth,
                         onSubmit: submitOverheadBandwidth,
                         keyboardType: .numbersAndPunctuation,
@@ -100,12 +98,12 @@ struct StreamSrtSettingsView: View {
                     EmptyView()
                 }
                 Toggle("Big packets", isOn: Binding(get: {
-                    stream.srt.mpegtsPacketsPerPacket == 7
+                    srt.mpegtsPacketsPerPacket == 7
                 }, set: { value in
                     if value {
-                        stream.srt.mpegtsPacketsPerPacket = 7
+                        srt.mpegtsPacketsPerPacket = 7
                     } else {
-                        stream.srt.mpegtsPacketsPerPacket = 6
+                        srt.mpegtsPacketsPerPacket = 6
                     }
                     model.reloadStreamIfEnabled(stream: stream)
                 }))
@@ -127,7 +125,7 @@ struct StreamSrtSettingsView: View {
                     }
                 }
                 .onChange(of: dnsLookupStrategy) { strategy in
-                    stream.srt.dnsLookupStrategy = SettingsDnsLookupStrategy(rawValue: strategy) ?? .system
+                    srt.dnsLookupStrategy = SettingsDnsLookupStrategy(rawValue: strategy) ?? .system
                 }
                 .disabled(stream.enabled && model.isLive)
             } footer: {
