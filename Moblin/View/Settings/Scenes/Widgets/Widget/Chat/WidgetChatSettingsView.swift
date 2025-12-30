@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct WidgetChatSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var database: Database
     let widget: SettingsWidget
     @ObservedObject var chat: SettingsWidgetChat
 
@@ -33,7 +34,7 @@ struct WidgetChatSettingsView: View {
                 Text(String(Int(chat.fontSize)))
                     .frame(width: 25)
             }
-            if model.database.showAllSettings {
+            if database.showAllSettings {
                 Picker("Display style", selection: $chat.displayStyle) {
                     ForEach(SettingsChatDisplayStyle.allCases, id: \.self) { displayStyle in
                         Text(displayStyle.toString())
@@ -61,7 +62,7 @@ struct WidgetChatSettingsView: View {
             }
         }
         Section {
-            if model.database.showAllSettings {
+            if database.showAllSettings {
                 ColorPicker("Name", selection: $chat.usernameColorColor, supportsOpacity: false)
                     .onChange(of: chat.usernameColorColor) { _ in
                         guard let color = chat.usernameColorColor.toRgb() else {

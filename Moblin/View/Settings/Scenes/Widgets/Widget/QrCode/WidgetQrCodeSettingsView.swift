@@ -1,8 +1,7 @@
-import PhotosUI
 import SwiftUI
 
 struct WidgetQrCodeSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let widget: SettingsWidget
 
     private func submitMessage(value: String) {
@@ -18,6 +17,6 @@ struct WidgetQrCodeSettingsView: View {
                 onSubmit: submitMessage
             )
         }
-        WidgetEffectsView(widget: widget)
+        WidgetEffectsView(model: model, widget: widget)
     }
 }

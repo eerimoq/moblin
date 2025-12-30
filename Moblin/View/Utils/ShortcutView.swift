@@ -13,12 +13,13 @@ struct ShortcutSectionView<Content: View>: View {
 }
 
 struct WidgetShortcutView: View {
+    let model: Model
     let database: Database
     let widget: SettingsWidget
 
     var body: some View {
         NavigationLink {
-            WidgetSettingsView(database: database, widget: widget)
+            WidgetSettingsView(model: model, database: database, widget: widget)
         } label: {
             Text("Widget")
         }

@@ -8,7 +8,7 @@ private struct WidgetsSettingsItemView: View {
 
     var body: some View {
         NavigationLink {
-            WidgetSettingsView(database: database, widget: widget)
+            WidgetSettingsView(model: model, database: database, widget: widget)
         } label: {
             Toggle(isOn: $widget.enabled) {
                 HStack {

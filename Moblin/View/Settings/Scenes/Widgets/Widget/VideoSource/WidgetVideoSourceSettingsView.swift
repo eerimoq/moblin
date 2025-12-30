@@ -223,6 +223,6 @@ struct WidgetVideoSourceSettingsView: View {
         } header: {
             Text("Face tracking")
         }
-        WidgetEffectsView(widget: widget)
+        WidgetEffectsView(model: model, widget: widget)
     }
 }

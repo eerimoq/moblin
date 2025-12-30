@@ -123,6 +123,6 @@ struct WidgetBrowserSettingsView: View {
                 "Give the webpage access to various data in Moblin, for example chat messages and your location."
             )
         }
-        WidgetEffectsView(widget: widget)
+        WidgetEffectsView(model: model, widget: widget)
     }
 }

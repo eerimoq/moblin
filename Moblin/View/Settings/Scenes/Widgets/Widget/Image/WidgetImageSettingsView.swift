@@ -58,12 +58,12 @@ struct WidgetImagePickerView: View {
 }
 
 struct WidgetImageSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let widget: SettingsWidget
     @State private var image: UIImage?
 
     var body: some View {
         WidgetImagePickerView(model: model, widget: widget, image: $image, sizeScale: 6)
-        WidgetEffectsView(widget: widget)
+        WidgetEffectsView(model: model, widget: widget)
     }
 }

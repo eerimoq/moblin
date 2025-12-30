@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WidgetSnapshotSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let widget: SettingsWidget
     @ObservedObject var snapshot: SettingsWidgetSnapshot
 
@@ -22,6 +22,6 @@ struct WidgetSnapshotSettingsView: View {
                 setEffectSettings()
             }
         }
-        WidgetEffectsView(widget: widget)
+        WidgetEffectsView(model: model, widget: widget)
     }
 }

@@ -69,7 +69,7 @@ struct SceneWidgetSettingsView: View {
                              widget: widget,
                              numericInput: $database.sceneNumericInput)
             ShortcutSectionView {
-                WidgetShortcutView(database: model.database, widget: widget)
+                WidgetShortcutView(model: model, database: model.database, widget: widget)
                 if widget.type == .scene,
                    let scene = model.database.scenes.first(where: { $0.id == widget.scene.sceneId })
                 {

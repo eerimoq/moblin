@@ -64,7 +64,7 @@ private struct EffectView: View {
 }
 
 struct WidgetEffectsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var widget: SettingsWidget
 
     var body: some View {

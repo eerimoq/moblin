@@ -60,7 +60,7 @@ private struct SlideView: View {
                 }
                 if let widgetId = slide.widgetId, let widget = model.findWidget(id: widgetId) {
                     ShortcutSectionView {
-                        WidgetShortcutView(database: database, widget: widget)
+                        WidgetShortcutView(model: model, database: database, widget: widget)
                     }
                 }
             }

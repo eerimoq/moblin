@@ -378,6 +378,5 @@ struct WidgetAlertsSettingsView: View {
         AiResponseView(model: model,
                        alerts: widget.alerts,
                        ai: widget.alerts.ai)
-        // TtsMonsterSettingsView(ttsMonster: widget.alerts.ttsMonster)
     }
 }

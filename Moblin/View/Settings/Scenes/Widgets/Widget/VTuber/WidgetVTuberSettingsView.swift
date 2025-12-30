@@ -47,7 +47,7 @@ struct WidgetVTuberPickerView: View {
 }
 
 struct WidgetVTuberSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let widget: SettingsWidget
     @ObservedObject var vTuber: SettingsWidgetVTuber
 

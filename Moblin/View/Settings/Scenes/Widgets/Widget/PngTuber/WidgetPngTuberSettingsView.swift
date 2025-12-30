@@ -49,7 +49,7 @@ struct WidgetPngTuberPickerView: View {
 }
 
 struct WidgetPngTuberSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let widget: SettingsWidget
     @ObservedObject var pngTuber: SettingsWidgetPngTuber
 

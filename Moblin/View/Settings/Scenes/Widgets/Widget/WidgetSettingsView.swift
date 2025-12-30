@@ -69,7 +69,7 @@ struct WidgetNameView: View {
 }
 
 struct WidgetSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var widget: SettingsWidget
 
@@ -80,7 +80,7 @@ struct WidgetSettingsView: View {
             }
             switch widget.type {
             case .image:
-                WidgetImageSettingsView(widget: widget)
+                WidgetImageSettingsView(model: model, widget: widget)
             case .browser:
                 WidgetBrowserSettingsView(widget: widget, browser: widget.browser)
             case .text:
@@ -94,7 +94,7 @@ struct WidgetSettingsView: View {
             case .slideshow:
                 WidgetSlideshowSettingsView(widget: widget)
             case .qrCode:
-                WidgetQrCodeSettingsView(widget: widget)
+                WidgetQrCodeSettingsView(model: model, widget: widget)
             case .alerts:
                 WidgetAlertsSettingsView(model: model, widget: widget)
             case .videoSource:
@@ -104,13 +104,13 @@ struct WidgetSettingsView: View {
                                              widget: widget,
                                              scoreboard: widget.scoreboard)
             case .vTuber:
-                WidgetVTuberSettingsView(widget: widget, vTuber: widget.vTuber)
+                WidgetVTuberSettingsView(model: model, widget: widget, vTuber: widget.vTuber)
             case .pngTuber:
-                WidgetPngTuberSettingsView(widget: widget, pngTuber: widget.pngTuber)
+                WidgetPngTuberSettingsView(model: model, widget: widget, pngTuber: widget.pngTuber)
             case .snapshot:
-                WidgetSnapshotSettingsView(widget: widget, snapshot: widget.snapshot)
+                WidgetSnapshotSettingsView(model: model, widget: widget, snapshot: widget.snapshot)
             case .chat:
-                WidgetChatSettingsView(widget: widget, chat: widget.chat)
+                WidgetChatSettingsView(model: model, database: database, widget: widget, chat: widget.chat)
             }
         }
         .navigationTitle("\(widget.type.toString()) widget")
