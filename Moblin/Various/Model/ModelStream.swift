@@ -178,40 +178,52 @@ extension Model {
         moblink.streamer?.stopTunnels()
         switch stream.getProtocol() {
         case .rtmp:
-            let rtmp = stream.rtmp
-            media.rtmpStartStream(url: stream.url,
-                                  targetBitrate: getBitrate(),
-                                  adaptiveBitrate: rtmp.adaptiveBitrateEnabled)
-            updateAdaptiveBitrateRtmpIfEnabled()
+            startNetStreamRtmp()
         case .srt:
-            let srt = stream.srt
-            payloadSize = srt.mpegtsPacketsPerPacket() * MpegTsPacket.size
-            media.srtStartStream(
-                isSrtla: stream.isSrtla(),
-                url: stream.url,
-                reconnectTime: 5,
-                targetBitrate: getBitrate(),
-                adaptiveBitrateAlgorithm: srt.adaptiveBitrateEnabled
-                    ? srt.adaptiveBitrate.algorithm
-                    : nil,
-                latency: srt.latency,
-                overheadBandwidth: database.debug.srtOverheadBandwidth,
-                maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
-                mpegtsPacketsPerPacket: srt.mpegtsPacketsPerPacket(),
-                networkInterfaceNames: database.networkInterfaceNames,
-                connectionPriorities: srt.connectionPriorities,
-                dnsLookupStrategy: srt.dnsLookupStrategy
-            )
-            updateAdaptiveBitrateSrt(srt: srt)
+            startNetStreamSrt()
         case .rist:
-            let rist = stream.rist
-            media.ristStartStream(url: stream.url,
-                                  bonding: rist.bonding,
-                                  targetBitrate: getBitrate(),
-                                  adaptiveBitrate: rist.adaptiveBitrateEnabled)
-            updateAdaptiveBitrateRistIfEnabled()
+            startNetStreamRist()
         }
         updateSpeed(now: .now)
+    }
+
+    private func startNetStreamRtmp() {
+        let rtmp = stream.rtmp
+        media.rtmpStartStream(url: stream.url,
+                              targetBitrate: getBitrate(),
+                              adaptiveBitrate: rtmp.adaptiveBitrateEnabled)
+        updateAdaptiveBitrateRtmpIfEnabled()
+    }
+
+    private func startNetStreamSrt() {
+        let srt = stream.srt
+        payloadSize = srt.mpegtsPacketsPerPacket() * MpegTsPacket.size
+        media.srtStartStream(
+            isSrtla: stream.isSrtla(),
+            url: stream.url,
+            reconnectTime: 5,
+            targetBitrate: getBitrate(),
+            adaptiveBitrateAlgorithm: srt.adaptiveBitrateEnabled
+                ? srt.adaptiveBitrate.algorithm
+                : nil,
+            latency: srt.latency,
+            overheadBandwidth: database.debug.srtOverheadBandwidth,
+            maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
+            mpegtsPacketsPerPacket: srt.mpegtsPacketsPerPacket(),
+            networkInterfaceNames: database.networkInterfaceNames,
+            connectionPriorities: srt.connectionPriorities,
+            dnsLookupStrategy: srt.dnsLookupStrategy
+        )
+        updateAdaptiveBitrateSrt(srt: srt)
+    }
+
+    private func startNetStreamRist() {
+        let rist = stream.rist
+        media.ristStartStream(url: stream.url,
+                              bonding: rist.bonding,
+                              targetBitrate: getBitrate(),
+                              adaptiveBitrate: rist.adaptiveBitrateEnabled)
+        updateAdaptiveBitrateRistIfEnabled()
     }
 
     private func stopNetStream() {
