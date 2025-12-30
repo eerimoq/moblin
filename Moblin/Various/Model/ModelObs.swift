@@ -260,9 +260,11 @@ extension Model {
         obsWebSocket?.stop()
         obsWebSocket = nil
         guard isObsRemoteControlConfigured() else {
+            updateStatusObsText()
             return
         }
         guard let url = URL(string: stream.obsWebSocketUrl) else {
+            updateStatusObsText()
             return
         }
         obsWebSocket = ObsWebSocket(
@@ -271,6 +273,7 @@ extension Model {
             delegate: self
         )
         obsWebSocket!.start()
+        updateStatusObsText()
     }
 
     func obsWebSocketEnabledUpdated() {
