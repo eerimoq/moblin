@@ -464,8 +464,6 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
     }
 }
 
-let dnsLookupStrategies = SettingsDnsLookupStrategy.allCases.map { $0.rawValue }
-
 enum SettingsSelfieStickButtonFunction: String, Codable, CaseIterable {
     case switchScene
 

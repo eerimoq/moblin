@@ -459,7 +459,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
     var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate = .init()
     var connectionPriorities: SettingsStreamSrtConnectionPriorities = .init()
     var mpegtsPacketsPerPacket: Int = 7
-    var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
+    @Published var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
     @Published var implementation: SettingsStreamSrtImplementation = .moblin
 
     init() {}

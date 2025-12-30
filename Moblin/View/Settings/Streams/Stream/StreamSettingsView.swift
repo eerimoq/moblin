@@ -229,11 +229,7 @@ struct StreamSettingsView: View {
                     switch stream.getProtocol() {
                     case .srt:
                         NavigationLink {
-                            StreamSrtSettingsView(
-                                stream: stream,
-                                srt: stream.srt,
-                                dnsLookupStrategy: stream.srt.dnsLookupStrategy.rawValue
-                            )
+                            StreamSrtSettingsView(stream: stream, srt: stream.srt)
                         } label: {
                             Text("SRT(LA)")
                         }

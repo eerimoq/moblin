@@ -4,7 +4,6 @@ struct StreamSrtSettingsView: View {
     @EnvironmentObject var model: Model
     let stream: SettingsStream
     @ObservedObject var srt: SettingsStreamSrt
-    @State var dnsLookupStrategy: String
 
     private func changeLatency(value: String) -> String? {
         guard let latency = Int32(value) else {
@@ -119,13 +118,10 @@ struct StreamSrtSettingsView: View {
                 }
             }
             Section {
-                Picker("DNS lookup strategy", selection: $dnsLookupStrategy) {
-                    ForEach(dnsLookupStrategies, id: \.self) { strategy in
-                        Text(strategy)
+                Picker("DNS lookup strategy", selection: $srt.dnsLookupStrategy) {
+                    ForEach(SettingsDnsLookupStrategy.allCases, id: \.self) {
+                        Text($0.rawValue)
                     }
-                }
-                .onChange(of: dnsLookupStrategy) { strategy in
-                    srt.dnsLookupStrategy = SettingsDnsLookupStrategy(rawValue: strategy) ?? .system
                 }
                 .disabled(stream.enabled && model.isLive)
             } footer: {
