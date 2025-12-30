@@ -521,7 +521,6 @@ struct RemoteControlStatusTopLeft: Codable {
 
 struct RemoteControlStatusTopRight: Codable {
     var audioInfo: RemoteControlStatusTopRightAudioInfo?
-    var audioLevel: RemoteControlStatusItem?
     var rtmpServer: RemoteControlStatusItem?
     var remoteControl: RemoteControlStatusItem?
     var gameController: RemoteControlStatusItem?
