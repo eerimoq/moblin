@@ -4,10 +4,6 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
 
-    private func onSubmit(interface: SettingsNetworkInterfaceName, value: String) {
-        interface.name = value
-    }
-
     var body: some View {
         Form {
             Section {
@@ -19,7 +15,9 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                             TextEditNavigationView(
                                 title: interface.interfaceName,
                                 value: interface.name,
-                                onSubmit: { onSubmit(interface: interface, value: $0) },
+                                onSubmit: {
+                                    interface.name = $0
+                                },
                                 capitalize: true
                             )
                         }
