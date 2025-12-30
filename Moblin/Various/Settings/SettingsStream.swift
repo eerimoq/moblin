@@ -137,9 +137,9 @@ enum SettingsStreamSrtImplementation: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .moblin:
-            return "Moblin"
+            return String(localized: "Moblin")
         case .official:
-            return "Official"
+            return String(localized: "Official")
         }
     }
 }
