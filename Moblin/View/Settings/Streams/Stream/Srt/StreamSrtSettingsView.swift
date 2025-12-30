@@ -48,7 +48,7 @@ struct StreamSrtSettingsView: View {
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Latency"),
-                    value: String(stream.srt.latency),
+                    value: String(srt.latency),
                     onChange: changeLatency,
                     onSubmit: submitLatency,
                     footers: [
@@ -77,13 +77,11 @@ struct StreamSrtSettingsView: View {
                 }
                 switch srt.implementation {
                 case .official:
-                    Toggle("Max bandwidth follows input", isOn: Binding(get: {
-                        srt.maximumBandwidthFollowInput
-                    }, set: { value in
-                        srt.maximumBandwidthFollowInput = value
-                        model.reloadStreamIfEnabled(stream: stream)
-                    }))
-                    .disabled(stream.enabled && model.isLive)
+                    Toggle("Max bandwidth follows input", isOn: $srt.maximumBandwidthFollowInput)
+                        .onChange(of: srt.maximumBandwidthFollowInput) { _ in
+                            model.reloadStreamIfEnabled(stream: stream)
+                        }
+                        .disabled(stream.enabled && model.isLive)
                     TextEditNavigationView(
                         title: String(localized: "Overhead bandwidth"),
                         value: String(srt.overheadBandwidth),
