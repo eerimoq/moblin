@@ -177,7 +177,7 @@ class TextEffectFormatter {
     }
 
     private func formatText(text: String) {
-        parts.append(.init(id: partId, data: .text(text)))
+        appendTextPart(value: text)
     }
 
     private func formatNewLine() {
@@ -187,88 +187,70 @@ class TextEffectFormatter {
     }
 
     private func formatClock(stats: TextEffectStats) {
-        parts.append(.init(
-            id: partId,
-            data: .text(stats.date.formatted(textEffectTimeFormat))
-        ))
+        appendTextPart(value: stats.date.formatted(textEffectTimeFormat))
     }
 
     private func formatShortClock(stats: TextEffectStats) {
-        parts.append(.init(
-            id: partId,
-            data: .text(stats.date.formatted(textEffectShortTimeFormat))
-        ))
+        appendTextPart(value: stats.date.formatted(textEffectShortTimeFormat))
     }
 
     private func formatDate(stats: TextEffectStats) {
-        parts.append(.init(
-            id: partId,
-            data: .text(textEffectDateFormatter.string(from: stats.date))
-        ))
+        appendTextPart(value: textEffectDateFormatter.string(from: stats.date))
     }
 
     private func formatFullDate(stats: TextEffectStats) {
-        parts.append(.init(
-            id: partId,
-            data: .text(textEffectFullDateFormatter.string(from: stats.date))
-        ))
+        appendTextPart(value: textEffectFullDateFormatter.string(from: stats.date))
     }
 
     private func formatBitrate(stats: TextEffectStats) {
         let bitrate = stats.bitrate.isEmpty ? "-" : stats.bitrate
-        parts.append(.init(id: partId, data: .text("\(bitrate) Mbps")))
+        appendTextPart(value: "\(bitrate) Mbps")
     }
 
     private func formatBitrateAndTotal(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.bitrateAndTotal)))
+        appendTextPart(value: stats.bitrateAndTotal)
     }
 
     private func formatResolution(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.resolution ?? "")))
+        appendTextPart(value: stats.resolution ?? "")
     }
 
     private func formatFps(stats: TextEffectStats) {
         if let fps = stats.fps {
-            parts.append(.init(id: partId, data: .text(String(fps))))
+            appendTextPart(value: String(fps))
         } else {
-            parts.append(.init(id: partId, data: .text("")))
+            appendTextPart(value: "")
         }
     }
 
     private func formatDebugOverlay(stats: TextEffectStats) {
-        parts.append(.init(
-            id: partId,
-            data: .text(stats.debugOverlayLines.joined(separator: "\n"))
-        ))
+        appendTextPart(value: stats.debugOverlayLines.joined(separator: "\n"))
     }
 
     private func formatSpeed(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.speed)))
+        appendTextPart(value: stats.speed)
     }
 
     private func formatAverageSpeed(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.averageSpeed)))
+        appendTextPart(value: stats.averageSpeed)
     }
 
     private func formatAltitude(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.altitude)))
+        appendTextPart(value: stats.altitude)
     }
 
     private func formatDistance(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.distance)))
+        appendTextPart(value: stats.distance)
     }
 
     private func formatSlope(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.slope)))
+        appendTextPart(value: stats.slope)
     }
 
     private func formatTimer(stats _: TextEffectStats, now: ContinuousClock.Instant) {
         if timerIndex < timersEndTime.count {
             let timeLeft = max(now.duration(to: timersEndTime[timerIndex]).seconds, 0)
-            parts.append(.init(
-                id: partId,
-                data: .text(uptimeFormatter.string(from: Double(timeLeft)) ?? "")
-            ))
+            appendTextPart(value: uptimeFormatter.string(from: Double(timeLeft)) ?? "")
         }
         timerIndex += 1
     }
@@ -280,10 +262,7 @@ class TextEffectFormatter {
             if stopwatch.running {
                 elapsed += stopwatch.playPressedTime.duration(to: now).seconds
             }
-            parts.append(.init(
-                id: partId,
-                data: .text(uptimeFormatter.string(from: elapsed) ?? "")
-            ))
+            appendTextPart(value: uptimeFormatter.string(from: elapsed) ?? "")
         }
         stopwatchIndex += 1
     }
@@ -292,35 +271,32 @@ class TextEffectFormatter {
         if let conditions = stats.conditions {
             parts.append(.init(id: partId, data: .imageSystemNameTryFill(conditions)))
         } else {
-            parts.append(.init(id: partId, data: .text("-")))
+            appendTextPart(value: "-")
         }
     }
 
     private func formatTemperature(stats: TextEffectStats) {
         if let temperature = stats.temperature {
-            parts.append(.init(
-                id: partId,
-                data: .text(temperatureFormatter.string(from: temperature))
-            ))
+            appendTextPart(value: temperatureFormatter.string(from: temperature))
         } else {
-            parts.append(.init(id: partId, data: .text("-")))
+            appendTextPart(value: "-")
         }
     }
 
     private func formatCountry(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.country ?? "")))
+        appendTextPart(value: stats.country ?? "")
     }
 
     private func formatCountryFlag(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.countryFlag ?? "-")))
+        appendTextPart(value: stats.countryFlag ?? "-")
     }
 
     private func formatState(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.state ?? "-")))
+        appendTextPart(value: stats.state ?? "-")
     }
 
     private func formatCity(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.city ?? "-")))
+        appendTextPart(value: stats.city ?? "-")
     }
 
     private func formatCheckbox() {
@@ -350,7 +326,7 @@ class TextEffectFormatter {
                 lineId += 1
                 parts = []
             }
-            parts.append(.init(id: partId, data: .text(line)))
+            appendTextPart(value: line)
             partId += 1
         }
         if !parts.isEmpty {
@@ -367,73 +343,43 @@ class TextEffectFormatter {
     }
 
     private func formatHeartRate(stats: TextEffectStats, deviceName: String) {
-        let text: String
-        if let heartRate = stats.heartRates[deviceName], let heartRate {
-            text = String(heartRate)
-        } else {
-            text = "-"
-        }
-        parts.append(.init(id: partId, data: .text(text)))
+        appendTextPart(value: formatOptional(value: stats.heartRates[deviceName] ?? nil))
     }
 
     private func formatActiveEnergyBurned(stats: TextEffectStats) {
-        let text: String
-        if let activeEnergyBurned = stats.activeEnergyBurned {
-            text = String(activeEnergyBurned)
-        } else {
-            text = "-"
-        }
-        parts.append(.init(id: partId, data: .text(text)))
+        appendTextPart(value: formatOptional(value: stats.activeEnergyBurned))
     }
 
     private func formatPower(stats: TextEffectStats) {
-        let text: String
-        if let power = stats.power {
-            text = String(power)
-        } else {
-            text = "-"
-        }
-        parts.append(.init(id: partId, data: .text(text)))
+        appendTextPart(value: formatOptional(value: stats.power))
     }
 
     private func formatStepCount(stats: TextEffectStats) {
-        let text: String
-        if let stepCount = stats.stepCount {
-            text = String(stepCount)
-        } else {
-            text = "-"
-        }
-        parts.append(.init(id: partId, data: .text(text)))
+        appendTextPart(value: formatOptional(value: stats.stepCount))
     }
 
     private func formatWorkoutDistance(stats: TextEffectStats) {
-        let text: String
-        if let workoutDistance = stats.workoutDistance {
-            text = String(workoutDistance)
-        } else {
-            text = "-"
-        }
-        parts.append(.init(id: partId, data: .text(text)))
+        appendTextPart(value: formatOptional(value: stats.workoutDistance))
     }
 
     private func formatTeslaBatteryLevel(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.teslaBatteryLevel)))
+        appendTextPart(value: stats.teslaBatteryLevel)
     }
 
     private func formatTeslaDrive(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.teslaDrive)))
+        appendTextPart(value: stats.teslaDrive)
     }
 
     private func formatTeslaMedia(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.teslaMedia)))
+        appendTextPart(value: stats.teslaMedia)
     }
 
     private func formatCyclingPower(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.cyclingPower)))
+        appendTextPart(value: stats.cyclingPower)
     }
 
     private func formatCyclingCadence(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.cyclingCadence)))
+        appendTextPart(value: stats.cyclingCadence)
     }
 
     private func formatLapTimes() {
@@ -457,7 +403,7 @@ class TextEffectFormatter {
                     text = "Lap \(lap) \(time.formatWithSeconds())"
                     lap += 1
                 }
-                parts.append(.init(id: partId, data: .text(text)))
+                appendTextPart(value: text)
                 partId += 1
             }
             if !parts.isEmpty {
@@ -470,36 +416,38 @@ class TextEffectFormatter {
     }
 
     private func formatBrowserTitle(stats: TextEffectStats) {
-        parts.append(.init(id: partId, data: .text(stats.browserTitle)))
+        appendTextPart(value: stats.browserTitle)
     }
 
     private func formatGForce(stats: TextEffectStats) {
-        let text: String
-        if let now = stats.gForce?.now {
-            text = formatOneDecimal(Float(now))
-        } else {
-            text = "-"
-        }
-        parts.append(.init(id: partId, data: .text(text)))
+        appendTextPart(value: formatOptionalOneDecimal(value: stats.gForce?.now))
     }
 
     private func formatGForceRecentMax(stats: TextEffectStats) {
-        let text: String
-        if let peak = stats.gForce?.recentMax {
-            text = formatOneDecimal(Float(peak))
-        } else {
-            text = "-"
-        }
-        parts.append(.init(id: partId, data: .text(text)))
+        appendTextPart(value: formatOptionalOneDecimal(value: stats.gForce?.recentMax))
     }
 
     private func formatGForceMax(stats: TextEffectStats) {
-        let text: String
-        if let max = stats.gForce?.max {
-            text = formatOneDecimal(Float(max))
+        appendTextPart(value: formatOptionalOneDecimal(value: stats.gForce?.max))
+    }
+
+    private func formatOptional(value: Int?) -> String {
+        if let value {
+            return String(value)
         } else {
-            text = "-"
+            return "-"
         }
-        parts.append(.init(id: partId, data: .text(text)))
+    }
+
+    private func formatOptionalOneDecimal(value: Double?) -> String {
+        if let value {
+            return formatOneDecimal(Float(value))
+        } else {
+            return "-"
+        }
+    }
+
+    private func appendTextPart(value: String) {
+        parts.append(.init(id: partId, data: .text(value)))
     }
 }
