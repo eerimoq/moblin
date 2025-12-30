@@ -300,7 +300,7 @@ extension Model {
             timecodesEnabled: isTimecodesEnabled(),
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
             destinations: stream.multiStreaming.destinations,
-            newSrt: database.debug.newSrt
+            srtImplementation: stream.srt.implementation
         )
         updateTorch()
         updateMute()

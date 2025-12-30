@@ -230,8 +230,8 @@ struct StreamSettingsView: View {
                     case .srt:
                         NavigationLink {
                             StreamSrtSettingsView(
-                                debug: database.debug,
                                 stream: stream,
+                                srt: stream.srt,
                                 dnsLookupStrategy: stream.srt.dnsLookupStrategy.rawValue
                             )
                         } label: {

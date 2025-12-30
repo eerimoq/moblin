@@ -75,7 +75,7 @@ final class Media: NSObject {
     private var updateTickCount: UInt64 = 0
     private var belaLinesAndActions: ([String], [String])?
     private var srtConnected = false
-    private var newSrt: Bool = false
+    private var srtImplementation: SettingsStreamSrtImplementation = .moblin
     private var canvasSize: CGSize = .init(width: 1920, height: 1080)
 
     func logStatistics() {
@@ -114,9 +114,9 @@ final class Media: NSObject {
                       timecodesEnabled: Bool,
                       builtinAudioDelay: Double,
                       destinations: [SettingsStreamMultiStreamingDestination],
-                      newSrt: Bool)
+                      srtImplementation: SettingsStreamSrtImplementation)
     {
-        self.newSrt = newSrt
+        self.srtImplementation = srtImplementation
         processor?.stop()
         srtStopStream()
         rtmpStopStream()
@@ -140,14 +140,15 @@ final class Media: NSObject {
             srtStreamOld = nil
             ristStream = nil
         case .srt:
-            if newSrt {
+            switch srtImplementation {
+            case .moblin:
                 srtStreamNew = SrtStreamNew(
                     processor: processor,
                     timecodesEnabled: timecodesEnabled,
                     delegate: self
                 )
                 srtStreamOld = nil
-            } else {
+            case .official:
                 srtStreamNew = nil
                 srtStreamOld = SrtStreamOld(
                     processor: processor,
@@ -236,7 +237,7 @@ final class Media: NSObject {
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
             networkInterfaceNames: networkInterfaceNames,
             connectionPriorities: connectionPriorities,
-            newSrt: newSrt
+            srtImplementation: srtImplementation
         )
         srtSetAdaptiveBitrateAlgorithm(
             targetBitrate: targetBitrate,

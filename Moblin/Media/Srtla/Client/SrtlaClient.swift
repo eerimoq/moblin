@@ -50,7 +50,7 @@ class SrtlaClient: NSObject {
     private var networkInterfaces: SrtlaNetworkInterfaces
     private var connectionPriorities: [SettingsStreamSrtConnectionPriority]
     private var latestFlushDataPacketsTime = ContinuousClock.now
-    private let newSrt: Bool
+    private let srtImplementation: SettingsStreamSrtImplementation
 
     init(
         delegate: SrtlaDelegate,
@@ -58,14 +58,14 @@ class SrtlaClient: NSObject {
         mpegtsPacketsPerPacket: Int,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
         connectionPriorities: SettingsStreamSrtConnectionPriorities,
-        newSrt: Bool
+        srtImplementation: SettingsStreamSrtImplementation
     ) {
         self.delegate = delegate
         self.passThrough = passThrough
         self.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         networkInterfaces = .init()
         self.connectionPriorities = .init()
-        self.newSrt = newSrt
+        self.srtImplementation = srtImplementation
         super.init()
         setNetworkInterfaceNames(networkInterfaceNames: networkInterfaceNames)
         updateConnectionPriorities(connectionPriorities: connectionPriorities)
@@ -356,9 +356,10 @@ class SrtlaClient: NSObject {
     }
 
     private func startListener() {
-        if newSrt {
+        switch srtImplementation {
+        case .moblin:
             startListenerNew()
-        } else {
+        case .official:
             startListenerOld()
         }
     }
@@ -467,9 +468,10 @@ extension SrtlaClient: RemoteConnectionDelegate {
     }
 
     func remoteConnectionPacketHandler(packet: Data) {
-        if newSrt {
+        switch srtImplementation {
+        case .moblin:
             delegate?.srtlaReceivedPacket(packet: packet)
-        } else {
+        case .official:
             localListener?.sendPacket(packet: packet)
         }
         totalByteCount += Int64(packet.count)

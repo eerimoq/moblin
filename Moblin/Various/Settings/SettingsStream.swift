@@ -124,6 +124,26 @@ let resolutions = SettingsStreamResolution.allCases
 
 let fpss = [120, 100, 60, 50, 30, 25, 15]
 
+enum SettingsStreamSrtImplementation: String, Codable, CaseIterable {
+    case moblin = "Moblin"
+    case official = "Official"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsStreamSrtImplementation(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .moblin
+    }
+
+    func toString() -> String {
+        switch self {
+        case .moblin:
+            return "Moblin"
+        case .official:
+            return "Official"
+        }
+    }
+}
+
 enum SettingsStreamAudioCodec: String, Codable, CaseIterable {
     case aac = "AAC"
     case opus = "OPUS"
@@ -431,7 +451,7 @@ class SettingsStreamSrtAdaptiveBitrate: Codable {
     }
 }
 
-class SettingsStreamSrt: Codable {
+class SettingsStreamSrt: Codable, ObservableObject {
     var latency: Int32 = defaultSrtLatency
     var maximumBandwidthFollowInput: Bool = true
     var overheadBandwidth: Int32 = 25
@@ -440,6 +460,7 @@ class SettingsStreamSrt: Codable {
     var connectionPriorities: SettingsStreamSrtConnectionPriorities = .init()
     var mpegtsPacketsPerPacket: Int = 7
     var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
+    @Published var implementation: SettingsStreamSrtImplementation = .moblin
 
     init() {}
 
@@ -451,7 +472,8 @@ class SettingsStreamSrt: Codable {
              adaptiveBitrate,
              connectionPriorities,
              mpegtsPacketsPerPacket,
-             dnsLookupStrategy
+             dnsLookupStrategy,
+             implementation
     }
 
     func encode(to encoder: Encoder) throws {
@@ -464,6 +486,7 @@ class SettingsStreamSrt: Codable {
         try container.encode(.connectionPriorities, connectionPriorities)
         try container.encode(.mpegtsPacketsPerPacket, mpegtsPacketsPerPacket)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
+        try container.encode(.implementation, implementation)
     }
 
     required init(from decoder: Decoder) throws {
@@ -478,6 +501,7 @@ class SettingsStreamSrt: Codable {
                                                 .init())
         mpegtsPacketsPerPacket = container.decode(.mpegtsPacketsPerPacket, Int.self, 7)
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
+        implementation = container.decode(.implementation, SettingsStreamSrtImplementation.self, .moblin)
     }
 
     func clone() -> SettingsStreamSrt {
@@ -490,6 +514,7 @@ class SettingsStreamSrt: Codable {
         new.connectionPriorities = connectionPriorities.clone()
         new.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
         new.dnsLookupStrategy = dnsLookupStrategy
+        new.implementation = implementation
         return new
     }
 }

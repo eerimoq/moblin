@@ -118,7 +118,6 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = builtinAudioAndVideoDelayDefault
-    @Published var newSrt: Bool = false
     var builtinAudioAndVideoDelay70msMigrated: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -154,7 +153,6 @@ class SettingsDebug: Codable, ObservableObject {
              builtinAudioAndVideoDelay,
              overrideSceneMic,
              autoLowPowerMode,
-             newSrt,
              builtinAudioAndVideoDelay70msMigrated
     }
 
@@ -185,7 +183,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
-        try container.encode(.newSrt, newSrt)
         try container.encode(.builtinAudioAndVideoDelay70msMigrated, builtinAudioAndVideoDelay70msMigrated)
     }
 
@@ -224,7 +221,6 @@ class SettingsDebug: Codable, ObservableObject {
         builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay,
                                                      Double.self,
                                                      Self.builtinAudioAndVideoDelayDefault)
-        newSrt = container.decode(.newSrt, Bool.self, false)
         builtinAudioAndVideoDelay70msMigrated = container.decode(.builtinAudioAndVideoDelay70msMigrated,
                                                                  Bool.self,
                                                                  false)

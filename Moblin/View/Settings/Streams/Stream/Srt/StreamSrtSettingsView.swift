@@ -2,8 +2,8 @@ import SwiftUI
 
 struct StreamSrtSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var debug: SettingsDebug
     let stream: SettingsStream
+    @ObservedObject var srt: SettingsStreamSrt
     @State var dnsLookupStrategy: String
 
     private func changeLatency(value: String) -> String? {
@@ -78,7 +78,8 @@ struct StreamSrtSettingsView: View {
                 } label: {
                     Text("Connection priorities")
                 }
-                if !debug.newSrt {
+                switch srt.implementation {
+                case .official:
                     Toggle("Max bandwidth follows input", isOn: Binding(get: {
                         stream.srt.maximumBandwidthFollowInput
                     }, set: { value in
@@ -95,6 +96,8 @@ struct StreamSrtSettingsView: View {
                         valueFormat: { "\($0)%" }
                     )
                     .disabled(stream.enabled && model.isLive)
+                case .moblin:
+                    EmptyView()
                 }
                 Toggle("Big packets", isOn: Binding(get: {
                     stream.srt.mpegtsPacketsPerPacket == 7
@@ -129,6 +132,22 @@ struct StreamSrtSettingsView: View {
                 .disabled(stream.enabled && model.isLive)
             } footer: {
                 Text("System seems to work best for TMobile. IPv4 probably best for IRLToolkit.")
+            }
+            Section {
+                Picker("Implementation", selection: $srt.implementation) {
+                    ForEach(SettingsStreamSrtImplementation.allCases, id: \.self) {
+                        Text($0.toString())
+                    }
+                }
+                .disabled(stream.enabled && model.isLive)
+                .onChange(of: srt.implementation) { _ in
+                    model.reloadStreamIfEnabled(stream: stream)
+                }
+            } footer: {
+                Text("""
+                \"Official\" uses the widely supported libSRT (version 1.5.3) and \"Moblin\" uses a \
+                more energy efficient custom implementation.
+                """)
             }
         }
         .navigationTitle("SRT(LA)")
