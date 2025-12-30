@@ -187,7 +187,7 @@ extension Model {
                                   adaptiveBitrate: stream.rtmp.adaptiveBitrateEnabled)
             updateAdaptiveBitrateRtmpIfEnabled()
         case .srt:
-            payloadSize = stream.srt.mpegtsPacketsPerPacket * MpegTsPacket.size
+            payloadSize = stream.srt.mpegtsPacketsPerPacket() * MpegTsPacket.size
             media.srtStartStream(
                 isSrtla: stream.isSrtla(),
                 url: stream.url,
@@ -199,7 +199,7 @@ extension Model {
                 latency: stream.srt.latency,
                 overheadBandwidth: database.debug.srtOverheadBandwidth,
                 maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
-                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket,
+                mpegtsPacketsPerPacket: stream.srt.mpegtsPacketsPerPacket(),
                 networkInterfaceNames: database.networkInterfaceNames,
                 connectionPriorities: stream.srt.connectionPriorities,
                 dnsLookupStrategy: stream.srt.dnsLookupStrategy

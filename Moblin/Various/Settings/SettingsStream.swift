@@ -458,9 +458,11 @@ class SettingsStreamSrt: Codable, ObservableObject {
     @Published var adaptiveBitrateEnabled: Bool = true
     var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate = .init()
     var connectionPriorities: SettingsStreamSrtConnectionPriorities = .init()
-    var mpegtsPacketsPerPacket: Int = 7
+    var mpegtsPacketsPerPacketRemove: Int = 7
     @Published var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
     @Published var implementation: SettingsStreamSrtImplementation = .moblin
+    @Published var bigPackets: Bool = true
+    var bigPacketsMigrated: Bool = false
 
     init() {}
 
@@ -473,7 +475,9 @@ class SettingsStreamSrt: Codable, ObservableObject {
              connectionPriorities,
              mpegtsPacketsPerPacket,
              dnsLookupStrategy,
-             implementation
+             implementation,
+             bigPackets,
+             bigPacketsMigrated
     }
 
     func encode(to encoder: Encoder) throws {
@@ -484,9 +488,11 @@ class SettingsStreamSrt: Codable, ObservableObject {
         try container.encode(.adaptiveBitrateEnabled, adaptiveBitrateEnabled)
         try container.encode(.adaptiveBitrate, adaptiveBitrate)
         try container.encode(.connectionPriorities, connectionPriorities)
-        try container.encode(.mpegtsPacketsPerPacket, mpegtsPacketsPerPacket)
+        try container.encode(.mpegtsPacketsPerPacket, mpegtsPacketsPerPacketRemove)
         try container.encode(.dnsLookupStrategy, dnsLookupStrategy)
         try container.encode(.implementation, implementation)
+        try container.encode(.bigPackets, bigPackets)
+        try container.encode(.bigPacketsMigrated, bigPacketsMigrated)
     }
 
     required init(from decoder: Decoder) throws {
@@ -499,9 +505,23 @@ class SettingsStreamSrt: Codable, ObservableObject {
         connectionPriorities = container.decode(.connectionPriorities,
                                                 SettingsStreamSrtConnectionPriorities.self,
                                                 .init())
-        mpegtsPacketsPerPacket = container.decode(.mpegtsPacketsPerPacket, Int.self, 7)
+        mpegtsPacketsPerPacketRemove = container.decode(.mpegtsPacketsPerPacket, Int.self, 7)
         dnsLookupStrategy = container.decode(.dnsLookupStrategy, SettingsDnsLookupStrategy.self, .system)
         implementation = container.decode(.implementation, SettingsStreamSrtImplementation.self, .moblin)
+        bigPackets = container.decode(.bigPackets, Bool.self, true)
+        bigPacketsMigrated = container.decode(.bigPacketsMigrated, Bool.self, false)
+        if !bigPacketsMigrated {
+            bigPackets = mpegtsPacketsPerPacketRemove == 7
+            bigPacketsMigrated = true
+        }
+    }
+
+    func mpegtsPacketsPerPacket() -> Int {
+        if bigPackets {
+            return 7
+        } else {
+            return 6
+        }
     }
 
     func clone() -> SettingsStreamSrt {
@@ -512,9 +532,11 @@ class SettingsStreamSrt: Codable, ObservableObject {
         new.adaptiveBitrateEnabled = adaptiveBitrateEnabled
         new.adaptiveBitrate = adaptiveBitrate.clone()
         new.connectionPriorities = connectionPriorities.clone()
-        new.mpegtsPacketsPerPacket = mpegtsPacketsPerPacket
+        new.mpegtsPacketsPerPacketRemove = mpegtsPacketsPerPacketRemove
         new.dnsLookupStrategy = dnsLookupStrategy
         new.implementation = implementation
+        new.bigPackets = bigPackets
+        new.bigPacketsMigrated = bigPacketsMigrated
         return new
     }
 }

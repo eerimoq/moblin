@@ -94,17 +94,11 @@ struct StreamSrtSettingsView: View {
                 case .moblin:
                     EmptyView()
                 }
-                Toggle("Big packets", isOn: Binding(get: {
-                    srt.mpegtsPacketsPerPacket == 7
-                }, set: { value in
-                    if value {
-                        srt.mpegtsPacketsPerPacket = 7
-                    } else {
-                        srt.mpegtsPacketsPerPacket = 6
+                Toggle("Big packets", isOn: $srt.bigPackets)
+                    .onChange(of: srt.bigPackets) { _ in
+                        model.reloadStreamIfEnabled(stream: stream)
                     }
-                    model.reloadStreamIfEnabled(stream: stream)
-                }))
-                .disabled(stream.enabled && model.isLive)
+                    .disabled(stream.enabled && model.isLive)
             } footer: {
                 VStack(alignment: .leading) {
                     Text(
