@@ -305,7 +305,6 @@ class SrtSender {
 
     private func outputPackets(now: ContinuousClock.Instant) {
         guard latestOutputPacketsTime.duration(to: now) > .milliseconds(2) else {
-            // logger.info("xxx output ignored")
             return
         }
         latestOutputPacketsTime = now

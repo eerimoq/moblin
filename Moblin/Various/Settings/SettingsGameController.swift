@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum SettingsControllerFunction: String, Codable, CaseIterable {
     case unused = "Unused"
@@ -89,6 +90,26 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Blur faces")
         case .privacy:
             return String(localized: "Privacy")
+        }
+    }
+
+    func toString(sceneName: String, widgetName: String) -> String {
+        switch self {
+        case .scene:
+            return String(localized: "\(sceneName) scene")
+        case .widget:
+            return String(localized: "\(widgetName) widget")
+        default:
+            return toString()
+        }
+    }
+
+    func color() -> Color {
+        switch self {
+        case .unused:
+            return .gray
+        default:
+            return .primary
         }
     }
 }

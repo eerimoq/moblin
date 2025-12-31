@@ -93,13 +93,13 @@ struct SettingsView: View {
                         Label("Selfie stick", systemImage: "line.diagonal")
                     }
                     NavigationLink {
-                        GameControllersSettingsView(database: database)
+                        GameControllersSettingsView(model: model, database: database)
                     } label: {
                         Label("Game controllers", systemImage: "gamecontroller")
                     }
                     if #available(iOS 17.0, *) {
                         NavigationLink {
-                            KeyboardSettingsView(keyboard: database.keyboard)
+                            KeyboardSettingsView(model: model, keyboard: database.keyboard)
                         } label: {
                             Label("Keyboard", systemImage: "keyboard")
                         }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GameControllersSettingsView: View {
+    let model: Model
     @ObservedObject var database: Database
 
     private func gameControllerIndex(gameController: SettingsGameController) -> Int {
@@ -22,7 +23,10 @@ struct GameControllersSettingsView: View {
                 List {
                     ForEach(database.gameControllers) { gameController in
                         NavigationLink {
-                            GameControllersControllerSettingsView(gameController: gameController)
+                            GameControllersControllerSettingsView(
+                                model: model,
+                                gameController: gameController
+                            )
                         } label: {
                             Text("Controller \(gameControllerIndex(gameController: gameController))")
                         }

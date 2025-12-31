@@ -1,81 +1,74 @@
 import SwiftUI
 
-struct GameControllersControllerButtonSettingsView: View {
-    @EnvironmentObject var model: Model
-    @ObservedObject var button: SettingsGameControllerButton
+struct ControllerButtonView: View {
+    let model: Model
+    let functions: [SettingsControllerFunction]
+    @Binding var function: SettingsControllerFunction
+    @Binding var sceneId: UUID
+    @Binding var widgetId: UUID
 
     private func onFunctionChange(function: String) {
-        button.function = SettingsControllerFunction(rawValue: function) ?? .unused
+        self.function = SettingsControllerFunction(rawValue: function) ?? .unused
     }
 
-    private func buttonText() -> String {
-        switch button.function {
+    var body: some View {
+        Section {
+            NavigationLink {
+                InlinePickerView(
+                    title: "Function",
+                    onChange: onFunctionChange,
+                    items: functions.map { .init(id: $0.rawValue, text: $0.toString()) },
+                    selectedId: function.rawValue
+                )
+            } label: {
+                TextItemLocalizedView(name: "Function", value: function.toString())
+            }
+        }
+        switch function {
         case .scene:
-            return String(localized: "\(model.getSceneName(id: button.sceneId)) scene")
+            Section {
+                Picker("", selection: $sceneId) {
+                    ForEach(model.database.scenes) { scene in
+                        SceneNameView(scene: scene)
+                            .tag(scene.id)
+                    }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            } header: {
+                Text("Scene")
+            }
         case .widget:
-            return String(localized: "\(model.getWidgetName(id: button.widgetId)) widget")
+            Section {
+                Picker("", selection: $widgetId) {
+                    ForEach(model.database.widgets) { widget in
+                        WidgetNameView(widget: widget)
+                            .tag(widget.id)
+                    }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            } header: {
+                Text("Widget")
+            }
         default:
-            return button.function.toString()
+            EmptyView()
         }
     }
+}
 
-    private func buttonColor() -> Color {
-        switch button.function {
-        case .unused:
-            return .gray
-        default:
-            return .primary
-        }
-    }
+struct GameControllersControllerButtonSettingsView: View {
+    let model: Model
+    @ObservedObject var button: SettingsGameControllerButton
 
     var body: some View {
         NavigationLink {
             Form {
-                Section {
-                    NavigationLink {
-                        InlinePickerView(
-                            title: "Function",
-                            onChange: onFunctionChange,
-                            items: SettingsControllerFunction.allCases.map { .init(
-                                id: $0.rawValue,
-                                text: $0.toString()
-                            ) },
-                            selectedId: button.function.rawValue
-                        )
-                    } label: {
-                        TextItemLocalizedView(name: "Function", value: button.function.toString())
-                    }
-                }
-                switch button.function {
-                case .scene:
-                    Section {
-                        Picker("", selection: $button.sceneId) {
-                            ForEach(model.database.scenes) { scene in
-                                SceneNameView(scene: scene)
-                                    .tag(scene.id)
-                            }
-                        }
-                        .pickerStyle(.inline)
-                        .labelsHidden()
-                    } header: {
-                        Text("Scene")
-                    }
-                case .widget:
-                    Section {
-                        Picker("", selection: $button.widgetId) {
-                            ForEach(model.database.widgets) { widget in
-                                WidgetNameView(widget: widget)
-                                    .tag(widget.id)
-                            }
-                        }
-                        .pickerStyle(.inline)
-                        .labelsHidden()
-                    } header: {
-                        Text("Widget")
-                    }
-                default:
-                    EmptyView()
-                }
+                ControllerButtonView(model: model,
+                                     functions: SettingsControllerFunction.allCases,
+                                     function: $button.function,
+                                     sceneId: $button.sceneId,
+                                     widgetId: $button.widgetId)
             }
             .navigationTitle("Game controller button")
         } label: {
@@ -83,8 +76,9 @@ struct GameControllersControllerButtonSettingsView: View {
                 HStack {
                     Text(button.text)
                     Spacer()
-                    Text(buttonText())
-                        .foregroundStyle(buttonColor())
+                    Text(button.function.toString(sceneName: model.getSceneName(id: button.sceneId),
+                                                  widgetName: model.getWidgetName(id: button.widgetId)))
+                        .foregroundStyle(button.function.color())
                 }
             } icon: {
                 Image(systemName: button.name)

@@ -42,32 +42,8 @@ private struct KeyPickerView: View {
 }
 
 struct KeyboardKeySettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var key: SettingsKeyboardKey
-
-    private func onFunctionChange(function: String) {
-        key.function = SettingsControllerFunction(rawValue: function) ?? .unused
-    }
-
-    private func keyText() -> String {
-        switch key.function {
-        case .scene:
-            return String(localized: "\(model.getSceneName(id: key.sceneId)) scene")
-        case .widget:
-            return String(localized: "\(model.getWidgetName(id: key.widgetId)) widget")
-        default:
-            return key.function.toString()
-        }
-    }
-
-    private func keyColor() -> Color {
-        switch key.function {
-        case .unused:
-            return .gray
-        default:
-            return .primary
-        }
-    }
 
     var body: some View {
         NavigationLink {
@@ -87,58 +63,21 @@ struct KeyboardKeySettingsView: View {
                         }
                     }
                 }
-                Section {
-                    NavigationLink {
-                        InlinePickerView(
-                            title: "Function",
-                            onChange: onFunctionChange,
-                            items: SettingsControllerFunction.allCases
-                                .filter { $0 != .zoomIn && $0 != .zoomOut }
-                                .map { .init(id: $0.rawValue, text: $0.toString()) },
-                            selectedId: key.function.rawValue
-                        )
-                    } label: {
-                        TextItemLocalizedView(name: "Function", value: key.function.toString())
-                    }
-                }
-                switch key.function {
-                case .scene:
-                    Section {
-                        Picker("", selection: $key.sceneId) {
-                            ForEach(model.database.scenes) { scene in
-                                SceneNameView(scene: scene)
-                                    .tag(scene.id)
-                            }
-                        }
-                        .pickerStyle(.inline)
-                        .labelsHidden()
-                    } header: {
-                        Text("Scene")
-                    }
-                case .widget:
-                    Section {
-                        Picker("", selection: $key.widgetId) {
-                            ForEach(model.database.widgets) { widget in
-                                WidgetNameView(widget: widget)
-                                    .tag(widget.id)
-                            }
-                        }
-                        .pickerStyle(.inline)
-                        .labelsHidden()
-                    } header: {
-                        Text("Widget")
-                    }
-                default:
-                    EmptyView()
-                }
+                ControllerButtonView(model: model,
+                                     functions: SettingsControllerFunction.allCases
+                                         .filter { $0 != .zoomIn && $0 != .zoomOut },
+                                     function: $key.function,
+                                     sceneId: $key.sceneId,
+                                     widgetId: $key.widgetId)
             }
             .navigationTitle("Keyboard key")
         } label: {
             HStack {
                 SelectedKeyView(key: key)
                 Spacer()
-                Text(keyText())
-                    .foregroundStyle(keyColor())
+                Text(key.function.toString(sceneName: model.getSceneName(id: key.sceneId),
+                                           widgetName: model.getWidgetName(id: key.widgetId)))
+                    .foregroundStyle(key.function.color())
             }
         }
     }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct KeyboardSettingsView: View {
+    let model: Model
     @ObservedObject var keyboard: SettingsKeyboard
 
     var body: some View {
@@ -11,7 +12,7 @@ struct KeyboardSettingsView: View {
             Section {
                 List {
                     ForEach(keyboard.keys) { key in
-                        KeyboardKeySettingsView(key: key)
+                        KeyboardKeySettingsView(model: model, key: key)
                     }
                     .onDelete { indexSet in
                         keyboard.keys.remove(atOffsets: indexSet)
