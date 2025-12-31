@@ -28,15 +28,6 @@ enum SettingsColorLutType: String, Codable {
     case bundled
     case disk
     case diskCube
-
-    init(from decoder: Decoder) throws {
-        do {
-            self = try SettingsColorLutType(rawValue: decoder.singleValueContainer()
-                .decode(RawValue.self)) ?? .bundled
-        } catch {
-            self = .bundled
-        }
-    }
 }
 
 class SettingsColorLut: Codable, Identifiable, ObservableObject {
