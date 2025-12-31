@@ -39,8 +39,8 @@ extension Model {
     }
 
     func handleControllerFunction(function: SettingsControllerFunction,
-                                  sceneId: UUID,
-                                  widgetId: UUID,
+                                  sceneId: UUID?,
+                                  widgetId: UUID?,
                                   pressed: Bool)
     {
         switch function {
@@ -78,7 +78,7 @@ extension Model {
                 updateQuickButtonStates()
             }
         case .scene:
-            if !pressed {
+            if let sceneId, !pressed {
                 selectScene(id: sceneId)
             }
         case .switchScene:
@@ -86,7 +86,7 @@ extension Model {
                 switchToNextSceneRoundRobin()
             }
         case .widget:
-            if !pressed {
+            if let widgetId, !pressed {
                 toggleWidgetOnOff(id: widgetId)
             }
         case .instantReplay:

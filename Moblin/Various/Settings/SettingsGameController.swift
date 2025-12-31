@@ -93,12 +93,20 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
         }
     }
 
-    func toString(sceneName: String, widgetName: String) -> String {
+    func toString(sceneName: String?, widgetName: String?) -> String {
         switch self {
         case .scene:
-            return String(localized: "\(sceneName) scene")
+            if let sceneName {
+                return String(localized: "\(sceneName) scene")
+            } else {
+                return String(localized: "Scene")
+            }
         case .widget:
-            return String(localized: "\(widgetName) widget")
+            if let widgetName {
+                return String(localized: "\(widgetName) widget")
+            } else {
+                return String(localized: "Widget")
+            }
         default:
             return toString()
         }
@@ -119,8 +127,8 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     var name: String = ""
     var text: String = ""
     @Published var function: SettingsControllerFunction = .unused
-    @Published var sceneId: UUID = .init()
-    @Published var widgetId: UUID = .init()
+    @Published var sceneId: UUID?
+    @Published var widgetId: UUID?
 
     init() {}
 
@@ -149,8 +157,8 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         name = container.decode(.name, String.self, "")
         text = container.decode(.text, String.self, "")
         function = container.decode(.function, SettingsControllerFunction.self, .unused)
-        sceneId = container.decode(.sceneId, UUID.self, .init())
-        widgetId = container.decode(.widgetId, UUID.self, .init())
+        sceneId = container.decode(.sceneId, UUID?.self, nil)
+        widgetId = container.decode(.widgetId, UUID?.self, nil)
     }
 }
 

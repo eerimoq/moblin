@@ -160,12 +160,12 @@ extension Model {
         updateSpeechToText()
     }
 
-    func getSceneName(id: UUID) -> String {
-        return database.scenes.first { $0.id == id }?.name ?? "Unknown"
+    func getSceneName(id: UUID?) -> String? {
+        return database.scenes.first { $0.id == id }?.name
     }
 
-    func getWidgetName(id: UUID) -> String {
-        return database.widgets.first { $0.id == id }?.name ?? "Unknown"
+    func getWidgetName(id: UUID?) -> String? {
+        return database.widgets.first { $0.id == id }?.name
     }
 
     func removeDeadWidgetsFromScenes() {

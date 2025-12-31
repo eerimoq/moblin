@@ -294,6 +294,7 @@ private struct WidgetsView: View {
                                     Spacer()
                                 }
                             }
+                            .foregroundStyle(.primary)
                             .padding(11)
                         }
                     }

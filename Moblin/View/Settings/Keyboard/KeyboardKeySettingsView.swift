@@ -75,9 +75,11 @@ struct KeyboardKeySettingsView: View {
             HStack {
                 SelectedKeyView(key: key)
                 Spacer()
-                Text(key.function.toString(sceneName: model.getSceneName(id: key.sceneId),
-                                           widgetName: model.getWidgetName(id: key.widgetId)))
-                    .foregroundStyle(key.function.color())
+                Text(key.function.toString(
+                    sceneName: model.getSceneName(id: key.sceneId ?? .init()),
+                    widgetName: model.getWidgetName(id: key.widgetId ?? .init())
+                ))
+                .foregroundStyle(key.function.color())
             }
         }
     }

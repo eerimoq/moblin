@@ -64,7 +64,10 @@ struct WidgetNameView: View {
     @ObservedObject var widget: SettingsWidget
 
     var body: some View {
-        Text(widget.name)
+        HStack {
+            Image(systemName: widget.image())
+            Text(widget.name)
+        }
     }
 }
 

@@ -4,8 +4,8 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var key: String = ""
     @Published var function: SettingsControllerFunction = .unused
-    @Published var sceneId: UUID = .init()
-    @Published var widgetId: UUID = .init()
+    @Published var sceneId: UUID?
+    @Published var widgetId: UUID?
 
     init() {}
 
@@ -31,8 +31,8 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         id = container.decode(.id, UUID.self, .init())
         key = container.decode(.key, String.self, "")
         function = container.decode(.function, SettingsControllerFunction.self, .unused)
-        sceneId = container.decode(.sceneId, UUID.self, .init())
-        widgetId = container.decode(.widgetId, UUID.self, .init())
+        sceneId = container.decode(.sceneId, UUID?.self, nil)
+        widgetId = container.decode(.widgetId, UUID?.self, nil)
     }
 }
 

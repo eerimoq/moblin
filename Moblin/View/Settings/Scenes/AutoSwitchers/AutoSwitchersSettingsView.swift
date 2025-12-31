@@ -19,11 +19,10 @@ private struct AutoSwitcherSceneSettingsView: View {
     @ObservedObject var scene: SettingsAutoSceneSwitcherScene
 
     private func getSceneName(sceneId: UUID?) -> String {
-        if let sceneId {
-            return model.getSceneName(id: sceneId)
-        } else {
-            return String(localized: "-- None --")
+        if let sceneId, let sceneName = model.getSceneName(id: sceneId) {
+            return sceneName
         }
+        return String(localized: "-- None --")
     }
 
     var body: some View {

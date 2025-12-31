@@ -4,52 +4,39 @@ struct ControllerButtonView: View {
     let model: Model
     let functions: [SettingsControllerFunction]
     @Binding var function: SettingsControllerFunction
-    @Binding var sceneId: UUID
-    @Binding var widgetId: UUID
-
-    private func onFunctionChange(function: String) {
-        self.function = SettingsControllerFunction(rawValue: function) ?? .unused
-    }
+    @Binding var sceneId: UUID?
+    @Binding var widgetId: UUID?
 
     var body: some View {
         Section {
-            NavigationLink {
-                InlinePickerView(
-                    title: "Function",
-                    onChange: onFunctionChange,
-                    items: functions.map { .init(id: $0.rawValue, text: $0.toString()) },
-                    selectedId: function.rawValue
-                )
-            } label: {
-                TextItemLocalizedView(name: "Function", value: function.toString())
+            Picker("Function", selection: $function) {
+                ForEach(functions, id: \.self) {
+                    Text($0.toString())
+                }
             }
         }
         switch function {
         case .scene:
             Section {
-                Picker("", selection: $sceneId) {
-                    ForEach(model.database.scenes) { scene in
-                        SceneNameView(scene: scene)
-                            .tag(scene.id)
+                Picker("Scene", selection: $sceneId) {
+                    Text("-- None --")
+                        .tag(nil as UUID?)
+                    ForEach(model.database.scenes) {
+                        SceneNameView(scene: $0)
+                            .tag($0.id as UUID?)
                     }
                 }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            } header: {
-                Text("Scene")
             }
         case .widget:
             Section {
-                Picker("", selection: $widgetId) {
-                    ForEach(model.database.widgets) { widget in
-                        WidgetNameView(widget: widget)
-                            .tag(widget.id)
+                Picker("Widget", selection: $widgetId) {
+                    Text("-- None --")
+                        .tag(nil as UUID?)
+                    ForEach(model.database.widgets) {
+                        WidgetNameView(widget: $0)
+                            .tag($0.id as UUID?)
                     }
                 }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            } header: {
-                Text("Widget")
             }
         default:
             EmptyView()
