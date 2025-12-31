@@ -86,13 +86,7 @@ enum SettingsColorSpace: String, Codable, CaseIterable {
     case p3D65 = "P3 D65"
     case hlgBt2020 = "HLG BT2020"
     case appleLog = "Apple Log"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsColorSpace(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .srgb
-    }
 }
-
-let colorSpaces = SettingsColorSpace.allCases
 
 private let allBundledLuts = [
     SettingsColorLut(type: .bundled, name: "Apple Log To Rec 709"),

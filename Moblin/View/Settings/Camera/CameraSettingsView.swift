@@ -225,8 +225,8 @@ struct CameraSettingsView: View {
                 if model.supportsAppleLog {
                     Section {
                         Picker("Color space", selection: $color.space) {
-                            ForEach(colorSpaces, id: \.self) { space in
-                                Text(space.rawValue)
+                            ForEach(SettingsColorSpace.allCases, id: \.self) {
+                                Text($0.rawValue)
                             }
                         }
                         .onChange(of: color.space) { _ in
@@ -244,8 +244,8 @@ struct CameraSettingsView: View {
                 } else {
                     Section {
                         Picker("Color space", selection: $color.space) {
-                            ForEach(colorSpaces.filter { $0 != .appleLog }, id: \.self) { space in
-                                Text(space.rawValue)
+                            ForEach(SettingsColorSpace.allCases.filter { $0 != .appleLog }, id: \.self) {
+                                Text($0.rawValue)
                             }
                         }
                         .onChange(of: color.space) { _ in
