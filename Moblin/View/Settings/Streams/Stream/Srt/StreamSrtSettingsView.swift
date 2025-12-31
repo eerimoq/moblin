@@ -61,6 +61,12 @@ struct StreamSrtSettingsView: View {
                     valueFormat: { "\($0) ms" }
                 )
                 .disabled(stream.enabled && model.isLive)
+                if srt.implementation == .moblin && srt.latency < 1000 {
+                    Text("""
+                    ⚠️ The \"Moblin\" implementation does not perform well with low latency. \
+                    Select the \"Official\" implementation at the bottom of this page.
+                    """)
+                }
                 NavigationLink {
                     StreamSrtAdaptiveBitrateSettingsView(stream: stream, srt: srt)
                 } label: {
