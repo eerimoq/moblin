@@ -10,6 +10,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case torch = "Torch"
     case blackScreen = "Black screen"
     case scene = "Scene"
+    case switchScene = "Switch scene"
     case widget = "Widget"
     case instantReplay = "Instant replay"
     case snapshot = "Snapshot"
@@ -54,6 +55,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Stealth mode")
         case .scene:
             return String(localized: "Scene")
+        case .switchScene:
+            return String(localized: "Switch scene")
         case .widget:
             return String(localized: "Widget")
         case .instantReplay:

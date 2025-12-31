@@ -81,6 +81,10 @@ extension Model {
             if !pressed {
                 selectScene(id: sceneId)
             }
+        case .switchScene:
+            if !pressed {
+                switchToNextSceneRoundRobin()
+            }
         case .widget:
             if !pressed {
                 toggleWidgetOnOff(id: widgetId)

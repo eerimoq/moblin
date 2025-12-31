@@ -281,13 +281,20 @@ extension Model {
             }
             if volume != initialVolume {
                 setSystemVolume(initialVolume)
-                switchToNextSceneRoundRobin()
+                executeSelfieStickAction()
             } else if isVolumeMinOrMax(volume), latestSetVolumeTime.duration(to: .now) > .seconds(1) {
-                switchToNextSceneRoundRobin()
+                executeSelfieStickAction()
             }
         } else {
             initialVolume = volume
         }
+    }
+
+    private func executeSelfieStickAction() {
+        handleControllerFunction(function: database.selfieStick.buttonFunction,
+                                 sceneId: .init(),
+                                 widgetId: .init(),
+                                 pressed: false)
     }
 
     private func isVolumeMinOrMax(_ volume: Float) -> Bool {

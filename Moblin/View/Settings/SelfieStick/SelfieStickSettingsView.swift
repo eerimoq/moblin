@@ -12,22 +12,32 @@ struct SelfieStickDoesNotWorkView: View {
 }
 
 struct SelfieStickSettingsView: View {
-    @ObservedObject var database: Database
+    @EnvironmentObject var model: Model
     @ObservedObject var selfieStick: SettingsSelfieStick
+
+    private func onFunctionChange(function: String) {
+        selfieStick.buttonFunction = SettingsControllerFunction(rawValue: function) ?? .unused
+    }
 
     var body: some View {
         Form {
             Section {
                 Toggle("Enabled", isOn: $selfieStick.buttonEnabled)
-                Picker(selection: $selfieStick.buttonFunction) {
-                    ForEach(SettingsSelfieStickButtonFunction.allCases, id: \.self) { buttonFunction in
-                        Text(buttonFunction.toString())
-                            .tag(buttonFunction)
-                    }
+                NavigationLink {
+                    InlinePickerView(
+                        title: "Function",
+                        onChange: onFunctionChange,
+                        items: SettingsControllerFunction.allCases.map { .init(
+                            id: $0.rawValue,
+                            text: $0.toString()
+                        ) },
+                        selectedId: selfieStick.buttonFunction.rawValue
+                    )
                 } label: {
-                    Text("Function")
+                    TextItemLocalizedView(name: "Function", value: selfieStick.buttonFunction.toString())
                 }
-                SelfieStickDoesNotWorkView(database: database, selfieStick: selfieStick)
+
+                SelfieStickDoesNotWorkView(database: model.database, selfieStick: selfieStick)
             } header: {
                 Text("Button")
             } footer: {
