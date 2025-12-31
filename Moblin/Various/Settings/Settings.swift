@@ -464,44 +464,9 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
     }
 }
 
-enum SettingsSelfieStickButtonFunction: String, Codable, CaseIterable {
-    case switchScene
-    case takeSnapshot
-    case mute
-    case toggleMute
-    case stopStream
-    case startStream
-
-    init(from decoder: Decoder) throws {
-        do {
-            self = try SettingsSelfieStickButtonFunction(rawValue: decoder.singleValueContainer()
-                .decode(RawValue.self)) ?? .switchScene
-        } catch {
-            self = .switchScene
-        }
-    }
-
-    func toString() -> String {
-        switch self {
-        case .switchScene:
-            return String(localized: "Switch scene")
-        case .takeSnapshot:
-            return String(localized: "Take snapshot")
-        case .mute:
-            return String(localized: "Mute")
-        case .toggleMute:
-            return String(localized: "Toggle mute")
-        case .stopStream:
-            return String(localized: "Stop stream")
-        case .startStream:
-            return String(localized: "Start stream")
-        }
-    }
-}
-
 class SettingsSelfieStick: Codable, ObservableObject {
     @Published var buttonEnabled: Bool = false
-    @Published var buttonFunction: SettingsSelfieStickButtonFunction = .switchScene
+    @Published var buttonFunction: SettingsControllerFunction = .switchScene
 
     enum CodingKeys: CodingKey {
         case enabled,
@@ -519,7 +484,7 @@ class SettingsSelfieStick: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         buttonEnabled = container.decode(.enabled, Bool.self, false)
-        buttonFunction = container.decode(.function, SettingsSelfieStickButtonFunction.self, .switchScene)
+        buttonFunction = container.decode(.function, SettingsControllerFunction.self, .switchScene)
     }
 }
 

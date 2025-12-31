@@ -88,7 +88,7 @@ struct SettingsView: View {
             if database.showAllSettings {
                 Section {
                     NavigationLink {
-                        SelfieStickSettingsView(database: database, selfieStick: database.selfieStick)
+                        SelfieStickSettingsView(selfieStick: database.selfieStick)
                     } label: {
                         Label("Selfie stick", systemImage: "line.diagonal")
                     }

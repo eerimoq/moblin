@@ -291,20 +291,23 @@ extension Model {
     }
 
     private func executeSelfieStickAction() {
-        switch database.selfieStick.buttonFunction {
-        case .switchScene:
-            switchToNextSceneRoundRobin()
-        case .takeSnapshot:
-            takeSnapshot()
-        case .mute:
-            setMuted(value: true)
-        case .toggleMute:
-            toggleMute()
-        case .stopStream:
-            _ = stopStream()
-        case .startStream:
-            startStream()
-        }
+//        switch database.selfieStick.buttonFunction {
+//        case .switchScene:
+//            switchToNextSceneRoundRobin()
+//        case .snapshot:
+//            takeSnapshot()
+//        case .mute:
+//            toggleMute()
+//        case .stream:
+//            toggleStream()
+//            updateQuickButtonStates()
+//        default:
+//            logger.info("xxx SelfieStickAction idk")
+//        }
+        handleControllerFunction(function: database.selfieStick.buttonFunction,
+                                 sceneId: .init(), // no scene/widget means random UUIDs?
+                                 widgetId: .init(),
+                                 pressed: false)
     }
 
     private func isVolumeMinOrMax(_ volume: Float) -> Bool {
