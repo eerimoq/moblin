@@ -34,13 +34,6 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case blurFaces = "Blur faces"
     case privacy = "Privacy"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsControllerFunction(
-            rawValue: decoder.singleValueContainer().decode(RawValue.self)
-        ) ??
-            .unused
-    }
-
     func toString() -> String {
         switch self {
         case .unused:

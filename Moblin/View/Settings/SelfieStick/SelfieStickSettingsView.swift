@@ -15,13 +15,18 @@ struct SelfieStickSettingsView: View {
     let model: Model
     @ObservedObject var selfieStick: SettingsSelfieStick
 
+    private func functions() -> [SettingsControllerFunction] {
+        return SettingsControllerFunction.allCases.filter {
+            ![.unused, .zoomIn, .zoomOut].contains($0)
+        }
+    }
+
     var body: some View {
         Form {
             Section {
                 Toggle("Enabled", isOn: $selfieStick.enabled)
                 ControllerButtonView(model: model,
-                                     functions: SettingsControllerFunction.allCases
-                                         .filter { $0 != .unused && $0 != .zoomIn && $0 != .zoomOut },
+                                     functions: functions(),
                                      function: $selfieStick.function,
                                      sceneId: $selfieStick.sceneId,
                                      widgetId: $selfieStick.widgetId)

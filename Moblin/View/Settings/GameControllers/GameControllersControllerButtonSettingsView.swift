@@ -49,12 +49,16 @@ struct GameControllersControllerButtonSettingsView: View {
     let model: Model
     @ObservedObject var button: SettingsGameControllerButton
 
+    private func functions() -> [SettingsControllerFunction] {
+        return SettingsControllerFunction.allCases
+    }
+
     var body: some View {
         NavigationLink {
             Form {
                 Section {
                     ControllerButtonView(model: model,
-                                         functions: SettingsControllerFunction.allCases,
+                                         functions: functions(),
                                          function: $button.function,
                                          sceneId: $button.sceneId,
                                          widgetId: $button.widgetId)

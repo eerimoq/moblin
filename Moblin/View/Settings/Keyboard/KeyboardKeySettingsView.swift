@@ -51,6 +51,12 @@ struct KeyboardKeySettingsView: View {
     let model: Model
     @ObservedObject var key: SettingsKeyboardKey
 
+    private func functions() -> [SettingsControllerFunction] {
+        return SettingsControllerFunction.allCases.filter {
+            ![.zoomIn, .zoomOut].contains($0)
+        }
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -71,8 +77,7 @@ struct KeyboardKeySettingsView: View {
                 }
                 Section {
                     ControllerButtonView(model: model,
-                                         functions: SettingsControllerFunction.allCases
-                                             .filter { $0 != .zoomIn && $0 != .zoomOut },
+                                         functions: functions(),
                                          function: $key.function,
                                          sceneId: $key.sceneId,
                                          widgetId: $key.widgetId)
