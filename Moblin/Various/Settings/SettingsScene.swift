@@ -37,15 +37,6 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case dewarp360
     case anamorphicLens
 
-    init(from decoder: Decoder) throws {
-        do {
-            self = try SettingsVideoEffectType(rawValue: decoder.singleValueContainer()
-                .decode(RawValue.self)) ?? .shape
-        } catch {
-            self = .shape
-        }
-    }
-
     func toString() -> String {
         switch self {
         case .shape:
@@ -320,11 +311,6 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
     case rounded = "Rounded"
     case monospaced = "Monospaced"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsFontDesign(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .default
-    }
-
     func toString() -> String {
         switch self {
         case .default:
@@ -357,11 +343,6 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
     case light = "Light"
     case bold = "Bold"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsFontWeight(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .regular
-    }
-
     func toString() -> String {
         switch self {
         case .regular:
@@ -390,11 +371,6 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     case trailing = "Trailing"
     case center = "Center"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsHorizontalAlignment(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .leading
-    }
-
     func toString() -> String {
         switch self {
         case .leading:
@@ -421,11 +397,6 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
 enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     case top = "Top"
     case bottom = "Bottom"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsVerticalAlignment(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .top
-    }
 }
 
 enum SettingsAlignment: String, Codable, CaseIterable {
@@ -433,11 +404,6 @@ enum SettingsAlignment: String, Codable, CaseIterable {
     case topRight = "TopRight"
     case bottomLeft = "BottomLeft"
     case bottomRight = "BottomRight"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsAlignment(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .topLeft
-    }
 
     func isLeft() -> Bool {
         return self == .topLeft || self == .bottomLeft
@@ -834,11 +800,6 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
     case scene = "Scene"
     case face = "Face"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsWidgetAlertPositionType(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .scene
-    }
-
     func toString() -> String {
         switch self {
         case .scene:
@@ -859,12 +820,6 @@ class SettingsWidgetAlertFacePosition: Codable {
 enum SettingsWidgetAlertsAlertMediaType: String, CaseIterable, Codable {
     case gifAndSound
     case video
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsWidgetAlertsAlertMediaType(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .gifAndSound
-    }
 
     func toString() -> LocalizedStringKey {
         switch self {
@@ -1191,12 +1146,6 @@ class SettingsWidgetAlertsKick: Codable {
 
 enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable {
     case file = "File"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsWidgetAlertsChatBotCommandImageType(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .file
-    }
 }
 
 class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Sendable {
@@ -1426,12 +1375,6 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
     case blur = "Blur"
     case freeze = "Freeze"
     case blurAndZoom = "Blur & zoom"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsSceneSwitchTransition(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .blur
-    }
 
     func toString() -> String {
         switch self {
@@ -2350,12 +2293,6 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
     case generic = "Generic"
     case padel = "Padel"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsWidgetScoreboardType(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .padel
-    }
-
     func toString() -> String {
         switch self {
         case .generic:
@@ -2399,12 +2336,6 @@ class SettingsWidgetScoreboardScore: Codable, Identifiable {
 enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
     case doubles = "Double"
     case singles = "Single"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsWidgetPadelScoreboardGameType(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .doubles
-    }
 
     func toString() -> String {
         switch self {
@@ -2630,22 +2561,6 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
     }
 }
 
-enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
-    case movie = "Movie"
-    case grayScale = "Gray scale"
-    case sepia = "Sepia"
-    case bloom = "Bloom"
-    case random = "Random"
-    case triple = "Triple"
-    case noiseReduction = "Noise reduction"
-    case pixellate = "Pixellate"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsWidgetVideoEffectType(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .movie
-    }
-}
-
 enum SettingsWidgetType: String, Codable, CaseIterable {
     case text = "Text"
     case browser = "Browser"
@@ -2662,10 +2577,6 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case qrCode = "QR code"
     case scoreboard = "Scoreboard"
     case crop = "Crop"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .text
-    }
 
     func toString() -> String {
         switch self {

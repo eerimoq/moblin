@@ -480,11 +480,6 @@ enum SettingsChatDisplayStyle: String, Codable, CaseIterable {
     case internationalNameAndUsername
     case username
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsChatDisplayStyle(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .internationalName
-    }
-
     func toString() -> String {
         switch self {
         case .internationalName:

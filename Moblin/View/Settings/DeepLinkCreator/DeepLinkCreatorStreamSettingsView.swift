@@ -1,31 +1,7 @@
 import SwiftUI
 
-private struct DeepLinkCreatorStreamVideoBitrateView: View {
-    @EnvironmentObject var model: Model
-    @Environment(\.dismiss) var dismiss
-    @ObservedObject var video: DeepLinkCreatorStreamVideo
-
-    var body: some View {
-        Form {
-            Section {
-                Picker("", selection: $video.bitrate) {
-                    ForEach(model.database.bitratePresets) { preset in
-                        Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
-                            .tag(preset.bitrate)
-                    }
-                }
-                .onChange(of: video.bitrate) { _ in
-                    dismiss()
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            }
-        }
-        .navigationTitle("Bitrate")
-    }
-}
-
 private struct DeepLinkCreatorStreamVideoView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var video: DeepLinkCreatorStreamVideo
 
     private func submitMaxKeyFrameInterval(value: String) {
@@ -41,43 +17,26 @@ private struct DeepLinkCreatorStreamVideoView: View {
     var body: some View {
         Form {
             Section {
-                NavigationLink {
-                    InlinePickerView(
-                        title: "Resolution",
-                        onChange: { video.resolution = SettingsStreamResolution(rawValue: $0)! },
-                        items: resolutions.map { .init(id: $0.rawValue, text: $0.shortString()) },
-                        selectedId: video.resolution.rawValue
-                    )
-                } label: {
-                    TextItemLocalizedView(name: "Resolution", value: video.resolution.shortString())
+                Picker("Resolution", selection: $video.resolution) {
+                    ForEach(SettingsStreamResolution.allCases, id: \.self) {
+                        Text($0.shortString())
+                    }
                 }
-                NavigationLink {
-                    InlinePickerView(
-                        title: "FPS",
-                        onChange: { video.fps = Int($0)! },
-                        items: InlinePickerItem.fromStrings(values: fpss.map { String($0) }),
-                        selectedId: String(video.fps)
-                    )
-                } label: {
-                    TextItemLocalizedView(name: "FPS", value: String(video.fps))
+                Picker("FPS", selection: $video.fps) {
+                    ForEach(fpss, id: \.self) {
+                        Text(String($0))
+                    }
                 }
-                NavigationLink {
-                    InlinePickerView(
-                        title: "Codec",
-                        onChange: { video.codec = SettingsStreamCodec(rawValue: $0)! },
-                        items: InlinePickerItem.fromStrings(values: codecs),
-                        selectedId: video.codec.rawValue
-                    )
-                } label: {
-                    TextItemLocalizedView(name: "Codec", value: video.codec.rawValue)
+                Picker("Codec", selection: $video.codec) {
+                    ForEach(SettingsStreamCodec.allCases, id: \.self) {
+                        Text($0.rawValue)
+                    }
                 }
-                NavigationLink {
-                    DeepLinkCreatorStreamVideoBitrateView(video: video)
-                } label: {
-                    TextItemLocalizedView(
-                        name: "Bitrate",
-                        value: formatBytesPerSecond(speed: Int64(video.bitrate))
-                    )
+                Picker("Bitrate", selection: $video.bitrate) {
+                    ForEach(model.database.bitratePresets) { preset in
+                        Text(formatBytesPerSecond(speed: Int64(preset.bitrate)))
+                            .tag(preset.bitrate)
+                    }
                 }
                 NavigationLink {
                     TextEditView(

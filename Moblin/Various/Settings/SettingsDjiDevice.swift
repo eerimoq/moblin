@@ -4,11 +4,6 @@ enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
     case server = "Server"
     case custom = "Custom"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsDjiDeviceUrlType(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .server
-    }
-
     func toString() -> String {
         switch self {
         case .server:
@@ -25,11 +20,6 @@ enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
     case rockSteadyPlus
     case horizonBalancing
     case horizonSteady
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsDjiDeviceImageStabilization(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .rockSteady
-    }
 
     func toString() -> String {
         switch self {
@@ -51,11 +41,6 @@ enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
     case r1080p = "1080p"
     case r720p = "720p"
     case r480p = "480p"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsDjiDeviceResolution(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .r1080p
-    }
 }
 
 enum SettingsDjiDeviceModel: String, Codable {
@@ -65,11 +50,6 @@ enum SettingsDjiDeviceModel: String, Codable {
     case osmoAction6
     case osmoPocket3
     case unknown
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsDjiDeviceModel(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .unknown
-    }
 }
 
 var djiDeviceBitrates: [UInt32] = [

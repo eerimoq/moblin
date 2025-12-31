@@ -19,18 +19,10 @@ enum SettingsStreamCodec: String, Codable, CaseIterable {
     }
 }
 
-let codecs = SettingsStreamCodec.allCases.map { $0.rawValue }
-
 enum SettingsStreamH264Profile: String, Codable, CaseIterable {
     case baseline = "Baseline"
     case main = "Main"
     case high = "High"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsStreamH264Profile(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .main
-    }
 }
 
 enum SettingsStreamResolution: String, Codable, CaseIterable {
@@ -46,11 +38,6 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r854x480 = "854x480"
     case r640x360 = "640x360"
     case r426x240 = "426x240"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsStreamResolution(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .r1920x1080
-    }
 
     static func > (lhs: SettingsStreamResolution, rhs: SettingsStreamResolution) -> Bool {
         return lhs.dimensions(portrait: false).width > rhs.dimensions(portrait: false).width
@@ -120,19 +107,11 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     }
 }
 
-let resolutions = SettingsStreamResolution.allCases
-
 let fpss = [120, 100, 60, 50, 30, 25, 15]
 
 enum SettingsStreamSrtImplementation: String, Codable, CaseIterable {
     case moblin = "Moblin"
     case official = "Official"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsStreamSrtImplementation(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .moblin
-    }
 
     func toString() -> String {
         switch self {
@@ -147,11 +126,6 @@ enum SettingsStreamSrtImplementation: String, Codable, CaseIterable {
 enum SettingsStreamAudioCodec: String, Codable, CaseIterable {
     case aac = "AAC"
     case opus = "OPUS"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsStreamAudioCodec(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .aac
-    }
 
     func toEncoder() -> AudioEncoderSettings.Format {
         switch self {

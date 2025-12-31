@@ -436,12 +436,6 @@ enum SettingsDnsLookupStrategy: String, Codable, CaseIterable {
     case ipv4 = "IPv4"
     case ipv6 = "IPv6"
     case ipv4AndIpv6 = "IPv4 and IPv6"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsDnsLookupStrategy(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .system
-    }
 }
 
 class SettingsSelfieStick: Codable, ObservableObject {
@@ -564,11 +558,6 @@ class SettingsMediaPlayers: Codable, ObservableObject {
 enum SettingsReplaySpeed: String, Codable, CaseIterable {
     case oneHalf = "0.5x"
     case one = "1x"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsReplaySpeed(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .one
-    }
 
     func toNumber() -> Double {
         switch self {

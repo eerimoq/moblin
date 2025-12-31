@@ -78,11 +78,6 @@ enum SettingsGoProLaunchLiveStreamResolution: String, CaseIterable, Codable {
     case r1080p = "1080p"
     case r720p = "720p"
     case r480p = "480p"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsGoProLaunchLiveStreamResolution(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .r1080p
-    }
 }
 
 class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject, Named {

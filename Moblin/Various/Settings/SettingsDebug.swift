@@ -5,10 +5,6 @@ enum SettingsLogLevel: String, Codable, CaseIterable {
     case error = "Error"
     case info = "Info"
     case debug = "Debug"
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsLogLevel(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .error
-    }
 }
 
 let pixelFormats = ["32BGRA", "420YpCbCr8BiPlanarFullRange", "420YpCbCr8BiPlanarVideoRange"]
@@ -21,11 +17,6 @@ let pixelFormatTypes = [
 enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
     case blur
     case pixellate
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsFacePrivacyMode(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
-            .blur
-    }
 
     func toString() -> LocalizedStringKey {
         switch self {

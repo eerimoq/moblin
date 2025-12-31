@@ -7,7 +7,7 @@ private struct ResolutionSettingsView: View {
     var body: some View {
         Section {
             Picker("Resolution", selection: $stream.resolution) {
-                ForEach(resolutions, id: \.self) {
+                ForEach(SettingsStreamResolution.allCases, id: \.self) {
                     Text($0.shortString())
                 }
             }

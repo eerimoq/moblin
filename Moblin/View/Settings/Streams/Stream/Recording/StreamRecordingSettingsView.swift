@@ -86,7 +86,7 @@ private struct ResolutionSettingsView: View {
 
     var body: some View {
         Picker("Resolution", selection: $recording.resolution) {
-            ForEach(resolutions, id: \.self) {
+            ForEach(SettingsStreamResolution.allCases, id: \.self) {
                 Text($0.shortString())
             }
         }
