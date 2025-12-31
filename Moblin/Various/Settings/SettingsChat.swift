@@ -121,7 +121,9 @@ class SettingsChatBotPermissionsCommand: Codable, ObservableObject {
         try container.encode(.cooldown, cooldown)
     }
 
-    init() {}
+    init(moderatorsEnabled: Bool = true) {
+        self.moderatorsEnabled = moderatorsEnabled
+    }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -145,8 +147,8 @@ class SettingsChatBotPermissions: Codable {
     var tesla: SettingsChatBotPermissionsCommand = .init()
     var audio: SettingsChatBotPermissionsCommand = .init()
     var reaction: SettingsChatBotPermissionsCommand = .init()
-    var scene: SettingsChatBotPermissionsCommand = .init()
-    var stream: SettingsChatBotPermissionsCommand = .init()
+    var scene: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
+    var stream: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
     var widget: SettingsChatBotPermissionsCommand = .init()
     var location: SettingsChatBotPermissionsCommand = .init()
     var ai: SettingsChatBotPermissionsCommand = .init()
