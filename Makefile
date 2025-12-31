@@ -1,6 +1,6 @@
-SWIFTFORMAT_ARGS=--maxwidth 110 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf
+SWIFTFORMAT_ARGS=--maxwidth 110 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf --quiet
 PRETTIER_ARGS=--log-level silent "Moblin/**/*.js"
-SWIFTLINT_ARGS=--strict 
+SWIFTLINT_ARGS=--strict --quiet
 CODESPELL_ARGS=--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
 		 --ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
 PERIPHERY_ARGS=--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
