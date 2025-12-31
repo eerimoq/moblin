@@ -381,11 +381,6 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     case cinematic = "Cinematic"
     case cinematicExtendedEnhanced = "Cinematic extended enhanced"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsVideoStabilizationMode(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .off
-    }
-
     func toString() -> String {
         switch self {
         case .off:
