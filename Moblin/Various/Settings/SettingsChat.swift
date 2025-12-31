@@ -153,6 +153,7 @@ class SettingsChatBotPermissions: Codable {
     var location: SettingsChatBotPermissionsCommand = .init()
     var ai: SettingsChatBotPermissionsCommand = .init()
     var twitch: SettingsChatBotPermissionsCommand = .init()
+    var migrated: Bool = false
 
     enum CodingKeys: CodingKey {
         case tts,
@@ -170,7 +171,8 @@ class SettingsChatBotPermissions: Codable {
              widget,
              location,
              ai,
-             twitch
+             twitch,
+             migrated
     }
 
     func encode(to encoder: Encoder) throws {
@@ -191,6 +193,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.location, location)
         try container.encode(.ai, ai)
         try container.encode(.twitch, twitch)
+        try container.encode(.migrated, migrated)
     }
 
     init() {}
@@ -213,6 +216,12 @@ class SettingsChatBotPermissions: Codable {
         location = container.decode(.location, SettingsChatBotPermissionsCommand.self, .init())
         ai = container.decode(.ai, SettingsChatBotPermissionsCommand.self, .init())
         twitch = container.decode(.twitch, SettingsChatBotPermissionsCommand.self, .init())
+        migrated = container.decode(.migrated, Bool.self, false)
+        if !migrated {
+            scene.moderatorsEnabled = false
+            stream.moderatorsEnabled = false
+            migrated = true
+        }
     }
 }
 
