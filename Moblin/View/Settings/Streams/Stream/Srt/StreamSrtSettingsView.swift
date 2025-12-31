@@ -51,12 +51,6 @@ struct StreamSrtSettingsView: View {
                     value: String(srt.latency),
                     onChange: changeLatency,
                     onSubmit: submitLatency,
-                    footers: [
-                        String(localized: """
-                        Zero or more milliseconds. Any latency parameter given in the URL \
-                        overrides this value.
-                        """),
-                    ],
                     keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )
