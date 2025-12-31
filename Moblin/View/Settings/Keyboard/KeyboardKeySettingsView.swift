@@ -69,12 +69,14 @@ struct KeyboardKeySettingsView: View {
                         }
                     }
                 }
-                ControllerButtonView(model: model,
-                                     functions: SettingsControllerFunction.allCases
-                                         .filter { $0 != .zoomIn && $0 != .zoomOut },
-                                     function: $key.function,
-                                     sceneId: $key.sceneId,
-                                     widgetId: $key.widgetId)
+                Section {
+                    ControllerButtonView(model: model,
+                                         functions: SettingsControllerFunction.allCases
+                                             .filter { $0 != .zoomIn && $0 != .zoomOut },
+                                         function: $key.function,
+                                         sceneId: $key.sceneId,
+                                         widgetId: $key.widgetId)
+                }
             }
             .navigationTitle("Keyboard key")
         } label: {
