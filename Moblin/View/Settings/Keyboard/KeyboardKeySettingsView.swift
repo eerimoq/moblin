@@ -38,6 +38,12 @@ private struct KeyPickerView: View {
                 }
                 key.key = ""
             }
+            .onAppear {
+                guard key.key.isEmpty else {
+                    return
+                }
+                editingText = true
+            }
     }
 }
 
