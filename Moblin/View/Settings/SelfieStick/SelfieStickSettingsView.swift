@@ -5,38 +5,25 @@ struct SelfieStickDoesNotWorkView: View {
     @ObservedObject var selfieStick: SettingsSelfieStick
 
     var body: some View {
-        if database.cameraControlsEnabled, selfieStick.buttonEnabled {
+        if database.cameraControlsEnabled, selfieStick.enabled {
             Text("⚠️ Selfie stick button does not work with Camera controls enabled.")
         }
     }
 }
 
 struct SelfieStickSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var selfieStick: SettingsSelfieStick
-
-    private func onFunctionChange(function: String) {
-        selfieStick.buttonFunction = SettingsControllerFunction(rawValue: function) ?? .unused
-    }
 
     var body: some View {
         Form {
             Section {
-                Toggle("Enabled", isOn: $selfieStick.buttonEnabled)
-                NavigationLink {
-                    InlinePickerView(
-                        title: "Function",
-                        onChange: onFunctionChange,
-                        items: SettingsControllerFunction.allCases.map { .init(
-                            id: $0.rawValue,
-                            text: $0.toString()
-                        ) },
-                        selectedId: selfieStick.buttonFunction.rawValue
-                    )
-                } label: {
-                    TextItemLocalizedView(name: "Function", value: selfieStick.buttonFunction.toString())
-                }
-
+                Toggle("Enabled", isOn: $selfieStick.enabled)
+                ControllerButtonView(model: model,
+                                     functions: SettingsControllerFunction.allCases,
+                                     function: $selfieStick.function,
+                                     sceneId: $selfieStick.sceneId,
+                                     widgetId: $selfieStick.widgetId)
                 SelfieStickDoesNotWorkView(database: model.database, selfieStick: selfieStick)
             } header: {
                 Text("Button")

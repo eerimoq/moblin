@@ -272,7 +272,7 @@ extension Model {
             return
         }
         latestVolumeChangeSequenceNumber = sequenceNumber
-        if reason == "ExplicitVolumeChange", database.selfieStick.buttonEnabled, isAppActive {
+        if reason == "ExplicitVolumeChange", database.selfieStick.enabled, isAppActive {
             if initialVolume == nil {
                 initialVolume = volume
             }
@@ -291,7 +291,7 @@ extension Model {
     }
 
     private func executeSelfieStickAction() {
-        handleControllerFunction(function: database.selfieStick.buttonFunction,
+        handleControllerFunction(function: database.selfieStick.function,
                                  sceneId: .init(),
                                  widgetId: .init(),
                                  pressed: false)
