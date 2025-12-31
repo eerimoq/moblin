@@ -20,7 +20,8 @@ struct SelfieStickSettingsView: View {
             Section {
                 Toggle("Enabled", isOn: $selfieStick.enabled)
                 ControllerButtonView(model: model,
-                                     functions: SettingsControllerFunction.allCases,
+                                     functions: SettingsControllerFunction.allCases
+                                         .filter { $0 != .unused && $0 != .zoomIn && $0 != .zoomOut },
                                      function: $selfieStick.function,
                                      sceneId: $selfieStick.sceneId,
                                      widgetId: $selfieStick.widgetId)

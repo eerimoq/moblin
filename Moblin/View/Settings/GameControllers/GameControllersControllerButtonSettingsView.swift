@@ -9,8 +9,15 @@ struct ControllerButtonView: View {
 
     var body: some View {
         Picker("Function", selection: $function) {
-            ForEach(functions, id: \.self) {
-                Text($0.toString())
+            Section("General") {
+                ForEach(functions.filter { $0.section() == .general }, id: \.self) {
+                    Text($0.toString())
+                }
+            }
+            Section("Filters") {
+                ForEach(functions.filter { $0.section() == .filters }, id: \.self) {
+                    Text($0.toString())
+                }
             }
         }
         switch function {

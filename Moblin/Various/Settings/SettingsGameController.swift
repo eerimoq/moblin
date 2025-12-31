@@ -1,6 +1,11 @@
 import Foundation
 import SwiftUI
 
+enum SettingsControllerFunctionSection {
+    case general
+    case filters
+}
+
 enum SettingsControllerFunction: String, Codable, CaseIterable {
     case unused = "Unused"
     case record = "Record"
@@ -118,6 +123,63 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return .gray
         default:
             return .primary
+        }
+    }
+
+    func section() -> SettingsControllerFunctionSection {
+        switch self {
+        case .unused:
+            return .general
+        case .record:
+            return .general
+        case .stream:
+            return .general
+        case .zoomIn:
+            return .general
+        case .zoomOut:
+            return .general
+        case .mute:
+            return .general
+        case .torch:
+            return .general
+        case .blackScreen:
+            return .general
+        case .scene:
+            return .general
+        case .switchScene:
+            return .general
+        case .widget:
+            return .general
+        case .instantReplay:
+            return .general
+        case .snapshot:
+            return .general
+        case .pauseTts:
+            return .general
+        case .pixellate:
+            return .filters
+        case .movie:
+            return .filters
+        case .grayScale:
+            return .filters
+        case .sepia:
+            return .filters
+        case .triple:
+            return .filters
+        case .twin:
+            return .filters
+        case .fourThree:
+            return .filters
+        case .pinch:
+            return .filters
+        case .whirlpool:
+            return .filters
+        case .poll:
+            return .filters
+        case .blurFaces:
+            return .filters
+        case .privacy:
+            return .filters
         }
     }
 }

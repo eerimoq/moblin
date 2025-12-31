@@ -292,8 +292,8 @@ extension Model {
 
     private func executeSelfieStickAction() {
         handleControllerFunction(function: database.selfieStick.function,
-                                 sceneId: .init(),
-                                 widgetId: .init(),
+                                 sceneId: database.selfieStick.sceneId,
+                                 widgetId: database.selfieStick.widgetId,
                                  pressed: false)
     }
 
