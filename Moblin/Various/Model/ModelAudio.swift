@@ -291,20 +291,10 @@ extension Model {
     }
 
     private func executeSelfieStickAction() {
-        switch database.selfieStick.buttonFunction {
-        case .switchScene:
-            switchToNextSceneRoundRobin()
-        case .takeSnapshot:
-            takeSnapshot()
-        case .mute:
-            setMuted(value: true)
-        case .toggleMute:
-            toggleMute()
-        case .stopStream:
-            _ = stopStream()
-        case .startStream:
-            startStream()
-        }
+        handleControllerFunction(function: database.selfieStick.buttonFunction,
+                                 sceneId: .init(),
+                                 widgetId: .init(),
+                                 pressed: false)
     }
 
     private func isVolumeMinOrMax(_ volume: Float) -> Bool {
