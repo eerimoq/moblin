@@ -198,8 +198,6 @@ class SrtSender {
     private var latestReceivedPacketTime = ContinuousClock.now
     private let packetsInFlightDropThreshold: ContinuousClock.Duration
     private let packetsToSendDropThreshold: ContinuousClock.Duration
-    // periphery:ignore
-    private let leakyBucketSmoothingTime: ContinuousClock.Duration
     private var clock = SrtClock()
     private let connectTimer = SimpleTimer(queue: srtlaClientQueue)
 
@@ -209,7 +207,6 @@ class SrtSender {
         let latencyUs = 1000 * Int64(latency)
         packetsInFlightDropThreshold = .microseconds(latencyUs * 3 / 2)
         packetsToSendDropThreshold = .microseconds(latencyUs * 5 / 4)
-        leakyBucketSmoothingTime = .milliseconds(min(Int(latency) / 10, 200))
     }
 
     func start() {
@@ -309,14 +306,7 @@ class SrtSender {
         }
         latestOutputPacketsTime = now
         var numberOfPacketsToSend = sequenceNumbersToRetransmit.count + packetsToSend.count
-        // if let packet = packetsToSend.first, packet.createdAt.duration(to: now) > leakyBucketSmoothingTime
-        // {
-        //     let count = sequenceNumbersToRetransmit.count + packetsToSend.count
-        //     let duration = packet.createdAt.duration(to: now)
-        //     logger.info("xxx are we falling behind? age: \(duration) packets: \(count)")
-        // }
         numberOfPacketsToSend = max(numberOfPacketsToSend / 10, min(numberOfPacketsToSend, 10))
-        // logger.info("xxx outputting \(numberOfPacketsToSend) packets")
         for _ in 0 ..< numberOfPacketsToSend {
             if retransmitPacketIfNeeded(now: now) {
                 continue
