@@ -50,8 +50,8 @@ final class Media: NSObject {
         rtmpStreams.first
     }
 
-    private var srtStreamNew: SrtStreamNew?
-    private var srtStreamOld: SrtStreamOld?
+    private var srtStreamNew: SrtStreamMoblin?
+    private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
     private var srtlaClient: SrtlaClient?
     private var processor: Processor?
@@ -142,7 +142,7 @@ final class Media: NSObject {
         case .srt:
             switch srtImplementation {
             case .moblin:
-                srtStreamNew = SrtStreamNew(
+                srtStreamNew = SrtStreamMoblin(
                     processor: processor,
                     timecodesEnabled: timecodesEnabled,
                     delegate: self
@@ -150,7 +150,7 @@ final class Media: NSObject {
                 srtStreamOld = nil
             case .official:
                 srtStreamNew = nil
-                srtStreamOld = SrtStreamOld(
+                srtStreamOld = SrtStreamOfficial(
                     processor: processor,
                     timecodesEnabled: timecodesEnabled,
                     delegate: self
@@ -1140,28 +1140,28 @@ extension Media: RistStreamDelegate {
     }
 }
 
-extension Media: SrtStreamNewDelegate {
-    func srtStreamConnected() {
+extension Media: SrtStreamMoblinDelegate {
+    func srtStreamMoblinConnected() {
         DispatchQueue.main.async {
             self.srtConnected = true
             self.delegate?.mediaOnSrtConnected()
         }
     }
 
-    func srtStreamDisconnected() {
+    func srtStreamMoblinDisconnected() {
         DispatchQueue.main.async {
             self.srtConnected = false
         }
         srtlaError(message: String(localized: "SRT disconnected"))
     }
 
-    func srtStreamOutput(packet: Data) {
+    func srtStreamMoblinOutput(packet: Data) {
         srtlaClient?.handleLocalPacket(packet: packet)
     }
 }
 
-extension Media: SrtStreamOldDelegate {
-    func srtStreamError() {
+extension Media: SrtStreamOfficialDelegate {
+    func srtStreamOfficialError() {
         DispatchQueue.main.async {
             self.srtConnected = false
         }

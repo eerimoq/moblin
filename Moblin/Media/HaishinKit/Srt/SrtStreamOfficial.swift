@@ -2,8 +2,8 @@ import AVFoundation
 import Foundation
 import libsrt
 
-protocol SrtStreamOldDelegate: AnyObject {
-    func srtStreamError()
+protocol SrtStreamOfficialDelegate: AnyObject {
+    func srtStreamOfficialError()
 }
 
 private enum ReadyState: UInt8 {
@@ -19,13 +19,13 @@ private class SendHook {
     }
 }
 
-class SrtStreamOld {
+class SrtStreamOfficial {
     private let writer: MpegTsWriter
     private var sendHook = SendHook(closure: nil)
     private var options: [SrtSocketOption: String] = [:]
     private var perf = CBytePerfMon()
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
-    weak var srtStreamDelegate: SrtStreamOldDelegate?
+    weak var srtStreamDelegate: SrtStreamOfficialDelegate?
     private let processor: Processor
 
     private var readyState: ReadyState = .initialized {
@@ -53,7 +53,7 @@ class SrtStreamOld {
         }
     }
 
-    init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamOldDelegate) {
+    init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamOfficialDelegate) {
         self.processor = processor
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: false)
         srtStreamDelegate = delegate
@@ -204,7 +204,7 @@ class SrtStreamOld {
     }
 }
 
-extension SrtStreamOld: MpegTsWriterDelegate {
+extension SrtStreamOfficial: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutput data: Data) {
         if data.withUnsafeBytes({ pointer in
             guard let buffer = pointer.baseAddress?.assumingMemoryBound(to: CChar.self) else {
@@ -215,7 +215,7 @@ extension SrtStreamOld: MpegTsWriterDelegate {
         }) != data.count {
             processorControlQueue.async {
                 self.readyState = .initialized
-                self.srtStreamDelegate?.srtStreamError()
+                self.srtStreamDelegate?.srtStreamOfficialError()
             }
         }
     }
@@ -227,7 +227,7 @@ extension SrtStreamOld: MpegTsWriterDelegate {
         if srt_sendmsg2(socket, buffer, Int32(count), nil) != count {
             processorControlQueue.async {
                 self.readyState = .initialized
-                self.srtStreamDelegate?.srtStreamError()
+                self.srtStreamDelegate?.srtStreamOfficialError()
             }
         }
     }

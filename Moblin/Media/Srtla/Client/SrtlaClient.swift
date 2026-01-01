@@ -358,19 +358,19 @@ class SrtlaClient: NSObject {
     private func startListener() {
         switch srtImplementation {
         case .moblin:
-            startListenerNew()
+            startListenerMoblin()
         case .official:
-            startListenerOld()
+            startListenerOfficial()
         }
     }
 
-    private func startListenerNew() {
+    private func startListenerMoblin() {
         state = .running
         delegate?.srtlaReady(port: 0)
         cancelConnectTimer()
     }
 
-    private func startListenerOld() {
+    private func startListenerOfficial() {
         guard localListener == nil else {
             return
         }

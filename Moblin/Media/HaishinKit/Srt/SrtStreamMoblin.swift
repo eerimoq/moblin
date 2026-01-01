@@ -1,19 +1,19 @@
 import AVFoundation
 import Foundation
 
-protocol SrtStreamNewDelegate: AnyObject {
-    func srtStreamConnected()
-    func srtStreamDisconnected()
-    func srtStreamOutput(packet: Data)
+protocol SrtStreamMoblinDelegate: AnyObject {
+    func srtStreamMoblinConnected()
+    func srtStreamMoblinDisconnected()
+    func srtStreamMoblinOutput(packet: Data)
 }
 
-class SrtStreamNew {
+class SrtStreamMoblin {
     private let writer: MpegTsWriter
-    weak var srtStreamDelegate: SrtStreamNewDelegate?
+    weak var srtStreamDelegate: SrtStreamMoblinDelegate?
     private let processor: Processor
     private var srtSender: SrtSender?
 
-    init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamNewDelegate) {
+    init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamMoblinDelegate) {
         self.processor = processor
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: true)
         srtStreamDelegate = delegate
@@ -60,7 +60,7 @@ class SrtStreamNew {
     }
 }
 
-extension SrtStreamNew: MpegTsWriterDelegate {
+extension SrtStreamMoblin: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutput data: Data) {
         srtlaClientQueue.async {
             self.write(data: data)
@@ -70,12 +70,12 @@ extension SrtStreamNew: MpegTsWriterDelegate {
     func writer(_: MpegTsWriter, doOutputPointer _: UnsafeRawBufferPointer, count _: Int) {}
 }
 
-extension SrtStreamNew: SrtSenderDelegate {
+extension SrtStreamMoblin: SrtSenderDelegate {
     func srtSenderConnected() {
         processorControlQueue.async {
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
-            self.srtStreamDelegate?.srtStreamConnected()
+            self.srtStreamDelegate?.srtStreamMoblinConnected()
         }
     }
 
@@ -83,11 +83,11 @@ extension SrtStreamNew: SrtSenderDelegate {
         processorControlQueue.async {
             self.writer.stopRunning()
             self.processor.stopEncoding(self.writer)
-            self.srtStreamDelegate?.srtStreamDisconnected()
+            self.srtStreamDelegate?.srtStreamMoblinDisconnected()
         }
     }
 
     func srtSenderOutput(packet: Data) {
-        srtStreamDelegate?.srtStreamOutput(packet: packet)
+        srtStreamDelegate?.srtStreamMoblinOutput(packet: packet)
     }
 }
