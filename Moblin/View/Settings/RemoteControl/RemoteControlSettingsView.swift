@@ -402,6 +402,20 @@ struct RemoteControlSettingsView: View {
                             model: model,
                             remoteControlSettings: database.remoteControl
                         )
+                        Section {
+                            ExternalUrlButtonView(
+                                url: "https://moblin.mys-lang.org/moblin-remote-control-relay/assistant.html"
+                            ) {
+                                Text(String("Moblin Remote Control Assistant"))
+                            }
+                            ExternalUrlButtonView(url: "https://moblinremote.com/") {
+                                Text(String("Moblin Remote Control"))
+                            }
+                        } header: {
+                            Text("Websites")
+                        } footer: {
+                            Text("Alternatively, use a website as assistant.")
+                        }
                     }
                     .navigationTitle("Assistant")
                 } label: {
