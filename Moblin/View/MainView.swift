@@ -355,10 +355,6 @@ struct MainView: View {
         }
     }
 
-    private func face() -> some View {
-        FaceView(model: model, database: model.database, face: model.database.debug.face)
-    }
-
     private func streamAspectRatio() -> CGFloat {
         return model.stream.dimensions().aspectRatio()
     }
@@ -410,9 +406,6 @@ struct MainView: View {
                     DrawOnStreamView(model: model)
                 }
                 MutedView(level: model.audio.level)
-                if model.showFace && !model.showDrawOnStream {
-                    face()
-                }
                 if model.showBrowser {
                     WebBrowserView(model: model,
                                    database: model.database,
@@ -488,9 +481,6 @@ struct MainView: View {
                     DrawOnStreamView(model: model)
                 }
                 MutedView(level: model.audio.level)
-                if model.showFace && !model.showDrawOnStream {
-                    face()
-                }
                 if model.showBrowser {
                     WebBrowserView(model: model,
                                    database: model.database,

@@ -785,7 +785,7 @@ struct RightOverlayBottomView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 1) {
             Spacer()
-            if !(model.showDrawOnStream || model.showFace) {
+            if !model.showDrawOnStream {
                 if streamOverlay.showingReplay {
                     StreamOverlayRightReplayView(model: model,
                                                  replay: model.replay,
@@ -794,6 +794,7 @@ struct RightOverlayBottomView: View {
                     if streamOverlay.showMediaPlayerControls {
                         StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
                     } else {
+                        StreamOverlayRightFaceView(model: model, face: model.database.debug.face)
                         if streamOverlay.showingPixellate {
                             StreamOverlayRightPixellateView(model: model, database: model.database)
                         }

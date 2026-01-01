@@ -275,11 +275,6 @@ struct QuickButtonsInnerView: View {
         model.reattachCamera()
     }
 
-    private func faceAction() {
-        model.showFace.toggle()
-        model.updateFaceFilterButtonState()
-    }
-
     private func snapshotAction() {
         model.takeSnapshot()
     }
@@ -374,6 +369,10 @@ struct QuickButtonsInnerView: View {
 
     private func privacyAction() {
         model.togglePrivacy()
+    }
+
+    private func moblinInMouthAction() {
+        model.toggleMoblinInMouth()
     }
 
     private func glassesAction() {
@@ -627,14 +626,6 @@ struct QuickButtonsInnerView: View {
                 {
                     cameraPreviewAction()
                 }
-            case .face:
-                QuickButtonImage(model: model,
-                                 quickButtonsSettings: quickButtonsSettings,
-                                 state: state,
-                                 buttonSize: size)
-                {
-                    faceAction()
-                }
             case .poll:
                 QuickButtonImage(model: model,
                                  quickButtonsSettings: quickButtonsSettings,
@@ -844,6 +835,14 @@ struct QuickButtonsInnerView: View {
                                  buttonSize: size)
                 {
                     blurFacesAction()
+                }
+            case .moblinInMouth:
+                QuickButtonImage(model: model,
+                                 quickButtonsSettings: quickButtonsSettings,
+                                 state: state,
+                                 buttonSize: size)
+                {
+                    moblinInMouthAction()
                 }
             case .privacy:
                 QuickButtonImage(model: model,

@@ -340,7 +340,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var presentingModeration = false
     @Published var showingPredefinedMessages: Bool = false
     @Published var showDrawOnStream = false
-    @Published var showFace = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
     @Published var showNavigation = false
@@ -1080,7 +1079,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         MoblinShortcuts.updateAppShortcutParameters()
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
-        updateFaceFilterButtonState()
+        updateQuickButtonStates()
         setQuickButtonState(type: .blurFaces, isOn: database.debug.face.showBlur)
         setQuickButtonState(type: .privacy, isOn: database.debug.face.showBlurBackground)
         updateLutsButtonState()
@@ -1253,24 +1252,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateFaceFilterSettings() {
         faceEffect.setSettings(settings: database.debug.face.toEffectSettings())
-    }
-
-    func updateFaceFilterButtonState() {
-        var isOn = false
-        if showFace, !showDrawOnStream {
-            isOn = true
-        }
-        if database.debug.face.showBlur {
-            isOn = true
-        }
-        if database.debug.face.showBlurBackground {
-            isOn = true
-        }
-        if database.debug.face.showMoblin {
-            isOn = true
-        }
-        setQuickButtonState(type: .face, isOn: isOn)
-        updateQuickButtonStates()
     }
 
     func updateImageButtonState() {
@@ -3035,14 +3016,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.debug.face.showBlur.toggle()
         toggleFilterQuickButton(type: .blurFaces)
         updateFaceFilterSettings()
-        updateFaceFilterButtonState()
     }
 
     func togglePrivacy() {
         database.debug.face.showBlurBackground.toggle()
         toggleFilterQuickButton(type: .privacy)
         updateFaceFilterSettings()
-        updateFaceFilterButtonState()
+    }
+
+    func toggleMoblinInMouth() {
+        database.debug.face.showMoblin.toggle()
+        toggleFilterQuickButton(type: .moblinInMouth)
+        updateFaceFilterSettings()
     }
 
     func triggerGlasses() {

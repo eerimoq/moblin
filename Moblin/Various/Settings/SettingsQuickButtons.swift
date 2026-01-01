@@ -29,7 +29,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case browser = "Browser"
     case lut = "LUT"
     case cameraPreview = "Camera preview"
-    case face = "Face"
     case fourThree = "4:3"
     case poll = "Poll"
     case snapshot = "Snapshot"
@@ -57,6 +56,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case navigation = "Navigation"
     case blurFaces = "Blur faces"
     case privacy = "Privacy"
+    case moblinInMouth = "Moblin in mouth"
     case glasses = "Glasses"
     case star = "Star"
 

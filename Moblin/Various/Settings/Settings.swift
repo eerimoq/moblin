@@ -1505,16 +1505,15 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  imageOn: "camera.filters",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Face"),
-                                 type: .face,
-                                 imageOn: "theatermask.and.paintbrush.fill",
-                                 imageOff: "theatermask.and.paintbrush",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Pinch"),
                                  type: .pinch,
                                  imageOn: "hand.pinch.fill",
                                  imageOff: "hand.pinch",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Whirlpool"),
+                                 type: .whirlpool,
+                                 imageOn: "tornado",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Blur faces"),
@@ -1539,16 +1538,6 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  type: .star,
                                  imageOn: "star",
                                  imageOff: "star",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Pixellate"),
-                                 type: .pixellate,
-                                 imageOn: "squareshape.split.2x2",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Whirlpool"),
-                                 type: .whirlpool,
-                                 imageOn: "tornado",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Movie"),
@@ -1585,6 +1574,17 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  type: .twin,
                                  imageOn: "person.2.fill",
                                  imageOff: "person.2",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Moblin in mouth"),
+                                 type: .moblinInMouth,
+                                 imageOn: "mouth.fill",
+                                 imageOff: "mouth",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Pixellate"),
+                                 type: .pixellate,
+                                 imageOn: "squareshape.split.2x2",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }

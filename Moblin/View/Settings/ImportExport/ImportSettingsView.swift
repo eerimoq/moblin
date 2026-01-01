@@ -9,7 +9,6 @@ struct ImportSettingsView: View {
         model.reloadStream()
         model.resetSelectedScene()
         model.updateQuickButtonStates()
-        model.updateFaceFilterButtonState()
     }
 
     private func failed(message: String) {
