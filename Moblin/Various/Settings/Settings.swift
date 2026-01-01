@@ -797,12 +797,6 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     case chat = "Chat"
     case mirror = "Mirror"
 
-    init(from decoder: Decoder) throws {
-        self = try SettingsExternalDisplayContent(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .stream
-    }
-
     func toString() -> String {
         switch self {
         case .stream:
