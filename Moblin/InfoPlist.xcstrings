@@ -713,6 +713,12 @@
             "value" : "Moblin 串流音源來自麥克風。"
           }
         },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 透過麥克風音訊進行實況。"
+          }
+        },
         "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",

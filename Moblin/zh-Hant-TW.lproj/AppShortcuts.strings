@@ -2,5 +2,8 @@
 "${applicationName}, mute" = "${applicationName}, 靜音";
 
 /* No comment provided by engineer. */
+"${applicationName}, take snapshot" = "${applicationName}, 截了一張圖";
+
+/* No comment provided by engineer. */
 "${applicationName}, unmute" = "${applicationName}, 取消靜音";
 
