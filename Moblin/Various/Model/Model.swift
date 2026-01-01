@@ -3031,14 +3031,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func triggerGlasses() {
-        DispatchQueue.main.async {
-            self.glassesEffect?.play(alert: .quickButton)
-        }
+        triggerQuickButtonEffect(type: .glasses, effect: glassesEffect, duration: 5.8)
     }
 
     func triggerStar() {
+        triggerQuickButtonEffect(type: .star, effect: starEffect, duration: 1.3)
+    }
+
+    private func triggerQuickButtonEffect(type: SettingsQuickButtonType,
+                                          effect: AlertsEffect?,
+                                          duration: Double)
+    {
+        guard getQuickButton(type: type)?.isOn == false else {
+            return
+        }
+        setQuickButtonState(type: type, isOn: true)
+        updateQuickButtonStates()
         DispatchQueue.main.async {
-            self.starEffect?.play(alert: .quickButton)
+            effect?.play(alert: .quickButton)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            self.setQuickButtonState(type: type, isOn: false)
+            self.updateQuickButtonStates()
         }
     }
 }
