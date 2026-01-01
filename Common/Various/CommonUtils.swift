@@ -376,7 +376,7 @@ extension Data {
         }
         var bytes = Data()
         var index = hexString.startIndex
-        for offset in stride(from: 0, to: hexString.count, by: 2) {
+        for _ in stride(from: 0, to: hexString.count, by: 2) {
             var value = String(hexString[index])
             index = hexString.index(after: index)
             value += String(hexString[index])

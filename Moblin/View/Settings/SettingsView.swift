@@ -65,6 +65,17 @@ struct SettingsView: View {
                 }
             }
             Section {
+                NavigationLink {
+                    StoreSettingsView(store: model.store)
+                } label: {
+                    Label {
+                        Text("Store (support us) ❤️")
+                    } icon: {
+                        Image(systemName: "cart")
+                    }
+                }
+            }
+            Section {
                 if database.showAllSettings {
                     NavigationLink {
                         IngestsSettingsView(database: database)
@@ -146,18 +157,6 @@ struct SettingsView: View {
                             .blackSharkCoolerDevices)
                     } label: {
                         Label("Black Shark coolers", systemImage: "fan")
-                    }
-                }
-            }
-            Section {
-                NavigationLink {
-                    CosmeticsSettingsView(cosmetics: model.cosmetics)
-                } label: {
-                    Label {
-                        Text("Cosmetics")
-                    } icon: {
-                        Image(systemName: "heart.fill")
-                            .foregroundStyle(.red)
                     }
                 }
             }

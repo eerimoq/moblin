@@ -150,9 +150,9 @@ private struct MenuView: View {
             NavigationStack {
                 RecordingsSettingsView(model: model)
             }
-        case .cosmetics:
+        case .store:
             NavigationStack {
-                CosmeticsSettingsView(cosmetics: model.cosmetics)
+                StoreSettingsView(store: model.store)
             }
         case .chat:
             NavigationStack {

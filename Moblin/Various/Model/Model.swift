@@ -34,7 +34,7 @@ enum ShowingPanel {
     case obs
     case widgets
     case recordings
-    case cosmetics
+    case store
     case chat
     case djiDevices
     case sceneSettings
@@ -245,7 +245,7 @@ class StreamOverlay: ObservableObject {
     @Published var isTorchOn = false
 }
 
-class Cosmetics: ObservableObject {
+class Store: ObservableObject {
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     @Published var iconImage: String = plainIcon.id
@@ -378,7 +378,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let debugOverlay = DebugOverlayProvider()
     let stealthMode = StealthMode()
     let drawOnStream = DrawOnStream()
-    let cosmetics = Cosmetics()
+    let store = Store()
     let show = Show()
     let streamOverlay = StreamOverlay()
     let sceneSelector = SceneSelector()
@@ -807,7 +807,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func makeBuyIconsToastIfNeeded() -> Bool {
-        if cosmetics.hasBoughtSomething {
+        if store.hasBoughtSomething {
             return false
         }
         if enterForegroundCount < 100 {
@@ -817,10 +817,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return false
         }
         makeToast(title: randomBuyIconsTitle(),
-                  subTitle: String(localized: "Tap here to open the shop."))
+                  subTitle: String(localized: "Tap here to open the store."))
         {
             self.toggleShowingPanel(type: nil, panel: .none)
-            self.toggleShowingPanel(type: nil, panel: .cosmetics)
+            self.toggleShowingPanel(type: nil, panel: .store)
         }
         return true
     }
@@ -975,7 +975,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                                selector: #selector(orientationDidChange),
                                                name: UIDevice.orientationDidChangeNotification,
                                                object: nil)
-        cosmetics.iconImage = database.iconImage
+        store.iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
             await getProductsFromAppStore()
@@ -1313,7 +1313,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopPeriodicTimers(keepChatRunning: keepChatRunning,
                                keepBatteryLevelRunning: keepBatteryLevelRunning)
         case .off:
-            store()
+            storeSettings()
             replaysStorage.store()
             stopAll()
         }
@@ -1378,7 +1378,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             suspendRecording()
         }
         updateSettingsFromTextWidgets()
-        store()
+        storeSettings()
         replaysStorage.store()
         if isMac() {
             stopAll()
@@ -1851,7 +1851,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         pollEffect?.updateText(text: votes.joined(separator: ", "))
     }
 
-    func store() {
+    func storeSettings() {
         settings.store()
     }
 

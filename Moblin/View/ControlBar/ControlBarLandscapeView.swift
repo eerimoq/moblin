@@ -131,14 +131,14 @@ private struct StatusView: View {
 
 private struct IconAndSettingsView: View {
     let model: Model
-    @ObservedObject var cosmetics: Cosmetics
+    @ObservedObject var store: Store
 
     var body: some View {
         HCenter {
             Button {
-                model.toggleShowingPanel(type: nil, panel: .cosmetics)
+                model.toggleShowingPanel(type: nil, panel: .store)
             } label: {
-                Image("\(cosmetics.iconImage)NoBackground")
+                Image("\(store.iconImage)NoBackground")
                     .interpolation(.high)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -184,7 +184,7 @@ private struct MainPageView: View {
     let model: Model
     let quickButtons: QuickButtons
     let quickButtonsSettings: SettingsQuickButtons
-    let cosmetics: Cosmetics
+    let store: Store
     let width: Double
 
     private func buttonsWidth() -> Double {
@@ -197,7 +197,7 @@ private struct MainPageView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            IconAndSettingsView(model: model, cosmetics: cosmetics)
+            IconAndSettingsView(model: model, store: store)
                 .padding([.top, .bottom], 2)
                 .frame(width: buttonsWidth())
             PageView(model: model,
@@ -243,7 +243,7 @@ private struct PagesView: View {
                         MainPageView(model: model,
                                      quickButtons: quickButtons,
                                      quickButtonsSettings: quickButtonsSettings,
-                                     cosmetics: model.cosmetics,
+                                     store: model.store,
                                      width: width)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !quickButtons.pairs[page].isEmpty {
@@ -268,7 +268,7 @@ private struct PagesView: View {
                 MainPageView(model: model,
                              quickButtons: quickButtons,
                              quickButtonsSettings: quickButtonsSettings,
-                             cosmetics: model.cosmetics,
+                             store: model.store,
                              width: width)
                     .padding([.leading], 5)
             }

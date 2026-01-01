@@ -109,14 +109,14 @@ private struct PageView: View {
 
 private struct IconAndSettingsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var cosmetics: Cosmetics
+    @ObservedObject var store: Store
 
     var body: some View {
         HStack(spacing: 0) {
             Button {
-                model.toggleShowingPanel(type: nil, panel: .cosmetics)
+                model.toggleShowingPanel(type: nil, panel: .store)
             } label: {
-                Image("\(cosmetics.iconImage)NoBackground")
+                Image("\(store.iconImage)NoBackground")
                     .interpolation(.high)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -171,7 +171,7 @@ private struct MainPageView: View {
                 .padding([.top], 3)
                 .padding([.trailing], 5)
                 .padding([.leading], 0)
-                IconAndSettingsView(cosmetics: model.cosmetics)
+                IconAndSettingsView(store: model.store)
                 StreamButton()
                     .padding([.top], 10)
                     .padding([.leading, .trailing], 5)

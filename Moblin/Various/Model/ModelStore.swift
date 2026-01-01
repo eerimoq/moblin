@@ -53,9 +53,9 @@ extension Model {
             for product in products {
                 self.products[product.id] = product
             }
-            logger.debug("cosmetics: Got \(products.count) product(s) from App Store")
+            logger.debug("store: Got \(products.count) product(s) from App Store")
         } catch {
-            logger.info("cosmetics: Failed to get products from App Store: \(error)")
+            logger.info("store: Failed to get products from App Store: \(error)")
         }
     }
 
@@ -63,7 +63,7 @@ extension Model {
         return Task.detached {
             for await result in Transaction.updates {
                 guard let transaction = self.checkVerified(result: result) else {
-                    logger.info("cosmetics: Updated transaction failed verification")
+                    logger.info("store: Updated transaction failed verification")
                     continue
                 }
                 await self.updateProductFromAppStore()
@@ -83,7 +83,7 @@ extension Model {
 
     @MainActor
     func updateProductFromAppStore() async {
-        logger.debug("cosmetics: Update my products from App Store")
+        logger.debug("store: Update my products from App Store")
         let myProductIds = await getMyProductIds()
         updateIcons(myProductIds: myProductIds)
     }
@@ -92,7 +92,7 @@ extension Model {
         var myProductIds: [String] = []
         for await result in Transaction.currentEntitlements {
             guard let transaction = checkVerified(result: result) else {
-                logger.info("cosmetics: Verification failed for my product")
+                logger.info("store: Verification failed for my product")
                 continue
             }
             myProductIds.append(transaction.productID)
@@ -102,11 +102,11 @@ extension Model {
 
     private func updateIcons(myProductIds: [String]) {
         var myIcons = globalMyIcons
-        cosmetics.hasBoughtSomething = false
+        store.hasBoughtSomething = false
         var iconsInStore: [Icon] = []
         for productId in iconsProductIds {
             guard let product = products[productId] else {
-                logger.info("cosmetics: Icon product \(productId) not found")
+                logger.info("store: Icon product \(productId) not found")
                 continue
             }
             if myProductIds.contains(productId) {
@@ -115,7 +115,7 @@ extension Model {
                     id: product.id,
                     price: product.displayPrice
                 ))
-                cosmetics.hasBoughtSomething = true
+                store.hasBoughtSomething = true
             } else {
                 iconsInStore.append(Icon(
                     name: product.displayName,
@@ -124,8 +124,8 @@ extension Model {
                 ))
             }
         }
-        cosmetics.myIcons = myIcons
-        cosmetics.iconsInStore = iconsInStore
+        store.myIcons = myIcons
+        store.iconsInStore = iconsInStore
     }
 
     private func findProduct(id: String) -> Product? {
@@ -140,21 +140,21 @@ extension Model {
 
         switch result {
         case let .success(result):
-            logger.info("cosmetics: Purchase successful")
+            logger.info("store: Purchase successful")
             guard let transaction = checkVerified(result: result) else {
                 throw "Purchase failed verification"
             }
             await updateProductFromAppStore()
             await transaction.finish()
         case .userCancelled, .pending:
-            logger.info("cosmetics: Purchase not done yet")
+            logger.info("store: Purchase not done yet")
         default:
-            logger.info("cosmetics: What happened when buying? \(result)")
+            logger.info("store: What happened when buying? \(result)")
         }
     }
 
     private func isInMyIcons(id: String) -> Bool {
-        return cosmetics.myIcons.contains(where: { $0.id == id })
+        return store.myIcons.contains(where: { $0.id == id })
     }
 
     func updateIconImageFromDatabase() {
@@ -162,6 +162,6 @@ extension Model {
             logger.info("Database icon image \(database.iconImage) is not mine")
             database.iconImage = plainIcon.id
         }
-        cosmetics.iconImage = database.iconImage
+        store.iconImage = database.iconImage
     }
 }

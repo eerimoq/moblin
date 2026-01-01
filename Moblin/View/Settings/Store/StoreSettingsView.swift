@@ -1,6 +1,6 @@
 import SwiftUI
 
-private struct CosmeticsSettingsRestoreView: View {
+private struct StoreSettingsRestoreView: View {
     @EnvironmentObject var model: Model
 
     var body: some View {
@@ -14,31 +14,27 @@ private struct CosmeticsSettingsRestoreView: View {
     }
 }
 
-private struct CosmeticsSettingsBoughtEverythingView: View {
+private struct StoreSettingsBoughtEverythingView: View {
     var body: some View {
         Section {
-            HStack {
-                Text("You already bought everything!")
-                Image(systemName: "heart.fill")
-                    .foregroundStyle(.red)
-            }
+            Text("You already bought everything! ❤️")
         } header: {
-            Text("Icons in store")
+            Text("Icons to buy")
         } footer: {
             Text("Many thanks from the Moblin developers!")
         }
     }
 }
 
-private struct CosmeticsSettingsIconsInStoreView: View {
+private struct StoreSettingsIconsToBuyView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var cosmetics: Cosmetics
+    @ObservedObject var store: Store
     @State var disabledPurchaseButtons: Set<String> = []
 
     var body: some View {
         Section {
             List {
-                ForEach(cosmetics.iconsInStore) { icon in
+                ForEach(store.iconsInStore) { icon in
                     HStack {
                         Text("")
                         Image(icon.imageNoBackground())
@@ -56,10 +52,7 @@ private struct CosmeticsSettingsIconsInStoreView: View {
                                     do {
                                         try await model.purchaseProduct(id: icon.id)
                                     } catch {
-                                        logger
-                                            .info(
-                                                "cosmetics: Purchase failed with error \(error)"
-                                            )
+                                        logger.info("store: Purchase failed with error \(error)")
                                     }
                                     disabledPurchaseButtons.remove(icon.id)
                                     disabledPurchaseButtons = disabledPurchaseButtons
@@ -79,14 +72,14 @@ private struct CosmeticsSettingsIconsInStoreView: View {
                 }
             }
         } header: {
-            Text("Icons in store")
+            Text("Icons to buy")
         }
     }
 }
 
-private struct CosmeticsSettingsMyIconsView: View {
+private struct StoreSettingsMyIconsView: View {
     @EnvironmentObject var model: Model
-    @ObservedObject var cosmetics: Cosmetics
+    @ObservedObject var store: Store
 
     private func setAppIcon(iconImage: String) {
         var iconImage: String? = iconImage
@@ -102,8 +95,8 @@ private struct CosmeticsSettingsMyIconsView: View {
 
     var body: some View {
         Section {
-            Picker("", selection: $cosmetics.iconImage) {
-                ForEach(cosmetics.myIcons) { icon in
+            Picker("", selection: $store.iconImage) {
+                ForEach(store.myIcons) { icon in
                     HStack {
                         Text("")
                         Image(icon.imageNoBackground())
@@ -117,7 +110,7 @@ private struct CosmeticsSettingsMyIconsView: View {
                     .tag(icon.image())
                 }
             }
-            .onChange(of: cosmetics.iconImage) { iconImage in
+            .onChange(of: store.iconImage) { iconImage in
                 model.database.iconImage = iconImage
                 setAppIcon(iconImage: iconImage)
             }
@@ -131,27 +124,23 @@ private struct CosmeticsSettingsMyIconsView: View {
     }
 }
 
-struct CosmeticsSettingsView: View {
-    @ObservedObject var cosmetics: Cosmetics
+struct StoreSettingsView: View {
+    @ObservedObject var store: Store
     @State var disabledPurchaseButtons: Set<String> = []
 
     var body: some View {
         Form {
             Section {
-                HStack {
-                    Text("Support Moblin developers by buying icons.")
-                    Image(systemName: "heart.fill")
-                        .foregroundStyle(.red)
-                }
+                Text("Support Moblin developers by buying icons. ❤️")
             }
-            CosmeticsSettingsMyIconsView(cosmetics: cosmetics)
-            if !cosmetics.iconsInStore.isEmpty {
-                CosmeticsSettingsIconsInStoreView(cosmetics: cosmetics)
+            if !store.iconsInStore.isEmpty {
+                StoreSettingsIconsToBuyView(store: store)
             } else {
-                CosmeticsSettingsBoughtEverythingView()
+                StoreSettingsBoughtEverythingView()
             }
-            CosmeticsSettingsRestoreView()
+            StoreSettingsMyIconsView(store: store)
+            StoreSettingsRestoreView()
         }
-        .navigationTitle("Cosmetics")
+        .navigationTitle("Store")
     }
 }
