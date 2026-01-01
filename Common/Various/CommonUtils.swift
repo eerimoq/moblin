@@ -27,6 +27,12 @@ extension String {
     func trim() -> String {
         return trimmingCharacters(in: .whitespacesAndNewlines)
     }
+
+    func substring(begin: Int, end: Int) -> String {
+        let beginIndex = index(startIndex, offsetBy: begin)
+        let endIndex = index(startIndex, offsetBy: end)
+        return String(self[beginIndex ..< endIndex])
+    }
 }
 
 extension Substring {
@@ -364,6 +370,25 @@ extension UnsignedInteger {
 }
 
 extension Data {
+    init(hexString: String) throws {
+        guard hexString.count.isMultiple(of: 2) else {
+            throw "Not multiple of 2"
+        }
+        var bytes = Data()
+        var index = hexString.startIndex
+        for offset in stride(from: 0, to: hexString.count, by: 2) {
+            var value = String(hexString[index])
+            index = hexString.index(after: index)
+            value += String(hexString[index])
+            index = hexString.index(after: index)
+            guard let value = UInt8(value, radix: 16) else {
+                throw "Invalid radix 16 data \(value)"
+            }
+            bytes.append(value)
+        }
+        self.init(bytes)
+    }
+
     func hexString() -> String {
         return map { String(format: "%02hhx", $0) }.joined()
     }
