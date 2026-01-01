@@ -437,6 +437,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
     @Published var implementation: SettingsStreamSrtImplementation = .moblin
     @Published var bigPackets: Bool = true
     var bigPacketsMigrated: Bool = false
+    var implemenationMigrated: Bool = false
 
     init() {}
 
@@ -451,7 +452,8 @@ class SettingsStreamSrt: Codable, ObservableObject {
              dnsLookupStrategy,
              implementation,
              bigPackets,
-             bigPacketsMigrated
+             bigPacketsMigrated,
+             implemenationMigrated
     }
 
     func encode(to encoder: Encoder) throws {
@@ -467,6 +469,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
         try container.encode(.implementation, implementation)
         try container.encode(.bigPackets, bigPackets)
         try container.encode(.bigPacketsMigrated, bigPacketsMigrated)
+        try container.encode(.implemenationMigrated, implemenationMigrated)
     }
 
     required init(from decoder: Decoder) throws {
@@ -487,6 +490,13 @@ class SettingsStreamSrt: Codable, ObservableObject {
         if !bigPacketsMigrated {
             bigPackets = mpegtsPacketsPerPacketRemove == 7
             bigPacketsMigrated = true
+        }
+        implemenationMigrated = container.decode(.implemenationMigrated, Bool.self, false)
+        if !implemenationMigrated {
+            if latency < 1000 {
+                implementation = .official
+            }
+            implemenationMigrated = true
         }
     }
 
