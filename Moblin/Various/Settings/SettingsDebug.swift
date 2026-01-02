@@ -37,19 +37,13 @@ class SettingsFace: Codable, ObservableObject {
     @Published var pixellateStrength: Float = 0.3
 
     enum CodingKeys: CodingKey {
-        case showBlur,
-             showBlurBackground,
-             showMoblin,
-             privacyMode,
+        case privacyMode,
              blurStrength,
              pixellateStrength
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.showBlur, showBlur)
-        try container.encode(.showBlurBackground, showBlurBackground)
-        try container.encode(.showMoblin, showMoblin)
         try container.encode(.privacyMode, privacyMode)
         try container.encode(.blurStrength, blurStrength)
         try container.encode(.pixellateStrength, pixellateStrength)
@@ -59,9 +53,9 @@ class SettingsFace: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        showBlur = container.decode(.showBlur, Bool.self, false)
-        showBlurBackground = container.decode(.showBlurBackground, Bool.self, false)
-        showMoblin = container.decode(.showMoblin, Bool.self, false)
+        showBlur = false
+        showBlurBackground = false
+        showMoblin = false
         privacyMode = container.decode(.privacyMode, SettingsFacePrivacyMode.self, .blur)
         blurStrength = container.decode(.blurStrength, Float.self, 1.0)
         pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
