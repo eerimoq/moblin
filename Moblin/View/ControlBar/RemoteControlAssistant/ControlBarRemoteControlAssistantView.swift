@@ -564,6 +564,10 @@ private struct ControlBarRemoteControlAssistantControlView: View {
     @State var presentingLog: Bool = false
     @State var log: Deque<LogEntry> = []
 
+    private func reloadLog() {
+        log = model.remoteControlAssistantLog
+    }
+
     var body: some View {
         Section {
             if remoteControl.settings != nil {
@@ -600,10 +604,10 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                                      debug: model.database.debug,
                                      log: $log,
                                      presentingLog: $presentingLog,
-                                     reloadLog: { log = model.remoteControlAssistantLog },
+                                     reloadLog: reloadLog,
                                      clearLog: { model.clearRemoteControlAssistantLog() })
                     .task {
-                        log = model.remoteControlAssistantLog
+                        reloadLog()
                     }
             }
         }

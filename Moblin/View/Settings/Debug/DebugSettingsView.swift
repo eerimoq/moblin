@@ -28,6 +28,10 @@ struct DebugSettingsView: View {
         debug.maximumLogLines = lines
     }
 
+    private func reloadLog() {
+        log = model.log
+    }
+
     var body: some View {
         Form {
             Section {
@@ -39,10 +43,10 @@ struct DebugSettingsView: View {
                                          debug: debug,
                                          log: $log,
                                          presentingLog: $presentingLog,
-                                         reloadLog: { log = model.log },
+                                         reloadLog: reloadLog,
                                          clearLog: { model.clearLog() })
                         .task {
-                            log = model.log
+                            reloadLog()
                         }
                 }
             }
