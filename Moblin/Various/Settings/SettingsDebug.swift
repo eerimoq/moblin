@@ -33,7 +33,7 @@ class SettingsFace: Codable, ObservableObject {
     @Published var showBlurBackground: Bool = false
     @Published var showMoblin = false
     @Published var privacyMode: SettingsFacePrivacyMode = .blur
-    @Published var blurStrength: Float = 1.0
+    @Published var blurStrength: Float = 0.8
     @Published var pixellateStrength: Float = 0.3
 
     enum CodingKeys: CodingKey {
@@ -57,7 +57,7 @@ class SettingsFace: Codable, ObservableObject {
         showBlurBackground = false
         showMoblin = false
         privacyMode = container.decode(.privacyMode, SettingsFacePrivacyMode.self, .blur)
-        blurStrength = container.decode(.blurStrength, Float.self, 1.0)
+        blurStrength = container.decode(.blurStrength, Float.self, 0.8)
         pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
     }
 
