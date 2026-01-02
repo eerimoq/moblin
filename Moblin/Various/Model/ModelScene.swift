@@ -432,7 +432,7 @@ extension Model {
         pinchEffect = PinchEffect(scale: database.pinchScale)
         fixedHorizonEffect = FixedHorizonEffect()
         glassesEffect = createGlassesEffect()
-        starEffect = createStarEffect()
+        sparkleEffect = createStarEffect()
     }
 
     private func createGlassesEffect() -> AlertsEffect {
@@ -473,8 +473,8 @@ extension Model {
 
     private func registerGlobalVideoEffects(scene: SettingsScene) -> [VideoEffect] {
         var effects: [VideoEffect] = []
-        if let starEffect {
-            effects.append(starEffect)
+        if let sparkleEffect {
+            effects.append(sparkleEffect)
         }
         if let glassesEffect {
             effects.append(glassesEffect)

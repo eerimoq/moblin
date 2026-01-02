@@ -380,7 +380,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func starAction() {
-        model.triggerStar()
+        model.triggerSparkle()
     }
 
     var body: some View {
@@ -860,13 +860,21 @@ struct QuickButtonsInnerView: View {
                 {
                     glassesAction()
                 }
-            case .star:
-                QuickButtonImage(model: model,
-                                 quickButtonsSettings: quickButtonsSettings,
-                                 state: state,
-                                 buttonSize: size)
-                {
-                    starAction()
+            case .sparkle:
+                ZStack {
+                    QuickButtonImage(model: model,
+                                     quickButtonsSettings: quickButtonsSettings,
+                                     state: state,
+                                     buttonSize: size)
+                    {
+                        starAction()
+                    }
+                    Image(systemName: "sparkle")
+                        .rotationEffect(.degrees(70))
+                        .offset(CGSize(width: 11, height: 0))
+                        .font(.system(size: 18))
+                        .foregroundStyle(.white)
+                        .frame(width: size, height: size)
                 }
             }
             if quickButtonsSettings.showName && !orientation.isPortrait {

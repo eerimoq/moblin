@@ -606,7 +606,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pollEffect: PollEffect?
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?
-    var starEffect: AlertsEffect?
+    var sparkleEffect: AlertsEffect?
     var replayEffect: ReplayEffect?
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
@@ -3040,8 +3040,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         triggerQuickButtonEffect(type: .glasses, effect: glassesEffect, duration: 5.8)
     }
 
-    func triggerStar() {
-        triggerQuickButtonEffect(type: .star, effect: starEffect, duration: 1.3)
+    func triggerSparkle() {
+        triggerQuickButtonEffect(type: .sparkle, effect: sparkleEffect, duration: 1.3)
     }
 
     private func triggerQuickButtonEffect(type: SettingsQuickButtonType,
