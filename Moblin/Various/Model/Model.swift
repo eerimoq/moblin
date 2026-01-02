@@ -15,6 +15,7 @@ import SwiftUI
 import TrueTime
 import WatchConnectivity
 import WebKit
+import WiFiAware
 
 private enum BackgroundRunLevel {
     // Streaming and recording
@@ -349,7 +350,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var sceneSettingsPanelSceneId = 1
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
-    var activeBufferedVideoIds: Set<UUID> = []
 
     var streamState = StreamState.disconnected {
         didSet {
@@ -363,6 +363,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    var activeBufferedVideoIds: Set<UUID> = []
+    var wiFiAwareSenderTask: Task<Void, Error>?
+    var wiFiAwareReceiverTask: Task<Void, Error>?
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
     let orientation = Orientation()
@@ -1100,6 +1103,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         loadStealthModeImage()
         updateKickChannelInfoIfNeeded()
         reloadSpeechToText()
+        if #available(iOS 26, *), false {
+            wiFiAwareUpdated()
+        }
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {

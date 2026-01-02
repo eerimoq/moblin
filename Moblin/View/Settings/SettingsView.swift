@@ -78,7 +78,7 @@ struct SettingsView: View {
             Section {
                 if database.showAllSettings {
                     NavigationLink {
-                        IngestsSettingsView(database: database)
+                        IngestsSettingsView(model: model, database: database)
                     } label: {
                         Label("Ingests", systemImage: "server.rack")
                     }

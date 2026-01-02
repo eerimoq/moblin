@@ -932,6 +932,44 @@ class SettingsDisconnectProtection: Codable, ObservableObject {
     }
 }
 
+enum SettingsWiFiAwareRole: Codable, CaseIterable {
+    case sender
+    case receiver
+
+    func toString() -> String {
+        switch self {
+        case .sender:
+            return "Sender"
+        case .receiver:
+            return "Receiver"
+        }
+    }
+}
+
+class SettingsWiFiAware: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var role: SettingsWiFiAwareRole = .sender
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             role
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.role, role)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        role = container.decode(.role, SettingsWiFiAwareRole.self, .sender)
+    }
+}
+
 class Database: Codable, ObservableObject {
     @Published var streams: [SettingsStream] = []
     @Published var scenes: [SettingsScene] = []
@@ -1000,6 +1038,7 @@ class Database: Codable, ObservableObject {
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
     var navigation: SettingsNavigation = .init()
+    var wiFiAware: SettingsWiFiAware = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1098,7 +1137,8 @@ class Database: Codable, ObservableObject {
              ristServer,
              disconnectProtection,
              rtspClient,
-             navigation
+             navigation,
+             wiFiAware
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1169,6 +1209,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
         try container.encode(.navigation, navigation)
+        try container.encode(.wiFiAware, wiFiAware)
     }
 
     init() {}
@@ -1274,6 +1315,7 @@ class Database: Codable, ObservableObject {
         )
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
+        wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
     }
 }
 

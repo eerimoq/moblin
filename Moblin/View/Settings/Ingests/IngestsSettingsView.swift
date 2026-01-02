@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct IngestsSettingsView: View {
+    let model: Model
     let database: Database
 
     var body: some View {
@@ -10,6 +11,13 @@ struct IngestsSettingsView: View {
                 SrtlaServerSettingsView(srtlaServer: database.srtlaServer)
                 RistServerSettingsView(ristServer: database.ristServer)
                 RtspClientSettingsView(rtspClient: database.rtspClient)
+                if #available(iOS 26, *), false {
+                    NavigationLink {
+                        WiFiAwareSettingsView(model: model, wiFiAware: database.wiFiAware)
+                    } label: {
+                        Text(String("WiFi Aware"))
+                    }
+                }
             }
         }
         .navigationTitle("Ingests")
