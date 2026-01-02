@@ -837,12 +837,19 @@ struct QuickButtonsInnerView: View {
                     blurFacesAction()
                 }
             case .moblinInMouth:
-                QuickButtonImage(model: model,
-                                 quickButtonsSettings: quickButtonsSettings,
-                                 state: state,
-                                 buttonSize: size)
-                {
-                    moblinInMouthAction()
+                ZStack {
+                    QuickButtonImage(model: model,
+                                     quickButtonsSettings: quickButtonsSettings,
+                                     state: state,
+                                     buttonSize: size)
+                    {
+                        moblinInMouthAction()
+                    }
+                    Image("MoblinInMouth")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 21, height: 40)
+                        .offset(.init(width: 0, height: 3))
                 }
             case .privacy:
                 QuickButtonImage(model: model,
