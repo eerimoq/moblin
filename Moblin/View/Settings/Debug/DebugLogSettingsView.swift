@@ -3,20 +3,21 @@ import SwiftUI
 
 struct DebugLogSettingsView: View {
     let model: Model
+    @ObservedObject var debug: SettingsDebug
     @Binding var log: Deque<LogEntry>
     @Binding var presentingLog: Bool
+    let reloadLog: () -> Void
     let clearLog: () -> Void
-    @State private var filter: String = ""
 
     private func isMessageVisible(message: String) -> Bool {
-        return filter.isEmpty || message.lowercased().contains(filter.lowercased())
+        return debug.logFilter.isEmpty || message.lowercased().contains(debug.logFilter.lowercased())
     }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Filter", text: $filter)
+                    TextField("Filter", text: $debug.logFilter)
                         .autocorrectionDisabled()
                 }
                 Section {
@@ -48,6 +49,13 @@ struct DebugLogSettingsView: View {
                         clearLog()
                     } label: {
                         Image(systemName: "trash")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        reloadLog()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
                     }
                 }
                 CloseToolbar(presenting: $presentingLog)

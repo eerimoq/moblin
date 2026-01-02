@@ -36,8 +36,10 @@ struct DebugSettingsView: View {
                 }
                 .fullScreenCover(isPresented: $presentingLog) {
                     DebugLogSettingsView(model: model,
+                                         debug: debug,
                                          log: $log,
                                          presentingLog: $presentingLog,
+                                         reloadLog: { log = model.log },
                                          clearLog: { model.clearLog() })
                         .task {
                             log = model.log

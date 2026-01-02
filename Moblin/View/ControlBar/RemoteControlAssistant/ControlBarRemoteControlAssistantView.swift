@@ -597,8 +597,10 @@ private struct ControlBarRemoteControlAssistantControlView: View {
             }
             .fullScreenCover(isPresented: $presentingLog) {
                 DebugLogSettingsView(model: model,
+                                     debug: model.database.debug,
                                      log: $log,
                                      presentingLog: $presentingLog,
+                                     reloadLog: { log = model.remoteControlAssistantLog },
                                      clearLog: { model.clearRemoteControlAssistantLog() })
                     .task {
                         log = model.remoteControlAssistantLog
