@@ -16,13 +16,20 @@ class CreateStreamWizard: ObservableObject {
     let twitchStream = SettingsStream(name: "")
     var twitchAccessToken = ""
     var twitchLoggedIn: Bool = false
+    let kickStream = SettingsStream(name: "")
+    var kickAccessToken = ""
+    var kickLoggedIn: Bool = false
     @Published var presenting = false
     @Published var presentingSetup = false
     @Published var showTwitchAuth = false
+    @Published var showKickAuth = false
     @Published var name = ""
     @Published var twitchChannelName = ""
     @Published var twitchChannelId = ""
     @Published var kickChannelName = ""
+    var kickChannelId: String?
+    var kickSlug: String?
+    var kickChatroomChannelId: String?
     @Published var youTubeHandle = ""
     @Published var soopChannelName = ""
     @Published var soopStreamId = ""
