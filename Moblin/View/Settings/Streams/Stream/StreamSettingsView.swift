@@ -163,6 +163,25 @@ struct StreamPlatformsSettingsView: View {
     }
 }
 
+struct BackgroundStreamingToggleView: View {
+    @Binding var enabled: Bool
+
+    var body: some View {
+        Section {
+            Toggle("Background streaming", isOn: $enabled)
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("Live stream and record when the app is in background mode.")
+                Text("")
+                Text("""
+                Built-in and USB cameras will freeze when the app is in \
+                background mode. Apple limitation. 😢
+                """)
+            }
+        }
+    }
+}
+
 struct StreamSettingsView: View {
     @EnvironmentObject private var model: Model
     @ObservedObject var database: Database
@@ -260,18 +279,7 @@ struct StreamSettingsView: View {
                 Text("Streaming platforms")
             }
             if !isMac() {
-                Section {
-                    Toggle("Background streaming", isOn: $stream.backgroundStreaming)
-                } footer: {
-                    VStack(alignment: .leading) {
-                        Text("Live stream and record when the app is in background mode.")
-                        Text("")
-                        Text("""
-                        Built-in and USB cameras will freeze when the app is in \
-                        background mode. Apple limitation. 😢
-                        """)
-                    }
-                }
+                BackgroundStreamingToggleView(enabled: $stream.backgroundStreaming)
             }
             Section {
                 NavigationLink {
