@@ -41,27 +41,27 @@ struct StreamWizardSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    StreamWizardTwitchSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardTwitchSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     TwitchLogoAndNameView()
                 }
                 NavigationLink {
-                    StreamWizardKickSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardKickSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     KickLogoAndNameView()
                 }
                 NavigationLink {
-                    StreamWizardYouTubeSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardYouTubeSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     YouTubeLogoAndNameView()
                 }
                 NavigationLink {
-                    StreamWizardSoopSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardSoopSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     SoopLogoAndNameView()
                 }
                 NavigationLink {
-                    StreamWizardObsSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardObsSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     ObsLogoAndNameView()
                 }

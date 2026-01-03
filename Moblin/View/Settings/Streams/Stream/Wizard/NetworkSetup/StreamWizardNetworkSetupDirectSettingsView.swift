@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupDirectSettingsView: View {
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var ingestError = ""
 
@@ -169,7 +170,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardGeneralSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardGeneralSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }

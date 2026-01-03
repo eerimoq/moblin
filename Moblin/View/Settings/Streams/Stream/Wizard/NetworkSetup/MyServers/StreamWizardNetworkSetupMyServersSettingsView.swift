@@ -1,18 +1,25 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupMyServersSettingsView: View {
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
         Form {
             Section {
                 NavigationLink {
-                    StreamWizardNetworkSetupMyServersSrtSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardNetworkSetupMyServersSrtSettingsView(
+                        model: model,
+                        createStreamWizard: createStreamWizard
+                    )
                 } label: {
                     Text("SRT(LA)")
                 }
                 NavigationLink {
-                    StreamWizardNetworkSetupMyServersRtmpSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardNetworkSetupMyServersRtmpSettingsView(
+                        model: model,
+                        createStreamWizard: createStreamWizard
+                    )
                 } label: {
                     Text("RTMP(S)")
                 }

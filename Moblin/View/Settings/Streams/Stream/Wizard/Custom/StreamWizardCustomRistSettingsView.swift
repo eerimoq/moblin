@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamWizardCustomRistSettingsView: View {
-    @EnvironmentObject private var model: Model
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var urlError = ""
 
@@ -34,7 +34,7 @@ struct StreamWizardCustomRistSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardGeneralSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardGeneralSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }

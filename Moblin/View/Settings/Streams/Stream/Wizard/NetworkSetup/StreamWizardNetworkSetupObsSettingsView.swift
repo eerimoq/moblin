@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupObsSettingsView: View {
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @State var portError = ""
 
@@ -63,7 +64,10 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardObsRemoteControlSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardObsRemoteControlSettingsView(
+                        model: model,
+                        createStreamWizard: createStreamWizard
+                    )
                 } label: {
                     WizardNextButtonView()
                 }

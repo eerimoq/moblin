@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct StreamWizardNetworkSetupSettingsView: View {
+    let model: Model
     let createStreamWizard: CreateStreamWizard
     let platform: String
 
@@ -9,7 +10,10 @@ struct StreamWizardNetworkSetupSettingsView: View {
             Form {
                 Section {
                     NavigationLink {
-                        StreamWizardNetworkSetupObsSettingsView(createStreamWizard: createStreamWizard)
+                        StreamWizardNetworkSetupObsSettingsView(
+                            model: model,
+                            createStreamWizard: createStreamWizard
+                        )
                     } label: {
                         HStack {
                             Text("Moblin")
@@ -24,7 +28,10 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        StreamWizardNetworkSetupBelaboxSettingsView(createStreamWizard: createStreamWizard)
+                        StreamWizardNetworkSetupBelaboxSettingsView(
+                            model: model,
+                            createStreamWizard: createStreamWizard
+                        )
                     } label: {
                         HStack {
                             Text("Moblin")
@@ -41,7 +48,10 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        StreamWizardNetworkSetupDirectSettingsView(createStreamWizard: createStreamWizard)
+                        StreamWizardNetworkSetupDirectSettingsView(
+                            model: model,
+                            createStreamWizard: createStreamWizard
+                        )
                     } label: {
                         HStack {
                             Text("Moblin")
@@ -59,7 +69,10 @@ struct StreamWizardNetworkSetupSettingsView: View {
                 }
                 Section {
                     NavigationLink {
-                        StreamWizardNetworkSetupMyServersSettingsView(createStreamWizard: createStreamWizard)
+                        StreamWizardNetworkSetupMyServersSettingsView(
+                            model: model,
+                            createStreamWizard: createStreamWizard
+                        )
                     } label: {
                         HStack {
                             Text("Moblin")

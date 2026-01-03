@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamWizardSoopSettingsView: View {
-    @EnvironmentObject private var model: Model
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
@@ -22,6 +22,7 @@ struct StreamWizardSoopSettingsView: View {
             Section {
                 NavigationLink {
                     StreamWizardNetworkSetupSettingsView(
+                        model: model,
                         createStreamWizard: createStreamWizard,
                         platform: String(localized: "SOOP")
                     )

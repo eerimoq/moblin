@@ -8,17 +8,17 @@ struct StreamWizardCustomSettingsView: View {
         Form {
             Section {
                 NavigationLink {
-                    StreamWizardCustomSrtSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardCustomSrtSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     Text("SRT(LA)")
                 }
                 NavigationLink {
-                    StreamWizardCustomRtmpSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardCustomRtmpSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     Text("RTMP(S)")
                 }
                 NavigationLink {
-                    StreamWizardCustomRistSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardCustomRistSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     Text("RIST")
                 }
@@ -27,7 +27,7 @@ struct StreamWizardCustomSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardGeneralSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardGeneralSettingsView(model: model, createStreamWizard: createStreamWizard)
                 } label: {
                     WizardSkipButtonView()
                 }

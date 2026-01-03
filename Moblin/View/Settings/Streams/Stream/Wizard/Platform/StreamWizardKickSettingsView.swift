@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamWizardKickSettingsView: View {
-    @EnvironmentObject private var model: Model
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     private func nextDisabled() -> Bool {
@@ -44,6 +44,7 @@ struct StreamWizardKickSettingsView: View {
             Section {
                 NavigationLink {
                     StreamWizardNetworkSetupSettingsView(
+                        model: model,
                         createStreamWizard: createStreamWizard,
                         platform: String(localized: "Kick")
                     )

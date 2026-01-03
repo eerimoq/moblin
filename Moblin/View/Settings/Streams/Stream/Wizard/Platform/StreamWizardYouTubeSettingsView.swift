@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamWizardYouTubeSettingsView: View {
-    @EnvironmentObject private var model: Model
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
@@ -18,6 +18,7 @@ struct StreamWizardYouTubeSettingsView: View {
             Section {
                 NavigationLink {
                     StreamWizardNetworkSetupSettingsView(
+                        model: model,
                         createStreamWizard: createStreamWizard,
                         platform: String(localized: "YouTube")
                     )

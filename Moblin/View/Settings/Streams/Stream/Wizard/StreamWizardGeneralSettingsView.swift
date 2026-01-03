@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamWizardGeneralSettingsView: View {
-    @EnvironmentObject private var model: Model
+    let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     var body: some View {
