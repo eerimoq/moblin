@@ -2,6 +2,46 @@ import Foundation
 import SwiftUI
 
 extension Model {
+    func kickLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
+        kickAuthOnComplete = { accessToken in
+            stream.kickLoggedIn = true
+            stream.kickAccessToken = accessToken
+            self.createStreamWizard.showKickAuth = false
+            getKickUser(accessToken: accessToken) { userData in
+                guard let userData else {
+                    onComplete?()
+                    return
+                }
+                stream.kickChannelName = userData.username
+                getKickChannelInfo(channelName: userData.username) { channelInfo in
+                    DispatchQueue.main.async {
+                        if let channelInfo {
+                            stream.kickChannelId = String(channelInfo.chatroom.id)
+                            stream.kickSlug = channelInfo.slug
+                            stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                        }
+                        if stream.enabled {
+                            self.kickAccessTokenUpdated()
+                        }
+                        onComplete?()
+                    }
+                }
+            }
+        }
+    }
+
+    func kickLogout(stream: SettingsStream) {
+        stream.kickAccessToken = ""
+        stream.kickLoggedIn = false
+        stream.kickChannelName = ""
+        stream.kickChannelId = nil
+        stream.kickSlug = nil
+        stream.kickChatroomChannelId = nil
+        if stream.enabled {
+            kickAccessTokenUpdated()
+        }
+    }
+
     func isKickPusherConfigured() -> Bool {
         return database.chat.enabled && stream.kickChannelName != ""
     }

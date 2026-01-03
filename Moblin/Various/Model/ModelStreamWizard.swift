@@ -132,6 +132,11 @@ extension Model {
             }
         case .kick:
             stream.kickChannelName = createStreamWizard.kickChannelName.trim()
+            stream.kickAccessToken = createStreamWizard.kickAccessToken
+            stream.kickLoggedIn = createStreamWizard.kickLoggedIn
+            stream.kickChannelId = createStreamWizard.kickChannelId
+            stream.kickSlug = createStreamWizard.kickSlug
+            stream.kickChatroomChannelId = createStreamWizard.kickChatroomChannelId
         case .youTube:
             stream.youTubeHandle = createStreamWizard.youTubeHandle.trim()
         case .soop:
@@ -174,7 +179,13 @@ extension Model {
         createStreamWizard.twitchChannelName = ""
         createStreamWizard.twitchChannelId = ""
         createStreamWizard.twitchAccessToken = ""
+        createStreamWizard.twitchLoggedIn = false
         createStreamWizard.kickChannelName = ""
+        createStreamWizard.kickAccessToken = ""
+        createStreamWizard.kickLoggedIn = false
+        createStreamWizard.kickChannelId = nil
+        createStreamWizard.kickSlug = nil
+        createStreamWizard.kickChatroomChannelId = nil
         createStreamWizard.youTubeHandle = ""
         createStreamWizard.soopChannelName = ""
         createStreamWizard.soopStreamId = ""

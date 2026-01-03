@@ -58,7 +58,8 @@ struct HeartRateDeviceSettingsView: View {
                         )
                     } label: {
                         GrayTextView(
-                            text: device.bluetoothPeripheralName ?? String(localized: "Select device"))
+                            text: device.bluetoothPeripheralName ?? String(localized: "Select device")
+                        )
                     }
                     .disabled(model.isHeartRateDeviceEnabled(device: device))
                 } header: {

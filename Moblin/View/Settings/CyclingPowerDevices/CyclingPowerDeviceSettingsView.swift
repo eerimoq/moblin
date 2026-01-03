@@ -55,7 +55,8 @@ struct CyclingPowerDeviceSettingsView: View {
                     )
                     } label: {
                         GrayTextView(
-                            text: device.bluetoothPeripheralName ?? String(localized: "Select device"))
+                            text: device.bluetoothPeripheralName ?? String(localized: "Select device")
+                        )
                     }
                     .disabled(model.isCyclingPowerDeviceEnabled(device: device))
                 } header: {
