@@ -259,6 +259,20 @@ struct StreamSettingsView: View {
             } header: {
                 Text("Streaming platforms")
             }
+            if !isMac() {
+                Section {
+                    Toggle("Background streaming", isOn: $stream.backgroundStreaming)
+                } footer: {
+                    VStack(alignment: .leading) {
+                        Text("Live stream and record when the app is in background mode.")
+                        Text("")
+                        Text("""
+                        Built-in and USB cameras will freeze when the app is in \
+                        background mode. Apple limitation. 😢
+                        """)
+                    }
+                }
+            }
             Section {
                 NavigationLink {
                     StreamObsRemoteControlSettingsView(stream: stream)
@@ -296,20 +310,6 @@ struct StreamSettingsView: View {
                 }
             }
             if database.showAllSettings {
-                if !isMac() {
-                    Section {
-                        Toggle("Background streaming", isOn: $stream.backgroundStreaming)
-                    } footer: {
-                        VStack(alignment: .leading) {
-                            Text("Live stream and record when the app is in background mode.")
-                            Text("")
-                            Text("""
-                            Built-in and USB cameras will freeze when the app is in \
-                            background mode. Apple limitation. 😢
-                            """)
-                        }
-                    }
-                }
                 Section {
                     NavigationLink {
                         TextEditView(
