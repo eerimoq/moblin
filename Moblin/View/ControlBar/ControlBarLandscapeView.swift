@@ -41,7 +41,7 @@ private struct QuickButtonsView: View {
 
     var body: some View {
         VStack {
-            ForEach(model.getQuickButtonPairs(page: page)) { pair in
+            ForEach(model.getQuickButtonPairs(page: page + 1)) { pair in
                 if quickButtonsSettings.twoColumns {
                     HStack(alignment: .bottom) {
                         if let second = pair.second {

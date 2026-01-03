@@ -52,6 +52,7 @@ private struct QuickButtonStealthModeView: View {
 
 struct QuickButtonsButtonSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var button: SettingsQuickButton
     let shortcut: Bool
 
@@ -63,20 +64,88 @@ struct QuickButtonsButtonSettingsView: View {
         model.updateQuickButtonStates()
     }
 
+    private func moveUp() {
+        var otherButton: SettingsQuickButton?
+        let pairs = model.getQuickButtonPairs(page: button.page)
+        for (pairIndex, pair) in pairs.enumerated() {
+            let otherPair = pairs[(pairIndex + 1) % pairs.count]
+            if pair.first.button.id == button.id {
+                if quickButtonsSettings.twoColumns {
+                    otherButton = otherPair.first.button
+                } else {
+                    otherButton = otherPair.second?.button
+                    if otherButton == nil {
+                        otherButton = otherPair.first.button
+                    }
+                }
+                break
+            } else if pair.second?.button.id == button.id {
+                if quickButtonsSettings.twoColumns {
+                    otherButton = otherPair.second?.button
+                    if otherButton == nil {
+                        otherButton = pairs[0].second?.button
+                    }
+                } else {
+                    otherButton = pair.first.button
+                }
+                break
+            }
+        }
+        swapButtons(firstButton: button, secondButton: otherButton)
+    }
+
+    private func moveDown() {
+        var otherButton: SettingsQuickButton?
+        let pairs = model.getQuickButtonPairs(page: button.page)
+        for (pairIndex, pair) in pairs.enumerated() {
+            let otherPair = pairs[(pairs.count + pairIndex - 1) % pairs.count]
+            if pair.first.button.id == button.id {
+                if quickButtonsSettings.twoColumns {
+                    otherButton = otherPair.first.button
+                } else {
+                    otherButton = pair.second?.button
+                    if otherButton == nil {
+                        otherButton = otherPair.first.button
+                    }
+                }
+                break
+            } else if pair.second?.button.id == button.id {
+                if quickButtonsSettings.twoColumns {
+                    otherButton = otherPair.second?.button
+                    if otherButton == nil {
+                        otherButton = pairs[pairs.count - 2].second?.button
+                    }
+                } else {
+                    otherButton = otherPair.first.button
+                }
+                break
+            }
+        }
+        swapButtons(firstButton: button, secondButton: otherButton)
+    }
+
+    private func moveLeftRight() {
+        guard let pair = model.getQuickButtonPairs(page: button.page).first(where: {
+            $0.first.button.id == button.id || $0.second?.button.id == button.id
+        }) else {
+            return
+        }
+        swapButtons(firstButton: pair.first.button, secondButton: pair.second?.button)
+    }
+
+    private func swapButtons(firstButton: SettingsQuickButton?, secondButton: SettingsQuickButton?) {
+        let database = model.database
+        guard let firstIndex = database.quickButtons.firstIndex(where: { $0.id == firstButton?.id }),
+              let secondIndex = database.quickButtons.firstIndex(where: { $0.id == secondButton?.id })
+        else {
+            return
+        }
+        database.quickButtons.swapAt(firstIndex, secondIndex)
+        model.updateQuickButtonStates()
+    }
+
     var body: some View {
         Form {
-            Section {
-                ColorPicker("Background", selection: $button.color, supportsOpacity: false)
-                    .onChange(of: button.color) { _ in
-                        onColorChange(color: button.color)
-                    }
-                TextButtonView("Reset") {
-                    button.color = defaultQuickButtonColor.color()
-                    onColorChange(color: button.color)
-                }
-            } header: {
-                Text("Color")
-            }
             if #available(iOS 17, *) {
                 Section {
                     Picker(selection: $button.page) {
@@ -89,7 +158,53 @@ struct QuickButtonsButtonSettingsView: View {
                     .onChange(of: button.page) { _ in
                         model.updateQuickButtonStates()
                     }
+                    HStack {
+                        Text("Position")
+                        Spacer()
+                        VStack(alignment: .center, spacing: 7) {
+                            Button {
+                                moveUp()
+                            } label: {
+                                Image(systemName: "arrow.up.circle")
+                            }
+                            HStack {
+                                Button {
+                                    moveLeftRight()
+                                } label: {
+                                    Image(systemName: "arrow.left.circle")
+                                }
+                                .disabled(!quickButtonsSettings.twoColumns)
+                                Button {
+                                    moveDown()
+                                } label: {
+                                    Image(systemName: "arrow.down.circle")
+                                }
+                                Button {
+                                    moveLeftRight()
+                                } label: {
+                                    Image(systemName: "arrow.right.circle")
+                                }
+                                .disabled(!quickButtonsSettings.twoColumns)
+                            }
+                        }
+                        .font(.title)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                } header: {
+                    Text("Layout")
                 }
+            }
+            Section {
+                ColorPicker("Background", selection: $button.color, supportsOpacity: false)
+                    .onChange(of: button.color) { _ in
+                        onColorChange(color: button.color)
+                    }
+                TextButtonView("Reset") {
+                    button.color = defaultQuickButtonColor.color()
+                    onColorChange(color: button.color)
+                }
+            } header: {
+                Text("Color")
             }
             switch button.type {
             case .blackScreen:

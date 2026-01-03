@@ -286,6 +286,7 @@ class GoProState: ObservableObject {
 
 class QuickButtons: ObservableObject {
     @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
+    @Published var selectedButtonType: SettingsQuickButtonType?
 }
 
 class Snapshot: ObservableObject {
@@ -722,6 +723,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleShowingPanel(type: SettingsQuickButtonType?, panel: ShowingPanel) {
+        if showingPanel == .quickButtonSettings {
+            quickButtons.selectedButtonType = nil
+        }
         if showingPanel == panel {
             showingPanel = .none
         } else {
@@ -861,7 +865,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getQuickButtonPairs(page: Int) -> [QuickButtonPair] {
-        return quickButtons.pairs[page]
+        guard page > 0, page <= quickButtons.pairs.count else {
+            return []
+        }
+        return quickButtons.pairs[page - 1]
     }
 
     func getQuickButtonState(type: SettingsQuickButtonType) -> ButtonState? {
@@ -1959,6 +1966,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         quickButtonSettingsButton = getQuickButton(type: type)
         toggleShowingPanel(type: nil, panel: .none)
         toggleShowingPanel(type: nil, panel: .quickButtonSettings)
+        quickButtons.selectedButtonType = type
     }
 
     func toggleQuickButton(type: SettingsQuickButtonType) {

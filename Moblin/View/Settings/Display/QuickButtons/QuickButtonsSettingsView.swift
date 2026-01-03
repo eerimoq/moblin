@@ -59,7 +59,9 @@ private struct ButtonSettingsView: View {
     var body: some View {
         if model.database.showAllSettings {
             NavigationLink {
-                QuickButtonsButtonSettingsView(button: button, shortcut: false)
+                QuickButtonsButtonSettingsView(quickButtonsSettings: model.database.quickButtonsGeneral,
+                                               button: button,
+                                               shortcut: false)
             } label: {
                 label()
             }
