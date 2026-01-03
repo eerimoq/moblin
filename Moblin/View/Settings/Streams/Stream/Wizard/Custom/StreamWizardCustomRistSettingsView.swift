@@ -34,7 +34,7 @@ struct StreamWizardCustomRistSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardSummarySettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardGeneralSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }

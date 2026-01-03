@@ -45,7 +45,7 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardChatSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardObsRemoteControlSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }

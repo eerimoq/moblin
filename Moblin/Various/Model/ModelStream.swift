@@ -24,6 +24,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var showTwitchAuth = false
     @Published var showKickAuth = false
     @Published var name = ""
+    @Published var backgroundStreaming = false
     @Published var twitchChannelName = ""
     @Published var twitchChannelId = ""
     @Published var kickChannelName = ""
@@ -42,9 +43,6 @@ class CreateStreamWizard: ObservableObject {
     @Published var obsRemoteControlBrbScene = ""
     @Published var directIngest = ""
     @Published var directStreamKey = ""
-    @Published var chatBttv = false
-    @Published var chatFfz = false
-    @Published var chatSeventv = false
     @Published var belaboxUrl = ""
     @Published var customSrtUrl = ""
     @Published var customSrtStreamId = ""

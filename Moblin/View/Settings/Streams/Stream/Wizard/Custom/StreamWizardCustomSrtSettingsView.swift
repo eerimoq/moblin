@@ -46,7 +46,7 @@ struct StreamWizardCustomSrtSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardSummarySettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardGeneralSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }

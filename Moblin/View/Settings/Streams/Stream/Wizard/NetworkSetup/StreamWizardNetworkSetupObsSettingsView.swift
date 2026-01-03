@@ -63,7 +63,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardChatSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardObsRemoteControlSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }

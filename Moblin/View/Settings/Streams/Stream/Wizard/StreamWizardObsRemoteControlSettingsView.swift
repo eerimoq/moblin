@@ -94,7 +94,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardSummarySettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardGeneralSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                         .disabled(nextDisabled())

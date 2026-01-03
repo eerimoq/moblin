@@ -342,14 +342,6 @@ extension ProcessInfo.ThermalState {
     }
 }
 
-func yesOrNo(_ value: Bool) -> String {
-    if value {
-        return "Yes"
-    } else {
-        return "No"
-    }
-}
-
 extension ExpressibleByIntegerLiteral {
     init(data: Data) {
         let diff: Int = MemoryLayout<Self>.size - data.count

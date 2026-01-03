@@ -107,6 +107,7 @@ extension Model {
 
     func createStreamFromWizard() {
         let stream = SettingsStream(name: createStreamWizard.name.trim())
+        stream.backgroundStreaming = createStreamWizard.backgroundStreaming
         if createStreamWizard.platform != .custom {
             if createStreamWizard.networkSetup != .direct {
                 if createStreamWizard.obsRemoteControlEnabled {
@@ -149,9 +150,9 @@ extension Model {
         case .custom:
             break
         }
-        stream.chat.bttvEmotes = createStreamWizard.chatBttv
-        stream.chat.ffzEmotes = createStreamWizard.chatFfz
-        stream.chat.seventvEmotes = createStreamWizard.chatSeventv
+        stream.chat.bttvEmotes = false
+        stream.chat.ffzEmotes = false
+        stream.chat.seventvEmotes = false
         stream.url = createStreamFromWizardUrl()
         switch createStreamWizard.networkSetup {
         case .none:
@@ -176,6 +177,7 @@ extension Model {
         createStreamWizard.platform = .custom
         createStreamWizard.networkSetup = .none
         createStreamWizard.name = ""
+        createStreamWizard.backgroundStreaming = false
         createStreamWizard.twitchChannelName = ""
         createStreamWizard.twitchChannelId = ""
         createStreamWizard.twitchAccessToken = ""
@@ -196,9 +198,6 @@ extension Model {
         createStreamWizard.obsRemoteControlPassword = ""
         createStreamWizard.directIngest = ""
         createStreamWizard.directStreamKey = ""
-        createStreamWizard.chatBttv = false
-        createStreamWizard.chatFfz = false
-        createStreamWizard.chatSeventv = false
         createStreamWizard.belaboxUrl = ""
     }
 

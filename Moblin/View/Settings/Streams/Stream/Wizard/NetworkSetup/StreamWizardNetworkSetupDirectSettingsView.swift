@@ -169,7 +169,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardChatSettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardGeneralSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardNextButtonView()
                 }

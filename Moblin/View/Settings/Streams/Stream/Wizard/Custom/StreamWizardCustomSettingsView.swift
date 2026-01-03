@@ -27,7 +27,7 @@ struct StreamWizardCustomSettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StreamWizardSummarySettingsView(createStreamWizard: createStreamWizard)
+                    StreamWizardGeneralSettingsView(createStreamWizard: createStreamWizard)
                 } label: {
                     WizardSkipButtonView()
                 }
