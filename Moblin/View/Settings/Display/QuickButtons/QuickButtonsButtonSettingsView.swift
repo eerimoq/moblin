@@ -52,6 +52,7 @@ private struct QuickButtonStealthModeView: View {
 
 struct QuickButtonsButtonSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var orientation: Orientation
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var button: SettingsQuickButton
     let shortcut: Bool
@@ -144,6 +145,64 @@ struct QuickButtonsButtonSettingsView: View {
         model.updateQuickButtonStates()
     }
 
+    private func positionPortrait() -> some View {
+        Group {
+            Button {
+                moveLeftRight()
+            } label: {
+                Image(systemName: "arrow.up.circle")
+            }
+            .disabled(!quickButtonsSettings.twoColumns)
+            HStack {
+                Button {
+                    moveUp()
+                } label: {
+                    Image(systemName: "arrow.left.circle")
+                }
+                Button {
+                    moveLeftRight()
+                } label: {
+                    Image(systemName: "arrow.down.circle")
+                }
+                .disabled(!quickButtonsSettings.twoColumns)
+                Button {
+                    moveDown()
+                } label: {
+                    Image(systemName: "arrow.right.circle")
+                }
+            }
+        }
+    }
+
+    private func positionLandscape() -> some View {
+        Group {
+            Button {
+                moveUp()
+            } label: {
+                Image(systemName: "arrow.up.circle")
+            }
+            HStack {
+                Button {
+                    moveLeftRight()
+                } label: {
+                    Image(systemName: "arrow.left.circle")
+                }
+                .disabled(!quickButtonsSettings.twoColumns)
+                Button {
+                    moveDown()
+                } label: {
+                    Image(systemName: "arrow.down.circle")
+                }
+                Button {
+                    moveLeftRight()
+                } label: {
+                    Image(systemName: "arrow.right.circle")
+                }
+                .disabled(!quickButtonsSettings.twoColumns)
+            }
+        }
+    }
+
     var body: some View {
         Form {
             if #available(iOS 17, *) {
@@ -162,29 +221,10 @@ struct QuickButtonsButtonSettingsView: View {
                         Text("Position")
                         Spacer()
                         VStack(alignment: .center, spacing: 7) {
-                            Button {
-                                moveUp()
-                            } label: {
-                                Image(systemName: "arrow.up.circle")
-                            }
-                            HStack {
-                                Button {
-                                    moveLeftRight()
-                                } label: {
-                                    Image(systemName: "arrow.left.circle")
-                                }
-                                .disabled(!quickButtonsSettings.twoColumns)
-                                Button {
-                                    moveDown()
-                                } label: {
-                                    Image(systemName: "arrow.down.circle")
-                                }
-                                Button {
-                                    moveLeftRight()
-                                } label: {
-                                    Image(systemName: "arrow.right.circle")
-                                }
-                                .disabled(!quickButtonsSettings.twoColumns)
+                            if orientation.isPortrait {
+                                positionPortrait()
+                            } else {
+                                positionLandscape()
                             }
                         }
                         .font(.title)
