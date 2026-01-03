@@ -222,6 +222,6 @@ struct QuickButtonsButtonSettingsView: View {
                 }
             }
         }
-        .navigationTitle(button.name)
+        .navigationTitle("\(button.name) quick button")
     }
 }

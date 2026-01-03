@@ -34,39 +34,21 @@ private struct AppearanceSettingsView: View {
 }
 
 private struct ButtonSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var button: SettingsQuickButton
     @ObservedObject var state: ButtonState
 
-    private func label() -> some View {
+    var body: some View {
         Toggle(isOn: $button.enabled) {
-            HStack {
-                DraggableItemPrefixView()
-                IconAndTextView(
-                    image: button.imageOff,
-                    text: button.name,
-                    longDivider: true
-                )
-                Spacer()
-            }
+            IconAndTextView(
+                image: button.imageOff,
+                text: button.name,
+                longDivider: true
+            )
         }
         .disabled(state.isOn && button.enabled)
         .onChange(of: button.enabled) { _ in
             model.updateQuickButtonStates()
-        }
-    }
-
-    var body: some View {
-        if model.database.showAllSettings {
-            NavigationLink {
-                QuickButtonsButtonSettingsView(quickButtonsSettings: model.database.quickButtonsGeneral,
-                                               button: button,
-                                               shortcut: false)
-            } label: {
-                label()
-            }
-        } else {
-            label()
         }
     }
 }
@@ -76,21 +58,19 @@ private struct ButtonsSettingsView: View {
     @ObservedObject var database: Database
 
     var body: some View {
-        Section {
-            List {
-                ForEach(database.quickButtons) { button in
-                    ButtonSettingsView(button: button,
-                                       state: model.getQuickButtonState(type: button.type)
-                                           ?? ButtonState(isOn: false, button: button))
+        ForEach(1 ..< 6, id: \.self) { page in
+            Section {
+                List {
+                    ForEach(database.quickButtons.reversed().filter { $0.page == page }) { button in
+                        ButtonSettingsView(model: model,
+                                           button: button,
+                                           state: model.getQuickButtonState(type: button.type)
+                                               ?? ButtonState(isOn: false, button: button))
+                    }
                 }
-                .onMove { froms, to in
-                    database.quickButtons.move(fromOffsets: froms, toOffset: to)
-                    model.updateQuickButtonStates()
-                    model.sceneUpdated(updateRemoteScene: false)
-                }
+            } header: {
+                Text("Page \(page)")
             }
-        } header: {
-            Text("Quick buttons")
         }
     }
 }
