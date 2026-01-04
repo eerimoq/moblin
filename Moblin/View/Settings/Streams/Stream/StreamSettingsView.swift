@@ -176,7 +176,7 @@ struct BackgroundStreamingToggleView: View {
                 Text("""
                 Built-in camera and USB sources blur the last frame in background mode \
                 (Apple limitation), but audio stays active. Both audio and video from \
-                ingests (RTMP/SRT/...) stays active in background mode.
+                ingests (RTMP/SRT/...) stay active in background mode.
                 """)
             }
         }
