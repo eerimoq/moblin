@@ -640,6 +640,12 @@ extension Model: TwitchEventSubDelegate {
         makeToast(title: String(localized: "\(duration) \(kind) commercial starting"))
     }
 
+    func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent) {
+        if let raidInfo = event.raid, raid.progress == nil {
+            twitchRaidStarted(channelName: raidInfo.user_name)
+        }
+    }
+
     func removeHypeTrain() {
         hypeTrain.level = nil
         hypeTrain.progress = nil

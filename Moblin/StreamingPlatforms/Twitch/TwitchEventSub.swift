@@ -224,6 +224,26 @@ private struct NotificationChannelAdBreakBeginMessage: Decodable {
     var payload: NotificationChannelAdBreakBeginPayload
 }
 
+struct TwitchEventSubChannelModerateRaid: Decodable {
+    var user_id: String
+    var user_login: String
+    var user_name: String
+    var viewer_count: Int
+}
+
+struct TwitchEventSubChannelModerateEvent: Decodable {
+    var action: String
+    var raid: TwitchEventSubChannelModerateRaid?
+}
+
+private struct NotificationChannelModeratePayload: Decodable {
+    var event: TwitchEventSubChannelModerateEvent
+}
+
+private struct NotificationChannelModerateMessage: Decodable {
+    var payload: NotificationChannelModeratePayload
+}
+
 private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
@@ -242,6 +262,7 @@ protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent)
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent)
     func twitchEventSubChannelAdBreakBegin(event: TwitchEventSubChannelAdBreakBeginEvent)
+    func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent)
     func twitchEventSubUnauthorized()
     func twitchEventSubNotification(message: String)
 }
@@ -258,6 +279,7 @@ private let subTypeChannelHypeTrainBegin = "channel.hype_train.begin"
 private let subTypeChannelHypeTrainProgress = "channel.hype_train.progress"
 private let subTypeChannelHypeTrainEnd = "channel.hype_train.end"
 private let subTypeChannelAdBreakBegin = "channel.ad_break.begin"
+private let subTypeChannelModerate = "channel.moderate"
 
 final class TwitchEventSub: NSObject {
     private var webSocket: WebSocketClient
@@ -437,6 +459,20 @@ final class TwitchEventSub: NSObject {
 
     private func subscribeTochannelAdBreakBegin() {
         subscribeBroadcasterUserId(type: subTypeChannelAdBreakBegin) {
+            self.subscribeToChannelModerate()
+        }
+    }
+
+    private func subscribeToChannelModerate() {
+        let body = createBody(
+            type: subTypeChannelModerate,
+            version: 2,
+            condition: "{\"broadcaster_user_id\":\"\(userId)\",\"moderator_user_id\":\"\(userId)\"}"
+        )
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            guard ok else {
+                return
+            }
             self.connected = true
         }
     }
@@ -500,6 +536,8 @@ final class TwitchEventSub: NSObject {
                 try handleChannelHypeTrainEnd(messageData: messageData)
             case subTypeChannelAdBreakBegin:
                 try handleChannelAdBreakBegin(messageData: messageData)
+            case subTypeChannelModerate:
+                try handleChannelModerate(messageData: messageData)
             default:
                 if let type = message.metadata.subscription_type {
                     logger.info("twitch: event-sub: Unknown notification type \(type)")
@@ -600,6 +638,14 @@ final class TwitchEventSub: NSObject {
             from: messageData
         )
         delegate.twitchEventSubChannelAdBreakBegin(event: message.payload.event)
+    }
+
+    private func handleChannelModerate(messageData: Data) throws {
+        let message = try JSONDecoder().decode(
+            NotificationChannelModerateMessage.self,
+            from: messageData
+        )
+        delegate.twitchEventSubChannelModerate(event: message.payload.event)
     }
 }
 
