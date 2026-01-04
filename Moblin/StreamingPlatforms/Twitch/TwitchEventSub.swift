@@ -225,10 +225,7 @@ private struct NotificationChannelAdBreakBeginMessage: Decodable {
 }
 
 struct TwitchEventSubChannelModerateRaid: Decodable {
-    var user_id: String
-    var user_login: String
     var user_name: String
-    var viewer_count: Int
 }
 
 struct TwitchEventSubChannelModerateEvent: Decodable {
