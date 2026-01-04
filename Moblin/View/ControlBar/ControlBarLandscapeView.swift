@@ -235,34 +235,58 @@ private struct PagesView: View {
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     let width: Double
 
+    private func offsetX() -> Double {
+        if quickButtonsSettings.bigButtons && quickButtonsSettings.twoColumns {
+            return -6
+        } else {
+            return -1
+        }
+    }
+
     var body: some View {
         if #available(iOS 17, *) {
-            ScrollView(.horizontal) {
-                HStack {
-                    Group {
-                        MainPageView(model: model,
-                                     quickButtons: quickButtons,
-                                     quickButtonsSettings: quickButtonsSettings,
-                                     store: model.store,
-                                     width: width)
-                        ForEach(1 ..< controlBarPages, id: \.self) { page in
-                            if !quickButtons.pairs[page].isEmpty {
-                                PageView(model: model,
+            VStack {
+                ScrollView(.horizontal) {
+                    HStack {
+                        Group {
+                            MainPageView(model: model,
                                          quickButtons: quickButtons,
                                          quickButtonsSettings: quickButtonsSettings,
-                                         page: page,
+                                         store: model.store,
                                          width: width)
+                                .id(1)
+                            ForEach(1 ..< controlBarPages, id: \.self) { page in
+                                if !quickButtons.pairs[page].isEmpty {
+                                    PageView(model: model,
+                                             quickButtons: quickButtons,
+                                             quickButtonsSettings: quickButtonsSettings,
+                                             page: page,
+                                             width: width)
+                                        .id(page + 1)
+                                }
                             }
                         }
+                        .padding([.leading], 5)
+                        .containerRelativeFrame(.horizontal, count: 1, spacing: 0, alignment: .leading)
                     }
-                    .padding([.leading], 5)
-                    .containerRelativeFrame(.horizontal, count: 1, spacing: 0, alignment: .leading)
+                    .scrollTargetLayout()
                 }
-                .scrollTargetLayout()
+                .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
+                .scrollIndicators(.never)
+                .scrollPosition(id: $quickButtons.activePage)
+                .ignoresSafeArea(.all, edges: edgesToIgnore())
+                .overlay(alignment: .bottom) {
+                    HStack(spacing: 3) {
+                        ForEach(1 ... controlBarPages, id: \.self) { page in
+                            Image(systemName: quickButtons.activePage == page ? "circle.fill" : "circle")
+                                .font(.system(size: 5))
+                                .padding([.bottom], 0)
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    .offset(.init(width: offsetX(), height: 13))
+                }
             }
-            .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
-            .scrollIndicators(.never)
-            .ignoresSafeArea(.all, edges: edgesToIgnore())
         } else {
             ScrollView(.horizontal) {
                 MainPageView(model: model,

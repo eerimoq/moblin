@@ -198,15 +198,9 @@ struct QuickButtonGoProView: View {
                         .scrollIndicators(.never)
                         HStack {
                             ForEach(0 ..< 3) { index in
-                                Button {
-                                    withAnimation {
-                                        activeIndex = index
-                                    }
-                                } label: {
-                                    Image(systemName: activeIndex == index ? "circle.fill" : "circle")
-                                        .font(.system(size: 10))
-                                        .padding([.bottom], 10)
-                                }
+                                Image(systemName: activeIndex == index ? "circle.fill" : "circle")
+                                    .font(.system(size: 10))
+                                    .padding([.bottom], 10)
                             }
                         }
                     }
