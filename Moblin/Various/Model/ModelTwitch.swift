@@ -624,6 +624,7 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
         if event.from_broadcaster_user_id == stream.twitchChannelId {
+            raid.state = .completed
             raid.message = String(localized: "Raid completed!")
             raid.timer.startSingleShot(timeout: 60) {
                 self.removeRaid()

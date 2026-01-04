@@ -321,6 +321,29 @@ private struct RaidView: View {
     let model: Model
     @ObservedObject var raid: Raid
 
+    private func close() {
+        switch raid.state {
+        case .idle:
+            break
+        case .ongoing:
+            raid.message = String(localized: "Cancelling raid")
+            model.cancelRaidTwitchChannel {
+                switch $0 {
+                case .success:
+                    raid.message = String(localized: "Raid cancelled")
+                default:
+                    raid.message = String(localized: "Failed to cancel the raid")
+                }
+                raid.state = .completed
+            }
+            raid.state = .cancelling
+        case .cancelling:
+            break
+        case .completed:
+            raid.state = .idle
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             Rectangle()
@@ -333,26 +356,7 @@ private struct RaidView: View {
                         Text(raid.message)
                         Spacer()
                         CloseView {
-                            switch raid.state {
-                            case .idle:
-                                break
-                            case .ongoing:
-                                raid.message = String(localized: "Cancelling raid")
-                                model.cancelRaidTwitchChannel {
-                                    switch $0 {
-                                    case .success:
-                                        raid.message = String(localized: "Raid cancelled")
-                                    default:
-                                        raid.message = String(localized: "Failed to cancel the raid")
-                                    }
-                                    raid.state = .completed
-                                }
-                                raid.state = .cancelling
-                            case .cancelling:
-                                break
-                            case .completed:
-                                raid.state = .idle
-                            }
+                            close()
                         }
                     }
                     .foregroundStyle(.white)
