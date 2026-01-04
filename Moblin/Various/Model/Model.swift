@@ -129,9 +129,18 @@ class HypeTrain: ObservableObject {
     var timer = SimpleTimer(queue: .main)
 }
 
+enum RaidState {
+    case idle
+    case ongoing
+    case cancelling
+    case completed
+}
+
 class Raid: ObservableObject {
-    @Published var message: String?
-    @Published var progress: ProgressBar?
+    @Published var state: RaidState = .idle
+    @Published var message: String = ""
+    @Published var progress = ProgressBar()
+    var timer = SimpleTimer(queue: .main)
 }
 
 class Ingests: ObservableObject {

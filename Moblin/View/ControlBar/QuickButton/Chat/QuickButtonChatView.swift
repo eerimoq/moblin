@@ -328,31 +328,36 @@ private struct RaidView: View {
                 .background(.clear)
                 .frame(height: 1)
             VStack {
-                if let message = raid.message, let progress = raid.progress {
+                if raid.state != .idle {
                     HStack(spacing: 0) {
-                        Text(message)
+                        Text(raid.message)
                         Spacer()
                         CloseView {
-                            raid.message = String(localized: "Cancelling raid")
-                            model.cancelRaidTwitchChannel {
-                                switch $0 {
-                                case .success:
-                                    raid.message = String(localized: "Raid cancelled")
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                                        model.removeRaid()
+                            switch raid.state {
+                            case .idle:
+                                break
+                            case .ongoing:
+                                raid.message = String(localized: "Cancelling raid")
+                                model.cancelRaidTwitchChannel {
+                                    switch $0 {
+                                    case .success:
+                                        raid.message = String(localized: "Raid cancelled")
+                                    default:
+                                        raid.message = String(localized: "Failed to cancel the raid")
                                     }
-                                default:
-                                    raid.message = String(localized: "Failed to cancel the raid")
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
-                                        model.removeRaid()
-                                    }
+                                    raid.state = .completed
                                 }
+                                raid.state = .cancelling
+                            case .cancelling:
+                                break
+                            case .completed:
+                                raid.state = .idle
                             }
                         }
                     }
                     .foregroundStyle(.white)
                     .padding(10)
-                    ProgressBarView(progress: progress)
+                    ProgressBarView(progress: raid.progress)
                 }
             }
             .background(RgbColor(red: 0x64, green: 0x41, blue: 0xA5).color())

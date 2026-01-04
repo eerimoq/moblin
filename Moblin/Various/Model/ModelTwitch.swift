@@ -421,14 +421,10 @@ extension Model {
     }
 
     func twitchRaidStarted(channelName: String) {
-        guard raid.progress == nil else {
-            return
-        }
+        raid.state = .ongoing
         raid.message = String(localized: "Raiding \(channelName)")
-        let progress = ProgressBar()
-        progress.progress = 0
-        progress.goal = 90
-        raid.progress = progress
+        raid.progress.progress = 0
+        raid.progress.goal = 90
     }
 
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {
@@ -475,17 +471,17 @@ extension Model {
     }
 
     func updateTwitchRaid() {
-        guard let progress = raid.progress else {
+        guard raid.state == .ongoing else {
             return
         }
-        if progress.progress < progress.goal {
-            progress.progress += 1
+        if raid.progress.progress < raid.progress.goal {
+            raid.progress.progress += 1
         }
     }
 
     func removeRaid() {
-        raid.message = nil
-        raid.progress = nil
+        raid.state = .idle
+        raid.timer.stop()
     }
 
     private func appendTwitchChatAlertMessage(
@@ -629,7 +625,7 @@ extension Model: TwitchEventSubDelegate {
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
         if event.from_broadcaster_user_id == stream.twitchChannelId {
             raid.message = String(localized: "Raid completed!")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            raid.timer.startSingleShot(timeout: 60) {
                 self.removeRaid()
             }
         } else {
