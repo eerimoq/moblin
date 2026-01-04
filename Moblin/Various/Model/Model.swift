@@ -1537,105 +1537,119 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func startPeriodicTimers() {
-        periodicTimer20ms.startPeriodic(interval: 0.02) {
-            self.updateAdaptiveBitrate()
+        periodicTimer20ms.startPeriodic(interval: 0.02, handler: handle20msTimer)
+        periodicTimer200ms.startPeriodic(interval: 0.2, handler: handle200msTimer)
+        periodicTimer1s.startPeriodic(interval: 1, handler: handle1sTimer)
+        periodicTimer3s.startPeriodic(interval: 3, handler: handle3sTimer)
+        periodicTimer5s.startPeriodic(interval: 5, handler: handle5sTimer)
+        periodicTimer10s.startPeriodic(interval: 10, handler: handle10sTimer)
+        periodicTimerBatteryLevel.startPeriodic(interval: 30, handler: handle30sTimer)
+    }
+
+    private func handle20msTimer() {
+        updateAdaptiveBitrate()
+    }
+
+    private func handle200msTimer() {
+        let monotonicNow = ContinuousClock.now
+        updateAudioLevel()
+        updateChat()
+        executeChatBotMessage()
+        if isWatchLocal() {
+            trySendNextChatPostToWatch()
         }
-        periodicTimer200ms.startPeriodic(interval: 0.2) {
-            let monotonicNow = ContinuousClock.now
-            self.updateAudioLevel()
-            self.updateChat()
-            self.executeChatBotMessage()
-            if self.isWatchLocal() {
-                self.trySendNextChatPostToWatch()
-            }
-            if let lastAttachCompletedTime = self.lastAttachCompletedTime,
-               lastAttachCompletedTime.duration(to: monotonicNow) > .seconds(0.5)
-            {
-                self.updateTorch()
-                self.lastAttachCompletedTime = nil
-            }
-            if let relaxedBitrateStartTime = self.relaxedBitrateStartTime,
-               relaxedBitrateStartTime.duration(to: monotonicNow) > .seconds(3)
-            {
-                self.relaxedBitrate = false
-                self.relaxedBitrateStartTime = nil
-            }
-            self.speechToText?.tick(now: monotonicNow)
+        if let lastAttachCompletedTime = lastAttachCompletedTime,
+           lastAttachCompletedTime.duration(to: monotonicNow) > .seconds(0.5)
+        {
+            updateTorch()
+            self.lastAttachCompletedTime = nil
         }
-        periodicTimer1s.startPeriodic(interval: 1) {
-            let now = Date()
-            let monotonicNow = ContinuousClock.now
-            self.updateStreamUptime(now: monotonicNow)
-            self.updateRecordingLength(now: now)
-            self.updateDigitalClock(now: now)
-            self.media.updateSrtTransportBitrate()
-            self.updateSpeed(now: monotonicNow)
-            self.updateIngestsSpeed()
-            self.updateBondingStatistics()
-            self.removeOldChatMessages(now: monotonicNow)
-            self.updateLocation()
-            self.updateObsSourceScreenshot()
-            self.updateObsAudioVolume()
-            self.updateBrowserWidgetStatus()
-            self.logStatus()
-            self.updateFailedVideoEffects()
-            self.updateDebugOverlay()
-            self.updateDistance()
-            self.updateSlope()
-            self.updateAverageSpeed(now: monotonicNow)
-            self.updateTextEffects(now: now, timestamp: monotonicNow)
-            self.updateMapEffects()
-            self.updateScoreboardEffects()
-            self.updatePoll()
-            self.updateObsSceneSwitcher(now: monotonicNow)
-            self.weatherManager.setLocation(location: self.latestKnownLocation)
-            self.geographyManager.setLocation(location: self.latestKnownLocation)
-            self.updateBitrateStatus()
-            self.updateAdsRemainingTimer(now: now)
-            if self.database.show.systemMonitor {
-                self.resourceUsage.update(now: monotonicNow)
-                self.systemMonitor.cpu = self.resourceUsage.getCpuUsage()
-                self.systemMonitor.ram = self.resourceUsage.getMemoryUsage()
-            }
-            self.updateMoblinkStatus()
-            self.updateStatusEventsText()
-            self.updateStatusChatText()
-            self.updateAutoSceneSwitcher(now: monotonicNow)
-            self.sendPeriodicRemoteControlStreamerStatus()
-            self.speechToTextProcess()
-            self.updateTwitchRaid()
+        if let relaxedBitrateStartTime = relaxedBitrateStartTime,
+           relaxedBitrateStartTime.duration(to: monotonicNow) > .seconds(3)
+        {
+            relaxedBitrate = false
+            self.relaxedBitrateStartTime = nil
         }
-        periodicTimer3s.startPeriodic(interval: 3) {
-            self.teslaGetDriveState()
+        speechToText?.tick(now: monotonicNow)
+    }
+
+    private func handle1sTimer() {
+        let now = Date()
+        let monotonicNow = ContinuousClock.now
+        updateStreamUptime(now: monotonicNow)
+        updateRecordingLength(now: now)
+        updateDigitalClock(now: now)
+        media.updateSrtTransportBitrate()
+        updateSpeed(now: monotonicNow)
+        updateIngestsSpeed()
+        updateBondingStatistics()
+        removeOldChatMessages(now: monotonicNow)
+        updateLocation()
+        updateObsSourceScreenshot()
+        updateObsAudioVolume()
+        updateBrowserWidgetStatus()
+        logStatus()
+        updateFailedVideoEffects()
+        updateDebugOverlay()
+        updateDistance()
+        updateSlope()
+        updateAverageSpeed(now: monotonicNow)
+        updateTextEffects(now: now, timestamp: monotonicNow)
+        updateMapEffects()
+        updateScoreboardEffects()
+        updatePoll()
+        updateObsSceneSwitcher(now: monotonicNow)
+        weatherManager.setLocation(location: latestKnownLocation)
+        geographyManager.setLocation(location: latestKnownLocation)
+        updateBitrateStatus()
+        updateAdsRemainingTimer(now: now)
+        if database.show.systemMonitor {
+            resourceUsage.update(now: monotonicNow)
+            systemMonitor.cpu = resourceUsage.getCpuUsage()
+            systemMonitor.ram = resourceUsage.getMemoryUsage()
         }
-        periodicTimer5s.startPeriodic(interval: 5) {
-            self.updateRemoteControlAssistantStatus()
-            if self.isWatchLocal() {
-                self.sendThermalStateToWatch(thermalState: self.statusOther.thermalState)
-            }
-            self.teslaGetMediaState()
+        updateMoblinkStatus()
+        updateStatusEventsText()
+        updateStatusChatText()
+        updateAutoSceneSwitcher(now: monotonicNow)
+        sendPeriodicRemoteControlStreamerStatus()
+        speechToTextProcess()
+        updateTwitchRaid()
+    }
+
+    private func handle3sTimer() {
+        teslaGetDriveState()
+    }
+
+    private func handle5sTimer() {
+        updateRemoteControlAssistantStatus()
+        if isWatchLocal() {
+            sendThermalStateToWatch(thermalState: statusOther.thermalState)
         }
-        periodicTimer10s.startPeriodic(interval: 10) {
-            let monotonicNow = ContinuousClock.now
-            self.media.logStatistics()
-            self.updateObsStatus()
-            self.updateRemoteControlStatus()
-            if self.stream.enabled {
-                self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
-            }
-            self.updateViewers()
-            self.updateCurrentSsid()
-            self.teslaGetChargeState()
-            self.moblink.streamer?.updateStatus()
-            self.updateTwitchStream(monotonicNow: monotonicNow)
-            self.updateAvailableDiskSpace()
-            self.tryToFetchYouTubeVideoId()
-            self.keepSpeakerAlive(now: monotonicNow)
+        teslaGetMediaState()
+    }
+
+    private func handle10sTimer() {
+        let monotonicNow = ContinuousClock.now
+        media.logStatistics()
+        updateObsStatus()
+        updateRemoteControlStatus()
+        if stream.enabled {
+            media.updateVideoStreamBitrate(bitrate: stream.bitrate)
         }
-        periodicTimerBatteryLevel.startPeriodic(interval: 30) {
-            self.updateDjiDevicesStatus()
-            self.updateBatteryLevel()
-        }
+        updateViewers()
+        updateCurrentSsid()
+        teslaGetChargeState()
+        moblink.streamer?.updateStatus()
+        updateTwitchStream(monotonicNow: monotonicNow)
+        updateAvailableDiskSpace()
+        tryToFetchYouTubeVideoId()
+        keepSpeakerAlive(now: monotonicNow)
+    }
+
+    private func handle30sTimer() {
+        updateDjiDevicesStatus()
+        updateBatteryLevel()
     }
 
     func stopPeriodicTimers(keepChatRunning: Bool, keepBatteryLevelRunning: Bool) {
