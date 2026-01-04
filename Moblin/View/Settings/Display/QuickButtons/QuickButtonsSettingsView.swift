@@ -58,7 +58,7 @@ private struct ButtonsSettingsView: View {
     @ObservedObject var database: Database
 
     var body: some View {
-        ForEach(1 ..< 6, id: \.self) { page in
+        ForEach(1 ... controlBarPages, id: \.self) { page in
             Section {
                 List {
                     ForEach(database.quickButtons.reversed().filter { $0.page == page }) { button in

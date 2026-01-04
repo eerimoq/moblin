@@ -50,12 +50,24 @@ private struct QuickButtonStealthModeView: View {
     }
 }
 
+private struct PositionButtonView: View {
+    let image: String
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Image(systemName: image)
+        }
+    }
+}
+
 struct QuickButtonsButtonSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var orientation: Orientation
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var button: SettingsQuickButton
-    let shortcut: Bool
 
     private func onColorChange(color: Color) {
         guard let color = color.toRgb() else {
@@ -147,28 +159,20 @@ struct QuickButtonsButtonSettingsView: View {
 
     private func positionPortrait() -> some View {
         Group {
-            Button {
+            PositionButtonView(image: "arrow.up.circle") {
                 moveLeftRight()
-            } label: {
-                Image(systemName: "arrow.up.circle")
             }
             .disabled(!quickButtonsSettings.twoColumns)
             HStack {
-                Button {
+                PositionButtonView(image: "arrow.left.circle") {
                     moveUp()
-                } label: {
-                    Image(systemName: "arrow.left.circle")
                 }
-                Button {
+                PositionButtonView(image: "arrow.down.circle") {
                     moveLeftRight()
-                } label: {
-                    Image(systemName: "arrow.down.circle")
                 }
                 .disabled(!quickButtonsSettings.twoColumns)
-                Button {
+                PositionButtonView(image: "arrow.right.circle") {
                     moveDown()
-                } label: {
-                    Image(systemName: "arrow.right.circle")
                 }
             }
         }
@@ -176,27 +180,19 @@ struct QuickButtonsButtonSettingsView: View {
 
     private func positionLandscape() -> some View {
         Group {
-            Button {
+            PositionButtonView(image: "arrow.up.circle") {
                 moveUp()
-            } label: {
-                Image(systemName: "arrow.up.circle")
             }
             HStack {
-                Button {
+                PositionButtonView(image: "arrow.left.circle") {
                     moveLeftRight()
-                } label: {
-                    Image(systemName: "arrow.left.circle")
                 }
                 .disabled(!quickButtonsSettings.twoColumns)
-                Button {
+                PositionButtonView(image: "arrow.down.circle") {
                     moveDown()
-                } label: {
-                    Image(systemName: "arrow.down.circle")
                 }
-                Button {
+                PositionButtonView(image: "arrow.right.circle") {
                     moveLeftRight()
-                } label: {
-                    Image(systemName: "arrow.right.circle")
                 }
                 .disabled(!quickButtonsSettings.twoColumns)
             }
@@ -205,8 +201,8 @@ struct QuickButtonsButtonSettingsView: View {
 
     var body: some View {
         Form {
-            if #available(iOS 17, *) {
-                Section {
+            Section {
+                if #available(iOS 17, *) {
                     Picker(selection: $button.page) {
                         ForEach(1 ... controlBarPages, id: \.self) { page in
                             Text(String(page))
@@ -217,22 +213,22 @@ struct QuickButtonsButtonSettingsView: View {
                     .onChange(of: button.page) { _ in
                         model.updateQuickButtonStates()
                     }
-                    HStack {
-                        Text("Position")
-                        Spacer()
-                        VStack(alignment: .center, spacing: 7) {
-                            if orientation.isPortrait {
-                                positionPortrait()
-                            } else {
-                                positionLandscape()
-                            }
-                        }
-                        .font(.title)
-                    }
-                    .buttonStyle(.borderless)
-                } header: {
-                    Text("Layout")
                 }
+                HStack {
+                    Text("Position")
+                    Spacer()
+                    VStack(alignment: .center, spacing: 7) {
+                        if orientation.isPortrait {
+                            positionPortrait()
+                        } else {
+                            positionLandscape()
+                        }
+                    }
+                    .font(.title)
+                }
+                .buttonStyle(.borderless)
+            } header: {
+                Text("Layout")
             }
             Section {
                 ColorPicker("Background", selection: $button.color, supportsOpacity: false)
@@ -252,13 +248,17 @@ struct QuickButtonsButtonSettingsView: View {
             default:
                 EmptyView()
             }
-            if shortcut {
-                ShortcutSectionView {
-                    NavigationLink {
-                        QuickButtonsSettingsView(model: model)
-                    } label: {
-                        Label("Quick buttons", systemImage: "rectangle.inset.topright.fill")
+            Section {
+                Toggle("Enabled", isOn: $button.enabled)
+                    .onChange(of: button.enabled) { _ in
+                        model.updateQuickButtonStates()
                     }
+            }
+            ShortcutSectionView {
+                NavigationLink {
+                    QuickButtonsSettingsView(model: model)
+                } label: {
+                    Label("Quick buttons", systemImage: "rectangle.inset.topright.fill")
                 }
             }
         }
