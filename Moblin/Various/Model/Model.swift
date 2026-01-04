@@ -117,12 +117,21 @@ class StreamUptimeProvider: ObservableObject {
     @Published var uptime = noValue
 }
 
+class ProgressBar: ObservableObject {
+    @Published var progress: Float = 0
+    @Published var goal: Float = 1
+}
+
 class HypeTrain: ObservableObject {
     @Published var status = noValue
     @Published var level: Int?
-    @Published var progress: Int?
-    @Published var goal: Int?
+    @Published var progress: ProgressBar?
     var timer = SimpleTimer(queue: .main)
+}
+
+class Raid: ObservableObject {
+    @Published var message: String?
+    @Published var progress: ProgressBar?
 }
 
 class Ingests: ObservableObject {
@@ -402,6 +411,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let mediaPlayerPlayer = MediaPlayerPlayer()
     let media = Media()
     let hypeTrain = HypeTrain()
+    let raid = Raid()
     let moblink = Moblink()
     let ingests = Ingests()
     let bitrate = Bitrate()
@@ -1116,6 +1126,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 26, *), false {
             wiFiAwareUpdated()
         }
+        // raid.message = String(localized: "Raiding erik")
+        // let progress = ProgressBar()
+        // progress.progress = 0
+        // progress.goal = 90
+        // raid.progress = progress
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
@@ -1584,6 +1599,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAutoSceneSwitcher(now: monotonicNow)
             self.sendPeriodicRemoteControlStreamerStatus()
             self.speechToTextProcess()
+            self.updateTwitchRaid()
         }
         periodicTimer3s.startPeriodic(interval: 3) {
             self.teslaGetDriveState()

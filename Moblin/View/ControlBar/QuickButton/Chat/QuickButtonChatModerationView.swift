@@ -669,7 +669,7 @@ private struct TwitchChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            StartRaidView(text: "Raid channel", action: model.raidTwitchChannelByName)
+            StartRaidView(text: "Raid channel", action: model.startRaidTwitchChannelByName)
             RunCommercialView(model: model)
             SendAnnouncementView(model: model)
         }

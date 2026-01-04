@@ -506,6 +506,23 @@ class TwitchApi {
         }
     }
 
+    func cancelRaid(
+        broadcasterId: String,
+        onComplete: @escaping (OperationResult) -> Void
+    ) {
+        var components = URLComponents()
+        components.queryItems = [
+            URLQueryItem(name: "broadcaster_id", value: broadcasterId),
+        ]
+        guard let query = components.percentEncodedQuery else {
+            onComplete(.error)
+            return
+        }
+        doDelete(subPath: "raids?\(query)") {
+            onComplete($0)
+        }
+    }
+
     func searchCategories(query: String, onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
         var components = URLComponents()
         components.queryItems = [

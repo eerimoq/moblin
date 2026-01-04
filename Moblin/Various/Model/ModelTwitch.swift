@@ -396,8 +396,7 @@ extension Model {
             }
     }
 
-    func raidTwitchChannel(
-        channelName _: String,
+    func startRaidTwitchChannel(
         channelId: String,
         onComplete: @escaping (OperationResult) -> Void
     ) {
@@ -406,16 +405,19 @@ extension Model {
                                                   onComplete: onComplete)
     }
 
-    func raidTwitchChannelByName(channelName: String, onComplete: @escaping (OperationResult) -> Void) {
+    func startRaidTwitchChannelByName(channelName: String, onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream).searchChannel(channelName: channelName) { channel in
             guard let channel else {
                 onComplete(.error)
                 return
             }
-            self.raidTwitchChannel(channelName: channel.broadcaster_login,
-                                   channelId: channel.id,
-                                   onComplete: onComplete)
+            self.startRaidTwitchChannel(channelId: channel.id, onComplete: onComplete)
         }
+    }
+
+    func cancelRaidTwitchChannel(onComplete: @escaping (OperationResult) -> Void) {
+        createTwitchApi(stream: stream).cancelRaid(broadcasterId: stream.twitchChannelId,
+                                                   onComplete: onComplete)
     }
 
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {
@@ -542,21 +544,32 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
-        let text = String(localized: "raided with a party of \(event.viewers)!")
-        if stream.twitchToastAlerts.raids {
-            makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
-        }
-        playAlert(alert: .twitchRaid(event))
-        if stream.twitchChatAlerts.raids {
-            appendTwitchChatAlertMessage(
-                user: event.from_broadcaster_user_name,
-                text: text,
-                title: String(localized: "Raid"),
-                color: .pink,
-                image: "person.3"
+        if event.from_broadcaster_user_id == stream.twitchChannelId {
+            raid.message = String(localized: "Raid completed!")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                self.removeRaid()
+            }
+        } else {
+            let text = String(localized: "raided with a party of \(event.viewers)!")
+            if stream.twitchToastAlerts.raids {
+                makeToast(title: "\(event.from_broadcaster_user_name) \(text)")
+            }
+            playAlert(alert: .twitchRaid(event))
+            if stream.twitchChatAlerts.raids {
+                appendTwitchChatAlertMessage(
+                    user: event.from_broadcaster_user_name,
+                    text: text,
+                    title: String(localized: "Raid"),
+                    color: .pink,
+                    image: "person.3"
+                )
+            }
+            printEventCatPrinters(
+                event: .twitchRaid,
+                username: event.from_broadcaster_user_name,
+                message: text
             )
         }
-        printEventCatPrinters(event: .twitchRaid, username: event.from_broadcaster_user_name, message: text)
     }
 
     func twitchEventSubChannelCheer(event: TwitchEventSubChannelCheerEvent) {
@@ -583,24 +596,31 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {
         hypeTrain.level = event.level
-        hypeTrain.progress = event.progress
-        hypeTrain.goal = event.goal
+        hypeTrain.progress = ProgressBar()
+        hypeTrain.progress?.progress = Float(event.progress)
+        hypeTrain.progress?.goal = Float(event.goal)
         updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
         startHypeTrainTimer(timeout: 600)
     }
 
     func twitchEventSubChannelHypeTrainProgress(event: TwitchEventSubChannelHypeTrainProgressEvent) {
         hypeTrain.level = event.level
-        hypeTrain.progress = event.progress
-        hypeTrain.goal = event.goal
+        if hypeTrain.progress == nil {
+            hypeTrain.progress = ProgressBar()
+        }
+        hypeTrain.progress?.progress = Float(event.progress)
+        hypeTrain.progress?.goal = Float(event.goal)
         updateHypeTrainStatus(level: event.level, progress: event.progress, goal: event.goal)
         startHypeTrainTimer(timeout: 600)
     }
 
     func twitchEventSubChannelHypeTrainEnd(event: TwitchEventSubChannelHypeTrainEndEvent) {
         hypeTrain.level = event.level
-        hypeTrain.progress = 1
-        hypeTrain.goal = 1
+        if hypeTrain.progress == nil {
+            hypeTrain.progress = ProgressBar()
+        }
+        hypeTrain.progress?.progress = 1
+        hypeTrain.progress?.goal = 1
         updateHypeTrainStatus(level: event.level, progress: 1, goal: 1)
         startHypeTrainTimer(timeout: 60)
     }
@@ -615,9 +635,39 @@ extension Model: TwitchEventSubDelegate {
     func removeHypeTrain() {
         hypeTrain.level = nil
         hypeTrain.progress = nil
-        hypeTrain.goal = nil
         hypeTrain.status = noValue
         stopHypeTrainTimer()
+    }
+
+    func updateTwitchRaid() {
+        guard let progress = raid.progress else {
+            return
+        }
+        if progress.progress < progress.goal {
+            progress.progress += 1
+        } /* else {
+             let message = """
+                             {
+                                 "metadata": {
+                                     "message_type": "notification",
+                                     "subscription_type": "channel.raid"
+                                 },
+                                 "payload": {
+                                     "event": {
+                                         "from_broadcaster_user_id": "\(self.stream.twitchChannelId)",
+                                         "from_broadcaster_user_name": "eerimoq",
+                                         "viewers": 100
+                                     }
+                                 }
+                             }
+                             """
+             self.twitchEventSub?.handleMessage(messageText: message)
+         }*/
+    }
+
+    func removeRaid() {
+        raid.message = nil
+        raid.progress = nil
     }
 
     func twitchEventSubUnauthorized() {

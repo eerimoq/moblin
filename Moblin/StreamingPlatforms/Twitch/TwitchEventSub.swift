@@ -132,6 +132,7 @@ private struct NotificationChannelPointsCustomRewardRedemptionAddMessage: Decoda
 }
 
 struct TwitchEventSubChannelRaidEvent: Decodable {
+    var from_broadcaster_user_id: String
     var from_broadcaster_user_name: String
     var viewers: Int
 }
@@ -382,14 +383,26 @@ final class TwitchEventSub: NSObject {
 
     private func subscribeToChannelPointsCustomRewardRedemptionAdd() {
         subscribeBroadcasterUserId(type: subTypeChannelChannelPointsCustomRewardRedemptionAdd) {
-            self.subscribeToChannelRaid()
+            self.subscribeToChannelRaidTo()
         }
     }
 
-    private func subscribeToChannelRaid() {
+    private func subscribeToChannelRaidTo() {
         let body = createBody(type: subTypeChannelRaid,
                               version: 1,
                               condition: "{\"to_broadcaster_user_id\":\"\(userId)\"}")
+        twitchApi.createEventSubSubscription(body: body) { ok in
+            guard ok else {
+                return
+            }
+            self.subscribeToChannelRaidFrom()
+        }
+    }
+
+    private func subscribeToChannelRaidFrom() {
+        let body = createBody(type: subTypeChannelRaid,
+                              version: 1,
+                              condition: "{\"from_broadcaster_user_id\":\"\(userId)\"}")
         twitchApi.createEventSubSubscription(body: body) { ok in
             guard ok else {
                 return

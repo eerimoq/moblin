@@ -238,6 +238,18 @@ private struct MessagesView: View {
     }
 }
 
+private struct ProgressBarView: View {
+    @ObservedObject var progress: ProgressBar
+
+    var body: some View {
+        ProgressView(value: progress.goal - progress.progress, total: progress.goal)
+            .accentColor(.white)
+            .scaleEffect(x: 1, y: 4, anchor: .center)
+            .padding([.top, .leading, .trailing], 10)
+            .padding([.bottom], 20)
+    }
+}
+
 private struct HypeTrainView: View {
     let model: Model
     @ObservedObject var hypeTrain: HypeTrain
@@ -285,12 +297,57 @@ private struct HypeTrainView: View {
                     .foregroundStyle(.white)
                     .padding(10)
                 }
-                if let progress = hypeTrain.progress, let goal = hypeTrain.goal {
-                    ProgressView(value: Float(progress), total: Float(goal))
-                        .accentColor(.white)
-                        .scaleEffect(x: 1, y: 4, anchor: .center)
-                        .padding([.top, .leading, .trailing], 10)
-                        .padding([.bottom], 20)
+                if let progress = hypeTrain.progress {
+                    ProgressBarView(progress: progress)
+                }
+            }
+            .background(RgbColor(red: 0x64, green: 0x41, blue: 0xA5).color())
+            Spacer()
+        }
+    }
+}
+
+private struct RaidView: View {
+    let model: Model
+    @ObservedObject var raid: Raid
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .foregroundStyle(.clear)
+                .background(.clear)
+                .frame(height: 1)
+            VStack {
+                if let message = raid.message, let progress = raid.progress {
+                    HStack(spacing: 0) {
+                        Text(message)
+                        Spacer()
+                        Button {
+                            model.cancelRaidTwitchChannel {
+                                switch $0 {
+                                case .success:
+                                    model.removeRaid()
+                                default:
+                                    raid.message = String(localized: "Failed to cancel the raid")
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                        model.removeRaid()
+                                    }
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.footnote)
+                                .frame(width: 25, height: 25)
+                                .overlay(
+                                    Circle()
+                                        .stroke(.secondary)
+                                )
+                                .padding([.leading], 15)
+                        }
+                    }
+                    .foregroundStyle(.white)
+                    .padding(10)
+                    ProgressBarView(progress: progress)
                 }
             }
             .background(RgbColor(red: 0x64, green: 0x41, blue: 0xA5).color())
@@ -315,6 +372,7 @@ private struct ChatView: View {
                     .padding(2)
             }
             HypeTrainView(model: model, hypeTrain: model.hypeTrain)
+            RaidView(model: model, raid: model.raid)
         }
     }
 }

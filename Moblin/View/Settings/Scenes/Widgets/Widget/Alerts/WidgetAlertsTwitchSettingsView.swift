@@ -121,6 +121,7 @@ private struct TwitchRaidsView: View {
             Section {
                 TextButtonView("Test") {
                     let event = TwitchEventSubChannelRaidEvent(
+                        from_broadcaster_user_id: "1234",
                         from_broadcaster_user_name: alertTestNames.randomElement()!,
                         viewers: .random(in: 1 ..< 1000)
                     )
