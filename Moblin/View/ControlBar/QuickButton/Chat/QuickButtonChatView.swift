@@ -330,11 +330,11 @@ private struct RaidView: View {
             model.cancelRaidTwitchChannel {
                 switch $0 {
                 case .success:
-                    raid.message = String(localized: "Raid cancelled")
+                    model.twitchRaidCancelled()
                 default:
                     raid.message = String(localized: "Failed to cancel the raid")
+                    raid.state = .completed
                 }
-                raid.state = .completed
             }
             raid.state = .cancelling
         case .cancelling:

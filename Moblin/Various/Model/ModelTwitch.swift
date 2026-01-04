@@ -427,6 +427,11 @@ extension Model {
         raid.progress.goal = 90
     }
 
+    func twitchRaidCancelled() {
+        raid.message = String(localized: "Raid cancelled")
+        raid.state = .completed
+    }
+
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {
         let twitchApi = TwitchApi(stream.twitchAccessToken)
         twitchApi.delegate = self
@@ -719,6 +724,8 @@ extension Model: TwitchEventSubDelegate {
                 return
             }
             twitchRaidStarted(channelName: raid.user_name)
+        case "unraid":
+            twitchRaidCancelled()
         default:
             break
         }
