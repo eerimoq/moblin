@@ -323,6 +323,7 @@ private struct RaidView: View {
                         Text(message)
                         Spacer()
                         Button {
+                            raid.message = String(localized: "Cancelling raid")
                             model.cancelRaidTwitchChannel {
                                 switch $0 {
                                 case .success:
