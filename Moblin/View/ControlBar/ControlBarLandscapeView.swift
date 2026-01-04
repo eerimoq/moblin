@@ -229,6 +229,21 @@ private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
     }
 }
 
+private struct PageIndicatorView: View {
+    @ObservedObject var quickButtons: QuickButtons
+
+    var body: some View {
+        HStack(spacing: 3) {
+            ForEach(1 ... controlBarPages, id: \.self) { page in
+                Image(systemName: quickButtons.activePage == page ? "circle.fill" : "circle")
+                    .font(.system(size: 5))
+                    .padding([.bottom], 0)
+                    .foregroundStyle(.white)
+            }
+        }
+    }
+}
+
 private struct PagesView: View {
     let model: Model
     @ObservedObject var quickButtons: QuickButtons
@@ -276,15 +291,14 @@ private struct PagesView: View {
                 .scrollPosition(id: $quickButtons.activePage)
                 .ignoresSafeArea(.all, edges: edgesToIgnore())
                 .overlay(alignment: .bottom) {
-                    HStack(spacing: 3) {
-                        ForEach(1 ... controlBarPages, id: \.self) { page in
-                            Image(systemName: quickButtons.activePage == page ? "circle.fill" : "circle")
-                                .font(.system(size: 5))
-                                .padding([.bottom], 0)
-                                .foregroundStyle(.white)
-                        }
+                    if !isMac() {
+                        PageIndicatorView(quickButtons: quickButtons)
+                            .offset(.init(width: offsetX(), height: 13))
                     }
-                    .offset(.init(width: offsetX(), height: 13))
+                }
+                if isMac() {
+                    PageIndicatorView(quickButtons: quickButtons)
+                        .padding([.top], 1)
                 }
             }
         } else {
