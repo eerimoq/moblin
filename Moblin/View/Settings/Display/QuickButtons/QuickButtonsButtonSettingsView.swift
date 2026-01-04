@@ -229,7 +229,7 @@ struct QuickButtonsButtonSettingsView: View {
                         }
                         .font(.title)
                     }
-                    .buttonStyle(BorderlessButtonStyle())
+                    .buttonStyle(.borderless)
                 } header: {
                     Text("Layout")
                 }

@@ -61,7 +61,7 @@ struct ValueEditView: View {
                 }
                 Divider()
             }
-            .buttonStyle(BorderlessButtonStyle())
+            .buttonStyle(.borderless)
         }
         Slider(
             value: $number,
@@ -138,6 +138,6 @@ struct ValueEditCompactView: View {
                     .font(.title)
             }
         }
-        .buttonStyle(BorderlessButtonStyle())
+        .buttonStyle(.borderless)
     }
 }

@@ -277,7 +277,7 @@ struct CheckboxWidgetView: View {
                     .font(.title)
             }
         }
-        .buttonStyle(BorderlessButtonStyle())
+        .buttonStyle(.borderless)
     }
 }
 
@@ -405,7 +405,7 @@ struct LapTimesWidgetView: View {
                     .font(.title)
             }
         }
-        .buttonStyle(BorderlessButtonStyle())
+        .buttonStyle(.borderless)
     }
 }
 
