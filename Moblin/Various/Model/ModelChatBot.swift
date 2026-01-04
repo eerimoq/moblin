@@ -399,6 +399,7 @@ extension Model {
                 switch $0 {
                 case .success:
                     self.makeToast(title: String(localized: "Raiding \(channelName) in 90 seconds!"))
+                    self.twitchRaidStarted(channelName: channelName)
                 default:
                     self.makeErrorToast(title: String(localized: "Failed to raid \(channelName)"))
                 }

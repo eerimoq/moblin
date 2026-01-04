@@ -420,6 +420,14 @@ extension Model {
                                                    onComplete: onComplete)
     }
 
+    func twitchRaidStarted(channelName: String) {
+        raid.message = String(localized: "Raiding \(channelName)")
+        let progress = ProgressBar()
+        progress.progress = 0
+        progress.goal = 90
+        raid.progress = progress
+    }
+
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {
         let twitchApi = TwitchApi(stream.twitchAccessToken)
         twitchApi.delegate = self
@@ -645,24 +653,7 @@ extension Model: TwitchEventSubDelegate {
         }
         if progress.progress < progress.goal {
             progress.progress += 1
-        } /* else {
-             let message = """
-                             {
-                                 "metadata": {
-                                     "message_type": "notification",
-                                     "subscription_type": "channel.raid"
-                                 },
-                                 "payload": {
-                                     "event": {
-                                         "from_broadcaster_user_id": "\(self.stream.twitchChannelId)",
-                                         "from_broadcaster_user_name": "eerimoq",
-                                         "viewers": 100
-                                     }
-                                 }
-                             }
-                             """
-             self.twitchEventSub?.handleMessage(messageText: message)
-         }*/
+        }
     }
 
     func removeRaid() {

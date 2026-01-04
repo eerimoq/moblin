@@ -1126,11 +1126,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 26, *), false {
             wiFiAwareUpdated()
         }
-        // raid.message = String(localized: "Raiding erik")
-        // let progress = ProgressBar()
-        // progress.progress = 0
-        // progress.goal = 90
-        // raid.progress = progress
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {

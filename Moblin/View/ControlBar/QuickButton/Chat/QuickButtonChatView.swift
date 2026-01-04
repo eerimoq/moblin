@@ -250,6 +250,25 @@ private struct ProgressBarView: View {
     }
 }
 
+private struct CloseView: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Image(systemName: "xmark")
+                .font(.footnote)
+                .frame(width: 25, height: 25)
+                .overlay(
+                    Circle()
+                        .stroke(.secondary)
+                )
+                .padding([.leading], 15)
+        }
+    }
+}
+
 private struct HypeTrainView: View {
     let model: Model
     @ObservedObject var hypeTrain: HypeTrain
@@ -281,17 +300,8 @@ private struct HypeTrainView: View {
                         }
                         Spacer()
                         Text("LEVEL \(level)")
-                        Button {
+                        CloseView {
                             model.removeHypeTrain()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.footnote)
-                                .frame(width: 25, height: 25)
-                                .overlay(
-                                    Circle()
-                                        .stroke(.secondary)
-                                )
-                                .padding([.leading], 15)
                         }
                     }
                     .foregroundStyle(.white)
@@ -322,7 +332,7 @@ private struct RaidView: View {
                     HStack(spacing: 0) {
                         Text(message)
                         Spacer()
-                        Button {
+                        CloseView {
                             raid.message = String(localized: "Cancelling raid")
                             model.cancelRaidTwitchChannel {
                                 switch $0 {
@@ -335,15 +345,6 @@ private struct RaidView: View {
                                     }
                                 }
                             }
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.footnote)
-                                .frame(width: 25, height: 25)
-                                .overlay(
-                                    Circle()
-                                        .stroke(.secondary)
-                                )
-                                .padding([.leading], 15)
                         }
                     }
                     .foregroundStyle(.white)
