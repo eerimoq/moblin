@@ -709,7 +709,7 @@ final class VideoUnit: NSObject {
         }
         var image = CIImage(cvPixelBuffer: imageBuffer)
         image = applySceneSwitchTransition(image)
-        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
+        guard let outputImageBuffer = createBufferedPixelBuffer(sampleBuffer: sampleBuffer) else {
             return sampleBuffer
         }
         if let poolColorSpace {
@@ -821,8 +821,8 @@ final class VideoUnit: NSObject {
         attributes[kCVPixelBufferPixelFormatTypeKey] = NSNumber(value: pixelFormatType)
         attributes[kCVPixelBufferIOSurfacePropertiesKey] = NSDictionary()
         attributes[kCVPixelBufferMetalCompatibilityKey] = kCFBooleanTrue
-        attributes[kCVPixelBufferWidthKey] = NSNumber(value: canvasSize.width)
-        attributes[kCVPixelBufferHeightKey] = NSNumber(value: canvasSize.height)
+        attributes[kCVPixelBufferWidthKey] = NSNumber(value: captureSize.width)
+        attributes[kCVPixelBufferHeightKey] = NSNumber(value: captureSize.height)
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
         if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
             let colorPrimaries = formatDescriptionExtension[kCVImageBufferColorPrimariesKey]
