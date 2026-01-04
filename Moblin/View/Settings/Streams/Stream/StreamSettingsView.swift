@@ -174,8 +174,9 @@ struct BackgroundStreamingToggleView: View {
                 Text("Live stream and record when the app is in background mode.")
                 Text("")
                 Text("""
-                Built-in and USB cameras will freeze when the app is in \
-                background mode. Apple limitation. 😢
+                Built-in camera and USB sources blur the last frame in background mode \
+                (Apple limitation), but audio stays active. Both audio and video from \
+                ingests (RTMP/SRT/...) stays active in background mode.
                 """)
             }
         }
