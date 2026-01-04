@@ -337,10 +337,13 @@ private struct RaidView: View {
                             model.cancelRaidTwitchChannel {
                                 switch $0 {
                                 case .success:
-                                    model.removeRaid()
+                                    raid.message = String(localized: "Raid cancelled")
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                        model.removeRaid()
+                                    }
                                 default:
                                     raid.message = String(localized: "Failed to cancel the raid")
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
                                         model.removeRaid()
                                     }
                                 }
