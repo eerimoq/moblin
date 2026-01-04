@@ -421,6 +421,9 @@ extension Model {
     }
 
     func twitchRaidStarted(channelName: String) {
+        guard raid.progress == nil else {
+            return
+        }
         raid.message = String(localized: "Raiding \(channelName)")
         let progress = ProgressBar()
         progress.progress = 0
@@ -447,6 +450,78 @@ extension Model {
                 self.twitchPlatformStatus = .unknown
             }
         }
+    }
+
+    private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
+        let percentage = Int(100 * Float(progress) / Float(goal))
+        hypeTrain.status = "LVL \(level), \(percentage)%"
+    }
+
+    private func startHypeTrainTimer(timeout: Double) {
+        hypeTrain.timer.startSingleShot(timeout: timeout) { [weak self] in
+            self?.removeHypeTrain()
+        }
+    }
+
+    private func stopHypeTrainTimer() {
+        hypeTrain.timer.stop()
+    }
+
+    func removeHypeTrain() {
+        hypeTrain.level = nil
+        hypeTrain.progress = nil
+        hypeTrain.status = noValue
+        stopHypeTrainTimer()
+    }
+
+    func updateTwitchRaid() {
+        guard let progress = raid.progress else {
+            return
+        }
+        if progress.progress < progress.goal {
+            progress.progress += 1
+        }
+    }
+
+    func removeRaid() {
+        raid.message = nil
+        raid.progress = nil
+    }
+
+    private func appendTwitchChatAlertMessage(
+        user: String,
+        text: String,
+        title: String,
+        color: Color,
+        image: String? = nil,
+        kind: ChatHighlightKind? = nil,
+        bits: String? = nil
+    ) {
+        guard let twitchChat else {
+            return
+        }
+        appendChatMessage(platform: .twitch,
+                          messageId: nil,
+                          displayName: user,
+                          user: user,
+                          userId: nil,
+                          userColor: nil,
+                          userBadges: [],
+                          segments: twitchChat.createSegmentsNoTwitchEmotes(text: text, bits: bits),
+                          timestamp: statusOther.digitalClock,
+                          timestampTime: .now,
+                          isAction: false,
+                          isSubscriber: false,
+                          isModerator: false,
+                          isOwner: false,
+                          bits: nil,
+                          highlight: .init(
+                              kind: kind ?? .redemption,
+                              barColor: color,
+                              image: image ?? "medal",
+                              titleSegments: [ChatPostSegment(id: 0, text: title)]
+                          ),
+                          live: true)
     }
 }
 
@@ -641,30 +716,15 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubChannelModerate(event: TwitchEventSubChannelModerateEvent) {
-        if let raidInfo = event.raid, raid.progress == nil {
-            twitchRaidStarted(channelName: raidInfo.user_name)
+        switch event.action {
+        case "raid":
+            guard let raid = event.raid else {
+                return
+            }
+            twitchRaidStarted(channelName: raid.user_name)
+        default:
+            break
         }
-    }
-
-    func removeHypeTrain() {
-        hypeTrain.level = nil
-        hypeTrain.progress = nil
-        hypeTrain.status = noValue
-        stopHypeTrainTimer()
-    }
-
-    func updateTwitchRaid() {
-        guard let progress = raid.progress else {
-            return
-        }
-        if progress.progress < progress.goal {
-            progress.progress += 1
-        }
-    }
-
-    func removeRaid() {
-        raid.message = nil
-        raid.progress = nil
     }
 
     func twitchEventSubUnauthorized() {
@@ -672,57 +732,6 @@ extension Model: TwitchEventSubDelegate {
     }
 
     func twitchEventSubNotification(message _: String) {}
-
-    private func updateHypeTrainStatus(level: Int, progress: Int, goal: Int) {
-        let percentage = Int(100 * Float(progress) / Float(goal))
-        hypeTrain.status = "LVL \(level), \(percentage)%"
-    }
-
-    private func startHypeTrainTimer(timeout: Double) {
-        hypeTrain.timer.startSingleShot(timeout: timeout) { [weak self] in
-            self?.removeHypeTrain()
-        }
-    }
-
-    private func stopHypeTrainTimer() {
-        hypeTrain.timer.stop()
-    }
-
-    private func appendTwitchChatAlertMessage(
-        user: String,
-        text: String,
-        title: String,
-        color: Color,
-        image: String? = nil,
-        kind: ChatHighlightKind? = nil,
-        bits: String? = nil
-    ) {
-        guard let twitchChat else {
-            return
-        }
-        appendChatMessage(platform: .twitch,
-                          messageId: nil,
-                          displayName: user,
-                          user: user,
-                          userId: nil,
-                          userColor: nil,
-                          userBadges: [],
-                          segments: twitchChat.createSegmentsNoTwitchEmotes(text: text, bits: bits),
-                          timestamp: statusOther.digitalClock,
-                          timestampTime: .now,
-                          isAction: false,
-                          isSubscriber: false,
-                          isModerator: false,
-                          isOwner: false,
-                          bits: nil,
-                          highlight: .init(
-                              kind: kind ?? .redemption,
-                              barColor: color,
-                              image: image ?? "medal",
-                              titleSegments: [ChatPostSegment(id: 0, text: title)]
-                          ),
-                          live: true)
-    }
 }
 
 extension Model: TwitchChatDelegate {
