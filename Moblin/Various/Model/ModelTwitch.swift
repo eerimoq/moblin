@@ -118,6 +118,18 @@ extension Model {
         createTwitchApi(stream: stream).searchChannel(channelName: channelName, onComplete: onComplete)
     }
 
+    func searchTwitchChannels(
+        stream: SettingsStream,
+        filter: String,
+        onComplete: @escaping ([TwitchApiChannel]?) -> Void
+    ) {
+        twitchSearchChannelsTimer.startSingleShot(timeout: 0.5) {
+            self.createTwitchApi(stream: stream).searchChannels(filter: filter,
+                                                                liveOnly: true,
+                                                                onComplete: onComplete)
+        }
+    }
+
     func getTwitchChannelInformation(
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void

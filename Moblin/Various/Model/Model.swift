@@ -524,6 +524,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var kickAuthOnComplete: ((_ accessToken: String) -> Void)?
     var twitchPlatformStatus: PlatformStatus = .unknown
     let twitchSearchCategoriesTimer = SimpleTimer(queue: .main)
+    let twitchSearchChannelsTimer = SimpleTimer(queue: .main)
     let kickSearchCategoriesTimer = SimpleTimer(queue: .main)
     var drawOnStreamSize: CGSize = .zero
     var webBrowser: WKWebView?
