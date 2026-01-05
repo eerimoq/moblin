@@ -69,3 +69,10 @@ enum NetworkResponse<T> {
 }
 
 typealias OperationResult = NetworkResponse<Data>
+
+func makeUrl(_ path: String, _ parameters: [(String, String)]) -> String {
+    var components = URLComponents()
+    components.path = path
+    components.queryItems = parameters.map { URLQueryItem(name: $0, value: $1) }
+    return components.string ?? ""
+}
