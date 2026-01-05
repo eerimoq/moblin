@@ -586,11 +586,11 @@ struct MainView: View {
             .sheet(isPresented: $model.presentingModeration) {
                 QuickButtonChatModerationView(model: model, presentingModeration: $model.presentingModeration)
             }
-            .sheet(isPresented: $model.showingPredefinedMessages) {
+            .sheet(isPresented: $model.presentingPredefinedMessages) {
                 PredefinedMessagesView(model: model,
                                        chat: model.database.chat,
                                        filter: model.database.chat.predefinedMessagesFilter,
-                                       presentingPredefinedMessages: $model.showingPredefinedMessages)
+                                       presentingPredefinedMessages: $model.presentingPredefinedMessages)
             }
             .toast(isPresenting: $toast.showingToast, duration: 5) {
                 toast.toast

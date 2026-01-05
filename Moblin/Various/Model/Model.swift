@@ -360,7 +360,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showTwitchAuth = false
     @Published var showModerationAuth = false
     @Published var presentingModeration = false
-    @Published var showingPredefinedMessages: Bool = false
+    @Published var presentingPredefinedMessages: Bool = false
     @Published var showDrawOnStream = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false

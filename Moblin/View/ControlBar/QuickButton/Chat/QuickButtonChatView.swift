@@ -788,7 +788,7 @@ private struct ControlMenuButtonView: View {
                 }
                 Button {
                     presentingMenu = false
-                    model.showingPredefinedMessages = true
+                    model.presentingPredefinedMessages = true
                 } label: {
                     IconAndTextLocalizedView(image: "list.bullet", text: "Predefined messages")
                         .padding(11)

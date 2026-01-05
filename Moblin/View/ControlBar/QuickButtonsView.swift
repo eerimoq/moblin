@@ -707,7 +707,7 @@ struct QuickButtonsInnerView: View {
                                          state: state,
                                          buttonSize: size)
                         {
-                            model.showingPredefinedMessages = true
+                            model.presentingPredefinedMessages = true
                         }
                     case .skipCurrentTts:
                         QuickButtonImage(model: model,
