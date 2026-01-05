@@ -24,7 +24,6 @@ struct KickLivestream: Codable {
     // periphery:ignore
     let id: Int
     let viewers: Int
-    // periphery:ignore
     let session_title: String?
     let categories: [KickLivestreamCategory]?
 }
@@ -80,6 +79,7 @@ struct KickFollowedChannelsResponse: Codable {
 
 struct KickHostChannelResponse: Codable {
     let success: Bool
+    // periphery:ignore
     let error: String?
 }
 

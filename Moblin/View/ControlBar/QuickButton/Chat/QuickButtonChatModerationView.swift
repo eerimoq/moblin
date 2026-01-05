@@ -615,6 +615,28 @@ private struct KickHostChannelView: View {
     }
 }
 
+private struct KickProfilePictureView: View {
+    let url: String?
+
+    var body: some View {
+        if let profilePic = url, let imageUrl = URL(string: profilePic) {
+            AsyncImage(url: imageUrl) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Color.gray.opacity(0.3)
+            }
+            .frame(width: 40, height: 40)
+            .clipShape(Circle())
+        } else {
+            Circle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(width: 40, height: 40)
+        }
+    }
+}
+
 private struct KickFollowedChannelRowView: View {
     let channel: KickFollowedChannel
     let action: (String, @escaping (OperationResult) -> Void) -> Void
@@ -622,21 +644,7 @@ private struct KickFollowedChannelRowView: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 10) {
-            if let profilePic = channel.profile_picture, let url = URL(string: profilePic) {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Color.gray.opacity(0.3)
-                }
-                .frame(width: 40, height: 40)
-                .clipShape(Circle())
-            } else {
-                Circle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 40, height: 40)
-            }
+            KickProfilePictureView(url: channel.profile_picture)
             VStack(alignment: .leading, spacing: 2) {
                 Text(channel.user_username)
                 if let title = channel.session_title, !title.isEmpty {
@@ -680,21 +688,7 @@ private struct KickSearchedChannelRowView: View {
     var body: some View {
         HStack(alignment: .center, spacing: 10) {
             ZStack(alignment: .bottomTrailing) {
-                if let profilePic = channel.user?.profile_pic, let url = URL(string: profilePic) {
-                    AsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        Color.gray.opacity(0.3)
-                    }
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
-                } else {
-                    Circle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 40, height: 40)
-                }
+                KickProfilePictureView(url: channel.user?.profile_pic)
                 Circle()
                     .fill(channel.livestream != nil ? .green : .gray)
                     .frame(width: 12, height: 12)
