@@ -37,6 +37,15 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case dewarp360
     case anamorphicLens
 
+    init(from decoder: Decoder) throws {
+        do {
+            self = try SettingsVideoEffectType(rawValue: decoder.singleValueContainer()
+                .decode(RawValue.self)) ?? .shape
+        } catch {
+            self = .shape
+        }
+    }
+
     func toString() -> String {
         switch self {
         case .shape:
@@ -311,6 +320,11 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
     case rounded = "Rounded"
     case monospaced = "Monospaced"
 
+    init(from decoder: Decoder) throws {
+        self = try SettingsFontDesign(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .default
+    }
+
     func toString() -> String {
         switch self {
         case .default:
@@ -343,6 +357,11 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
     case light = "Light"
     case bold = "Bold"
 
+    init(from decoder: Decoder) throws {
+        self = try SettingsFontWeight(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .regular
+    }
+
     func toString() -> String {
         switch self {
         case .regular:
@@ -371,6 +390,11 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     case trailing = "Trailing"
     case center = "Center"
 
+    init(from decoder: Decoder) throws {
+        self = try SettingsHorizontalAlignment(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .leading
+    }
+
     func toString() -> String {
         switch self {
         case .leading:
@@ -397,6 +421,11 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
 enum SettingsVerticalAlignment: String, Codable, CaseIterable {
     case top = "Top"
     case bottom = "Bottom"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsVerticalAlignment(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .top
+    }
 }
 
 enum SettingsAlignment: String, Codable, CaseIterable {
@@ -404,6 +433,11 @@ enum SettingsAlignment: String, Codable, CaseIterable {
     case topRight = "TopRight"
     case bottomLeft = "BottomLeft"
     case bottomRight = "BottomRight"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsAlignment(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
+            .topLeft
+    }
 
     func isLeft() -> Bool {
         return self == .topLeft || self == .bottomLeft
@@ -800,6 +834,11 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
     case scene = "Scene"
     case face = "Face"
 
+    init(from decoder: Decoder) throws {
+        self = try SettingsWidgetAlertPositionType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .scene
+    }
+
     func toString() -> String {
         switch self {
         case .scene:
@@ -820,6 +859,12 @@ class SettingsWidgetAlertFacePosition: Codable {
 enum SettingsWidgetAlertsAlertMediaType: String, CaseIterable, Codable {
     case gifAndSound
     case video
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsWidgetAlertsAlertMediaType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .gifAndSound
+    }
 
     func toString() -> LocalizedStringKey {
         switch self {
@@ -1146,6 +1191,12 @@ class SettingsWidgetAlertsKick: Codable {
 
 enum SettingsWidgetAlertsChatBotCommandImageType: String, Codable, CaseIterable {
     case file = "File"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsWidgetAlertsChatBotCommandImageType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .file
+    }
 }
 
 class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Sendable {
@@ -1375,6 +1426,12 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
     case blur = "Blur"
     case freeze = "Freeze"
     case blurAndZoom = "Blur & zoom"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsSceneSwitchTransition(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .blur
+    }
 
     func toString() -> String {
         switch self {
@@ -2293,6 +2350,12 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
     case generic = "Generic"
     case padel = "Padel"
 
+    init(from decoder: Decoder) throws {
+        self = try SettingsWidgetScoreboardType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .padel
+    }
+
     func toString() -> String {
         switch self {
         case .generic:
@@ -2301,6 +2364,12 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
             return String(localized: "Padel")
         }
     }
+}
+
+enum SettingsWidgetScoreboardLayout: String, Codable, CaseIterable {
+    case stacked = "Stacked"
+    case sideBySide = "Side by side"
+    //case scoreboard = "Scoreboard"
 }
 
 class SettingsWidgetScoreboardPlayer: Codable, Identifiable, ObservableObject, Named {
@@ -2336,6 +2405,12 @@ class SettingsWidgetScoreboardScore: Codable, Identifiable {
 enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
     case doubles = "Double"
     case singles = "Single"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsWidgetPadelScoreboardGameType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ??
+            .doubles
+    }
 
     func toString() -> String {
         switch self {
@@ -2509,13 +2584,46 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
     var padel: SettingsWidgetPadelScoreboard = .init()
     var generic: SettingsWidgetGenericScoreboard = .init()
 
+    @Published var layout: SettingsWidgetScoreboardLayout = .stacked
+    
+    //stacked settings
+    @Published var stackedFontSize: Float = 20
+    @Published var stackedWidth: Float = 300
+    @Published var stackedRowHeight: Float = 30
+    @Published var stackedIsBold: Bool = true
+    @Published var stackedIsItalic: Bool = false
+    @Published var showStackedHeader: Bool = true
+    @Published var showStackedFooter: Bool = true
+
+    //side by side settings
+    @Published var sbsFontSize: Float = 20
+    @Published var sbsWidth: Float = 500
+    @Published var sbsRowHeight: Float = 30
+    @Published var sbsIsBold: Bool = true
+    @Published var sbsIsItalic: Bool = false
+    @Published var showSbsTitle: Bool = true
+    
     enum CodingKeys: CodingKey {
         case type,
              padel,
              generic,
              textColor,
              primaryBackgroundColor,
-             secondaryBackgroundColor
+             secondaryBackgroundColor,
+             layout,
+             stackedFontSize,
+             stackedWidth,
+             stackedRowHeight,
+             stackedIsBold,
+             stackedIsItalic,
+             showStackedHeader,
+             showStackedFooter,
+             sbsFontSize,
+             sbsWidth,
+             sbsRowHeight,
+             sbsIsBold,
+             sbsIsItalic,
+             showSbsTitle
     }
 
     init() {
@@ -2524,12 +2632,28 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.type, type)
-        try container.encode(.textColor, textColor)
-        try container.encode(.primaryBackgroundColor, primaryBackgroundColor)
-        try container.encode(.secondaryBackgroundColor, secondaryBackgroundColor)
-        try container.encode(.padel, padel)
-        try container.encode(.generic, generic)
+        try container.encode(type, forKey: .type)
+        try container.encode(textColor, forKey: .textColor)
+        try container.encode(primaryBackgroundColor, forKey: .primaryBackgroundColor)
+        try container.encode(secondaryBackgroundColor, forKey: .secondaryBackgroundColor)
+        try container.encode(padel, forKey: .padel)
+        try container.encode(generic, forKey: .generic)
+        try container.encode(layout, forKey: .layout)
+        
+        try container.encode(stackedFontSize, forKey: .stackedFontSize)
+        try container.encode(stackedWidth, forKey: .stackedWidth)
+        try container.encode(stackedRowHeight, forKey: .stackedRowHeight)
+        try container.encode(stackedIsBold, forKey: .stackedIsBold)
+        try container.encode(stackedIsItalic, forKey: .stackedIsItalic)
+        try container.encode(showStackedHeader, forKey: .showStackedHeader)
+        try container.encode(showStackedFooter, forKey: .showStackedFooter)
+        
+        try container.encode(sbsFontSize, forKey: .sbsFontSize)
+        try container.encode(sbsWidth, forKey: .sbsWidth)
+        try container.encode(sbsRowHeight, forKey: .sbsRowHeight)
+        try container.encode(sbsIsBold, forKey: .sbsIsBold)
+        try container.encode(sbsIsItalic, forKey: .sbsIsItalic)
+        try container.encode(showSbsTitle, forKey: .showSbsTitle)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2544,6 +2668,24 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
                                                     Self.baseSecondaryBackgroundColor)
         padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
         generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
+        
+        layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
+        
+        stackedFontSize = container.decode(.stackedFontSize, Float.self, 20)
+        stackedWidth = container.decode(.stackedWidth, Float.self, 300)
+        stackedRowHeight = container.decode(.stackedRowHeight, Float.self, 30)
+        stackedIsBold = container.decode(.stackedIsBold, Bool.self, true)
+        stackedIsItalic = container.decode(.stackedIsItalic, Bool.self, false)
+        showStackedHeader = container.decode(.showStackedHeader, Bool.self, true)
+        showStackedFooter = container.decode(.showStackedFooter, Bool.self, true)
+
+        sbsFontSize = container.decode(.sbsFontSize, Float.self, 20)
+        sbsWidth = container.decode(.sbsWidth, Float.self, 400)
+        sbsRowHeight = container.decode(.sbsRowHeight, Float.self, 30)
+        sbsIsBold = container.decode(.sbsIsBold, Bool.self, true)
+        sbsIsItalic = container.decode(.sbsIsItalic, Bool.self, false)
+        showSbsTitle = container.decode(.showSbsTitle, Bool.self, true)
+        
         loadColors()
     }
 
@@ -2558,6 +2700,22 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
         textColorColor = textColor.color()
         primaryBackgroundColorColor = primaryBackgroundColor.color()
         secondaryBackgroundColorColor = secondaryBackgroundColor.color()
+    }
+}
+
+enum SettingsWidgetVideoEffectType: String, Codable, CaseIterable {
+    case movie = "Movie"
+    case grayScale = "Gray scale"
+    case sepia = "Sepia"
+    case bloom = "Bloom"
+    case random = "Random"
+    case triple = "Triple"
+    case noiseReduction = "Noise reduction"
+    case pixellate = "Pixellate"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsWidgetVideoEffectType(rawValue: decoder.singleValueContainer()
+            .decode(RawValue.self)) ?? .movie
     }
 }
 
@@ -2577,6 +2735,10 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case qrCode = "QR code"
     case scoreboard = "Scoreboard"
     case crop = "Crop"
+
+    init(from decoder: Decoder) throws {
+        self = try SettingsWidgetType(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .text
+    }
 
     func toString() -> String {
         switch self {

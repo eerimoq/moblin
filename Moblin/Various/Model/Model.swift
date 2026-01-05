@@ -15,7 +15,6 @@ import SwiftUI
 import TrueTime
 import WatchConnectivity
 import WebKit
-import WiFiAware
 
 private enum BackgroundRunLevel {
     // Streaming and recording
@@ -35,7 +34,7 @@ enum ShowingPanel {
     case obs
     case widgets
     case recordings
-    case store
+    case cosmetics
     case chat
     case djiDevices
     case sceneSettings
@@ -117,29 +116,11 @@ class StreamUptimeProvider: ObservableObject {
     @Published var uptime = noValue
 }
 
-class ProgressBar: ObservableObject {
-    @Published var progress: Float = 0
-    @Published var goal: Float = 1
-}
-
 class HypeTrain: ObservableObject {
     @Published var status = noValue
     @Published var level: Int?
-    @Published var progress: ProgressBar?
-    var timer = SimpleTimer(queue: .main)
-}
-
-enum RaidState {
-    case idle
-    case ongoing
-    case cancelling
-    case completed
-}
-
-class Raid: ObservableObject {
-    @Published var state: RaidState = .idle
-    @Published var message: String = ""
-    @Published var progress = ProgressBar()
+    @Published var progress: Int?
+    @Published var goal: Int?
     var timer = SimpleTimer(queue: .main)
 }
 
@@ -264,7 +245,7 @@ class StreamOverlay: ObservableObject {
     @Published var isTorchOn = false
 }
 
-class Store: ObservableObject {
+class Cosmetics: ObservableObject {
     @Published var myIcons: [Icon] = []
     @Published var iconsInStore: [Icon] = []
     @Published var iconImage: String = plainIcon.id
@@ -304,9 +285,6 @@ class GoProState: ObservableObject {
 
 class QuickButtons: ObservableObject {
     @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
-    @Published var selectedButtonType: SettingsQuickButtonType?
-    var page = 1
-    @Published var activePage: Int? = 1
 }
 
 class Snapshot: ObservableObject {
@@ -362,6 +340,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var presentingModeration = false
     @Published var showingPredefinedMessages: Bool = false
     @Published var showDrawOnStream = false
+    @Published var showFace = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
     @Published var showNavigation = false
@@ -371,6 +350,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var sceneSettingsPanelSceneId = 1
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
+    @Published var externalScoreboard: SBMatchConfig?
+    var activeBufferedVideoIds: Set<UUID> = []
 
     var streamState = StreamState.disconnected {
         didSet {
@@ -384,9 +365,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    var activeBufferedVideoIds: Set<UUID> = []
-    var wiFiAwareSenderTask: Task<Void, Error>?
-    var wiFiAwareReceiverTask: Task<Void, Error>?
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
     let orientation = Orientation()
@@ -402,7 +380,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let debugOverlay = DebugOverlayProvider()
     let stealthMode = StealthMode()
     let drawOnStream = DrawOnStream()
-    let store = Store()
+    let cosmetics = Cosmetics()
     let show = Show()
     let streamOverlay = StreamOverlay()
     let sceneSelector = SceneSelector()
@@ -413,6 +391,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let statusTopRight = StatusTopRight()
     let battery = Battery()
     let remoteControl = RemoteControl()
+    let sbRemoteControlServer = SBRemoteControlServer()
     let createStreamWizard = CreateStreamWizard()
     let createWidgetWizard = CreateWidgetWizard()
     let zoom = Zoom()
@@ -420,7 +399,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let mediaPlayerPlayer = MediaPlayerPlayer()
     let media = Media()
     let hypeTrain = HypeTrain()
-    let raid = Raid()
     let moblink = Moblink()
     let ingests = Ingests()
     let bitrate = Bitrate()
@@ -497,6 +475,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var alertMediaStorage = AlertMediaStorage()
     var vTuberStorage = VTuberStorage()
     var pngTuberStorage = PngTuberStorage()
+    var controlBarPage = 1
     var reconnectTimer = SimpleTimer(queue: .main)
     var logId = 1
     private var serversSpeed: Int64 = 0
@@ -521,10 +500,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var speechToText: SpeechToText?
     let twitchAuth = TwitchAuth()
     var twitchAuthOnComplete: ((_ accessToken: String) -> Void)?
-    var kickAuthOnComplete: ((_ accessToken: String) -> Void)?
     var twitchPlatformStatus: PlatformStatus = .unknown
     let twitchSearchCategoriesTimer = SimpleTimer(queue: .main)
-    let twitchSearchChannelsTimer = SimpleTimer(queue: .main)
     let kickSearchCategoriesTimer = SimpleTimer(queue: .main)
     var drawOnStreamSize: CGSize = .zero
     var webBrowser: WKWebView?
@@ -629,7 +606,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pollEffect: PollEffect?
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?
-    var sparkleEffect: AlertsEffect?
+    var starEffect: AlertsEffect?
     var replayEffect: ReplayEffect?
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
@@ -662,6 +639,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             AppDelegate.orientationLock = .landscape
         }
+        setupSBRemoteControlServer() //CST
     }
 
     func updateIsPortrait() {
@@ -683,18 +661,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
     }
 
-    func updateAdaptiveBitrateSrt(srt: SettingsStreamSrt) {
-        switch srt.adaptiveBitrate.algorithm {
+    func updateAdaptiveBitrateSrt(stream: SettingsStream) {
+        switch stream.srt.adaptiveBitrate.algorithm {
         case .fastIrl:
             var settings = adaptiveBitrateFastSettings
-            settings.packetsInFlight = Int64(srt.adaptiveBitrate.fastIrlSettings.packetsInFlight)
+            settings.packetsInFlight = Int64(stream.srt.adaptiveBitrate.fastIrlSettings.packetsInFlight)
             settings
-                .minimumBitrate = Int64(srt.adaptiveBitrate.fastIrlSettings.minimumBitrate * 1000)
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.fastIrlSettings.minimumBitrate * 1000)
             media.setAdaptiveBitrateSettings(settings: settings)
         case .slowIrl:
             media.setAdaptiveBitrateSettings(settings: adaptiveBitrateSlowSettings)
         case .customIrl:
-            let customSettings = srt.adaptiveBitrate.customSettings
+            let customSettings = stream.srt.adaptiveBitrate.customSettings
             media.setAdaptiveBitrateSettings(settings: AdaptiveBitrateSettings(
                 packetsInFlight: Int64(customSettings.packetsInFlight),
                 rttDiffHighFactor: Double(customSettings.rttDiffHighDecreaseFactor),
@@ -706,7 +684,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .belabox:
             var settings = adaptiveBitrateBelaboxSettings
             settings
-                .minimumBitrate = Int64(srt.adaptiveBitrate.belaboxSettings.minimumBitrate * 1000)
+                .minimumBitrate = Int64(stream.srt.adaptiveBitrate.belaboxSettings.minimumBitrate * 1000)
             media.setAdaptiveBitrateSettings(settings: settings)
         }
     }
@@ -745,9 +723,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleShowingPanel(type: SettingsQuickButtonType?, panel: ShowingPanel) {
-        if showingPanel == .quickButtonSettings {
-            quickButtons.selectedButtonType = nil
-        }
         if showingPanel == panel {
             showingPanel = .none
         } else {
@@ -836,7 +811,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func makeBuyIconsToastIfNeeded() -> Bool {
-        if store.hasBoughtSomething {
+        if cosmetics.hasBoughtSomething {
             return false
         }
         if enterForegroundCount < 100 {
@@ -846,10 +821,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return false
         }
         makeToast(title: randomBuyIconsTitle(),
-                  subTitle: String(localized: "Tap here to open the store."))
+                  subTitle: String(localized: "Tap here to open the shop."))
         {
             self.toggleShowingPanel(type: nil, panel: .none)
-            self.toggleShowingPanel(type: nil, panel: .store)
+            self.toggleShowingPanel(type: nil, panel: .cosmetics)
         }
         return true
     }
@@ -887,10 +862,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getQuickButtonPairs(page: Int) -> [QuickButtonPair] {
-        guard page > 0, page <= quickButtons.pairs.count else {
-            return []
-        }
-        return quickButtons.pairs[page - 1]
+        return quickButtons.pairs[page]
     }
 
     func getQuickButtonState(type: SettingsQuickButtonType) -> ButtonState? {
@@ -1007,7 +979,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                                selector: #selector(orientationDidChange),
                                                name: UIDevice.orientationDidChangeNotification,
                                                object: nil)
-        store.iconImage = database.iconImage
+        cosmetics.iconImage = database.iconImage
         Task {
             appStoreUpdateListenerTask = listenForAppStoreTransactions()
             await getProductsFromAppStore()
@@ -1111,10 +1083,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         MoblinShortcuts.updateAppShortcutParameters()
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
-        updateQuickButtonStates()
+        updateFaceFilterButtonState()
         setQuickButtonState(type: .blurFaces, isOn: database.debug.face.showBlur)
         setQuickButtonState(type: .privacy, isOn: database.debug.face.showBlurBackground)
-        setQuickButtonState(type: .moblinInMouth, isOn: database.debug.face.showMoblin)
         updateLutsButtonState()
         updateAutoSceneSwitcherButtonState()
         reloadNtpClient()
@@ -1133,9 +1104,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         loadStealthModeImage()
         updateKickChannelInfoIfNeeded()
         reloadSpeechToText()
-        if #available(iOS 26, *), false {
-            wiFiAwareUpdated()
-        }
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
@@ -1290,6 +1258,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         faceEffect.setSettings(settings: database.debug.face.toEffectSettings())
     }
 
+    func updateFaceFilterButtonState() {
+        var isOn = false
+        if showFace, !showDrawOnStream {
+            isOn = true
+        }
+        if database.debug.face.showBlur {
+            isOn = true
+        }
+        if database.debug.face.showBlurBackground {
+            isOn = true
+        }
+        if database.debug.face.showMoblin {
+            isOn = true
+        }
+        setQuickButtonState(type: .face, isOn: isOn)
+        updateQuickButtonStates()
+    }
+
     func updateImageButtonState() {
         var isOn = streamOverlay.showingCamera
         if camera.bias != 0.0 {
@@ -1349,7 +1335,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopPeriodicTimers(keepChatRunning: keepChatRunning,
                                keepBatteryLevelRunning: keepBatteryLevelRunning)
         case .off:
-            storeSettings()
+            store()
             replaysStorage.store()
             stopAll()
         }
@@ -1414,7 +1400,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             suspendRecording()
         }
         updateSettingsFromTextWidgets()
-        storeSettings()
+        store()
         replaysStorage.store()
         if isMac() {
             stopAll()
@@ -1538,119 +1524,105 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func startPeriodicTimers() {
-        periodicTimer20ms.startPeriodic(interval: 0.02, handler: handle20msTimer)
-        periodicTimer200ms.startPeriodic(interval: 0.2, handler: handle200msTimer)
-        periodicTimer1s.startPeriodic(interval: 1, handler: handle1sTimer)
-        periodicTimer3s.startPeriodic(interval: 3, handler: handle3sTimer)
-        periodicTimer5s.startPeriodic(interval: 5, handler: handle5sTimer)
-        periodicTimer10s.startPeriodic(interval: 10, handler: handle10sTimer)
-        periodicTimerBatteryLevel.startPeriodic(interval: 30, handler: handle30sTimer)
-    }
-
-    private func handle20msTimer() {
-        updateAdaptiveBitrate()
-    }
-
-    private func handle200msTimer() {
-        let monotonicNow = ContinuousClock.now
-        updateAudioLevel()
-        updateChat()
-        executeChatBotMessage()
-        if isWatchLocal() {
-            trySendNextChatPostToWatch()
+        periodicTimer20ms.startPeriodic(interval: 0.02) {
+            self.updateAdaptiveBitrate()
         }
-        if let lastAttachCompletedTime = lastAttachCompletedTime,
-           lastAttachCompletedTime.duration(to: monotonicNow) > .seconds(0.5)
-        {
-            updateTorch()
-            self.lastAttachCompletedTime = nil
+        periodicTimer200ms.startPeriodic(interval: 0.2) {
+            let monotonicNow = ContinuousClock.now
+            self.updateAudioLevel()
+            self.updateChat()
+            self.executeChatBotMessage()
+            if self.isWatchLocal() {
+                self.trySendNextChatPostToWatch()
+            }
+            if let lastAttachCompletedTime = self.lastAttachCompletedTime,
+               lastAttachCompletedTime.duration(to: monotonicNow) > .seconds(0.5)
+            {
+                self.updateTorch()
+                self.lastAttachCompletedTime = nil
+            }
+            if let relaxedBitrateStartTime = self.relaxedBitrateStartTime,
+               relaxedBitrateStartTime.duration(to: monotonicNow) > .seconds(3)
+            {
+                self.relaxedBitrate = false
+                self.relaxedBitrateStartTime = nil
+            }
+            self.speechToText?.tick(now: monotonicNow)
         }
-        if let relaxedBitrateStartTime = relaxedBitrateStartTime,
-           relaxedBitrateStartTime.duration(to: monotonicNow) > .seconds(3)
-        {
-            relaxedBitrate = false
-            self.relaxedBitrateStartTime = nil
+        periodicTimer1s.startPeriodic(interval: 1) {
+            let now = Date()
+            let monotonicNow = ContinuousClock.now
+            self.updateStreamUptime(now: monotonicNow)
+            self.updateRecordingLength(now: now)
+            self.updateDigitalClock(now: now)
+            self.media.updateSrtTransportBitrate()
+            self.updateSpeed(now: monotonicNow)
+            self.updateIngestsSpeed()
+            self.updateBondingStatistics()
+            self.removeOldChatMessages(now: monotonicNow)
+            self.updateLocation()
+            self.updateObsSourceScreenshot()
+            self.updateObsAudioVolume()
+            self.updateBrowserWidgetStatus()
+            self.logStatus()
+            self.updateFailedVideoEffects()
+            self.updateDebugOverlay()
+            self.updateDistance()
+            self.updateSlope()
+            self.updateAverageSpeed(now: monotonicNow)
+            self.updateTextEffects(now: now, timestamp: monotonicNow)
+            self.updateMapEffects()
+            self.updateScoreboardEffects()
+            self.updatePoll()
+            self.updateObsSceneSwitcher(now: monotonicNow)
+            self.weatherManager.setLocation(location: self.latestKnownLocation)
+            self.geographyManager.setLocation(location: self.latestKnownLocation)
+            self.updateBitrateStatus()
+            self.updateAdsRemainingTimer(now: now)
+            if self.database.show.systemMonitor {
+                self.resourceUsage.update(now: monotonicNow)
+                self.systemMonitor.cpu = self.resourceUsage.getCpuUsage()
+                self.systemMonitor.ram = self.resourceUsage.getMemoryUsage()
+            }
+            self.updateMoblinkStatus()
+            self.updateStatusEventsText()
+            self.updateStatusChatText()
+            self.updateAutoSceneSwitcher(now: monotonicNow)
+            self.sendPeriodicRemoteControlStreamerStatus()
+            self.speechToTextProcess()
+            self.broadcastStreamStats() //to broadcast stream stats to remote control interface
         }
-        speechToText?.tick(now: monotonicNow)
-    }
-
-    private func handle1sTimer() {
-        let now = Date()
-        let monotonicNow = ContinuousClock.now
-        updateStreamUptime(now: monotonicNow)
-        updateRecordingLength(now: now)
-        updateDigitalClock(now: now)
-        media.updateSrtTransportBitrate()
-        updateSpeed(now: monotonicNow)
-        updateIngestsSpeed()
-        updateBondingStatistics()
-        removeOldChatMessages(now: monotonicNow)
-        updateLocation()
-        updateObsSourceScreenshot()
-        updateObsAudioVolume()
-        updateBrowserWidgetStatus()
-        logStatus()
-        updateFailedVideoEffects()
-        updateDebugOverlay()
-        updateDistance()
-        updateSlope()
-        updateAverageSpeed(now: monotonicNow)
-        updateTextEffects(now: now, timestamp: monotonicNow)
-        updateMapEffects()
-        updateScoreboardEffects()
-        updatePoll()
-        updateObsSceneSwitcher(now: monotonicNow)
-        weatherManager.setLocation(location: latestKnownLocation)
-        geographyManager.setLocation(location: latestKnownLocation)
-        updateBitrateStatus()
-        updateAdsRemainingTimer(now: now)
-        if database.show.systemMonitor {
-            resourceUsage.update(now: monotonicNow)
-            systemMonitor.cpu = resourceUsage.getCpuUsage()
-            systemMonitor.ram = resourceUsage.getMemoryUsage()
+        periodicTimer3s.startPeriodic(interval: 3) {
+            self.teslaGetDriveState()
         }
-        updateMoblinkStatus()
-        updateStatusEventsText()
-        updateStatusChatText()
-        updateAutoSceneSwitcher(now: monotonicNow)
-        sendPeriodicRemoteControlStreamerStatus()
-        speechToTextProcess()
-        updateTwitchRaid()
-    }
-
-    private func handle3sTimer() {
-        teslaGetDriveState()
-    }
-
-    private func handle5sTimer() {
-        updateRemoteControlAssistantStatus()
-        if isWatchLocal() {
-            sendThermalStateToWatch(thermalState: statusOther.thermalState)
+        periodicTimer5s.startPeriodic(interval: 5) {
+            self.updateRemoteControlAssistantStatus()
+            if self.isWatchLocal() {
+                self.sendThermalStateToWatch(thermalState: self.statusOther.thermalState)
+            }
+            self.teslaGetMediaState()
         }
-        teslaGetMediaState()
-    }
-
-    private func handle10sTimer() {
-        let monotonicNow = ContinuousClock.now
-        media.logStatistics()
-        updateObsStatus()
-        updateRemoteControlStatus()
-        if stream.enabled {
-            media.updateVideoStreamBitrate(bitrate: stream.bitrate)
+        periodicTimer10s.startPeriodic(interval: 10) {
+            let monotonicNow = ContinuousClock.now
+            self.media.logStatistics()
+            self.updateObsStatus()
+            self.updateRemoteControlStatus()
+            if self.stream.enabled {
+                self.media.updateVideoStreamBitrate(bitrate: self.stream.bitrate)
+            }
+            self.updateViewers()
+            self.updateCurrentSsid()
+            self.teslaGetChargeState()
+            self.moblink.streamer?.updateStatus()
+            self.updateTwitchStream(monotonicNow: monotonicNow)
+            self.updateAvailableDiskSpace()
+            self.tryToFetchYouTubeVideoId()
+            self.keepSpeakerAlive(now: monotonicNow)
         }
-        updateViewers()
-        updateCurrentSsid()
-        teslaGetChargeState()
-        moblink.streamer?.updateStatus()
-        updateTwitchStream(monotonicNow: monotonicNow)
-        updateAvailableDiskSpace()
-        tryToFetchYouTubeVideoId()
-        keepSpeakerAlive(now: monotonicNow)
-    }
-
-    private func handle30sTimer() {
-        updateDjiDevicesStatus()
-        updateBatteryLevel()
+        periodicTimerBatteryLevel.startPeriodic(interval: 30) {
+            self.updateDjiDevicesStatus()
+            self.updateBatteryLevel()
+        }
     }
 
     func stopPeriodicTimers(keepChatRunning: Bool, keepBatteryLevelRunning: Bool) {
@@ -1902,7 +1874,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         pollEffect?.updateText(text: votes.joined(separator: ", "))
     }
 
-    func storeSettings() {
+    func store() {
         settings.store()
     }
 
@@ -2003,7 +1975,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         quickButtonSettingsButton = getQuickButton(type: type)
         toggleShowingPanel(type: nil, panel: .none)
         toggleShowingPanel(type: nil, panel: .quickButtonSettings)
-        quickButtons.selectedButtonType = type
     }
 
     func toggleQuickButton(type: SettingsQuickButtonType) {
@@ -3068,43 +3039,25 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.debug.face.showBlur.toggle()
         toggleFilterQuickButton(type: .blurFaces)
         updateFaceFilterSettings()
+        updateFaceFilterButtonState()
     }
 
     func togglePrivacy() {
         database.debug.face.showBlurBackground.toggle()
         toggleFilterQuickButton(type: .privacy)
         updateFaceFilterSettings()
-    }
-
-    func toggleMoblinInMouth() {
-        database.debug.face.showMoblin.toggle()
-        toggleFilterQuickButton(type: .moblinInMouth)
-        updateFaceFilterSettings()
+        updateFaceFilterButtonState()
     }
 
     func triggerGlasses() {
-        triggerQuickButtonEffect(type: .glasses, effect: glassesEffect, duration: 5.8)
-    }
-
-    func triggerSparkle() {
-        triggerQuickButtonEffect(type: .sparkle, effect: sparkleEffect, duration: 1.3)
-    }
-
-    private func triggerQuickButtonEffect(type: SettingsQuickButtonType,
-                                          effect: AlertsEffect?,
-                                          duration: Double)
-    {
-        guard getQuickButton(type: type)?.isOn == false else {
-            return
-        }
-        setQuickButtonState(type: type, isOn: true)
-        updateQuickButtonStates()
         DispatchQueue.main.async {
-            effect?.play(alert: .quickButton)
+            self.glassesEffect?.play(alert: .quickButton)
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-            self.setQuickButtonState(type: type, isOn: false)
-            self.updateQuickButtonStates()
+    }
+
+    func triggerStar() {
+        DispatchQueue.main.async {
+            self.starEffect?.play(alert: .quickButton)
         }
     }
 }

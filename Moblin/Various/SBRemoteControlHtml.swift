@@ -1,0 +1,280 @@
+import Foundation
+
+// --- THE REMOTE CONTROL UI (Port 8080 /) ---
+let SB_REMOTE_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Moblin Scoreboard Remote</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .match-badge-shadow { box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.3); }
+        body { position: fixed; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; background-color: #09090b; }
+        input[type="text"] { border: none; outline: none; }
+        .active-serve { background-color: #fafafa !important; color: #18181b !important; border-color: #fafafa !important; }
+        input { font-size: 16px !important; }
+        .stats-grid div { display: flex; flex-direction: column; padding: 4px; border-bottom: 1px solid #27272a; }
+        .stats-label { font-size: 8px; color: #71717a; text-transform: uppercase; font-weight: 800; }
+        .stats-value { font-size: 11px; font-family: monospace; color: #e4e4e7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    </style>
+</head>
+<body class="text-[#fafafa] font-sans">
+    <div class="h-full flex flex-col p-2 max-w-lg mx-auto space-y-2">
+        <div class="flex items-center justify-between px-1 text-[11px]">
+            <div><span class="font-bold text-zinc-500">GAME: </span><span id="match-id-display" class="font-mono text-zinc-200">---</span></div>
+            <div class="flex items-center gap-2">
+                <div id="status-dot" class="w-2 h-2 rounded-full bg-red-500"></div>
+                <span id="status-text" class="text-zinc-400 font-bold uppercase tracking-tighter">Connecting...</span>
+            </div>
+        </div>
+        <div id="main-controls" class="opacity-30 pointer-events-none transition-opacity duration-500 flex gap-1.5 w-full">
+            <div class="flex-1 flex flex-col min-w-0">
+                <div id="t1-header" class="rounded-t-md transition-colors duration-300"><input type="text" id="t1-name" onblur="updateState()" class="w-full bg-transparent text-white text-center font-bold h-8 p-0 text-[11px] uppercase" value="TEAM 1"></div>
+                <div class="bg-[#18181b] p-1.5 space-y-1 rounded-b-md border border-[#27272a]">
+                    <div id="t1-display-box" class="flex justify-center gap-2 text-lg font-bold mb-1.5 p-1.5 rounded items-center transition-colors duration-300">
+                        <span id="t1-set-score" class="text-xl">0</span><span id="t1-match-score" class="px-1.5 py-0.5 rounded-sm text-[10px] match-badge-shadow">0</span>
+                        <div class="flex gap-1 items-center"><input type="color" id="t1-bg-color" oninput="updateState()" class="h-3.5 w-3.5 p-0 border-none bg-transparent"><input type="color" id="t1-txt-color" oninput="updateState()" class="h-3.5 w-3.5 p-0 border-none bg-transparent"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button onclick="adjScore(1, 1)" class="h-14 bg-[#fafafa] text-[#18181b] rounded font-bold text-xs">+ PTS</button>
+                        <button onclick="adjScore(1, -1)" class="h-14 bg-[#fafafa] text-[#18181b] rounded font-bold text-xs">- PTS</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button onclick="adjSets(1, 1)" class="h-10 bg-[#27272a] text-[#fafafa] border border-[#3f3f46] rounded text-[10px] font-bold">+ SET</button>
+                        <button onclick="adjSets(1, -1)" class="h-10 bg-[#27272a] text-[#fafafa] border border-[#3f3f46] rounded text-[10px] font-bold">- SET</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1">
+                        <button id="t1-sv-btn" onclick="setServe(1)" class="h-8 border border-[#27272a] rounded text-[9px] uppercase font-black">Sv</button>
+                        <button onclick="confirmReset('sets')" class="h-8 bg-[#27272a] border border-[#3f3f46] rounded text-[9px] uppercase font-black">RS</button>
+                        <button onclick="confirmReset('match')" class="h-8 bg-[#27272a] border border-[#3f3f46] rounded text-[9px] uppercase font-black">RM</button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 flex flex-col min-w-0">
+                <div id="t2-header" class="rounded-t-md transition-colors duration-300"><input type="text" id="t2-name" onblur="updateState()" class="w-full bg-transparent text-white text-center font-bold h-8 p-0 text-[11px] uppercase" value="TEAM 2"></div>
+                <div class="bg-[#18181b] p-1.5 space-y-1 rounded-b-md border border-[#27272a]">
+                    <div id="t2-display-box" class="flex justify-center gap-2 text-lg font-bold mb-1.5 p-1.5 rounded items-center transition-colors duration-300">
+                        <span id="t2-set-score" class="text-xl">0</span><span id="t2-match-score" class="px-1.5 py-0.5 rounded-sm text-[10px] match-badge-shadow">0</span>
+                        <div class="flex gap-1 items-center"><input type="color" id="t2-bg-color" oninput="updateState()" class="h-3.5 w-3.5 p-0 border-none bg-transparent"><input type="color" id="t2-txt-color" oninput="updateState()" class="h-4 w-4 p-0 border-none bg-transparent"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button onclick="adjScore(2, 1)" class="h-14 bg-[#fafafa] text-[#18181b] rounded font-bold text-xs">+ PTS</button>
+                        <button onclick="adjScore(2, -1)" class="h-14 bg-[#fafafa] text-[#18181b] rounded font-bold text-xs">- PTS</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button onclick="adjSets(2, 1)" class="h-10 bg-[#27272a] text-[#fafafa] border border-[#3f3f46] rounded text-[10px] font-bold active:bg-[#3f3f46]">+ SET</button>
+                        <button onclick="adjSets(2, -1)" class="h-10 bg-[#27272a] text-[#fafafa] border border-[#3f3f46] rounded text-[10px] font-bold active:bg-[#3f3f46]">- SET</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1">
+                        <button id="t2-sv-btn" onclick="setServe(2)" class="h-8 border border-[#27272a] rounded text-[9px] uppercase font-black">Sv</button>
+                        <button onclick="confirmReset('sets')" class="h-8 bg-[#27272a] border border-[#3f3f46] rounded text-[9px] uppercase font-black">RS</button>
+                        <button onclick="confirmReset('match')" class="h-8 bg-[#27272a] border border-[#3f3f46] rounded text-[9px] uppercase font-black">RM</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-black border border-zinc-800 rounded-lg overflow-hidden flex flex-col">
+            <button onclick="toggleStats()" class="w-full p-2 flex justify-between items-center bg-zinc-900 active:bg-zinc-800 transition-colors">
+                <span class="text-[10px] font-black uppercase text-zinc-400">Stream Health</span>
+                <span id="stats-chevron" class="text-zinc-500 transition-transform duration-300">▼</span>
+            </button>
+            <div id="stats-content" class="hidden p-2 grid grid-cols-2 gap-x-3 stats-grid">
+                <div><span class="stats-label">Bitrate</span><span id="stat-bitrate" class="stats-value">---</span></div>
+                <div><span class="stats-label">Battery</span><span id="stat-battery" class="stats-value">---</span></div>
+                <div><span class="stats-label">Uptime</span><span id="stat-uptime" class="stats-value">---</span></div>
+                <div><span class="stats-label">System</span><span id="stat-system" class="stats-value">---</span></div>
+                <div class="col-span-2"><span class="stats-label">Bonding Stats</span><span id="stat-bonding" class="stats-value">---</span></div>
+                <div class="col-span-2 border-none"><span class="stats-label">RTTs</span><span id="stat-rtts" class="stats-value">---</span></div>
+            </div>
+        </div>
+        <div class="bg-black border border-zinc-800 rounded p-2 font-mono text-[9px] text-center mt-auto">
+            <span id="sync-indicator" class="text-amber-500 animate-pulse uppercase">Waiting for Sync...</span>
+        </div>
+    </div>
+    <div id="modal-overlay" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-6 z-50">
+        <div class="bg-[#09090b] border border-[#27272a] p-6 rounded-lg w-full max-w-xs shadow-2xl">
+            <h3 id="modal-title" class="text-sm font-bold text-zinc-100 mb-2 uppercase text-center font-black">Reset Confirmation</h3>
+            <p class="text-[10px] text-zinc-400 mb-6 text-center">Are you sure?</p>
+            <div class="flex flex-col gap-2">
+                <button id="modal-confirm-btn" class="w-full py-3 text-xs font-black bg-red-600 text-white rounded uppercase active:bg-red-700">Confirm Reset</button>
+                <button onclick="closeModal()" class="w-full py-3 text-xs font-black border border-[#27272a] rounded uppercase text-zinc-400 active:bg-zinc-800">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let isSynced = false, socket;
+        let state = { matchId: "---", layout: "stacked", team1: { name: "", bgColor: "#000000", textColor: "#ffffff", setScore: 0, matchScore: 0, serving: true }, team2: { name: "", bgColor: "#000000", textColor: "#ffffff", setScore: 0, matchScore: 0, serving: false } };
+
+        function connect() {
+            socket = new WebSocket('ws://' + window.location.hostname + ':8081');
+            socket.onopen = () => { updateStatusUI(true); socket.send(JSON.stringify({ type: "request-sync" })); };
+            socket.onclose = () => { isSynced = false; updateStatusUI(false); document.getElementById('main-controls').classList.add('opacity-30', 'pointer-events-none'); document.getElementById('sync-indicator').innerText = "Disconnected"; setTimeout(connect, 3000); };
+            socket.onmessage = (e) => {
+                try {
+                    const msg = JSON.parse(e.data);
+                    if (msg.type === "update-match" && msg.updates) {
+                        state = msg.updates;
+                        if (!isSynced) {
+                            isSynced = true;
+                            document.getElementById('main-controls').classList.remove('opacity-30', 'pointer-events-none');
+                            document.getElementById('sync-indicator').innerText = "Live Sync Active";
+                            document.getElementById('sync-indicator').className = "text-green-500 uppercase font-bold";
+                            updateStatusUI(true);
+                        }
+                        document.getElementById('t1-name').value = state.team1.name;
+                        document.getElementById('t2-name').value = state.team2.name;
+                        document.getElementById('t1-bg-color').value = state.team1.bgColor;
+                        document.getElementById('t1-txt-color').value = state.team1.textColor;
+                        document.getElementById('t2-bg-color').value = state.team2.bgColor;
+                        document.getElementById('t2-txt-color').value = state.team2.textColor;
+                        render();
+                    }
+                    if (msg.type === "stream-stats" && msg.stats) {
+                        const s = msg.stats;
+                        document.getElementById('stat-bitrate').innerText = s.bitrate;
+                        document.getElementById('stat-battery').innerText = s.battery;
+                        document.getElementById('stat-uptime').innerText = s.uptime;
+                        document.getElementById('stat-system').innerText = s.system;
+                        document.getElementById('stat-bonding').innerText = s.bonding || "N/A";
+                        document.getElementById('stat-rtts').innerText = s.rtts || "N/A";
+                    }
+                } catch (err) {}
+            };
+        }
+        function toggleStats() {
+            const content = document.getElementById('stats-content');
+            const chevron = document.getElementById('stats-chevron');
+            const isHidden = content.classList.toggle('hidden');
+            chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+        function sendUpdate() { if (isSynced && socket && socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: "update-match", updates: state })); }
+        function adjScore(team, val) { state[`team${team}`].setScore = Math.max(0, state[`team${team}`].setScore + val); if (val > 0) setServe(team); render(); sendUpdate(); }
+        function adjSets(team, val) { state[`team${team}`].matchScore = Math.max(0, state[`team${team}`].matchScore + val); render(); sendUpdate(); }
+        function setServe(team) { state.team1.serving = (team === 1); state.team2.serving = (team === 2); render(); sendUpdate(); }
+        function updateState() { state.team1.name = document.getElementById('t1-name').value; state.team1.bgColor = document.getElementById('t1-bg-color').value; state.team1.textColor = document.getElementById('t1-txt-color').value; state.team2.name = document.getElementById('t2-name').value; state.team2.bgColor = document.getElementById('t2-bg-color').value; state.team2.textColor = document.getElementById('t2-txt-color').value; render(); sendUpdate(); }
+        function confirmReset(type) { document.getElementById('modal-overlay').classList.remove('hidden'); document.getElementById('modal-confirm-btn').onclick = () => { if(type === 'sets') { state.team1.setScore = 0; state.team2.setScore = 0; } else { state.team1.setScore = 0; state.team1.matchScore = 0; state.team2.setScore = 0; state.team2.matchScore = 0; } render(); sendUpdate(); closeModal(); }; }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+        function render() {
+            document.getElementById('t1-set-score').innerText = state.team1.setScore; document.getElementById('t1-match-score').innerText = state.team1.matchScore;
+            document.getElementById('t2-set-score').innerText = state.team2.setScore; document.getElementById('t2-match-score').innerText = state.team2.matchScore;
+            document.getElementById('match-id-display').innerText = state.matchId;
+            document.getElementById('t1-header').style.backgroundColor = state.team1.bgColor; document.getElementById('t1-display-box').style.backgroundColor = state.team1.bgColor; document.getElementById('t1-display-box').style.color = state.team1.textColor; document.getElementById('t1-name').style.color = state.team1.textColor;
+            document.getElementById('t1-sv-btn').className = state.team1.serving ? "h-8 rounded text-[9px] uppercase font-black active-serve" : "h-8 border border-[#27272a] rounded text-[9px] uppercase font-black";
+            document.getElementById('t2-header').style.backgroundColor = state.team2.bgColor; document.getElementById('t2-display-box').style.backgroundColor = state.team2.bgColor; document.getElementById('t2-display-box').style.color = state.team2.textColor; document.getElementById('t2-name').style.color = state.team2.textColor;
+            document.getElementById('t2-sv-btn').className = state.team2.serving ? "h-8 rounded text-[9px] uppercase font-black active-serve" : "h-8 border border-[#27272a] rounded text-[9px] uppercase font-black";
+        }
+        function updateStatusUI(con) {
+            const dot = document.getElementById('status-dot'), text = document.getElementById('status-text');
+            if (!con) { dot.className = "w-2 h-2 rounded-full bg-red-500 animate-pulse"; text.innerText = "Offline"; text.className = "text-red-500 font-bold uppercase tracking-tighter"; }
+            else if (!isSynced) { dot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse"; text.innerText = "Syncing..."; text.className = "text-amber-500 font-bold uppercase tracking-tighter"; }
+            else { dot.className = "w-2 h-2 rounded-full bg-green-500"; text.innerText = "Connected"; text.className = "text-green-500 font-bold uppercase tracking-tighter"; }
+        }
+        connect();
+    </script>
+</body>
+</html>
+"""
+
+let SB_DISPLAY_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Moblin Scoreboard Display</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: black; margin: 0; overflow: hidden; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .team-column { flex: 1 1 50%; max-width: 50vw; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        
+        /* Center large score in the 88% area, pulling up slightly for optical centering */
+        .score-container { height: 88vh; display: flex; align-items: center; justify-content: center; }
+        .set-score { 
+            font-size: 60vh; 
+            font-weight: 900; 
+            line-height: 1; 
+            transform: translateY(-4vh); 
+        }
+
+        .info-bar { height: 12vh; font-weight: 800; display: flex; width: 100%; }
+        
+        /* Narrower Match Box (9vw) */
+        .match-box { width: 9vw; background: rgba(0,0,0,0.3); font-size: 7vh; display: flex; align-items: center; justify-content: center; }
+        
+        .team-name { font-size: 7vh; text-transform: uppercase; flex: 1; text-align: center; align-self: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 0 10px; }
+
+        /* Serving Icon Box */
+        .serve-box { width: 9vw; display: flex; align-items: center; justify-content: center; }
+        .serve-img { height: 8vh; width: 8vh; object-fit: contain; }
+        
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body onclick="toggleFullscreen()">
+    <div class="h-screen w-screen flex overflow-hidden">
+        <!-- Team 1 (Left) -->
+        <div id="t1-column" class="team-column border-r border-white/10">
+            <div class="score-container"><div id="t1-set-score" class="set-score">0</div></div>
+            <div id="t1-bar" class="info-bar">
+                <div class="match-box" id="t1-match">0</div>
+                <div class="team-name" id="t1-name">TEAM 1</div>
+                <div class="serve-box">
+                    <img id="t1-serve-icon" src="/volleyball.png" class="serve-img hidden">
+                </div>
+            </div>
+        </div>
+
+        <!-- Team 2 (Right) -->
+        <div id="t2-column" class="team-column">
+            <div class="score-container"><div id="t2-set-score" class="set-score">0</div></div>
+            <div id="t2-bar" class="info-bar">
+                <div class="match-box" id="t2-match">0</div>
+                <div class="team-name" id="t2-name">TEAM 2</div>
+                <div class="serve-box">
+                    <img id="t2-serve-icon" src="/volleyball.png" class="serve-img hidden">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+            else { if (document.exitFullscreen) { document.exitFullscreen(); } }
+        }
+
+        function connect() {
+            const socket = new WebSocket('ws://' + window.location.hostname + ':8081');
+            socket.onopen = () => socket.send(JSON.stringify({ type: "request-sync" }));
+            socket.onclose = () => setTimeout(connect, 2000);
+            socket.onmessage = (e) => {
+                const msg = JSON.parse(e.data);
+                if (msg.type === "update-match" && msg.updates) {
+                    updateTeam(1, msg.updates.team1); 
+                    updateTeam(2, msg.updates.team2);
+                }
+            };
+        }
+
+        function updateTeam(num, data) {
+            document.getElementById('t' + num + '-column').style.backgroundColor = data.bgColor;
+            document.getElementById('t' + num + '-bar').style.backgroundColor = data.bgColor;
+            document.getElementById('t' + num + '-set-score').style.color = data.textColor;
+            document.getElementById('t' + num + '-name').style.color = data.textColor;
+            document.getElementById('t' + num + '-match').style.color = data.textColor;
+
+            document.getElementById('t' + num + '-set-score').innerText = data.setScore;
+            document.getElementById('t' + num + '-name').innerText = data.name;
+            document.getElementById('t' + num + '-match').innerText = data.matchScore;
+
+            const icon = document.getElementById('t' + num + '-serve-icon');
+            if (data.serving) { icon.classList.remove('hidden'); }
+            else { icon.classList.add('hidden'); }
+        }
+        connect();
+    </script>
+</body>
+</html>
+"""
