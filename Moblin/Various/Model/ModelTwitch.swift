@@ -421,7 +421,6 @@ extension Model {
     }
 
     func twitchRaidStarted(channelName: String) {
-        makeToast(title: String(localized: "Raiding \(channelName) in 90 seconds!"))
         raid.state = .ongoing
         raid.message = String(localized: "Raiding \(channelName)")
         raid.progress.progress = 0
@@ -429,9 +428,16 @@ extension Model {
     }
 
     func twitchRaidCancelled() {
-        makeToast(title: String(localized: "Raid cancelled"))
         raid.message = String(localized: "Raid cancelled")
         raid.state = .completed
+    }
+
+    func twitchRaidCompleted() {
+        raid.state = .completed
+        raid.message = String(localized: "Raid completed!")
+        raid.timer.startSingleShot(timeout: 60) {
+            self.removeRaid()
+        }
     }
 
     func updateTwitchRaid() {
@@ -440,15 +446,6 @@ extension Model {
         }
         if raid.progress.progress < raid.progress.goal {
             raid.progress.progress += 1
-        }
-    }
-
-    func twitchRaidCompleted() {
-        makeToast(title: String(localized: "Raid completed!"))
-        raid.state = .completed
-        raid.message = String(localized: "Raid completed!")
-        raid.timer.startSingleShot(timeout: 60) {
-            self.removeRaid()
         }
     }
 
