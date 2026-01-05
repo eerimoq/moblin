@@ -78,6 +78,11 @@ struct KickFollowedChannelsResponse: Codable {
     let nextCursor: Int?
 }
 
+struct KickHostChannelResponse: Codable {
+    let success: Bool
+    let error: String?
+}
+
 struct KickCategorySearchHit: Codable {
     let document: KickCategory
 }
@@ -275,14 +280,8 @@ class KickApi {
         { result in
             switch result {
             case let .success(data):
-                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let success = json["success"] as? Bool
-                {
-                    if success {
-                        onComplete(.success(data))
-                    } else {
-                        onComplete(.error)
-                    }
+                if let response = try? JSONDecoder().decode(KickHostChannelResponse.self, from: data) {
+                    onComplete(response.success ? .success(data) : .error)
                 } else {
                     onComplete(.success(data))
                 }

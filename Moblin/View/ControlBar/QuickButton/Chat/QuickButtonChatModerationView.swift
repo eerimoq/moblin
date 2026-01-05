@@ -499,13 +499,10 @@ private struct KickHostChannelView: View {
         guard !isSearching else { return }
         isSearching = true
         searchCompleted = false
-        Task {
-            let channel = try? await getKickChannelInfo(channelName: trimmed)
-            await MainActor.run {
-                searchedChannel = channel
-                isSearching = false
-                searchCompleted = true
-            }
+        getKickChannelInfo(channelName: trimmed) { channel in
+            searchedChannel = channel
+            isSearching = false
+            searchCompleted = true
         }
     }
 
@@ -513,9 +510,12 @@ private struct KickHostChannelView: View {
         NavigationLinkView(text: "Host channel", image: "play.tv") {
             Section {
                 HStack {
-                    TextField("Username", text: $username)
+                    TextField("Search", text: $username)
                         .autocapitalization(.none)
                         .autocorrectionDisabled()
+                        .onSubmit {
+                            searchChannel()
+                        }
                         .onChange(of: username) { _ in
                             searchCompleted = false
                             searchedChannel = nil
@@ -523,10 +523,6 @@ private struct KickHostChannelView: View {
                     if isSearching {
                         ProgressView()
                             .scaleEffect(0.8)
-                    } else if !username.trim().isEmpty {
-                        Button("Check") {
-                            searchChannel()
-                        }
                     }
                 }
                 if searchCompleted {
@@ -541,8 +537,6 @@ private struct KickHostChannelView: View {
                             .foregroundStyle(.red)
                     }
                 }
-            } header: {
-                Text("Username")
             }
             if !hasLoadedOnce && isLoading {
                 Section {
