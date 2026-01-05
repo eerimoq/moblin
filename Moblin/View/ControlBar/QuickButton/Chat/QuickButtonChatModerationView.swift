@@ -457,6 +457,261 @@ private struct StartRaidView: View {
     }
 }
 
+private struct KickHostChannelView: View {
+    let model: Model
+    @State private var username: String = ""
+    @State private var channels: [KickFollowedChannel] = []
+    @State private var cursor: Int?
+    @State private var isLoading = false
+    @State private var hasLoadedOnce = false
+    @StateObject private var executor = Executor()
+    @State private var searchedChannel: KickChannel?
+    @State private var isSearching = false
+    @State private var searchCompleted = false
+
+    private var onlineChannels: [KickFollowedChannel] {
+        channels.filter { $0.is_live }
+    }
+
+    private func loadMore() {
+        guard !isLoading else { return }
+        isLoading = true
+        getKickFollowedChannels(
+            accessToken: model.stream.kickAccessToken,
+            cursor: cursor
+        ) { response in
+            isLoading = false
+            hasLoadedOnce = true
+            if let response {
+                channels.append(contentsOf: response.channels)
+                cursor = response.nextCursor
+            }
+        }
+    }
+
+    private func searchChannel() {
+        let trimmed = username.trim()
+        guard !trimmed.isEmpty else {
+            searchedChannel = nil
+            searchCompleted = false
+            return
+        }
+        guard !isSearching else { return }
+        isSearching = true
+        searchCompleted = false
+        Task {
+            let channel = try? await getKickChannelInfo(channelName: trimmed)
+            await MainActor.run {
+                searchedChannel = channel
+                isSearching = false
+                searchCompleted = true
+            }
+        }
+    }
+
+    var body: some View {
+        NavigationLinkView(text: "Host channel", image: "play.tv") {
+            Section {
+                HStack {
+                    TextField("Username", text: $username)
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled()
+                        .onChange(of: username) { _ in
+                            searchCompleted = false
+                            searchedChannel = nil
+                        }
+                    if isSearching {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        TextButtonView("Check") {
+                            searchChannel()
+                        }
+                        .disabled(username.trim().isEmpty)
+                    }
+                }
+                if searchCompleted {
+                    if let channel = searchedChannel {
+                        KickSearchedChannelRowView(
+                            channel: channel,
+                            action: model.hostKickChannel
+                        )
+                    } else if !username.trim().isEmpty {
+                        Text("Channel not found")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                }
+            } header: {
+                Text("Username")
+            }
+            if !hasLoadedOnce && isLoading {
+                Section {
+                    HCenter {
+                        ProgressView()
+                    }
+                } header: {
+                    Text("Online followed channels")
+                }
+            } else if !onlineChannels.isEmpty || cursor != nil {
+                Section {
+                    ForEach(onlineChannels) { channel in
+                        KickFollowedChannelRowView(
+                            channel: channel,
+                            action: model.hostKickChannel
+                        )
+                    }
+                    if cursor != nil {
+                        HCenter {
+                            if isLoading {
+                                ProgressView()
+                            } else {
+                                TextButtonView("Load more") {
+                                    loadMore()
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Online followed channels")
+                }
+            }
+        }
+        .onAppear {
+            if !hasLoadedOnce {
+                loadMore()
+            }
+        }
+    }
+}
+
+private struct KickFollowedChannelRowView: View {
+    let channel: KickFollowedChannel
+    let action: (String, @escaping (OperationResult) -> Void) -> Void
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        HStack(spacing: 10) {
+            if let profilePic = channel.profile_picture, let url = URL(string: profilePic) {
+                AsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    Color.gray.opacity(0.3)
+                }
+                .frame(width: 40, height: 40)
+                .clipShape(Circle())
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(channel.user_username)
+                    .fontWeight(.medium)
+                if let title = channel.session_title, !title.isEmpty {
+                    Text(title)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                if let category = channel.category_name {
+                    Text(category)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            if let viewers = channel.viewer_count {
+                HStack(spacing: 2) {
+                    Image(systemName: "eye")
+                    Text(countFormatter.format(viewers))
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+            ExecutorView(executor: executor) {
+                TextButtonView("Host") {
+                    executor.startProgress()
+                    action(channel.channel_slug) { result in
+                        executor.completed(result: result)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct KickSearchedChannelRowView: View {
+    let channel: KickChannel
+    let action: (String, @escaping (OperationResult) -> Void) -> Void
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        HStack(spacing: 10) {
+            ZStack(alignment: .bottomTrailing) {
+                if let profilePic = channel.user?.profile_pic, let url = URL(string: profilePic) {
+                    AsyncImage(url: url) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } placeholder: {
+                        Color.gray.opacity(0.3)
+                    }
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
+                } else {
+                    Circle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 40, height: 40)
+                }
+                Circle()
+                    .fill(channel.livestream != nil ? .green : .gray)
+                    .frame(width: 12, height: 12)
+                    .overlay(
+                        Circle()
+                            .stroke(Color(.systemBackground), lineWidth: 2)
+                    )
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(channel.slug)
+                    .fontWeight(.medium)
+                if let livestream = channel.livestream {
+                    if let title = livestream.session_title, !title.isEmpty {
+                        Text(title)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+                    if let category = livestream.categories?.first?.name {
+                        Text(category)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    Text("Offline")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            if let livestream = channel.livestream {
+                HStack(spacing: 2) {
+                    Image(systemName: "eye")
+                    Text(countFormatter.format(livestream.viewers))
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                ExecutorView(executor: executor) {
+                    TextButtonView("Host") {
+                        executor.startProgress()
+                        action(channel.slug) { result in
+                            executor.completed(result: result)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 private struct RunCommercialView: View {
     let model: Model
     @State private var duration = 30
@@ -753,7 +1008,7 @@ private struct KickChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            StartRaidView(text: "Host channel", action: model.hostKickChannel)
+            KickHostChannelView(model: model)
             CreatePollView(model: model)
             DeletePollView(model: model)
             CreatePredictionView(model: model)
