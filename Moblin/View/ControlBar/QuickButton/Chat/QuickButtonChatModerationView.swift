@@ -590,7 +590,7 @@ private struct KickFollowedChannelRowView: View {
     @StateObject private var executor = Executor()
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(alignment: .center, spacing: 10) {
             if let profilePic = channel.profile_picture, let url = URL(string: profilePic) {
                 AsyncImage(url: url) { image in
                     image
@@ -601,10 +601,13 @@ private struct KickFollowedChannelRowView: View {
                 }
                 .frame(width: 40, height: 40)
                 .clipShape(Circle())
+            } else {
+                Circle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 40, height: 40)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(channel.user_username)
-                    .fontWeight(.medium)
                 if let title = channel.session_title, !title.isEmpty {
                     Text(title)
                         .font(.caption)
@@ -627,14 +630,12 @@ private struct KickFollowedChannelRowView: View {
                 .foregroundStyle(.secondary)
             }
             ExecutorView(executor: executor) {
-                Button("Host") {
+                BorderlessButtonView(text: "Host") {
                     executor.startProgress()
                     action(channel.channel_slug) { result in
                         executor.completed(result: result)
                     }
                 }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
             }
         }
     }
@@ -646,7 +647,7 @@ private struct KickSearchedChannelRowView: View {
     @StateObject private var executor = Executor()
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(alignment: .center, spacing: 10) {
             ZStack(alignment: .bottomTrailing) {
                 if let profilePic = channel.user?.profile_pic, let url = URL(string: profilePic) {
                     AsyncImage(url: url) { image in
@@ -673,7 +674,6 @@ private struct KickSearchedChannelRowView: View {
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(channel.slug)
-                    .fontWeight(.medium)
                 if let livestream = channel.livestream {
                     if let title = livestream.session_title, !title.isEmpty {
                         Text(title)
@@ -701,14 +701,12 @@ private struct KickSearchedChannelRowView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 ExecutorView(executor: executor) {
-                    Button("Host") {
+                    BorderlessButtonView(text: "Host") {
                         executor.startProgress()
                         action(channel.slug) { result in
                             executor.completed(result: result)
                         }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
                 }
             }
         }

@@ -146,42 +146,19 @@ func getKickFollowedChannels(
         urlString += "?cursor=\(cursor)"
     }
     guard let url = URL(string: urlString) else {
-        logger.info("kick: Failed to create URL for followed channels")
         onComplete(nil)
         return
     }
     var request = URLRequest(url: url)
     request.setAuthorization("Bearer \(accessToken)")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
-    logger.debug("kick: Fetching followed channels (cursor: \(cursor.map { String($0) } ?? "none"))")
     URLSession.shared.dataTask(with: request) { data, response, error in
         DispatchQueue.main.async {
-            if let error {
-                logger.info("kick: Failed to fetch followed channels: \(error.localizedDescription)")
+            guard error == nil, let data, response?.http?.isSuccessful == true else {
                 onComplete(nil)
                 return
             }
-            guard let data, response?.http?.isSuccessful == true else {
-                if response?.http?.isUnauthorized == true {
-                    logger.info("kick: Unauthorized when fetching followed channels")
-                } else {
-                    logger.info("kick: Failed to fetch followed channels: HTTP \(response?.http?.statusCode ?? 0)")
-                }
-                onComplete(nil)
-                return
-            }
-            if let jsonString = String(data: data, encoding: .utf8) {
-                logger.info("kick: Followed channels response: \(jsonString.prefix(1500))")
-            }
-            do {
-                let response = try JSONDecoder().decode(KickFollowedChannelsResponse.self, from: data)
-                let liveCount = response.channels.filter { $0.is_live }.count
-                logger.debug("kick: Fetched \(response.channels.count) followed channels (\(liveCount) live)")
-                onComplete(response)
-            } catch {
-                logger.info("kick: Failed to decode followed channels response: \(error)")
-                onComplete(nil)
-            }
+            onComplete(try? JSONDecoder().decode(KickFollowedChannelsResponse.self, from: data))
         }
     }
     .resume()
@@ -292,7 +269,6 @@ class KickApi {
     }
 
     func hostChannel(channel: String, onComplete: @escaping (OperationResult) -> Void) {
-        logger.info("kick: Hosting channel \(channel) from \(slug)")
         doV2Request(method: "POST",
                     subPath: "channels/\(slug)/chat-commands",
                     body: ["command": "host", "parameter": channel])
@@ -303,21 +279,16 @@ class KickApi {
                    let success = json["success"] as? Bool
                 {
                     if success {
-                        logger.info("kick: Host successful")
                         onComplete(.success(data))
                     } else {
-                        let error = json["error"] as? String ?? "unknown"
-                        logger.info("kick: Host failed - \(error)")
                         onComplete(.error)
                     }
                 } else {
                     onComplete(.success(data))
                 }
             case .authError:
-                logger.info("kick: Host failed - auth error")
                 onComplete(.authError)
             case .error:
-                logger.info("kick: Host failed - error")
                 onComplete(.error)
             }
         }
