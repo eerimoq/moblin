@@ -118,6 +118,18 @@ extension Model {
         createTwitchApi(stream: stream).searchChannel(channelName: channelName, onComplete: onComplete)
     }
 
+    func searchTwitchChannels(
+        stream: SettingsStream,
+        filter: String,
+        onComplete: @escaping ([TwitchApiChannel]?) -> Void
+    ) {
+        twitchSearchChannelsTimer.startSingleShot(timeout: 0.5) {
+            self.createTwitchApi(stream: stream).searchChannels(filter: filter,
+                                                                liveOnly: true,
+                                                                onComplete: onComplete)
+        }
+    }
+
     func getTwitchChannelInformation(
         stream: SettingsStream,
         onComplete: @escaping (TwitchApiChannelInformationData) -> Void
@@ -432,6 +444,28 @@ extension Model {
         raid.state = .completed
     }
 
+    func twitchRaidCompleted() {
+        raid.state = .completed
+        raid.message = String(localized: "Raid completed!")
+        raid.timer.startSingleShot(timeout: 60) {
+            self.removeRaid()
+        }
+    }
+
+    func updateTwitchRaid() {
+        guard raid.state == .ongoing else {
+            return
+        }
+        if raid.progress.progress < raid.progress.goal {
+            raid.progress.progress += 1
+        }
+    }
+
+    func removeRaid() {
+        raid.state = .idle
+        raid.timer.stop()
+    }
+
     func createTwitchApi(stream: SettingsStream) -> TwitchApi {
         let twitchApi = TwitchApi(stream.twitchAccessToken)
         twitchApi.delegate = self
@@ -473,20 +507,6 @@ extension Model {
         hypeTrain.progress = nil
         hypeTrain.status = noValue
         stopHypeTrainTimer()
-    }
-
-    func updateTwitchRaid() {
-        guard raid.state == .ongoing else {
-            return
-        }
-        if raid.progress.progress < raid.progress.goal {
-            raid.progress.progress += 1
-        }
-    }
-
-    func removeRaid() {
-        raid.state = .idle
-        raid.timer.stop()
     }
 
     private func appendTwitchChatAlertMessage(
@@ -629,11 +649,7 @@ extension Model: TwitchEventSubDelegate {
 
     func twitchEventSubChannelRaid(event: TwitchEventSubChannelRaidEvent) {
         if event.from_broadcaster_user_id == stream.twitchChannelId {
-            raid.state = .completed
-            raid.message = String(localized: "Raid completed!")
-            raid.timer.startSingleShot(timeout: 60) {
-                self.removeRaid()
-            }
+            twitchRaidCompleted()
         } else {
             let text = String(localized: "raided with a party of \(event.viewers)!")
             if stream.twitchToastAlerts.raids {

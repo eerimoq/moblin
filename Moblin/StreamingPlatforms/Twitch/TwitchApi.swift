@@ -100,9 +100,13 @@ struct TwitchApiGames: Decodable {
     let data: [TwitchApiGameData]
 }
 
-struct TwitchApiChannel: Decodable {
-    let broadcaster_login: String
+struct TwitchApiChannel: Decodable, Identifiable {
     let id: String
+    let broadcaster_login: String
+    let display_name: String
+    let game_name: String
+    let title: String
+    let thumbnail_url: String
 }
 
 struct TwitchApiSearchChannels: Decodable {
@@ -544,13 +548,23 @@ class TwitchApi {
     }
 
     func searchChannel(channelName: String, onComplete: @escaping (TwitchApiChannel?) -> Void) {
-        doGet(subPath: "search/channels?query=\(channelName)") {
+        searchChannels(filter: channelName, liveOnly: false) {
+            onComplete($0?.first(where: {
+                $0.broadcaster_login.lowercased() == channelName.lowercased()
+            }))
+        }
+    }
+
+    func searchChannels(filter: String, liveOnly: Bool, onComplete: @escaping ([TwitchApiChannel]?) -> Void) {
+        var subPath = "search/channels?query=\(filter)"
+        if liveOnly {
+            subPath += "&live_only=true"
+        }
+        doGet(subPath: subPath) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiSearchChannels.self, from: data)
-                onComplete(message?.data.first(where: {
-                    $0.broadcaster_login.lowercased() == channelName.lowercased()
-                }))
+                onComplete(message?.data)
             default:
                 onComplete(nil)
             }
