@@ -427,14 +427,81 @@ private struct CreatePredictionView: View {
     }
 }
 
-private struct StartRaidView: View {
-    let text: LocalizedStringKey
-    let action: (String, @escaping (OperationResult) -> Void) -> Void
+private struct StartTwitchRaidChannelView: View {
+    let model: Model
+    @Binding var channel: TwitchApiChannel
+    @StateObject private var executor = Executor()
+
+    var body: some View {
+        HStack {
+            if let url = URL(string: channel.thumbnail_url) {
+                CacheAsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    Image("AppIconNoBackground")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+                .frame(width: 60)
+                .clipShape(Circle())
+            }
+            VStack(alignment: .leading) {
+                Text(channel.display_name)
+                Text(channel.game_name)
+                    .font(.caption)
+                Text(channel.title)
+                    .font(.caption)
+            }
+            Spacer()
+            ExecutorView(executor: executor) {
+                BorderlessButtonView(text: "Raid") {
+                    executor.startProgress()
+                    model.startRaidTwitchChannel(channelId: channel.id, onComplete: executor.completed)
+                }
+            }
+        }
+    }
+}
+
+private struct StartTwitchRaidView: View {
+    let model: Model
+    @State private var searchText: String = ""
+    @State private var channels: [TwitchApiChannel] = []
+
+    var body: some View {
+        NavigationLinkView(text: "Raid channel", image: "play.tv") {
+            Section {
+                TextField("Search", text: $searchText)
+                    .autocorrectionDisabled(true)
+                    .onChange(of: searchText) { _ in
+                        guard !searchText.isEmpty else {
+                            return
+                        }
+                        model.searchTwitchChannels(stream: model.stream, filter: searchText) { channels in
+                            DispatchQueue.main.async {
+                                self.channels = channels ?? []
+                            }
+                        }
+                    }
+            }
+            Section {
+                ForEach($channels) { channel in
+                    StartTwitchRaidChannelView(model: model, channel: channel)
+                }
+            }
+        }
+    }
+}
+
+private struct StartKickRaidView: View {
+    let model: Model
     @State private var username: String = ""
     @StateObject private var executor = Executor()
 
     var body: some View {
-        NavigationLinkView(text: text, image: "play.tv") {
+        NavigationLinkView(text: "Host channel", image: "play.tv") {
             Section {
                 TextField("Username", text: $username)
                     .autocapitalization(.none)
@@ -447,7 +514,7 @@ private struct StartRaidView: View {
                     ExecutorView(executor: executor) {
                         TextButtonView("Send") {
                             executor.startProgress()
-                            action(username, executor.completed)
+                            model.hostKickChannel(channel: username, onComplete: executor.completed)
                         }
                         .disabled(username.trim().isEmpty)
                     }
@@ -919,17 +986,7 @@ private struct TwitchChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            StartRaidView(text: "Raid channel") { channelName, onCompleted in
-                model.startRaidTwitchChannelByName(channelName: channelName) {
-                    switch $0 {
-                    case .success:
-                        model.twitchRaidStarted(channelName: channelName)
-                    default:
-                        break
-                    }
-                    onCompleted($0)
-                }
-            }
+            StartTwitchRaidView(model: model)
             RunCommercialView(model: model)
             SendAnnouncementView(model: model)
         }
@@ -1003,7 +1060,7 @@ private struct KickChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            KickHostChannelView(model: model)
+KickHostChannelView(model: model)
             CreatePollView(model: model)
             DeletePollView(model: model)
             CreatePredictionView(model: model)
