@@ -669,17 +669,7 @@ private struct TwitchChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-            StartRaidView(text: "Raid channel") { channelName, onCompleted in
-                model.startRaidTwitchChannelByName(channelName: channelName) {
-                    switch $0 {
-                    case .success:
-                        model.twitchRaidStarted(channelName: channelName)
-                    default:
-                        break
-                    }
-                    onCompleted($0)
-                }
-            }
+            StartRaidView(text: "Raid channel", action: model.startRaidTwitchChannelByName)
             RunCommercialView(model: model)
             SendAnnouncementView(model: model)
         }
