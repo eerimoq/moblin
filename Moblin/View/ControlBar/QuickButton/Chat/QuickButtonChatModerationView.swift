@@ -1060,7 +1060,7 @@ private struct KickChannelManagementView: View {
 
     var body: some View {
         ChannelManagementView {
-KickHostChannelView(model: model)
+            KickHostChannelView(model: model)
             CreatePollView(model: model)
             DeletePollView(model: model)
             CreatePredictionView(model: model)
