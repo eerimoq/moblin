@@ -495,35 +495,6 @@ private struct StartTwitchRaidView: View {
     }
 }
 
-private struct StartKickRaidView: View {
-    let model: Model
-    @State private var username: String = ""
-    @StateObject private var executor = Executor()
-
-    var body: some View {
-        NavigationLinkView(text: "Host channel", image: "play.tv") {
-            Section {
-                TextField("Username", text: $username)
-                    .autocapitalization(.none)
-                    .autocorrectionDisabled()
-            } header: {
-                Text("Username")
-            }
-            Section {
-                HCenter {
-                    ExecutorView(executor: executor) {
-                        TextButtonView("Send") {
-                            executor.startProgress()
-                            model.hostKickChannel(channel: username, onComplete: executor.completed)
-                        }
-                        .disabled(username.trim().isEmpty)
-                    }
-                }
-            }
-        }
-    }
-}
-
 private struct KickHostChannelView: View {
     let model: Model
     @State private var username: String = ""
@@ -531,7 +502,6 @@ private struct KickHostChannelView: View {
     @State private var cursor: Int?
     @State private var isLoading = false
     @State private var hasLoadedOnce = false
-    @StateObject private var executor = Executor()
     @State private var searchedChannel: KickChannel?
     @State private var isSearching = false
     @State private var searchCompleted = false
