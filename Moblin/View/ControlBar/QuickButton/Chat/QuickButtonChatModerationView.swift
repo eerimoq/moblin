@@ -523,11 +523,10 @@ private struct KickHostChannelView: View {
                     if isSearching {
                         ProgressView()
                             .scaleEffect(0.8)
-                    } else {
-                        TextButtonView("Check") {
+                    } else if !username.trim().isEmpty {
+                        Button("Check") {
                             searchChannel()
                         }
-                        .disabled(username.trim().isEmpty)
                     }
                 }
                 if searchCompleted {
@@ -566,7 +565,7 @@ private struct KickHostChannelView: View {
                             if isLoading {
                                 ProgressView()
                             } else {
-                                TextButtonView("Load more") {
+                                Button("Load more") {
                                     loadMore()
                                 }
                             }
@@ -628,7 +627,7 @@ private struct KickFollowedChannelRowView: View {
                 .foregroundStyle(.secondary)
             }
             ExecutorView(executor: executor) {
-                TextButtonView("Host") {
+                Button("Host") {
                     executor.startProgress()
                     action(channel.channel_slug) { result in
                         executor.completed(result: result)
@@ -700,7 +699,7 @@ private struct KickSearchedChannelRowView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 ExecutorView(executor: executor) {
-                    TextButtonView("Host") {
+                    Button("Host") {
                         executor.startProgress()
                         action(channel.slug) { result in
                             executor.completed(result: result)
