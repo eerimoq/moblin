@@ -3,11 +3,14 @@ import UIKit
 
 struct BadgeImage: Codable {
     let src: String
+    // periphery:ignore
     let srcset: String
 }
 
 struct SubscriberBadge: Codable {
+    // periphery:ignore
     let id: Int
+    // periphery:ignore
     let channel_id: Int
     let months: Int
     let badge_image: BadgeImage
@@ -18,8 +21,10 @@ struct KickLivestreamCategory: Codable {
 }
 
 struct KickLivestream: Codable {
+    // periphery:ignore
     let id: Int
     let viewers: Int
+    // periphery:ignore
     let session_title: String?
     let categories: [KickLivestreamCategory]?
 }
@@ -47,10 +52,13 @@ struct KickUser: Codable {
 
 struct KickCategory: Codable, Identifiable {
     let id: String
+    // periphery:ignore
     let category_id: Int
     let name: String
+    // periphery:ignore
     let slug: String
     let src: String?
+    // periphery:ignore
     let srcset: String?
 }
 
@@ -80,6 +88,7 @@ struct KickCategorySearchHit: Codable {
 }
 
 struct KickCategorySearchResponse: Codable {
+    // periphery:ignore
     let found: Int
     let hits: [KickCategorySearchHit]
 }
@@ -149,11 +158,13 @@ func getKickFollowedChannels(
     request.setAuthorization("Bearer \(accessToken)")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     URLSession.shared.dataTask(with: request) { data, response, error in
-        guard error == nil, let data, response?.http?.isSuccessful == true else {
-            onComplete(nil)
-            return
+        DispatchQueue.main.async {
+            guard error == nil, let data, response?.http?.isSuccessful == true else {
+                onComplete(nil)
+                return
+            }
+            onComplete(try? JSONDecoder().decode(KickFollowedChannelsResponse.self, from: data))
         }
-        onComplete(try? JSONDecoder().decode(KickFollowedChannelsResponse.self, from: data))
     }
     .resume()
 }
