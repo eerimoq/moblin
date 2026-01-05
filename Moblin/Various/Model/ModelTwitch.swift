@@ -417,16 +417,6 @@ extension Model {
                                                   onComplete: onComplete)
     }
 
-    func startRaidTwitchChannelByName(channelName: String, onComplete: @escaping (OperationResult) -> Void) {
-        createTwitchApi(stream: stream).searchChannel(channelName: channelName) { channel in
-            guard let channel else {
-                onComplete(.error)
-                return
-            }
-            self.startRaidTwitchChannel(channelId: channel.id, onComplete: onComplete)
-        }
-    }
-
     func cancelRaidTwitchChannel(onComplete: @escaping (OperationResult) -> Void) {
         createTwitchApi(stream: stream).cancelRaid(broadcasterId: stream.twitchChannelId,
                                                    onComplete: onComplete)

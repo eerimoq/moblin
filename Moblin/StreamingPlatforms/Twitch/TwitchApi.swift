@@ -248,11 +248,7 @@ class TwitchApi {
     }
 
     func getUserByLogin(login: String, onComplete: @escaping (TwitchApiUser?) -> Void) {
-        guard let encodedLogin = login.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            onComplete(nil)
-            return
-        }
-        doGet(subPath: "users?login=\(encodedLogin)") {
+        doGet(subPath: makeUrl("users", [("login", login)])) {
             switch $0 {
             case let .success(data):
                 let users = try? JSONDecoder().decode(TwitchApiUsers.self, from: data)
@@ -270,7 +266,7 @@ class TwitchApi {
     }
 
     func getStreamKey(broadcasterId: String, onComplete: @escaping (String?) -> Void) {
-        doGet(subPath: "streams/key?broadcaster_id=\(broadcasterId)") {
+        doGet(subPath: makeUrl("streams/key", [("broadcaster_id", broadcasterId)])) {
             switch $0 {
             case let .success(data):
                 let response = try? JSONDecoder().decode(TwitchApiStreamKey.self, from: data)
@@ -285,7 +281,7 @@ class TwitchApi {
         broadcasterId: String,
         onComplete: @escaping (TwitchApiChannelPointsCustomRewards?) -> Void
     ) {
-        doGet(subPath: "channel_points/custom_rewards?broadcaster_id=\(broadcasterId)") {
+        doGet(subPath: makeUrl("channel_points/custom_rewards", [("broadcaster_id", broadcasterId)])) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiChannelPointsCustomRewards.self, from: data)
@@ -300,7 +296,7 @@ class TwitchApi {
         broadcasterId: String,
         onComplete: @escaping (TwitchApiChannelInformationData?) -> Void
     ) {
-        doGet(subPath: "channels?broadcaster_id=\(broadcasterId)") {
+        doGet(subPath: makeUrl("channels", [("broadcaster_id", broadcasterId)])) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiChannelInformation.self, from: data)
@@ -352,26 +348,39 @@ class TwitchApi {
         if let reason {
             data["reason"] = reason
         }
-        doPost(subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
-               body: serialize(["data": data]),
-               onComplete: onComplete)
+        let subPath = makeUrl(
+            "moderation/bans",
+            [
+                ("broadcaster_id", broadcasterId),
+                ("moderator_id", broadcasterId),
+            ]
+        )
+        doPost(subPath: subPath, body: serialize(["data": data]), onComplete: onComplete)
     }
 
     func unbanUser(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
-        doDelete(
-            subPath: "moderation/bans?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)&user_id=\(userId)",
-            onComplete: onComplete
+        let subPath = makeUrl(
+            "moderation/bans",
+            [
+                ("broadcaster_id", broadcasterId),
+                ("moderator_id", broadcasterId),
+                ("user_id", userId),
+            ]
         )
+        doDelete(subPath: subPath, onComplete: onComplete)
     }
 
     func addModerator(broadcasterId: String, userId: String,
                       onComplete: @escaping (OperationResult) -> Void)
     {
-        doPost(
-            subPath: "moderation/moderators?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            body: Data(),
-            onComplete: onComplete
+        let subPath = makeUrl(
+            "moderation/moderators",
+            [
+                ("broadcaster_id", broadcasterId),
+                ("user_id", userId),
+            ]
         )
+        doPost(subPath: subPath, body: Data(), onComplete: onComplete)
     }
 
     func removeModerator(
@@ -379,25 +388,24 @@ class TwitchApi {
         userId: String,
         onComplete: @escaping (OperationResult) -> Void
     ) {
-        doDelete(
-            subPath: "moderation/moderators?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            onComplete: onComplete
+        let subPath = makeUrl(
+            "moderation/moderators",
+            [
+                ("broadcaster_id", broadcasterId),
+                ("user_id", userId),
+            ]
         )
+        doDelete(subPath: subPath, onComplete: onComplete)
     }
 
     func addVip(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
-        doPost(
-            subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            body: Data(),
-            onComplete: onComplete
-        )
+        let subPath = makeUrl("channels/vips", [("broadcaster_id", broadcasterId), ("user_id", userId)])
+        doPost(subPath: subPath, body: Data(), onComplete: onComplete)
     }
 
     func removeVip(broadcasterId: String, userId: String, onComplete: @escaping (OperationResult) -> Void) {
-        doDelete(
-            subPath: "channels/vips?broadcaster_id=\(broadcasterId)&user_id=\(userId)",
-            onComplete: onComplete
-        )
+        let subPath = makeUrl("channels/vips", [("broadcaster_id", broadcasterId), ("user_id", userId)])
+        doDelete(subPath: subPath, onComplete: onComplete)
     }
 
     func sendAnnouncement(broadcasterId: String,
@@ -405,15 +413,18 @@ class TwitchApi {
                           color: String,
                           onComplete: @escaping (OperationResult) -> Void)
     {
+        let subPath = makeUrl(
+            "chat/announcements",
+            [
+                ("broadcaster_id", broadcasterId),
+                ("moderator_id", broadcasterId),
+            ]
+        )
         let body: [String: Any] = [
             "message": message,
             "color": color,
         ]
-        doPost(
-            subPath: "chat/announcements?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
-            body: serialize(body),
-            onComplete: onComplete
-        )
+        doPost(subPath: subPath, body: serialize(body), onComplete: onComplete)
     }
 
     func updateChatSettings(
@@ -421,25 +432,26 @@ class TwitchApi {
         settings: [String: Any],
         onComplete: @escaping (OperationResult) -> Void
     ) {
-        doPatch(
-            subPath: "chat/settings?broadcaster_id=\(broadcasterId)&moderator_id=\(broadcasterId)",
-            body: serialize(settings),
-            onComplete: onComplete
+        let subPath = makeUrl(
+            "chat/settings",
+            [
+                ("broadcaster_id", broadcasterId),
+                ("moderator_id", broadcasterId),
+            ]
         )
+        doPatch(subPath: subPath, body: serialize(settings), onComplete: onComplete)
     }
 
     func deleteChatMessage(broadcasterId: String, messageId: String, onComplete: @escaping (Bool) -> Void) {
-        doDelete(
-            subPath: """
-            moderation/chat\
-            ?broadcaster_id=\(broadcasterId)\
-            &moderator_id=\(broadcasterId)\
-            &message_id=\(messageId)
-            """,
-            onComplete: {
-                onComplete($0.isSuccessful())
-            }
+        let subPath = makeUrl(
+            "moderation/chat",
+            [
+                ("broadcaster_id", broadcasterId),
+                ("moderator_id", broadcasterId),
+                ("message_id", messageId),
+            ]
         )
+        doDelete(subPath: subPath, onComplete: { onComplete($0.isSuccessful()) })
     }
 
     func createStreamMarker(
@@ -461,7 +473,7 @@ class TwitchApi {
     }
 
     func getStream(userId: String, onComplete: @escaping (NetworkResponse<TwitchApiStreamData?>) -> Void) {
-        doGet(subPath: "streams?user_id=\(userId)&type=live") {
+        doGet(subPath: makeUrl("streams", [("user_id", userId), ("type", "live")])) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiStreams.self, from: data)
@@ -475,12 +487,7 @@ class TwitchApi {
     }
 
     func getGames(names: [String], onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
-        var components = URLComponents()
-        components.queryItems = names.map { URLQueryItem(name: "name", value: $0) }
-        guard let query = components.percentEncodedQuery else {
-            return
-        }
-        doGet(subPath: "games?\(query)") {
+        doGet(subPath: makeUrl("games", names.map { ("name", $0) })) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiGames.self, from: data)
@@ -496,16 +503,11 @@ class TwitchApi {
         toBroadcasterId: String,
         onComplete: @escaping (OperationResult) -> Void
     ) {
-        var components = URLComponents()
-        components.queryItems = [
-            URLQueryItem(name: "from_broadcaster_id", value: broadcasterId),
-            URLQueryItem(name: "to_broadcaster_id", value: toBroadcasterId),
-        ]
-        guard let query = components.percentEncodedQuery else {
-            onComplete(.error)
-            return
-        }
-        doPost(subPath: "raids?\(query)", body: Data()) {
+        let subPath = makeUrl(
+            "raids",
+            [("from_broadcaster_id", broadcasterId), ("to_broadcaster_id", toBroadcasterId)]
+        )
+        doPost(subPath: subPath, body: Data()) {
             onComplete($0)
         }
     }
@@ -514,29 +516,13 @@ class TwitchApi {
         broadcasterId: String,
         onComplete: @escaping (OperationResult) -> Void
     ) {
-        var components = URLComponents()
-        components.queryItems = [
-            URLQueryItem(name: "broadcaster_id", value: broadcasterId),
-        ]
-        guard let query = components.percentEncodedQuery else {
-            onComplete(.error)
-            return
-        }
-        doDelete(subPath: "raids?\(query)") {
+        doDelete(subPath: makeUrl("raids", [("broadcaster_id", broadcasterId)])) {
             onComplete($0)
         }
     }
 
     func searchCategories(query: String, onComplete: @escaping ([TwitchApiGameData]?) -> Void) {
-        var components = URLComponents()
-        components.queryItems = [
-            URLQueryItem(name: "query", value: query),
-            URLQueryItem(name: "first", value: "10"),
-        ]
-        guard let query = components.percentEncodedQuery else {
-            return
-        }
-        doGet(subPath: "search/categories?\(query)") {
+        doGet(subPath: makeUrl("search/categories", [("query", query), ("first", "10")])) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiGames.self, from: data)
@@ -556,11 +542,11 @@ class TwitchApi {
     }
 
     func searchChannels(filter: String, liveOnly: Bool, onComplete: @escaping ([TwitchApiChannel]?) -> Void) {
-        var subPath = "search/channels?query=\(filter)"
+        var parameters = [("query", filter)]
         if liveOnly {
-            subPath += "&live_only=true"
+            parameters.append(("live_only", "true"))
         }
-        doGet(subPath: subPath) {
+        doGet(subPath: makeUrl("search/channels", parameters)) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiSearchChannels.self, from: data)
@@ -584,7 +570,7 @@ class TwitchApi {
             body["title"] = title
         }
         doPatch(
-            subPath: "channels?broadcaster_id=\(broadcasterId)",
+            subPath: makeUrl("channels", [("broadcaster_id", broadcasterId)]),
             body: serialize(body),
             onComplete: {
                 onComplete($0.isSuccessful())
@@ -608,7 +594,7 @@ class TwitchApi {
         broadcasterId: String,
         onComplete: @escaping ([TwitchApiChatBadgesData]?) -> Void
     ) {
-        doGet(subPath: "chat/badges?broadcaster_id=\(broadcasterId)") {
+        doGet(subPath: makeUrl("chat/badges", [("broadcaster_id", broadcasterId)])) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiChatBadges.self, from: data)
@@ -624,7 +610,7 @@ class TwitchApi {
         userId: String,
         onComplete: @escaping (TwitchApiGetBroadcasterSubscriptionsData?) -> Void
     ) {
-        doGet(subPath: "subscriptions?broadcaster_id=\(broadcasterId)&user_id=\(userId)") {
+        doGet(subPath: makeUrl("subscriptions", [("broadcaster_id", broadcasterId), ("user_id", userId)])) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiGetBroadcasterSubscriptions.self, from: data)
@@ -639,7 +625,7 @@ class TwitchApi {
         broadcasterId: String,
         onComplete: @escaping ([TwitchApiGetCheermotesData]?) -> Void
     ) {
-        doGet(subPath: "bits/cheermotes?broadcaster_id=\(broadcasterId)") {
+        doGet(subPath: makeUrl("bits/cheermotes", [("broadcaster_id", broadcasterId)])) {
             switch $0 {
             case let .success(data):
                 let message = try? JSONDecoder().decode(TwitchApiGetCheermotes.self, from: data)
