@@ -395,7 +395,7 @@ extension Model {
     }
 
     func isObsRemoteControlConfigured() -> Bool {
-        return stream.obsWebSocketEnabled && stream.obsWebSocketUrl != "" && stream.obsWebSocketPassword != ""
+        return stream.obsWebSocketEnabled && stream.obsWebSocketUrl != ""
     }
 }
 
