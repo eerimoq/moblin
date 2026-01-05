@@ -633,6 +633,8 @@ private struct KickFollowedChannelRowView: View {
                         executor.completed(result: result)
                     }
                 }
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
             }
         }
     }
@@ -705,6 +707,8 @@ private struct KickSearchedChannelRowView: View {
                             executor.completed(result: result)
                         }
                     }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
                 }
             }
         }
