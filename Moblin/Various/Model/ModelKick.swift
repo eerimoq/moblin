@@ -167,7 +167,11 @@ extension Model {
 
     func searchKickChannels(query: String, onComplete: @escaping ([KickLiveSearchChannel]?) -> Void) {
         kickSearchChannelsTimer.startSingleShot(timeout: 0.5) {
-            searchKickLiveChannels(query: query, accessToken: self.stream.kickAccessToken, onComplete: onComplete)
+            searchKickLiveChannels(
+                query: query,
+                accessToken: self.stream.kickAccessToken,
+                onComplete: onComplete
+            )
         }
     }
 

@@ -146,7 +146,11 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
     .resume()
 }
 
-func searchKickLiveChannels(query: String, accessToken: String, onComplete: @escaping ([KickLiveSearchChannel]?) -> Void) {
+func searchKickLiveChannels(
+    query: String,
+    accessToken: String,
+    onComplete: @escaping ([KickLiveSearchChannel]?) -> Void
+) {
     guard var components = URLComponents(string: "https://kick.com/api/internal/v1/live/search") else {
         onComplete(nil)
         return
