@@ -1,13 +1,15 @@
 import SwiftUI
 
-private struct ColorsView: View {
+struct ScoreboardColorsView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
 
     private func updateEffect() {
         model.getScoreboardEffect(id: widget.id)?
-            .update(scoreboard: scoreboard, players: model.database.scoreboardPlayers)
+            .update(scoreboard: scoreboard,
+                    config: model.getCurrentConfig(),
+                    players: model.database.scoreboardPlayers)
     }
 
     var body: some View {
@@ -61,29 +63,46 @@ struct WidgetScoreboardSettingsView: View {
 
     var body: some View {
         Section {
-            Picker("Type", selection: $scoreboard.type) {
-                ForEach(SettingsWidgetScoreboardType.allCases, id: \.self) {
+            Picker("Sport", selection: $scoreboard.sport) {
+                ForEach(SettingsWidgetScoreboardSport.allCases, id: \.self) {
                     Text($0.toString())
                 }
             }
-            .onChange(of: scoreboard.type) { _ in
+            .onChange(of: scoreboard.sport) { _ in
+                scoreboard.modular.config = nil
+                model.remoteControlScoreboardUpdate()
                 model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
-            switch scoreboard.type {
+            switch scoreboard.sport {
             case .padel:
-                WidgetScoreboardPadelGeneralSettingsView(model: model, padel: scoreboard.padel)
+                WidgetScoreboardPadelGeneralSettingsView(model: model,
+                                                         widget: widget,
+                                                         scoreboard: scoreboard,
+                                                         padel: scoreboard.padel)
             case .generic:
-                WidgetScoreboardGenericGeneralSettingsView(model: model, generic: scoreboard.generic)
+                WidgetScoreboardGenericGeneralSettingsView(model: model,
+                                                           widget: widget,
+                                                           scoreboard: scoreboard,
+                                                           generic: scoreboard.generic)
+            default:
+                WidgetScoreboardModularGeneralSettingsView(model: model,
+                                                           widget: widget,
+                                                           scoreboard: scoreboard,
+                                                           modular: scoreboard.modular)
             }
-            ColorsView(model: model, widget: widget, scoreboard: scoreboard)
         } header: {
             Text("General")
         }
-        switch scoreboard.type {
+        switch scoreboard.sport {
         case .padel:
             WidgetScoreboardPadelSettingsView(model: model, padel: scoreboard.padel)
         case .generic:
             WidgetScoreboardGenericSettingsView(model: model, generic: scoreboard.generic)
+        default:
+            WidgetScoreboardModularSettingsView(model: model,
+                                                widget: widget,
+                                                scoreboard: scoreboard,
+                                                modular: scoreboard.modular)
         }
     }
 }

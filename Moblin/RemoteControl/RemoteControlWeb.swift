@@ -10,6 +10,12 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetDebugLogging(on: Bool)
     func remoteControlWebSetMute(on: Bool)
     func remoteControlWebSetTorch(on: Bool)
+    func remoteControlWebGetScoreboardSports() -> [String]
+    func remoteControlWebSetScoreboardSport(sportId: String)
+    func remoteControlWebUpdateScoreboard(config: RemoteControlScoreboardMatchConfig)
+    func remoteControlWebToggleScoreboardClock()
+    func remoteControlWebSetScoreboardDuration(minutes: Int)
+    func remoteControlWebSetScoreboardClock(time: String)
 }
 
 private struct StaticFile {
@@ -30,6 +36,9 @@ private struct StaticFile {
 
 private let staticFiles: [StaticFile] = [
     StaticFile("/", "index", "html"),
+    StaticFile("/", "remote", "html"),
+    StaticFile("/", "scoreboard", "html"),
+    StaticFile("/", "volleyball", "png"),
     StaticFile("/", "favicon", "ico"),
     StaticFile("/css/", "vanilla-framework-version-4.14.0.min", "css"),
     StaticFile("/css/", "f3b9cc97-Ubuntu[wdth,wght]-latin", "woff2"),
@@ -37,6 +46,8 @@ private let staticFiles: [StaticFile] = [
     StaticFile("/css/", "0bd4277a-UbuntuMono[wght]-latin", "woff2"),
     StaticFile("/js/", "index", "mjs"),
     StaticFile("/js/", "utils", "mjs"),
+    StaticFile("/js/", "remote", "mjs"),
+    StaticFile("/js/", "scoreboard", "mjs"),
 ]
 
 class RemoteControlWeb {
@@ -73,6 +84,12 @@ class RemoteControlWeb {
     func log(entry: String) {
         for connection in connections {
             send(connection: connection, message: .event(data: .log(entry: entry)))
+        }
+    }
+
+    func sendScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
+        for connection in connections {
+            send(connection: connection, message: .event(data: .scoreboard(config: config)))
         }
     }
 
@@ -231,6 +248,27 @@ class RemoteControlWeb {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setDebugLogging(on: on):
             delegate.remoteControlWebSetDebugLogging(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .getScoreboardSports:
+            let sports = delegate.remoteControlWebGetScoreboardSports()
+            send(connection: connection,
+                 message: .response(id: id,
+                                    result: .ok,
+                                    data: .getScoreboardSports(names: sports)))
+        case let .setScoreboardSport(sportId):
+            delegate.remoteControlWebSetScoreboardSport(sportId: sportId)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .updateScoreboard(config):
+            delegate.remoteControlWebUpdateScoreboard(config: config)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .toggleScoreboardClock:
+            delegate.remoteControlWebToggleScoreboardClock()
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setScoreboardDuration(minutes):
+            delegate.remoteControlWebSetScoreboardDuration(minutes: minutes)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setScoreboardClock(time):
+            delegate.remoteControlWebSetScoreboardClock(time: time)
             sendEmptyOkResponse(connection: connection, id: id)
         default:
             break

@@ -2500,9 +2500,16 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     }
 }
 
-enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
+enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
     case generic = "Generic"
     case padel = "Padel"
+    case basketball = "Basketball"
+    case generic2 = "Generic 2"
+    case genericSets = "Generic sets"
+    case hockey = "Hockey"
+    case football = "Football"
+    case tennis = "Tennis"
+    case volleyball = "Volleyball"
 
     func toString() -> String {
         switch self {
@@ -2510,6 +2517,53 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
             return String(localized: "Generic")
         case .padel:
             return String(localized: "Padel")
+        case .basketball:
+            return String(localized: "Basketball")
+        case .generic2:
+            return String(localized: "Generic 2")
+        case .genericSets:
+            return String(localized: "Generic sets")
+        case .hockey:
+            return String(localized: "Hockey")
+        case .football:
+            return String(localized: "Football")
+        case .tennis:
+            return String(localized: "Tennis")
+        case .volleyball:
+            return String(localized: "Volleyball")
+        }
+    }
+}
+
+enum SettingsWidgetScoreboardLayout: Codable, CaseIterable {
+    case stacked
+    case stackedInline
+    case sideBySide
+    case stackHistory
+
+    func toString() -> String {
+        switch self {
+        case .stacked:
+            return String(localized: "Stacked")
+        case .stackedInline:
+            return String(localized: "Stacked inline")
+        case .sideBySide:
+            return String(localized: "Side by side")
+        case .stackHistory:
+            return String(localized: "Stack history")
+        }
+    }
+
+    func isStacked() -> Bool {
+        switch self {
+        case .stacked:
+            return true
+        case .stackedInline:
+            return true
+        case .sideBySide:
+            return false
+        case .stackHistory:
+            return true
         }
     }
 }
@@ -2624,6 +2678,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     @Published var home: String = baseName
     @Published var away: String = baseName
     @Published var title: String = baseTitle
+    @Published var period: String = "1"
     @Published var clockMaximum: Int = 45
     @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
     var score: SettingsWidgetScoreboardScore = .init()
@@ -2636,6 +2691,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         case home,
              away,
              title,
+             period,
              clockMaximum,
              clockDirection
     }
@@ -2647,6 +2703,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         try container.encode(.home, home)
         try container.encode(.away, away)
         try container.encode(.title, title)
+        try container.encode(.period, period)
         try container.encode(.clockMaximum, clockMaximum)
         try container.encode(.clockDirection, clockDirection)
     }
@@ -2656,6 +2713,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         home = container.decode(.home, String.self, Self.baseName)
         away = container.decode(.away, String.self, Self.baseName)
         title = container.decode(.title, String.self, Self.baseTitle)
+        period = container.decode(.period, String.self, "1")
         clockMaximum = container.decode(.clockMaximum, Int.self, 45)
         clockDirection = container.decode(.clockDirection,
                                           SettingsWidgetGenericScoreboardClockDirection.self,
@@ -2706,27 +2764,144 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     }
 }
 
-class SettingsWidgetScoreboard: Codable, ObservableObject {
-    static let baseTextColor = RgbColor.white
-    static let basePrimaryBackgroundColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC)
-    static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
-    @Published var type: SettingsWidgetScoreboardType = .generic
-    var textColor = baseTextColor
-    @Published var textColorColor: Color = .clear
-    var primaryBackgroundColor = basePrimaryBackgroundColor
-    @Published var primaryBackgroundColorColor: Color = .clear
-    var secondaryBackgroundColor = baseSecondaryBackgroundColor
-    @Published var secondaryBackgroundColorColor: Color = .clear
-    var padel: SettingsWidgetPadelScoreboard = .init()
-    var generic: SettingsWidgetGenericScoreboard = .init()
+class SettingsWidgetModularStackedScoreboard: Codable, ObservableObject {
+    @Published var fontSize: Float = 12
+    @Published var width: Float = 150
+    @Published var rowHeight: Float = 16
+    @Published var isBold: Bool = true
+    @Published var isItalic: Bool = false
+    @Published var showFooter: Bool = false
 
     enum CodingKeys: CodingKey {
-        case type,
-             padel,
-             generic,
-             textColor,
-             primaryBackgroundColor,
-             secondaryBackgroundColor
+        case fontSize,
+             width,
+             rowHeight,
+             isBold,
+             isItalic,
+             showFooter
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.fontSize, fontSize)
+        try container.encode(.width, width)
+        try container.encode(.rowHeight, rowHeight)
+        try container.encode(.isBold, isBold)
+        try container.encode(.isItalic, isItalic)
+        try container.encode(.showFooter, showFooter)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fontSize = container.decode(.fontSize, Float.self, 12)
+        width = container.decode(.width, Float.self, 150)
+        rowHeight = container.decode(.rowHeight, Float.self, 16)
+        isBold = container.decode(.isBold, Bool.self, true)
+        isItalic = container.decode(.isItalic, Bool.self, false)
+        showFooter = container.decode(.showFooter, Bool.self, false)
+    }
+}
+
+class SettingsWidgetModularSideBySideScoreboard: Codable, ObservableObject {
+    @Published var fontSize: Float = 12
+    @Published var width: Float = 370
+    @Published var rowHeight: Float = 16
+    @Published var isBold: Bool = true
+    @Published var isItalic: Bool = false
+    @Published var showTitle: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case fontSize,
+             width,
+             rowHeight,
+             isBold,
+             isItalic,
+             showTitle
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.fontSize, fontSize)
+        try container.encode(.width, width)
+        try container.encode(.rowHeight, rowHeight)
+        try container.encode(.isBold, isBold)
+        try container.encode(.isItalic, isItalic)
+        try container.encode(.showTitle, showTitle)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fontSize = container.decode(.fontSize, Float.self, 12)
+        width = container.decode(.width, Float.self, 370)
+        rowHeight = container.decode(.rowHeight, Float.self, 16)
+        isBold = container.decode(.isBold, Bool.self, true)
+        isItalic = container.decode(.isItalic, Bool.self, false)
+        showTitle = container.decode(.showTitle, Bool.self, false)
+    }
+}
+
+class SettingsWidgetModularScoreboard: Codable, ObservableObject {
+    static let baseName = String(localized: "🇸🇪 Moblin")
+    static let baseTitle = "⚽️"
+    static let baseHomeBgColor: RgbColor = .init(red: 11, green: 16, blue: 172)
+    static let baseHomeTextColor: RgbColor = .white
+    static let baseAwayBgColor: RgbColor = .init(red: 220, green: 38, blue: 38)
+    static let baseAwayTextColor: RgbColor = .white
+    static let baseSecondaryBackgroundColor: RgbColor = .black
+    @Published var home: String = baseName
+    @Published var away: String = baseName
+    @Published var title: String = baseTitle
+    @Published var period: String = "1"
+    var score: SettingsWidgetScoreboardScore = .init()
+    @Published var clockMaximum: Int = 45
+    @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
+    var clockMinutes: Int = 0
+    var clockSeconds: Int = 0
+    var isClockStopped: Bool = true
+    @Published var layout: SettingsWidgetScoreboardLayout = .stacked
+    @Published var config: RemoteControlScoreboardMatchConfig?
+    var homeBgColor: RgbColor = baseHomeBgColor
+    @Published var homeBgColorColor: Color = .clear
+    var homeTextColor: RgbColor = baseHomeTextColor
+    @Published var homeTextColorColor: Color = .clear
+    var awayBgColor: RgbColor = baseAwayBgColor
+    @Published var awayBgColorColor: Color = .clear
+    var awayTextColor: RgbColor = baseAwayTextColor
+    @Published var awayTextColorColor: Color = .clear
+    var secondaryBackgroundColor: RgbColor = baseSecondaryBackgroundColor
+    @Published var secondaryBackgroundColorColor: Color = .clear
+    var stacked: SettingsWidgetModularStackedScoreboard = .init()
+    var sideBySide: SettingsWidgetModularSideBySideScoreboard = .init()
+    @Published var showStackedHeader: Bool = false
+    @Published var titleAbove: Bool = true
+    @Published var showSecondaryRows: Bool = false
+    @Published var showGlobalStatsBlock: Bool = false
+
+    enum CodingKeys: CodingKey {
+        case home,
+             away,
+             title,
+             period,
+             clockMaximum,
+             clockDirection,
+             layout,
+             config,
+             homeBgColor,
+             homeTextColor,
+             awayBgColor,
+             awayTextColor,
+             secondaryBackgroundColor,
+             stacked,
+             sideBySide,
+             showStackedHeader,
+             titleAbove,
+             showSecondaryRows,
+             showGlobalStatsBlock,
+             showSbsTitle
     }
 
     init() {
@@ -2735,17 +2910,161 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.type, type)
+        try container.encode(.home, home)
+        try container.encode(.away, away)
+        try container.encode(.title, title)
+        try container.encode(.period, period)
+        try container.encode(.clockMaximum, clockMaximum)
+        try container.encode(.clockDirection, clockDirection)
+        try container.encode(.layout, layout)
+        try container.encode(.config, config)
+        try container.encode(.homeBgColor, homeBgColor)
+        try container.encode(.homeTextColor, homeTextColor)
+        try container.encode(.awayBgColor, awayBgColor)
+        try container.encode(.awayTextColor, awayTextColor)
+        try container.encode(.secondaryBackgroundColor, secondaryBackgroundColor)
+        try container.encode(.stacked, stacked)
+        try container.encode(.sideBySide, sideBySide)
+        try container.encode(.showStackedHeader, showStackedHeader)
+        try container.encode(.titleAbove, titleAbove)
+        try container.encode(.showSecondaryRows, showSecondaryRows)
+        try container.encode(.showGlobalStatsBlock, showGlobalStatsBlock)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        home = container.decode(.home, String.self, Self.baseName)
+        away = container.decode(.away, String.self, Self.baseName)
+        title = container.decode(.title, String.self, Self.baseTitle)
+        period = container.decode(.period, String.self, "1")
+        clockMaximum = container.decode(.clockMaximum, Int.self, 45)
+        clockDirection = container.decode(.clockDirection,
+                                          SettingsWidgetGenericScoreboardClockDirection.self,
+                                          .up)
+        layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
+        config = container.decode(.config, RemoteControlScoreboardMatchConfig?.self, nil)
+        homeBgColor = container.decode(.homeBgColor, RgbColor.self, Self.baseHomeBgColor)
+        homeTextColor = container.decode(.homeTextColor, RgbColor.self, Self.baseHomeTextColor)
+        awayBgColor = container.decode(.awayBgColor, RgbColor.self, Self.baseAwayBgColor)
+        awayTextColor = container.decode(.awayTextColor, RgbColor.self, Self.baseAwayTextColor)
+        secondaryBackgroundColor = container.decode(
+            .secondaryBackgroundColor,
+            RgbColor.self,
+            Self.baseSecondaryBackgroundColor
+        )
+        stacked = container.decode(.stacked, SettingsWidgetModularStackedScoreboard.self, .init())
+        sideBySide = container.decode(.sideBySide, SettingsWidgetModularSideBySideScoreboard.self, .init())
+        showStackedHeader = container.decode(.showStackedHeader, Bool.self, false)
+        titleAbove = container.decode(.titleAbove, Bool.self, true)
+        showSecondaryRows = container.decode(.showSecondaryRows, Bool.self, false)
+        showGlobalStatsBlock = container.decode(.showGlobalStatsBlock, Bool.self, false)
+        loadColors()
+        resetClock()
+    }
+
+    func clock() -> String {
+        if clockSeconds < 10 {
+            return "\(clockMinutes):0\(clockSeconds)"
+        } else {
+            return "\(clockMinutes):\(clockSeconds)"
+        }
+    }
+
+    func tickClock() {
+        switch clockDirection {
+        case .up:
+            if clockMinutes != clockMaximum {
+                if clockSeconds == 59 {
+                    clockSeconds = 0
+                    clockMinutes += 1
+                } else {
+                    clockSeconds += 1
+                }
+            }
+        case .down:
+            if clockMinutes != 0 || clockSeconds != 0 {
+                if clockSeconds == 0 {
+                    clockSeconds = 59
+                    clockMinutes -= 1
+                } else {
+                    clockSeconds -= 1
+                }
+            }
+        }
+    }
+
+    func resetClock() {
+        switch clockDirection {
+        case .up:
+            clockMinutes = 0
+            clockSeconds = 0
+        case .down:
+            clockMinutes = clockMaximum
+            clockSeconds = 0
+        }
+    }
+
+    func resetColors() {
+        homeBgColor = Self.baseHomeBgColor
+        homeTextColor = Self.baseHomeTextColor
+        awayBgColor = Self.baseAwayBgColor
+        awayTextColor = Self.baseAwayTextColor
+        secondaryBackgroundColor = Self.baseSecondaryBackgroundColor
+        loadColors()
+    }
+
+    func loadColors() {
+        homeBgColorColor = homeBgColor.color()
+        homeTextColorColor = homeTextColor.color()
+        awayBgColorColor = awayBgColor.color()
+        awayTextColorColor = awayTextColor.color()
+        secondaryBackgroundColorColor = secondaryBackgroundColor.color()
+    }
+}
+
+class SettingsWidgetScoreboard: Codable, ObservableObject {
+    static let baseTextColor = RgbColor.white
+    static let basePrimaryBackgroundColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC)
+    static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
+    @Published var sport: SettingsWidgetScoreboardSport = .generic
+    var textColor = baseTextColor
+    @Published var textColorColor: Color = .clear
+    var primaryBackgroundColor = basePrimaryBackgroundColor
+    @Published var primaryBackgroundColorColor: Color = .clear
+    var secondaryBackgroundColor = baseSecondaryBackgroundColor
+    @Published var secondaryBackgroundColorColor: Color = .clear
+    var padel: SettingsWidgetPadelScoreboard = .init()
+    var generic: SettingsWidgetGenericScoreboard = .init()
+    var modular: SettingsWidgetModularScoreboard = .init()
+
+    enum CodingKeys: CodingKey {
+        case type,
+             textColor,
+             primaryBackgroundColor,
+             secondaryBackgroundColor,
+             padel,
+             generic,
+             modular
+    }
+
+    init() {
+        loadColors()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.type, sport)
         try container.encode(.textColor, textColor)
         try container.encode(.primaryBackgroundColor, primaryBackgroundColor)
         try container.encode(.secondaryBackgroundColor, secondaryBackgroundColor)
         try container.encode(.padel, padel)
         try container.encode(.generic, generic)
+        try container.encode(.modular, modular)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        type = container.decode(.type, SettingsWidgetScoreboardType.self, .generic)
+        sport = container.decode(.type, SettingsWidgetScoreboardSport.self, .generic)
         textColor = container.decode(.textColor, RgbColor.self, Self.baseTextColor)
         primaryBackgroundColor = container.decode(.primaryBackgroundColor,
                                                   RgbColor.self,
@@ -2755,6 +3074,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
                                                     Self.baseSecondaryBackgroundColor)
         padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
         generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
+        modular = container.decode(.modular, SettingsWidgetModularScoreboard.self, .init())
         loadColors()
     }
 
@@ -2765,7 +3085,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
         loadColors()
     }
 
-    private func loadColors() {
+    func loadColors() {
         textColorColor = textColor.color()
         primaryBackgroundColorColor = primaryBackgroundColor.color()
         secondaryBackgroundColorColor = secondaryBackgroundColor.color()

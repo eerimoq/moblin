@@ -72,6 +72,8 @@ class HttpServerRequest {
             return "font/woff2"
         case "ico":
             return "image/vnd.microsoft.icon"
+        case "png":
+            return "image/png"
         default:
             return "text/html"
         }

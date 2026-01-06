@@ -54,11 +54,13 @@ extension Model {
             }
             for id in scoreboardEffects.keys {
                 if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
-                    switch scoreboard.type {
+                    switch scoreboard.sport {
                     case .padel:
                         sendUpdatePadelScoreboardToWatch(id: id, padel: scoreboard.padel)
                     case .generic:
                         sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
+                    default:
+                        break
                     }
                 } else {
                     sendRemoveScoreboardToWatch(id: id)
@@ -414,26 +416,45 @@ extension Model {
             sceneWidgets = []
         }
         for (id, scoreboardEffect) in scoreboardEffects {
-            if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
-                switch scoreboard.type {
-                case .padel:
-                    break
-                case .generic:
-                    guard let widget = findWidget(id: id) else {
-                        continue
-                    }
-                    guard !widget.scoreboard.generic.isClockStopped else {
-                        continue
-                    }
-                    widget.scoreboard.generic.tickClock()
-                    DispatchQueue.main.async {
-                        scoreboardEffect.update(
-                            scoreboard: widget.scoreboard,
-                            players: self.database.scoreboardPlayers
-                        )
-                    }
-                    sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
+            guard let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard else {
+                continue
+            }
+            switch scoreboard.sport {
+            case .padel:
+                break
+            case .generic:
+                guard let widget = findWidget(id: id) else {
+                    continue
                 }
+                guard !widget.scoreboard.generic.isClockStopped else {
+                    continue
+                }
+                widget.scoreboard.generic.tickClock()
+                DispatchQueue.main.async {
+                    scoreboardEffect.update(
+                        scoreboard: widget.scoreboard,
+                        config: self.getCurrentConfig(),
+                        players: self.database.scoreboardPlayers
+                    )
+                }
+                sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
+            default:
+                guard let widget = findWidget(id: id) else {
+                    continue
+                }
+                guard !widget.scoreboard.modular.isClockStopped else {
+                    continue
+                }
+                widget.scoreboard.modular.tickClock()
+                DispatchQueue.main.async {
+                    scoreboardEffect.update(
+                        scoreboard: widget.scoreboard,
+                        config: self.getCurrentConfig(),
+                        players: self.database.scoreboardPlayers
+                    )
+                    self.remoteControlScoreboardUpdate()
+                }
+                sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
             }
         }
     }
@@ -670,7 +691,9 @@ extension Model: WCSessionDelegate {
             guard let scoreboardEffect = self.scoreboardEffects[action.id] else {
                 return
             }
-            scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+            scoreboardEffect.update(scoreboard: widget.scoreboard,
+                                    config: self.getCurrentConfig(),
+                                    players: self.database.scoreboardPlayers)
             self.sendUpdatePadelScoreboardToWatch(id: action.id, padel: widget.scoreboard.padel)
         }
     }
@@ -784,7 +807,9 @@ extension Model: WCSessionDelegate {
             guard let scoreboardEffect = self.scoreboardEffects[action.id] else {
                 return
             }
-            scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+            scoreboardEffect.update(scoreboard: widget.scoreboard,
+                                    config: self.getCurrentConfig(),
+                                    players: self.database.scoreboardPlayers)
             self.sendUpdateGenericScoreboardToWatch(id: action.id, generic: widget.scoreboard.generic)
         }
     }

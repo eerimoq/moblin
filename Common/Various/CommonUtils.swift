@@ -637,6 +637,10 @@ class RgbColor: Codable, Equatable {
         return RgbColor(red: red, green: green, blue: blue, opacity: opacity)
     }
 
+    func toHex() -> String {
+        return String(format: "#%02x%02x%02x", red, green, blue)
+    }
+
     static func fromHex(string: String) -> RgbColor? {
         if let colorNumber = Int(string.suffix(6), radix: 16) {
             return RgbColor(
