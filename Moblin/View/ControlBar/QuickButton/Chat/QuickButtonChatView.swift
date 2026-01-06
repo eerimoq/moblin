@@ -752,6 +752,24 @@ private struct SendMessagesToSelectorView: View {
     }
 }
 
+private struct MenuItemView: View {
+    let image: String
+    let text: LocalizedStringKey
+    let action: () -> Void
+
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            HStack {
+                IconAndTextLocalizedView(image: image, text: text)
+                Spacer()
+            }
+            .padding(11)
+        }
+    }
+}
+
 private struct ControlMenuButtonView: View {
     let model: Model
     @State var presentingMenu: Bool = false
@@ -767,19 +785,13 @@ private struct ControlMenuButtonView: View {
         }
         .popover(isPresented: $presentingMenu) {
             VStack(alignment: .leading, spacing: 0) {
-                Button {
+                MenuItemView(image: "shield", text: "Moderation") {
                     presentingMenu = false
                     model.presentingModeration = true
-                } label: {
-                    IconAndTextLocalizedView(image: "shield", text: "Moderation")
-                        .padding(11)
                 }
-                Button {
+                MenuItemView(image: "list.bullet", text: "Predefined messages") {
                     presentingMenu = false
                     model.presentingPredefinedMessages = true
-                } label: {
-                    IconAndTextLocalizedView(image: "list.bullet", text: "Predefined messages")
-                        .padding(11)
                 }
             }
             .padding(5)
