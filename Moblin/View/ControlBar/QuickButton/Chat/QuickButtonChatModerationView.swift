@@ -841,44 +841,9 @@ private struct NavigationLinkView<Content: View>: View {
     }
 }
 
-private struct UserModerationView<Content: View>: View {
-    @ViewBuilder let content: () -> Content
-
-    var body: some View {
-        NavigationLinkView(text: "User moderation", image: "person", content: content)
-    }
-}
-
-private struct ChatModesView<Content: View>: View {
-    @ViewBuilder let content: () -> Content
-
-    var body: some View {
-        NavigationLinkView(text: "Chat modes", image: "bubble.left", content: content)
-    }
-}
-
-private struct ChannelManagementView<Content: View>: View {
-    @ViewBuilder let content: () -> Content
-
-    var body: some View {
-        NavigationLinkView(text: "Channel management", image: "gearshape", content: content)
-    }
-}
-
-private struct TwitchUserModerationView: View {
+private struct TwitchView: View {
     let model: Model
-
-    var body: some View {
-        UserModerationView {
-            ForEach(ModActionType.allCases, id: \.self) {
-                UserModerationItemView(model: model, action: $0, platform: .twitch)
-            }
-        }
-    }
-}
-
-private struct TwitchChatModesView: View {
-    let model: Model
+    @Binding var platform: Platform?
 
     private func slowModeAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
         model.setTwitchSlowMode(enabled: duration != nil, duration: duration, onComplete: onComplete)
@@ -891,37 +856,24 @@ private struct TwitchChatModesView: View {
     }
 
     var body: some View {
-        ChatModesView {
-            SlowModeView(durations: [3, 5, 10, 30, 60, 120], action: slowModeAction)
-            FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
-            SubscribersOnlyView(action: model.setTwitchSubscribersOnlyMode)
-            EmotesOnlyView(action: model.setTwitchEmoteOnlyMode)
-        }
-    }
-}
-
-private struct TwitchChannelManagementView: View {
-    let model: Model
-
-    var body: some View {
-        ChannelManagementView {
-            StartTwitchRaidView(model: model)
-            RunCommercialView(model: model)
-            SendAnnouncementView(model: model)
-        }
-    }
-}
-
-private struct TwitchView: View {
-    let model: Model
-    @Binding var platform: Platform?
-
-    var body: some View {
         NavigationLink {
             Form {
-                TwitchChannelManagementView(model: model)
-                TwitchUserModerationView(model: model)
-                TwitchChatModesView(model: model)
+                Section {
+                    StartTwitchRaidView(model: model)
+                    RunCommercialView(model: model)
+                    SendAnnouncementView(model: model)
+                }
+                Section {
+                    SlowModeView(durations: [3, 5, 10, 30, 60, 120], action: slowModeAction)
+                    FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
+                    SubscribersOnlyView(action: model.setTwitchSubscribersOnlyMode)
+                    EmotesOnlyView(action: model.setTwitchEmoteOnlyMode)
+                }
+                Section {
+                    ForEach(ModActionType.allCases, id: \.self) {
+                        UserModerationItemView(model: model, action: $0, platform: .twitch)
+                    }
+                }
             }
             .navigationTitle("Twitch")
             .onAppear {
@@ -933,20 +885,9 @@ private struct TwitchView: View {
     }
 }
 
-private struct KickUserModerationView: View {
+private struct KickView: View {
     let model: Model
-
-    var body: some View {
-        UserModerationView {
-            ForEach(ModActionType.allCases, id: \.self) {
-                UserModerationItemView(model: model, action: $0, platform: .kick)
-            }
-        }
-    }
-}
-
-private struct KickChatModesView: View {
-    let model: Model
+    @Binding var platform: Platform?
 
     private func slowModeAction(duration: Int?, onComplete: @escaping (OperationResult) -> Void) {
         if let duration {
@@ -965,38 +906,25 @@ private struct KickChatModesView: View {
     }
 
     var body: some View {
-        ChatModesView {
-            SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)
-            FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
-            SubscribersOnlyView(action: model.setKickSubscribersOnlyMode)
-            EmotesOnlyView(action: model.setKickEmoteOnlyMode)
-        }
-    }
-}
-
-private struct KickChannelManagementView: View {
-    let model: Model
-
-    var body: some View {
-        ChannelManagementView {
-            KickHostChannelView(model: model)
-            CreatePollView(model: model)
-            DeletePollView(model: model)
-            CreatePredictionView(model: model)
-        }
-    }
-}
-
-private struct KickView: View {
-    let model: Model
-    @Binding var platform: Platform?
-
-    var body: some View {
         NavigationLink {
             Form {
-                KickChannelManagementView(model: model)
-                KickUserModerationView(model: model)
-                KickChatModesView(model: model)
+                Section {
+                    KickHostChannelView(model: model)
+                    CreatePollView(model: model)
+                    DeletePollView(model: model)
+                    CreatePredictionView(model: model)
+                }
+                Section {
+                    SlowModeView(durations: [3, 5, 10, 30, 60, 120, 300], action: slowModeAction)
+                    FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
+                    SubscribersOnlyView(action: model.setKickSubscribersOnlyMode)
+                    EmotesOnlyView(action: model.setKickEmoteOnlyMode)
+                }
+                Section {
+                    ForEach(ModActionType.allCases, id: \.self) {
+                        UserModerationItemView(model: model, action: $0, platform: .kick)
+                    }
+                }
             }
             .navigationTitle("Kick")
             .onAppear {

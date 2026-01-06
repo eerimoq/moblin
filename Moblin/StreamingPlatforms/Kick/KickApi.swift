@@ -16,16 +16,10 @@ struct SubscriberBadge: Codable {
     let badge_image: BadgeImage
 }
 
-struct KickLivestreamCategory: Codable {
-    let name: String?
-}
-
 struct KickLivestream: Codable {
     // periphery:ignore
     let id: Int
     let viewers: Int
-    let session_title: String?
-    let categories: [KickLivestreamCategory]?
 }
 
 struct KickChatroom: Codable {
@@ -34,7 +28,6 @@ struct KickChatroom: Codable {
 }
 
 struct KickChannelUser: Codable {
-    let username: String?
     let profile_pic: String?
 }
 
@@ -85,7 +78,6 @@ struct KickHostChannelResponse: Codable {
 struct KickLiveSearchChannel: Codable, Identifiable {
     let id: Int
     let username: String
-    let slug: String
     let viewers_count: Int
     let is_live: Bool
     let profile_pic: String?
