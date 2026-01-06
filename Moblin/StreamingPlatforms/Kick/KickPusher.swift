@@ -318,10 +318,8 @@ final class KickPusher: NSObject {
 
     private func fetchSubscriberBadges() {
         getKickChannelInfo(channelName: channelName) { [weak self] channelInfo in
-            DispatchQueue.main.async {
-                if let subscriberBadges = channelInfo?.subscriber_badges {
-                    self?.badges.setBadges(subscriberBadges)
-                }
+            if let subscriberBadges = channelInfo?.subscriber_badges {
+                self?.badges.setBadges(subscriberBadges)
             }
         }
     }

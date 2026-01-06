@@ -52,9 +52,7 @@ private struct TwitchCategoryPickerView: View {
     private func fetchDefaultCategories() {
         let categoryNames = ["IRL", "Just Chatting", "Food & Drink"]
         model.fetchTwitchGames(stream: stream, names: categoryNames) { games in
-            DispatchQueue.main.async {
-                self.categories = games ?? []
-            }
+            self.categories = games ?? []
         }
     }
 
@@ -92,9 +90,7 @@ private struct TwitchCategoryPickerView: View {
                             return
                         }
                         model.searchTwitchCategories(stream: stream, filter: searchText) { categories in
-                            DispatchQueue.main.async {
-                                self.categories = categories ?? []
-                            }
+                            self.categories = categories ?? []
                         }
                     }
             }
@@ -149,9 +145,7 @@ func loadTwitchStreamInfo(model: Model,
     }
     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
         model.getTwitchChannelInformation(stream: stream) { info in
-            DispatchQueue.main.async {
-                onChange(info.title, info.game_name)
-            }
+            onChange(info.title, info.game_name)
         }
     }
 }

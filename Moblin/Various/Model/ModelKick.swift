@@ -14,17 +14,15 @@ extension Model {
                 }
                 stream.kickChannelName = userData.username
                 getKickChannelInfo(channelName: userData.username) { channelInfo in
-                    DispatchQueue.main.async {
-                        if let channelInfo {
-                            stream.kickChannelId = String(channelInfo.chatroom.id)
-                            stream.kickSlug = channelInfo.slug
-                            stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
-                        }
-                        if stream.enabled {
-                            self.kickAccessTokenUpdated()
-                        }
-                        onComplete?()
+                    if let channelInfo {
+                        stream.kickChannelId = String(channelInfo.chatroom.id)
+                        stream.kickSlug = channelInfo.slug
+                        stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
                     }
+                    if stream.enabled {
+                        self.kickAccessTokenUpdated()
+                    }
+                    onComplete?()
                 }
             }
         }
@@ -110,14 +108,12 @@ extension Model {
             return
         }
         getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            DispatchQueue.main.async {
-                if let channelInfo {
-                    self.stream.kickChannelId = String(channelInfo.chatroom.id)
-                    self.stream.kickSlug = channelInfo.slug
-                    self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
-                }
-                self.kickChannelNameUpdated()
+            if let channelInfo {
+                self.stream.kickChannelId = String(channelInfo.chatroom.id)
+                self.stream.kickSlug = channelInfo.slug
+                self.stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
             }
+            self.kickChannelNameUpdated()
         }
     }
 

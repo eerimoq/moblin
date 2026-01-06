@@ -118,11 +118,13 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
     }
     let request = URLRequest(url: url)
     URLSession.shared.dataTask(with: request) { data, response, error in
-        guard error == nil, let data, response?.http?.isSuccessful == true else {
-            onComplete(nil)
-            return
+        DispatchQueue.main.async {
+            guard error == nil, let data, response?.http?.isSuccessful == true else {
+                onComplete(nil)
+                return
+            }
+            onComplete(try? JSONDecoder().decode(KickChannel.self, from: data))
         }
-        onComplete(try? JSONDecoder().decode(KickChannel.self, from: data))
     }
     .resume()
 }
@@ -132,11 +134,13 @@ func getKickUser(accessToken: String, onComplete: @escaping (KickUser?) -> Void)
     request.setAuthorization("Bearer \(accessToken)")
     request.setValue("application/json", forHTTPHeaderField: "Accept")
     URLSession.shared.dataTask(with: request) { data, response, error in
-        guard error == nil, let data, response?.http?.isSuccessful == true else {
-            onComplete(nil)
-            return
+        DispatchQueue.main.async {
+            guard error == nil, let data, response?.http?.isSuccessful == true else {
+                onComplete(nil)
+                return
+            }
+            onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
         }
-        onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
     }
     .resume()
 }

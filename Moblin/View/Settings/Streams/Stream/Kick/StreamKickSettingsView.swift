@@ -41,9 +41,7 @@ private struct KickCategoryPickerView: View {
         for categoryName in categoryNames {
             model.fetchKickCategories(query: categoryName) { result in
                 if let category = result?.first {
-                    DispatchQueue.main.async {
-                        self.categories.append(category)
-                    }
+                    self.categories.append(category)
                 }
             }
         }
@@ -81,12 +79,12 @@ private struct KickCategoryPickerView: View {
                     .autocorrectionDisabled(true)
                     .onChange(of: searchText) { _ in
                         guard !searchText.isEmpty else {
+                            categories = []
+                            fetchDefaultCategories()
                             return
                         }
                         model.searchKickCategories(stream: stream, query: searchText) { result in
-                            DispatchQueue.main.async {
-                                self.categories = result ?? []
-                            }
+                            self.categories = result ?? []
                         }
                     }
             }
@@ -185,13 +183,11 @@ func loadKickStreamInfo(model: Model,
     }
     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
         model.getKickStreamInfo(stream: stream) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case let .success(info):
-                    onChange(info.title, info.categoryName)
-                default:
-                    onChange(nil, nil)
-                }
+            switch result {
+            case let .success(info):
+                onChange(info.title, info.categoryName)
+            default:
+                onChange(nil, nil)
             }
         }
     }
@@ -209,19 +205,17 @@ struct StreamKickSettingsView: View {
         fetchingChannelInfo = true
         fetchChannelInfoFailed = false
         getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            DispatchQueue.main.async {
-                fetchingChannelInfo = false
-                if let channelInfo {
-                    fetchChannelInfoFailed = false
-                    stream.kickChannelId = String(channelInfo.chatroom.id)
-                    stream.kickSlug = channelInfo.slug
-                    stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
-                    loadStreamInfo()
-                } else {
-                    fetchChannelInfoFailed = true
-                }
-                reloadConnectionsIfEnabled()
+            fetchingChannelInfo = false
+            if let channelInfo {
+                fetchChannelInfoFailed = false
+                stream.kickChannelId = String(channelInfo.chatroom.id)
+                stream.kickSlug = channelInfo.slug
+                stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
+                loadStreamInfo()
+            } else {
+                fetchChannelInfoFailed = true
             }
+            reloadConnectionsIfEnabled()
         }
     }
 
@@ -243,9 +237,7 @@ struct StreamKickSettingsView: View {
 
     private func onLoggedIn() {
         getKickUser(accessToken: stream.kickAccessToken) { data in
-            DispatchQueue.main.async {
-                self.handleUser(data: data)
-            }
+            self.handleUser(data: data)
         }
     }
 
