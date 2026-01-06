@@ -535,13 +535,21 @@ class TwitchApi {
 
     func searchChannel(channelName: String, onComplete: @escaping (TwitchApiChannel?) -> Void) {
         searchChannels(filter: channelName, liveOnly: false) {
-            onComplete($0?.first(where: {
-                $0.broadcaster_login.lowercased() == channelName.lowercased()
-            }))
+            switch $0 {
+            case let .success(data):
+                onComplete(data.first(where: {
+                    $0.broadcaster_login.lowercased() == channelName.lowercased()
+                }))
+            default:
+                onComplete(nil)
+            }
         }
     }
 
-    func searchChannels(filter: String, liveOnly: Bool, onComplete: @escaping ([TwitchApiChannel]?) -> Void) {
+    func searchChannels(filter: String,
+                        liveOnly: Bool,
+                        onComplete: @escaping (NetworkResponse<[TwitchApiChannel]>) -> Void)
+    {
         var parameters = [("query", filter)]
         if liveOnly {
             parameters.append(("live_only", "true"))
@@ -549,10 +557,15 @@ class TwitchApi {
         doGet(subPath: makeUrl("search/channels", parameters)) {
             switch $0 {
             case let .success(data):
-                let message = try? JSONDecoder().decode(TwitchApiSearchChannels.self, from: data)
-                onComplete(message?.data)
-            default:
-                onComplete(nil)
+                if let message = try? JSONDecoder().decode(TwitchApiSearchChannels.self, from: data) {
+                    onComplete(.success(message.data))
+                } else {
+                    onComplete(.error)
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
             }
         }
     }

@@ -28,11 +28,23 @@ private class Executor: ObservableObject {
             self.state = .idle
         }
     }
+
+    func completedNoTimer(result: OperationResult) {
+        switch result {
+        case .success:
+            state = .idle
+        case .authError:
+            state = .authError
+        case .error:
+            state = .error
+        }
+    }
 }
 
 private struct ExecutorView<Content: View>: View {
     @EnvironmentObject var model: Model
     @ObservedObject var executor: Executor
+    var centerNonContent: Bool = false
     @ViewBuilder let content: () -> Content
 
     var body: some View {
@@ -42,15 +54,20 @@ private struct ExecutorView<Content: View>: View {
                 content()
             case .inProgress:
                 ProgressView()
+                    .id(UUID()) // Only visible first raid search if removed.
+                    .hCenter(centerNonContent)
             case .success:
                 Text("Success")
                     .foregroundStyle(.green)
+                    .hCenter(centerNonContent)
             case .authError:
                 Text("Not logged in")
                     .foregroundStyle(.red)
+                    .hCenter(centerNonContent)
             case .error:
                 Text("Failed")
                     .foregroundStyle(.red)
+                    .hCenter(centerNonContent)
             }
         }
         .onChange(of: executor.state) { _ in
@@ -469,6 +486,7 @@ private struct StartTwitchRaidView: View {
     let model: Model
     @State private var searchText: String = ""
     @State private var channels: [TwitchApiChannel] = []
+    @StateObject private var executor = Executor()
 
     var body: some View {
         NavigationLinkView(text: "Raid channel", image: "play.tv") {
@@ -479,16 +497,25 @@ private struct StartTwitchRaidView: View {
                         guard !searchText.isEmpty else {
                             return
                         }
-                        model.searchTwitchChannels(stream: model.stream, filter: searchText) { channels in
-                            DispatchQueue.main.async {
-                                self.channels = channels ?? []
+                        executor.startProgress()
+                        model.searchTwitchChannels(stream: model.stream, filter: searchText) {
+                            switch $0 {
+                            case let .success(channels):
+                                self.channels = channels
+                                executor.completedNoTimer(result: .success(Data()))
+                            case .authError:
+                                executor.completedNoTimer(result: .authError)
+                            case .error:
+                                executor.completedNoTimer(result: .error)
                             }
                         }
                     }
             }
             Section {
-                ForEach($channels) { channel in
-                    StartTwitchRaidChannelView(model: model, channel: channel)
+                ExecutorView(executor: executor, centerNonContent: true) {
+                    ForEach($channels) {
+                        StartTwitchRaidChannelView(model: model, channel: $0)
+                    }
                 }
             }
         }
