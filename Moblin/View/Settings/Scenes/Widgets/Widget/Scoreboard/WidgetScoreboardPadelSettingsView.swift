@@ -72,6 +72,8 @@ private struct PlayerView: View {
 
 struct WidgetScoreboardPadelGeneralSettingsView: View {
     let model: Model
+    @ObservedObject var widget: SettingsWidget
+    @ObservedObject var scoreboard: SettingsWidgetScoreboard
     @ObservedObject var padel: SettingsWidgetPadelScoreboard
 
     var body: some View {
@@ -88,6 +90,7 @@ struct WidgetScoreboardPadelGeneralSettingsView: View {
                 model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
         }
+        ScoreboardColorsView(model: model, widget: widget, scoreboard: scoreboard)
     }
 }
 

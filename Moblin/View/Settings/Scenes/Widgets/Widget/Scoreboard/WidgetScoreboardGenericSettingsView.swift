@@ -2,6 +2,8 @@ import SwiftUI
 
 struct WidgetScoreboardGenericGeneralSettingsView: View {
     let model: Model
+    @ObservedObject var widget: SettingsWidget
+    @ObservedObject var scoreboard: SettingsWidgetScoreboard
     @ObservedObject var generic: SettingsWidgetGenericScoreboard
 
     var body: some View {
@@ -11,6 +13,7 @@ struct WidgetScoreboardGenericGeneralSettingsView: View {
         .onChange(of: generic.title) { _ in
             model.resetSelectedScene(changeScene: false, attachCamera: false)
         }
+        ScoreboardColorsView(model: model, widget: widget, scoreboard: scoreboard)
     }
 }
 

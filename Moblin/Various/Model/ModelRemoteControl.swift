@@ -507,6 +507,7 @@ extension Model {
             return
         }
         remoteControlWeb = RemoteControlWeb(delegate: self)
+        setupRemoteControlScoreboardServer()
         remoteControlWeb?.start(port: database.remoteControl.web.port)
     }
 }
