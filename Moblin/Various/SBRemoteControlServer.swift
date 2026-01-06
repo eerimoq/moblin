@@ -34,11 +34,11 @@ class SBRemoteControlServer {
                             }
                             
                             if request.contains("GET /volleyball.png") {
-                                self.serveVolleyballIcon(on: connection)
+                                self.serveImage(on: connection)
                             } else if request.contains("GET /scoreboard") {
-                                self.servePage(on: connection, html: SB_DISPLAY_HTML)
+                                self.servePage(on: connection, name: "scoreboard")
                             } else {
-                                self.servePage(on: connection, html: SB_REMOTE_HTML)
+                                self.servePage(on: connection, name: "remote")
                             }
                         }
                     }
@@ -51,7 +51,7 @@ class SBRemoteControlServer {
         }
     }
 
-    private func serveVolleyballIcon(on connection: NWConnection) {
+    private func serveImage(on connection: NWConnection) {
         // Try to load the image from Xcode Assets
         guard let image = UIImage(named: "VolleyballIndicator") else {
             print("❌ SB Remote Error: Asset 'VolleyballIndicator' not found.")
@@ -77,20 +77,26 @@ class SBRemoteControlServer {
         }))
     }
 
-    private func servePage(on connection: NWConnection, html: String) {
-        let header = "HTTP/1.1 200 OK\r\n" +
-                     "Content-Type: text/html; charset=utf-8\r\n" +
-                     "Content-Length: \(html.utf8.count)\r\n" +
-                     "Connection: close\r\n\r\n"
-        
-        var responseData = Data(header.utf8)
-        responseData.append(Data(html.utf8))
-        
-        connection.send(content: responseData, completion: .contentProcessed({ _ in
+    private func servePage(on connection: NWConnection, name: String) {
+        //check root first, then in directory
+        let path = Bundle.main.path(forResource: name, ofType: "html") ??
+                   Bundle.main.path(forResource: name, ofType: "html", inDirectory: "Web")
+
+        guard let path = path, let html = try? String(contentsOfFile: path, encoding: .utf8) else {
+            print("❌ SB Server: File not found: \(name).html")
+            let errorResponse = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nFile Not Found"
+            connection.send(content: errorResponse.data(using: .utf8), completion: .contentProcessed({ _ in
+                connection.cancel()
+            }))
+            return
+        }
+
+        let response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: \(html.utf8.count)\r\nConnection: close\r\n\r\n\(html)"
+        connection.send(content: response.data(using: .utf8), completion: .contentProcessed({ _ in
             connection.cancel()
         }))
     }
-
+    
     // --- PORT 8081: Handles the Real-Time WebSocket Data ---
     private func startWsServer() {
         do {

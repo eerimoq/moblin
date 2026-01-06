@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Moblin Scoreboard Display</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: black; margin: 0; overflow: hidden; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .team-column { flex: 1 1 50%; max-width: 50vw; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        
+        /* Center large score in the 88% area, pulling up slightly for optical centering */
+        .score-container { height: 88vh; display: flex; align-items: center; justify-content: center; }
+        .set-score {
+            font-size: 60vh;
+            font-weight: 900;
+            line-height: 1;
+            transform: translateY(-4vh);
+        }
+
+        .info-bar { height: 12vh; font-weight: 800; display: flex; width: 100%; }
+        
+        /* Narrower Match Box (9vw) */
+        .match-box { width: 9vw; background: rgba(0,0,0,0.3); font-size: 7vh; display: flex; align-items: center; justify-content: center; }
+        
+        .team-name { font-size: 7vh; text-transform: uppercase; flex: 1; text-align: center; align-self: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 0 10px; }
+
+        /* Serving Icon Box */
+        .serve-box { width: 9vw; display: flex; align-items: center; justify-content: center; }
+        .serve-img { height: 8vh; width: 8vh; object-fit: contain; }
+        
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body onclick="toggleFullscreen()">
+    <div class="h-screen w-screen flex overflow-hidden">
+        <!-- Team 1 (Left) -->
+        <div id="t1-column" class="team-column border-r border-white/10">
+            <div class="score-container"><div id="t1-set-score" class="set-score">0</div></div>
+            <div id="t1-bar" class="info-bar">
+                <div class="match-box" id="t1-match">0</div>
+                <div class="team-name" id="t1-name">TEAM 1</div>
+                <div class="serve-box">
+                    <img id="t1-serve-icon" src="/volleyball.png" class="serve-img hidden">
+                </div>
+            </div>
+        </div>
+
+        <!-- Team 2 (Right) -->
+        <div id="t2-column" class="team-column">
+            <div class="score-container"><div id="t2-set-score" class="set-score">0</div></div>
+            <div id="t2-bar" class="info-bar">
+                <div class="match-box" id="t2-match">0</div>
+                <div class="team-name" id="t2-name">TEAM 2</div>
+                <div class="serve-box">
+                    <img id="t2-serve-icon" src="/volleyball.png" class="serve-img hidden">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+            else { if (document.exitFullscreen) { document.exitFullscreen(); } }
+        }
+
+        function connect() {
+            const socket = new WebSocket('ws://' + window.location.hostname + ':8081');
+            socket.onopen = () => socket.send(JSON.stringify({ type: "request-sync" }));
+            socket.onclose = () => setTimeout(connect, 2000);
+            socket.onmessage = (e) => {
+                const msg = JSON.parse(e.data);
+                if (msg.type === "update-match" && msg.updates) {
+                    updateTeam(1, msg.updates.team1);
+                    updateTeam(2, msg.updates.team2);
+                }
+            };
+        }
+
+        function updateTeam(num, data) {
+            document.getElementById('t' + num + '-column').style.backgroundColor = data.bgColor;
+            document.getElementById('t' + num + '-bar').style.backgroundColor = data.bgColor;
+            document.getElementById('t' + num + '-set-score').style.color = data.textColor;
+            document.getElementById('t' + num + '-name').style.color = data.textColor;
+            document.getElementById('t' + num + '-match').style.color = data.textColor;
+
+            document.getElementById('t' + num + '-set-score').innerText = data.setScore;
+            document.getElementById('t' + num + '-name').innerText = data.name;
+            document.getElementById('t' + num + '-match').innerText = data.matchScore;
+
+            const icon = document.getElementById('t' + num + '-serve-icon');
+            if (data.serving) { icon.classList.remove('hidden'); }
+            else { icon.classList.add('hidden'); }
+        }
+        connect();
+    </script>
+</body>
+</html>
