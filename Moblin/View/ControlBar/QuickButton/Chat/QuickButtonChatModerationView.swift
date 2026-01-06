@@ -529,7 +529,18 @@ private struct StartTwitchRaidView: View {
                         model.searchTwitchChannels(stream: model.stream, filter: searchText) {
                             switch $0 {
                             case let .success(channels):
-                                self.channels = channels
+                                self.channels = channels.sorted(by: {
+                                    let searchText = searchText.lowercased()
+                                    let first = $0.display_name.lowercased()
+                                    let second = $1.display_name.lowercased()
+                                    if first.hasPrefix(searchText) {
+                                        return true
+                                    } else if second.hasPrefix(searchText) {
+                                        return false
+                                    } else {
+                                        return true
+                                    }
+                                })
                                 executor.completedNoTimer(result: .success(Data()))
                             case .authError:
                                 executor.completedNoTimer(result: .authError)
