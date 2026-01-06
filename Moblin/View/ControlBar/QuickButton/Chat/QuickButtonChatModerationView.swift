@@ -907,9 +907,9 @@ private struct TwitchView: View {
     var body: some View {
         NavigationLink {
             Form {
+                TwitchChannelManagementView(model: model)
                 TwitchUserModerationView(model: model)
                 TwitchChatModesView(model: model)
-                TwitchChannelManagementView(model: model)
             }
             .navigationTitle("Twitch")
             .onAppear {
@@ -982,9 +982,9 @@ private struct KickView: View {
     var body: some View {
         NavigationLink {
             Form {
+                KickChannelManagementView(model: model)
                 KickUserModerationView(model: model)
                 KickChatModesView(model: model)
-                KickChannelManagementView(model: model)
             }
             .navigationTitle("Kick")
             .onAppear {
