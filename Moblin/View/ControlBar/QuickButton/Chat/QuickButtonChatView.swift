@@ -300,9 +300,12 @@ private struct HypeTrainView: View {
                         }
                         Spacer()
                         Text("LEVEL \(level)")
-                        CloseView {
+                        Button {
                             model.removeHypeTrain()
+                        } label: {
+                            Text("Close")
                         }
+                        .buttonStyle(.bordered)
                     }
                     .foregroundStyle(.white)
                     .padding(10)
@@ -355,9 +358,12 @@ private struct RaidView: View {
                     HStack(spacing: 0) {
                         Text(raid.message)
                         Spacer()
-                        CloseView {
+                        Button {
                             close()
+                        } label: {
+                            Text(raid.state == .ongoing ? "Cancel" : "Close")
                         }
+                        .buttonStyle(.bordered)
                     }
                     .foregroundStyle(.white)
                     .padding(10)
