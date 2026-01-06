@@ -422,11 +422,14 @@ extension Model {
                                                    onComplete: onComplete)
     }
 
-    func twitchRaidStarted(channelName: String) {
+    func twitchRaidStarted(channelLogin: String, channelName: String) {
         raid.state = .ongoing
         raid.message = String(localized: "Raiding \(channelName)")
         raid.progress.progress = 0
         raid.progress.goal = 90
+        searchTwitchChannel(stream: stream, channelName: channelLogin) {
+            self.raid.channelImage = $0?.thumbnail_url ?? ""
+        }
     }
 
     func twitchRaidCancelled() {
@@ -453,6 +456,7 @@ extension Model {
 
     func removeRaid() {
         raid.state = .idle
+        raid.channelImage = ""
         raid.timer.stop()
     }
 
@@ -729,7 +733,7 @@ extension Model: TwitchEventSubDelegate {
             guard let raid = event.raid else {
                 return
             }
-            twitchRaidStarted(channelName: raid.user_name)
+            twitchRaidStarted(channelLogin: raid.user_login, channelName: raid.user_name)
         case "unraid":
             twitchRaidCancelled()
         default:

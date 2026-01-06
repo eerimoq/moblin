@@ -250,25 +250,6 @@ private struct ProgressBarView: View {
     }
 }
 
-private struct CloseView: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button {
-            action()
-        } label: {
-            Image(systemName: "xmark")
-                .font(.footnote)
-                .frame(width: 25, height: 25)
-                .overlay(
-                    Circle()
-                        .stroke(.secondary)
-                )
-                .padding([.leading], 15)
-        }
-    }
-}
-
 private struct HypeTrainView: View {
     let model: Model
     @ObservedObject var hypeTrain: HypeTrain
@@ -355,7 +336,8 @@ private struct RaidView: View {
                 .frame(height: 1)
             VStack {
                 if raid.state != .idle {
-                    HStack(spacing: 0) {
+                    HStack {
+                        RaidChannelImageView(image: raid.channelImage)
                         Text(raid.message)
                         Spacer()
                         Button {

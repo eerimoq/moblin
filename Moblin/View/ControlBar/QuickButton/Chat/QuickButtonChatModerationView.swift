@@ -444,6 +444,32 @@ private struct CreatePredictionView: View {
     }
 }
 
+struct RaidChannelImageView: View {
+    let image: String?
+
+    var body: some View {
+        Group {
+            if let image, let url = URL(string: image) {
+                CacheAsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    Image("AppIconNoBackground")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+            } else {
+                Image("AppIconNoBackground")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            }
+        }
+        .frame(width: 50)
+        .clipShape(Circle())
+    }
+}
+
 private struct RaidChannelView: View {
     let buttonText: LocalizedStringKey
     let channel: String
@@ -457,25 +483,7 @@ private struct RaidChannelView: View {
 
     var body: some View {
         HStack {
-            Group {
-                if let image, let url = URL(string: image) {
-                    CacheAsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        Image("AppIconNoBackground")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    }
-                } else {
-                    Image("AppIconNoBackground")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                }
-            }
-            .frame(width: 50)
-            .clipShape(Circle())
+            RaidChannelImageView(image: image)
             VStack(alignment: .leading) {
                 Text(channel)
                 if isLive {
