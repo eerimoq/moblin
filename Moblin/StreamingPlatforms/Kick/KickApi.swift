@@ -328,13 +328,13 @@ class KickApi {
         doV2Request(method: "POST",
                     subPath: "channels/\(slug)/chat-commands",
                     body: ["command": "host", "parameter": channel])
-        { result in
-            switch result {
+        {
+            switch $0 {
             case let .success(data):
                 if let response = try? JSONDecoder().decode(KickHostChannelResponse.self, from: data) {
                     onComplete(response.success ? .success(data) : .error)
                 } else {
-                    onComplete(.success(data))
+                    onComplete(.error)
                 }
             case .authError:
                 onComplete(.authError)
