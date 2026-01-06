@@ -16,12 +16,16 @@ struct SubscriberBadge: Codable {
     let badge_image: BadgeImage
 }
 
+struct KickLivestreamCategory: Codable {
+    let name: String?
+}
+
 struct KickLivestream: Codable {
     // periphery:ignore
     let id: Int
     let viewers: Int
-    // periphery:ignore
     let session_title: String?
+    let categories: [KickLivestreamCategory]?
 }
 
 struct KickChatroom: Codable {
@@ -55,6 +59,28 @@ struct KickCategory: Codable, Identifiable {
     let src: String?
     // periphery:ignore
     let srcset: String?
+}
+
+struct KickFollowedChannel: Codable, Identifiable {
+    var id: String { channel_slug }
+    let is_live: Bool
+    let profile_picture: String?
+    let channel_slug: String
+    let viewer_count: Int?
+    let category_name: String?
+    let user_username: String
+    let session_title: String?
+}
+
+struct KickFollowedChannelsResponse: Codable {
+    let channels: [KickFollowedChannel]
+    let nextCursor: Int?
+}
+
+struct KickHostChannelResponse: Codable {
+    let success: Bool
+    // periphery:ignore
+    let error: String?
 }
 
 struct KickCategorySearchHit: Codable {
@@ -111,6 +137,34 @@ func getKickUser(accessToken: String, onComplete: @escaping (KickUser?) -> Void)
             return
         }
         onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
+    }
+    .resume()
+}
+
+func getKickFollowedChannels(
+    accessToken: String,
+    cursor: Int? = nil,
+    onComplete: @escaping (KickFollowedChannelsResponse?) -> Void
+) {
+    var urlString = "https://kick.com/api/v2/channels/followed"
+    if let cursor {
+        urlString += "?cursor=\(cursor)"
+    }
+    guard let url = URL(string: urlString) else {
+        onComplete(nil)
+        return
+    }
+    var request = URLRequest(url: url)
+    request.setAuthorization("Bearer \(accessToken)")
+    request.setValue("application/json", forHTTPHeaderField: "Accept")
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        DispatchQueue.main.async {
+            guard error == nil, let data, response?.http?.isSuccessful == true else {
+                onComplete(nil)
+                return
+            }
+            onComplete(try? JSONDecoder().decode(KickFollowedChannelsResponse.self, from: data))
+        }
     }
     .resume()
 }
@@ -222,8 +276,21 @@ class KickApi {
     func hostChannel(channel: String, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "POST",
                     subPath: "channels/\(slug)/chat-commands",
-                    body: ["command": "host", "parameter": channel],
-                    onComplete: onComplete)
+                    body: ["command": "host", "parameter": channel])
+        { result in
+            switch result {
+            case let .success(data):
+                if let response = try? JSONDecoder().decode(KickHostChannelResponse.self, from: data) {
+                    onComplete(response.success ? .success(data) : .error)
+                } else {
+                    onComplete(.success(data))
+                }
+            case .authError:
+                onComplete(.authError)
+            case .error:
+                onComplete(.error)
+            }
+        }
     }
 
     func enableSlowMode(messageInterval: Int, onComplete: @escaping (OperationResult) -> Void) {
