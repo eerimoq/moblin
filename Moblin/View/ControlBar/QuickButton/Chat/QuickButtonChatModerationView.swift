@@ -465,7 +465,7 @@ struct RaidChannelImageView: View {
                     .aspectRatio(contentMode: .fit)
             }
         }
-        .frame(width: 50)
+        .frame(width: 50, height: 50)
         .clipShape(Circle())
     }
 }
