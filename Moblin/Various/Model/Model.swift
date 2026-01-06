@@ -350,6 +350,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var sceneSettingsPanelSceneId = 1
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
+    @Published var externalScoreboard: SBMatchConfig?
     var activeBufferedVideoIds: Set<UUID> = []
 
     var streamState = StreamState.disconnected {
@@ -390,6 +391,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let statusTopRight = StatusTopRight()
     let battery = Battery()
     let remoteControl = RemoteControl()
+    let sbRemoteControlServer = SBRemoteControlServer()
     let createStreamWizard = CreateStreamWizard()
     let createWidgetWizard = CreateWidgetWizard()
     let zoom = Zoom()
@@ -637,6 +639,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             AppDelegate.orientationLock = .landscape
         }
+        setupSBRemoteControlServer() //CST
     }
 
     func updateIsPortrait() {
@@ -1587,6 +1590,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAutoSceneSwitcher(now: monotonicNow)
             self.sendPeriodicRemoteControlStreamerStatus()
             self.speechToTextProcess()
+            self.broadcastStreamStats() //to broadcast stream stats to remote control interface
         }
         periodicTimer3s.startPeriodic(interval: 3) {
             self.teslaGetDriveState()

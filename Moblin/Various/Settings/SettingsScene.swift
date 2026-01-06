@@ -2366,6 +2366,12 @@ enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
     }
 }
 
+enum SettingsWidgetScoreboardLayout: String, Codable, CaseIterable {
+    case stacked = "Stacked"
+    case sideBySide = "Side by side"
+    //case scoreboard = "Scoreboard"
+}
+
 class SettingsWidgetScoreboardPlayer: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "🇸🇪 Moblin")
     var id: UUID = .init()
@@ -2578,13 +2584,46 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
     var padel: SettingsWidgetPadelScoreboard = .init()
     var generic: SettingsWidgetGenericScoreboard = .init()
 
+    @Published var layout: SettingsWidgetScoreboardLayout = .stacked
+    
+    //stacked settings
+    @Published var stackedFontSize: Float = 20
+    @Published var stackedWidth: Float = 300
+    @Published var stackedRowHeight: Float = 30
+    @Published var stackedIsBold: Bool = true
+    @Published var stackedIsItalic: Bool = false
+    @Published var showStackedHeader: Bool = true
+    @Published var showStackedFooter: Bool = true
+
+    //side by side settings
+    @Published var sbsFontSize: Float = 20
+    @Published var sbsWidth: Float = 500
+    @Published var sbsRowHeight: Float = 30
+    @Published var sbsIsBold: Bool = true
+    @Published var sbsIsItalic: Bool = false
+    @Published var showSbsTitle: Bool = true
+    
     enum CodingKeys: CodingKey {
         case type,
              padel,
              generic,
              textColor,
              primaryBackgroundColor,
-             secondaryBackgroundColor
+             secondaryBackgroundColor,
+             layout,
+             stackedFontSize,
+             stackedWidth,
+             stackedRowHeight,
+             stackedIsBold,
+             stackedIsItalic,
+             showStackedHeader,
+             showStackedFooter,
+             sbsFontSize,
+             sbsWidth,
+             sbsRowHeight,
+             sbsIsBold,
+             sbsIsItalic,
+             showSbsTitle
     }
 
     init() {
@@ -2593,12 +2632,28 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.type, type)
-        try container.encode(.textColor, textColor)
-        try container.encode(.primaryBackgroundColor, primaryBackgroundColor)
-        try container.encode(.secondaryBackgroundColor, secondaryBackgroundColor)
-        try container.encode(.padel, padel)
-        try container.encode(.generic, generic)
+        try container.encode(type, forKey: .type)
+        try container.encode(textColor, forKey: .textColor)
+        try container.encode(primaryBackgroundColor, forKey: .primaryBackgroundColor)
+        try container.encode(secondaryBackgroundColor, forKey: .secondaryBackgroundColor)
+        try container.encode(padel, forKey: .padel)
+        try container.encode(generic, forKey: .generic)
+        try container.encode(layout, forKey: .layout)
+        
+        try container.encode(stackedFontSize, forKey: .stackedFontSize)
+        try container.encode(stackedWidth, forKey: .stackedWidth)
+        try container.encode(stackedRowHeight, forKey: .stackedRowHeight)
+        try container.encode(stackedIsBold, forKey: .stackedIsBold)
+        try container.encode(stackedIsItalic, forKey: .stackedIsItalic)
+        try container.encode(showStackedHeader, forKey: .showStackedHeader)
+        try container.encode(showStackedFooter, forKey: .showStackedFooter)
+        
+        try container.encode(sbsFontSize, forKey: .sbsFontSize)
+        try container.encode(sbsWidth, forKey: .sbsWidth)
+        try container.encode(sbsRowHeight, forKey: .sbsRowHeight)
+        try container.encode(sbsIsBold, forKey: .sbsIsBold)
+        try container.encode(sbsIsItalic, forKey: .sbsIsItalic)
+        try container.encode(showSbsTitle, forKey: .showSbsTitle)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2613,6 +2668,24 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
                                                     Self.baseSecondaryBackgroundColor)
         padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
         generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
+        
+        layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
+        
+        stackedFontSize = container.decode(.stackedFontSize, Float.self, 20)
+        stackedWidth = container.decode(.stackedWidth, Float.self, 300)
+        stackedRowHeight = container.decode(.stackedRowHeight, Float.self, 30)
+        stackedIsBold = container.decode(.stackedIsBold, Bool.self, true)
+        stackedIsItalic = container.decode(.stackedIsItalic, Bool.self, false)
+        showStackedHeader = container.decode(.showStackedHeader, Bool.self, true)
+        showStackedFooter = container.decode(.showStackedFooter, Bool.self, true)
+
+        sbsFontSize = container.decode(.sbsFontSize, Float.self, 20)
+        sbsWidth = container.decode(.sbsWidth, Float.self, 400)
+        sbsRowHeight = container.decode(.sbsRowHeight, Float.self, 30)
+        sbsIsBold = container.decode(.sbsIsBold, Bool.self, true)
+        sbsIsItalic = container.decode(.sbsIsItalic, Bool.self, false)
+        showSbsTitle = container.decode(.showSbsTitle, Bool.self, true)
+        
         loadColors()
     }
 
