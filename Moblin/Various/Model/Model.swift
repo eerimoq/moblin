@@ -639,7 +639,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             AppDelegate.orientationLock = .landscape
         }
-        setupSBRemoteControlServer() //CST
+        setupSBRemoteControlServer()
     }
 
     func updateIsPortrait() {
