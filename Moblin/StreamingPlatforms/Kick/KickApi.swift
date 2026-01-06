@@ -34,6 +34,7 @@ struct KickChatroom: Codable {
 }
 
 struct KickChannelUser: Codable {
+    let username: String?
     let profile_pic: String?
 }
 
@@ -79,8 +80,6 @@ struct KickFollowedChannelsResponse: Codable {
 
 struct KickHostChannelResponse: Codable {
     let success: Bool
-    // periphery:ignore
-    let error: String?
 }
 
 struct KickCategorySearchHit: Codable {

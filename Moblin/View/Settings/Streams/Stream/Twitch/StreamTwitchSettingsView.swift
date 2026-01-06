@@ -87,6 +87,8 @@ private struct TwitchCategoryPickerView: View {
                     .autocorrectionDisabled(true)
                     .onChange(of: searchText) { _ in
                         guard !searchText.isEmpty else {
+                            categories = []
+                            fetchDefaultCategories()
                             return
                         }
                         model.searchTwitchCategories(stream: stream, filter: searchText) { categories in
