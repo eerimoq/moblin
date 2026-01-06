@@ -580,50 +580,54 @@ private struct StartTwitchRaidView: View {
 
 private struct KickHostChannelSearchView: View {
     let model: Model
-    @State private var username: String = ""
-    @State private var channel: KickChannel?
-    @StateObject var executor = Executor()
-
-    private func searchChannel() {
-        channel = nil
-        let username = username.trim()
-        guard !username.isEmpty else {
-            return
-        }
-        executor.startProgress()
-        getKickChannelInfo(channelName: username) {
-            channel = $0
-            executor.completedNoTimer(result: $0 != nil ? .success(Data()) : .error)
-        }
-    }
+    @State private var searchText: String = ""
+    @State private var channels: [KickLiveSearchChannel] = []
+    @StateObject private var executor = Executor()
 
     var body: some View {
         Section {
-            TextField("Search", text: $username)
+            TextField("Search", text: $searchText)
                 .autocapitalization(.none)
                 .autocorrectionDisabled()
-                .onSubmit {
-                    searchChannel()
-                }
-                .onChange(of: username) { _ in
-                    guard username.isEmpty else {
+                .onChange(of: searchText) { _ in
+                    guard !searchText.isEmpty else {
+                        channels = []
                         return
                     }
-                    channel = nil
+                    executor.startProgress()
+                    model.searchKickChannels(query: searchText) { results in
+                        if let results {
+                            self.channels = results.sorted(by: {
+                                let searchText = searchText.lowercased()
+                                let first = $0.username.lowercased()
+                                let second = $1.username.lowercased()
+                                if first.hasPrefix(searchText) {
+                                    return true
+                                } else if second.hasPrefix(searchText) {
+                                    return false
+                                } else {
+                                    return true
+                                }
+                            })
+                            executor.completedNoTimer(result: .success(Data()))
+                        } else {
+                            executor.completedNoTimer(result: .error)
+                        }
+                    }
                 }
         }
         Section {
             ExecutorView(executor: executor, centerNonContent: true) {
-                if let channel {
+                ForEach(channels) { channel in
                     RaidChannelView(buttonText: "Host",
-                                    channel: channel.user?.username ?? "",
-                                    category: channel.livestream?.categories?.first?.name ?? "",
-                                    title: channel.livestream?.session_title ?? "",
-                                    image: channel.user?.profile_pic,
-                                    isLive: channel.livestream != nil,
-                                    viewerCount: channel.livestream?.viewers)
+                                    channel: channel.username,
+                                    category: channel.category ?? "",
+                                    title: "",
+                                    image: channel.profile_pic,
+                                    isLive: channel.is_live,
+                                    viewerCount: channel.viewers_count)
                     {
-                        model.hostKickChannel(channel: channel.slug, onComplete: $0)
+                        model.hostKickChannel(channel: channel.username, onComplete: $0)
                     }
                 }
             }
@@ -664,7 +668,7 @@ private struct KickHostChannelView: View {
                                     isLive: true,
                                     viewerCount: channel.viewer_count)
                     {
-                        model.hostKickChannel(channel: channel.channel_slug, onComplete: $0)
+                        model.hostKickChannel(channel: channel.user_username, onComplete: $0)
                     }
                 }
                 if isLoading {

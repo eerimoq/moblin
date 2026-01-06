@@ -527,6 +527,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let twitchSearchCategoriesTimer = SimpleTimer(queue: .main)
     let twitchSearchChannelsTimer = SimpleTimer(queue: .main)
     let kickSearchCategoriesTimer = SimpleTimer(queue: .main)
+    let kickSearchChannelsTimer = SimpleTimer(queue: .main)
     var drawOnStreamSize: CGSize = .zero
     var webBrowser: WKWebView?
     let webBrowserController = WebBrowserController()

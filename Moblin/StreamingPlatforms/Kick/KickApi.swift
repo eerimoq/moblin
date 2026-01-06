@@ -82,6 +82,24 @@ struct KickHostChannelResponse: Codable {
     let success: Bool
 }
 
+struct KickLiveSearchChannel: Codable, Identifiable {
+    let id: Int
+    let username: String
+    let slug: String
+    let viewers_count: Int
+    let is_live: Bool
+    let profile_pic: String?
+    let category: String?
+}
+
+struct KickLiveSearchData: Codable {
+    let channels: [KickLiveSearchChannel]
+}
+
+struct KickLiveSearchResponse: Codable {
+    let data: KickLiveSearchData
+}
+
 struct KickCategorySearchHit: Codable {
     let document: KickCategory
 }
@@ -123,6 +141,32 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
                 return
             }
             onComplete(try? JSONDecoder().decode(KickChannel.self, from: data))
+        }
+    }
+    .resume()
+}
+
+func searchKickLiveChannels(query: String, accessToken: String, onComplete: @escaping ([KickLiveSearchChannel]?) -> Void) {
+    guard var components = URLComponents(string: "https://kick.com/api/internal/v1/live/search") else {
+        onComplete(nil)
+        return
+    }
+    components.queryItems = [URLQueryItem(name: "q", value: query)]
+    guard let url = components.url else {
+        onComplete(nil)
+        return
+    }
+    var request = URLRequest(url: url)
+    request.setValue("application/json", forHTTPHeaderField: "Accept")
+    request.setAuthorization("Bearer \(accessToken)")
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        DispatchQueue.main.async {
+            guard error == nil, let data, response?.http?.isSuccessful == true else {
+                onComplete(nil)
+                return
+            }
+            let response = try? JSONDecoder().decode(KickLiveSearchResponse.self, from: data)
+            onComplete(response?.data.channels)
         }
     }
     .resume()
@@ -490,7 +534,7 @@ class KickApi {
         }
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
-                guard error == nil, let data, response?.http?.isSuccessful == true else {
+                guard error == nil, let responseData = data, response?.http?.isSuccessful == true else {
                     if let data, let data = String(bytes: data, encoding: .utf8) {
                         logger.info("kick-api: Error response body: \(data)")
                     }
@@ -501,7 +545,7 @@ class KickApi {
                     }
                     return
                 }
-                onComplete(.success(data))
+                onComplete(.success(responseData))
             }
         }
         .resume()
