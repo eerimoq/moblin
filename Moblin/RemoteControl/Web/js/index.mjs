@@ -4,6 +4,7 @@ import {
   addOnChange,
   connectionStatus,
 } from "./utils.mjs";
+import { websocketPort } from "./config.mjs";
 
 class Connection {
   constructor() {
@@ -14,7 +15,9 @@ class Connection {
   }
 
   setup() {
-    this.websocket = new WebSocket(`ws://${window.location.host}:81`);
+    this.websocket = new WebSocket(
+      `ws://${window.location.hostname}:${websocketPort}`,
+    );
     this.websocket.onopen = (event) => {
       this.sendGetStatusRequest();
     };

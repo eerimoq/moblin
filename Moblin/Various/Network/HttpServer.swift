@@ -75,6 +75,10 @@ class HttpServerResponse {
     func send(data: Data) {
         connection?.send200AndClose(content: data)
     }
+
+    func send(text: String) {
+        connection?.send200AndClose(content: text.utf8Data)
+    }
 }
 
 private class HttpServerConnection {

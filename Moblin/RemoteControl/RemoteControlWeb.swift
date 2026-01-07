@@ -38,6 +38,7 @@ private let staticFiles: [StaticFile] = [
 class RemoteControlWeb {
     private var server: HttpServer?
     private var websocketServer: NWListener?
+    private var websocketPort: UInt16 = 0
     private weak var delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
 
@@ -72,11 +73,13 @@ class RemoteControlWeb {
             HttpServerRoute(path: $0.makePath(), handler: handleStatic)
         }
         routes.append(HttpServerRoute(path: "/", handler: handleRoot))
+        routes.append(HttpServerRoute(path: "/js/config.mjs", handler: handleConfigMjs))
         server = HttpServer(queue: .main, routes: routes)
         server?.start(port: .init(integer: Int(port)))
     }
 
     private func startWebsocketServer(port: UInt16) {
+        websocketPort = port
         let parameters = NWParameters.tcp
         let options = NWProtocolWebSocket.Options()
         options.autoReplyPing = true
@@ -116,6 +119,16 @@ class RemoteControlWeb {
             return
         }
         response.send(data: loadResource(name: staticPath.name, ext: staticPath.ext))
+    }
+
+    private func handleConfigMjs(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "GET" else {
+            return
+        }
+        let configMjs = """
+        export const websocketPort = \(websocketPort);
+        """
+        response.send(text: configMjs)
     }
 
     private func handleNewWebsocketConnection(_ connection: NWConnection) {
