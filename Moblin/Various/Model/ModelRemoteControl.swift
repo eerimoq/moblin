@@ -496,7 +496,7 @@ extension Model {
             return
         }
         remoteControlWeb = RemoteControlWeb(delegate: self)
-        remoteControlWeb?.start(port: web.port)
+        remoteControlWeb?.start(port: database.remoteControl.web.port)
     }
 }
 
