@@ -486,14 +486,14 @@ extension Model {
 
     func remoteControlStateChanged(state: RemoteControlAssistantStreamerState) {
         remoteControlStreamer?.stateChanged(state: state)
-        remoteControlWeb.stateChanged(state: state)
+        remoteControlWeb?.stateChanged(state: state)
     }
 
     func reloadRemoteControlWeb() {
         if false {
-            remoteControlWeb.delegate = self
-            remoteControlWeb.stop()
-            remoteControlWeb.start(port: 80)
+            remoteControlWeb?.stop()
+            remoteControlWeb = RemoteControlWeb(delegate: self)
+            remoteControlWeb?.start(port: 80)
         }
     }
 }
@@ -847,7 +847,7 @@ extension Model: RemoteControlAssistantDelegate {
 
 extension Model: RemoteControlWebDelegate {
     func remoteControlWebConnected() {
-        remoteControlWeb.stateChanged(state: createRemoteControlStateChanged())
+        remoteControlWeb?.stateChanged(state: createRemoteControlStateChanged())
     }
 
     func remoteControlWebGetStatus()

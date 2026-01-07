@@ -37,8 +37,12 @@ private let staticPaths: [StaticPath] = [
 class RemoteControlWeb {
     private var server: HttpServer?
     private var websocketServer: NWListener?
-    weak var delegate: (any RemoteControlWebDelegate)?
+    private weak var delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
+
+    init(delegate: RemoteControlWebDelegate) {
+        self.delegate = delegate
+    }
 
     func start(port: Int) {
         startServer(port: port)

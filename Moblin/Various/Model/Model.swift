@@ -540,7 +540,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var remoteControlStreamer: RemoteControlStreamer?
     var remoteControlAssistant: RemoteControlAssistant?
     var remoteControlRelay: RemoteControlRelay?
-    let remoteControlWeb = RemoteControlWeb()
+    var remoteControlWeb: RemoteControlWeb?
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
     var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
@@ -919,7 +919,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
             self.remoteControlStreamer?.log(entry: message)
-            self.remoteControlWeb.log(entry: message)
+            self.remoteControlWeb?.log(entry: message)
             if self.streamLog.count >= 100_000 {
                 self.streamLog.removeFirst()
             }
