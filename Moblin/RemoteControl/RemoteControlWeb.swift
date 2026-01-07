@@ -8,7 +8,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetDebugLogging(on: Bool)
 }
 
-private struct StaticPath {
+private struct StaticFile {
     let path: String
     let name: String
     let ext: String
@@ -24,14 +24,15 @@ private struct StaticPath {
     }
 }
 
-private let staticPaths: [StaticPath] = [
-    StaticPath("/", "index", "html"),
-    StaticPath("/css/", "vanilla-framework-version-4.14.0.min", "css"),
-    StaticPath("/css/", "f3b9cc97-Ubuntu[wdth,wght]-latin", "woff2"),
-    StaticPath("/css/", "c1b12cdf-Ubuntu-Italic[wdth,wght]-latin", "woff2"),
-    StaticPath("/css/", "0bd4277a-UbuntuMono[wght]-latin", "woff2"),
-    StaticPath("/js/", "index", "mjs"),
-    StaticPath("/js/", "utils", "mjs"),
+private let staticFiles: [StaticFile] = [
+    StaticFile("/", "index", "html"),
+    StaticFile("/", "favicon", "ico"),
+    StaticFile("/css/", "vanilla-framework-version-4.14.0.min", "css"),
+    StaticFile("/css/", "f3b9cc97-Ubuntu[wdth,wght]-latin", "woff2"),
+    StaticFile("/css/", "c1b12cdf-Ubuntu-Italic[wdth,wght]-latin", "woff2"),
+    StaticFile("/css/", "0bd4277a-UbuntuMono[wght]-latin", "woff2"),
+    StaticFile("/js/", "index", "mjs"),
+    StaticFile("/js/", "utils", "mjs"),
 ]
 
 class RemoteControlWeb {
@@ -67,7 +68,7 @@ class RemoteControlWeb {
     }
 
     private func startServer(port: Int) {
-        let routes = staticPaths.map {
+        let routes = staticFiles.map {
             HttpServerRoute(path: $0.makePath(), handler: handleStatic)
         }
         server = HttpServer(queue: .main, routes: routes)
@@ -100,13 +101,13 @@ class RemoteControlWeb {
 
     private func handleStatic(request: HttpServerRequest, response: HttpServerResponse) {
         guard request.method == "GET",
-              let staticPath = staticPaths.first(where: {
+              let staticPath = staticFiles.first(where: {
                   request.path == $0.makePath()
               })
         else {
             return
         }
-        response.send(text: loadStringResource(name: staticPath.name, ext: staticPath.ext))
+        response.send(data: loadResource(name: staticPath.name, ext: staticPath.ext))
     }
 
     private func handleNewWebsocketConnection(_ connection: NWConnection) {

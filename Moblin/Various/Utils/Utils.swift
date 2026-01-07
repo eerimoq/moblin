@@ -295,6 +295,11 @@ func loadStringResource(name: String, ext: String) -> String {
     return try! String(contentsOf: url)
 }
 
+func loadResource(name: String, ext: String) -> Data {
+    let url = Bundle.main.url(forResource: name, withExtension: ext)!
+    return try! Data(contentsOf: url)
+}
+
 extension Array {
     mutating func truncate(length: Int, create: () -> Element) {
         while count < length {

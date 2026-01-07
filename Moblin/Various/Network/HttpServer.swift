@@ -72,8 +72,8 @@ class HttpServerResponse {
         self.connection = connection
     }
 
-    func send(text: String) {
-        connection?.send200AndClose(content: text.utf8Data)
+    func send(data: Data) {
+        connection?.send200AndClose(content: data)
     }
 }
 
@@ -151,6 +151,8 @@ private class HttpServerConnection {
             return "text/css"
         case "woff2":
             return "font/woff2"
+        case "ico":
+            return "image/vnd.microsoft.icon"
         default:
             return "text/plain"
         }
