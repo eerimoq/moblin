@@ -43,7 +43,7 @@ class HttpResponseParser {
 
     private func getLine(data: Data, offset: Int) -> (String, Int)? {
         let data = data.advanced(by: offset)
-        guard let rIndex = data.firstIndex(of: 0xD), data.count > rIndex, data[rIndex + 1] == 0xA else {
+        guard let rIndex = data.firstIndex(of: 0xD), data.count > rIndex + 1, data[rIndex + 1] == 0xA else {
             return nil
         }
         guard let line = String(bytes: data[0 ..< rIndex], encoding: .utf8) else {

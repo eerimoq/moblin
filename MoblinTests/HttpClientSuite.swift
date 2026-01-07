@@ -67,4 +67,17 @@ struct HttpClientSuite {
         #expect(done)
         #expect(data == nil)
     }
+
+    @Test
+    func responseParserGetLineCrash() async throws {
+        let parser = HttpResponseParser()
+        parser.append(data: "HTTP/1.1 400 OK\r".utf8Data)
+        var (done, data) = parser.parse()
+        #expect(!done)
+        #expect(data == nil)
+        parser.append(data: "\n\r\n".utf8Data)
+        (done, data) = parser.parse()
+        #expect(done)
+        #expect(data == nil)
+    }
 }
