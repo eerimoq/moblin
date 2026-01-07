@@ -1140,7 +1140,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 26, *), false {
             wiFiAwareUpdated()
         }
-        reloadRemoteControlWeb()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
@@ -2086,6 +2085,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRemoteControlStreamer()
         reloadRemoteControlAssistant()
         reloadRemoteControlRelay()
+        reloadRemoteControlWeb()
         reloadKickViewers()
         reloadNtpClient()
     }
