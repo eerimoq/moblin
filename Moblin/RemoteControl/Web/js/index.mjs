@@ -14,7 +14,7 @@ class Connection {
   }
 
   setup() {
-    this.websocket = new WebSocket(`ws://localhost:81`);
+    this.websocket = new WebSocket(`ws://${window.location.host}:81`);
     this.websocket.onopen = (event) => {
       this.sendGetStatusRequest();
     };
