@@ -350,6 +350,67 @@ struct RemoteControlStreamersView: View {
     }
 }
 
+private struct WebUrlsView: View {
+    @ObservedObject var status: StatusOther
+    let port: UInt16
+
+    private func formatUrl(ip: String) -> String {
+        if port == 80 {
+            return "http://\(ip)"
+        } else {
+            return "http://\(ip):\(port)"
+        }
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                UrlsIpv4View(status: status, formatUrl: formatUrl)
+                UrlsIpv6View(status: status, formatUrl: formatUrl)
+            }
+            .navigationTitle("URLs")
+        } label: {
+            Text("URLs")
+        }
+    }
+}
+
+private struct RemoteControlSettingsWebView: View {
+    let model: Model
+    @ObservedObject var web: SettingsRemoteControlWeb
+
+    private func submitPort(value: String) {
+        guard let port = UInt16(value), port < UInt16.max else {
+            return
+        }
+        web.port = port
+        model.reloadRemoteControlWeb()
+    }
+
+    var body: some View {
+        Section {
+            Toggle("Enabled", isOn: $web.enabled)
+                .onChange(of: web.enabled) { _ in
+                    model.reloadRemoteControlWeb()
+                }
+        }
+        Section {
+            TextEditNavigationView(
+                title: String(localized: "Server port"),
+                value: String(web.port),
+                onChange: isValidPort,
+                onSubmit: submitPort,
+                keyboardType: .numbersAndPunctuation,
+                placeholder: "80"
+            )
+            .disabled(web.enabled)
+        }
+        if web.enabled {
+            WebUrlsView(status: model.statusOther, port: web.port)
+        }
+    }
+}
+
 struct RemoteControlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -420,6 +481,17 @@ struct RemoteControlSettingsView: View {
                     .navigationTitle("Assistant")
                 } label: {
                     Text("Assistant")
+                }
+                NavigationLink {
+                    Form {
+                        RemoteControlSettingsWebView(
+                            model: model,
+                            web: database.remoteControl.web
+                        )
+                    }
+                    .navigationTitle("Web")
+                } label: {
+                    Text("Web")
                 }
             }
             if stream !== fallbackStream {

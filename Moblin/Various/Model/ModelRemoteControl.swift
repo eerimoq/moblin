@@ -490,11 +490,13 @@ extension Model {
     }
 
     func reloadRemoteControlWeb() {
-        if false {
-            remoteControlWeb?.stop()
-            remoteControlWeb = RemoteControlWeb(delegate: self)
-            remoteControlWeb?.start(port: 80)
+        remoteControlWeb?.stop()
+        remoteControlWeb = nil
+        guard database.remoteControl.web.enabled else {
+            return
         }
+        remoteControlWeb = RemoteControlWeb(delegate: self)
+        remoteControlWeb?.start(port: web.port)
     }
 }
 

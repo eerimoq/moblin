@@ -101,9 +101,34 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
     }
 }
 
+class SettingsRemoteControlWeb: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var port: UInt16 = 80
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             port
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.port, port)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        port = container.decode(.port, UInt16.self, 80)
+    }
+}
+
 class SettingsRemoteControl: Codable, ObservableObject {
     var assistant: SettingsRemoteControlAssistant = .init()
     var streamer: SettingsRemoteControlStreamer = .init()
+    var web: SettingsRemoteControlWeb = .init()
     var password: String = randomHumanString()
     @Published var streamers: [SettingsRemoteControlAssistant] = []
     @Published var selectedStreamer: UUID?
@@ -112,6 +137,7 @@ class SettingsRemoteControl: Codable, ObservableObject {
     enum CodingKeys: CodingKey {
         case client,
              server,
+             web,
              password,
              streamers,
              selectedStreamer,
@@ -122,6 +148,7 @@ class SettingsRemoteControl: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.client, assistant)
         try container.encode(.server, streamer)
+        try container.encode(.web, web)
         try container.encode(.password, password)
         try container.encode(.streamers, streamers)
         try container.encode(.selectedStreamer, selectedStreamer)
@@ -134,6 +161,7 @@ class SettingsRemoteControl: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         assistant = container.decode(.client, SettingsRemoteControlAssistant.self, .init())
         streamer = container.decode(.server, SettingsRemoteControlStreamer.self, .init())
+        web = container.decode(.web, SettingsRemoteControlWeb.self, .init())
         password = container.decode(.password, String.self, randomHumanString())
         streamers = container.decode(.streamers, [SettingsRemoteControlAssistant].self, [])
         selectedStreamer = container.decode(.selectedStreamer, UUID?.self, nil)

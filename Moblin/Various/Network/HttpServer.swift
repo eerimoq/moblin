@@ -154,7 +154,7 @@ private class HttpServerConnection {
         case "ico":
             return "image/vnd.microsoft.icon"
         default:
-            return "text/plain"
+            return "text/html"
         }
     }
 }

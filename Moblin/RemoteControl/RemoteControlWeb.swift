@@ -45,7 +45,7 @@ class RemoteControlWeb {
         self.delegate = delegate
     }
 
-    func start(port: Int) {
+    func start(port: UInt16) {
         startServer(port: port)
         startWebsocketServer(port: port + 1)
     }
@@ -67,20 +67,21 @@ class RemoteControlWeb {
         }
     }
 
-    private func startServer(port: Int) {
-        let routes = staticFiles.map {
+    private func startServer(port: UInt16) {
+        var routes = staticFiles.map {
             HttpServerRoute(path: $0.makePath(), handler: handleStatic)
         }
+        routes.append(HttpServerRoute(path: "/", handler: handleRoot))
         server = HttpServer(queue: .main, routes: routes)
-        server?.start(port: .init(integer: port))
+        server?.start(port: .init(integer: Int(port)))
     }
 
-    private func startWebsocketServer(port: Int) {
+    private func startWebsocketServer(port: UInt16) {
         let parameters = NWParameters.tcp
         let options = NWProtocolWebSocket.Options()
         options.autoReplyPing = true
         parameters.defaultProtocolStack.applicationProtocols.append(options)
-        websocketServer = try? NWListener(using: parameters, on: .init(integer: port))
+        websocketServer = try? NWListener(using: parameters, on: .init(integer: Int(port)))
         websocketServer?.newConnectionHandler = handleNewWebsocketConnection
         websocketServer?.start(queue: .main)
     }
@@ -97,6 +98,13 @@ class RemoteControlWeb {
         connections.removeAll()
         websocketServer?.cancel()
         websocketServer = nil
+    }
+
+    private func handleRoot(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "GET" else {
+            return
+        }
+        response.send(data: loadResource(name: "index", ext: "html"))
     }
 
     private func handleStatic(request: HttpServerRequest, response: HttpServerResponse) {
