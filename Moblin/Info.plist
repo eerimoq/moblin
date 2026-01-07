@@ -26,6 +26,7 @@
 	</dict>
 	<key>NSBonjourServices</key>
 	<array>
+		<string>_http._tcp</string>
 		<string>_moblink._tcp</string>
 	</array>
 	<key>NSCameraReactionEffectsEnabled</key>

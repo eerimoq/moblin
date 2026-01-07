@@ -216,6 +216,7 @@ class HttpServer {
 
     private func setupListener() {
         listener = try? NWListener(using: .tcp, on: port)
+        listener?.service = NWListener.Service(name: "moblin", type: "_http._tcp")
         listener?.stateUpdateHandler = handleStateUpdate
         listener?.newConnectionHandler = handleNewConnection
         listener?.start(queue: queue)
