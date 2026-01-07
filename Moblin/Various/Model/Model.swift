@@ -645,7 +645,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var speechToTextLatestPosition: Int?
     var speechToTextLatestText: String?
     var speechToTextTextAligners: [String?: TextAligner] = [:]
-    var httpServer: HttpServer?
+    let webUI = RemoteControlWebUI()
 
     weak var processor: Processor? {
         didSet {
@@ -1139,7 +1139,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 26, *), false {
             wiFiAwareUpdated()
         }
-        reloadHttpServer()
+        if false {
+            webUI.reload()
+        }
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {

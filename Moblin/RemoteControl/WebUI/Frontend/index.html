@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moblin Remote Control</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="css/vanilla-framework-version-4.14.0.min.css"
+    />
+  </head>
+
+  <body class="is-dark" style="background: #001c0b">
+    <div class="row">
+      <div class="col-2"></div>
+      <div class="col-8" style="margin: auto">
+        <h1>Moblin Remote Control</h1>
+      </div>
+      <div class="col-2"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-2"></div>
+      <div class="col-8">
+        <div class="p-card">
+          <h2>Status</h2>
+          <h3>General</h3>
+          <div>
+            <table id="statusGeneral" style="table-layout: auto">
+              <tbody></tbody>
+            </table>
+          </div>
+          <h3>Top left</h3>
+          <div>
+            <table id="statusTopLeft" style="table-layout: auto">
+              <tbody></tbody>
+            </table>
+          </div>
+          <h3>Top right</h3>
+          <div>
+            <table id="statusTopRight" style="table-layout: auto">
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-2"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-2"></div>
+      <div class="col-8">
+        <div class="p-card">
+          <h2>Log</h2>
+          <div id="log" style="overflow-y: scroll; height: 400px"></div>
+        </div>
+      </div>
+      <div class="col-2"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-2"></div>
+      <div class="col-8">
+        <div class="p-card">
+          <h2>Control</h2>
+          <label class="p-switch">
+            <input
+              id="controlDebugLogging"
+              type="checkbox"
+              class="p-switch__input"
+              checked=""
+              role="switch"
+            />
+            <span class="p-switch__slider"></span>
+            <span class="p-switch__label">Debug logging</span>
+          </label>
+        </div>
+      </div>
+      <div class="col-2"></div>
+    </div>
+
+    <div class="row" style="padding-bottom: 20px">
+      <div class="col-12" style="margin: auto">
+        <a
+          href="https://github.com/eerimoq/moblin"
+          target="_blank"
+          style="padding: 10px"
+        >
+          Github
+        </a>
+      </div>
+    </div>
+
+    <script src="js/index.mjs" type="module"></script>
+  </body>
+</html>

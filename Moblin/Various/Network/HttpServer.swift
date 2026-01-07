@@ -72,8 +72,8 @@ class HttpServerResponse {
         self.connection = connection
     }
 
-    func send() {
-        connection?.send200AndClose()
+    func send(text: String) {
+        connection?.send200AndClose(content: text.utf8Data)
     }
 }
 
@@ -82,6 +82,7 @@ private class HttpServerConnection {
     private weak var server: HttpServer?
     private var parser = HttpRequestParser()
     private var version: String = "HTTP/1.0"
+    private var request: HttpServerRequest?
 
     init(connection: NWConnection, server: HttpServer) {
         self.connection = connection
@@ -109,30 +110,50 @@ private class HttpServerConnection {
             connection.cancel()
             return
         }
-        let request = HttpServerRequest(method: requestData.0,
-                                        path: requestData.1,
-                                        headers: requestData.3)
+        request = HttpServerRequest(method: requestData.0,
+                                    path: requestData.1,
+                                    headers: requestData.3)
         version = requestData.2
-        guard let route = server.findRoute(request: request) else {
+        guard let route = server.findRoute(request: request!) else {
             send404AndClose()
             return
         }
         let response = HttpServerResponse(connection: self)
-        route.handler(request, response)
+        route.handler(request!, response)
     }
 
-    func send200AndClose() {
-        sendAndClose(data: "\(version) 200 OK\r\n\r\n".utf8Data)
+    func send200AndClose(content: Data) {
+        sendAndClose(data: """
+        \(version) 200 OK\r\n\
+        Content-Type: \(getContentType())\r\n\
+        Connection: close\r\n\
+        \r\n
+        """.utf8Data + content)
     }
 
     func send404AndClose() {
-        sendAndClose(data: "\(version) 404 Not Found\r\n\r\n".utf8Data)
+        sendAndClose(data: "\(version) 404 Not Found\r\nConnection: close\r\n\r\n".utf8Data)
     }
 
     private func sendAndClose(data: Data) {
         connection.send(content: data, completion: .contentProcessed { _ in
             self.connection.cancel()
         })
+    }
+
+    private func getContentType() -> String {
+        switch request?.path.split(separator: ".").last {
+        case "html":
+            return "text/html"
+        case "mjs":
+            return "text/javascript"
+        case "css":
+            return "text/css"
+        case "woff2":
+            return "font/woff2"
+        default:
+            return "text/plain"
+        }
     }
 }
 
