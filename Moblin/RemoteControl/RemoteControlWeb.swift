@@ -1,11 +1,11 @@
 import Foundation
 import Network
 
-protocol RemoteControlWebUIDelegate: AnyObject {
-    func remoteControlWebUIConnected()
-    func remoteControlWebUIGetStatus()
+protocol RemoteControlWebDelegate: AnyObject {
+    func remoteControlWebConnected()
+    func remoteControlWebGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
-    func remoteControlWebUISetDebugLogging(on: Bool)
+    func remoteControlWebSetDebugLogging(on: Bool)
 }
 
 private struct StaticPath {
@@ -34,10 +34,10 @@ private let staticPaths: [StaticPath] = [
     StaticPath("/js/", "utils", "mjs"),
 ]
 
-class RemoteControlWebUI {
+class RemoteControlWeb {
     private var server: HttpServer?
     private var websocketServer: NWListener?
-    weak var delegate: (any RemoteControlWebUIDelegate)?
+    weak var delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
 
     func start(port: Int) {
@@ -109,7 +109,7 @@ class RemoteControlWebUI {
         connections.append(connection)
         connection.start(queue: .main)
         receiveWebsocketPacket(connection: connection)
-        delegate?.remoteControlWebUIConnected()
+        delegate?.remoteControlWebConnected()
     }
 
     private func receiveWebsocketPacket(connection: NWConnection) {
@@ -156,7 +156,7 @@ class RemoteControlWebUI {
         }
         switch data {
         case .getStatus:
-            let (general, topLeft, topRight) = delegate.remoteControlWebUIGetStatus()
+            let (general, topLeft, topRight) = delegate.remoteControlWebGetStatus()
             send(connection: connection,
                  message: .response(
                      id: id,
@@ -164,7 +164,7 @@ class RemoteControlWebUI {
                      data: .getStatus(general: general, topLeft: topLeft, topRight: topRight)
                  ))
         case let .setDebugLogging(on: on):
-            delegate.remoteControlWebUISetDebugLogging(on: on)
+            delegate.remoteControlWebSetDebugLogging(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
         default:
             break

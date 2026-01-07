@@ -540,6 +540,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var remoteControlStreamer: RemoteControlStreamer?
     var remoteControlAssistant: RemoteControlAssistant?
     var remoteControlRelay: RemoteControlRelay?
+    let remoteControlWeb = RemoteControlWeb()
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
     var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
@@ -645,7 +646,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var speechToTextLatestPosition: Int?
     var speechToTextLatestText: String?
     var speechToTextTextAligners: [String?: TextAligner] = [:]
-    let webUI = RemoteControlWebUI()
 
     weak var processor: Processor? {
         didSet {
@@ -919,7 +919,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
             self.remoteControlStreamer?.log(entry: message)
-            self.webUI.log(entry: message)
+            self.remoteControlWeb.log(entry: message)
             if self.streamLog.count >= 100_000 {
                 self.streamLog.removeFirst()
             }
@@ -1140,7 +1140,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 26, *), false {
             wiFiAwareUpdated()
         }
-        reloadRemoteControlWebUI()
+        reloadRemoteControlWeb()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {

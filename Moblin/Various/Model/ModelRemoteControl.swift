@@ -486,14 +486,14 @@ extension Model {
 
     func remoteControlStateChanged(state: RemoteControlAssistantStreamerState) {
         remoteControlStreamer?.stateChanged(state: state)
-        webUI.stateChanged(state: state)
+        remoteControlWeb.stateChanged(state: state)
     }
 
-    func reloadRemoteControlWebUI() {
+    func reloadRemoteControlWeb() {
         if false {
-            webUI.delegate = self
-            webUI.stop()
-            webUI.start(port: 80)
+            remoteControlWeb.delegate = self
+            remoteControlWeb.stop()
+            remoteControlWeb.start(port: 80)
         }
     }
 }
@@ -845,18 +845,18 @@ extension Model: RemoteControlAssistantDelegate {
     }
 }
 
-extension Model: RemoteControlWebUIDelegate {
-    func remoteControlWebUIConnected() {
-        webUI.stateChanged(state: createRemoteControlStateChanged())
+extension Model: RemoteControlWebDelegate {
+    func remoteControlWebConnected() {
+        remoteControlWeb.stateChanged(state: createRemoteControlStateChanged())
     }
 
-    func remoteControlWebUIGetStatus()
+    func remoteControlWebGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     {
         return remoteControlStreamerGetStatus()
     }
 
-    func remoteControlWebUISetDebugLogging(on: Bool) {
+    func remoteControlWebSetDebugLogging(on: Bool) {
         remoteControlStreamerSetDebugLogging(on: on)
     }
 }
