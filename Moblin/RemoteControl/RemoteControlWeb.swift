@@ -37,8 +37,10 @@ private let staticFiles: [StaticFile] = [
 
 class RemoteControlWeb {
     private var server: HttpServer?
+    private var started: Bool = false
     private var websocketServer: NWListener?
     private var websocketPort: UInt16 = 0
+    private let websocketRetryTimer = SimpleTimer(queue: .main)
     private weak var delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
 
@@ -47,11 +49,13 @@ class RemoteControlWeb {
     }
 
     func start(port: UInt16) {
+        started = true
         startServer(port: port)
         startWebsocketServer(port: port + 1)
     }
 
     func stop() {
+        started = false
         stopServer()
         stopWebsocketServer()
     }
@@ -80,11 +84,16 @@ class RemoteControlWeb {
 
     private func startWebsocketServer(port: UInt16) {
         websocketPort = port
+        setupWebsocketServer()
+    }
+
+    private func setupWebsocketServer() {
         let parameters = NWParameters.tcp
         let options = NWProtocolWebSocket.Options()
         options.autoReplyPing = true
         parameters.defaultProtocolStack.applicationProtocols.append(options)
-        websocketServer = try? NWListener(using: parameters, on: .init(integer: Int(port)))
+        websocketServer = try? NWListener(using: parameters, on: .init(integer: Int(websocketPort)))
+        websocketServer?.stateUpdateHandler = handleWebsocketStateUpdate
         websocketServer?.newConnectionHandler = handleNewWebsocketConnection
         websocketServer?.start(queue: .main)
     }
@@ -99,6 +108,7 @@ class RemoteControlWeb {
             connection.cancel()
         }
         connections.removeAll()
+        websocketRetryTimer.stop()
         websocketServer?.cancel()
         websocketServer = nil
     }
@@ -129,6 +139,20 @@ class RemoteControlWeb {
         export const websocketPort = \(websocketPort);
         """
         response.send(text: configMjs)
+    }
+
+    private func handleWebsocketStateUpdate(_ newState: NWListener.State) {
+        switch newState {
+        case .failed:
+            websocketRetryTimer.startSingleShot(timeout: 1) { [weak self] in
+                guard let self, self.started else {
+                    return
+                }
+                self.setupWebsocketServer()
+            }
+        default:
+            break
+        }
     }
 
     private func handleNewWebsocketConnection(_ connection: NWConnection) {

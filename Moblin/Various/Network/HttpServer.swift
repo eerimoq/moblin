@@ -177,10 +177,14 @@ class HttpServer {
     private let queue: DispatchQueue
     private let routes: [HttpServerRoute]
     private var listener: NWListener?
+    private let retryTimer: SimpleTimer
+    private var port: NWEndpoint.Port = .http
+    private var started: Bool = false
 
     init(queue: DispatchQueue, routes: [HttpServerRoute]) {
         self.queue = queue
         self.routes = routes
+        retryTimer = SimpleTimer(queue: queue)
     }
 
     func start(port: NWEndpoint.Port) {
@@ -198,19 +202,37 @@ class HttpServer {
     }
 
     private func startInternal(port: NWEndpoint.Port) {
+        self.port = port
+        started = true
+        setupListener()
+    }
+
+    private func stopInternal() {
+        started = false
+        retryTimer.stop()
+        listener?.cancel()
+        listener = nil
+    }
+
+    private func setupListener() {
         listener = try? NWListener(using: .tcp, on: port)
         listener?.stateUpdateHandler = handleStateUpdate
         listener?.newConnectionHandler = handleNewConnection
         listener?.start(queue: queue)
     }
 
-    private func stopInternal() {
-        listener?.cancel()
-        listener = nil
-    }
-
     private func handleStateUpdate(_ newState: NWListener.State) {
-        logger.info("http-server: State \(newState)")
+        switch newState {
+        case .failed:
+            retryTimer.startSingleShot(timeout: 1) { [weak self] in
+                guard let self, self.started else {
+                    return
+                }
+                self.setupListener()
+            }
+        default:
+            break
+        }
     }
 
     private func handleNewConnection(_ connection: NWConnection) {
