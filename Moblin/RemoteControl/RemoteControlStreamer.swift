@@ -138,7 +138,6 @@ class RemoteControlStreamer {
     private func send(message: RemoteControlMessageToAssistant) {
         do {
             let message = try message.toJson()
-            // logger.debug("remote-control-streamer: Sending message \(message)")
             webSocket.send(string: message)
         } catch {
             logger.info("remote-control-streamer: Encode failed")

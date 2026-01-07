@@ -919,6 +919,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
             self.remoteControlStreamer?.log(entry: message)
+            self.webUI.log(entry: message)
             if self.streamLog.count >= 100_000 {
                 self.streamLog.removeFirst()
             }
@@ -1140,6 +1141,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             wiFiAwareUpdated()
         }
         if false {
+            webUI.delegate = self
             webUI.reload()
         }
     }
