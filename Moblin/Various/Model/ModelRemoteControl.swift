@@ -483,6 +483,19 @@ extension Model {
         state.batteryCharging = isBatteryCharging()
         return state
     }
+
+    func remoteControlStateChanged(state: RemoteControlAssistantStreamerState) {
+        remoteControlStreamer?.stateChanged(state: state)
+        webUI.stateChanged(state: state)
+    }
+
+    func reloadRemoteControlWebUI() {
+        if false {
+            webUI.delegate = self
+            webUI.stop()
+            webUI.start(port: 80)
+        }
+    }
 }
 
 extension Model: RemoteControlStreamerDelegate {
@@ -502,7 +515,7 @@ extension Model: RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingStatus = false
         setLowFpsImage()
         updateRemoteControlStatus()
-        remoteControlStreamer?.stateChanged(state: createRemoteControlStateChanged())
+        remoteControlStateChanged(state: createRemoteControlStateChanged())
     }
 
     func remoteControlStreamerDisconnected() {
@@ -840,7 +853,10 @@ extension Model: RemoteControlWebUIDelegate {
     func remoteControlWebUIGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     {
-        let (general, topLeft, topRight) = remoteControlStreamerCreateStatus(filter: nil)
-        return (general!, topLeft!, topRight!)
+        return remoteControlStreamerGetStatus()
+    }
+
+    func remoteControlWebUISetDebugLogging(on: Bool) {
+        remoteControlStreamerSetDebugLogging(on: on)
     }
 }

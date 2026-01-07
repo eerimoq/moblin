@@ -12,7 +12,7 @@ extension Model {
         database.autoSceneSwitchers.switcherId = id
         autoSceneSwitcher.switchTime = .now
         autoSceneSwitcher.sceneIds.removeAll()
-        remoteControlStreamer?.stateChanged(state: .init(autoSceneSwitcher: .init(id: id)))
+        remoteControlStateChanged(state: .init(autoSceneSwitcher: .init(id: id)))
     }
 
     func deleteAutoSceneSwitchers(offsets: IndexSet) {

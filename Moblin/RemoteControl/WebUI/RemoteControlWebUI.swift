@@ -5,6 +5,7 @@ protocol RemoteControlWebUIDelegate: AnyObject {
     func remoteControlWebUIConnected()
     func remoteControlWebUIGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
+    func remoteControlWebUISetDebugLogging(on: Bool)
 }
 
 private struct StaticPath {
@@ -162,6 +163,9 @@ class RemoteControlWebUI {
                      result: .ok,
                      data: .getStatus(general: general, topLeft: topLeft, topRight: topRight)
                  ))
+        case let .setDebugLogging(on: on):
+            delegate.remoteControlWebUISetDebugLogging(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
         default:
             break
         }
@@ -174,5 +178,9 @@ class RemoteControlWebUI {
         } catch {
             logger.info("remote-control-web-ui: Encode failed")
         }
+    }
+
+    private func sendEmptyOkResponse(connection: NWConnection, id: Int) {
+        send(connection: connection, message: .response(id: id, result: .ok, data: nil))
     }
 }

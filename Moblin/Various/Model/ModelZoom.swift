@@ -68,7 +68,7 @@ extension Model {
             break
         }
         zoom.x = x
-        remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(zoom: x))
+        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoom: x))
         if isWatchLocal() {
             sendZoomToWatch(x: x)
         }

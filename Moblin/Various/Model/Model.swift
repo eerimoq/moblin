@@ -1140,10 +1140,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 26, *), false {
             wiFiAwareUpdated()
         }
-        if false {
-            webUI.delegate = self
-            webUI.start(port: 80)
-        }
+        reloadRemoteControlWebUI()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
@@ -2111,7 +2108,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setDebugLogging(on: Bool) {
         logger.debugEnabled = on
-        remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(debugLogging: on))
+        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(debugLogging: on))
     }
 
     func isEventsConfigured() -> Bool {
@@ -2397,7 +2394,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let state = UIDevice.current.batteryState
         if state != battery.state {
             battery.state = state
-            remoteControlStreamer?.stateChanged(state: .init(batteryCharging: isBatteryCharging()))
+            remoteControlStateChanged(state: .init(batteryCharging: isBatteryCharging()))
         }
     }
 
@@ -2837,7 +2834,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateTorch() {
         media.setTorch(on: streamOverlay.isTorchOn)
-        remoteControlStreamer?.stateChanged(state: .init(torchOn: streamOverlay.isTorchOn))
+        remoteControlStateChanged(state: .init(torchOn: streamOverlay.isTorchOn))
     }
 
     func toggleMute() {
@@ -2857,7 +2854,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         updateTextEffects(now: .now, timestamp: .now)
         forceUpdateTextEffects()
-        remoteControlStreamer?.stateChanged(state: .init(muted: isMuteOn))
+        remoteControlStateChanged(state: .init(muted: isMuteOn))
     }
 
     private func makeFlameRedToast() {
