@@ -452,25 +452,8 @@ extension Model {
             && isRemoteControlAssistantRequestingPreview
             && database.remoteControl.streamer.previewFps > 0
     }
-}
 
-extension Model: RemoteControlStreamerDelegate {
-    func remoteControlStreamerConnected() {
-        useRemoteControlForChatAndEvents = database.remoteControl.streamer.reliableChatAndEvents
-        let subTitle: String?
-        if useRemoteControlForChatAndEvents {
-            reloadTwitchEventSub()
-            reloadTwitchChat()
-            remoteControlStreamerSendTwitchStart()
-            subTitle = String(localized: "Reliable alerts and chat messages activated")
-        } else {
-            subTitle = nil
-        }
-        makeToast(title: String(localized: "Remote control assistant connected"), subTitle: subTitle)
-        isRemoteControlAssistantRequestingPreview = false
-        isRemoteControlAssistantRequestingStatus = false
-        setLowFpsImage()
-        updateRemoteControlStatus()
+    private func createRemoteControlStateChanged() -> RemoteControlAssistantStreamerState {
         var state = RemoteControlAssistantStreamerState()
         if sceneSelector.sceneIndex < enabledScenes.count {
             state.scene = enabledScenes[sceneSelector.sceneIndex].id
@@ -498,7 +481,28 @@ extension Model: RemoteControlStreamerDelegate {
         state.muted = isMuteOn
         state.torchOn = streamOverlay.isTorchOn
         state.batteryCharging = isBatteryCharging()
-        remoteControlStreamer?.stateChanged(state: state)
+        return state
+    }
+}
+
+extension Model: RemoteControlStreamerDelegate {
+    func remoteControlStreamerConnected() {
+        useRemoteControlForChatAndEvents = database.remoteControl.streamer.reliableChatAndEvents
+        let subTitle: String?
+        if useRemoteControlForChatAndEvents {
+            reloadTwitchEventSub()
+            reloadTwitchChat()
+            remoteControlStreamerSendTwitchStart()
+            subTitle = String(localized: "Reliable alerts and chat messages activated")
+        } else {
+            subTitle = nil
+        }
+        makeToast(title: String(localized: "Remote control assistant connected"), subTitle: subTitle)
+        isRemoteControlAssistantRequestingPreview = false
+        isRemoteControlAssistantRequestingStatus = false
+        setLowFpsImage()
+        updateRemoteControlStatus()
+        remoteControlStreamer?.stateChanged(state: createRemoteControlStateChanged())
     }
 
     func remoteControlStreamerDisconnected() {
@@ -825,5 +829,18 @@ extension Model: RemoteControlAssistantDelegate {
         if let topRight {
             remoteControl.topRight = topRight
         }
+    }
+}
+
+extension Model: RemoteControlWebUIDelegate {
+    func remoteControlWebUIConnected() {
+        webUI.stateChanged(state: createRemoteControlStateChanged())
+    }
+
+    func remoteControlWebUIGetStatus()
+        -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
+    {
+        let (general, topLeft, topRight) = remoteControlStreamerCreateStatus(filter: nil)
+        return (general!, topLeft!, topRight!)
     }
 }
