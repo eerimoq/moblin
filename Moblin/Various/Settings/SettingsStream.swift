@@ -1008,6 +1008,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var obsAutoStopStream: Bool = false
     var obsAutoStartRecording: Bool = false
     var obsAutoStopRecording: Bool = false
+    @Published var streamingDirectlyToObs: Bool = false
     var discordSnapshotWebhook: String = ""
     var discordChatBotSnapshotWebhook: String = ""
     @Published var discordSnapshotWebhookOnlyWhenLive: Bool = true
@@ -1090,6 +1091,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              obsAutoStopStream,
              obsAutoStartRecording,
              obsAutoStopRecording,
+             streamingDirectlyToObs,
              discordSnapshotWebhook,
              discordChatBotSnapshotWebhook,
              discordSnapshotWebhookOnlyWhenLive,
@@ -1168,6 +1170,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.obsAutoStopStream, obsAutoStopStream)
         try container.encode(.obsAutoStartRecording, obsAutoStartRecording)
         try container.encode(.obsAutoStopRecording, obsAutoStopRecording)
+        try container.encode(.streamingDirectlyToObs, streamingDirectlyToObs)
         try container.encode(.discordSnapshotWebhook, discordSnapshotWebhook)
         try container.encode(.discordChatBotSnapshotWebhook, discordChatBotSnapshotWebhook)
         try container.encode(.discordSnapshotWebhookOnlyWhenLive, discordSnapshotWebhookOnlyWhenLive)
@@ -1249,6 +1252,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         obsAutoStopStream = container.decode(.obsAutoStopStream, Bool.self, false)
         obsAutoStartRecording = container.decode(.obsAutoStartRecording, Bool.self, false)
         obsAutoStopRecording = container.decode(.obsAutoStopRecording, Bool.self, false)
+        streamingDirectlyToObs = container.decode(.streamingDirectlyToObs, Bool.self, false)
         discordSnapshotWebhook = container.decode(.discordSnapshotWebhook, String.self, "")
         discordChatBotSnapshotWebhook = container.decode(.discordChatBotSnapshotWebhook, String.self, "")
         discordSnapshotWebhookOnlyWhenLive = container.decode(
@@ -1336,6 +1340,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.obsAutoStopStream = obsAutoStopStream
         new.obsAutoStartRecording = obsAutoStartRecording
         new.obsAutoStopRecording = obsAutoStopRecording
+        new.streamingDirectlyToObs = streamingDirectlyToObs
         new.discordSnapshotWebhook = discordSnapshotWebhook
         new.discordChatBotSnapshotWebhook = discordChatBotSnapshotWebhook
         new.discordSnapshotWebhookOnlyWhenLive = discordSnapshotWebhookOnlyWhenLive

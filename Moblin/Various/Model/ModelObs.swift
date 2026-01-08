@@ -224,6 +224,40 @@ extension Model {
         else {
             return
         }
+        if stream.streamingDirectlyToObs {
+            updateObsSceneSwitcherStreamingDirectlyToObs(now: now)
+        } else {
+            updateObsSceneSwitcherStreamingViaRelay(now: now)
+        }
+    }
+
+    private func updateObsSceneSwitcherStreamingDirectlyToObs(now: ContinuousClock.Instant) {
+        if let streamStartTime, streamStartTime.duration(to: now) < .seconds(10) {
+            guard streamStartTime.duration(to: now) > .seconds(5) else {
+                return
+            }
+            if !isStreamLikelyBroken(now: now) {
+                if obsQuickButton.currentScene == stream.obsBrbScene {
+                    makeStreamLikelyWorkingToast(scene: stream.obsMainScene)
+                    setObsScene(name: stream.obsMainScene)
+                }
+            }
+        } else {
+            if isStreamLikelyBroken(now: now) {
+                if obsQuickButton.currentScene == stream.obsMainScene {
+                    makeStreamLikelyBrokenToast(scene: stream.obsBrbScene)
+                    setObsScene(name: stream.obsBrbScene)
+                }
+            } else {
+                if obsQuickButton.currentScene == stream.obsBrbScene {
+                    stopNetStream()
+                    streamState = .disconnected
+                }
+            }
+        }
+    }
+
+    private func updateObsSceneSwitcherStreamingViaRelay(now: ContinuousClock.Instant) {
         if isStreamLikelyBroken(now: now) {
             if obsQuickButton.currentScene == stream.obsMainScene {
                 makeStreamLikelyBrokenToast(scene: stream.obsBrbScene)

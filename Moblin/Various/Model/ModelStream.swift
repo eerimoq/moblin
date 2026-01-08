@@ -177,7 +177,7 @@ extension Model {
         ) { _ in }
     }
 
-    private func startNetStream() {
+    func startNetStream() {
         streamState = .connecting
         latestLowBitrateTime = .now
         moblink.streamer?.stopTunnels()
@@ -190,6 +190,7 @@ extension Model {
             startNetStreamRist()
         }
         updateSpeed(now: .now)
+        streamBecameBrokenTime = nil
     }
 
     private func startNetStreamRtmp() {
@@ -232,7 +233,7 @@ extension Model {
         updateAdaptiveBitrateRistIfEnabled()
     }
 
-    private func stopNetStream() {
+    func stopNetStream() {
         moblink.streamer?.stopTunnels()
         reconnectTimer.stop()
         media.rtmpStopStream()

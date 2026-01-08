@@ -2,7 +2,7 @@ import SwiftUI
 
 struct StreamObsRemoteControlSettingsInnerView: View {
     @EnvironmentObject var model: Model
-    let stream: SettingsStream
+    @ObservedObject var stream: SettingsStream
 
     func submitWebSocketUrl(value: String) {
         let url = cleanUrl(url: value)
@@ -66,6 +66,7 @@ struct StreamObsRemoteControlSettingsInnerView: View {
                 onSubmit: submitBrbScene,
                 capitalize: true
             )
+            Toggle("Streaming directly to OBS", isOn: $stream.streamingDirectlyToObs)
         } footer: {
             Text("""
             Moblin will periodically try to switch to the BRB scene if the stream is \
