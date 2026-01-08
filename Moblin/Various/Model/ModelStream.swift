@@ -203,6 +203,7 @@ extension Model {
     private func startNetStreamSrt() {
         let srt = stream.srt
         payloadSize = srt.mpegtsPacketsPerPacket() * MpegTsPacket.size
+        previousSrtDroppedPacketsTotal = 0
         media.srtStartStream(
             isSrtla: stream.isSrtla(),
             url: stream.url,
