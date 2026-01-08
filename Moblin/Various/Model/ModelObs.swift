@@ -236,18 +236,14 @@ extension Model {
             guard streamStartTime.duration(to: now) > .seconds(5) else {
                 return
             }
-            if !isStreamLikelyBroken(now: now) {
-                if obsQuickButton.currentScene == stream.obsBrbScene {
-                    makeStreamLikelyWorkingToast(scene: stream.obsMainScene)
-                    setObsScene(name: stream.obsMainScene)
-                }
+            if isStreamLikelyBroken(now: now) {
+                switchToBrbSceneIfNeeded()
+            } else {
+                switchToMainSceneIfNeeded()
             }
         } else {
             if isStreamLikelyBroken(now: now) {
-                if obsQuickButton.currentScene == stream.obsMainScene {
-                    makeStreamLikelyBrokenToast(scene: stream.obsBrbScene)
-                    setObsScene(name: stream.obsBrbScene)
-                }
+                switchToBrbSceneIfNeeded()
             } else {
                 if obsQuickButton.currentScene == stream.obsBrbScene {
                     stopNetStream()
@@ -259,16 +255,26 @@ extension Model {
 
     private func updateObsSceneSwitcherStreamingViaRelay(now: ContinuousClock.Instant) {
         if isStreamLikelyBroken(now: now) {
-            if obsQuickButton.currentScene == stream.obsMainScene {
-                makeStreamLikelyBrokenToast(scene: stream.obsBrbScene)
-                setObsScene(name: stream.obsBrbScene)
-            }
+            switchToBrbSceneIfNeeded()
         } else {
-            if obsQuickButton.currentScene == stream.obsBrbScene {
-                makeStreamLikelyWorkingToast(scene: stream.obsMainScene)
-                setObsScene(name: stream.obsMainScene)
-            }
+            switchToMainSceneIfNeeded()
         }
+    }
+
+    private func switchToMainSceneIfNeeded() {
+        guard obsQuickButton.currentScene == stream.obsBrbScene else {
+            return
+        }
+        makeStreamLikelyWorkingToast(scene: stream.obsMainScene)
+        setObsScene(name: stream.obsMainScene)
+    }
+
+    private func switchToBrbSceneIfNeeded() {
+        guard obsQuickButton.currentScene == stream.obsMainScene else {
+            return
+        }
+        makeStreamLikelyBrokenToast(scene: stream.obsBrbScene)
+        setObsScene(name: stream.obsBrbScene)
     }
 
     private func makeStreamLikelyBrokenToast(scene: String) {
