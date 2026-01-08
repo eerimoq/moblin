@@ -104,16 +104,19 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
 class SettingsRemoteControlWeb: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var port: UInt16 = 80
+    @Published var deviceName: String = ""
 
     enum CodingKeys: CodingKey {
         case enabled,
-             port
+             port,
+             deviceName
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.port, port)
+        try container.encode(.deviceName, deviceName)
     }
 
     init() {}
@@ -122,6 +125,7 @@ class SettingsRemoteControlWeb: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 80)
+        deviceName = container.decode(.deviceName, String.self, "")
     }
 }
 

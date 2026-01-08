@@ -351,20 +351,31 @@ struct RemoteControlStreamersView: View {
 }
 
 private struct WebUrlsView: View {
+    @ObservedObject var web: SettingsRemoteControlWeb
     @ObservedObject var status: StatusOther
-    let port: UInt16
 
     private func formatUrl(ip: String) -> String {
-        if port == 80 {
+        if web.port == 80 {
             return "http://\(ip)"
         } else {
-            return "http://\(ip):\(port)"
+            return "http://\(ip):\(web.port)"
         }
     }
 
     var body: some View {
         NavigationLink {
             Form {
+                Section {
+                    TextField("My device name", text: $web.deviceName)
+                    if !web.deviceName.isEmpty {
+                        UrlCopyView(
+                            url: formatUrl(ip: makeMdnsHostname(deviceName: web.deviceName)),
+                            image: "network"
+                        )
+                    }
+                } header: {
+                    Text("mDNS")
+                }
                 UrlsIpv4View(status: status, formatUrl: formatUrl)
                 UrlsIpv6View(status: status, formatUrl: formatUrl)
             }
@@ -406,7 +417,7 @@ private struct RemoteControlSettingsWebView: View {
             .disabled(web.enabled)
         }
         if web.enabled {
-            WebUrlsView(status: model.statusOther, port: web.port)
+            WebUrlsView(web: web, status: model.statusOther)
         }
     }
 }

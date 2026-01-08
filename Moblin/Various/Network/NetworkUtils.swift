@@ -76,3 +76,13 @@ func makeUrl(_ path: String, _ parameters: [(String, String)]) -> String {
     components.queryItems = parameters.map { URLQueryItem(name: $0, value: $1) }
     return components.string ?? ""
 }
+
+func makeMdnsHostname(deviceName: String) -> String {
+    let name = deviceName
+        .lowercased()
+        .replacingOccurrences(of: " ", with: "-")
+        .replacing(/-+/, with: "-")
+        .trimmingCharacters(in: ["-"])
+        .replacing(/[^\w\d-]/, with: "")
+    return "\(name).local"
+}
