@@ -1,6 +1,15 @@
 import Foundation
 import Network
 
+private struct HttpRequestParseResult {
+    let method: String
+    let path: String
+    let version: String
+    let headers: [(String, String)]
+    // periphery:ignore
+    let data: Data
+}
+
 private class HttpRequestParser {
     private var data = Data()
 
@@ -10,7 +19,7 @@ private class HttpRequestParser {
         self.data += data
     }
 
-    func parse() -> (Bool, (String, String, String, [(String, String)], Data)?) {
+    func parse() -> (Bool, HttpRequestParseResult?) {
         var offset = 0
         guard let (startLine, nextLineOffset) = getLine(data: data, offset: offset) else {
             return (false, nil)
@@ -33,7 +42,11 @@ private class HttpRequestParser {
                 headers.append((String(parts[0]), String(parts[1])))
             }
             if line.isEmpty {
-                return (true, (String(method), String(path), String(version), headers, Data()))
+                return (true, HttpRequestParseResult(method: String(method),
+                                                     path: String(path),
+                                                     version: String(version),
+                                                     headers: headers,
+                                                     data: Data()))
             }
             offset = nextLineOffset
         }
@@ -55,98 +68,19 @@ private class HttpRequestParser {
 class HttpServerRequest {
     let method: String
     let path: String
+    let version: String
     // periphery:ignore
     let headers: [(String, String)]
 
-    fileprivate init(method: String, path: String, headers: [(String, String)]) {
+    fileprivate init(method: String, path: String, version: String, headers: [(String, String)]) {
         self.method = method
         self.path = path
+        self.version = version
         self.headers = headers
     }
-}
 
-class HttpServerResponse {
-    private weak var connection: HttpServerConnection?
-
-    fileprivate init(connection: HttpServerConnection) {
-        self.connection = connection
-    }
-
-    func send(data: Data) {
-        connection?.send200AndClose(content: data)
-    }
-
-    func send(text: String) {
-        connection?.send200AndClose(content: text.utf8Data)
-    }
-}
-
-private class HttpServerConnection {
-    private let connection: NWConnection
-    private weak var server: HttpServer?
-    private var parser = HttpRequestParser()
-    private var version: String = "HTTP/1.0"
-    private var request: HttpServerRequest?
-
-    init(connection: NWConnection, server: HttpServer) {
-        self.connection = connection
-        self.server = server
-    }
-
-    func receiveData() {
-        connection.receive(minimumIncompleteLength: 1, maximumLength: 4096) { data, _, _, error in
-            guard let data, error == nil else {
-                logger.info("http-server: Connection error: \(error?.localizedDescription ?? "")")
-                return
-            }
-            self.handleData(data: data)
-            self.receiveData()
-        }
-    }
-
-    private func handleData(data: Data) {
-        parser.append(data: data)
-        let (done, requestData) = parser.parse()
-        guard done else {
-            return
-        }
-        guard let requestData, let server else {
-            connection.cancel()
-            return
-        }
-        request = HttpServerRequest(method: requestData.0,
-                                    path: requestData.1,
-                                    headers: requestData.3)
-        version = requestData.2
-        guard let route = server.findRoute(request: request!) else {
-            send404AndClose()
-            return
-        }
-        let response = HttpServerResponse(connection: self)
-        route.handler(request!, response)
-    }
-
-    func send200AndClose(content: Data) {
-        sendAndClose(data: """
-        \(version) 200 OK\r\n\
-        Content-Type: \(getContentType())\r\n\
-        Connection: close\r\n\
-        \r\n
-        """.utf8Data + content)
-    }
-
-    func send404AndClose() {
-        sendAndClose(data: "\(version) 404 Not Found\r\nConnection: close\r\n\r\n".utf8Data)
-    }
-
-    private func sendAndClose(data: Data) {
-        connection.send(content: data, completion: .contentProcessed { _ in
-            self.connection.cancel()
-        })
-    }
-
-    private func getContentType() -> String {
-        switch request?.path.split(separator: ".").last {
+    fileprivate func getContentType() -> String {
+        switch path.split(separator: ".").last {
         case "html":
             return "text/html"
         case "mjs":
@@ -160,6 +94,112 @@ private class HttpServerConnection {
         default:
             return "text/html"
         }
+    }
+}
+
+enum HttpServerStatus {
+    case ok
+    case notFound
+
+    func code() -> Int {
+        switch self {
+        case .ok:
+            return 200
+        case .notFound:
+            return 404
+        }
+    }
+
+    func text() -> String {
+        switch self {
+        case .ok:
+            return "OK"
+        case .notFound:
+            return "Not Found"
+        }
+    }
+}
+
+class HttpServerResponse {
+    private weak var connection: HttpServerConnection?
+
+    fileprivate init(connection: HttpServerConnection) {
+        self.connection = connection
+    }
+
+    func send(data: Data, status: HttpServerStatus = .ok) {
+        connection?.sendAndClose(status: status, content: data)
+    }
+
+    func send(text: String, status: HttpServerStatus = .ok) {
+        send(data: text.utf8Data, status: status)
+    }
+}
+
+private class HttpServerConnection {
+    private let connection: NWConnection
+    private weak var server: HttpServer?
+    private var parser = HttpRequestParser()
+    private var request: HttpServerRequest?
+
+    init(connection: NWConnection, server: HttpServer) {
+        self.connection = connection
+        self.server = server
+    }
+
+    func receiveData() {
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 4096) { data, _, _, error in
+            guard let data, error == nil else {
+                if let error {
+                    logger.info("http-server: Connection error: \(error.localizedDescription)")
+                }
+                return
+            }
+            self.handleData(data: data)
+            self.receiveData()
+        }
+    }
+
+    private func handleData(data: Data) {
+        parser.append(data: data)
+        let (done, result) = parser.parse()
+        guard done else {
+            return
+        }
+        guard let result, let server else {
+            connection.cancel()
+            return
+        }
+        request = HttpServerRequest(method: result.method,
+                                    path: result.path,
+                                    version: result.version,
+                                    headers: result.headers)
+        guard let route = server.findRoute(request: request!) else {
+            sendAndClose(status: .notFound, content: Data())
+            return
+        }
+        route.handler(request!, HttpServerResponse(connection: self))
+    }
+
+    func sendAndClose(status: HttpServerStatus, content: Data) {
+        guard let request else {
+            return
+        }
+        var lines: [String] = []
+        lines.append("\(request.version) \(status.code()) \(status.text())")
+        if !content.isEmpty {
+            lines.append("Content-Type: \(request.getContentType())")
+        }
+        lines.append("Connection: close")
+        lines.append("")
+        lines.append("")
+        sendAndClose(data: lines.joined(separator: "\r\n").utf8Data + content)
+    }
+
+    private func sendAndClose(data: Data) {
+        connection.send(content: data, completion: .contentProcessed { _ in
+            self.connection.cancel()
+        })
     }
 }
 
@@ -188,14 +228,14 @@ class HttpServer {
     }
 
     func start(port: NWEndpoint.Port) {
-        logger.info("http-server: Start")
+        logger.debug("http-server: Start")
         queue.async {
             self.startInternal(port: port)
         }
     }
 
     func stop() {
-        logger.info("http-server: Stop")
+        logger.debug("http-server: Stop")
         queue.async {
             self.stopInternal()
         }
@@ -237,7 +277,6 @@ class HttpServer {
     }
 
     private func handleNewConnection(_ connection: NWConnection) {
-        logger.info("http-server: New connection \(connection)")
         connection.start(queue: queue)
         let connection = HttpServerConnection(connection: connection, server: self)
         connection.receiveData()
