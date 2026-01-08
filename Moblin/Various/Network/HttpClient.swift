@@ -1,15 +1,26 @@
 import Foundation
 import Network
 
-class HttpResponseParser {
-    private var data = Data()
-
-    init() {}
+class HttpParser {
+    var data = Data()
 
     func append(data: Data) {
         self.data += data
     }
 
+    func getLine(data: Data, offset: Int) -> (String, Int)? {
+        let data = data.advanced(by: offset)
+        guard let rIndex = data.firstIndex(of: 0xD), data.count > rIndex + 1, data[rIndex + 1] == 0xA else {
+            return nil
+        }
+        guard let line = String(bytes: data[0 ..< rIndex], encoding: .utf8) else {
+            return nil
+        }
+        return (line, offset + rIndex + 2)
+    }
+}
+
+class HttpResponseParser: HttpParser {
     func parse() -> (Bool, Data?) {
         var offset = 0
         guard let (statusLine, nextLineOffset) = getLine(data: data, offset: offset) else {
@@ -39,17 +50,6 @@ class HttpResponseParser {
             offset = nextLineOffset
         }
         return (false, nil)
-    }
-
-    private func getLine(data: Data, offset: Int) -> (String, Int)? {
-        let data = data.advanced(by: offset)
-        guard let rIndex = data.firstIndex(of: 0xD), data.count > rIndex + 1, data[rIndex + 1] == 0xA else {
-            return nil
-        }
-        guard let line = String(bytes: data[0 ..< rIndex], encoding: .utf8) else {
-            return nil
-        }
-        return (line, offset + rIndex + 2)
     }
 }
 
