@@ -11,7 +11,6 @@ class QuickButtonObs: ObservableObject {
     var sourceScreenshotIsFetching = false
     var recording = false
     var audioVolumeLatest: String = ""
-    var sceneBeforeSwitchToBrbScene: String?
     @Published var streamingState: ObsOutputState = .stopped
     @Published var recordingState: ObsOutputState = .stopped
     @Published var sceneInputs: [ObsSceneInput] = []
@@ -217,27 +216,23 @@ extension Model {
     }
 
     func updateObsSceneSwitcher(now: ContinuousClock.Instant) {
-        guard isLive, !stream.obsBrbScene.isEmpty, !obsQuickButton.currentScene.isEmpty,
+        guard isLive,
+              !stream.obsMainScene.isEmpty,
+              !stream.obsBrbScene.isEmpty,
+              !obsQuickButton.currentScene.isEmpty,
               isObsConnected()
         else {
             return
         }
         if isStreamLikelyBroken(now: now) {
-            if obsQuickButton.currentScene != stream.obsBrbScene {
-                if !stream.obsMainScene.isEmpty {
-                    obsQuickButton.sceneBeforeSwitchToBrbScene = stream.obsMainScene
-                } else {
-                    obsQuickButton.sceneBeforeSwitchToBrbScene = obsQuickButton.currentScene
-                }
+            if obsQuickButton.currentScene == stream.obsMainScene {
                 makeStreamLikelyBrokenToast(scene: stream.obsBrbScene)
                 setObsScene(name: stream.obsBrbScene)
             }
-        } else if let obsSceneBeforeSwitchToBrbScene = obsQuickButton.sceneBeforeSwitchToBrbScene {
+        } else {
             if obsQuickButton.currentScene == stream.obsBrbScene {
-                makeStreamLikelyWorkingToast(scene: obsSceneBeforeSwitchToBrbScene)
-                setObsScene(name: obsSceneBeforeSwitchToBrbScene)
-            } else if obsQuickButton.currentScene == obsSceneBeforeSwitchToBrbScene {
-                obsQuickButton.sceneBeforeSwitchToBrbScene = nil
+                makeStreamLikelyWorkingToast(scene: stream.obsMainScene)
+                setObsScene(name: stream.obsMainScene)
             }
         }
     }
