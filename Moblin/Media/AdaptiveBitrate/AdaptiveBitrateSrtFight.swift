@@ -32,9 +32,9 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
-        currentBitrate = Int64(targetBitrate)
-        previousBitrate = Int64(targetBitrate)
-        currentMaximumBitrate = Int64(targetBitrate)
+        currentBitrate = adaptiveBitrateStart
+        previousBitrate = adaptiveBitrateStart
+        currentMaximumBitrate = adaptiveBitrateStart
         super.init(delegate: delegate)
     }
 

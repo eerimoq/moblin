@@ -40,7 +40,7 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
 
     init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
-        currentBitrate = Int64(targetBitrate)
+        currentBitrate = Int64(adaptiveBitrateStart)
         super.init(delegate: delegate)
     }
 
