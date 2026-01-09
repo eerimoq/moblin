@@ -29,15 +29,15 @@ private func update(belabox: AdaptiveBitrateSrtBelabox, bitrate: Int64) async th
 
 struct AdaptiveBitrateSuite {
     @Test
-    func belaboxStartAtTarget() async throws {
+    func belaboxStartAtLowerThanTarget() async throws {
         let handler = Handler()
         let belabox = AdaptiveBitrateSrtBelabox(targetBitrate: 5_000_000, delegate: handler)
         belabox.setSettings(settings: adaptiveBitrateBelaboxSettings)
-        #expect(belabox.getCurrentBitrate() == 5_000_000)
-        #expect(belabox.getCurrentMaximumBitrateInKbps() == 5000)
+        #expect(belabox.getCurrentBitrate() == 1_000_000)
+        #expect(belabox.getCurrentMaximumBitrateInKbps() == 1000)
         #expect(handler.bitrates.isEmpty)
         try await update(belabox: belabox, bitrate: 5_000_000)
-        #expect(belabox.getCurrentBitrate() == 5_000_000)
+        #expect(belabox.getCurrentBitrate() == 1_133_333)
     }
 
     @Test
@@ -45,18 +45,16 @@ struct AdaptiveBitrateSuite {
         let handler = Handler()
         let belabox = AdaptiveBitrateSrtBelabox(targetBitrate: 5_000_000, delegate: handler)
         belabox.setSettings(settings: adaptiveBitrateBelaboxSettings)
-        #expect(belabox.getCurrentBitrate() == 5_000_000)
-        #expect(belabox.getCurrentMaximumBitrateInKbps() == 5000)
+        #expect(belabox.getCurrentBitrate() == 1_000_000)
+        #expect(belabox.getCurrentMaximumBitrateInKbps() == 1000)
         #expect(handler.bitrates.isEmpty)
-        let transportBitrate1Mbps: Int64 = 1_000_000
-        try await update(belabox: belabox, bitrate: transportBitrate1Mbps)
-        #expect(handler.bitrates.popFirst() == 2_000_000)
         let transportBitrate5Mbps: Int64 = 5_000_000
         while belabox.getCurrentBitrate() != 5_000_000 {
             try await update(belabox: belabox, bitrate: transportBitrate5Mbps)
         }
-        try await update(belabox: belabox, bitrate: transportBitrate5Mbps)
-        #expect(belabox.getCurrentBitrate() == 5_000_000)
-        #expect(handler.bitrates.last == 5_000_000)
+        let transportBitrate1Mbps: Int64 = 1_000_000
+        try await update(belabox: belabox, bitrate: transportBitrate1Mbps)
+        #expect(belabox.getCurrentBitrate() == 2_000_000)
+        #expect(handler.bitrates.last == 2_000_000)
     }
 }
