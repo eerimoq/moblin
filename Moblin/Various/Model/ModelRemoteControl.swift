@@ -383,7 +383,13 @@ extension Model {
 
     private func remoteControlStreamerCreateStatusTopRight() -> RemoteControlStatusTopRight {
         var topRight = RemoteControlStatusTopRight()
-        topRight.audioInfo = .init(audioLevel: .unknown, numberOfAudioChannels: audio.numberOfChannels)
+        let level = formatAudioLevel(level: audio.level.level) +
+            formatAudioLevelChannels(channels: audio.numberOfChannels)
+        topRight.audioLevel = RemoteControlStatusItem(message: level)
+        topRight.audioInfo = .init(
+            audioLevel: .unknown,
+            numberOfAudioChannels: audio.numberOfChannels
+        )
         if audio.level.level.isNaN {
             topRight.audioInfo!.audioLevel = .muted
         } else if audio.level.level.isInfinite {

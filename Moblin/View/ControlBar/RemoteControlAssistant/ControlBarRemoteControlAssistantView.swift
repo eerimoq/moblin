@@ -299,6 +299,9 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                             level: audioInfo.audioLevel.toFloat(),
                             channels: audioInfo.numberOfAudioChannels
                         )
+                    } else {
+                        // Backwards compatibility. Remove later.
+                        StatusItemView(icon: "waveform", status: status.audioLevel)
                     }
                     StatusItemView(icon: "cpu", status: status.systemMonitor)
                     StatusItemView(icon: "server.rack", status: status.rtmpServer)
