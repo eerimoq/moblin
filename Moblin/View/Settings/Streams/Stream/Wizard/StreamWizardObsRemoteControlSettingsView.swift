@@ -74,6 +74,17 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                     }
                 }
                 Section {
+                    TextField("Main scene", text: $createStreamWizard.obsRemoteControlMainScene)
+                        .disableAutocorrection(true)
+                } header: {
+                    Text("Main scene")
+                } footer: {
+                    Text("""
+                    The name of your main scene in OBS. Moblin will periodically try to switch \
+                    to this scene from your BRB scene if the stream is likely working.
+                    """)
+                }
+                Section {
                     TextField("My BRB scene", text: $createStreamWizard.obsRemoteControlBrbScene)
                         .disableAutocorrection(true)
                 } header: {
@@ -81,7 +92,7 @@ struct StreamWizardObsRemoteControlSettingsView: View {
                 } footer: {
                     Text("""
                     The name of your BRB scene in OBS. Moblin will periodically try to switch \
-                    to this scene if the stream is likely broken.
+                    from your main scene to this scene if the stream is likely broken.
                     """)
                 }
                 Section {

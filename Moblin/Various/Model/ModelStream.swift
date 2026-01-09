@@ -40,6 +40,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var obsRemoteControlUrl = ""
     @Published var obsRemoteControlPassword = ""
     @Published var obsRemoteControlSourceName = ""
+    @Published var obsRemoteControlMainScene = ""
     @Published var obsRemoteControlBrbScene = ""
     @Published var directIngest = ""
     @Published var directStreamKey = ""
