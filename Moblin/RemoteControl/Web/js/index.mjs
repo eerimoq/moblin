@@ -167,9 +167,6 @@ class Connection {
   }
 
   handleStateEvent(state) {
-    if (state.data.debugLogging !== undefined) {
-      setDebugLogging(state.data.debugLogging);
-    }
     if (state.data.streaming !== undefined) {
       setLive(state.data.streaming);
     }
@@ -178,6 +175,9 @@ class Connection {
     }
     if (state.data.muted !== undefined) {
       setMuted(state.data.muted);
+    }
+    if (state.data.debugLogging !== undefined) {
+      setDebugLogging(state.data.debugLogging);
     }
   }
 
