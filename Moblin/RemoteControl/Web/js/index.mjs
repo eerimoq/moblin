@@ -1,31 +1,27 @@
-import {
-  appendToRow,
-  getTableBodyNoHead,
-  addOnChange,
-  connectionStatus,
-} from "./utils.mjs";
+import { appendToRow, getTableBodyNoHead, addOnChange } from "./utils.mjs";
 import { websocketPort } from "./config.mjs";
 
 class Connection {
   constructor() {
-    this.websocket = undefined;
     this.statusTimerId = undefined;
+    this.connectTimerId = undefined;
     this.nextId = 1;
-    this.setup();
+    this.connect();
   }
 
-  setup() {
+  connect() {
     this.websocket = new WebSocket(
       `ws://${window.location.hostname}:${websocketPort}`,
     );
     this.websocket.onopen = (event) => {
+      this.sendStartStatusRequest();
       this.sendGetStatusRequest();
     };
     this.websocket.onerror = (event) => {
-      this.close();
+      this.reconnectSoon();
     };
     this.websocket.onclose = (event) => {
-      this.close();
+      this.reconnectSoon();
     };
     this.websocket.onmessage = async (event) => {
       let message = JSON.parse(event.data);
@@ -33,7 +29,7 @@ class Connection {
     };
   }
 
-  close() {
+  reconnectSoon() {
     if (this.statusTimerId != undefined) {
       clearTimeout(this.statusTimerId);
       this.statusTimerId = undefined;
@@ -41,6 +37,13 @@ class Connection {
     if (this.websocket != undefined) {
       this.websocket.close();
     }
+    if (this.connectTimerId != undefined) {
+      clearTimeout(this.connectTimerId);
+    }
+    this.connectTimerId = setTimeout(() => {
+      this.connectTimerId = undefined;
+      this.connect();
+    }, 5000);
   }
 
   setDebugLogging(on) {
@@ -97,7 +100,7 @@ class Connection {
     updateStatus(status);
     this.statusTimerId = setTimeout(() => {
       this.sendGetStatusRequest();
-    }, 5000);
+    }, 1000);
   }
 
   handleEvent(data) {
@@ -131,13 +134,27 @@ class Connection {
     });
   }
 
+  sendStartStatusRequest() {
+    this.send({
+      request: {
+        id: this.getNextId(),
+        data: {
+          startStatus: {
+            interval: 1,
+            filter: {
+              topRight: true,
+            },
+          },
+        },
+      },
+    });
+  }
+
   send(message) {
     // console.log("Sending", message);
     this.websocket.send(JSON.stringify(message));
   }
 }
-
-let connection = undefined;
 
 function updateStatus(status) {
   let generalBody = getTableBodyNoHead("statusGeneral");
@@ -198,9 +215,6 @@ function appendStatuses(body, statuses) {
 }
 
 function toggleDebugLogging(event) {
-  if (connection === undefined) {
-    return;
-  }
   connection.setDebugLogging(event.target.checked);
 }
 
@@ -208,7 +222,8 @@ function setDebugLogging(on) {
   document.getElementById("controlDebugLogging").checked = on;
 }
 
+let connection = new Connection();
+
 window.addEventListener("DOMContentLoaded", async (event) => {
   addOnChange("controlDebugLogging", toggleDebugLogging);
-  connection = new Connection();
 });
