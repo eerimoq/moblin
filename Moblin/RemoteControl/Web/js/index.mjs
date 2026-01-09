@@ -1,11 +1,17 @@
 import { appendToRow, getTableBodyNoHead, addOnChange } from "./utils.mjs";
 import { websocketPort } from "./config.mjs";
 
+export const connectionStatus = {
+  connecting: "Connecting...",
+  connected: "Connected",
+};
+
 class Connection {
   constructor() {
     this.statusTimerId = undefined;
     this.connectTimerId = undefined;
     this.nextId = 1;
+    this.status = connectionStatus.connecting;
     this.connect();
   }
 
@@ -14,6 +20,7 @@ class Connection {
       `ws://${window.location.hostname}:${websocketPort}`,
     );
     this.websocket.onopen = (event) => {
+      this.setStatus(connectionStatus.connected);
       this.sendStartStatusRequest();
       this.sendGetStatusRequest();
     };
@@ -40,10 +47,19 @@ class Connection {
     if (this.connectTimerId != undefined) {
       clearTimeout(this.connectTimerId);
     }
+    this.setStatus(connectionStatus.connecting);
     this.connectTimerId = setTimeout(() => {
       this.connectTimerId = undefined;
       this.connect();
     }, 5000);
+  }
+
+  setStatus(newStatus) {
+    if (this.status == newStatus) {
+      return;
+    }
+    this.status = newStatus;
+    updateConnectionStatus();
   }
 
   setLive(on) {
@@ -260,6 +276,17 @@ function appendStatuses(body, statuses) {
     appendToRow(row, name);
     appendToRow(row, statuses[key].message);
   }
+}
+
+function updateConnectionStatus() {
+  let status = '<i class="p-icon--error"></i> Unknown server status';
+  if (connection.status == connectionStatus.connecting) {
+    status =
+      '<i class="p-icon--spinner u-animation--spin"></i> Connecting to server';
+  } else if (connection.status == connectionStatus.connected) {
+    status = '<i class="p-icon--success"></i> Connected to server';
+  }
+  document.getElementById("status").innerHTML = status;
 }
 
 function toggleLive(event) {
