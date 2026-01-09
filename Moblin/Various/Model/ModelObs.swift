@@ -232,7 +232,10 @@ extension Model {
     }
 
     private func updateObsSceneSwitcherStreamingDirectlyToObs(now: ContinuousClock.Instant) {
-        if let streamStartTime, streamStartTime.duration(to: now) < .seconds(10) {
+        guard let streamStartTime else {
+            return
+        }
+        if streamStartTime.duration(to: now) < .seconds(10) {
             guard streamStartTime.duration(to: now) > .seconds(5) else {
                 return
             }
@@ -246,8 +249,13 @@ extension Model {
                 switchToBrbSceneIfNeeded()
             } else {
                 if obsQuickButton.currentScene == stream.obsBrbScene {
+                    makeStreamReconnectFixAudioToast()
                     stopNetStream()
                     streamState = .disconnected
+                    reconnectTimer.startSingleShot(timeout: 5) {
+                        logger.info("stream: Reconnecting bacause of OBS scene switcher")
+                        self.startNetStream()
+                    }
                 }
             }
         }
@@ -281,6 +289,13 @@ extension Model {
         makeErrorToast(
             title: String(localized: "😠 Stream likely broken 😠"),
             subTitle: String(localized: "Trying to switch OBS scene to \(scene)")
+        )
+    }
+
+    private func makeStreamReconnectFixAudioToast() {
+        makeToast(
+            title: String(localized: "😠 Stream audio likely broken 😠"),
+            subTitle: String(localized: "Restarting stream to OBS")
         )
     }
 
