@@ -407,7 +407,10 @@ private struct RemoteControlSettingsWebView: View {
                     model.reloadRemoteControlWeb()
                 }
         } footer: {
-            Text("Enable to monitor and control this device from another device using a web browser.")
+            Text("""
+            Enable to monitor and control this device from another device on your \
+            local network using a web browser.
+            """)
         }
         Section {
             TextEditNavigationView(
@@ -497,6 +500,8 @@ struct RemoteControlSettingsView: View {
                 } label: {
                     Text("Assistant")
                 }
+            }
+            Section {
                 NavigationLink {
                     Form {
                         RemoteControlSettingsWebView(
