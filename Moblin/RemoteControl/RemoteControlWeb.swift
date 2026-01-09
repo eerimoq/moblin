@@ -5,7 +5,11 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebConnected()
     func remoteControlWebGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
+    func remoteControlWebSetRecord(on: Bool)
+    func remoteControlWebSetStream(on: Bool)
     func remoteControlWebSetDebugLogging(on: Bool)
+    func remoteControlWebSetMute(on: Bool)
+    func remoteControlWebSetTorch(on: Bool)
 }
 
 private struct StaticFile {
@@ -213,6 +217,18 @@ class RemoteControlWeb {
                      result: .ok,
                      data: .getStatus(general: general, topLeft: topLeft, topRight: topRight)
                  ))
+        case let .setRecord(on: on):
+            delegate.remoteControlWebSetRecord(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setStream(on: on):
+            delegate.remoteControlWebSetStream(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setMute(on: on):
+            delegate.remoteControlWebSetMute(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setTorch(on: on):
+            delegate.remoteControlWebSetTorch(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
         case let .setDebugLogging(on: on):
             delegate.remoteControlWebSetDebugLogging(on: on)
             sendEmptyOkResponse(connection: connection, id: id)

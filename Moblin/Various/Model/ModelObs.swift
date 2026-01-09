@@ -253,7 +253,7 @@ extension Model {
                     stopNetStream()
                     streamState = .disconnected
                     reconnectTimer.startSingleShot(timeout: 5) {
-                        logger.info("stream: Reconnecting bacause of OBS scene switcher")
+                        logger.info("stream: Reconnecting because of OBS scene switcher")
                         self.startNetStream()
                     }
                 }

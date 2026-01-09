@@ -46,6 +46,45 @@ class Connection {
     }, 5000);
   }
 
+  setLive(on) {
+    this.send({
+      request: {
+        id: this.getNextId(),
+        data: {
+          setStream: {
+            on: on,
+          },
+        },
+      },
+    });
+  }
+
+  setRecording(on) {
+    this.send({
+      request: {
+        id: this.getNextId(),
+        data: {
+          setRecord: {
+            on: on,
+          },
+        },
+      },
+    });
+  }
+
+  setMuted(on) {
+    this.send({
+      request: {
+        id: this.getNextId(),
+        data: {
+          setMute: {
+            on: on,
+          },
+        },
+      },
+    });
+  }
+
   setDebugLogging(on) {
     this.send({
       request: {
@@ -114,6 +153,15 @@ class Connection {
   handleStateEvent(state) {
     if (state.data.debugLogging !== undefined) {
       setDebugLogging(state.data.debugLogging);
+    }
+    if (state.data.streaming !== undefined) {
+      setLive(state.data.streaming);
+    }
+    if (state.data.recording !== undefined) {
+      setRecording(state.data.recording);
+    }
+    if (state.data.muted !== undefined) {
+      setMuted(state.data.muted);
     }
   }
 
@@ -214,6 +262,30 @@ function appendStatuses(body, statuses) {
   }
 }
 
+function toggleLive(event) {
+  connection.setLive(event.target.checked);
+}
+
+function setLive(on) {
+  document.getElementById("controlLive").checked = on;
+}
+
+function toggleRecording(event) {
+  connection.setRecording(event.target.checked);
+}
+
+function setRecording(on) {
+  document.getElementById("controlRecording").checked = on;
+}
+
+function toggleMuted(event) {
+  connection.setMuted(event.target.checked);
+}
+
+function setMuted(on) {
+  document.getElementById("controlMuted").checked = on;
+}
+
 function toggleDebugLogging(event) {
   connection.setDebugLogging(event.target.checked);
 }
@@ -225,5 +297,8 @@ function setDebugLogging(on) {
 let connection = new Connection();
 
 window.addEventListener("DOMContentLoaded", async (event) => {
+  addOnChange("controlLive", toggleLive);
+  addOnChange("controlRecording", toggleRecording);
+  addOnChange("controlMuted", toggleMuted);
   addOnChange("controlDebugLogging", toggleDebugLogging);
 });

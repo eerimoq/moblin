@@ -495,6 +495,11 @@ extension Model {
         remoteControlWeb?.stateChanged(state: state)
     }
 
+    func remoteControlLog(entry: String) {
+        remoteControlStreamer?.log(entry: entry)
+        remoteControlWeb?.log(entry: entry)
+    }
+
     func reloadRemoteControlWeb() {
         remoteControlWeb?.stop()
         remoteControlWeb = nil
@@ -864,7 +869,23 @@ extension Model: RemoteControlWebDelegate {
         return remoteControlStreamerGetStatus()
     }
 
+    func remoteControlWebSetRecord(on: Bool) {
+        remoteControlStreamerSetRecord(on: on)
+    }
+
+    func remoteControlWebSetStream(on: Bool) {
+        remoteControlStreamerSetStream(on: on)
+    }
+
     func remoteControlWebSetDebugLogging(on: Bool) {
         remoteControlStreamerSetDebugLogging(on: on)
+    }
+
+    func remoteControlWebSetMute(on: Bool) {
+        remoteControlStreamerSetMute(on: on)
+    }
+
+    func remoteControlWebSetTorch(on: Bool) {
+        remoteControlStreamerSetTorch(on: on)
     }
 }

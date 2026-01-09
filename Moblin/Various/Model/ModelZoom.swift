@@ -105,8 +105,7 @@ extension Model {
     private func setBackZoomPreset(presetId: UUID) {
         zoom.backPresetId = presetId
         if cameraPosition == .back {
-            remoteControlStreamer?
-                .stateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
+            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
@@ -116,8 +115,7 @@ extension Model {
     private func setFrontZoomPreset(presetId: UUID) {
         zoom.frontPresetId = presetId
         if cameraPosition == .front {
-            remoteControlStreamer?
-                .stateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
+            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPreset: presetId))
             if isWatchLocal() {
                 sendZoomPresetToWatch()
             }
@@ -153,8 +151,7 @@ extension Model {
         zoom.frontZoomPresets = database.zoom.front.filter { showPreset(preset: $0) }
         if cameraPosition == .front {
             let presets = zoom.frontZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-            remoteControlStreamer?
-                .stateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: presets))
+            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: presets))
             if isWatchLocal() {
                 sendZoomPresetsToWatch()
             }
@@ -165,8 +162,7 @@ extension Model {
         zoom.backZoomPresets = database.zoom.back.filter { showPreset(preset: $0) }
         if cameraPosition == .back {
             let presets = zoom.backZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-            remoteControlStreamer?
-                .stateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: presets))
+            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: presets))
             if isWatchLocal() {
                 sendZoomPresetsToWatch()
             }
