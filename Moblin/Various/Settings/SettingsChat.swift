@@ -17,10 +17,16 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
             return false
         }
         var segmentsIterator = segments.makeIterator()
-        for messageWord in messageStartWords {
+        for (index, messageWord) in messageStartWords.enumerated() {
             if let text = firstText(segmentsIterator: &segmentsIterator) {
-                if !text.starts(with: messageWord) {
-                    return false
+                if index == messageStartWords.count - 1 {
+                    if !text.starts(with: messageWord) {
+                        return false
+                    }
+                } else {
+                    if text != messageWord {
+                        return false
+                    }
                 }
             } else {
                 return false
