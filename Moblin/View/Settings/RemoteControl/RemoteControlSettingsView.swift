@@ -408,8 +408,8 @@ private struct RemoteControlSettingsWebView: View {
                 }
         } footer: {
             Text("""
-            Enable to monitor and control this device from another device on your \
-            local network using a web browser.
+            Enable to monitor and control this device from another device using a web \
+            browser. There is no authentication, nor encryption, so be careful.
             """)
         }
         Section {
