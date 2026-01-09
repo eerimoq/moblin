@@ -375,6 +375,8 @@ private struct WebUrlsView: View {
                     }
                 } header: {
                     Text("mDNS")
+                } footer: {
+                    Text("Copy your device name from iOS settings.")
                 }
                 UrlsIpv4View(status: status, formatUrl: formatUrl)
                 UrlsIpv6View(status: status, formatUrl: formatUrl)
@@ -404,6 +406,8 @@ private struct RemoteControlSettingsWebView: View {
                 .onChange(of: web.enabled) { _ in
                     model.reloadRemoteControlWeb()
                 }
+        } footer: {
+            Text("Enable to monitor and control this device from another device using a web browser.")
         }
         Section {
             TextEditNavigationView(
