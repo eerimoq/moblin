@@ -119,6 +119,7 @@ extension Model {
                         stream.obsSourceName = createStreamWizard.obsRemoteControlSourceName.trim()
                         stream.obsMainScene = createStreamWizard.obsRemoteControlMainScene.trim()
                         stream.obsBrbScene = createStreamWizard.obsRemoteControlBrbScene.trim()
+                        stream.streamingDirectlyToObs = createStreamWizard.networkSetup == .obs
                     }
                 }
             }
