@@ -12,6 +12,16 @@ class CreateWidgetWizard: ObservableObject {
         type = .text
         widget = .init(name: "")
         widget.text.formatString = ""
+        let yes1 = SettingsWidgetWheelOfLuckSector()
+        yes1.text = String(localized: "Yes")
+        let no1 = SettingsWidgetWheelOfLuckSector()
+        no1.text = String(localized: "No")
+        let yes2 = SettingsWidgetWheelOfLuckSector()
+        yes2.text = String(localized: "Yes")
+        let no2 = SettingsWidgetWheelOfLuckSector()
+        no2.text = String(localized: "No")
+        widget.wheelOfLuck.sectors = [yes1, no1, yes2, no2]
+        widget.wheelOfLuck.updateTotalWeight()
     }
 }
 
@@ -1409,7 +1419,7 @@ extension Model {
         case .wheelOfLuck:
             sceneWidget.layout.alignment = .topRight
             sceneWidget.layout.x = 1.3
-            sceneWidget.layout.y = 2
+            sceneWidget.layout.y = 31
         default:
             break
         }

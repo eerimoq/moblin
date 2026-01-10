@@ -196,6 +196,14 @@ struct WidgetWizardSettingsView: View {
                                                          pngTuber: createWidgetWizard.widget.pngTuber,
                                                          createWidgetWizard: createWidgetWizard,
                                                          presentingCreateWizard: $presentingCreateWizard)
+                    case .wheelOfLuck:
+                        WidgetWizardWheelOfLuckSettingsView(model: model,
+                                                            database: database,
+                                                            widget: createWidgetWizard.widget,
+                                                            wheelOfLuck: createWidgetWizard.widget
+                                                                .wheelOfLuck,
+                                                            createWidgetWizard: createWidgetWizard,
+                                                            presentingCreateWizard: $presentingCreateWizard)
                     default:
                         SelectScenesView(model: model,
                                          database: database,

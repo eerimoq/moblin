@@ -1,5 +1,7 @@
 import SwiftUI
 
+let wheelOfLuckSectorWeights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 40, 60, 80, 100]
+
 private struct SectorView: View {
     let model: Model
     let widget: SettingsWidget
@@ -22,7 +24,7 @@ private struct SectorView: View {
                     updateEffect()
                 }
                 Picker("Weight", selection: $sector.weight) {
-                    ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 40, 60, 80, 100], id: \.self) {
+                    ForEach(wheelOfLuckSectorWeights, id: \.self) {
                         Text(String($0))
                     }
                 }
