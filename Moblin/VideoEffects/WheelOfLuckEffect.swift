@@ -93,7 +93,7 @@ final class WheelOfLuckEffect: VideoEffect {
     func spin() {
         processorPipelineQueue.async {
             self.speed = .random(in: 5 ... 10)
-            self.spinTime = self.speed * 2
+            self.spinTime = 12
             self.startPresentationTimeStamp = .nan
         }
     }
