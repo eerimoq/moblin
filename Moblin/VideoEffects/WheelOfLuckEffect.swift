@@ -58,7 +58,7 @@ final class WheelOfLuckEffect: VideoEffect {
     private var spinTime: Double = .random(in: 12 ... 17)
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
 
-    override init() {
+    init(canvasSize: CGSize) {
         super.init()
         let inputSectors = [
             WheelOfLuckEffectSector(id: 0,
@@ -78,7 +78,7 @@ final class WheelOfLuckEffect: VideoEffect {
                                     text: "Special",
                                     textAngle: .zero),
         ]
-        let size = 500.0
+        let size = 500.0 * (canvasSize.width / 1920)
         var sectors: [WheelOfLuckEffectSector] = []
         let totalWeight = inputSectors.reduce(0) { $0 + $1.weight }
         var angle = 0.0

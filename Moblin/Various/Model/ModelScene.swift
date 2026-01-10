@@ -755,7 +755,7 @@ extension Model {
     private func resetWheelOfLuckEffects(widgets: [SettingsWidget]) {
         wheelOfLuckEffects.removeAll()
         for widget in widgets where widget.type == .wheelOfLuck {
-            let effect = WheelOfLuckEffect()
+            let effect = WheelOfLuckEffect(canvasSize: media.getCanvasSize())
             wheelOfLuckEffects[widget.id] = effect
         }
     }
