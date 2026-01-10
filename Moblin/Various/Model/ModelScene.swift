@@ -37,6 +37,7 @@ extension Model {
                 }
             }
         }
+        logger.info("xxx effects \(effects)")
         return effects
     }
 
@@ -62,6 +63,10 @@ extension Model {
 
     func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
         return qrCodeEffects.first(where: { $0.key == id })?.value
+    }
+
+    func getWheelOfLuckEffect(id: UUID) -> WheelOfLuckEffect? {
+        return wheelOfLuckEffects.first(where: { $0.key == id })?.value
     }
 
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
@@ -563,6 +568,7 @@ extension Model {
         resetSnapshotVideoEffects(widgets: widgets)
         resetChatVideoEffects(widgets: widgets)
         resetSlideshowVideoEffects(widgets: widgets)
+        resetWheelOfLuckEffects(widgets: widgets)
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
@@ -623,42 +629,42 @@ extension Model {
             guard let url = URL(string: widget.browser.url) else {
                 continue
             }
-            let browserEffect = BrowserEffect(
+            let effect = BrowserEffect(
                 url: url,
                 styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
                 settingName: widget.name,
                 moblinAccess: widget.browser.moblinAccess
             )
-            browserEffect.effects = widget.getEffects()
-            browserEffects[widget.id] = browserEffect
+            effect.effects = widget.getEffects()
+            browserEffects[widget.id] = effect
         }
     }
 
     private func resetMapVideoEffects(widgets: [SettingsWidget]) {
         mapEffects.removeAll()
         for widget in widgets where widget.type == .map {
-            let mapEffect = MapEffect(widget: widget.map)
-            mapEffect.effects = widget.getEffects()
-            mapEffects[widget.id] = mapEffect
+            let effect = MapEffect(widget: widget.map)
+            effect.effects = widget.getEffects()
+            mapEffects[widget.id] = effect
         }
     }
 
     private func resetQrCodeVideoEffects(widgets: [SettingsWidget]) {
         qrCodeEffects.removeAll()
         for widget in widgets where widget.type == .qrCode {
-            let qrCodeEffect = QrCodeEffect(widget: widget.qrCode.clone())
-            qrCodeEffect.effects = widget.getEffects()
-            qrCodeEffects[widget.id] = qrCodeEffect
+            let effect = QrCodeEffect(widget: widget.qrCode.clone())
+            effect.effects = widget.getEffects()
+            qrCodeEffects[widget.id] = effect
         }
     }
 
     private func resetVideoSourceVideoEffects(widgets: [SettingsWidget]) {
         videoSourceEffects.removeAll()
         for widget in widgets where widget.type == .videoSource {
-            let videoSourceEffect = VideoSourceEffect()
-            videoSourceEffect.effects = widget.getEffects()
-            videoSourceEffects[widget.id] = videoSourceEffect
+            let effect = VideoSourceEffect()
+            effect.effects = widget.getEffects()
+            videoSourceEffects[widget.id] = effect
         }
     }
 
@@ -743,6 +749,14 @@ extension Model {
                                                    time: Double(slide.time)))
             }
             slideshowEffects[widget.id] = SlideshowEffect(slides: slides)
+        }
+    }
+
+    private func resetWheelOfLuckEffects(widgets: [SettingsWidget]) {
+        wheelOfLuckEffects.removeAll()
+        for widget in widgets where widget.type == .wheelOfLuck {
+            let effect = WheelOfLuckEffect()
+            wheelOfLuckEffects[widget.id] = effect
         }
     }
 
@@ -889,6 +903,8 @@ extension Model {
                 addSceneSnapshotEffects(sceneWidget, widget, &effects)
             case .chat:
                 addSceneChatEffects(sceneWidget, widget, &effects)
+            case .wheelOfLuck:
+                addSceneWheelOfLuckEffects(sceneWidget, widget, &effects)
             }
         }
     }
@@ -1123,6 +1139,18 @@ extension Model {
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         effect.start()
         enabledChatEffects.append(effect)
+        effects.append(effect)
+    }
+
+    private func addSceneWheelOfLuckEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = wheelOfLuckEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         effects.append(effect)
     }
 
@@ -1377,6 +1405,10 @@ extension Model {
         case .scoreboard:
             sceneWidget.layout.x = 0.78
             sceneWidget.layout.y = 1.388
+        case .wheelOfLuck:
+            sceneWidget.layout.alignment = .topRight
+            sceneWidget.layout.x = 1.3
+            sceneWidget.layout.y = 2
         default:
             break
         }
@@ -1392,6 +1424,7 @@ extension Model {
         _ parts: [TextFormatPart]
     ) {
         let length = parts.filter { $0 == .timer }.count
+        logger.info("xxx length \(length) \(parts)")
         text.timers.truncate(length: length, create: { .init() })
         textEffect.setTimersEndTime(endTimes: text.timers.map {
             .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))

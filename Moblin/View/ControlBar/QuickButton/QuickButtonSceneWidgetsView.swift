@@ -409,6 +409,28 @@ struct LapTimesWidgetView: View {
     }
 }
 
+struct WheelOfLuckWidgetView: View {
+    let effect: WheelOfLuckEffect
+    let indented: Bool
+
+    var body: some View {
+        HStack {
+            if indented {
+                Text("")
+                Text("").frame(width: iconWidth)
+            }
+            Spacer()
+            Button {
+                effect.spin()
+            } label: {
+                Image(systemName: "play")
+                    .font(.title)
+            }
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
 private struct WidgetTextView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget
@@ -472,6 +494,17 @@ private struct WidgetTextView: View {
     }
 }
 
+private struct WidgetWheelOfLuckView: View {
+    let model: Model
+    @ObservedObject var widget: SettingsWidget
+
+    var body: some View {
+        if let effect = model.getWheelOfLuckEffect(id: widget.id) {
+            WheelOfLuckWidgetView(effect: effect, indented: true)
+        }
+    }
+}
+
 private struct WidgetView: View {
     let model: Model
     @ObservedObject var database: Database
@@ -499,8 +532,13 @@ private struct WidgetView: View {
                 model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
             }
         }
-        if widget.type == .text {
+        switch widget.type {
+        case .text:
             WidgetTextView(model: model, widget: widget, text: widget.text)
+        case .wheelOfLuck:
+            WidgetWheelOfLuckView(model: model, widget: widget)
+        default:
+            EmptyView()
         }
     }
 }

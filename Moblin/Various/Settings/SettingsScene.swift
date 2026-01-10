@@ -1868,6 +1868,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .chat,
             .slideshow,
             .scoreboard,
+            .wheelOfLuck,
         ].contains(type)
     }
 
@@ -1901,6 +1902,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .chat,
             .slideshow,
             .scoreboard,
+            .wheelOfLuck,
         ].contains(type)
     }
 
@@ -2576,6 +2578,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case pngTuber = "PNGTuber"
     case qrCode = "QR code"
     case scoreboard = "Scoreboard"
+    case wheelOfLuck = "Wheel of luck"
     case crop = "Crop"
 
     func toString() -> String {
@@ -2608,6 +2611,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "QR code")
         case .scoreboard:
             return String(localized: "Scoreboard")
+        case .wheelOfLuck:
+            return String(localized: "Wheel of luck")
         case .crop:
             return String(localized: "Crop")
         }
@@ -2645,6 +2650,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return "person.crop.circle"
         case .pngTuber:
             return "person.crop.circle.dashed"
+        case .wheelOfLuck:
+            return "burn"
         }
     }
 
@@ -2686,11 +2693,13 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             )
         case .crop:
             return String(localized: "A crop widget shows parts of a browser widget.")
+        case .wheelOfLuck:
+            return String(localized: "A wheel of luck widget shows a wheel of luck that you can spin.")
         }
     }
 }
 
-let widgetTypes = SettingsWidgetType.allCases
+let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .wheelOfLuck }
 
 class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     static let baseName = String(localized: "My scene")
