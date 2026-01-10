@@ -59,7 +59,7 @@ final class WheelOfLuckEffect: VideoEffect {
     private var previousPresentationTimeStamp: Double = 0
     private var speed: Double = 0
     private var angle: Double = 0
-    private var spinTime: Double = 0
+    private let spinTime: Double = 12
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private let canvasSize: CGSize
 
@@ -92,8 +92,7 @@ final class WheelOfLuckEffect: VideoEffect {
 
     func spin() {
         processorPipelineQueue.async {
-            self.speed = .random(in: 5 ... 10)
-            self.spinTime = 12
+            self.speed = .random(in: 8 ... 15)
             self.startPresentationTimeStamp = .nan
         }
     }
