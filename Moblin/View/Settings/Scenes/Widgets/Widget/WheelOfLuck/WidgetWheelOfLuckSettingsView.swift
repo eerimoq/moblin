@@ -63,6 +63,7 @@ struct WidgetWheelOfLuckSettingsView: View {
                 wheelOfLuck.updateTotalWeight()
                 updateEffect()
             }
+            .deleteDisabled(wheelOfLuck.sectors.count < 2)
             CreateButtonView {
                 wheelOfLuck.sectors.append(SettingsWidgetWheelOfLuckSector())
                 wheelOfLuck.updateTotalWeight()
