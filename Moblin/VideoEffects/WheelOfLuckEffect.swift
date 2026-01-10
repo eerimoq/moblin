@@ -125,6 +125,7 @@ final class WheelOfLuckEffect: VideoEffect {
             return
         } else if startPresentationTimeStamp.isNaN {
             startPresentationTimeStamp = presentationTimeStamp
+            previousPresentationTimeStamp = presentationTimeStamp
         }
         let elapsedSinceStart = presentationTimeStamp - startPresentationTimeStamp
         let ratio = max(1 - elapsedSinceStart / spinTime, 0)
