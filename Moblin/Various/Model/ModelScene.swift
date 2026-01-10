@@ -1404,7 +1404,7 @@ extension Model {
         _ parts: [TextFormatPart]
     ) {
         let length = parts.filter { $0 == .stopwatch }.count
-        text.timers.truncate(length: length, create: { .init() })
+        text.stopwatches.truncate(length: length, create: { .init() })
         textEffect.setStopwatches(stopwatches: text.stopwatches.map { $0.clone() })
     }
 
