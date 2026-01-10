@@ -54,8 +54,9 @@ final class WheelOfLuckEffect: VideoEffect {
     private var arrow: CIImage?
     private var startPresentationTimeStamp: Double = .infinity
     private var previousPresentationTimeStamp: Double = 0
-    private var angle: Double = .random(in: 0 ... .pi * 2)
-    private var spinTime: Double = .random(in: 12 ... 17)
+    private var speed: Double = 0
+    private var angle: Double = 0
+    private var spinTime: Double = 0
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private let canvasSize: CGSize
 
@@ -88,7 +89,8 @@ final class WheelOfLuckEffect: VideoEffect {
 
     func spin() {
         processorPipelineQueue.async {
-            self.spinTime = .random(in: 12 ... 17)
+            self.speed = .random(in: 5 ... 10)
+            self.spinTime = .random(in: 10 ... 17)
             self.startPresentationTimeStamp = .nan
         }
     }
@@ -123,7 +125,7 @@ final class WheelOfLuckEffect: VideoEffect {
         }
         let elapsedSinceStart = presentationTimeStamp - startPresentationTimeStamp
         let ratio = max(1 - elapsedSinceStart / spinTime, 0)
-        angle += -8 * ratio * (presentationTimeStamp - previousPresentationTimeStamp)
+        angle += -speed * ratio * (presentationTimeStamp - previousPresentationTimeStamp)
         previousPresentationTimeStamp = presentationTimeStamp
     }
 
