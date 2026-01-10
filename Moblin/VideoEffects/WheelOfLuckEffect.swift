@@ -17,7 +17,7 @@ private struct WheelView: View {
     let sectors: [WheelOfLuckEffectSector]
 
     var body: some View {
-        let offset = size / 3.5
+        let offset = size / 3.4
         let font = size / 10
         ZStack {
             Chart(sectors) { sector in
@@ -29,9 +29,12 @@ private struct WheelView: View {
                 .frame(width: size / 5, height: size / 5)
             ForEach(sectors) { sector in
                 Text(sector.text)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.1)
                     .font(.system(size: font))
                     .offset(x: offset)
                     .rotationEffect(sector.textAngle)
+                    .frame(width: 150)
             }
         }
         .frame(width: size, height: size)
