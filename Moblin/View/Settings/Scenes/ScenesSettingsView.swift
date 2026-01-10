@@ -22,7 +22,7 @@ private struct SceneItemView: View {
                     }
             }
         }
-        .swipeActions(edge: .trailing) {
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             SwipeLeftToDeleteButtonView(presentingConfirmation: $presentingDeleteConfirmation)
             SwipeLeftToDuplicateButtonView {
                 database.scenes.append(scene.clone())

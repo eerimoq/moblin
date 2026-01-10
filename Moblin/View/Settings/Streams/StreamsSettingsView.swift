@@ -21,7 +21,7 @@ private struct StreamItemView: View {
                 .disabled(stream.enabled || model.isLive || model.isRecording)
             }
         }
-        .swipeActions(edge: .trailing) {
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if !stream.enabled {
                 SwipeLeftToDeleteButtonView(presentingConfirmation: $presentingDeleteConfirmation)
             }

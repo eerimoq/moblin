@@ -25,7 +25,7 @@ private struct WidgetsSettingsItemView: View {
                 model.sceneUpdated(attachCamera: model.isCaptureDeviceWidget(widget: widget))
             }
         }
-        .swipeActions(edge: .trailing) {
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             SwipeLeftToDeleteButtonView(presentingConfirmation: $presentingDeleteConfirmation)
         }
         .confirmationDialog("", isPresented: $presentingDeleteConfirmation) {
