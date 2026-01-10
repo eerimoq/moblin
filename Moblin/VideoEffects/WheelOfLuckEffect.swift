@@ -83,7 +83,7 @@ final class WheelOfLuckEffect: VideoEffect {
                                                    text: inputSector.text,
                                                    textAngle: .degrees(textAngle)))
         }
-        let size = 500.0 * (canvasSize.width / 1920)
+        let size = 400.0 * (canvasSize.width / 1920)
         render(size: size, sectors: sectors)
     }
 
