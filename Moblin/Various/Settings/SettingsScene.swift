@@ -1713,6 +1713,60 @@ class SettingsWidgetSlideshow: Codable, ObservableObject {
     }
 }
 
+class SettingsWidgetWheelOfLuckSector: Codable, ObservableObject, Identifiable {
+    var id: UUID = .init()
+    @Published var text: String = ""
+    @Published var weight: Int = 1
+
+    enum CodingKeys: CodingKey {
+        case id,
+             text,
+             weight
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.text, text)
+        try container.encode(.weight, weight)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        text = container.decode(.text, String.self, "")
+        weight = container.decode(.weight, Int.self, 1)
+    }
+}
+
+class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
+    @Published var totalWeight: Int = 1
+    @Published var sectors: [SettingsWidgetWheelOfLuckSector] = []
+
+    enum CodingKeys: CodingKey {
+        case sectors
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.sectors, sectors)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        sectors = container.decode(.sectors, [SettingsWidgetWheelOfLuckSector].self, [])
+        updateTotalWeight()
+    }
+
+    func updateTotalWeight() {
+        totalWeight = sectors.reduce(0) { $0 + $1.weight }
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {
     static let baseName = String(localized: "My widget")
     @Published var name: String
@@ -1732,6 +1786,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     var snapshot: SettingsWidgetSnapshot = .init()
     var chat: SettingsWidgetChat = .init()
     var slideshow: SettingsWidgetSlideshow = .init()
+    var wheelOfLuck: SettingsWidgetWheelOfLuck = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -1761,6 +1816,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
              snapshot,
              chat,
              slideshow,
+             wheelOfLuck,
              enabled,
              effects
     }
@@ -1784,6 +1840,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.snapshot, snapshot)
         try container.encode(.chat, chat)
         try container.encode(.slideshow, slideshow)
+        try container.encode(.wheelOfLuck, wheelOfLuck)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -1807,6 +1864,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         snapshot = container.decode(.snapshot, SettingsWidgetSnapshot.self, .init())
         chat = container.decode(.chat, SettingsWidgetChat.self, .init())
         slideshow = container.decode(.slideshow, SettingsWidgetSlideshow.self, .init())
+        wheelOfLuck = container.decode(.wheelOfLuck, SettingsWidgetWheelOfLuck.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
         migrateFromOlderVersions()
@@ -2698,8 +2756,6 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
         }
     }
 }
-
-let widgetTypes = SettingsWidgetType.allCases.filter { $0 != .wheelOfLuck }
 
 class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     static let baseName = String(localized: "My scene")

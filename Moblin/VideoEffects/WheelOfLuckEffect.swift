@@ -2,11 +2,11 @@ import Charts
 import CoreImage
 import SwiftUI
 
-private let sectorColors: [Color] = [.blue, .red, .yellow, .green, .pink, .cyan, .purple, .brown, .mint]
+private let sectorColors: [Color] = [.blue, .red, .yellow, .green, .pink, .cyan]
 
 struct WheelOfLuckEffectSector: Identifiable {
     let id: Int
-    let weight: Double
+    let weight: Int
     let text: String
     let textAngle: Angle
 }
@@ -57,33 +57,24 @@ final class WheelOfLuckEffect: VideoEffect {
     private var angle: Double = .random(in: 0 ... .pi * 2)
     private var spinTime: Double = .random(in: 12 ... 17)
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
+    private let canvasSize: CGSize
 
     init(canvasSize: CGSize) {
-        super.init()
-        let inputSectors = [
-            WheelOfLuckEffectSector(id: 0,
-                                    weight: 1,
-                                    text: "VIP",
-                                    textAngle: .zero),
-            WheelOfLuckEffectSector(id: 1,
-                                    weight: 2,
-                                    text: "BAN",
-                                    textAngle: .zero),
-            WheelOfLuckEffectSector(id: 2,
-                                    weight: 1.5,
-                                    text: "Timeout",
-                                    textAngle: .zero),
-            WheelOfLuckEffectSector(id: 3,
-                                    weight: 1,
-                                    text: "Special",
-                                    textAngle: .zero),
-        ]
-        let size = 500.0 * (canvasSize.width / 1920)
+        self.canvasSize = canvasSize
+    }
+
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
+        processorPipelineQueue.async {
+            self.sceneWidget = sceneWidget
+        }
+    }
+
+    func setSettings(settings: SettingsWidgetWheelOfLuck) {
         var sectors: [WheelOfLuckEffectSector] = []
-        let totalWeight = inputSectors.reduce(0) { $0 + $1.weight }
+        let totalWeight = Double(settings.totalWeight)
         var angle = 0.0
-        for (index, inputSector) in inputSectors.enumerated() {
-            let ratio = inputSector.weight / totalWeight
+        for (index, inputSector) in settings.sectors.enumerated() {
+            let ratio = Double(inputSector.weight) / totalWeight
             let textAngle = angle + ratio * 360 / 2 - 90
             angle += ratio * 360
             sectors.append(WheelOfLuckEffectSector(id: index,
@@ -91,13 +82,8 @@ final class WheelOfLuckEffect: VideoEffect {
                                                    text: inputSector.text,
                                                    textAngle: .degrees(textAngle)))
         }
+        let size = 500.0 * (canvasSize.width / 1920)
         render(size: size, sectors: sectors)
-    }
-
-    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        processorPipelineQueue.async {
-            self.sceneWidget = sceneWidget
-        }
     }
 
     func spin() {

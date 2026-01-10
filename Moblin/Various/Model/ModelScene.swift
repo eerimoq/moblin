@@ -1150,6 +1150,7 @@ extension Model {
         guard let effect = wheelOfLuckEffects[widget.id], !effects.contains(effect) else {
             return
         }
+        effect.setSettings(settings: widget.wheelOfLuck)
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         effects.append(effect)
     }

@@ -131,7 +131,7 @@ struct WidgetWizardSettingsView: View {
         Form {
             Section {
                 Picker("Type", selection: $createWidgetWizard.type) {
-                    ForEach(widgetTypes, id: \.self) { type in
+                    ForEach(SettingsWidgetType.allCases, id: \.self) { type in
                         Text(type.toString())
                     }
                 }
