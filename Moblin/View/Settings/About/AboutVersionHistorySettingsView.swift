@@ -59,6 +59,7 @@ private let versions = [
         "• Do not trigger delete action on long left swipe on stream, scene or widget. 💡 mikeful",
         "  • Remove delete confirm as long swipe kinda serves this purpose now.",
         "• Stop replay function in controllers. 💡 JasonM",
+        "• Korean translation updated. ✍️ Winter1l",
     ]),
     Version(version: "30.2.0", date: "2025-12-27", changes: [
         "• Interface name instead of index in Moblink ethernet relay id. 🐛 Djandrea",
