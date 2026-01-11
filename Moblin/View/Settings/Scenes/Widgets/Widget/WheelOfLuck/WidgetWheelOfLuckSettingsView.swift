@@ -36,6 +36,7 @@ private struct SectorView: View {
             .navigationTitle("Sector")
         } label: {
             HStack {
+                DraggableItemPrefixView()
                 Text(sector.text)
                 Spacer()
                 Text("\(calcPercent())%")
@@ -57,6 +58,10 @@ struct WidgetWheelOfLuckSettingsView: View {
         Section {
             ForEach(wheelOfLuck.sectors) {
                 SectorView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, sector: $0)
+            }
+            .onMove { froms, to in
+                wheelOfLuck.sectors.move(fromOffsets: froms, toOffset: to)
+                updateEffect()
             }
             .onDelete { offsets in
                 wheelOfLuck.sectors.remove(atOffsets: offsets)
