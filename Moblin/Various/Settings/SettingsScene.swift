@@ -1749,6 +1749,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     @Published var advanced: Bool = false
     @Published var totalWeight: Int = 1
     @Published var options: [SettingsWidgetWheelOfLuckOption] = []
+    @Published var text: String = ""
 
     enum CodingKeys: CodingKey {
         case advanced,
@@ -1767,6 +1768,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         advanced = container.decode(.advanced, Bool.self, false)
         options = container.decode(.options, [SettingsWidgetWheelOfLuckOption].self, [])
+        updateText()
         updateTotalWeight()
     }
 
@@ -1774,8 +1776,13 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
         totalWeight = max(options.reduce(0) { $0 + $1.weight }, 1)
     }
 
+    func updateText() {
+        text = optionsToText()
+    }
+
     func shuffle() {
         options.shuffle()
+        updateText()
     }
 
     func optionsFromText(text: String) {
@@ -1791,7 +1798,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
         updateTotalWeight()
     }
 
-    func optionsToText() -> String {
+    private func optionsToText() -> String {
         return options.map { $0.text }.joined(separator: "\n")
     }
 }

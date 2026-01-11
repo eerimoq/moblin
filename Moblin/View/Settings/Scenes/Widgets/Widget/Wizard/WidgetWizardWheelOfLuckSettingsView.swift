@@ -6,17 +6,16 @@ struct WidgetWizardWheelOfLuckSettingsView: View {
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
     let createWidgetWizard: CreateWidgetWizard
     @Binding var presentingCreateWizard: Bool
-    @State var text: String = ""
 
     var body: some View {
         Form {
             Section {
-                MultiLineTextFieldView(value: $text)
-                    .onChange(of: text) { _ in
-                        wheelOfLuck.optionsFromText(text: text)
+                MultiLineTextFieldView(value: $wheelOfLuck.text)
+                    .onChange(of: wheelOfLuck.text) { _ in
+                        wheelOfLuck.optionsFromText(text: wheelOfLuck.text)
                     }
                     .onAppear {
-                        text = wheelOfLuck.optionsToText()
+                        wheelOfLuck.optionsFromText(text: wheelOfLuck.text)
                     }
             } header: {
                 Text("Options")

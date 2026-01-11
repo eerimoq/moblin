@@ -49,7 +49,6 @@ struct WidgetWheelOfLuckSettingsView: View {
     let model: Model
     let widget: SettingsWidget
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
-    @State var text: String = ""
 
     private func updateEffect() {
         model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: wheelOfLuck)
@@ -63,31 +62,30 @@ struct WidgetWheelOfLuckSettingsView: View {
                 }
                 .onMove { froms, to in
                     wheelOfLuck.options.move(fromOffsets: froms, toOffset: to)
+                    wheelOfLuck.updateText()
                     updateEffect()
                 }
                 .onDelete { offsets in
                     wheelOfLuck.options.remove(atOffsets: offsets)
+                    wheelOfLuck.updateText()
                     wheelOfLuck.updateTotalWeight()
                     updateEffect()
                 }
                 .deleteDisabled(wheelOfLuck.options.count < 2)
                 CreateButtonView {
                     wheelOfLuck.options.append(SettingsWidgetWheelOfLuckOption())
+                    wheelOfLuck.updateText()
                     wheelOfLuck.updateTotalWeight()
                     updateEffect()
                 }
             } else {
-                MultiLineTextFieldView(value: $text)
-                    .onChange(of: text) { _ in
-                        wheelOfLuck.optionsFromText(text: text)
+                MultiLineTextFieldView(value: $wheelOfLuck.text)
+                    .onChange(of: wheelOfLuck.text) { _ in
+                        wheelOfLuck.optionsFromText(text: wheelOfLuck.text)
                         updateEffect()
                     }
-                    .onChange(of: wheelOfLuck.options) { _ in
-                        text = wheelOfLuck.optionsToText()
-                    }
                     .onAppear {
-                        text = wheelOfLuck.optionsToText()
-                        wheelOfLuck.optionsFromText(text: text)
+                        wheelOfLuck.optionsFromText(text: wheelOfLuck.text)
                         updateEffect()
                     }
             }
