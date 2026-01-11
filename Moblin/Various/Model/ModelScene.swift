@@ -12,15 +12,15 @@ class CreateWidgetWizard: ObservableObject {
         type = .text
         widget = .init(name: "")
         widget.text.formatString = ""
-        let yes = SettingsWidgetWheelOfLuckSector()
+        let yes = SettingsWidgetWheelOfLuckOption()
         yes.text = String(localized: "Yes")
-        let no = SettingsWidgetWheelOfLuckSector()
+        let no = SettingsWidgetWheelOfLuckOption()
         no.text = String(localized: "No")
-        let later = SettingsWidgetWheelOfLuckSector()
+        let later = SettingsWidgetWheelOfLuckOption()
         later.text = String(localized: "Later")
-        let spinAgain = SettingsWidgetWheelOfLuckSector()
+        let spinAgain = SettingsWidgetWheelOfLuckOption()
         spinAgain.text = String(localized: "Spin again")
-        widget.wheelOfLuck.sectors = [yes, no, later, spinAgain]
+        widget.wheelOfLuck.options = [yes, no, later, spinAgain]
         widget.wheelOfLuck.updateTotalWeight()
     }
 }

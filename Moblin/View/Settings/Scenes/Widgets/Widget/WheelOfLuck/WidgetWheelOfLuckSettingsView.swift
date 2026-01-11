@@ -1,43 +1,43 @@
 import SwiftUI
 
-let wheelOfLuckSectorWeights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 40, 60, 80, 100]
+let wheelOfLuckOptionWeights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 40, 60, 80, 100]
 
-private struct SectorView: View {
+private struct OptionView: View {
     let model: Model
     let widget: SettingsWidget
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
-    @ObservedObject var sector: SettingsWidgetWheelOfLuckSector
+    @ObservedObject var options: SettingsWidgetWheelOfLuckOption
 
     private func updateEffect() {
         model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: wheelOfLuck)
     }
 
     private func calcPercent() -> Int {
-        return 100 * sector.weight / wheelOfLuck.totalWeight
+        return 100 * options.weight / wheelOfLuck.totalWeight
     }
 
     var body: some View {
         NavigationLink {
             Form {
-                TextEditNavigationView(title: "Text", value: sector.text) {
-                    sector.text = $0
+                TextEditNavigationView(title: "Text", value: options.text) {
+                    options.text = $0
                     updateEffect()
                 }
-                Picker("Weight", selection: $sector.weight) {
-                    ForEach(wheelOfLuckSectorWeights, id: \.self) {
+                Picker("Weight", selection: $options.weight) {
+                    ForEach(wheelOfLuckOptionWeights, id: \.self) {
                         Text(String($0))
                     }
                 }
-                .onChange(of: sector.weight) { _ in
+                .onChange(of: options.weight) { _ in
                     wheelOfLuck.updateTotalWeight()
                     updateEffect()
                 }
             }
-            .navigationTitle("Sector")
+            .navigationTitle("Option")
         } label: {
             HStack {
                 DraggableItemPrefixView()
-                Text(sector.text)
+                Text(options.text)
                 Spacer()
                 Text("\(calcPercent())%")
             }
@@ -49,6 +49,7 @@ struct WidgetWheelOfLuckSettingsView: View {
     let model: Model
     let widget: SettingsWidget
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
+    @State var text: String = ""
 
     private func updateEffect() {
         model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: wheelOfLuck)
@@ -56,26 +57,46 @@ struct WidgetWheelOfLuckSettingsView: View {
 
     var body: some View {
         Section {
-            ForEach(wheelOfLuck.sectors) {
-                SectorView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, sector: $0)
-            }
-            .onMove { froms, to in
-                wheelOfLuck.sectors.move(fromOffsets: froms, toOffset: to)
-                updateEffect()
-            }
-            .onDelete { offsets in
-                wheelOfLuck.sectors.remove(atOffsets: offsets)
-                wheelOfLuck.updateTotalWeight()
-                updateEffect()
-            }
-            .deleteDisabled(wheelOfLuck.sectors.count < 2)
-            CreateButtonView {
-                wheelOfLuck.sectors.append(SettingsWidgetWheelOfLuckSector())
-                wheelOfLuck.updateTotalWeight()
-                updateEffect()
+            if wheelOfLuck.advanced {
+                ForEach(wheelOfLuck.options) {
+                    OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: $0)
+                }
+                .onMove { froms, to in
+                    wheelOfLuck.options.move(fromOffsets: froms, toOffset: to)
+                    updateEffect()
+                }
+                .onDelete { offsets in
+                    wheelOfLuck.options.remove(atOffsets: offsets)
+                    wheelOfLuck.updateTotalWeight()
+                    updateEffect()
+                }
+                .deleteDisabled(wheelOfLuck.options.count < 2)
+                CreateButtonView {
+                    wheelOfLuck.options.append(SettingsWidgetWheelOfLuckOption())
+                    wheelOfLuck.updateTotalWeight()
+                    updateEffect()
+                }
+            } else {
+                MultiLineTextFieldView(value: $text)
+                    .onChange(of: text) { _ in
+                        wheelOfLuck.options.removeAll()
+                        for line in text.trim().split(separator: "\n") {
+                            let option = SettingsWidgetWheelOfLuckOption()
+                            option.text = line.trim()
+                            wheelOfLuck.options.append(option)
+                        }
+                        wheelOfLuck.updateTotalWeight()
+                        updateEffect()
+                    }
+                    .onAppear {
+                        text = wheelOfLuck.options.map { $0.text }.joined(separator: "\n")
+                    }
             }
         } header: {
-            Text("Sectors")
+            Text("Options")
+        }
+        Section {
+            Toggle("Advanced", isOn: $wheelOfLuck.advanced)
         }
         Section {
             if let effect = model.getWheelOfLuckEffect(id: widget.id) {

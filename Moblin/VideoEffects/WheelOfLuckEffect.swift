@@ -2,9 +2,9 @@ import Charts
 import CoreImage
 import SwiftUI
 
-private let sectorColors: [Color] = [.blue, .red, .yellow, .green, .pink, .cyan]
+private let optionColors: [Color] = [.blue, .red, .yellow, .green, .pink, .cyan]
 
-struct WheelOfLuckEffectSector: Identifiable {
+struct WheelOfLuckEffectOption: Identifiable {
     let id: Int
     let weight: Int
     let text: String
@@ -14,26 +14,26 @@ struct WheelOfLuckEffectSector: Identifiable {
 @available(iOS 17, *)
 private struct WheelView: View {
     let size: Double
-    let sectors: [WheelOfLuckEffectSector]
+    let options: [WheelOfLuckEffectOption]
 
     var body: some View {
         let offset = size / 3.4
         let font = size / 10
         ZStack {
-            Chart(sectors) { sector in
-                SectorMark(angle: .value("", sector.weight))
-                    .foregroundStyle(sectorColors[sector.id % sectorColors.count])
+            Chart(options) { option in
+                SectorMark(angle: .value("", option.weight))
+                    .foregroundStyle(optionColors[option.id % optionColors.count])
             }
             Circle()
                 .foregroundStyle(.white)
                 .frame(width: size / 5, height: size / 5)
-            ForEach(sectors) { sector in
-                Text(sector.text)
+            ForEach(options) { option in
+                Text(option.text)
                     .lineLimit(1)
                     .minimumScaleFactor(0.1)
                     .font(.system(size: font))
                     .offset(x: offset)
-                    .rotationEffect(sector.textAngle)
+                    .rotationEffect(option.textAngle)
                     .frame(width: 150)
             }
         }
@@ -74,20 +74,20 @@ final class WheelOfLuckEffect: VideoEffect {
     }
 
     func setSettings(settings: SettingsWidgetWheelOfLuck) {
-        var sectors: [WheelOfLuckEffectSector] = []
+        var options: [WheelOfLuckEffectOption] = []
         let totalWeight = Double(settings.totalWeight)
         var angle = 0.0
-        for (index, inputSector) in settings.sectors.enumerated() {
-            let ratio = Double(inputSector.weight) / totalWeight
+        for (index, inputOption) in settings.options.enumerated() {
+            let ratio = Double(inputOption.weight) / totalWeight
             let textAngle = angle + ratio * 360 / 2 - 90
             angle += ratio * 360
-            sectors.append(WheelOfLuckEffectSector(id: index,
-                                                   weight: inputSector.weight,
-                                                   text: inputSector.text,
+            options.append(WheelOfLuckEffectOption(id: index,
+                                                   weight: inputOption.weight,
+                                                   text: inputOption.text,
                                                    textAngle: .degrees(textAngle)))
         }
         let size = 400.0 * (canvasSize.width / 1920)
-        render(size: size, sectors: sectors)
+        render(size: size, options: options)
     }
 
     func spin() {
@@ -132,9 +132,9 @@ final class WheelOfLuckEffect: VideoEffect {
         previousPresentationTimeStamp = presentationTimeStamp
     }
 
-    private func render(size: Double, sectors: [WheelOfLuckEffectSector]) {
+    private func render(size: Double, options: [WheelOfLuckEffectOption]) {
         DispatchQueue.main.async {
-            let wheel = self.renderWheel(size: size, sectors: sectors)
+            let wheel = self.renderWheel(size: size, options: options)
             let arrow = self.renderArrow(size: size)
             processorPipelineQueue.async {
                 self.wheel = wheel
@@ -144,11 +144,11 @@ final class WheelOfLuckEffect: VideoEffect {
     }
 
     @MainActor
-    private func renderWheel(size: Double, sectors: [WheelOfLuckEffectSector]) -> CIImage? {
+    private func renderWheel(size: Double, options: [WheelOfLuckEffectOption]) -> CIImage? {
         guard #available(iOS 17, *) else {
             return nil
         }
-        let renderer = ImageRenderer(content: WheelView(size: size, sectors: sectors))
+        let renderer = ImageRenderer(content: WheelView(size: size, options: options))
         guard let image = renderer.uiImage else {
             return nil
         }

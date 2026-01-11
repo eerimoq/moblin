@@ -1,34 +1,34 @@
 import SwiftUI
 
-private struct SectorView: View {
+private struct OptionView: View {
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
-    @ObservedObject var sector: SettingsWidgetWheelOfLuckSector
+    @ObservedObject var option: SettingsWidgetWheelOfLuckOption
 
     private func calcPercent() -> Int {
-        return 100 * sector.weight / wheelOfLuck.totalWeight
+        return 100 * option.weight / wheelOfLuck.totalWeight
     }
 
     var body: some View {
         NavigationLink {
             Form {
                 Section {
-                    TextField("Text", text: $sector.text)
+                    TextField("Text", text: $option.text)
                 }
                 Section {
-                    Picker("Weight", selection: $sector.weight) {
-                        ForEach(wheelOfLuckSectorWeights, id: \.self) {
+                    Picker("Weight", selection: $option.weight) {
+                        ForEach(wheelOfLuckOptionWeights, id: \.self) {
                             Text(String($0))
                         }
                     }
-                    .onChange(of: sector.weight) { _ in
+                    .onChange(of: option.weight) { _ in
                         wheelOfLuck.updateTotalWeight()
                     }
                 }
             }
-            .navigationTitle("Sector")
+            .navigationTitle("Option")
         } label: {
             HStack {
-                Text(sector.text)
+                Text(option.text)
                 Spacer()
                 Text("\(calcPercent())%")
             }
@@ -46,25 +46,25 @@ struct WidgetWizardWheelOfLuckSettingsView: View {
     var body: some View {
         Form {
             Section {
-                ForEach(wheelOfLuck.sectors) {
-                    SectorView(wheelOfLuck: wheelOfLuck, sector: $0)
+                ForEach(wheelOfLuck.options) {
+                    OptionView(wheelOfLuck: wheelOfLuck, option: $0)
                 }
                 .onDelete { offsets in
-                    wheelOfLuck.sectors.remove(atOffsets: offsets)
+                    wheelOfLuck.options.remove(atOffsets: offsets)
                     wheelOfLuck.updateTotalWeight()
                 }
                 CreateButtonView {
-                    wheelOfLuck.sectors.append(SettingsWidgetWheelOfLuckSector())
+                    wheelOfLuck.options.append(SettingsWidgetWheelOfLuckOption())
                     wheelOfLuck.updateTotalWeight()
                 }
             } header: {
-                Text("Sectors")
+                Text("Options")
             }
             WidgetWizardSelectScenesNavigationView(model: model,
                                                    database: database,
                                                    createWidgetWizard: createWidgetWizard,
                                                    presentingCreateWizard: $presentingCreateWizard)
-                .disabled(wheelOfLuck.sectors.isEmpty)
+                .disabled(wheelOfLuck.options.isEmpty)
         }
         .navigationTitle(basicWidgetSettingsTitle(createWidgetWizard))
         .toolbar {

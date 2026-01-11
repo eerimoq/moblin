@@ -1713,7 +1713,7 @@ class SettingsWidgetSlideshow: Codable, ObservableObject {
     }
 }
 
-class SettingsWidgetWheelOfLuckSector: Codable, ObservableObject, Identifiable {
+class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable {
     var id: UUID = .init()
     @Published var text: String = ""
     @Published var weight: Int = 1
@@ -1742,32 +1742,36 @@ class SettingsWidgetWheelOfLuckSector: Codable, ObservableObject, Identifiable {
 }
 
 class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
+    @Published var advanced: Bool = false
     @Published var totalWeight: Int = 1
-    @Published var sectors: [SettingsWidgetWheelOfLuckSector] = []
+    @Published var options: [SettingsWidgetWheelOfLuckOption] = []
 
     enum CodingKeys: CodingKey {
-        case sectors
+        case advanced,
+             options
     }
 
     init() {}
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.sectors, sectors)
+        try container.encode(.advanced, advanced)
+        try container.encode(.options, options)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        sectors = container.decode(.sectors, [SettingsWidgetWheelOfLuckSector].self, [])
+        advanced = container.decode(.advanced, Bool.self, false)
+        options = container.decode(.options, [SettingsWidgetWheelOfLuckOption].self, [])
         updateTotalWeight()
     }
 
     func updateTotalWeight() {
-        totalWeight = sectors.reduce(0) { $0 + $1.weight }
+        totalWeight = options.reduce(0) { $0 + $1.weight }
     }
 
     func shuffle() {
-        sectors.shuffle()
+        options.shuffle()
     }
 }
 
