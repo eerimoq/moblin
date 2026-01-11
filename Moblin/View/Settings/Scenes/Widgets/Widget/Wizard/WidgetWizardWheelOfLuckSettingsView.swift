@@ -17,7 +17,7 @@ struct WidgetWizardWheelOfLuckSettingsView: View {
                                                    database: database,
                                                    createWidgetWizard: createWidgetWizard,
                                                    presentingCreateWizard: $presentingCreateWizard)
-            .disabled(wheelOfLuck.options.isEmpty)
+                .disabled(wheelOfLuck.options.isEmpty)
         }
         .navigationTitle(basicWidgetSettingsTitle(createWidgetWizard))
         .toolbar {
