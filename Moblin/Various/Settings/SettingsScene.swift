@@ -1773,6 +1773,16 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     func shuffle() {
         options.shuffle()
     }
+
+    func optionsFromText(text: String) {
+        options.removeAll()
+        for line in text.trim().split(separator: "\n") {
+            let option = SettingsWidgetWheelOfLuckOption()
+            option.text = line.trim()
+            options.append(option)
+        }
+        updateTotalWeight()
+    }
 }
 
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {

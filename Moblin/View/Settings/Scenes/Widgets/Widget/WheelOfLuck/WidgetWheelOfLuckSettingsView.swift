@@ -79,13 +79,7 @@ struct WidgetWheelOfLuckSettingsView: View {
             } else {
                 MultiLineTextFieldView(value: $text)
                     .onChange(of: text) { _ in
-                        wheelOfLuck.options.removeAll()
-                        for line in text.trim().split(separator: "\n") {
-                            let option = SettingsWidgetWheelOfLuckOption()
-                            option.text = line.trim()
-                            wheelOfLuck.options.append(option)
-                        }
-                        wheelOfLuck.updateTotalWeight()
+                        wheelOfLuck.optionsFromText(text: text)
                         updateEffect()
                     }
                     .onAppear {
