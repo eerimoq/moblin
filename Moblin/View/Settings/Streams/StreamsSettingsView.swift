@@ -4,7 +4,6 @@ private struct StreamItemView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
-    @State private var presentingDeleteConfirmation: Bool = false
 
     var body: some View {
         NavigationLink {
@@ -23,15 +22,12 @@ private struct StreamItemView: View {
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if !stream.enabled {
-                SwipeLeftToDeleteButtonView(presentingConfirmation: $presentingDeleteConfirmation)
+                SwipeLeftToDeleteButtonView {
+                    database.streams.removeAll { $0 === stream }
+                }
             }
             SwipeLeftToDuplicateButtonView {
                 database.streams.append(stream.clone())
-            }
-        }
-        .confirmationDialog("", isPresented: $presentingDeleteConfirmation) {
-            Button("Delete", role: .destructive) {
-                database.streams.removeAll { $0 === stream }
             }
         }
     }

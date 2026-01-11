@@ -4,7 +4,6 @@ private struct WidgetsSettingsItemView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var widget: SettingsWidget
-    @State private var presentingDeleteConfirmation: Bool = false
 
     var body: some View {
         NavigationLink {
@@ -26,10 +25,7 @@ private struct WidgetsSettingsItemView: View {
             }
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            SwipeLeftToDeleteButtonView(presentingConfirmation: $presentingDeleteConfirmation)
-        }
-        .confirmationDialog("", isPresented: $presentingDeleteConfirmation) {
-            Button("Delete", role: .destructive) {
+            SwipeLeftToDeleteButtonView {
                 database.widgets.removeAll(where: { $0 === widget })
                 model.removeDeadWidgetsFromScenes()
                 model.resetSelectedScene()

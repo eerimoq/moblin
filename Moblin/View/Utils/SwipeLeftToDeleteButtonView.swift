@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct SwipeLeftToDeleteButtonView: View {
-    @Binding var presentingConfirmation: Bool
+    let action: () -> Void
 
     var body: some View {
         Button {
-            presentingConfirmation = true
+            action()
         } label: {
             Label("Delete", systemImage: "trash")
         }
