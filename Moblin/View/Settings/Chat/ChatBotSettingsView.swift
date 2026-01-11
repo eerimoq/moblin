@@ -203,11 +203,20 @@ private struct WidgetPermissionsSettingsView: View {
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: String(localized: "!moblin widget <name> timer <number> add <seconds>"),
+                title: String(localized: "!moblin widget ..."),
                 permissions: permissions
             )
         } footer: {
             VStack(alignment: .leading) {
+                Text("!moblin widget <name> enable")
+                Text("Enable given widget.")
+                Text("")
+                Text("!moblin widget <name> disable")
+                Text("Disable given widget.")
+                Text("")
+                Text("!moblin widget <name> wheelofluck spin")
+                Text("Spin given wheel of luck.")
+                Text("")
                 Text("!moblin widget <name> timer <number> add <seconds>")
                 Text("Change timer value.")
             }

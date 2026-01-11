@@ -507,12 +507,30 @@ extension Model {
                 return
             }
             switch command.popFirst() {
+            case "enable":
+                self.handleChatBotMessageWidgetEnable(widget: widget)
+            case "disable":
+                self.handleChatBotMessageWidgetDisable(widget: widget)
             case "timer":
                 self.handleChatBotMessageWidgetTimer(command: command, widget: widget)
+            case "wheelofluck":
+                self.handleChatBotMessageWidgetWheelOfLuck(command: command, widget: widget)
             default:
                 break
             }
         }
+    }
+
+    private func handleChatBotMessageWidgetEnable(widget: SettingsWidget) {
+        widget.enabled = true
+        reloadSpeechToText()
+        sceneUpdated(attachCamera: isCaptureDeviceWidget(widget: widget))
+    }
+
+    private func handleChatBotMessageWidgetDisable(widget: SettingsWidget) {
+        widget.enabled = false
+        reloadSpeechToText()
+        sceneUpdated(attachCamera: isCaptureDeviceWidget(widget: widget))
     }
 
     private func handleChatBotMessageWidgetTimer(command: ChatBotCommand, widget: SettingsWidget) {
@@ -537,6 +555,18 @@ extension Model {
             for effect in effects {
                 effect.setEndTime(index: index, endTime: timer.textEffectEndTime())
             }
+        default:
+            break
+        }
+    }
+
+    private func handleChatBotMessageWidgetWheelOfLuck(command: ChatBotCommand, widget: SettingsWidget) {
+        guard let effect = getWheelOfLuckEffect(id: widget.id) else {
+            return
+        }
+        switch command.popFirst() {
+        case "spin":
+            effect.spin()
         default:
             break
         }
