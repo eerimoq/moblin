@@ -567,6 +567,10 @@ extension Model {
         switch command.popFirst() {
         case "spin":
             effect.spin()
+        case "options":
+            let options = command.popAll()
+            widget.wheelOfLuck.optionsFromText(text: options.joined(separator: "\n"))
+            getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
         default:
             break
         }

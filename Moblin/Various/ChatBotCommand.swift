@@ -57,6 +57,14 @@ class ChatBotCommand {
         return nil
     }
 
+    func popAll() -> [String] {
+        var parts: [String] = []
+        while let part = popFirst() {
+            parts.append(part)
+        }
+        return parts
+    }
+
     func peekFirst() -> String? {
         return parts.first
     }
