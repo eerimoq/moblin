@@ -1765,6 +1765,10 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     func updateTotalWeight() {
         totalWeight = sectors.reduce(0) { $0 + $1.weight }
     }
+
+    func shuffle() {
+        sectors.shuffle()
+    }
 }
 
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {

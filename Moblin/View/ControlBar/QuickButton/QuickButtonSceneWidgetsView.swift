@@ -410,6 +410,8 @@ struct LapTimesWidgetView: View {
 }
 
 struct WheelOfLuckWidgetView: View {
+    let model: Model
+    @ObservedObject var widget: SettingsWidget
     let effect: WheelOfLuckEffect
     let indented: Bool
 
@@ -420,6 +422,15 @@ struct WheelOfLuckWidgetView: View {
                 Text("").frame(width: iconWidth)
             }
             Spacer()
+            Button {
+                widget.wheelOfLuck.shuffle()
+                model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
+
+            } label: {
+                Image(systemName: "shuffle")
+                    .font(.title)
+            }
+            .padding([.trailing], 10)
             Button {
                 effect.spin()
             } label: {
@@ -500,7 +511,7 @@ private struct WidgetWheelOfLuckView: View {
 
     var body: some View {
         if let effect = model.getWheelOfLuckEffect(id: widget.id) {
-            WheelOfLuckWidgetView(effect: effect, indented: true)
+            WheelOfLuckWidgetView(model: model, widget: widget, effect: effect, indented: true)
         }
     }
 }

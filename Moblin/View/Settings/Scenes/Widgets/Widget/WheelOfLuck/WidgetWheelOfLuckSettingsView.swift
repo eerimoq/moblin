@@ -79,7 +79,7 @@ struct WidgetWheelOfLuckSettingsView: View {
         }
         Section {
             if let effect = model.getWheelOfLuckEffect(id: widget.id) {
-                WheelOfLuckWidgetView(effect: effect, indented: false)
+                WheelOfLuckWidgetView(model: model, widget: widget, effect: effect, indented: false)
             }
         }
     }
