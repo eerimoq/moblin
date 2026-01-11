@@ -19,6 +19,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case switchScene = "Switch scene"
     case widget = "Widget"
     case instantReplay = "Instant replay"
+    case stopReplay = "Stop replay"
     case snapshot = "Snapshot"
     case pauseTts = "Pause TTS"
     case pixellate = "Pixellate"
@@ -60,6 +61,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Widget")
         case .instantReplay:
             return String(localized: "Instant replay")
+        case .stopReplay:
+            return String(localized: "Stop replay")
         case .snapshot:
             return String(localized: "Snapshot")
         case .pauseTts:
@@ -144,6 +147,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
         case .widget:
             return .general
         case .instantReplay:
+            return .general
+        case .stopReplay:
             return .general
         case .snapshot:
             return .general

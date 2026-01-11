@@ -1,7 +1,6 @@
 import SwiftUI
 
 private struct SectorView: View {
-    let widget: SettingsWidget
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
     @ObservedObject var sector: SettingsWidgetWheelOfLuckSector
 
@@ -40,7 +39,6 @@ private struct SectorView: View {
 struct WidgetWizardWheelOfLuckSettingsView: View {
     let model: Model
     let database: Database
-    let widget: SettingsWidget
     @ObservedObject var wheelOfLuck: SettingsWidgetWheelOfLuck
     let createWidgetWizard: CreateWidgetWizard
     @Binding var presentingCreateWizard: Bool
@@ -49,7 +47,7 @@ struct WidgetWizardWheelOfLuckSettingsView: View {
         Form {
             Section {
                 ForEach(wheelOfLuck.sectors) {
-                    SectorView(widget: widget, wheelOfLuck: wheelOfLuck, sector: $0)
+                    SectorView(wheelOfLuck: wheelOfLuck, sector: $0)
                 }
                 .onDelete { offsets in
                     wheelOfLuck.sectors.remove(atOffsets: offsets)

@@ -93,6 +93,11 @@ extension Model {
             if !pressed {
                 instantReplay()
             }
+        case .stopReplay:
+            if !pressed {
+                replay.isPlaying = false
+                replayCancel()
+            }
         case .snapshot:
             if !pressed {
                 takeSnapshot()

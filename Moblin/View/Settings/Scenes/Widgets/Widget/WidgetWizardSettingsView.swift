@@ -199,7 +199,6 @@ struct WidgetWizardSettingsView: View {
                     case .wheelOfLuck:
                         WidgetWizardWheelOfLuckSettingsView(model: model,
                                                             database: database,
-                                                            widget: createWidgetWizard.widget,
                                                             wheelOfLuck: createWidgetWizard.widget
                                                                 .wheelOfLuck,
                                                             createWidgetWizard: createWidgetWizard,
