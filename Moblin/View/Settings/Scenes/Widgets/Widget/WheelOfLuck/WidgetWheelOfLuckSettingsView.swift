@@ -45,6 +45,30 @@ private struct OptionView: View {
     }
 }
 
+struct WheelOfLuckWidgetTextView: View {
+    @Binding var value: String
+    @FocusState private var editingText: Bool
+
+    var body: some View {
+        Section {
+            MultiLineTextFieldView(value: $value)
+                .focused($editingText)
+        } header: {
+            Text("Options")
+        } footer: {
+            if isPhone() {
+                HStack {
+                    Spacer()
+                    Button("Done") {
+                        editingText = false
+                    }
+                }
+                .disabled(!editingText)
+            }
+        }
+    }
+}
+
 struct WidgetWheelOfLuckSettingsView: View {
     let model: Model
     let widget: SettingsWidget
@@ -55,31 +79,34 @@ struct WidgetWheelOfLuckSettingsView: View {
     }
 
     var body: some View {
-        Section {
             if wheelOfLuck.advanced {
-                ForEach(wheelOfLuck.options) {
-                    OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: $0)
-                }
-                .onMove { froms, to in
-                    wheelOfLuck.options.move(fromOffsets: froms, toOffset: to)
-                    wheelOfLuck.updateText()
-                    updateEffect()
-                }
-                .onDelete { offsets in
-                    wheelOfLuck.options.remove(atOffsets: offsets)
-                    wheelOfLuck.updateText()
-                    wheelOfLuck.updateTotalWeight()
-                    updateEffect()
-                }
-                .deleteDisabled(wheelOfLuck.options.count < 2)
-                CreateButtonView {
-                    wheelOfLuck.options.append(SettingsWidgetWheelOfLuckOption())
-                    wheelOfLuck.updateText()
-                    wheelOfLuck.updateTotalWeight()
-                    updateEffect()
+                Section {
+                    ForEach(wheelOfLuck.options) {
+                        OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: $0)
+                    }
+                    .onMove { froms, to in
+                        wheelOfLuck.options.move(fromOffsets: froms, toOffset: to)
+                        wheelOfLuck.updateText()
+                        updateEffect()
+                    }
+                    .onDelete { offsets in
+                        wheelOfLuck.options.remove(atOffsets: offsets)
+                        wheelOfLuck.updateText()
+                        wheelOfLuck.updateTotalWeight()
+                        updateEffect()
+                    }
+                    .deleteDisabled(wheelOfLuck.options.count < 2)
+                    CreateButtonView {
+                        wheelOfLuck.options.append(SettingsWidgetWheelOfLuckOption())
+                        wheelOfLuck.updateText()
+                        wheelOfLuck.updateTotalWeight()
+                        updateEffect()
+                    }
+                } header: {
+                    Text("Options")
                 }
             } else {
-                MultiLineTextFieldView(value: $wheelOfLuck.text)
+                WheelOfLuckWidgetTextView(value: $wheelOfLuck.text)
                     .onChange(of: wheelOfLuck.text) { _ in
                         wheelOfLuck.optionsFromText(text: wheelOfLuck.text)
                         updateEffect()
@@ -89,9 +116,6 @@ struct WidgetWheelOfLuckSettingsView: View {
                         updateEffect()
                     }
             }
-        } header: {
-            Text("Options")
-        }
         Section {
             Toggle("Advanced", isOn: $wheelOfLuck.advanced)
         }

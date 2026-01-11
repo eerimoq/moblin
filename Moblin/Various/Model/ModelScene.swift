@@ -21,6 +21,7 @@ class CreateWidgetWizard: ObservableObject {
         let spinAgain = SettingsWidgetWheelOfLuckOption()
         spinAgain.text = String(localized: "Spin again")
         widget.wheelOfLuck.options = [yes, no, later, spinAgain]
+        widget.wheelOfLuck.updateText()
         widget.wheelOfLuck.updateTotalWeight()
     }
 }
