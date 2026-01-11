@@ -82,8 +82,13 @@ struct WidgetWheelOfLuckSettingsView: View {
                         wheelOfLuck.optionsFromText(text: text)
                         updateEffect()
                     }
+                    .onChange(of: wheelOfLuck.options) { _ in
+                        text = wheelOfLuck.optionsToText()
+                    }
                     .onAppear {
                         text = wheelOfLuck.optionsToText()
+                        wheelOfLuck.optionsFromText(text: text)
+                        updateEffect()
                     }
             }
         } header: {

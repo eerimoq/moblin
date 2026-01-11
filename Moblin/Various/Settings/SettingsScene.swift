@@ -1713,10 +1713,14 @@ class SettingsWidgetSlideshow: Codable, ObservableObject {
     }
 }
 
-class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable {
+class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, Equatable {
     var id: UUID = .init()
     @Published var text: String = ""
     @Published var weight: Int = 1
+
+    static func == (lhs: SettingsWidgetWheelOfLuckOption, rhs: SettingsWidgetWheelOfLuckOption) -> Bool {
+        return lhs.id == rhs.id
+    }
 
     enum CodingKeys: CodingKey {
         case id,
@@ -1767,7 +1771,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     }
 
     func updateTotalWeight() {
-        totalWeight = options.reduce(0) { $0 + $1.weight }
+        totalWeight = max(options.reduce(0) { $0 + $1.weight }, 1)
     }
 
     func shuffle() {
@@ -1780,6 +1784,9 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
             let option = SettingsWidgetWheelOfLuckOption()
             option.text = line.trim()
             options.append(option)
+        }
+        if options.isEmpty {
+            options.append(SettingsWidgetWheelOfLuckOption())
         }
         updateTotalWeight()
     }

@@ -47,7 +47,6 @@ extension Model {
                 }
             }
         }
-        logger.info("xxx effects \(effects)")
         return effects
     }
 
