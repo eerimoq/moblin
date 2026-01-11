@@ -16,7 +16,7 @@ struct WidgetWizardWheelOfLuckSettingsView: View {
                         wheelOfLuck.optionsFromText(text: text)
                     }
                     .onAppear {
-                        text = wheelOfLuck.options.map { $0.text }.joined(separator: "\n")
+                        text = wheelOfLuck.optionsToText()
                     }
             } header: {
                 Text("Options")

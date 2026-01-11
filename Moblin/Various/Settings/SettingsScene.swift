@@ -1783,6 +1783,10 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
         }
         updateTotalWeight()
     }
+
+    func optionsToText() -> String {
+        return options.map { $0.text }.joined(separator: "\n")
+    }
 }
 
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {

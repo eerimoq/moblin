@@ -83,7 +83,7 @@ struct WidgetWheelOfLuckSettingsView: View {
                         updateEffect()
                     }
                     .onAppear {
-                        text = wheelOfLuck.options.map { $0.text }.joined(separator: "\n")
+                        text = wheelOfLuck.optionsToText()
                     }
             }
         } header: {
