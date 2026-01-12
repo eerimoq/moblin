@@ -44,6 +44,9 @@ class ChatBotCommand {
             return first
         }
         first.removeFirst()
+        guard first != "\"" else {
+            return ""
+        }
         var words = [first]
         while var word = parts.popFirst() {
             if word.hasSuffix("\"") {
