@@ -1,6 +1,7 @@
 import Collections
 import Combine
 import SwiftUI
+import WeatherKit
 
 struct TextEffectStats {
     let timestamp: ContinuousClock.Instant
@@ -15,8 +16,7 @@ struct TextEffectStats {
     let altitude: String
     let distance: String
     let slope: String
-    let conditions: String?
-    let temperature: Measurement<UnitTemperature>?
+    let weather: Weather?
     let country: String?
     let countryFlag: String?
     let state: String?

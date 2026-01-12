@@ -366,6 +366,16 @@ private struct WeatherVariablesView: View {
                         description: String(localized: "Show temperature"),
                         text: $value
                     )
+                    VariableView(
+                        title: "{feelsLikeTemperature}",
+                        description: String(localized: "Show feels like temperature"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{wind}",
+                        description: String(localized: "Show wind"),
+                        text: $value
+                    )
                 } footer: {
                     let image = Image(systemName: "apple.logo")
                     Text("""

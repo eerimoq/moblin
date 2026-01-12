@@ -1,6 +1,7 @@
 import CoreLocation
 import CryptoKit
 import Foundation
+import WeatherKit
 
 let remoteControlApiVersion = "0.1"
 
@@ -355,8 +356,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var altitude: String
     var distance: String
     var slope: String
-    var conditions: String?
-    var temperature: Measurement<UnitTemperature>?
+    var weather: Weather?
     var country: String?
     var countryFlag: String?
     var state: String?
@@ -387,8 +387,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         altitude = stats.altitude
         distance = stats.distance
         slope = stats.slope
-        conditions = stats.conditions
-        temperature = stats.temperature
+        weather = stats.weather
         country = stats.country
         countryFlag = stats.countryFlag
         state = stats.state
@@ -420,8 +419,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                                altitude: altitude,
                                distance: distance,
                                slope: slope,
-                               conditions: conditions,
-                               temperature: temperature,
+                               weather: weather,
                                country: country,
                                countryFlag: countryFlag,
                                state: state,

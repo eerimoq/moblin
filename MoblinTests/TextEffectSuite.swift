@@ -16,14 +16,6 @@ struct TextEffectSuite {
     }
 
     @Test
-    func conditions() async throws {
-        var lines = format(format: "{conditions}", stats: createStats())
-        #expect(lines == createLine(data: .text("-")))
-        lines = format(format: "{conditions}", stats: createStats(conditions: "sun.max"))
-        #expect(lines == createLine(data: .imageSystemNameTryFill("sun.max")))
-    }
-
-    @Test
     func gForce() async throws {
         var lines = format(format: "{gForce}", stats: createStats())
         #expect(lines == createLine(data: .text("-")))
@@ -91,8 +83,7 @@ struct TextEffectSuite {
         return formatter.format(stats: stats, now: .now)
     }
 
-    private func createStats(conditions: String? = nil,
-                             heartRates: [String: Int?] = [:],
+    private func createStats(heartRates: [String: Int?] = [:],
                              gForce: GForce? = nil) -> TextEffectStats
     {
         return TextEffectStats(timestamp: .now,
@@ -107,8 +98,7 @@ struct TextEffectSuite {
                                altitude: "",
                                distance: "",
                                slope: "",
-                               conditions: conditions,
-                               temperature: nil,
+                               weather: nil,
                                country: nil,
                                countryFlag: nil,
                                state: nil,

@@ -121,6 +121,10 @@ class TextEffectFormatter {
                 formatConditions(stats: stats)
             case .temperature:
                 formatTemperature(stats: stats)
+            case .feelsLikeTemperature:
+                formatFeelsLikeTemperature(stats: stats)
+            case .wind:
+                formatWind(stats: stats)
             case .country:
                 formatCountry(stats: stats)
             case .countryFlag:
@@ -268,7 +272,7 @@ class TextEffectFormatter {
     }
 
     private func formatConditions(stats: TextEffectStats) {
-        if let conditions = stats.conditions {
+        if let conditions = stats.weather?.currentWeather.symbolName {
             parts.append(.init(id: partId, data: .imageSystemNameTryFill(conditions)))
         } else {
             appendTextPart(value: "-")
@@ -276,8 +280,30 @@ class TextEffectFormatter {
     }
 
     private func formatTemperature(stats: TextEffectStats) {
-        if let temperature = stats.temperature {
+        if let temperature = stats.weather?.currentWeather.temperature {
             appendTextPart(value: temperatureFormatter.string(from: temperature))
+        } else {
+            appendTextPart(value: "-")
+        }
+    }
+
+    private func formatFeelsLikeTemperature(stats: TextEffectStats) {
+        if let temperature = stats.weather?.currentWeather.apparentTemperature {
+            appendTextPart(value: temperatureFormatter.string(from: temperature))
+        } else {
+            appendTextPart(value: "-")
+        }
+    }
+
+    private func formatWind(stats: TextEffectStats) {
+        if let wind = stats.weather?.currentWeather.wind {
+            let speed = Int(wind.speed.converted(to: .metersPerSecond).value)
+            if let gust = wind.gust {
+                let gust = Int(gust.converted(to: .metersPerSecond).value)
+                appendTextPart(value: "\(speed) (\(gust)) m/s")
+            } else {
+                appendTextPart(value: "\(speed) m/s")
+            }
         } else {
             appendTextPart(value: "-")
         }
