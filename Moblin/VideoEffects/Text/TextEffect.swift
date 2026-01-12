@@ -16,7 +16,11 @@ struct TextEffectStats {
     let altitude: String
     let distance: String
     let slope: String
-    let weather: Weather?
+    let conditions: String?
+    let temperature: Measurement<UnitTemperature>?
+    let feelsLikeTemperature: Measurement<UnitTemperature>?
+    let windSpeed: Measurement<UnitSpeed>?
+    let windGust: Measurement<UnitSpeed>?
     let country: String?
     let countryFlag: String?
     let state: String?

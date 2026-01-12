@@ -1288,7 +1288,7 @@ extension Model {
         } else {
             updateTextWidgetsLapTimes(now: now)
             let location = locationManager.getLatestKnownLocation()
-            let weather = weatherManager.getLatestWeather()
+            let weather = weatherManager.getLatestWeather()?.currentWeather
             let placemark = geographyManager.getLatestPlacemark()
             stats = TextEffectStats(
                 timestamp: timestamp,
@@ -1303,7 +1303,11 @@ extension Model {
                 altitude: format(altitude: location?.altitude ?? 0),
                 distance: getDistance(),
                 slope: "\(Int(slopePercent))%",
-                weather: weather,
+                conditions: weather?.symbolName,
+                temperature: weather?.temperature,
+                feelsLikeTemperature: weather?.apparentTemperature,
+                windSpeed: weather?.wind.speed,
+                windGust: weather?.wind.gust,
                 country: placemark?.country ?? "",
                 countryFlag: emojiFlag(countryCode: placemark?.isoCountryCode),
                 state: placemark?.administrativeArea,

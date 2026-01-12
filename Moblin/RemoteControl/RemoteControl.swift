@@ -356,7 +356,11 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var altitude: String
     var distance: String
     var slope: String
-    var weather: Weather?
+    var conditions: String?
+    var temperature: Measurement<UnitTemperature>?
+    var feelsLikeTemperature: Measurement<UnitTemperature>?
+    var windSpeed: Measurement<UnitSpeed>?
+    var windGust: Measurement<UnitSpeed>?
     var country: String?
     var countryFlag: String?
     var state: String?
@@ -387,7 +391,11 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         altitude = stats.altitude
         distance = stats.distance
         slope = stats.slope
-        weather = stats.weather
+        conditions = stats.conditions
+        temperature = stats.temperature
+        feelsLikeTemperature = stats.feelsLikeTemperature
+        windSpeed = stats.windSpeed
+        windGust = stats.windGust
         country = stats.country
         countryFlag = stats.countryFlag
         state = stats.state
@@ -419,7 +427,11 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                                altitude: altitude,
                                distance: distance,
                                slope: slope,
-                               weather: weather,
+                               conditions: conditions,
+                               temperature: temperature,
+                               feelsLikeTemperature: feelsLikeTemperature,
+                               windSpeed: windSpeed,
+                               windGust: windGust,
                                country: country,
                                countryFlag: countryFlag,
                                state: state,

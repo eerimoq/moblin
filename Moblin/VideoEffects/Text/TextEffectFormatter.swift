@@ -272,7 +272,7 @@ class TextEffectFormatter {
     }
 
     private func formatConditions(stats: TextEffectStats) {
-        if let conditions = stats.weather?.currentWeather.symbolName {
+        if let conditions = stats.conditions {
             parts.append(.init(id: partId, data: .imageSystemNameTryFill(conditions)))
         } else {
             appendTextPart(value: "-")
@@ -280,7 +280,7 @@ class TextEffectFormatter {
     }
 
     private func formatTemperature(stats: TextEffectStats) {
-        if let temperature = stats.weather?.currentWeather.temperature {
+        if let temperature = stats.temperature {
             appendTextPart(value: temperatureFormatter.string(from: temperature))
         } else {
             appendTextPart(value: "-")
@@ -288,7 +288,7 @@ class TextEffectFormatter {
     }
 
     private func formatFeelsLikeTemperature(stats: TextEffectStats) {
-        if let temperature = stats.weather?.currentWeather.apparentTemperature {
+        if let temperature = stats.feelsLikeTemperature {
             appendTextPart(value: temperatureFormatter.string(from: temperature))
         } else {
             appendTextPart(value: "-")
@@ -296,13 +296,13 @@ class TextEffectFormatter {
     }
 
     private func formatWind(stats: TextEffectStats) {
-        if let wind = stats.weather?.currentWeather.wind {
-            let speed = Int(wind.speed.converted(to: .metersPerSecond).value)
-            if let gust = wind.gust {
-                let gust = Int(gust.converted(to: .metersPerSecond).value)
-                appendTextPart(value: "\(speed) (\(gust)) m/s")
+        if let windSpeed = stats.windSpeed {
+            let windSpeed = Int(windSpeed.converted(to: .metersPerSecond).value)
+            if let windGust = stats.windGust {
+                let windGust = Int(windGust.converted(to: .metersPerSecond).value)
+                appendTextPart(value: "\(windSpeed) (\(windGust)) m/s")
             } else {
-                appendTextPart(value: "\(speed) m/s")
+                appendTextPart(value: "\(windSpeed) m/s")
             }
         } else {
             appendTextPart(value: "-")
