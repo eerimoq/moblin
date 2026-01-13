@@ -1,6 +1,7 @@
 import Foundation
 
 private let djiTechnologyCoLtd = Data([0xAA, 0x08])
+private let xtraLtd = Data([0xAA, 0xF7])
 private let djiDeviceModelOsmoAction3 = Data([0x12, 0x00])
 private let djiDeviceModelOsmoAction4 = Data([0x14, 0x00])
 private let djiDeviceModelOsmoAction5Pro = Data([0x15, 0x00])
@@ -28,5 +29,6 @@ func djiModelFromManufacturerData(data: Data) -> SettingsDjiDeviceModel {
 }
 
 func isDjiDevice(manufacturerData: Data) -> Bool {
-    return manufacturerData.prefix(2) == djiTechnologyCoLtd
+    let companyId = manufacturerData.prefix(2)
+    return companyId == djiTechnologyCoLtd || companyId == xtraLtd
 }
