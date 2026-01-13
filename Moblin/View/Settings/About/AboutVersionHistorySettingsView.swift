@@ -60,6 +60,9 @@ private let versions = [
         "  • Remove delete confirm as long swipe kinda serves this purpose now.",
         "• Stop replay function in controllers. 💡 JasonM",
         "• Korean translation updated. ✍️ Winter1l",
+        "• Chat bot commands to enable and disable widgets.",
+        "• Chat bot commands to set wheel of luck options and spin it.",
+        "• Feels like temperature and wind in test widget. 💡 TimurFearless",
     ]),
     Version(version: "30.2.0", date: "2025-12-27", changes: [
         "• Interface name instead of index in Moblink ethernet relay id. 🐛 Djandrea",
