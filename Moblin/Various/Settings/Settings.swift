@@ -1034,6 +1034,7 @@ class Database: Codable, ObservableObject {
     @Published var pinchScale: Float = 0.5
     var selfieStick: SettingsSelfieStick = .init()
     @Published var bigButtons: Bool = false
+    @Published var verticalButtons: Bool = false
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
@@ -1134,6 +1135,7 @@ class Database: Codable, ObservableObject {
              pinchScale,
              selfieStick,
              bigButtons,
+             verticalButtons,
              ristServer,
              disconnectProtection,
              rtspClient,
@@ -1205,6 +1207,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.pinchScale, pinchScale)
         try container.encode(.selfieStick, selfieStick)
         try container.encode(.bigButtons, bigButtons)
+        try container.encode(.verticalButtons, verticalButtons)
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
@@ -1307,6 +1310,7 @@ class Database: Codable, ObservableObject {
         pinchScale = container.decode(.pinchScale, Float.self, 0.5)
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
         bigButtons = container.decode(.bigButtons, Bool.self, false)
+        verticalButtons = container.decode(.verticalButtons, Bool.self, false)
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
         disconnectProtection = container.decode(
             .disconnectProtection,
