@@ -25,7 +25,7 @@ func getNalUnits(data: Data) -> [NalUnitInfo] {
 // Should escape as well?
 func addNalUnitStartCodes(_ data: inout Data) {
     var index = 0
-    while index < data.count {
+    while index + 3 < data.count {
         let length = data.getFourBytesBe(offset: index)
         data.replaceSubrange(index ..< index + 4, with: nalUnitStartCode)
         index += Int(length) + 4
