@@ -143,16 +143,7 @@ struct ShapeEffectView: View {
     let shape: SettingsVideoEffectShape
 
     private func updateWidget() {
-        guard let effectIndex, let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
-            return
-        }
-        guard effectIndex < effect.effects.count else {
-            return
-        }
-        guard let effect = effect.effects[effectIndex] as? ShapeEffect else {
-            return
-        }
-        effect.setSettings(settings: shape.toSettings())
+        model.getWidgetShapeEffect(widgetId, effectIndex)?.setSettings(settings: shape.toSettings())
     }
 
     var body: some View {

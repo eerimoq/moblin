@@ -46,6 +46,13 @@ private struct EffectView: View {
                         effectIndex: effectIndex,
                         anamorphicLens: effect.anamorphicLens
                     )
+                case .lut:
+                    LutEffectView(
+                        color: model.database.color,
+                        widgetId: widgetId,
+                        effectIndex: effectIndex,
+                        lut: effect.lut
+                    )
                 default:
                     EmptyView()
                 }

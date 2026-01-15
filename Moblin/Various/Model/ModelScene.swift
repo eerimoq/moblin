@@ -83,13 +83,43 @@ extension Model {
         return scoreboardEffects.first(where: { $0.key == id })?.value
     }
 
-    func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
+    func getWidgetShapeEffect(_ widgetId: UUID, _ effectIndex: Int?) -> ShapeEffect? {
+        return getWidgetVideoEffect(widgetId, effectIndex)
+    }
+
+    func getWidgetAnamorphicLensEffect(_ widgetId: UUID, _ effectIndex: Int?) -> AnamorphicLensEffect? {
+        return getWidgetVideoEffect(widgetId, effectIndex)
+    }
+
+    func getWidgetDewarp360Effect(_ widgetId: UUID, _ effectIndex: Int?) -> Dewarp360Effect? {
+        return getWidgetVideoEffect(widgetId, effectIndex)
+    }
+
+    func getWidgetLutEffect(_ widgetId: UUID, _ effectIndex: Int?) -> LutEffect? {
+        return getWidgetVideoEffect(widgetId, effectIndex)
+    }
+
+    func getWidgetRemoveBackgroundEffect(_ widgetId: UUID, _ effectIndex: Int?) -> RemoveBackgroundEffect? {
+        return getWidgetVideoEffect(widgetId, effectIndex)
+    }
+
+    private func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
         return getVideoSourceEffect(id: id)
             ?? getImageEffect(id: id)
             ?? getBrowserEffect(id: id)
             ?? getMapEffect(id: id)
             ?? getSnapshotEffect(id: id)
             ?? getQrCodeEffect(id: id)
+    }
+
+    private func getWidgetVideoEffect<T>(_ widgetId: UUID, _ effectIndex: Int?) -> T? {
+        guard let effectIndex,
+              let effect = getEffectWithPossibleEffects(id: widgetId),
+              effectIndex < effect.effects.count
+        else {
+            return nil
+        }
+        return effect.effects[effectIndex] as? T
     }
 
     func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
@@ -594,7 +624,7 @@ extension Model {
         imageEffects.removeAll()
         for widget in widgets where widget.type == .image {
             let effect = createImageEffect(widget: widget)
-            effect.effects = widget.getEffects()
+            effect.effects = widget.getEffects(model: self)
             imageEffects[widget.id] = effect
         }
     }
@@ -646,7 +676,7 @@ extension Model {
                 settingName: widget.name,
                 moblinAccess: widget.browser.moblinAccess
             )
-            effect.effects = widget.getEffects()
+            effect.effects = widget.getEffects(model: self)
             browserEffects[widget.id] = effect
         }
     }
@@ -655,7 +685,7 @@ extension Model {
         mapEffects.removeAll()
         for widget in widgets where widget.type == .map {
             let effect = MapEffect(widget: widget.map)
-            effect.effects = widget.getEffects()
+            effect.effects = widget.getEffects(model: self)
             mapEffects[widget.id] = effect
         }
     }
@@ -664,7 +694,7 @@ extension Model {
         qrCodeEffects.removeAll()
         for widget in widgets where widget.type == .qrCode {
             let effect = QrCodeEffect(widget: widget.qrCode.clone())
-            effect.effects = widget.getEffects()
+            effect.effects = widget.getEffects(model: self)
             qrCodeEffects[widget.id] = effect
         }
     }
@@ -673,7 +703,7 @@ extension Model {
         videoSourceEffects.removeAll()
         for widget in widgets where widget.type == .videoSource {
             let effect = VideoSourceEffect()
-            effect.effects = widget.getEffects()
+            effect.effects = widget.getEffects(model: self)
             videoSourceEffects[widget.id] = effect
         }
     }
@@ -723,7 +753,7 @@ extension Model {
         snapshotEffects.removeAll()
         for widget in widgets where widget.type == .snapshot {
             let effect = SnapshotEffect(showtime: widget.snapshot.showtime)
-            effect.effects = widget.getEffects()
+            effect.effects = widget.getEffects(model: self)
             snapshotEffects[widget.id] = effect
         }
     }

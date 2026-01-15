@@ -7,16 +7,7 @@ struct Dewarp360EffectView: View {
     @ObservedObject var dewarp360: SettingsVideoEffectDewarp360
 
     private func updateWidget() {
-        guard let effectIndex, let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
-            return
-        }
-        guard effectIndex < effect.effects.count else {
-            return
-        }
-        guard let effect = effect.effects[effectIndex] as? Dewarp360Effect else {
-            return
-        }
-        effect.setSettings(settings: dewarp360.toSettings())
+        model.getWidgetDewarp360Effect(widgetId, effectIndex)?.setSettings(settings: dewarp360.toSettings())
     }
 
     var body: some View {

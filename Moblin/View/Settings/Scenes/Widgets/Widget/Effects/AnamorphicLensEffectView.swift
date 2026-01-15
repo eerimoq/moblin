@@ -7,16 +7,8 @@ struct AnamorphicLensEffectView: View {
     @ObservedObject var anamorphicLens: SettingsVideoEffectAnamorphicLens
 
     private func updateWidget() {
-        guard let effectIndex, let effect = model.getEffectWithPossibleEffects(id: widgetId) else {
-            return
-        }
-        guard effectIndex < effect.effects.count else {
-            return
-        }
-        guard let effect = effect.effects[effectIndex] as? AnamorphicLensEffect else {
-            return
-        }
-        effect.setSettings(settings: anamorphicLens.clone())
+        model.getWidgetAnamorphicLensEffect(widgetId, effectIndex)?
+            .setSettings(settings: anamorphicLens.clone())
     }
 
     private func changeScale(value: String) -> String? {

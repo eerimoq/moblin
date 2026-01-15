@@ -120,14 +120,14 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
 }
 
 final class LutEffect: VideoEffect {
-    private var filter = CIFilter.colorCubeWithColorSpace()
+    private var filter: (CIFilter & CIColorCubeWithColorSpace)?
 
     override func getName() -> String {
         return "LUT"
     }
 
     func setLut(
-        lut: SettingsColorLut,
+        lut: SettingsColorLut?,
         imageStorage: ImageStorage,
         onError: @escaping (String, String?) -> Void
     ) {
@@ -165,14 +165,29 @@ final class LutEffect: VideoEffect {
         }
     }
 
-    private func loadLut(lut: SettingsColorLut, imageStorage: ImageStorage) throws {
-        switch lut.type {
-        case .bundled:
-            try loadBundledPngLut(lut: lut)
-        case .disk:
-            try loadDiskPngLut(lut: lut, imageStorage: imageStorage)
-        case .diskCube:
-            try loadDiskCubeLut(lut: lut, imageStorage: imageStorage)
+    override func isEnabled() -> Bool {
+        return filter != nil
+    }
+
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+        filter?.inputImage = image
+        return filter?.outputImage ?? image
+    }
+
+    private func loadLut(lut: SettingsColorLut?, imageStorage: ImageStorage) throws {
+        if let lut {
+            switch lut.type {
+            case .bundled:
+                try loadBundledPngLut(lut: lut)
+            case .disk:
+                try loadDiskPngLut(lut: lut, imageStorage: imageStorage)
+            case .diskCube:
+                try loadDiskCubeLut(lut: lut, imageStorage: imageStorage)
+            }
+        } else {
+            processorPipelineQueue.async {
+                self.filter = nil
+            }
         }
     }
 
@@ -218,10 +233,5 @@ final class LutEffect: VideoEffect {
         processorPipelineQueue.async {
             self.filter = filter
         }
-    }
-
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        filter.inputImage = image
-        return filter.outputImage ?? image
     }
 }
