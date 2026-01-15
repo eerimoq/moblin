@@ -279,7 +279,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func widgetsAction() {
-        model.toggleShowingPanel(type: .widgets, panel: .widgets)
+        model.toggleShowingPanel(type: .widgets, panel: .sceneWidgets)
     }
 
     private func lutsAction() {

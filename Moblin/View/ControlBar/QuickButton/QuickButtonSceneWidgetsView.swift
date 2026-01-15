@@ -555,7 +555,7 @@ private struct WidgetView: View {
 }
 
 struct QuickButtonSceneWidgetsView: View {
-    let model: Model
+    @EnvironmentObject var model: Model
     // periphery:ignore
     @ObservedObject var sceneSelector: SceneSelector
 
@@ -570,6 +570,9 @@ struct QuickButtonSceneWidgetsView: View {
                                    sceneWidget: widget.sceneWidget)
                     }
                 }
+            }
+            ShortcutSectionView {
+                ScenesShortcutView(database: model.database)
             }
         }
         .navigationTitle("Scene widgets")

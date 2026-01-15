@@ -33,7 +33,7 @@ enum ShowingPanel {
     case streamSwitcher
     case luts
     case obs
-    case widgets
+    case sceneWidgets
     case recordings
     case store
     case chat

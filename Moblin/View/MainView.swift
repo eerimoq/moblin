@@ -142,9 +142,9 @@ private struct MenuView: View {
             NavigationStack {
                 QuickButtonObsView(stream: model.stream, obsQuickButton: model.obsQuickButton)
             }
-        case .widgets:
+        case .sceneWidgets:
             NavigationStack {
-                QuickButtonSceneWidgetsView(model: model, sceneSelector: model.sceneSelector)
+                QuickButtonSceneWidgetsView(sceneSelector: model.sceneSelector)
             }
         case .recordings:
             NavigationStack {
