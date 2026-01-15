@@ -11,7 +11,7 @@ let cameraButtonWidth = 70.0
 let pickerBorderColor = Color.gray
 var pickerBackgroundColor = Color.black.opacity(0.4)
 
-struct SegmentedPicker<T: Equatable, Content: View>: View {
+private struct SegmentedPicker<T: Equatable, Content: View>: View {
     @Namespace private var selectionAnimation
     @Binding var selectedItem: T?
     private let items: [T]
@@ -40,76 +40,49 @@ struct SegmentedPicker<T: Equatable, Content: View>: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(self.items.indices, id: \.self) { index in
-                ZStack {
-                    Rectangle()
-                        .overlay(self.overlay(for: self.items[index]))
-                        .foregroundStyle(.black.opacity(0.1))
-                    self.content(self.items[index])
-                        .contentShape(Rectangle())
-                }
-                .onTapGesture {
-                    self.selectedItem = self.items[index]
-                }
-                .onLongPressGesture {
-                    onLongPress?(index)
-                }
-                Divider()
-                    .background(pickerBorderColor)
+        ForEach(items.indices, id: \.self) { index in
+            ZStack {
+                Rectangle()
+                    .overlay(self.overlay(for: self.items[index]))
+                    .foregroundStyle(.black.opacity(0.1))
+                self.content(self.items[index])
+                    .contentShape(Rectangle())
             }
+            .onTapGesture {
+                self.selectedItem = self.items[index]
+            }
+            .onLongPressGesture {
+                onLongPress?(index)
+            }
+            Divider()
+                .background(pickerBorderColor)
+        }
+    }
+}
+
+struct SegmentedHPicker<T: Equatable, Content: View>: View {
+    let items: [T]
+    @Binding var selectedItem: T?
+    var onLongPress: ((Int) -> Void)?
+    let content: (T) -> Content
+
+    var body: some View {
+        HStack(spacing: 0) {
+            SegmentedPicker(items, selectedItem: $selectedItem, content: content, onLongPress: onLongPress)
         }
         .fixedSize(horizontal: false, vertical: true)
     }
 }
 
 struct SegmentedVPicker<T: Equatable, Content: View>: View {
-    @Namespace private var selectionAnimation
+    let items: [T]
     @Binding var selectedItem: T?
-    private let items: [T]
-    private let content: (T) -> Content
-    private let onLongPress: ((Int) -> Void)?
-
-    init(
-        _ items: [T],
-        selectedItem: Binding<T?>,
-        @ViewBuilder content: @escaping (T) -> Content,
-        onLongPress: ((Int) -> Void)? = nil
-    ) {
-        _selectedItem = selectedItem
-        self.items = items
-        self.content = content
-        self.onLongPress = onLongPress
-    }
-
-    @ViewBuilder func overlay(for item: T) -> some View {
-        if item == selectedItem {
-            RoundedRectangle(cornerRadius: 6)
-                .fill(.gray.opacity(0.6))
-                .padding(2)
-                .matchedGeometryEffect(id: "selectedSegmentHighlight", in: selectionAnimation)
-        }
-    }
+    var onLongPress: ((Int) -> Void)?
+    let content: (T) -> Content
 
     var body: some View {
         VStack(spacing: 0) {
-            ForEach(self.items.indices, id: \.self) { index in
-                ZStack {
-                    Rectangle()
-                        .overlay(self.overlay(for: self.items[index]))
-                        .foregroundStyle(.black.opacity(0.1))
-                    self.content(self.items[index])
-                        .contentShape(Rectangle())
-                }
-                .onTapGesture {
-                    self.selectedItem = self.items[index]
-                }
-                .onLongPressGesture {
-                    onLongPress?(index)
-                }
-                Divider()
-                    .background(pickerBorderColor)
-            }
+            SegmentedPicker(items, selectedItem: $selectedItem, content: content, onLongPress: onLongPress)
         }
         .fixedSize(horizontal: false, vertical: true)
     }

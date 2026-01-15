@@ -82,7 +82,7 @@ private struct ReplayControlsSpeedPicker: View {
     @ObservedObject var replay: ReplayProvider
 
     var body: some View {
-        SegmentedPicker(SettingsReplaySpeed.allCases, selectedItem: $replay.speed) {
+        SegmentedHPicker(items: SettingsReplaySpeed.allCases, selectedItem: $replay.speed) {
             Text($0.rawValue)
                 .font(.subheadline)
                 .frame(height: 35)

@@ -33,7 +33,7 @@ private struct ZoomPresetView: View {
     }
 
     var body: some View {
-        SegmentedPicker(presets, selectedItem: Binding(get: {
+        SegmentedHPicker(items: presets, selectedItem: Binding(get: {
             presets.first { $0.id == selectedPresetId }
         }, set: { value in
             if let value {
@@ -82,7 +82,7 @@ private struct ZoomPresetVView: View {
     }
 
     var body: some View {
-        SegmentedVPicker(presets.reversed(), selectedItem: Binding(get: {
+        SegmentedVPicker(items: presets.reversed(), selectedItem: Binding(get: {
             presets.first { $0.id == selectedPresetId }
         }, set: { value in
             if let value {

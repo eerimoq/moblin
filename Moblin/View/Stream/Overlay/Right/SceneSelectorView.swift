@@ -45,7 +45,7 @@ struct StreamOverlayRightSceneSelectorView: View {
     let width: CGFloat
 
     var body: some View {
-        SegmentedPicker(model.enabledScenes, selectedItem: Binding(get: {
+        SegmentedHPicker(items: model.enabledScenes, selectedItem: Binding(get: {
             if sceneSelector.sceneIndex < model.enabledScenes.count {
                 model.enabledScenes[sceneSelector.sceneIndex]
             } else {
@@ -57,13 +57,13 @@ struct StreamOverlayRightSceneSelectorView: View {
             } else {
                 sceneSelector.sceneIndex = 0
             }
-        })) {
-            SceneItemView(database: database, scene: $0, width: width)
-        } onLongPress: { index in
+        }), onLongPress: { index in
             if index < model.enabledScenes.count {
                 model.showSceneSettings(scene: model.enabledScenes[index])
             }
-        }
+        }, content: {
+            SceneItemView(database: database, scene: $0, width: width)
+        })
         .onChange(of: sceneSelector.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)
         }
@@ -85,7 +85,7 @@ struct StreamOverlayRightSceneVSelectorView: View {
     let width: CGFloat
 
     var body: some View {
-        SegmentedVPicker(model.enabledScenes.reversed(), selectedItem: Binding(get: {
+        SegmentedVPicker(items: model.enabledScenes.reversed(), selectedItem: Binding(get: {
             if sceneSelector.sceneIndex < model.enabledScenes.count {
                 model.enabledScenes[sceneSelector.sceneIndex]
             } else {
@@ -97,13 +97,13 @@ struct StreamOverlayRightSceneVSelectorView: View {
             } else {
                 sceneSelector.sceneIndex = 0
             }
-        })) {
-            SceneItemView(database: database, scene: $0, width: width)
-        } onLongPress: { index in
+        }), onLongPress: { index in
             if index < model.enabledScenes.count {
                 model.showSceneSettings(scene: model.enabledScenes[index])
             }
-        }
+        }, content: {
+            SceneItemView(database: database, scene: $0, width: width)
+        })
         .onChange(of: sceneSelector.sceneIndex) { tag in
             model.selectScene(id: model.enabledScenes[tag].id)
         }
