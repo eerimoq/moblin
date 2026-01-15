@@ -263,6 +263,7 @@ private struct WidgetsView: View {
                 .onMove { froms, to in
                     scene.widgets.move(fromOffsets: froms, toOffset: to)
                     model.sceneUpdated()
+                    model.sceneSettingsPanelSceneId += 1
                 }
                 .onDelete { offsets in
                     var attachCamera = false
@@ -275,6 +276,7 @@ private struct WidgetsView: View {
                     }
                     scene.widgets.remove(atOffsets: offsets)
                     model.sceneUpdated(attachCamera: attachCamera)
+                    model.sceneSettingsPanelSceneId += 1
                 }
             }
             AddButtonView {
