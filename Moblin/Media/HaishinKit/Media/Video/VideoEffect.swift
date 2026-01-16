@@ -86,6 +86,6 @@ class VideoEffect: NSObject {
         for effect in effects {
             image = effect.execute(image, info)
         }
-        return image
+        return image.cropped(to: image.extent.insetBy(dx: graphicsEpsilon, dy: graphicsEpsilon))
     }
 }

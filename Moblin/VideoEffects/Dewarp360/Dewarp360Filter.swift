@@ -1,7 +1,7 @@
 import CoreImage
 import simd
 
-private let epsilon = 0.00001
+let graphicsEpsilon = 0.00001
 
 private let kernel: CIWarpKernel? = {
     guard let url = Bundle.main.url(forResource: "default", withExtension: "metallib") else {
@@ -31,8 +31,8 @@ class Dewarp360Filter: CIFilter {
             arguments: createArguments(inputImage: inputImage)
         )?.cropped(to: CGRect(x: 0,
                               y: 0,
-                              width: outputSize.width - epsilon,
-                              height: outputSize.height - epsilon))
+                              width: outputSize.width - graphicsEpsilon,
+                              height: outputSize.height - graphicsEpsilon))
     }
 
     private func createArguments(inputImage: CIImage) -> [Any] {
