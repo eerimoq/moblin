@@ -1822,7 +1822,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
 
     func optionsFromText(text: String) {
         options.removeAll()
-        for line in text.trim().split(separator: "\n") {
+        for line in text.trim().split(separator: "\n", omittingEmptySubsequences: false) {
             let option = SettingsWidgetWheelOfLuckOption()
             option.text = line.trim()
             options.append(option)
@@ -1835,6 +1835,78 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
 
     private func optionsToText() -> String {
         return options.map { $0.text }.joined(separator: "\n")
+    }
+}
+
+struct SettingsBingoCardCell: Codable, Identifiable {
+    var id: UUID = .init()
+    var text: String
+    var checked: Bool
+}
+
+class SettingsWidgetBingoCard: Codable, ObservableObject {
+    static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
+    static let baseForegroundColor = RgbColor.white
+    var backgroundColor: RgbColor = baseBackgroundColor
+    @Published var backgroundColorColor: Color = baseBackgroundColor.color()
+    var foregroundColor: RgbColor = baseForegroundColor
+    @Published var foregroundColorColor: Color = baseForegroundColor.color()
+    @Published var cells: [SettingsBingoCardCell] = []
+    @Published var cellsText: String = ""
+
+    enum CodingKeys: CodingKey {
+        case backgroundColor,
+             foregroundColor,
+             cells
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.backgroundColor, backgroundColor)
+        try container.encode(.foregroundColor, foregroundColor)
+        try container.encode(.cells, cells)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.baseBackgroundColor)
+        backgroundColorColor = backgroundColor.color()
+        foregroundColor = container.decode(.foregroundColor, RgbColor.self, Self.baseForegroundColor)
+        foregroundColorColor = foregroundColor.color()
+        cells = container.decode(.cells, [SettingsBingoCardCell].self, [])
+        cellsText = cells.map { $0.text }.joined(separator: "\n")
+    }
+
+    func update(other: SettingsWidgetBingoCard) {
+        backgroundColorColor = other.backgroundColorColor
+        foregroundColorColor = other.foregroundColorColor
+        cells = other.cells
+    }
+
+    func cellsTextChanged() {
+        let lines = cellsText.split(separator: "\n", omittingEmptySubsequences: false)
+        cells.truncate(length: lines.count, create: { .init(text: "", checked: false) })
+        for (index, line) in lines.enumerated() {
+            cells[index].text = line.trim()
+        }
+    }
+
+    func uncheckAll() {
+        cells = cells.map { .init(text: $0.text, checked: false) }
+    }
+
+    func size() -> Int {
+        if cells.count <= 4 {
+            return 2
+        } else if cells.count <= 9 {
+            return 3
+        } else if cells.count <= 16 {
+            return 4
+        } else {
+            return 5
+        }
     }
 }
 
@@ -1858,6 +1930,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     var chat: SettingsWidgetChat = .init()
     var slideshow: SettingsWidgetSlideshow = .init()
     var wheelOfLuck: SettingsWidgetWheelOfLuck = .init()
+    var bingoCard: SettingsWidgetBingoCard = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -1888,6 +1961,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
              chat,
              slideshow,
              wheelOfLuck,
+             bingoCard,
              enabled,
              effects
     }
@@ -1912,6 +1986,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.chat, chat)
         try container.encode(.slideshow, slideshow)
         try container.encode(.wheelOfLuck, wheelOfLuck)
+        try container.encode(.bingoCard, bingoCard)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -1936,6 +2011,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         chat = container.decode(.chat, SettingsWidgetChat.self, .init())
         slideshow = container.decode(.slideshow, SettingsWidgetSlideshow.self, .init())
         wheelOfLuck = container.decode(.wheelOfLuck, SettingsWidgetWheelOfLuck.self, .init())
+        bingoCard = container.decode(.bingoCard, SettingsWidgetBingoCard.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
         migrateFromOlderVersions()
@@ -1998,6 +2074,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .slideshow,
             .scoreboard,
             .wheelOfLuck,
+            .bingoCard,
         ].contains(type)
     }
 
@@ -2013,6 +2090,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .pngTuber,
             .snapshot,
             .slideshow,
+            .bingoCard,
         ].contains(type)
     }
 
@@ -2032,6 +2110,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .slideshow,
             .scoreboard,
             .wheelOfLuck,
+            .bingoCard,
         ].contains(type)
     }
 
@@ -2708,6 +2787,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case qrCode = "QR code"
     case scoreboard = "Scoreboard"
     case wheelOfLuck = "Wheel of luck"
+    case bingoCard = "Bingo card"
     case crop = "Crop"
 
     func toString() -> String {
@@ -2742,6 +2822,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "Scoreboard")
         case .wheelOfLuck:
             return String(localized: "Wheel of luck")
+        case .bingoCard:
+            return String(localized: "Bingo card")
         case .crop:
             return String(localized: "Crop")
         }
@@ -2781,6 +2863,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return "person.crop.circle.dashed"
         case .wheelOfLuck:
             return "burn"
+        case .bingoCard:
+            return "square.grid.3x3.square"
         }
     }
 
@@ -2824,6 +2908,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             return String(localized: "A crop widget shows parts of a browser widget.")
         case .wheelOfLuck:
             return String(localized: "A wheel of luck widget shows a wheel of luck that you can spin.")
+        case .bingoCard:
+            return String(localized: "A bingo card widget shows an interactive bingo card.")
         }
     }
 }

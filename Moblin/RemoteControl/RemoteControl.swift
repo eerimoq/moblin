@@ -178,6 +178,8 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             return nil
         case .wheelOfLuck:
             return nil
+        case .bingoCard:
+            return nil
         }
     }
 

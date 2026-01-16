@@ -610,6 +610,7 @@ class RgbColor: Codable, Equatable {
     }
 
     static let white = RgbColor(red: 255, green: 255, blue: 255)
+    static let black = RgbColor(red: 0, green: 0, blue: 0)
 
     var red: Int = 0
     var green: Int = 0
@@ -630,6 +631,10 @@ class RgbColor: Codable, Equatable {
             return self
         }
         return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
+    }
+
+    func withOpacity(opacity: Double?) -> RgbColor {
+        return RgbColor(red: red, green: green, blue: blue, opacity: opacity)
     }
 
     static func fromHex(string: String) -> RgbColor? {

@@ -548,6 +548,10 @@ private struct WidgetView: View {
             WidgetTextView(model: model, widget: widget, text: widget.text)
         case .wheelOfLuck:
             WidgetWheelOfLuckView(model: model, widget: widget)
+        case .bingoCard:
+            BingoCardCompactMarksView(bingoCard: widget.bingoCard) {
+                model.getBingoCardEffect(id: widget.id)?.setSettings(settings: widget.bingoCard)
+            }
         default:
             EmptyView()
         }

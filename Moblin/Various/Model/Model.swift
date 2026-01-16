@@ -486,6 +486,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var chatEffects: [UUID: ChatEffect] = [:]
     var slideshowEffects: [UUID: SlideshowEffect] = [:]
     var wheelOfLuckEffects: [UUID: WheelOfLuckEffect] = [:]
+    var bingoCardEffects: [UUID: BingoCardEffect] = [:]
     var enabledSnapshotEffects: [SnapshotEffect] = []
     var enabledChatEffects: [ChatEffect] = []
     var speechToTextAlertMatchOffset = 0

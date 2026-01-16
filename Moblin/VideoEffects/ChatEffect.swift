@@ -223,7 +223,7 @@ private struct ChatView: View {
     }
 }
 
-final class ChatEffect: VideoEffect, ObservableObject {
+final class ChatEffect: VideoEffect {
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var chatImage: CIImage?
     private var renderer: ImageRenderer<ChatView>?

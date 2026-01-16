@@ -203,6 +203,12 @@ struct WidgetWizardSettingsView: View {
                                                                 .wheelOfLuck,
                                                             createWidgetWizard: createWidgetWizard,
                                                             presentingCreateWizard: $presentingCreateWizard)
+                    case .bingoCard:
+                        WidgetWizardBingoCardSettingsView(model: model,
+                                                          database: database,
+                                                          bingoCard: createWidgetWizard.widget.bingoCard,
+                                                          createWidgetWizard: createWidgetWizard,
+                                                          presentingCreateWizard: $presentingCreateWizard)
                     default:
                         SelectScenesView(model: model,
                                          database: database,

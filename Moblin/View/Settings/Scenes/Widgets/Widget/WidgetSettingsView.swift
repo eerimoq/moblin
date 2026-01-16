@@ -116,6 +116,8 @@ struct WidgetSettingsView: View {
                 WidgetChatSettingsView(model: model, database: database, widget: widget, chat: widget.chat)
             case .wheelOfLuck:
                 WidgetWheelOfLuckSettingsView(model: model, widget: widget, wheelOfLuck: widget.wheelOfLuck)
+            case .bingoCard:
+                WidgetBingoCardSettingsView(model: model, widget: widget, bingoCard: widget.bingoCard)
             }
         }
         .navigationTitle("\(widget.type.toString()) widget")

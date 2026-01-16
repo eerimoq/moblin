@@ -79,6 +79,10 @@ extension Model {
         return wheelOfLuckEffects.first(where: { $0.key == id })?.value
     }
 
+    func getBingoCardEffect(id: UUID) -> BingoCardEffect? {
+        return bingoCardEffects.first(where: { $0.key == id })?.value
+    }
+
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
         return scoreboardEffects.first(where: { $0.key == id })?.value
     }
@@ -615,6 +619,7 @@ extension Model {
         resetChatVideoEffects(widgets: widgets)
         resetSlideshowVideoEffects(widgets: widgets)
         resetWheelOfLuckEffects(widgets: widgets)
+        resetBingoCardEffects(widgets: widgets)
         browsers = browserEffects.map { _, browser in
             Browser(browserEffect: browser)
         }
@@ -801,8 +806,14 @@ extension Model {
     private func resetWheelOfLuckEffects(widgets: [SettingsWidget]) {
         wheelOfLuckEffects.removeAll()
         for widget in widgets where widget.type == .wheelOfLuck {
-            let effect = WheelOfLuckEffect(canvasSize: media.getCanvasSize())
-            wheelOfLuckEffects[widget.id] = effect
+            wheelOfLuckEffects[widget.id] = WheelOfLuckEffect(canvasSize: media.getCanvasSize())
+        }
+    }
+
+    private func resetBingoCardEffects(widgets: [SettingsWidget]) {
+        bingoCardEffects.removeAll()
+        for widget in widgets where widget.type == .bingoCard {
+            bingoCardEffects[widget.id] = BingoCardEffect(canvasSize: media.getCanvasSize())
         }
     }
 
@@ -951,6 +962,8 @@ extension Model {
                 addSceneChatEffects(sceneWidget, widget, &effects)
             case .wheelOfLuck:
                 addSceneWheelOfLuckEffects(sceneWidget, widget, &effects)
+            case .bingoCard:
+                addSceneBingoCardEffects(sceneWidget, widget, &effects)
             }
         }
     }
@@ -1197,6 +1210,19 @@ extension Model {
             return
         }
         effect.setSettings(settings: widget.wheelOfLuck)
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effects.append(effect)
+    }
+
+    private func addSceneBingoCardEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = bingoCardEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
+        effect.setSettings(settings: widget.bingoCard)
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         effects.append(effect)
     }
@@ -1459,6 +1485,11 @@ extension Model {
             sceneWidget.layout.alignment = .topRight
             sceneWidget.layout.x = 1.3
             sceneWidget.layout.y = 31
+        case .bingoCard:
+            sceneWidget.layout.alignment = .topRight
+            sceneWidget.layout.x = 1.3
+            sceneWidget.layout.y = 33
+            sceneWidget.layout.size = 33
         default:
             break
         }
