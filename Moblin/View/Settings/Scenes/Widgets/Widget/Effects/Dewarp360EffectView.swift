@@ -2,12 +2,12 @@ import SwiftUI
 
 struct Dewarp360EffectView: View {
     @EnvironmentObject var model: Model
-    let widgetId: UUID
-    let effectIndex: Int?
+    let widget: SettingsWidget
+    let effect: SettingsVideoEffect
     @ObservedObject var dewarp360: SettingsVideoEffectDewarp360
 
     private func updateWidget() {
-        model.getWidgetDewarp360Effect(widgetId, effectIndex)?.setSettings(settings: dewarp360.toSettings())
+        model.getWidgetDewarp360Effect(widget, effect)?.setSettings(settings: dewarp360.toSettings())
     }
 
     var body: some View {

@@ -2,12 +2,12 @@ import SwiftUI
 
 struct RemoveBackgroundEffectView: View {
     @EnvironmentObject var model: Model
-    let widgetId: UUID
-    let effectIndex: Int?
+    let widget: SettingsWidget
+    let effect: SettingsVideoEffect
     @ObservedObject var removeBackground: SettingsVideoEffectRemoveBackground
 
     private func updateWidget() {
-        model.getWidgetRemoveBackgroundEffect(widgetId, effectIndex)?.setColorRange(
+        model.getWidgetRemoveBackgroundEffect(widget, effect)?.setColorRange(
             from: removeBackground.from,
             to: removeBackground.to
         )

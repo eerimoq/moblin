@@ -2,8 +2,7 @@ import SwiftUI
 
 private struct EffectView: View {
     @EnvironmentObject var model: Model
-    let widgetId: UUID
-    let effectIndex: Int?
+    let widget: SettingsWidget
     @ObservedObject var effect: SettingsVideoEffect
 
     var body: some View {
@@ -24,33 +23,33 @@ private struct EffectView: View {
                 case .shape:
                     ShapeEffectView(
                         model: model,
-                        widgetId: widgetId,
-                        effectIndex: effectIndex,
+                        widget: widget,
+                        effect: effect,
                         shape: effect.shape
                     )
                 case .removeBackground:
                     RemoveBackgroundEffectView(
-                        widgetId: widgetId,
-                        effectIndex: effectIndex,
+                        widget: widget,
+                        effect: effect,
                         removeBackground: effect.removeBackground
                     )
                 case .dewarp360:
                     Dewarp360EffectView(
-                        widgetId: widgetId,
-                        effectIndex: effectIndex,
+                        widget: widget,
+                        effect: effect,
                         dewarp360: effect.dewarp360
                     )
                 case .anamorphicLens:
                     AnamorphicLensEffectView(
-                        widgetId: widgetId,
-                        effectIndex: effectIndex,
+                        widget: widget,
+                        effect: effect,
                         anamorphicLens: effect.anamorphicLens
                     )
                 case .lut:
                     LutEffectView(
                         color: model.database.color,
-                        widgetId: widgetId,
-                        effectIndex: effectIndex,
+                        widget: widget,
+                        effect: effect,
                         lut: effect.lut
                     )
                 default:
@@ -77,11 +76,7 @@ struct WidgetEffectsView: View {
     var body: some View {
         Section {
             ForEach(widget.effects) { effect in
-                EffectView(
-                    widgetId: widget.id,
-                    effectIndex: widget.effects.filter { $0.enabled }.firstIndex(where: { $0 === effect }),
-                    effect: effect
-                )
+                EffectView(widget: widget, effect: effect)
             }
             .onMove { froms, to in
                 widget.effects.move(fromOffsets: froms, toOffset: to)

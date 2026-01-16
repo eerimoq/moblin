@@ -3,8 +3,8 @@ import SwiftUI
 struct LutEffectView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var color: SettingsColor
-    let widgetId: UUID
-    let effectIndex: Int?
+    let widget: SettingsWidget
+    let effect: SettingsVideoEffect
     @ObservedObject var lut: SettingsVideoEffectLut
 
     private func updateWidget() {
@@ -14,7 +14,7 @@ struct LutEffectView: View {
         } else {
             lut = nil
         }
-        model.getWidgetLutEffect(widgetId, effectIndex)?
+        model.getWidgetLutEffect(widget, effect)?
             .setLut(lut: lut, imageStorage: model.imageStorage) { title, subTitle in
                 model.makeErrorToastMain(title: title, subTitle: subTitle)
             }

@@ -2,13 +2,12 @@ import SwiftUI
 
 struct AnamorphicLensEffectView: View {
     @EnvironmentObject var model: Model
-    let widgetId: UUID
-    let effectIndex: Int?
+    let widget: SettingsWidget
+    let effect: SettingsVideoEffect
     @ObservedObject var anamorphicLens: SettingsVideoEffectAnamorphicLens
 
     private func updateWidget() {
-        model.getWidgetAnamorphicLensEffect(widgetId, effectIndex)?
-            .setSettings(settings: anamorphicLens.clone())
+        model.getWidgetAnamorphicLensEffect(widget, effect)?.setSettings(settings: anamorphicLens.clone())
     }
 
     private func changeScale(value: String) -> String? {

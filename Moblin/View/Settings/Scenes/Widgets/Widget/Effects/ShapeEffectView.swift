@@ -138,12 +138,12 @@ private struct CropView: View {
 
 struct ShapeEffectView: View {
     let model: Model
-    let widgetId: UUID
-    let effectIndex: Int?
+    let widget: SettingsWidget
+    let effect: SettingsVideoEffect
     let shape: SettingsVideoEffectShape
 
     private func updateWidget() {
-        model.getWidgetShapeEffect(widgetId, effectIndex)?.setSettings(settings: shape.toSettings())
+        model.getWidgetShapeEffect(widget, effect)?.setSettings(settings: shape.toSettings())
     }
 
     var body: some View {

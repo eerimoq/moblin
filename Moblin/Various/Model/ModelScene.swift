@@ -83,24 +83,30 @@ extension Model {
         return scoreboardEffects.first(where: { $0.key == id })?.value
     }
 
-    func getWidgetShapeEffect(_ widgetId: UUID, _ effectIndex: Int?) -> ShapeEffect? {
-        return getWidgetVideoEffect(widgetId, effectIndex)
+    func getWidgetShapeEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> ShapeEffect? {
+        return getWidgetVideoEffect(widget, effect)
     }
 
-    func getWidgetAnamorphicLensEffect(_ widgetId: UUID, _ effectIndex: Int?) -> AnamorphicLensEffect? {
-        return getWidgetVideoEffect(widgetId, effectIndex)
+    func getWidgetAnamorphicLensEffect(_ widget: SettingsWidget,
+                                       _ effect: SettingsVideoEffect) -> AnamorphicLensEffect?
+    {
+        return getWidgetVideoEffect(widget, effect)
     }
 
-    func getWidgetDewarp360Effect(_ widgetId: UUID, _ effectIndex: Int?) -> Dewarp360Effect? {
-        return getWidgetVideoEffect(widgetId, effectIndex)
+    func getWidgetDewarp360Effect(_ widget: SettingsWidget,
+                                  _ effect: SettingsVideoEffect) -> Dewarp360Effect?
+    {
+        return getWidgetVideoEffect(widget, effect)
     }
 
-    func getWidgetLutEffect(_ widgetId: UUID, _ effectIndex: Int?) -> LutEffect? {
-        return getWidgetVideoEffect(widgetId, effectIndex)
+    func getWidgetLutEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> LutEffect? {
+        return getWidgetVideoEffect(widget, effect)
     }
 
-    func getWidgetRemoveBackgroundEffect(_ widgetId: UUID, _ effectIndex: Int?) -> RemoveBackgroundEffect? {
-        return getWidgetVideoEffect(widgetId, effectIndex)
+    func getWidgetRemoveBackgroundEffect(_ widget: SettingsWidget,
+                                         _ effect: SettingsVideoEffect) -> RemoveBackgroundEffect?
+    {
+        return getWidgetVideoEffect(widget, effect)
     }
 
     private func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
@@ -112,9 +118,9 @@ extension Model {
             ?? getQrCodeEffect(id: id)
     }
 
-    private func getWidgetVideoEffect<T>(_ widgetId: UUID, _ effectIndex: Int?) -> T? {
-        guard let effectIndex,
-              let effect = getEffectWithPossibleEffects(id: widgetId),
+    private func getWidgetVideoEffect<T>(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> T? {
+        guard let effectIndex = widget.effects.filter({ $0.enabled }).firstIndex(where: { $0 === effect }),
+              let effect = getEffectWithPossibleEffects(id: widget.id),
               effectIndex < effect.effects.count
         else {
             return nil
@@ -1468,7 +1474,6 @@ extension Model {
         _ parts: [TextFormatPart]
     ) {
         let length = parts.filter { $0 == .timer }.count
-        logger.info("xxx length \(length) \(parts)")
         text.timers.truncate(length: length, create: { .init() })
         textEffect.setTimersEndTime(endTimes: text.timers.map {
             .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
