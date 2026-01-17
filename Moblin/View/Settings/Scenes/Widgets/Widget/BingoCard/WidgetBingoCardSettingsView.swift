@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct BingCardWidgetTextView: View {
+struct BingCardWidgetOptionsView: View {
     @Binding var value: String
     @FocusState private var editingText: Bool
 
@@ -90,7 +90,7 @@ struct WidgetBingoCardSettingsView: View {
     }
 
     var body: some View {
-        BingCardWidgetTextView(value: $bingoCard.cellsText)
+        BingCardWidgetOptionsView(value: $bingoCard.cellsText)
             .onChange(of: bingoCard.cellsText) { _ in
                 bingoCard.cellsTextChanged()
                 updateEffect()

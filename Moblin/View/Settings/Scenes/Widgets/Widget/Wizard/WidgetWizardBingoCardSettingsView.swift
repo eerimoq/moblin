@@ -9,7 +9,7 @@ struct WidgetWizardBingoCardSettingsView: View {
 
     var body: some View {
         Form {
-            BingCardWidgetTextView(value: $bingoCard.cellsText)
+            BingCardWidgetOptionsView(value: $bingoCard.cellsText)
                 .onChange(of: bingoCard.cellsText) { _ in
                     bingoCard.cellsTextChanged()
                 }

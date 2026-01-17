@@ -45,7 +45,7 @@ private struct OptionView: View {
     }
 }
 
-struct WheelOfLuckWidgetTextView: View {
+struct WheelOfLuckWidgetOptionsView: View {
     @Binding var value: String
     @FocusState private var editingText: Bool
 
@@ -106,7 +106,7 @@ struct WidgetWheelOfLuckSettingsView: View {
                 Text("Options")
             }
         } else {
-            WheelOfLuckWidgetTextView(value: $wheelOfLuck.text)
+            WheelOfLuckWidgetOptionsView(value: $wheelOfLuck.text)
                 .onChange(of: wheelOfLuck.text) { _ in
                     wheelOfLuck.optionsFromText(text: wheelOfLuck.text)
                     updateEffect()

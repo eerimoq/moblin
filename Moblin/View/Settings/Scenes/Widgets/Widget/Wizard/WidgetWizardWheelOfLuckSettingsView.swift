@@ -9,7 +9,7 @@ struct WidgetWizardWheelOfLuckSettingsView: View {
 
     var body: some View {
         Form {
-            WheelOfLuckWidgetTextView(value: $wheelOfLuck.text)
+            WheelOfLuckWidgetOptionsView(value: $wheelOfLuck.text)
                 .onChange(of: wheelOfLuck.text) { _ in
                     wheelOfLuck.optionsFromText(text: wheelOfLuck.text)
                 }
