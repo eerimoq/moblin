@@ -1838,7 +1838,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     }
 }
 
-struct SettingsBingoCardCell: Codable, Identifiable {
+struct SettingsBingoCardSquare: Codable, Identifiable {
     var id: UUID = .init()
     var text: String
     var checked: Bool
@@ -1851,13 +1851,13 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
     @Published var backgroundColorColor: Color = baseBackgroundColor.color()
     var foregroundColor: RgbColor = baseForegroundColor
     @Published var foregroundColorColor: Color = baseForegroundColor.color()
-    @Published var cells: [SettingsBingoCardCell] = []
-    @Published var cellsText: String = ""
+    @Published var squares: [SettingsBingoCardSquare] = []
+    @Published var squaresText: String = ""
 
     enum CodingKeys: CodingKey {
         case backgroundColor,
              foregroundColor,
-             cells
+             squares
     }
 
     init() {}
@@ -1866,7 +1866,7 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.backgroundColor, backgroundColor)
         try container.encode(.foregroundColor, foregroundColor)
-        try container.encode(.cells, cells)
+        try container.encode(.squares, squares)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1875,34 +1875,34 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
         backgroundColorColor = backgroundColor.color()
         foregroundColor = container.decode(.foregroundColor, RgbColor.self, Self.baseForegroundColor)
         foregroundColorColor = foregroundColor.color()
-        cells = container.decode(.cells, [SettingsBingoCardCell].self, [])
-        cellsText = cells.map { $0.text }.joined(separator: "\n")
+        squares = container.decode(.squares, [SettingsBingoCardSquare].self, [])
+        squaresText = squares.map { $0.text }.joined(separator: "\n")
     }
 
     func update(other: SettingsWidgetBingoCard) {
         backgroundColorColor = other.backgroundColorColor
         foregroundColorColor = other.foregroundColorColor
-        cells = other.cells
+        squares = other.squares
     }
 
-    func cellsTextChanged() {
-        let lines = cellsText.split(separator: "\n", omittingEmptySubsequences: false)
-        cells.truncate(length: lines.count, create: { .init(text: "", checked: false) })
+    func squaresTextChanged() {
+        let lines = squaresText.split(separator: "\n", omittingEmptySubsequences: false)
+        squares.truncate(length: lines.count, create: { .init(text: "", checked: false) })
         for (index, line) in lines.enumerated() {
-            cells[index].text = line.trim()
+            squares[index].text = line.trim()
         }
     }
 
     func uncheckAll() {
-        cells = cells.map { .init(text: $0.text, checked: false) }
+        squares = squares.map { .init(text: $0.text, checked: false) }
     }
 
     func size() -> Int {
-        if cells.count <= 4 {
+        if squares.count <= 4 {
             return 2
-        } else if cells.count <= 9 {
+        } else if squares.count <= 9 {
             return 3
-        } else if cells.count <= 16 {
+        } else if squares.count <= 16 {
             return 4
         } else {
             return 5

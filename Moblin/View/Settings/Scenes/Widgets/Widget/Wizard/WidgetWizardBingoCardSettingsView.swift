@@ -9,9 +9,9 @@ struct WidgetWizardBingoCardSettingsView: View {
 
     var body: some View {
         Form {
-            BingCardWidgetOptionsView(value: $bingoCard.cellsText)
-                .onChange(of: bingoCard.cellsText) { _ in
-                    bingoCard.cellsTextChanged()
+            BingCardWidgetSquaresView(value: $bingoCard.squaresText)
+                .onChange(of: bingoCard.squaresText) { _ in
+                    bingoCard.squaresTextChanged()
                 }
             WidgetWizardSelectScenesNavigationView(model: model,
                                                    database: database,

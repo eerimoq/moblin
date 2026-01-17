@@ -6,38 +6,38 @@ private struct BingoView: View {
     @ObservedObject var sceneWidget: SettingsSceneWidget
     let canvasSize: CGSize
 
-    private func cellSize(cellsCountSide: Int) -> Double {
-        return toPixels(sceneWidget.layout.size, canvasSize.minimum()) / Double(cellsCountSide)
+    private func squareSize(squaresCountSide: Int) -> Double {
+        return toPixels(sceneWidget.layout.size, canvasSize.minimum()) / Double(squaresCountSide)
     }
 
     var body: some View {
-        let cellsCountSide = settings.size()
-        let cellSize = cellSize(cellsCountSide: cellsCountSide)
+        let squaresCountSide = settings.size()
+        let squareSize = squareSize(squaresCountSide: squaresCountSide)
         ZStack {
             VStack(spacing: 0) {
-                ForEach(0 ..< cellsCountSide, id: \.self) { row in
+                ForEach(0 ..< squaresCountSide, id: \.self) { row in
                     HStack(spacing: 0) {
-                        ForEach(0 ..< cellsCountSide, id: \.self) { column in
+                        ForEach(0 ..< squaresCountSide, id: \.self) { column in
                             ZStack {
                                 Rectangle()
                                     .stroke(settings.foregroundColorColor, lineWidth: 2)
                                     .background(settings.backgroundColorColor)
-                                let index = row * cellsCountSide + column
-                                if index < settings.cells.count {
-                                    let cell = settings.cells[index]
-                                    Text(cell.text)
+                                let index = row * squaresCountSide + column
+                                if index < settings.squares.count {
+                                    let square = settings.squares[index]
+                                    Text(square.text)
                                         .lineLimit(3)
                                         .minimumScaleFactor(0.4)
                                         .multilineTextAlignment(.center)
-                                        .font(.system(size: 35 * cellSize / 100))
+                                        .font(.system(size: 35 * squareSize / 100))
                                         .padding(4)
-                                    if cell.checked {
+                                    if square.checked {
                                         Text(String("╳"))
-                                            .font(.system(size: 80 * cellSize / 100))
+                                            .font(.system(size: 80 * squareSize / 100))
                                     }
                                 }
                             }
-                            .frame(width: cellSize, height: cellSize)
+                            .frame(width: squareSize, height: squareSize)
                         }
                     }
                 }

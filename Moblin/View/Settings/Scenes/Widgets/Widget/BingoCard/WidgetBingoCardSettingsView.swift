@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct BingCardWidgetOptionsView: View {
+struct BingCardWidgetSquaresView: View {
     @Binding var value: String
     @FocusState private var editingText: Bool
 
@@ -9,7 +9,7 @@ struct BingCardWidgetOptionsView: View {
             MultiLineTextFieldView(value: $value)
                 .focused($editingText)
         } header: {
-            Text("Options")
+            Text("Squares")
         } footer: {
             if isPhone() {
                 HStack {
@@ -29,15 +29,15 @@ struct BingoCardMarksView: View {
     let updateEffect: () -> Void
 
     var body: some View {
-        ForEach($bingoCard.cells) { $cell in
+        ForEach($bingoCard.squares) { $square in
             HStack {
-                Text(cell.text)
+                Text(square.text)
                 Spacer()
                 Button {
-                    cell.checked.toggle()
+                    square.checked.toggle()
                     updateEffect()
                 } label: {
-                    Image(systemName: cell.checked ? "square.split.diagonal.2x2" : "square")
+                    Image(systemName: square.checked ? "square.split.diagonal.2x2" : "square")
                         .font(.title)
                 }
                 .buttonStyle(.borderless)
@@ -51,19 +51,19 @@ struct BingoCardCompactMarksView: View {
     let updateEffect: () -> Void
 
     var body: some View {
-        let cellsCountSide = bingoCard.size()
+        let squaresCountSide = bingoCard.size()
         VStack(spacing: 9) {
-            ForEach(0 ..< cellsCountSide, id: \.self) { row in
+            ForEach(0 ..< squaresCountSide, id: \.self) { row in
                 HStack {
                     Spacer()
-                    ForEach(0 ..< cellsCountSide, id: \.self) { column in
-                        let index = row * cellsCountSide + column
-                        if index < bingoCard.cells.count {
+                    ForEach(0 ..< squaresCountSide, id: \.self) { column in
+                        let index = row * squaresCountSide + column
+                        if index < bingoCard.squares.count {
                             Button {
-                                bingoCard.cells[index].checked.toggle()
+                                bingoCard.squares[index].checked.toggle()
                                 updateEffect()
                             } label: {
-                                Image(systemName: bingoCard.cells[index].checked
+                                Image(systemName: bingoCard.squares[index].checked
                                     ? "square.split.diagonal.2x2"
                                     : "square")
                                     .font(.title)
@@ -90,9 +90,9 @@ struct WidgetBingoCardSettingsView: View {
     }
 
     var body: some View {
-        BingCardWidgetOptionsView(value: $bingoCard.cellsText)
-            .onChange(of: bingoCard.cellsText) { _ in
-                bingoCard.cellsTextChanged()
+        BingCardWidgetSquaresView(value: $bingoCard.squaresText)
+            .onChange(of: bingoCard.squaresText) { _ in
+                bingoCard.squaresTextChanged()
                 updateEffect()
             }
         Section {
