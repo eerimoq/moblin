@@ -1065,6 +1065,7 @@ class SettingsWidgetAlertsTwitch: Codable {
     var raids: SettingsWidgetAlertsAlert = .init()
     var cheers: SettingsWidgetAlertsAlert = .init()
     var cheerBits: [SettingsWidgetAlertsCheerBitsAlert] = createDefaultCheerBits()
+    var redemptions: [SettingsWidgetAlertsAlert] = []
 
     init() {}
 

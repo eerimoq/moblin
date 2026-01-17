@@ -14,6 +14,8 @@
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032815D52AC855A5001F8A85 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032815D42AC855A5001F8A85 /* LicenseList */; };
 		033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 033BEAC32C0FCC0B005F4E06 /* NWWebSocket */; };
+		035351942F1C271700428DAC /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 035351932F1C271700428DAC /* AppAuthCore */; };
+		035351962F1C27A500428DAC /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 035351952F1C27A500428DAC /* AppAuth */; };
 		0376F6F92B9511030056B3D2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6F82B9511030056B3D2 /* WidgetKit.framework */; };
 		0376F6FB2B9511030056B3D2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0376F6FA2B9511030056B3D2 /* SwiftUI.framework */; };
 		0376F7042B9511040056B3D2 /* MoblinWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0376F6F72B9511030056B3D2 /* MoblinWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -216,10 +218,12 @@
 				0320D8762AED36860030418F /* WrappingHStack in Frameworks */,
 				032815D52AC855A5001F8A85 /* LicenseList in Frameworks */,
 				03AE56142BEA74D500FE8427 /* Rist in Frameworks */,
+				035351962F1C27A500428DAC /* AppAuth in Frameworks */,
 				03F465EC2C441D1400630708 /* CrcSwift in Frameworks */,
 				0377239A2DE35191007D040D /* VRMKit in Frameworks */,
 				03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */,
 				882D0C162DF76F5B0035BFAF /* BlackSharkLib in Frameworks */,
+				035351942F1C271700428DAC /* AppAuthCore in Frameworks */,
 				03A974282AC137A000610E21 /* Collections in Frameworks */,
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
 				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
@@ -355,6 +359,8 @@
 				037723992DE35191007D040D /* VRMKit */,
 				0377239B2DE35191007D040D /* VRMSceneKit */,
 				882D0C152DF76F5B0035BFAF /* BlackSharkLib */,
+				035351932F1C271700428DAC /* AppAuthCore */,
+				035351952F1C27A500428DAC /* AppAuth */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -508,6 +514,7 @@
 				03B279812D45EB9C007DEDB2 /* XCRemoteSwiftPackageReference "SwiftCube" */,
 				037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */,
 				882D0C142DF76F5B0035BFAF /* XCRemoteSwiftPackageReference "BlackSharkLib" */,
+				035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -1236,6 +1243,14 @@
 				kind = branch;
 			};
 		};
+		035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		037723982DE35191007D040D /* XCRemoteSwiftPackageReference "VRMKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/eerimoq/VRMKit";
@@ -1351,6 +1366,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */;
 			productName = NWWebSocket;
+		};
+		035351932F1C271700428DAC /* AppAuthCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuthCore;
+		};
+		035351952F1C27A500428DAC /* AppAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */;
+			productName = AppAuth;
 		};
 		037723992DE35191007D040D /* VRMKit */ = {
 			isa = XCSwiftPackageProductDependency;

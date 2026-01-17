@@ -1,6 +1,60 @@
+import AppAuth
+import AppAuthCore
 import Foundation
 
+class YouTube {
+    // periphery: ignore
+    var session: OIDExternalUserAgentSession?
+}
+
 extension Model {
+    func youTubeSignIn(stream: SettingsStream) {
+        guard let rootViewController = getRootViewController() else {
+            return
+        }
+        OIDAuthorizationService.discoverConfiguration(forIssuer: youTubeIssuer) { configuration, _ in
+            guard let configuration else {
+                return
+            }
+            let request = OIDAuthorizationRequest(configuration: configuration,
+                                                  clientId: youTubeClientId,
+                                                  clientSecret: nil,
+                                                  scopes: youTubeScopes,
+                                                  redirectURL: youTubeRedirectUri,
+                                                  responseType: OIDResponseTypeCode,
+                                                  additionalParameters: nil)
+            guard let userAgent = OIDExternalUserAgentIOS(presenting: rootViewController) else {
+                return
+            }
+            self.youTube.session = OIDAuthState.authState(
+                byPresenting: request,
+                externalUserAgent: userAgent
+            ) { authState, _ in
+                stream.youTubeAuthState = authState
+                self.youTube.session = nil
+            }
+        }
+    }
+
+    func youTubeSignOut(stream: SettingsStream) {
+        stream.youTubeAuthState = nil
+        removeYouTubeAuthStateInKeychain(streamId: stream.id)
+    }
+
+    func getYouTubeAccesssToken(stream: SettingsStream, onCompleted: @escaping (String?) -> Void) {
+        guard let authState = stream.youTubeAuthState else {
+            onCompleted(nil)
+            return
+        }
+        authState.performAction { accessToken, _, error in
+            guard let accessToken, error == nil else {
+                onCompleted(nil)
+                return
+            }
+            onCompleted(accessToken)
+        }
+    }
+
     func startFetchingYouTubeChatVideoId() {
         youTubeFetchVideoIdStartTime = .now
     }

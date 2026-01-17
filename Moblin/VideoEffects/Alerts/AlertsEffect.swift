@@ -15,6 +15,7 @@ enum AlertsEffectAlert {
     case twitchSubscrptionGift(TwitchEventSubNotificationChannelSubscriptionGiftEvent)
     case twitchResubscribe(TwitchEventSubNotificationChannelSubscriptionMessageEvent)
     case twitchRaid(TwitchEventSubChannelRaidEvent)
+    case twitchRedemption(TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent)
     case twitchCheer(TwitchEventSubChannelCheerEvent)
     case kickSubscription(event: KickPusherSubscriptionEvent)
     case kickGiftedSubscriptions(event: KickPusherGiftedSubscriptionsEvent)
@@ -61,6 +62,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var twitchSubscribeMedia = AlertsEffectMedia()
     private var twitchRaidMedia = AlertsEffectMedia()
     private var twitchCheersMedias: [AlertsEffectMedia] = []
+    private var twitchRedemptionMedias: [AlertsEffectMedia] = []
     private var kickSubscriptionMedia = AlertsEffectMedia()
     private var kickGiftedSubscriptionsMedias = AlertsEffectMedia()
     private var kickHostMedia = AlertsEffectMedia()
@@ -192,6 +194,8 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             playTwitchResubscribe(event: event)
         case let .twitchRaid(event):
             playTwitchRaid(event: event)
+        case let .twitchRedemption(event: event):
+            playTwitchRedemption(event: event)
         case let .twitchCheer(event):
             playTwitchCheer(event: event)
         case let .kickSubscription(event):
@@ -553,6 +557,12 @@ extension AlertsEffect {
             media.update(cheerBits.alert, mediaStorage, bundledImages, bundledSounds)
             twitchCheersMedias.append(media)
         }
+        twitchRedemptionMedias.removeAll()
+        for redemption in twitch.redemptions {
+            let media = AlertsEffectMedia()
+            media.update(redemption, mediaStorage, bundledImages, bundledSounds)
+            twitchRedemptionMedias.append(media)
+        }
     }
 
     @MainActor
@@ -617,6 +627,21 @@ extension AlertsEffect {
              username: event.from_broadcaster_user_name,
              message: String(localized: "raided with a party of \(event.viewers)!"),
              settings: settings.twitch.raids)
+    }
+
+    @MainActor
+    private func playTwitchRedemption(
+        event: TwitchEventSubNotificationChannelPointsCustomRewardRedemptionAddEvent
+    ) {
+        for (index, redemption) in settings.twitch.redemptions.enumerated() where redemption.enabled {
+            play(
+                media: twitchRedemptionMedias[index],
+                username: event.user_name,
+                message: String(localized: "redeemed \(event.reward.title)!"),
+                settings: redemption
+            )
+            break
+        }
     }
 
     @MainActor

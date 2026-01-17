@@ -109,6 +109,7 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
+                Toggle(String("YouTube authentication"), isOn: $debug.youTubeAuth)
             } header: {
                 Text("Experimental")
             }

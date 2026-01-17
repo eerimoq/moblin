@@ -1,3 +1,4 @@
+import AppAuthCore
 import AVFoundation
 
 enum SettingsStreamCodec: String, Codable, CaseIterable {
@@ -990,7 +991,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var kickChatAlerts: SettingsKickAlerts = .init()
     var kickToastAlerts: SettingsKickAlerts = .init()
     @Published var dLiveUsername: String = ""
-    var youTubeApiKey: String = ""
+    @Published var youTubeAuthState: OIDAuthState?
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
     @Published var soopChannelName: String = ""
@@ -1073,7 +1074,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              kickSendMessagesTo,
              kickChatAlerts,
              kickToastAlerts,
-             youTubeApiKey,
              youTubeVideoId,
              youTubeHandle,
              afreecaTvChannelName,
@@ -1152,7 +1152,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.kickSendMessagesTo, kickSendMessagesTo)
         try container.encode(.kickChatAlerts, kickChatAlerts)
         try container.encode(.kickToastAlerts, kickToastAlerts)
-        try container.encode(.youTubeApiKey, youTubeApiKey)
+        if let encoded = encodeYouTubeAuthState() {
+            storeYouTubeAuthStateInKeychain(streamId: id, authState: encoded.base64EncodedString())
+        }
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
         try container.encode(.afreecaTvChannelName, soopChannelName)
@@ -1234,7 +1236,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         kickSendMessagesTo = container.decode(.kickSendMessagesTo, Bool.self, true)
         kickChatAlerts = container.decode(.kickChatAlerts, SettingsKickAlerts.self, .init())
         kickToastAlerts = container.decode(.kickToastAlerts, SettingsKickAlerts.self, .init())
-        youTubeApiKey = container.decode(.youTubeApiKey, String.self, "")
+        if let encoded = loadYouTubeAuthStateFromKeychain(streamId: id) {
+            youTubeAuthState = decodeYouTubeAuthState(encoded: Data(base64Encoded: encoded))
+        }
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
         soopChannelName = container.decode(.afreecaTvChannelName, String.self, "")
@@ -1322,7 +1326,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.kickSendMessagesTo = kickSendMessagesTo
         new.kickChatAlerts = kickChatAlerts.clone()
         new.kickToastAlerts = kickToastAlerts.clone()
-        new.youTubeApiKey = youTubeApiKey
+        new.youTubeAuthState = youTubeAuthState
         new.youTubeVideoId = youTubeVideoId
         new.youTubeHandle = youTubeHandle
         new.soopChannelName = soopChannelName
@@ -1477,6 +1481,23 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
             return "\(maxKeyFrameInterval) s"
         } else {
             return String(localized: "Auto")
+        }
+    }
+
+    private func encodeYouTubeAuthState() -> Data? {
+        if let youTubeAuthState {
+            return try? NSKeyedArchiver.archivedData(withRootObject: youTubeAuthState,
+                                                     requiringSecureCoding: false)
+        } else {
+            return nil
+        }
+    }
+
+    private func decodeYouTubeAuthState(encoded: Data?) -> OIDAuthState? {
+        if let encoded {
+            return try? NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: encoded)
+        } else {
+            return nil
         }
     }
 }

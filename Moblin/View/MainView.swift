@@ -132,7 +132,7 @@ private struct MenuView: View {
             }
         case .streamSwitcher:
             NavigationStack {
-                QuickButtonStreamView(database: model.database)
+                QuickButtonStreamSwitcherView(database: model.database)
             }
         case .luts:
             NavigationStack {

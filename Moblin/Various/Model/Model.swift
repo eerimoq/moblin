@@ -388,6 +388,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var activeBufferedVideoIds: Set<UUID> = []
     var wiFiAwareSenderTask: Task<Void, Error>?
     var wiFiAwareReceiverTask: Task<Void, Error>?
+    let youTube = YouTube()
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
     let orientation = Orientation()

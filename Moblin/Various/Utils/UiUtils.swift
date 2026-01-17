@@ -59,3 +59,13 @@ extension ImageRenderer {
         return CIImage(cgImage: image)
     }
 }
+
+func getRootViewController() -> UIViewController? {
+    guard
+        let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+        let rootViewController = scene.windows.first?.rootViewController
+    else {
+        return nil
+    }
+    return rootViewController
+}

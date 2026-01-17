@@ -35,10 +35,16 @@ private struct KickView: View {
 }
 
 private struct YouTubeView: View {
+    let model: Model
+    @ObservedObject var debug: SettingsDebug
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
-        Section {} header: {
+        Section {
+            if debug.youTubeAuth {
+                StreamYouTubeScheduleStream(model: model, stream: stream)
+            }
+        } header: {
             YouTubeLogoAndNameView(handle: stream.youTubeHandle)
         }
     }
@@ -151,7 +157,7 @@ struct QuickButtonLiveView: View {
                     KickView(model: model, stream: stream, title: $kickTitle, category: $kickCategory)
                 }
                 if !stream.youTubeHandle.isEmpty {
-                    YouTubeView(stream: stream)
+                    YouTubeView(model: model, debug: database.debug, stream: stream)
                 }
                 if !stream.dLiveUsername.isEmpty {
                     DLiveView(stream: stream)

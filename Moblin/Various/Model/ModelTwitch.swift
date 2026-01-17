@@ -629,6 +629,9 @@ extension Model: TwitchEventSubDelegate {
         if stream.twitchToastAlerts.rewards {
             makeToast(title: "\(event.user_name) \(text)")
         }
+        if false {
+            playAlert(alert: .twitchRedemption(event))
+        }
         if stream.twitchChatAlerts.rewards {
             appendTwitchChatAlertMessage(
                 user: event.user_name,
