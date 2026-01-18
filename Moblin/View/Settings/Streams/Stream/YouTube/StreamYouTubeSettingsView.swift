@@ -36,7 +36,7 @@ struct StreamYouTubeScheduleStream: View {
                 scheduleStreamFailed("No live stream found")
                 return
             }
-            youTubeApi.insertLiveBroadcast(title: "Moblin stream", privacy: .public) {
+            youTubeApi.insertLiveBroadcast(title: "Moblin stream", privacy: .unlisted) {
                 handleInsertLiveBroadcastResponse(
                     youTubeApi: youTubeApi,
                     liveStream: liveStream,
