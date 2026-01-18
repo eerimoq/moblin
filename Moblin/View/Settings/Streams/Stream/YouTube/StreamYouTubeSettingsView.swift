@@ -58,7 +58,7 @@ struct StreamYouTubeScheduleStream: View {
         case let .success(liveBroadcast):
             youTubeApi.bindLiveBroadcast(boardcastId: liveBroadcast.id, streamId: liveStream.id) {
                 if $0 {
-                    schedulingStreamState = .succeeded
+                    scheduleStreamSucceeded()
                 } else {
                     scheduleStreamFailed("Failed to bind live stream to broadcast")
                 }
@@ -70,8 +70,17 @@ struct StreamYouTubeScheduleStream: View {
         }
     }
 
+    private func scheduleStreamSucceeded() {
+        schedulingStreamState = .succeeded
+        idleSoon()
+    }
+
     private func scheduleStreamFailed(_ message: String) {
         schedulingStreamState = .failed(message)
+        idleSoon()
+    }
+
+    private func idleSoon() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             schedulingStreamState = .idle
         }
