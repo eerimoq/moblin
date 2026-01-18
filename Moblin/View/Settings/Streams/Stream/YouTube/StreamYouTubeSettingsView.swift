@@ -11,6 +11,7 @@ struct StreamYouTubeScheduleStream: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
     @State private var schedulingStreamState: ScheduleStreamState = .idle
+    @State private var presenting: Bool = false
 
     private func scheduleStream() {
         schedulingStreamState = .inProgress
@@ -36,7 +37,9 @@ struct StreamYouTubeScheduleStream: View {
                 scheduleStreamFailed("No live stream found")
                 return
             }
-            youTubeApi.insertLiveBroadcast(title: "Moblin stream", privacy: .unlisted) {
+            youTubeApi.insertLiveBroadcast(title: stream.youTubeScheduleStreamTitle,
+                                           visibility: stream.youTubeScheduleStreamVisibility)
+            {
                 handleInsertLiveBroadcastResponse(
                     youTubeApi: youTubeApi,
                     liveStream: liveStream,
@@ -90,7 +93,7 @@ struct StreamYouTubeScheduleStream: View {
         Button {
             switch schedulingStreamState {
             case .idle:
-                scheduleStream()
+                presenting = true
             default:
                 break
             }
@@ -112,6 +115,34 @@ struct StreamYouTubeScheduleStream: View {
         }
         .buttonStyle(.borderless)
         .disabled(stream.youTubeAuthState == nil)
+        .sheet(isPresented: $presenting) {
+            NavigationStack {
+                Form {
+                    Section {
+                        TextField("", text: $stream.youTubeScheduleStreamTitle)
+                    } header: {
+                        Text("Title")
+                    }
+                    Section {
+                        Picker("Visibility", selection: $stream.youTubeScheduleStreamVisibility) {
+                            ForEach(YouTubeApiLiveBroadcaseVisibility.allCases, id: \.self) {
+                                Text($0.toString())
+                            }
+                        }
+                    }
+                    Section {
+                        CreateButtonView {
+                            scheduleStream()
+                            presenting = false
+                        }
+                    }
+                }
+                .navigationTitle("Schedule stream")
+                .toolbar {
+                    CloseToolbar(presenting: $presenting)
+                }
+            }
+        }
     }
 }
 

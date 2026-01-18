@@ -994,6 +994,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var youTubeAuthState: OIDAuthState?
     @Published var youTubeVideoId: String = ""
     @Published var youTubeHandle: String = ""
+    @Published var youTubeScheduleStreamTitle: String = ""
+    @Published var youTubeScheduleStreamVisibility: YouTubeApiLiveBroadcaseVisibility = .public
     @Published var soopChannelName: String = ""
     var soopStreamId: String = ""
     var openStreamingPlatformUrl: String = ""
@@ -1076,6 +1078,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              kickToastAlerts,
              youTubeVideoId,
              youTubeHandle,
+             youTubeScheduleStreamTitle,
+             youTubeScheduleStreamVisibility,
              afreecaTvChannelName,
              afreecaTvStreamId,
              openStreamingPlatformUrl,
@@ -1157,6 +1161,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         }
         try container.encode(.youTubeVideoId, youTubeVideoId)
         try container.encode(.youTubeHandle, youTubeHandle)
+        try container.encode(.youTubeScheduleStreamTitle, youTubeScheduleStreamTitle)
+        try container.encode(.youTubeScheduleStreamVisibility, youTubeScheduleStreamVisibility)
         try container.encode(.afreecaTvChannelName, soopChannelName)
         try container.encode(.afreecaTvStreamId, soopStreamId)
         try container.encode(.openStreamingPlatformUrl, openStreamingPlatformUrl)
@@ -1241,6 +1247,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         }
         youTubeVideoId = container.decode(.youTubeVideoId, String.self, "")
         youTubeHandle = container.decode(.youTubeHandle, String.self, "")
+        youTubeScheduleStreamTitle = container.decode(.youTubeScheduleStreamTitle, String.self, "")
+        youTubeScheduleStreamVisibility = container.decode(.youTubeScheduleStreamVisibility,
+                                                           YouTubeApiLiveBroadcaseVisibility.self,
+                                                           .public)
         soopChannelName = container.decode(.afreecaTvChannelName, String.self, "")
         soopStreamId = container.decode(.afreecaTvStreamId, String.self, "")
         openStreamingPlatformUrl = container.decode(.openStreamingPlatformUrl, String.self, "")

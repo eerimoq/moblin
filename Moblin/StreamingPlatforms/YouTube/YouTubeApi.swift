@@ -30,10 +30,21 @@ private func serialize(_ value: Any) -> Data {
     return (try? JSONSerialization.data(withJSONObject: value))!
 }
 
-enum YouTubeApiLiveBroadcasePrivacy: String {
+enum YouTubeApiLiveBroadcaseVisibility: String, Codable, CaseIterable {
     case `public`
     case `private`
     case unlisted
+
+    func toString() -> String {
+        switch self {
+        case .public:
+            return String(localized: "Public")
+        case .private:
+            return String(localized: "Private")
+        case .unlisted:
+            return String(localized: "Unlisted")
+        }
+    }
 }
 
 struct YouTubeApiListVideoStreamingDetails: Codable {
@@ -90,7 +101,7 @@ class YouTubeApi {
     }
 
     func insertLiveBroadcast(title: String,
-                             privacy: YouTubeApiLiveBroadcasePrivacy,
+                             visibility: YouTubeApiLiveBroadcaseVisibility,
                              onCompleted: @escaping (NetworkResponse<YouTubeApiLiveBroadcast>) -> Void)
     {
         let subPath = makeUrl("liveBroadcasts", [("part", "snippet,contentDetails,status")])
@@ -104,7 +115,7 @@ class YouTubeApi {
                 "enableAutoStop": true,
             ],
             "status": [
-                "privacyStatus": privacy.rawValue,
+                "privacyStatus": visibility.rawValue,
                 "selfDeclaredMadeForKids": false,
             ],
         ]
