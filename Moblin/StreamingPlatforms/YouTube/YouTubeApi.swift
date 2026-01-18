@@ -36,11 +36,47 @@ enum YouTubeApiLiveBroadcasePrivacy: String {
     case unlisted
 }
 
+struct YouTubeApiListVideoStreamingDetails: Codable {
+    let concurrentViewers: String
+}
+
+struct YouTubeApiListVideo: Codable {
+    let liveStreamingDetails: YouTubeApiListVideoStreamingDetails
+}
+
+struct YouTubeApiListVideosResponse: Codable {
+    let items: [YouTubeApiListVideo]
+}
+
 class YouTubeApi {
     private let accessToken: String
 
     init(accessToken: String) {
         self.accessToken = accessToken
+    }
+
+    func listVideos(
+        videoId: String,
+        onCompleted: @escaping (NetworkResponse<YouTubeApiListVideosResponse>) -> Void
+    ) {
+        let subPath = makeUrl("videos", [
+            ("part", "liveStreamingDetails"),
+            ("id", videoId),
+        ])
+        doGet(subPath: subPath) {
+            switch $0 {
+            case let .success(data):
+                if let response = try? JSONDecoder().decode(YouTubeApiListVideosResponse.self, from: data) {
+                    onCompleted(.success(response))
+                } else {
+                    onCompleted(.error)
+                }
+            case .authError:
+                onCompleted(.authError)
+            case .error:
+                onCompleted(.error)
+            }
+        }
     }
 
     // periphery: ignore
