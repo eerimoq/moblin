@@ -451,6 +451,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     var dliveChat: DLiveChat?
     var youTubeFetchVideoIdStartTime: ContinuousClock.Instant?
+    var youTubePlatformStatus: PlatformStatus = .unknown
+    var youTubeStreamUpdateTimePollDelta: ContinuousClock.Duration = .seconds(15)
+    var youTubeStreamUpdateTime = ContinuousClock.now
     var obsWebSocket: ObsWebSocket?
     var chatPostId = 0
     var chat = ChatProvider(maximumNumberOfMessages: maximumNumberOfChatMessages)
@@ -1649,6 +1652,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         teslaGetChargeState()
         moblink.streamer?.updateStatus()
         updateTwitchStream(monotonicNow: monotonicNow)
+        updateYouTubeStream(monotonicNow: monotonicNow)
         updateAvailableDiskSpace()
         tryToFetchYouTubeVideoId()
         keepSpeakerAlive(now: monotonicNow)
@@ -1744,6 +1748,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 newStreamingPlatformStatus = updateViewersTwitch()
             case .kick:
                 newStreamingPlatformStatus = updateViewersKick()
+            case .youTube:
+                newStreamingPlatformStatus = updateViewersYouTube()
             default:
                 newStreamingPlatformStatus = streamingPlatformStatus
             }
@@ -1783,6 +1789,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         } else {
             return StreamingPlatformStatus(platform: .kick, status: .unknown)
         }
+    }
+
+    private func updateViewersYouTube() -> StreamingPlatformStatus {
+        return StreamingPlatformStatus(platform: .youTube, status: youTubePlatformStatus)
     }
 
     private func updateViewersCompact(_ newNumberOfViewers: Int, _ hasCount: Bool) -> String {
@@ -2122,7 +2132,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isViewersConfigured() -> Bool {
-        return isTwitchViewersConfigured() || isKickViewersConfigured()
+        return isTwitchViewersConfigured() || isKickViewersConfigured() || isYouTubeViewersConfigured()
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
@@ -2281,8 +2291,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isKickViewersConfigured() {
             statusTopLeft.streamingPlatformStatuses.append(.init(platform: .kick, status: .unknown))
         }
+        if isYouTubeViewersConfigured() {
+            statusTopLeft.streamingPlatformStatuses.append(.init(platform: .youTube, status: .unknown))
+        }
         twitchPlatformStatus = .unknown
         twitchStreamUpdateTime = .now.advanced(by: .seconds(15))
+        youTubeStreamUpdateTimePollDelta = .seconds(15)
     }
 
     private func logStatus() {

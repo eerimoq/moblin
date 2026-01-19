@@ -148,6 +148,7 @@ struct StreamYouTubeScheduleStream: View {
 
 struct StreamYouTubeSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var debug: SettingsDebug
     @ObservedObject var stream: SettingsStream
 
     private func submitVideoId(value: String) {
@@ -161,29 +162,9 @@ struct StreamYouTubeSettingsView: View {
         stream.youTubeHandle = value
     }
 
-    private func getNumberOfViewers() {
-        model.getYouTubeAccesssToken(stream: stream) {
-            guard let accessToken = $0 else {
-                return
-            }
-            YouTubeApi(accessToken: accessToken)
-                .listVideos(videoId: stream.youTubeVideoId) {
-                    switch $0 {
-                    case let .success(response):
-                        guard let item = response.items.first else {
-                            return
-                        }
-                        logger.info("xxx viewers: \(item.liveStreamingDetails.concurrentViewers)")
-                    default:
-                        break
-                    }
-                }
-        }
-    }
-
     var body: some View {
         Form {
-            if model.database.debug.youTubeAuth {
+            if debug.youTubeAuth {
                 Section {
                     if stream.youTubeAuthState == nil {
                         TextButtonView("Login") {
@@ -199,13 +180,6 @@ struct StreamYouTubeSettingsView: View {
                     StreamYouTubeScheduleStream(model: model, stream: stream)
                 } footer: {
                     Text("Schedule a stream before going live. It will use your first RTMP stream key.")
-                }
-                if false {
-                    Section {
-                        TextButtonView(title: "Get number of viewers") {
-                            getNumberOfViewers()
-                        }
-                    }
                 }
             }
             Section {

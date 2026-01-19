@@ -107,6 +107,7 @@ struct GrayTextView: View {
 }
 
 struct StreamPlatformsSettingsView: View {
+    let model: Model
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
@@ -129,7 +130,7 @@ struct StreamPlatformsSettingsView: View {
             }
         }
         NavigationLink {
-            StreamYouTubeSettingsView(stream: stream)
+            StreamYouTubeSettingsView(debug: model.database.debug, stream: stream)
         } label: {
             HStack {
                 YouTubeLogoAndNameView()
@@ -275,7 +276,7 @@ struct StreamSettingsView: View {
                 Text("Media")
             }
             Section {
-                StreamPlatformsSettingsView(stream: stream)
+                StreamPlatformsSettingsView(model: model, stream: stream)
             } header: {
                 Text("Streaming platforms")
             }

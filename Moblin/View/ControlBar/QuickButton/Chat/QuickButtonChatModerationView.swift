@@ -949,7 +949,7 @@ struct QuickButtonChatModerationView: View {
                     KickView(model: model, platform: $platform)
                 }
                 ShortcutSectionView {
-                    StreamingPlatformsShortcutView(stream: model.stream)
+                    StreamingPlatformsShortcutView(model: model, stream: model.stream)
                 }
             }
             .navigationTitle("Moderation")

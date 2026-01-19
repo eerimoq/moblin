@@ -86,4 +86,43 @@ extension Model {
             }
         }
     }
+
+    func isYouTubeViewersConfigured() -> Bool {
+        return stream.youTubeAuthState != nil && !stream.youTubeVideoId.isEmpty
+    }
+
+    func updateYouTubeStream(monotonicNow: ContinuousClock.Instant) {
+        guard isLive, isYouTubeViewersConfigured() else {
+            youTubePlatformStatus = .unknown
+            return
+        }
+        guard youTubeStreamUpdateTime.duration(to: monotonicNow) > youTubeStreamUpdateTimePollDelta else {
+            return
+        }
+        youTubeStreamUpdateTime = monotonicNow
+        youTubeStreamUpdateTimePollDelta = min(youTubeStreamUpdateTimePollDelta * 2, .seconds(300))
+        getVideo()
+    }
+
+    private func getVideo() {
+        getYouTubeAccesssToken(stream: stream) {
+            guard let accessToken = $0 else {
+                return
+            }
+            YouTubeApi(accessToken: accessToken).listVideos(videoId: self.stream.youTubeVideoId) {
+                switch $0 {
+                case let .success(response):
+                    if let item = response.items.first,
+                       let viewers = Int(item.liveStreamingDetails.concurrentViewers)
+                    {
+                        self.youTubePlatformStatus = .live(viewerCount: viewers)
+                    } else {
+                        self.youTubePlatformStatus = .offline
+                    }
+                default:
+                    self.youTubePlatformStatus = .unknown
+                }
+            }
+        }
+    }
 }

@@ -39,12 +39,13 @@ struct ScenesShortcutView: View {
 }
 
 struct StreamingPlatformsShortcutView: View {
+    let model: Model
     let stream: SettingsStream
 
     var body: some View {
         NavigationLink {
             Form {
-                StreamPlatformsSettingsView(stream: stream)
+                StreamPlatformsSettingsView(model: model, stream: stream)
             }
             .navigationTitle("Streaming platforms")
         } label: {

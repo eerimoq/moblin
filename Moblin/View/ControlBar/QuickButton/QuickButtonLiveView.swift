@@ -99,12 +99,13 @@ private struct GoLiveNotificationView: View {
 }
 
 private struct ShortcutView: View {
+    let model: Model
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
         ShortcutSectionView {
-            StreamingPlatformsShortcutView(stream: stream)
+            StreamingPlatformsShortcutView(model: model, stream: stream)
             if database.showAllSettings {
                 NavigationLink {
                     GoLiveNotificationSettingsView(stream: stream)
@@ -174,7 +175,7 @@ struct QuickButtonLiveView: View {
                         GoLiveNotificationView(model: model, stream: stream)
                     }
                 }
-                ShortcutView(database: database, stream: stream)
+                ShortcutView(model: model, database: database, stream: stream)
             }
         }
         .navigationTitle("Stream")

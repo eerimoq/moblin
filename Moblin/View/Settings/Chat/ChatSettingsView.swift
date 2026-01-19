@@ -80,7 +80,7 @@ struct ChatSettingsView: View {
             }
             if stream !== fallbackStream {
                 ShortcutSectionView {
-                    StreamingPlatformsShortcutView(stream: stream)
+                    StreamingPlatformsShortcutView(model: model, stream: stream)
                     NavigationLink {
                         StreamEmotesSettingsView(stream: stream)
                     } label: {
