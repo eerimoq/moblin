@@ -61,6 +61,8 @@ struct StreamYouTubeScheduleStream: View {
         case let .success(liveBroadcast):
             youTubeApi.bindLiveBroadcast(boardcastId: liveBroadcast.id, streamId: liveStream.id) {
                 if $0 {
+                    stream.youTubeVideoId = liveBroadcast.id
+                    model.youTubeVideoIdUpdated()
                     scheduleStreamSucceeded()
                 } else {
                     scheduleStreamFailed("Failed to bind live stream to broadcast")
