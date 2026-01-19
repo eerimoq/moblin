@@ -27,13 +27,21 @@ struct StreamYouTubeScheduleStream: View {
         }
     }
 
+    private func getLiveStream(liveStreams: YouTubeApiLiveStreamsListResponse) -> YouTubeApiLiveStream? {
+        return liveStreams.items.first {
+            let ingestionInfo = $0.cdn.ingestionInfo
+            let url = "\(ingestionInfo.ingestionAddress)/\(ingestionInfo.streamName)"
+            return url == stream.url
+        } ?? liveStreams.items.first
+    }
+
     private func handleListLiveStreams(
         youTubeApi: YouTubeApi,
         response: NetworkResponse<YouTubeApiLiveStreamsListResponse>
     ) {
         switch response {
         case let .success(liveStreams):
-            guard let liveStream = liveStreams.items.first else {
+            guard let liveStream = getLiveStream(liveStreams: liveStreams) else {
                 scheduleStreamFailed("No live stream found")
                 return
             }

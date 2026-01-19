@@ -5,20 +5,16 @@ struct YouTubeApiLiveBroadcast: Codable {
 }
 
 struct YouTubeApiLiveStreamIngestInfo: Codable {
-    // periphery: ignore
     let streamName: String
-    // periphery: ignore
     let ingestionAddress: String
 }
 
 struct YouTubeApiLiveStreamCdn: Codable {
-    // periphery: ignore
     let ingestionInfo: YouTubeApiLiveStreamIngestInfo
 }
 
 struct YouTubeApiLiveStream: Codable {
     let id: String
-    // periphery: ignore
     let cdn: YouTubeApiLiveStreamCdn
 }
 
