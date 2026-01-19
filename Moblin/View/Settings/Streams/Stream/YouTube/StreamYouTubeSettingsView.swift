@@ -104,6 +104,7 @@ struct StreamYouTubeScheduleStreamView: View {
                     stream.youTubeVideoId = liveBroadcast.id
                     model.youTubeVideoIdUpdated()
                     scheduleStreamSucceeded()
+                    loadUpcomingStreams()
                 } else {
                     scheduleStreamFailed("Failed to bind live stream to broadcast")
                 }
