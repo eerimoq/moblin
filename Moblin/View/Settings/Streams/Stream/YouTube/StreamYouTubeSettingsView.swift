@@ -7,11 +7,43 @@ private enum ScheduleStreamState: Equatable {
     case failed(String)
 }
 
-struct StreamYouTubeScheduleStream: View {
+private struct UpcomingStreamView: View {
+    @Binding var upcomingStream: YouTubeApiLiveBroadcast
+
+    var body: some View {
+        if let scheduledStartTime = upcomingStream.snippet.scheduledStartTime,
+           let date = ISO8601DateFormatter().date(from: scheduledStartTime),
+           let thumbnailUrl = URL(string: upcomingStream.snippet.thumbnails.default.url)
+        {
+            HStack {
+                CacheAsyncImage(url: thumbnailUrl) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    Image("AppIconNoBackground")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+                .frame(width: 50, height: 50)
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+                VStack(alignment: .leading) {
+                    Text(upcomingStream.snippet.title)
+                    Text(date.formatted())
+                        .font(.caption)
+                }
+                Spacer()
+            }
+        }
+    }
+}
+
+struct StreamYouTubeScheduleStreamView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
     @State private var schedulingStreamState: ScheduleStreamState = .idle
     @State private var presenting: Bool = false
+    @State private var upcomingStreams: [YouTubeApiLiveBroadcast] = []
 
     private func scheduleStream() {
         schedulingStreamState = .inProgress
@@ -85,45 +117,34 @@ struct StreamYouTubeScheduleStream: View {
 
     private func scheduleStreamSucceeded() {
         schedulingStreamState = .succeeded
-        idleSoon()
     }
 
     private func scheduleStreamFailed(_ message: String) {
         schedulingStreamState = .failed(message)
-        idleSoon()
     }
 
-    private func idleSoon() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            schedulingStreamState = .idle
+    private func loadUpcomingStreams() {
+        model.getYouTubeAccesssToken(stream: stream) {
+            guard let accessToken = $0 else {
+                return
+            }
+            YouTubeApi(accessToken: accessToken).listLiveBroadcasts {
+                switch $0 {
+                case let .success(response):
+                    upcomingStreams = response.items
+                case .authError:
+                    break
+                case .error:
+                    break
+                }
+            }
         }
     }
 
     var body: some View {
-        Button {
-            switch schedulingStreamState {
-            case .idle:
-                presenting = true
-            default:
-                break
-            }
-        } label: {
-            HCenter {
-                switch schedulingStreamState {
-                case .idle:
-                    Text("Schedule stream")
-                case .inProgress:
-                    ProgressView()
-                case .succeeded:
-                    Text("Stream scheduled")
-                        .foregroundStyle(.green)
-                case let .failed(message):
-                    Text(message)
-                        .foregroundStyle(.red)
-                }
-            }
+        TextButtonView("Schedule stream") {
+            presenting = true
         }
-        .buttonStyle(.borderless)
         .disabled(stream.youTubeAuthState == nil)
         .sheet(isPresented: $presenting) {
             NavigationStack {
@@ -141,16 +162,46 @@ struct StreamYouTubeScheduleStream: View {
                         }
                     }
                     Section {
-                        CreateButtonView {
-                            scheduleStream()
-                            presenting = false
+                        switch schedulingStreamState {
+                        case .idle:
+                            Button {
+                                scheduleStream()
+                            } label: {
+                                HCenter {
+                                    Text("Schedule stream")
+                                }
+                            }
+                        case .inProgress:
+                            HCenter {
+                                ProgressView()
+                            }
+                        case .succeeded:
+                            HCenter {
+                                Text("Stream scheduled")
+                            }
+                        case let .failed(message):
+                            HCenter {
+                                Text(message)
+                                    .foregroundStyle(.red)
+                            }
                         }
+                    }
+                    Section {
+                        ForEach($upcomingStreams) { $upcomingStream in
+                            UpcomingStreamView(upcomingStream: $upcomingStream)
+                        }
+                    } header: {
+                        Text("Upcoming streams")
                     }
                 }
                 .navigationTitle("Schedule stream")
                 .toolbar {
                     CloseToolbar(presenting: $presenting)
                 }
+            }
+            .onAppear {
+                schedulingStreamState = .idle
+                loadUpcomingStreams()
             }
         }
     }
@@ -187,9 +238,9 @@ struct StreamYouTubeSettingsView: View {
                     }
                 }
                 Section {
-                    StreamYouTubeScheduleStream(model: model, stream: stream)
+                    StreamYouTubeScheduleStreamView(model: model, stream: stream)
                 } footer: {
-                    Text("Schedule a stream before going live. It will use your first RTMP stream key.")
+                    Text("Schedule a stream before going live.")
                 }
             }
             Section {

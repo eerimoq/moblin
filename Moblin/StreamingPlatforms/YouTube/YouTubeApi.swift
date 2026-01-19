@@ -1,7 +1,29 @@
 import Foundation
 
-struct YouTubeApiLiveBroadcast: Codable {
+struct YouTubeApiLiveBroadcastThumbnail: Codable {
+    let url: String
+}
+
+struct YouTubeApiLiveBroadcastThumbnails: Codable {
+    let `default`: YouTubeApiLiveBroadcastThumbnail
+}
+
+struct YouTubeApiLiveBroadcastSnippet: Codable {
+    let title: String
+    let thumbnails: YouTubeApiLiveBroadcastThumbnails
+    let scheduledStartTime: String?
+}
+
+struct YouTubeApiLiveBroadcastContentDetails: Codable {
+    // periphery: ignore
+    let boundStreamId: String
+}
+
+struct YouTubeApiLiveBroadcast: Codable, Identifiable {
     let id: String
+    let snippet: YouTubeApiLiveBroadcastSnippet
+    // periphery: ignore
+    let contentDetails: YouTubeApiLiveBroadcastContentDetails
 }
 
 struct YouTubeApiLiveStreamIngestInfo: Codable {
@@ -55,6 +77,10 @@ struct YouTubeApiListVideosResponse: Codable {
     let items: [YouTubeApiListVideo]
 }
 
+struct YouTubeApiLiveBroadcastListResponse: Codable {
+    let items: [YouTubeApiLiveBroadcast]
+}
+
 class YouTubeApi {
     private let accessToken: String
 
@@ -86,21 +112,37 @@ class YouTubeApi {
         }
     }
 
-    // periphery: ignore
-    func listLiveBroadcasts() {
+    func listLiveBroadcasts(onCompleted: @escaping (NetworkResponse<YouTubeApiLiveBroadcastListResponse>)
+        -> Void)
+    {
         let subPath = makeUrl("liveBroadcasts", [
-            ("part", "snippet,contentDetails,status"),
-            ("mine", "true"),
-            ("broadcastType", "all"),
+            ("part", "snippet,contentDetails"),
+            ("broadcastStatus", "upcoming"),
         ])
-        doGet(subPath: subPath) { _ in }
+        doGet(subPath: subPath) {
+            switch $0 {
+            case let .success(data):
+                if let response = try? JSONDecoder().decode(
+                    YouTubeApiLiveBroadcastListResponse.self,
+                    from: data
+                ) {
+                    onCompleted(.success(response))
+                } else {
+                    onCompleted(.error)
+                }
+            case .authError:
+                onCompleted(.authError)
+            case .error:
+                onCompleted(.error)
+            }
+        }
     }
 
     func insertLiveBroadcast(title: String,
                              visibility: YouTubeApiLiveBroadcaseVisibility,
                              onCompleted: @escaping (NetworkResponse<YouTubeApiLiveBroadcast>) -> Void)
     {
-        let subPath = makeUrl("liveBroadcasts", [("part", "snippet,contentDetails,status")])
+        let subPath = makeUrl("liveBroadcasts", [("part", "snippet,contentDetails")])
         let body: [String: Any] = [
             "snippet": [
                 "title": title,
@@ -169,29 +211,6 @@ class YouTubeApi {
                 onCompleted(.authError)
             case .error:
                 onCompleted(.error)
-            }
-        }
-    }
-
-    // periphery: ignore
-    func insertLiveStream(onCompleted: @escaping (YouTubeApiLiveStream?) -> Void) {
-        let subPath = makeUrl("liveStreams", [("part", "snippet,cdn,contentDetails,status")])
-        let body: [String: Any] = [
-            "snippet": [
-                "title": "Test broadcast",
-            ],
-            "cdn": [
-                "frameRate": "variable",
-                "ingestionType": "rtmp",
-                "resolution": "variable",
-            ],
-        ]
-        doPost(subPath: subPath, body: serialize(body)) {
-            switch $0 {
-            case let .success(data):
-                onCompleted(try? JSONDecoder().decode(YouTubeApiLiveStream.self, from: data))
-            default:
-                break
             }
         }
     }

@@ -100,7 +100,7 @@ extension Model {
             return
         }
         youTubeStreamUpdateTime = monotonicNow
-        youTubeStreamUpdateTimePollDelta = min(youTubeStreamUpdateTimePollDelta * 2, .seconds(300))
+        youTubeStreamUpdateTimePollDelta = min(youTubeStreamUpdateTimePollDelta * 2, .seconds(900))
         getVideo()
     }
 
