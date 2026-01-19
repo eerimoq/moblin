@@ -14,16 +14,9 @@ struct YouTubeApiLiveBroadcastSnippet: Codable {
     let scheduledStartTime: String?
 }
 
-struct YouTubeApiLiveBroadcastContentDetails: Codable {
-    // periphery: ignore
-    let boundStreamId: String
-}
-
 struct YouTubeApiLiveBroadcast: Codable, Identifiable {
     let id: String
     let snippet: YouTubeApiLiveBroadcastSnippet
-    // periphery: ignore
-    let contentDetails: YouTubeApiLiveBroadcastContentDetails
 }
 
 struct YouTubeApiLiveStreamIngestInfo: Codable {
@@ -142,7 +135,7 @@ class YouTubeApi {
                              visibility: YouTubeApiLiveBroadcaseVisibility,
                              onCompleted: @escaping (NetworkResponse<YouTubeApiLiveBroadcast>) -> Void)
     {
-        let subPath = makeUrl("liveBroadcasts", [("part", "snippet,contentDetails")])
+        let subPath = makeUrl("liveBroadcasts", [("part", "snippet,contentDetails,status")])
         let body: [String: Any] = [
             "snippet": [
                 "title": title,
