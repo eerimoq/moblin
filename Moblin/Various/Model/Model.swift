@@ -2218,6 +2218,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func youTubeVideoIdUpdated() {
+        reloadViewers()
         reloadYouTubeLiveChat()
         resetChat()
     }
