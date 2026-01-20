@@ -54,6 +54,8 @@ private struct UpcomingStreamView: View {
                     Text(upcomingStream.snippet.title)
                     Text(date.formatted())
                         .font(.caption)
+                    Text(upcomingStream.status.privacyStatus.capitalized)
+                        .font(.caption)
                 }
                 Spacer()
                 HCenter {

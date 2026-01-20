@@ -14,9 +14,14 @@ struct YouTubeApiLiveBroadcastSnippet: Codable {
     let scheduledStartTime: String?
 }
 
+struct YouTubeApiLiveBroadcastStatus: Codable {
+    let privacyStatus: String
+}
+
 struct YouTubeApiLiveBroadcast: Codable, Identifiable {
     let id: String
     let snippet: YouTubeApiLiveBroadcastSnippet
+    let status: YouTubeApiLiveBroadcastStatus
 }
 
 struct YouTubeApiLiveStreamIngestInfo: Codable {
@@ -109,7 +114,7 @@ class YouTubeApi {
         -> Void)
     {
         let subPath = makeUrl("liveBroadcasts", [
-            ("part", "snippet,contentDetails"),
+            ("part", "snippet,contentDetails,status"),
             ("broadcastStatus", "upcoming"),
         ])
         doGet(subPath: subPath) {
@@ -170,7 +175,7 @@ class YouTubeApi {
         let subPath = makeUrl("liveBroadcasts", [("id", id)])
         doDelete(subPath: subPath) {
             switch $0 {
-            case let .success(data):
+            case .success:
                 onCompleted(.success(()))
             case .authError:
                 onCompleted(.authError)
