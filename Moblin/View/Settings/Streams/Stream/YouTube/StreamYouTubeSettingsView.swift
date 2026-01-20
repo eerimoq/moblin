@@ -16,12 +16,12 @@ private struct UpcomingStreamView: View {
 
     private func delete() {
         deleting = true
-        model.getYouTubeAccesssToken(stream: stream) {
-            guard let accessToken = $0 else {
+        model.getYouTubeApi(stream: stream) { youTubeApi in
+            guard let youTubeApi else {
                 deleting = false
                 return
             }
-            YouTubeApi(accessToken: accessToken).deleteLiveBroadcast(id: upcomingStream.id) {
+            youTubeApi.deleteLiveBroadcast(id: upcomingStream.id) {
                 switch $0 {
                 case .success:
                     onDeleted(upcomingStream.id)
@@ -87,12 +87,11 @@ struct StreamYouTubeScheduleStreamView: View {
 
     private func scheduleStream() {
         schedulingStreamState = .inProgress
-        model.getYouTubeAccesssToken(stream: stream) {
-            guard let accessToken = $0 else {
+        model.getYouTubeApi(stream: stream) { youTubeApi in
+            guard let youTubeApi else {
                 scheduleStreamFailed("Failed to get access token")
                 return
             }
-            let youTubeApi = YouTubeApi(accessToken: accessToken)
             youTubeApi.listLiveStreams {
                 handleListLiveStreams(youTubeApi: youTubeApi, response: $0)
             }
@@ -165,11 +164,8 @@ struct StreamYouTubeScheduleStreamView: View {
     }
 
     private func loadUpcomingStreams() {
-        model.getYouTubeAccesssToken(stream: stream) {
-            guard let accessToken = $0 else {
-                return
-            }
-            YouTubeApi(accessToken: accessToken).listLiveBroadcasts {
+        model.getYouTubeApi(stream: stream) { youTubeApi in
+            youTubeApi?.listLiveBroadcasts {
                 switch $0 {
                 case let .success(response):
                     upcomingStreams = response.items

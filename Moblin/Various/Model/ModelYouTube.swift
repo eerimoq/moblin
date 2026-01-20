@@ -41,17 +41,13 @@ extension Model {
         removeYouTubeAuthStateInKeychain(streamId: stream.id)
     }
 
-    func getYouTubeAccesssToken(stream: SettingsStream, onCompleted: @escaping (String?) -> Void) {
-        guard let authState = stream.youTubeAuthState else {
-            onCompleted(nil)
-            return
-        }
-        authState.performAction { accessToken, _, error in
-            guard let accessToken, error == nil else {
+    func getYouTubeApi(stream: SettingsStream, onCompleted: @escaping (YouTubeApi?) -> Void) {
+        getYouTubeAccesssToken(stream: stream) {
+            guard let accessToken = $0 else {
                 onCompleted(nil)
                 return
             }
-            onCompleted(accessToken)
+            onCompleted(YouTubeApi(accessToken: accessToken))
         }
     }
 
@@ -104,12 +100,23 @@ extension Model {
         getVideo()
     }
 
-    private func getVideo() {
-        getYouTubeAccesssToken(stream: stream) {
-            guard let accessToken = $0 else {
+    private func getYouTubeAccesssToken(stream: SettingsStream, onCompleted: @escaping (String?) -> Void) {
+        guard let authState = stream.youTubeAuthState else {
+            onCompleted(nil)
+            return
+        }
+        authState.performAction { accessToken, _, error in
+            guard let accessToken, error == nil else {
+                onCompleted(nil)
                 return
             }
-            YouTubeApi(accessToken: accessToken).listVideos(videoId: self.stream.youTubeVideoId) {
+            onCompleted(accessToken)
+        }
+    }
+
+    private func getVideo() {
+        getYouTubeApi(stream: stream) { youTubeApi in
+            youTubeApi?.listVideos(videoId: self.stream.youTubeVideoId) {
                 switch $0 {
                 case let .success(response):
                     if let item = response.items.first,
