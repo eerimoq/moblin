@@ -8,7 +8,30 @@ private enum ScheduleStreamState: Equatable {
 }
 
 private struct UpcomingStreamView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
     @Binding var upcomingStream: YouTubeApiLiveBroadcast
+    let onDeleted: (String) -> Void
+    @State private var deleting: Bool = false
+
+    private func delete() {
+        deleting = true
+        model.getYouTubeAccesssToken(stream: stream) {
+            guard let accessToken = $0 else {
+                deleting = false
+                return
+            }
+            YouTubeApi(accessToken: accessToken).deleteLiveBroadcast(id: upcomingStream.id) {
+                switch $0 {
+                case .success:
+                    onDeleted(upcomingStream.id)
+                default:
+                    break
+                }
+                deleting = false
+            }
+        }
+    }
 
     var body: some View {
         if let scheduledStartTime = upcomingStream.snippet.scheduledStartTime,
@@ -33,7 +56,19 @@ private struct UpcomingStreamView: View {
                         .font(.caption)
                 }
                 Spacer()
+                if deleting {
+                    ProgressView()
+                } else {
+                    Button {
+                        delete()
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.title)
+                            .tint(.red)
+                    }
+                }
             }
+            .padding([.trailing], 5)
         }
     }
 }
@@ -189,7 +224,11 @@ struct StreamYouTubeScheduleStreamView: View {
                     }
                     Section {
                         ForEach($upcomingStreams) { $upcomingStream in
-                            UpcomingStreamView(upcomingStream: $upcomingStream)
+                            UpcomingStreamView(model: model, stream: stream,
+                                               upcomingStream: $upcomingStream)
+                            { id in
+                                upcomingStreams.removeAll { $0.id == id }
+                            }
                         }
                     } header: {
                         Text("Upcoming streams")

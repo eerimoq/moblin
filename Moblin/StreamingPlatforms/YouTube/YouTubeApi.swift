@@ -166,6 +166,20 @@ class YouTubeApi {
         }
     }
 
+    func deleteLiveBroadcast(id: String, onCompleted: @escaping (NetworkResponse<Void>) -> Void) {
+        let subPath = makeUrl("liveBroadcasts", [("id", id)])
+        doDelete(subPath: subPath) {
+            switch $0 {
+            case let .success(data):
+                onCompleted(.success(()))
+            case .authError:
+                onCompleted(.authError)
+            case .error:
+                onCompleted(.error)
+            }
+        }
+    }
+
     func bindLiveBroadcast(boardcastId: String, streamId: String, onCompleted: @escaping (Bool) -> Void) {
         let subPath = makeUrl("liveBroadcasts/bind", [
             ("id", boardcastId),
@@ -225,6 +239,14 @@ class YouTubeApi {
         doRequest(request, onComplete)
     }
 
+    private func doDelete(subPath: String, onComplete: @escaping ((OperationResult) -> Void)) {
+        guard let url = URL(string: "https://youtube.googleapis.com/youtube/v3/\(subPath)") else {
+            return
+        }
+        let request = createDeleteRequest(url: url)
+        doRequest(request, onComplete)
+    }
+
     private func doRequest(_ request: URLRequest, _ onComplete: @escaping (OperationResult) -> Void) {
         URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -257,6 +279,13 @@ class YouTubeApi {
         request.httpMethod = "POST"
         request.setAuthorization("Bearer \(accessToken)")
         request.setContentType("application/json")
+        return request
+    }
+
+    private func createDeleteRequest(url: URL) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setAuthorization("Bearer \(accessToken)")
         return request
     }
 }
