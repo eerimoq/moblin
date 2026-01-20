@@ -56,17 +56,20 @@ private struct UpcomingStreamView: View {
                         .font(.caption)
                 }
                 Spacer()
-                if deleting {
-                    ProgressView()
-                } else {
-                    Button {
-                        delete()
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.title)
-                            .tint(.red)
+                HCenter {
+                    if deleting {
+                        ProgressView()
+                    } else {
+                        Button {
+                            delete()
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.title)
+                                .tint(.red)
+                        }
                     }
                 }
+                .frame(width: 50)
             }
             .padding([.trailing], 5)
         }
