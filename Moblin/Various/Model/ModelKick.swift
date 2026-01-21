@@ -7,7 +7,7 @@ extension Model {
             stream.kickLoggedIn = true
             stream.kickAccessToken = accessToken
             self.createStreamWizard.showKickAuth = false
-            getKickUser(accessToken: accessToken) { userData in
+            self.createKickApi(stream: stream).getUser { userData in
                 guard let userData else {
                     onComplete?()
                     return
@@ -167,11 +167,7 @@ extension Model {
 
     func searchKickChannels(query: String, onComplete: @escaping ([KickLiveSearchChannel]?) -> Void) {
         kickSearchChannelsTimer.startSingleShot(timeout: 0.5) {
-            searchKickLiveChannels(
-                query: query,
-                accessToken: self.stream.kickAccessToken,
-                onComplete: onComplete
-            )
+            self.createKickApi(stream: self.stream).searchLiveChannels(query: query, onComplete: onComplete)
         }
     }
 
@@ -275,7 +271,7 @@ extension Model {
         }
     }
 
-    private func createKickApi(stream: SettingsStream) -> KickApi {
+    func createKickApi(stream: SettingsStream) -> KickApi {
         return KickApi(channelId: stream.kickChannelId ?? "",
                        slug: stream.kickSlug ?? "",
                        accessToken: stream.kickAccessToken)

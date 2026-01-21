@@ -3,22 +3,14 @@ import UIKit
 
 struct BadgeImage: Codable {
     let src: String
-    // periphery:ignore
-    let srcset: String
 }
 
 struct SubscriberBadge: Codable {
-    // periphery:ignore
-    let id: Int
-    // periphery:ignore
-    let channel_id: Int
     let months: Int
     let badge_image: BadgeImage
 }
 
 struct KickLivestream: Codable {
-    // periphery:ignore
-    let id: Int
     let viewers: Int
 }
 
@@ -45,14 +37,8 @@ struct KickUser: Codable {
 
 struct KickCategory: Codable, Identifiable {
     let id: String
-    // periphery:ignore
-    let category_id: Int
     let name: String
-    // periphery:ignore
-    let slug: String
     let src: String?
-    // periphery:ignore
-    let srcset: String?
 }
 
 struct KickFollowedChannel: Codable, Identifiable {
@@ -97,8 +83,6 @@ struct KickCategorySearchHit: Codable {
 }
 
 struct KickCategorySearchResponse: Codable {
-    // periphery:ignore
-    let found: Int
     let hits: [KickCategorySearchHit]
 }
 
@@ -133,80 +117,6 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
                 return
             }
             onComplete(try? JSONDecoder().decode(KickChannel.self, from: data))
-        }
-    }
-    .resume()
-}
-
-func searchKickLiveChannels(
-    query: String,
-    accessToken: String,
-    onComplete: @escaping ([KickLiveSearchChannel]?) -> Void
-) {
-    guard var components = URLComponents(string: "https://kick.com/api/internal/v1/live/search") else {
-        onComplete(nil)
-        return
-    }
-    components.queryItems = [URLQueryItem(name: "q", value: query)]
-    guard let url = components.url else {
-        onComplete(nil)
-        return
-    }
-    var request = URLRequest(url: url)
-    request.setValue("application/json", forHTTPHeaderField: "Accept")
-    request.setAuthorization("Bearer \(accessToken)")
-    URLSession.shared.dataTask(with: request) { data, response, error in
-        DispatchQueue.main.async {
-            guard error == nil, let data, response?.http?.isSuccessful == true else {
-                onComplete(nil)
-                return
-            }
-            let response = try? JSONDecoder().decode(KickLiveSearchResponse.self, from: data)
-            onComplete(response?.data.channels)
-        }
-    }
-    .resume()
-}
-
-func getKickUser(accessToken: String, onComplete: @escaping (KickUser?) -> Void) {
-    var request = URLRequest(url: userUrl)
-    request.setAuthorization("Bearer \(accessToken)")
-    request.setValue("application/json", forHTTPHeaderField: "Accept")
-    URLSession.shared.dataTask(with: request) { data, response, error in
-        DispatchQueue.main.async {
-            guard error == nil, let data, response?.http?.isSuccessful == true else {
-                onComplete(nil)
-                return
-            }
-            onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
-        }
-    }
-    .resume()
-}
-
-func getKickFollowedChannels(
-    accessToken: String,
-    cursor: Int? = nil,
-    onComplete: @escaping (KickFollowedChannelsResponse?) -> Void
-) {
-    var urlString = "https://kick.com/api/v2/channels/followed"
-    if let cursor {
-        urlString += "?cursor=\(cursor)"
-    }
-    guard let url = URL(string: urlString) else {
-        onComplete(nil)
-        return
-    }
-    var request = URLRequest(url: url)
-    request.setAuthorization("Bearer \(accessToken)")
-    request.setValue("application/json", forHTTPHeaderField: "Accept")
-    URLSession.shared.dataTask(with: request) { data, response, error in
-        DispatchQueue.main.async {
-            guard error == nil, let data, response?.http?.isSuccessful == true else {
-                onComplete(nil)
-                return
-            }
-            onComplete(try? JSONDecoder().decode(KickFollowedChannelsResponse.self, from: data))
         }
     }
     .resume()
@@ -460,21 +370,9 @@ class KickApi {
     }
 
     func searchCategories(query: String, onComplete: @escaping ([KickCategory]?) -> Void) {
-        guard var components =
-            URLComponents(string: "https://search.kick.com/collections/subcategory_index/documents/search")
-        else {
-            onComplete(nil)
-            return
-        }
-        components.queryItems = [
-            URLQueryItem(name: "q", value: query),
-            URLQueryItem(name: "query_by", value: "name"),
-        ]
-        guard let url = components.url else {
-            onComplete(nil)
-            return
-        }
-        var request = URLRequest(url: url)
+        let subPath = makeUrl("collections/subcategory_index/documents/search",
+                              [("q", query), ("query_by", "name")])
+        var request = URLRequest(url: URL(string: "https://search.kick.com/\(subPath)")!)
         request.setValue("application/json, text/plain, */*", forHTTPHeaderField: "Accept")
         request.setValue("nXIMW0iEN6sMujFYjFuhdrSwVow3pDQu", forHTTPHeaderField: "X-Typesense-Api-Key")
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -490,8 +388,55 @@ class KickApi {
                     onComplete(nil)
                     return
                 }
-                let categories = searchResponse.hits.map { $0.document }
-                onComplete(categories)
+                onComplete(searchResponse.hits.map { $0.document })
+            }
+        }
+        .resume()
+    }
+
+    func searchLiveChannels(query: String, onComplete: @escaping ([KickLiveSearchChannel]?) -> Void) {
+        let subPath = makeUrl("live/search", [("q", query)])
+        doInternalV1Request(method: "GET", subPath: subPath) {
+            switch $0 {
+            case let .success(data):
+                let response = try? JSONDecoder().decode(KickLiveSearchResponse.self, from: data)
+                onComplete(response?.data.channels)
+            default:
+                onComplete(nil)
+            }
+        }
+    }
+
+    func getFollowedChannels(
+        cursor: Int? = nil,
+        onComplete: @escaping (KickFollowedChannelsResponse?) -> Void
+    ) {
+        var parameters: [(String, String)] = []
+        if let cursor {
+            parameters.append(("cursor", String(cursor)))
+        }
+        let subPath = makeUrl("channels/followed", parameters)
+        doV2Request(method: "GET", subPath: subPath) {
+            switch $0 {
+            case let .success(data):
+                onComplete(try? JSONDecoder().decode(KickFollowedChannelsResponse.self, from: data))
+            default:
+                onComplete(nil)
+            }
+        }
+    }
+
+    func getUser(onComplete: @escaping (KickUser?) -> Void) {
+        var request = URLRequest(url: userUrl)
+        request.setAuthorization("Bearer \(accessToken)")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                guard error == nil, let data, response?.http?.isSuccessful == true else {
+                    onComplete(nil)
+                    return
+                }
+                onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
             }
         }
         .resume()

@@ -236,7 +236,7 @@ struct StreamKickSettingsView: View {
     }
 
     private func onLoggedIn() {
-        getKickUser(accessToken: stream.kickAccessToken) { data in
+        model.createKickApi(stream: stream).getUser { data in
             self.handleUser(data: data)
         }
     }

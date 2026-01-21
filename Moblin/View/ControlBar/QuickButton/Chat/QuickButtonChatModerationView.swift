@@ -646,7 +646,7 @@ private struct KickHostChannelView: View {
             return
         }
         isLoading = true
-        getKickFollowedChannels(accessToken: model.stream.kickAccessToken, cursor: cursor) { response in
+        model.createKickApi(stream: model.stream).getFollowedChannels(cursor: cursor) { response in
             isLoading = false
             if let response {
                 channels.append(contentsOf: response.channels)
