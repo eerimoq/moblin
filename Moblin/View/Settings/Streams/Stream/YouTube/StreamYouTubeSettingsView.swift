@@ -79,6 +79,7 @@ private struct YouTubeStreamView: View {
                                 .font(.title)
                                 .tint(.red)
                         }
+                        .buttonStyle(.borderless)
                     }
                 }
                 .frame(width: 50)
@@ -211,30 +212,25 @@ private struct ScheduleStreamView: View {
 
     var body: some View {
         Section {
-            TextField("", text: $stream.youTubeScheduleStreamTitle)
-        } header: {
-            Text("Title")
-        }
-        Section {
+            TextField("Title", text: $stream.youTubeScheduleStreamTitle)
             Picker("Visibility", selection: $stream.youTubeScheduleStreamVisibility) {
                 ForEach(YouTubeApiLiveBroadcaseVisibility.allCases, id: \.self) {
                     Text($0.toString())
                 }
             }
-        }
-        Section {
             switch schedulingStreamState {
             case .idle:
-                TextButtonView("Schedule stream") {
+                TextButtonView("Create") {
                     scheduleStream()
                 }
+                .disabled(stream.youTubeScheduleStreamTitle.isEmpty)
             case .inProgress:
                 HCenter {
-                    Text("Scheduling...")
+                    Text("Creating...")
                 }
             case .succeeded:
                 HCenter {
-                    Text("Stream scheduled")
+                    Text("Created")
                 }
             case let .failed(message):
                 HCenter {
@@ -242,6 +238,8 @@ private struct ScheduleStreamView: View {
                         .foregroundStyle(.red)
                 }
             }
+        } header: {
+            Text("Schedule")
         }
     }
 }
@@ -251,8 +249,8 @@ struct StreamYouTubeScheduleStreamView: View {
     @ObservedObject var stream: SettingsStream
     @State private var schedulingStreamState: ScheduleStreamState = .idle
     @State private var presenting: Bool = false
-    @State private var activeStreams: [YouTubeApiLiveBroadcast] = []
-    @State private var activeStreamsLoadError: String?
+    @State private var liveStreams: [YouTubeApiLiveBroadcast] = []
+    @State private var liveStreamsLoadError: String?
     @State private var upcomingStreams: [YouTubeApiLiveBroadcast] = []
     @State private var upcomingStreamsLoadError: String?
 
@@ -262,16 +260,16 @@ struct StreamYouTubeScheduleStreamView: View {
     }
 
     private func loadActiveStreams() {
-        activeStreamsLoadError = nil
+        liveStreamsLoadError = nil
         model.getYouTubeApi(stream: stream) { youTubeApi in
             youTubeApi?.listLiveBroadcasts(status: "active") {
                 switch $0 {
                 case let .success(response):
-                    activeStreams = response.items
+                    liveStreams = response.items
                 case .authError:
-                    activeStreamsLoadError = "Error"
+                    liveStreamsLoadError = "Error"
                 case .error:
-                    activeStreamsLoadError = "Error"
+                    liveStreamsLoadError = "Error"
                 }
             }
         }
@@ -307,12 +305,12 @@ struct StreamYouTubeScheduleStreamView: View {
                                        loadStreams: loadStreams)
                     StreamsView(model: model,
                                 stream: stream,
-                                title: "Active streams",
-                                streams: $activeStreams,
-                                loadError: $activeStreamsLoadError)
+                                title: "Live",
+                                streams: $liveStreams,
+                                loadError: $liveStreamsLoadError)
                     StreamsView(model: model,
                                 stream: stream,
-                                title: "Upcoming streams",
+                                title: "Upcoming",
                                 streams: $upcomingStreams,
                                 loadError: $upcomingStreamsLoadError)
                 }
