@@ -10,7 +10,7 @@ private enum ScheduleStreamState: Equatable {
 private struct UpcomingStreamView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
-    @Binding var upcomingStream: YouTubeApiLiveBroadcast
+    let upcomingStream: YouTubeApiLiveBroadcast
     let onDeleted: (String) -> Void
     @State private var deleting: Bool = false
 
@@ -84,6 +84,7 @@ struct StreamYouTubeScheduleStreamView: View {
     @State private var schedulingStreamState: ScheduleStreamState = .idle
     @State private var presenting: Bool = false
     @State private var upcomingStreams: [YouTubeApiLiveBroadcast] = []
+    @State private var upcomingStreamsLoadError: String?
 
     private func scheduleStream() {
         schedulingStreamState = .inProgress
@@ -164,15 +165,16 @@ struct StreamYouTubeScheduleStreamView: View {
     }
 
     private func loadUpcomingStreams() {
+        upcomingStreamsLoadError = nil
         model.getYouTubeApi(stream: stream) { youTubeApi in
             youTubeApi?.listLiveBroadcasts {
                 switch $0 {
                 case let .success(response):
-                    upcomingStreams = response.items
+                    upcomingStreams = response.items.filter { $0.snippet.scheduledStartTime != nil }
                 case .authError:
-                    break
+                    upcomingStreamsLoadError = "Error"
                 case .error:
-                    break
+                    upcomingStreamsLoadError = "Error"
                 }
             }
         }
@@ -224,11 +226,17 @@ struct StreamYouTubeScheduleStreamView: View {
                         }
                     }
                     Section {
-                        ForEach($upcomingStreams) { $upcomingStream in
-                            UpcomingStreamView(model: model, stream: stream,
-                                               upcomingStream: $upcomingStream)
+                        ForEach(upcomingStreams) { upcomingStream in
+                            UpcomingStreamView(model: model,
+                                               stream: stream,
+                                               upcomingStream: upcomingStream)
                             { id in
                                 upcomingStreams.removeAll { $0.id == id }
+                            }
+                        }
+                        if upcomingStreams.isEmpty {
+                            HCenter {
+                                Text("None")
                             }
                         }
                     } header: {
