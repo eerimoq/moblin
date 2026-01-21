@@ -110,12 +110,14 @@ class YouTubeApi {
         }
     }
 
-    func listLiveBroadcasts(onCompleted: @escaping (NetworkResponse<YouTubeApiLiveBroadcastListResponse>)
-        -> Void)
-    {
+    func listLiveBroadcasts(
+        status: String,
+        onCompleted: @escaping (NetworkResponse<YouTubeApiLiveBroadcastListResponse>)
+            -> Void
+    ) {
         let subPath = makeUrl("liveBroadcasts", [
             ("part", "snippet,contentDetails,status"),
-            ("broadcastStatus", "upcoming"),
+            ("broadcastStatus", status),
         ])
         doGet(subPath: subPath) {
             switch $0 {

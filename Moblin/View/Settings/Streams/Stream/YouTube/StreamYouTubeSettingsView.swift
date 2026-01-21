@@ -7,10 +7,37 @@ private enum ScheduleStreamState: Equatable {
     case failed(String)
 }
 
-private struct UpcomingStreamView: View {
+private struct StreamDescriptionView: View {
+    let stream: YouTubeApiLiveBroadcast
+    let thumbnailUrl: URL
+    let startTime: Date
+
+    var body: some View {
+        CacheAsyncImage(url: thumbnailUrl) { image in
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } placeholder: {
+            Image("AppIconNoBackground")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        }
+        .frame(width: 50, height: 50)
+        .clipShape(RoundedRectangle(cornerRadius: 5))
+        VStack(alignment: .leading) {
+            Text(stream.snippet.title)
+            Text(startTime.formatted())
+                .font(.caption)
+            Text(stream.status.privacyStatus.capitalized)
+                .font(.caption)
+        }
+    }
+}
+
+private struct YouTubeStreamView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
-    let upcomingStream: YouTubeApiLiveBroadcast
+    let youTubeStream: YouTubeApiLiveBroadcast
     let onDeleted: (String) -> Void
     @State private var deleting: Bool = false
 
@@ -21,10 +48,10 @@ private struct UpcomingStreamView: View {
                 deleting = false
                 return
             }
-            youTubeApi.deleteLiveBroadcast(id: upcomingStream.id) {
+            youTubeApi.deleteLiveBroadcast(id: youTubeStream.id) {
                 switch $0 {
                 case .success:
-                    onDeleted(upcomingStream.id)
+                    onDeleted(youTubeStream.id)
                 default:
                     break
                 }
@@ -34,29 +61,12 @@ private struct UpcomingStreamView: View {
     }
 
     var body: some View {
-        if let scheduledStartTime = upcomingStream.snippet.scheduledStartTime,
+        if let scheduledStartTime = youTubeStream.snippet.scheduledStartTime,
            let date = ISO8601DateFormatter().date(from: scheduledStartTime),
-           let thumbnailUrl = URL(string: upcomingStream.snippet.thumbnails.default.url)
+           let thumbnailUrl = URL(string: youTubeStream.snippet.thumbnails.default.url)
         {
             HStack {
-                CacheAsyncImage(url: thumbnailUrl) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    Image("AppIconNoBackground")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                }
-                .frame(width: 50, height: 50)
-                .clipShape(RoundedRectangle(cornerRadius: 5))
-                VStack(alignment: .leading) {
-                    Text(upcomingStream.snippet.title)
-                    Text(date.formatted())
-                        .font(.caption)
-                    Text(upcomingStream.status.privacyStatus.capitalized)
-                        .font(.caption)
-                }
+                StreamDescriptionView(stream: youTubeStream, thumbnailUrl: thumbnailUrl, startTime: date)
                 Spacer()
                 HCenter {
                     if deleting {
@@ -78,13 +88,40 @@ private struct UpcomingStreamView: View {
     }
 }
 
-struct StreamYouTubeScheduleStreamView: View {
+private struct StreamsView: View {
     let model: Model
     @ObservedObject var stream: SettingsStream
-    @State private var schedulingStreamState: ScheduleStreamState = .idle
-    @State private var presenting: Bool = false
-    @State private var upcomingStreams: [YouTubeApiLiveBroadcast] = []
-    @State private var upcomingStreamsLoadError: String?
+    let title: LocalizedStringKey
+    @Binding var streams: [YouTubeApiLiveBroadcast]
+    @Binding var loadError: String?
+
+    var body: some View {
+        Section {
+            ForEach(streams) {
+                YouTubeStreamView(model: model, stream: stream, youTubeStream: $0) { id in
+                    streams.removeAll { $0.id == id }
+                }
+            }
+            if streams.isEmpty {
+                HCenter {
+                    if let loadError {
+                        Text(loadError)
+                    } else {
+                        Text("None")
+                    }
+                }
+            }
+        } header: {
+            Text(title)
+        }
+    }
+}
+
+private struct ScheduleStreamView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
+    @Binding var schedulingStreamState: ScheduleStreamState
+    let loadStreams: () -> Void
 
     private func scheduleStream() {
         schedulingStreamState = .inProgress
@@ -144,7 +181,7 @@ struct StreamYouTubeScheduleStreamView: View {
                     stream.youTubeVideoId = liveBroadcast.id
                     model.youTubeVideoIdUpdated()
                     scheduleStreamSucceeded()
-                    loadUpcomingStreams()
+                    loadStreams()
                 } else {
                     scheduleStreamFailed("Failed to bind live stream to broadcast")
                 }
@@ -158,16 +195,92 @@ struct StreamYouTubeScheduleStreamView: View {
 
     private func scheduleStreamSucceeded() {
         schedulingStreamState = .succeeded
+        idleSoon()
     }
 
     private func scheduleStreamFailed(_ message: String) {
         schedulingStreamState = .failed(message)
+        idleSoon()
+    }
+
+    private func idleSoon() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            schedulingStreamState = .idle
+        }
+    }
+
+    var body: some View {
+        Section {
+            TextField("", text: $stream.youTubeScheduleStreamTitle)
+        } header: {
+            Text("Title")
+        }
+        Section {
+            Picker("Visibility", selection: $stream.youTubeScheduleStreamVisibility) {
+                ForEach(YouTubeApiLiveBroadcaseVisibility.allCases, id: \.self) {
+                    Text($0.toString())
+                }
+            }
+        }
+        Section {
+            switch schedulingStreamState {
+            case .idle:
+                TextButtonView("Schedule stream") {
+                    scheduleStream()
+                }
+            case .inProgress:
+                HCenter {
+                    Text("Scheduling...")
+                }
+            case .succeeded:
+                HCenter {
+                    Text("Stream scheduled")
+                }
+            case let .failed(message):
+                HCenter {
+                    Text(message)
+                        .foregroundStyle(.red)
+                }
+            }
+        }
+    }
+}
+
+struct StreamYouTubeScheduleStreamView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
+    @State private var schedulingStreamState: ScheduleStreamState = .idle
+    @State private var presenting: Bool = false
+    @State private var activeStreams: [YouTubeApiLiveBroadcast] = []
+    @State private var activeStreamsLoadError: String?
+    @State private var upcomingStreams: [YouTubeApiLiveBroadcast] = []
+    @State private var upcomingStreamsLoadError: String?
+
+    private func loadStreams() {
+        loadActiveStreams()
+        loadUpcomingStreams()
+    }
+
+    private func loadActiveStreams() {
+        activeStreamsLoadError = nil
+        model.getYouTubeApi(stream: stream) { youTubeApi in
+            youTubeApi?.listLiveBroadcasts(status: "active") {
+                switch $0 {
+                case let .success(response):
+                    activeStreams = response.items
+                case .authError:
+                    activeStreamsLoadError = "Error"
+                case .error:
+                    activeStreamsLoadError = "Error"
+                }
+            }
+        }
     }
 
     private func loadUpcomingStreams() {
         upcomingStreamsLoadError = nil
         model.getYouTubeApi(stream: stream) { youTubeApi in
-            youTubeApi?.listLiveBroadcasts {
+            youTubeApi?.listLiveBroadcasts(status: "upcoming") {
                 switch $0 {
                 case let .success(response):
                     upcomingStreams = response.items.filter { $0.snippet.scheduledStartTime != nil }
@@ -181,76 +294,36 @@ struct StreamYouTubeScheduleStreamView: View {
     }
 
     var body: some View {
-        TextButtonView("Schedule stream") {
+        TextButtonView("Manage streams") {
             presenting = true
         }
         .disabled(stream.youTubeAuthState == nil)
         .sheet(isPresented: $presenting) {
             NavigationStack {
                 Form {
-                    Section {
-                        TextField("", text: $stream.youTubeScheduleStreamTitle)
-                    } header: {
-                        Text("Title")
-                    }
-                    Section {
-                        Picker("Visibility", selection: $stream.youTubeScheduleStreamVisibility) {
-                            ForEach(YouTubeApiLiveBroadcaseVisibility.allCases, id: \.self) {
-                                Text($0.toString())
-                            }
-                        }
-                    }
-                    Section {
-                        switch schedulingStreamState {
-                        case .idle:
-                            Button {
-                                scheduleStream()
-                            } label: {
-                                HCenter {
-                                    Text("Schedule stream")
-                                }
-                            }
-                        case .inProgress:
-                            HCenter {
-                                ProgressView()
-                            }
-                        case .succeeded:
-                            HCenter {
-                                Text("Stream scheduled")
-                            }
-                        case let .failed(message):
-                            HCenter {
-                                Text(message)
-                                    .foregroundStyle(.red)
-                            }
-                        }
-                    }
-                    Section {
-                        ForEach(upcomingStreams) { upcomingStream in
-                            UpcomingStreamView(model: model,
-                                               stream: stream,
-                                               upcomingStream: upcomingStream)
-                            { id in
-                                upcomingStreams.removeAll { $0.id == id }
-                            }
-                        }
-                        if upcomingStreams.isEmpty {
-                            HCenter {
-                                Text("None")
-                            }
-                        }
-                    } header: {
-                        Text("Upcoming streams")
-                    }
+                    ScheduleStreamView(model: model,
+                                       stream: stream,
+                                       schedulingStreamState: $schedulingStreamState,
+                                       loadStreams: loadStreams)
+                    StreamsView(model: model,
+                                stream: stream,
+                                title: "Active streams",
+                                streams: $activeStreams,
+                                loadError: $activeStreamsLoadError)
+                    StreamsView(model: model,
+                                stream: stream,
+                                title: "Upcoming streams",
+                                streams: $upcomingStreams,
+                                loadError: $upcomingStreamsLoadError)
                 }
-                .navigationTitle("Schedule stream")
+                .navigationTitle("Manage streams")
                 .toolbar {
                     CloseToolbar(presenting: $presenting)
                 }
             }
             .onAppear {
                 schedulingStreamState = .idle
-                loadUpcomingStreams()
+                loadStreams()
             }
         }
     }
