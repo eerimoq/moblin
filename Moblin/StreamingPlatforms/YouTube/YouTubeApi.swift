@@ -231,15 +231,14 @@ class YouTubeApi {
         guard let url = URL(string: "https://youtube.googleapis.com/youtube/v3/\(subPath)") else {
             return
         }
-        let request = createGetRequest(url: url)
-        doRequest(request, onComplete)
+        doRequest(createRequest(url: url, method: "GET"), onComplete)
     }
 
     private func doPost(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
         guard let url = URL(string: "https://youtube.googleapis.com/youtube/v3/\(subPath)") else {
             return
         }
-        var request = createPostRequest(url: url)
+        var request = createRequest(url: url, method: "POST", json: true)
         request.httpBody = body
         doRequest(request, onComplete)
     }
@@ -248,8 +247,7 @@ class YouTubeApi {
         guard let url = URL(string: "https://youtube.googleapis.com/youtube/v3/\(subPath)") else {
             return
         }
-        let request = createDeleteRequest(url: url)
-        doRequest(request, onComplete)
+        doRequest(createRequest(url: url, method: "DELETE"), onComplete)
     }
 
     private func doRequest(_ request: URLRequest, _ onComplete: @escaping (OperationResult) -> Void) {
@@ -272,25 +270,13 @@ class YouTubeApi {
         .resume()
     }
 
-    private func createGetRequest(url: URL) -> URLRequest {
+    private func createRequest(url: URL, method: String, json: Bool = false) -> URLRequest {
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = method
         request.setAuthorization("Bearer \(accessToken)")
-        return request
-    }
-
-    private func createPostRequest(url: URL) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setAuthorization("Bearer \(accessToken)")
-        request.setContentType("application/json")
-        return request
-    }
-
-    private func createDeleteRequest(url: URL) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-        request.setAuthorization("Bearer \(accessToken)")
+        if json {
+            request.setContentType("application/json")
+        }
         return request
     }
 }

@@ -25,23 +25,11 @@ struct TwitchApiStreamKey: Decodable {
 struct TwitchApiUrls: Decodable {
     // periphery:ignore
     let url_1x: String
-    // periphery:ignore
-    let url_2x: String
-    // periphery:ignore
-    let url_4x: String
 }
 
 struct TwitchApiChannelPointsCustomRewardsData: Decodable {
     let id: String
     let title: String
-    // periphery:ignore
-    let cost: Int
-    // periphery:ignore
-    let image: TwitchApiUrls?
-    // periphery:ignore
-    let default_image: TwitchApiUrls
-    // periphery:ignore
-    let background_color: String
 }
 
 struct TwitchApiChannelPointsCustomRewards: Decodable {
@@ -59,11 +47,7 @@ struct TwitchApiChannelInformation: Decodable {
 
 struct TwitchApiStartCommercialData: Decodable {
     // periphery:ignore
-    let message: String
-    // periphery:ignore
     let length: Int
-    // periphery:ignore
-    let retry_after: Int
 }
 
 struct TwitchApiStartCommercial: Decodable {
@@ -114,10 +98,6 @@ struct TwitchApiSearchChannels: Decodable {
 }
 
 struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
-    // periphery:ignore
-    let user_id: String
-    // periphery:ignore
-    let user_login: String
     let tier: String
 
     func tierAsNumber() -> Int {
@@ -147,21 +127,14 @@ struct TwitchApiGetCheermotesDataTiersImagesTheme: Decodable {
 
 struct TwitchApiGetCheermotesDataTiersImages: Decodable {
     let dark: TwitchApiGetCheermotesDataTiersImagesTheme
-    // periphery:ignore
-    let light: TwitchApiGetCheermotesDataTiersImagesTheme
 }
 
 struct TwitchApiGetCheermotesDataTier: Decodable {
     let min_bits: Int
-    // periphery:ignore
-    let id: String
-    // periphery:ignore
-    let color: String
     let images: TwitchApiGetCheermotesDataTiersImages
 }
 
 struct TwitchApiGetCheermotesData: Decodable {
-    // periphery:ignore
     let prefix: String
     let tiers: [TwitchApiGetCheermotesDataTier]
 }
@@ -171,13 +144,11 @@ struct TwitchApiGetCheermotes: Decodable {
 }
 
 struct TwitchApiChatBadgesVersion: Decodable {
-    // periphery:ignore
     let id: String
     let image_url_2x: String
 }
 
 struct TwitchApiChatBadgesData: Decodable {
-    // periphery:ignore
     let set_id: String
     let versions: [TwitchApiChatBadgesVersion]
 }
@@ -507,9 +478,7 @@ class TwitchApi {
             "raids",
             [("from_broadcaster_id", broadcasterId), ("to_broadcaster_id", toBroadcasterId)]
         )
-        doPost(subPath: subPath, body: Data()) {
-            onComplete($0)
-        }
+        doPost(subPath: subPath, body: Data(), onComplete: onComplete)
     }
 
     func cancelRaid(
@@ -650,37 +619,27 @@ class TwitchApi {
     }
 
     private func doGet(subPath: String, onComplete: @escaping ((OperationResult) -> Void)) {
-        guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
-            return
-        }
-        let request = createGetRequest(url: url)
-        doRequest(request, onComplete)
+        doRequest(createRequest(url: makeHelixUrl(subPath: subPath), method: "GET"), onComplete)
     }
 
     private func doPost(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
-        guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
-            return
-        }
-        var request = createPostRequest(url: url)
+        var request = createRequest(url: makeHelixUrl(subPath: subPath), method: "POST", json: true)
         request.httpBody = body
         doRequest(request, onComplete)
     }
 
     private func doPatch(subPath: String, body: Data, onComplete: @escaping (OperationResult) -> Void) {
-        guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
-            return
-        }
-        var request = createPatchRequest(url: url)
+        var request = createRequest(url: makeHelixUrl(subPath: subPath), method: "PATCH", json: true)
         request.httpBody = body
         doRequest(request, onComplete)
     }
 
     private func doDelete(subPath: String, onComplete: @escaping (OperationResult) -> Void) {
-        guard let url = URL(string: "https://api.twitch.tv/helix/\(subPath)") else {
-            return
-        }
-        let request = createDeleteRequest(url: url)
-        doRequest(request, onComplete)
+        doRequest(createRequest(url: makeHelixUrl(subPath: subPath), method: "DELETE"), onComplete)
+    }
+
+    private func makeHelixUrl(subPath: String) -> URL {
+        return URL(string: "https://api.twitch.tv/helix/\(subPath)")!
     }
 
     private func doRequest(_ request: URLRequest, _ onComplete: @escaping (OperationResult) -> Void) {
@@ -704,37 +663,14 @@ class TwitchApi {
         .resume()
     }
 
-    private func createGetRequest(url: URL) -> URLRequest {
+    private func createRequest(url: URL, method: String, json: Bool = false) -> URLRequest {
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = method
         request.setValue(clientId, forHTTPHeaderField: "client-id")
         request.setAuthorization("Bearer \(accessToken)")
-        return request
-    }
-
-    private func createPostRequest(url: URL) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue(clientId, forHTTPHeaderField: "client-id")
-        request.setAuthorization("Bearer \(accessToken)")
-        request.setContentType("application/json")
-        return request
-    }
-
-    private func createPatchRequest(url: URL) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = "PATCH"
-        request.setValue(clientId, forHTTPHeaderField: "client-id")
-        request.setAuthorization("Bearer \(accessToken)")
-        request.setContentType("application/json")
-        return request
-    }
-
-    private func createDeleteRequest(url: URL) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-        request.setValue(clientId, forHTTPHeaderField: "client-id")
-        request.setAuthorization("Bearer \(accessToken)")
+        if json {
+            request.setContentType("application/json")
+        }
         return request
     }
 }
