@@ -203,6 +203,22 @@ class YouTubeApi {
         }
     }
 
+    func transitionLiveBroadcast(id: String, status: String, onCompleted: @escaping (Bool) -> Void) {
+        let subPath = makeUrl("liveBroadcasts/transition", [
+            ("id", id),
+            ("broadcastStatus", status),
+            ("part", "snippet,contentDetails,status"),
+        ])
+        doPost(subPath: subPath, body: Data()) {
+            switch $0 {
+            case .success:
+                onCompleted(true)
+            default:
+                onCompleted(false)
+            }
+        }
+    }
+
     func listLiveStreams(onCompleted: @escaping (NetworkResponse<YouTubeApiLiveStreamsListResponse>)
         -> Void)
     {

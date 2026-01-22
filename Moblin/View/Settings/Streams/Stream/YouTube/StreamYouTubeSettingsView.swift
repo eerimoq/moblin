@@ -36,26 +36,21 @@ private struct StreamDescriptionView: View {
 
 private struct YouTubeStreamView: View {
     let model: Model
-    @ObservedObject var stream: SettingsStream
+    let stream: SettingsStream
     let youTubeStream: YouTubeApiLiveBroadcast
-    let onDeleted: (String) -> Void
-    @State private var deleting: Bool = false
+    let destroyImage: String
+    let destroy: (String, YouTubeApi, @escaping () -> Void) -> Void
+    @State private var destroying: Bool = false
 
-    private func delete() {
-        deleting = true
+    private func handleDestroy() {
+        destroying = true
         model.getYouTubeApi(stream: stream) { youTubeApi in
             guard let youTubeApi else {
-                deleting = false
+                destroying = false
                 return
             }
-            youTubeApi.deleteLiveBroadcast(id: youTubeStream.id) {
-                switch $0 {
-                case .success:
-                    onDeleted(youTubeStream.id)
-                default:
-                    break
-                }
-                deleting = false
+            destroy(youTubeStream.id, youTubeApi) {
+                destroying = false
             }
         }
     }
@@ -69,13 +64,13 @@ private struct YouTubeStreamView: View {
                 StreamDescriptionView(stream: youTubeStream, thumbnailUrl: thumbnailUrl, startTime: date)
                 Spacer()
                 HCenter {
-                    if deleting {
+                    if destroying {
                         ProgressView()
                     } else {
                         Button {
-                            delete()
+                            handleDestroy()
                         } label: {
-                            Image(systemName: "trash")
+                            Image(systemName: destroyImage)
                                 .font(.title)
                                 .tint(.red)
                         }
@@ -95,13 +90,17 @@ private struct StreamsView: View {
     let title: LocalizedStringKey
     @Binding var streams: [YouTubeApiLiveBroadcast]
     @Binding var loadError: String?
+    let destroyImage: String
+    let destroy: (String, YouTubeApi, @escaping () -> Void) -> Void
 
     var body: some View {
         Section {
-            ForEach(streams) {
-                YouTubeStreamView(model: model, stream: stream, youTubeStream: $0) { id in
-                    streams.removeAll { $0.id == id }
-                }
+            ForEach(streams) { youTubeStream in
+                YouTubeStreamView(model: model,
+                                  stream: stream,
+                                  youTubeStream: youTubeStream,
+                                  destroyImage: destroyImage,
+                                  destroy: destroy)
             }
             if streams.isEmpty {
                 HCenter {
@@ -291,6 +290,27 @@ struct StreamYouTubeScheduleStreamView: View {
         }
     }
 
+    private func stopLiveStream(id: String, youTubeApi: YouTubeApi, onCompleted: @escaping () -> Void) {
+        youTubeApi.transitionLiveBroadcast(id: id, status: "complete") {
+            if $0 {
+                liveStreams.removeAll { $0.id == id }
+            }
+            onCompleted()
+        }
+    }
+
+    private func deleteUpcomingStream(id: String, youTubeApi: YouTubeApi, onCompleted: @escaping () -> Void) {
+        youTubeApi.deleteLiveBroadcast(id: id) {
+            switch $0 {
+            case .success:
+                upcomingStreams.removeAll { $0.id == id }
+            default:
+                break
+            }
+            onCompleted()
+        }
+    }
+
     var body: some View {
         TextButtonView("Manage streams") {
             presenting = true
@@ -307,12 +327,16 @@ struct StreamYouTubeScheduleStreamView: View {
                                 stream: stream,
                                 title: "Live",
                                 streams: $liveStreams,
-                                loadError: $liveStreamsLoadError)
+                                loadError: $liveStreamsLoadError,
+                                destroyImage: "stop",
+                                destroy: stopLiveStream)
                     StreamsView(model: model,
                                 stream: stream,
                                 title: "Upcoming",
                                 streams: $upcomingStreams,
-                                loadError: $upcomingStreamsLoadError)
+                                loadError: $upcomingStreamsLoadError,
+                                destroyImage: "trash",
+                                destroy: deleteUpcomingStream)
                 }
                 .navigationTitle("Manage streams")
                 .toolbar {
