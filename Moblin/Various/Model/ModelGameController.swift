@@ -154,6 +154,10 @@ extension Model {
             if !pressed {
                 togglePrivacy()
             }
+        case .beauty:
+            if !pressed {
+                toggleBeautyQuickButton()
+            }
         }
     }
 

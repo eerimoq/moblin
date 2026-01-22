@@ -1,5 +1,6 @@
 import AVFoundation
 import CoreImage.CIFilterBuiltins
+import MetalPetal
 import Vision
 
 struct VideoEffectInfo {
@@ -46,6 +47,14 @@ class VideoEffect: NSObject {
 
     func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         return image
+    }
+
+    func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
+        return image
+    }
+
+    func isMetalPetal() -> Bool {
+        return false
     }
 
     func prepare(_: CIImage, _: VideoEffectInfo) {}

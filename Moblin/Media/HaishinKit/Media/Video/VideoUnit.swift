@@ -1,6 +1,7 @@
 import AVFoundation
 import Collections
 import CoreImage
+import MetalPetal
 import UIKit
 import VideoToolbox
 import Vision
@@ -144,6 +145,7 @@ final class VideoUnit: NSObject {
     private var device: AVCaptureDevice?
     private var captureSessionDevices: [CaptureSessionDevice] = []
     private let context = CIContext()
+    private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
     private var nextFaceDetectionsSequenceNumber: UInt64 = 0
@@ -209,6 +211,7 @@ final class VideoUnit: NSObject {
     private var latestReportedFps = -1
     private var nextFpsReportTime: Double = 0.0
     private var currentAttachParams: VideoUnitAttachParams?
+    private var isMetalPetalGraphics: Bool = false
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
@@ -241,6 +244,11 @@ final class VideoUnit: NSObject {
     }
 
     override init() {
+        if let metalDevice = MTLCreateSystemDefaultDevice() {
+            metalPetalContext = try? MTIContext(device: metalDevice)
+        } else {
+            metalPetalContext = nil
+        }
         VTPixelTransferSessionCreate(allocator: nil, pixelTransferSessionOut: &pixelTransferSession)
         super.init()
         NotificationCenter.default.addObserver(self,
@@ -873,12 +881,16 @@ final class VideoUnit: NSObject {
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             videoUnit: self
         )
-        return applyEffectsCoreImage(
-            imageBuffer,
-            sampleBuffer,
-            isSceneSwitchTransition,
-            info
-        )
+        if isMetalPetalGraphics {
+            return applyEffectsMetalPetal(imageBuffer, sampleBuffer, info)
+        } else {
+            return applyEffectsCoreImage(
+                imageBuffer,
+                sampleBuffer,
+                isSceneSwitchTransition,
+                info
+            )
+        }
     }
 
     private func removeEffects() {
@@ -982,6 +994,41 @@ final class VideoUnit: NSObject {
         return (outputImageBuffer, outputSampleBuffer)
     }
 
+    private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
+                                        _ sampleBuffer: CMSampleBuffer,
+                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
+    {
+        let image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+        guard var image else {
+            return (nil, nil)
+        }
+        for effect in effects where effect.isEnabled() {
+            image = effect.executeMetalPetal(image, info)
+        }
+        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
+            return (nil, nil)
+        }
+        do {
+            try metalPetalContext?.render(image, to: outputImageBuffer)
+        } catch {
+            logger.info("Metal petal error: \(error)")
+            return (nil, nil)
+        }
+        guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: outputImageBuffer)
+        else {
+            return (nil, nil)
+        }
+        guard let outputSampleBuffer = CMSampleBuffer.create(outputImageBuffer,
+                                                             formatDescription,
+                                                             sampleBuffer.duration,
+                                                             sampleBuffer.presentationTimeStamp,
+                                                             sampleBuffer.decodeTimeStamp)
+        else {
+            return (nil, nil)
+        }
+        return (outputImageBuffer, outputSampleBuffer)
+    }
+
     private func calcBlurRadius() -> Float {
         if let latestSampleBufferTime {
             let offset = ContinuousClock.now - latestSampleBufferTime
@@ -1067,6 +1114,7 @@ final class VideoUnit: NSObject {
     private func usePendingAfterAttachEffectsInternal() {
         if let pendingAfterAttachEffects {
             effects = pendingAfterAttachEffects
+            isMetalPetalGraphics = effects.contains(where: { $0.isMetalPetal() })
             self.pendingAfterAttachEffects = nil
         }
         if let pendingAfterAttachRotation {

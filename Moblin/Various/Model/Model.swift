@@ -262,6 +262,7 @@ class StreamOverlay: ObservableObject {
     @Published var showingReplay = false
     @Published var showingPixellate = false
     @Published var showingWhirlpool = false
+    @Published var showingBeauty = false
     @Published var isTorchOn = false
 }
 
@@ -639,6 +640,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?
     var sparkleEffect: AlertsEffect?
+    var beautyEffect = BeautyEffect()
     var replayEffect: ReplayEffect?
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
@@ -2036,6 +2038,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func toggleWhirlpoolQuickButton() {
         streamOverlay.showingWhirlpool.toggle()
         toggleFilterQuickButton(type: .whirlpool)
+    }
+
+    func toggleBeautyQuickButton() {
+        streamOverlay.showingBeauty.toggle()
+        toggleFilterQuickButton(type: .beauty)
     }
 
     func togglePinchQuickButton() {

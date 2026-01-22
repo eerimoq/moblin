@@ -378,8 +378,12 @@ struct QuickButtonsInnerView: View {
         model.triggerGlasses()
     }
 
-    private func starAction() {
+    private func sparkleAction() {
         model.triggerSparkle()
+    }
+
+    private func beautyAction() {
+        model.toggleBeautyQuickButton()
     }
 
     var body: some View {
@@ -875,7 +879,7 @@ struct QuickButtonsInnerView: View {
                                              state: state,
                                              buttonSize: size)
                             {
-                                starAction()
+                                sparkleAction()
                             }
                             Image(systemName: "sparkle")
                                 .rotationEffect(.degrees(70))
@@ -883,6 +887,14 @@ struct QuickButtonsInnerView: View {
                                 .font(.system(size: 18))
                                 .foregroundStyle(.white)
                                 .frame(width: size, height: size)
+                        }
+                    case .beauty:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            beautyAction()
                         }
                     }
                 }

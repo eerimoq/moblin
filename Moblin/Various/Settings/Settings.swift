@@ -1040,6 +1040,8 @@ class Database: Codable, ObservableObject {
     var rtspClient: SettingsRtspClient = .init()
     var navigation: SettingsNavigation = .init()
     var wiFiAware: SettingsWiFiAware = .init()
+    @Published var beautyStrength: Float = 0.65
+    @Published var beautyRadius: Float = 10.0
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1140,7 +1142,9 @@ class Database: Codable, ObservableObject {
              disconnectProtection,
              rtspClient,
              navigation,
-             wiFiAware
+             wiFiAware,
+             beautyAmount,
+             beautyRadius
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1213,6 +1217,8 @@ class Database: Codable, ObservableObject {
         try container.encode(.rtspClient, rtspClient)
         try container.encode(.navigation, navigation)
         try container.encode(.wiFiAware, wiFiAware)
+        try container.encode(.beautyAmount, beautyStrength)
+        try container.encode(.beautyRadius, beautyRadius)
     }
 
     init() {}
@@ -1320,6 +1326,8 @@ class Database: Codable, ObservableObject {
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
+        beautyStrength = container.decode(.beautyAmount, Float.self, 0.65)
+        beautyRadius = container.decode(.beautyRadius, Float.self, 10.0)
     }
 }
 
@@ -1599,6 +1607,11 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Pixellate"),
                                  type: .pixellate,
                                  imageOn: "squareshape.split.2x2",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Beauty"),
+                                 type: .beauty,
+                                 imageOn: "smoke",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "LUTs"),

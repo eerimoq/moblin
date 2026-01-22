@@ -801,6 +801,9 @@ private struct RightOverlayBottomVerticalView: View {
                     if streamOverlay.showingPinch {
                         StreamOverlayRightPinchView(model: model, database: database)
                     }
+                    if streamOverlay.showingBeauty {
+                        StreamOverlayRightBeautyView(model: model, database: database)
+                    }
                     if streamOverlay.showingCamera {
                         StreamOverlayRightCameraSettingsControlView(model: model,
                                                                     camera: model.camera,
@@ -841,6 +844,9 @@ private struct RightOverlayBottomHorizontalView: View {
             }
             if streamOverlay.showingPinch {
                 StreamOverlayRightPinchView(model: model, database: database)
+            }
+            if streamOverlay.showingBeauty {
+                StreamOverlayRightBeautyView(model: model, database: database)
             }
             if streamOverlay.showingCamera {
                 StreamOverlayRightCameraSettingsControlView(model: model,

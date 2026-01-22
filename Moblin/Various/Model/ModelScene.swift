@@ -488,6 +488,8 @@ extension Model {
         fixedHorizonEffect = FixedHorizonEffect()
         glassesEffect = createGlassesEffect()
         sparkleEffect = createStarEffect()
+        beautyEffect = BeautyEffect()
+        beautyEffect.setSettings(amount: database.beautyStrength, radius: database.beautyRadius)
     }
 
     private func createGlassesEffect() -> AlertsEffect {
@@ -576,6 +578,9 @@ extension Model {
         if isQuickButtonOn(type: .pixellate) {
             pixellateEffect.setSettings(strength: database.pixellateStrength)
             effects.append(pixellateEffect)
+        }
+        if isQuickButtonOn(type: .beauty) {
+            effects.append(beautyEffect)
         }
         return effects
     }

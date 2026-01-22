@@ -34,6 +34,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case poll = "Poll"
     case blurFaces = "Blur faces"
     case privacy = "Privacy"
+    case beauty = "Beauty"
 
     func toString() -> String {
         switch self {
@@ -91,6 +92,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Blur faces")
         case .privacy:
             return String(localized: "Privacy")
+        case .beauty:
+            return String(localized: "Beauty")
         }
     }
 
@@ -177,6 +180,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
         case .blurFaces:
             return .filters
         case .privacy:
+            return .filters
+        case .beauty:
             return .filters
         }
     }
