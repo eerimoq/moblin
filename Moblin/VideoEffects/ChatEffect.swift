@@ -236,10 +236,6 @@ final class ChatEffect: VideoEffect {
         self.chat = chat
     }
 
-    override func getName() -> String {
-        return "Chat"
-    }
-
     func start() {
         guard !started else {
             return

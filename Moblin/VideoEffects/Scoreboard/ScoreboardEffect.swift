@@ -88,10 +88,6 @@ final class ScoreboardEffect: VideoEffect {
     private var scoreboardImage: CIImage?
     private var sceneWidget: SettingsSceneWidget?
 
-    override func getName() -> String {
-        return "Scoreboard"
-    }
-
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
         processorPipelineQueue.async {
             self.sceneWidget = sceneWidget

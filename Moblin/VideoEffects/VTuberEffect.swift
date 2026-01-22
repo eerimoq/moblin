@@ -71,10 +71,6 @@ final class VTuberEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "VTuber"
-    }
-
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let presentationTimeStamp = info.presentationTimeStamp.seconds
         if firstPresentationTimeStamp == nil {

@@ -122,10 +122,6 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
 final class LutEffect: VideoEffect {
     private var filter: (CIFilter & CIColorCubeWithColorSpace)?
 
-    override func getName() -> String {
-        return "LUT"
-    }
-
     func setLut(
         lut: SettingsColorLut?,
         imageStorage: ImageStorage,

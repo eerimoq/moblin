@@ -13,10 +13,6 @@ final class PinchEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Pinch"
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let filter = CIFilter.pinchDistortion()
         filter.inputImage = image

@@ -80,10 +80,6 @@ final class ReplayEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Replay"
-    }
-
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         switch transitionMode {
         case .none, .fade:

@@ -642,7 +642,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var replayEffect: ReplayEffect?
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
-    private var failedVideoEffect: String?
     var supportsAppleLog: Bool = false
     let weatherManager = WeatherManager()
     let geographyManager = GeographyManager()
@@ -1599,7 +1598,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateObsAudioVolume()
         updateBrowserWidgetStatus()
         logStatus()
-        updateFailedVideoEffects()
         updateDebugOverlay()
         updateDistance()
         updateSlope()
@@ -2303,16 +2301,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func logStatus() {
         if logger.debugEnabled, isLive {
             logger.debug("Status: Bitrate: \(bitrate.speedAndTotal), Uptime: \(streamUptime.uptime)")
-        }
-    }
-
-    private func updateFailedVideoEffects() {
-        let newFailedVideoEffect = media.getFailedVideoEffect()
-        if newFailedVideoEffect != failedVideoEffect {
-            if let newFailedVideoEffect {
-                makeErrorToast(title: String(localized: "Failed to render \(newFailedVideoEffect)"))
-            }
-            failedVideoEffect = newFailedVideoEffect
         }
     }
 

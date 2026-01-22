@@ -6,10 +6,8 @@ final class ImageEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
     private var originalImage: CIImage?
     private var sceneWidget: SettingsSceneWidget?
-    private let settingName: String
 
-    init(imageStorage: ImageStorage, settingName: String, widgetId: UUID) {
-        self.settingName = settingName
+    init(imageStorage: ImageStorage, widgetId: UUID) {
         super.init()
         DispatchQueue.global().async {
             guard let data = imageStorage.read(id: widgetId) else {
@@ -28,10 +26,6 @@ final class ImageEffect: VideoEffect {
         processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
         }
-    }
-
-    override func getName() -> String {
-        return "\(settingName) image widget"
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {

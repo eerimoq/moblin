@@ -14,10 +14,6 @@ final class QrCodeEffect: VideoEffect {
         super.init()
     }
 
-    override func getName() -> String {
-        return "QR code widget"
-    }
-
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
         processorPipelineQueue.async {
             self.newSceneWidget = sceneWidget

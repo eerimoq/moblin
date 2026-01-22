@@ -3,7 +3,6 @@ import UIKit
 
 protocol ProcessorDelegate: AnyObject {
     func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)
-    func streamVideo(failedEffect: String?)
     func streamVideo(lowFpsImage: Data?, frameNumber: UInt64)
     func streamVideo(findVideoFormatError: String, activeFormat: String)
     func streamVideoAttachCameraError()

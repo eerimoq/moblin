@@ -30,10 +30,6 @@ final class SlideshowEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Slideshow"
-    }
-
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let (effect, prepareEffect) = getEffects(info.presentationTimeStamp.seconds)
         prepareEffect?.prepare(image, info)

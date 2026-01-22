@@ -68,10 +68,6 @@ final class BingoCardEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Bingo card"
-    }
-
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
         self.sceneWidget.layout = sceneWidget.layout
         processorPipelineQueue.async {

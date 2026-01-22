@@ -27,10 +27,6 @@ final class MapEffect: VideoEffect {
         super.init()
     }
 
-    override func getName() -> String {
-        return "Map widget"
-    }
-
     func zoomOutTemporarily() {
         processorPipelineQueue.async {
             if self.zoomOutFactor == nil {

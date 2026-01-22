@@ -13,10 +13,6 @@ final class AnamorphicLensEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Anamorphic lens"
-    }
-
     override func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let filter = CIFilter.stretchCrop()
         filter.inputImage = image

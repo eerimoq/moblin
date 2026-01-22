@@ -32,10 +32,6 @@ enum VideoEffectFaceDetectionsMode {
 class VideoEffect: NSObject {
     var effects: [VideoEffect] = []
 
-    func getName() -> String {
-        return ""
-    }
-
     func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
         return .off
     }

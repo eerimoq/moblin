@@ -141,10 +141,6 @@ final class PngTuberEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "PNGTuber"
-    }
-
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let sceneWidget else {
             return image

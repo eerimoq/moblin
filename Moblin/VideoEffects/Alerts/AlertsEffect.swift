@@ -92,10 +92,6 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         setSettings(settings: settings)
     }
 
-    override func getName() -> String {
-        return "Alert widget"
-    }
-
     override func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
         if pipeline.landmarkSettings != nil {
             return .now(nil)

@@ -23,10 +23,6 @@ struct ShapeEffectSettings {
 final class ShapeEffect: VideoEffect {
     private var settings: ShapeEffectSettings = .init()
 
-    override func getName() -> String {
-        return "Shape effect"
-    }
-
     func setSettings(settings: ShapeEffectSettings) {
         processorPipelineQueue.async {
             self.settings = settings

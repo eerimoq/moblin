@@ -13,10 +13,6 @@ final class Dewarp360Effect: VideoEffect {
     private var currentTilt: Float = 0
     private var currentFieldOfView: Float = .pi / 2
 
-    override func getName() -> String {
-        return "Dewarp 360 filter"
-    }
-
     func setSettings(settings: Dewarp360EffectSettings) {
         processorPipelineQueue.async {
             self.applySettings(settings: settings)

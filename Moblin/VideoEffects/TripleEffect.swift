@@ -6,10 +6,6 @@ final class TripleEffect: VideoEffect {
     private let centerFilter = CIFilter.sourceOverCompositing()
     private let rightFilter = CIFilter.sourceOverCompositing()
 
-    override func getName() -> String {
-        return "Triple filter"
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let size = image.extent.size
         let width = size.width / 3

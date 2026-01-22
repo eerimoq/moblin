@@ -22,10 +22,6 @@ final class PixellateEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Pixellate filter"
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         filter.inputImage = image
         filter.center = .zero

@@ -3,10 +3,6 @@ import UIKit
 import Vision
 
 final class FourThreeEffect: VideoEffect {
-    override func getName() -> String {
-        return "4:3 filter"
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         return image
             .cropped(to: CGRect(x: image.extent.width / 8,

@@ -33,10 +33,6 @@ final class SnapshotEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Snapshot widget"
-    }
-
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let sceneWidget else {
             return image

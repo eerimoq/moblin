@@ -66,10 +66,6 @@ final class FixedHorizonEffect: VideoEffect {
         motionManager = nil
     }
 
-    override func getName() -> String {
-        return "Fixed horizon"
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         guard let targetAngle else {
             return image

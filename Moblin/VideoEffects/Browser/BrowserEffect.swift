@@ -55,7 +55,6 @@ final class BrowserEffect: VideoEffect {
     private let scale: Double
     private var sceneWidget: SettingsSceneWidget?
     private var crops: [WidgetCrop] = []
-    private let settingName: String
     private let server: BrowserEffectServer
     private var stopped = false
     private var suspended = false
@@ -65,7 +64,6 @@ final class BrowserEffect: VideoEffect {
         url: URL,
         styleSheet: String,
         widget: SettingsWidgetBrowser,
-        settingName: String,
         moblinAccess: Bool
     ) {
         if isMac() {
@@ -74,7 +72,6 @@ final class BrowserEffect: VideoEffect {
             scale = UIScreen().scale
         }
         self.url = url
-        self.settingName = settingName
         baseFps = Double(widget.baseFps)
         fps = baseFps
         isLoaded = false
@@ -107,10 +104,6 @@ final class BrowserEffect: VideoEffect {
     deinit {
         webView.configuration.userContentController.removeAllScriptMessageHandlers()
         stopTakeSnapshots()
-    }
-
-    override func getName() -> String {
-        return "\(settingName) browser widget"
     }
 
     override func isEnabled() -> Bool {

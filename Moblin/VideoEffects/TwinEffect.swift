@@ -5,10 +5,6 @@ import Vision
 final class TwinEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()
 
-    override func getName() -> String {
-        return "Twin filter"
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let size = image.extent.size
         let width = size.width / 2

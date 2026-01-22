@@ -950,7 +950,6 @@ final class VideoUnit: NSObject {
             image = scaleImage(image)
         }
         let extent = image.extent
-        var failedEffect: String?
         if isSceneSwitchTransition {
             image = applySceneSwitchTransition(image)
         }
@@ -958,11 +957,8 @@ final class VideoUnit: NSObject {
             let effectOutputImage = effect.execute(image, info)
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
-            } else {
-                failedEffect = "\(effect.getName()) (wrong size \(effectOutputImage.extent)"
             }
         }
-        processor?.delegate?.streamVideo(failedEffect: failedEffect)
         guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
             return (nil, nil)
         }

@@ -626,9 +626,7 @@ extension Model {
     }
 
     private func createImageEffect(widget: SettingsWidget) -> ImageEffect {
-        return ImageEffect(imageStorage: imageStorage,
-                           settingName: widget.name,
-                           widgetId: widget.id)
+        return ImageEffect(imageStorage: imageStorage, widgetId: widget.id)
     }
 
     private func resetImageEffects(widgets: [SettingsWidget]) {
@@ -652,7 +650,6 @@ extension Model {
             horizontalAlignment: widget.text.horizontalAlignment.toSystem(),
             width: widget.text.widthEnabled ? widget.text.width : nil,
             cornerRadius: Double(widget.text.cornerRadius),
-            settingName: widget.name,
             delay: widget.text.delay,
             timersEndTime: widget.text.timers.map {
                 .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
@@ -684,7 +681,6 @@ extension Model {
                 url: url,
                 styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
-                settingName: widget.name,
                 moblinAccess: widget.browser.moblinAccess
             )
             effect.effects = widget.getEffects(model: self)

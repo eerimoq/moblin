@@ -149,7 +149,6 @@ private struct TextView: View {
 }
 
 final class TextEffect: VideoEffect {
-    private let settingName: String
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
     private var nextUpdateTime = ContinuousClock.now
@@ -173,7 +172,6 @@ final class TextEffect: VideoEffect {
         horizontalAlignment: HorizontalAlignment,
         width: Int?,
         cornerRadius: Double,
-        settingName: String,
         delay: Double,
         timersEndTime: [ContinuousClock.Instant],
         stopwatches: [SettingsWidgetTextStopwatch],
@@ -198,7 +196,6 @@ final class TextEffect: VideoEffect {
                               foregroundColor: foregroundColor.color(),
                               backgroundColor: backgroundColor.color(),
                               lines: [])
-        self.settingName = settingName
         self.delay = delay
         super.init()
         DispatchQueue.main.async {
@@ -349,10 +346,6 @@ final class TextEffect: VideoEffect {
         if self.stats.count > 10 {
             self.stats.removeFirst()
         }
-    }
-
-    override func getName() -> String {
-        return "\(settingName) text widget"
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

@@ -97,10 +97,6 @@ final class WheelOfLuckEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Wheel of luck"
-    }
-
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let wheel, let arrow else {
             return image

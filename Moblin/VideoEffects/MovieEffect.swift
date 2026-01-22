@@ -3,10 +3,6 @@ import UIKit
 import Vision
 
 final class MovieEffect: VideoEffect {
-    override func getName() -> String {
-        return "Movie filter"
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         return image
             .cropped(to: CGRect(x: 0,

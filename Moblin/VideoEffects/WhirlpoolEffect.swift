@@ -13,10 +13,6 @@ final class WhirlpoolEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Whirlpool"
-    }
-
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let filter = CIFilter.twirlDistortion()
         filter.inputImage = image

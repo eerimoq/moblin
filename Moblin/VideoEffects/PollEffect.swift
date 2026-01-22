@@ -48,10 +48,6 @@ final class PollEffect: VideoEffect {
         }
     }
 
-    override func getName() -> String {
-        return "Poll widget"
-    }
-
     func updateText(text: String) {
         guard state.text != text else {
             return

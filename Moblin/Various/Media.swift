@@ -67,7 +67,6 @@ final class Media: NSObject {
     private var maximumBandwidthFollowInput: Bool = false
     weak var delegate: (any MediaDelegate)?
     private var adaptiveBitrate: AdaptiveBitrate?
-    private var failedVideoEffect: String?
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoEncoderSettings()
     private var audioEncoderSettings = AudioEncoderSettings()
@@ -965,10 +964,6 @@ final class Media: NSObject {
     func stopRecording() {
         processor?.stopRecording()
     }
-
-    func getFailedVideoEffect() -> String? {
-        return failedVideoEffect
-    }
 }
 
 extension Media: ProcessorDelegate {
@@ -985,12 +980,6 @@ extension Media: ProcessorDelegate {
             }
             self.numberOfAudioChannels = numberOfAudioChannels
             self.audioSampleRate = sampleRate
-        }
-    }
-
-    func streamVideo(failedEffect: String?) {
-        DispatchQueue.main.async {
-            self.failedVideoEffect = failedEffect
         }
     }
 
