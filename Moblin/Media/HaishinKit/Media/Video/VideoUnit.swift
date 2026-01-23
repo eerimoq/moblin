@@ -1507,7 +1507,7 @@ final class VideoUnit: NSObject {
     private func needsFaceDetections(_ presentationTimeStamp: Double) -> Set<UUID> {
         var faceDetectionsIntervals: [UUID: Double] = [:]
         var ids: Set<UUID> = []
-        for effect in effects {
+        for effect in effects where effect.isEnabled() {
             switch effect.needsFaceDetections(presentationTimeStamp) {
             case .off:
                 break
