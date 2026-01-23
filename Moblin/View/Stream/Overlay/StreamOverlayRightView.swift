@@ -801,9 +801,6 @@ private struct RightOverlayBottomVerticalView: View {
                     if streamOverlay.showingPinch {
                         StreamOverlayRightPinchView(model: model, database: database)
                     }
-                    if streamOverlay.showingBeauty {
-                        StreamOverlayRightBeautyView(model: model, database: database)
-                    }
                     if streamOverlay.showingCamera {
                         StreamOverlayRightCameraSettingsControlView(model: model,
                                                                     camera: model.camera,
@@ -845,9 +842,6 @@ private struct RightOverlayBottomHorizontalView: View {
             if streamOverlay.showingPinch {
                 StreamOverlayRightPinchView(model: model, database: database)
             }
-            if streamOverlay.showingBeauty {
-                StreamOverlayRightBeautyView(model: model, database: database)
-            }
             if streamOverlay.showingCamera {
                 StreamOverlayRightCameraSettingsControlView(model: model,
                                                             camera: model.camera,
@@ -879,6 +873,8 @@ struct RightOverlayBottomView: View {
                     StreamOverlayRightReplayView(model: model,
                                                  replay: model.replay,
                                                  orientation: model.orientation)
+                } else if streamOverlay.showingBeauty {
+                    StreamOverlayRightBeautyView(model: model, beauty: database.beauty)
                 } else {
                     if database.verticalButtons {
                         RightOverlayBottomVerticalView(model: model,

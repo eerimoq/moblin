@@ -488,8 +488,12 @@ extension Model {
         fixedHorizonEffect = FixedHorizonEffect()
         glassesEffect = createGlassesEffect()
         sparkleEffect = createStarEffect()
-        beautyEffect = BeautyEffect()
-        beautyEffect.setSettings(amount: database.beautyStrength, radius: database.beautyRadius)
+        beautyEffect = BeautyEffect(fps: Float(stream.fps))
+        beautyEffect.setSmoothSettings(radius: database.beauty.smoothRadius,
+                                       strength: database.beauty.smoothStrength)
+        beautyEffect.setShapeSettings(position: database.beauty.shapePosition,
+                                      radius: database.beauty.shapeRadius,
+                                      strength: database.beauty.shapeStrength)
     }
 
     private func createGlassesEffect() -> AlertsEffect {
@@ -579,7 +583,7 @@ extension Model {
             pixellateEffect.setSettings(strength: database.pixellateStrength)
             effects.append(pixellateEffect)
         }
-        if isQuickButtonOn(type: .beauty) {
+        if database.beauty.enabled {
             effects.append(beautyEffect)
         }
         return effects

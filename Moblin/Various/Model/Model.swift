@@ -640,7 +640,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?
     var sparkleEffect: AlertsEffect?
-    var beautyEffect = BeautyEffect()
+    var beautyEffect = BeautyEffect(fps: 30)
     var replayEffect: ReplayEffect?
     var locationManager = Location()
     var realtimeIrl: RealtimeIrl?
@@ -1125,6 +1125,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setQuickButtonState(type: .blurFaces, isOn: database.face.showBlur)
         setQuickButtonState(type: .privacy, isOn: database.face.showBlurBackground)
         setQuickButtonState(type: .moblinInMouth, isOn: database.face.showMoblin)
+        setQuickButtonState(type: .beauty, isOn: database.beauty.enabled)
         updateLutsButtonState()
         updateAutoSceneSwitcherButtonState()
         reloadNtpClient()
@@ -1316,6 +1317,17 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isOn != getQuickButton(type: .image)?.isOn {
             setQuickButtonState(type: .image, isOn: isOn)
+            updateQuickButtonStates()
+        }
+    }
+
+    func updateBeautyButtonState() {
+        var isOn = streamOverlay.showingBeauty
+        if database.beauty.enabled {
+            isOn = true
+        }
+        if isOn != getQuickButton(type: .beauty)?.isOn {
+            setQuickButtonState(type: .beauty, isOn: isOn)
             updateQuickButtonStates()
         }
     }
@@ -2042,7 +2054,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleBeautyQuickButton() {
         streamOverlay.showingBeauty.toggle()
-        toggleFilterQuickButton(type: .beauty)
+        updateBeautyButtonState()
     }
 
     func togglePinchQuickButton() {

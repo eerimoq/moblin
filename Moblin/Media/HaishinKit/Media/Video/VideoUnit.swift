@@ -876,14 +876,16 @@ final class VideoUnit: NSObject {
                               _ sceneVideoSourceId: UUID,
                               _ faceDetectionJobs: [FaceDetectionJob],
                               _ faceDetections: [UUID: [VNFaceObservation]],
-                              _ isSceneSwitchTransition: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                              _ isSceneSwitchTransition: Bool,
+                              _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let info = VideoEffectInfo(
             sceneVideoSourceId: sceneVideoSourceId,
             faceDetectionJobs: faceDetectionJobs,
             faceDetections: faceDetections,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
-            videoUnit: self
+            videoUnit: self,
+            isFirstAfterAttach: isFirstAfterAttach
         )
         if isMetalPetalGraphics {
             return applyEffectsMetalPetal(imageBuffer, sampleBuffer, info)
@@ -1003,13 +1005,16 @@ final class VideoUnit: NSObject {
                                         _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
+        let originalImage = image
         guard var image else {
             return (nil, nil)
         }
         for effect in effects where effect.isEnabled() {
             image = effect.executeMetalPetal(image, info)
         }
-        guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
+        guard image != originalImage,
+              let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer)
+        else {
             return (nil, nil)
         }
         do {
@@ -1345,7 +1350,8 @@ final class VideoUnit: NSObject {
                 sceneVideoSourceId,
                 faceDetectionJobs,
                 faceDetections,
-                isSceneSwitchTransition
+                isSceneSwitchTransition,
+                isFirstAfterAttach
             )
             removeEffects()
         }

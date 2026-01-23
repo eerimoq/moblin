@@ -1032,6 +1032,61 @@ class SettingsFace: Codable, ObservableObject {
     }
 }
 
+enum SettingsBeautySettings: CaseIterable {
+    case smooth
+    case shape
+
+    func toString() -> String {
+        switch self {
+        case .smooth:
+            return String(localized: "Smooth")
+        case .shape:
+            return String(localized: "Shape")
+        }
+    }
+}
+
+class SettingsBeauty: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var smoothRadius: Float = 10.0
+    @Published var smoothStrength: Float = 0.65
+    @Published var shapePosition: Float = 0.5
+    @Published var shapeRadius: Float = 0.5
+    @Published var shapeStrength: Float = 0.5
+    @Published var settings: SettingsBeautySettings = .smooth
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             smoothRadius,
+             smoothStrength,
+             shapePosition,
+             shapeRadius,
+             shapeStrength
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.smoothRadius, smoothRadius)
+        try container.encode(.smoothStrength, smoothStrength)
+        try container.encode(.shapePosition, shapePosition)
+        try container.encode(.shapeRadius, shapeRadius)
+        try container.encode(.shapeStrength, shapeStrength)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        smoothRadius = container.decode(.smoothRadius, Float.self, 10.0)
+        smoothStrength = container.decode(.smoothStrength, Float.self, 0.65)
+        shapePosition = container.decode(.shapePosition, Float.self, 0.5)
+        shapeRadius = container.decode(.shapeRadius, Float.self, 0.5)
+        shapeStrength = container.decode(.shapeStrength, Float.self, 0.5)
+    }
+}
+
 class Database: Codable, ObservableObject {
     @Published var streams: [SettingsStream] = []
     @Published var scenes: [SettingsScene] = []
@@ -1102,9 +1157,8 @@ class Database: Codable, ObservableObject {
     var rtspClient: SettingsRtspClient = .init()
     var navigation: SettingsNavigation = .init()
     var wiFiAware: SettingsWiFiAware = .init()
-    @Published var beautyStrength: Float = 0.65
-    @Published var beautyRadius: Float = 10.0
     var face: SettingsFace = .init()
+    var beauty: SettingsBeauty = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1206,9 +1260,8 @@ class Database: Codable, ObservableObject {
              rtspClient,
              navigation,
              wiFiAware,
-             beautyAmount,
-             beautyRadius,
-             face
+             face,
+             beauty
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1281,9 +1334,8 @@ class Database: Codable, ObservableObject {
         try container.encode(.rtspClient, rtspClient)
         try container.encode(.navigation, navigation)
         try container.encode(.wiFiAware, wiFiAware)
-        try container.encode(.beautyAmount, beautyStrength)
-        try container.encode(.beautyRadius, beautyRadius)
         try container.encode(.face, face)
+        try container.encode(.beauty, beauty)
     }
 
     init() {}
@@ -1391,9 +1443,8 @@ class Database: Codable, ObservableObject {
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
-        beautyStrength = container.decode(.beautyAmount, Float.self, 0.65)
-        beautyRadius = container.decode(.beautyRadius, Float.self, 10.0)
         face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved
+        beauty = container.decode(.beauty, SettingsBeauty.self, .init())
     }
 }
 

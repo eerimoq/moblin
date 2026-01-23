@@ -9,6 +9,7 @@ struct VideoEffectInfo {
     let faceDetections: [UUID: [VNFaceObservation]]
     let presentationTimeStamp: CMTime
     let videoUnit: VideoUnit
+    let isFirstAfterAttach: Bool
 
     func sceneFaceDetections() -> [VNFaceObservation]? {
         return faceDetections[sceneVideoSourceId]
