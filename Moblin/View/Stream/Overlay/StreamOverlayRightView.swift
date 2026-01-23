@@ -791,7 +791,7 @@ private struct RightOverlayBottomVerticalView: View {
                     .mediaPlayerPlayer)
             } else {
                 VStack(alignment: .trailing) {
-                    StreamOverlayRightFaceView(model: model, face: database.debug.face)
+                    StreamOverlayRightFaceView(model: model, face: database.face)
                     if streamOverlay.showingPixellate {
                         StreamOverlayRightPixellateView(model: model, database: database)
                     }
@@ -835,7 +835,7 @@ private struct RightOverlayBottomHorizontalView: View {
         if streamOverlay.showMediaPlayerControls {
             StreamOverlayRightMediaPlayerControlsView(mediaPlayer: model.mediaPlayerPlayer)
         } else {
-            StreamOverlayRightFaceView(model: model, face: database.debug.face)
+            StreamOverlayRightFaceView(model: model, face: database.face)
             if streamOverlay.showingPixellate {
                 StreamOverlayRightPixellateView(model: model, database: database)
             }

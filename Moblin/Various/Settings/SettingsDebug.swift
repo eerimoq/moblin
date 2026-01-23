@@ -14,68 +14,6 @@ let pixelFormatTypes = [
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
 ]
 
-enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
-    case blur
-    case pixellate
-
-    func toString() -> LocalizedStringKey {
-        switch self {
-        case .blur:
-            return "Blur"
-        case .pixellate:
-            return "Pixellate"
-        }
-    }
-}
-
-class SettingsFace: Codable, ObservableObject {
-    @Published var showBlur = false
-    @Published var showBlurBackground: Bool = false
-    @Published var showMoblin = false
-    @Published var privacyMode: SettingsFacePrivacyMode = .blur
-    @Published var blurStrength: Float = 0.8
-    @Published var pixellateStrength: Float = 0.3
-
-    enum CodingKeys: CodingKey {
-        case privacyMode,
-             blurStrength,
-             pixellateStrength
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.privacyMode, privacyMode)
-        try container.encode(.blurStrength, blurStrength)
-        try container.encode(.pixellateStrength, pixellateStrength)
-    }
-
-    init() {}
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        showBlur = false
-        showBlurBackground = false
-        showMoblin = false
-        privacyMode = container.decode(.privacyMode, SettingsFacePrivacyMode.self, .blur)
-        blurStrength = container.decode(.blurStrength, Float.self, 0.8)
-        pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
-    }
-
-    func toEffectSettings() -> FaceEffectSettings {
-        let faceEffectPrivacyMode: FaceEffectPrivacyMode
-        switch privacyMode {
-        case .blur:
-            faceEffectPrivacyMode = .blur(strength: blurStrength)
-        case .pixellate:
-            faceEffectPrivacyMode = .pixellate(strength: pixellateStrength)
-        }
-        return FaceEffectSettings(showBlur: showBlur,
-                                  showBlurBackground: showBlurBackground,
-                                  showMouth: showMoblin,
-                                  privacyMode: faceEffectPrivacyMode)
-    }
-}
-
 class SettingsDebug: Codable, ObservableObject {
     static let builtinAudioAndVideoDelayDefault: Double = 0.07
     var logLevel: SettingsLogLevel = .error
@@ -89,7 +27,8 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var bluetoothOutputOnly: Bool = true
     var maximumLogLines: Int = 500
     var pixelFormat: String = pixelFormats[1]
-    var face: SettingsFace = .init()
+    // To be removed.
+    var faceToBeRemoved: SettingsFace = .init()
     @Published var allowVideoRangePixelFormat: Bool = false
     var blurSceneSwitch: Bool = true
     @Published var preferStereoMic: Bool = false
@@ -158,7 +97,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.bluetoothOutputOnly, bluetoothOutputOnly)
         try container.encode(.maximumLogLines, maximumLogLines)
         try container.encode(.pixelFormat, pixelFormat)
-        try container.encode(.beautyFilterSettings, face)
+        try container.encode(.beautyFilterSettings, faceToBeRemoved)
         try container.encode(.allowVideoRangePixelFormat, allowVideoRangePixelFormat)
         try container.encode(.blurSceneSwitch, blurSceneSwitch)
         try container.encode(.preferStereoMic, preferStereoMic)
@@ -196,7 +135,7 @@ class SettingsDebug: Codable, ObservableObject {
         bluetoothOutputOnly = container.decode(.bluetoothOutputOnly, Bool.self, true)
         maximumLogLines = container.decode(.maximumLogLines, Int.self, 500)
         pixelFormat = container.decode(.pixelFormat, String.self, pixelFormats[1])
-        face = container.decode(.beautyFilterSettings, SettingsFace.self, .init())
+        faceToBeRemoved = container.decode(.beautyFilterSettings, SettingsFace.self, .init())
         allowVideoRangePixelFormat = container.decode(.allowVideoRangePixelFormat, Bool.self, false)
         blurSceneSwitch = container.decode(.blurSceneSwitch, Bool.self, true)
         preferStereoMic = container.decode(.preferStereoMic, Bool.self, false)

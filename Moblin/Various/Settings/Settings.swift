@@ -970,6 +970,68 @@ class SettingsWiFiAware: Codable, ObservableObject {
     }
 }
 
+enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
+    case blur
+    case pixellate
+
+    func toString() -> LocalizedStringKey {
+        switch self {
+        case .blur:
+            return "Blur"
+        case .pixellate:
+            return "Pixellate"
+        }
+    }
+}
+
+class SettingsFace: Codable, ObservableObject {
+    @Published var showBlur = false
+    @Published var showBlurBackground: Bool = false
+    @Published var showMoblin = false
+    @Published var privacyMode: SettingsFacePrivacyMode = .blur
+    @Published var blurStrength: Float = 0.8
+    @Published var pixellateStrength: Float = 0.3
+
+    enum CodingKeys: CodingKey {
+        case privacyMode,
+             blurStrength,
+             pixellateStrength
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.privacyMode, privacyMode)
+        try container.encode(.blurStrength, blurStrength)
+        try container.encode(.pixellateStrength, pixellateStrength)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        showBlur = false
+        showBlurBackground = false
+        showMoblin = false
+        privacyMode = container.decode(.privacyMode, SettingsFacePrivacyMode.self, .blur)
+        blurStrength = container.decode(.blurStrength, Float.self, 0.8)
+        pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
+    }
+
+    func toEffectSettings() -> FaceEffectSettings {
+        let faceEffectPrivacyMode: FaceEffectPrivacyMode
+        switch privacyMode {
+        case .blur:
+            faceEffectPrivacyMode = .blur(strength: blurStrength)
+        case .pixellate:
+            faceEffectPrivacyMode = .pixellate(strength: pixellateStrength)
+        }
+        return FaceEffectSettings(showBlur: showBlur,
+                                  showBlurBackground: showBlurBackground,
+                                  showMouth: showMoblin,
+                                  privacyMode: faceEffectPrivacyMode)
+    }
+}
+
 class Database: Codable, ObservableObject {
     @Published var streams: [SettingsStream] = []
     @Published var scenes: [SettingsScene] = []
@@ -1042,6 +1104,7 @@ class Database: Codable, ObservableObject {
     var wiFiAware: SettingsWiFiAware = .init()
     @Published var beautyStrength: Float = 0.65
     @Published var beautyRadius: Float = 10.0
+    var face: SettingsFace = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1144,7 +1207,8 @@ class Database: Codable, ObservableObject {
              navigation,
              wiFiAware,
              beautyAmount,
-             beautyRadius
+             beautyRadius,
+             face
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1219,6 +1283,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.wiFiAware, wiFiAware)
         try container.encode(.beautyAmount, beautyStrength)
         try container.encode(.beautyRadius, beautyRadius)
+        try container.encode(.face, face)
     }
 
     init() {}
@@ -1328,6 +1393,7 @@ class Database: Codable, ObservableObject {
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
         beautyStrength = container.decode(.beautyAmount, Float.self, 0.65)
         beautyRadius = container.decode(.beautyRadius, Float.self, 10.0)
+        face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved
     }
 }
 

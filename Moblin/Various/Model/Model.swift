@@ -1122,9 +1122,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
         updateQuickButtonStates()
-        setQuickButtonState(type: .blurFaces, isOn: database.debug.face.showBlur)
-        setQuickButtonState(type: .privacy, isOn: database.debug.face.showBlurBackground)
-        setQuickButtonState(type: .moblinInMouth, isOn: database.debug.face.showMoblin)
+        setQuickButtonState(type: .blurFaces, isOn: database.face.showBlur)
+        setQuickButtonState(type: .privacy, isOn: database.face.showBlurBackground)
+        setQuickButtonState(type: .moblinInMouth, isOn: database.face.showMoblin)
         updateLutsButtonState()
         updateAutoSceneSwitcherButtonState()
         reloadNtpClient()
@@ -1297,7 +1297,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateFaceFilterSettings() {
-        faceEffect.setSettings(settings: database.debug.face.toEffectSettings())
+        faceEffect.setSettings(settings: database.face.toEffectSettings())
     }
 
     func updateImageButtonState() {
@@ -3082,19 +3082,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleBlurFaces() {
-        database.debug.face.showBlur.toggle()
+        database.face.showBlur.toggle()
         toggleFilterQuickButton(type: .blurFaces)
         updateFaceFilterSettings()
     }
 
     func togglePrivacy() {
-        database.debug.face.showBlurBackground.toggle()
+        database.face.showBlurBackground.toggle()
         toggleFilterQuickButton(type: .privacy)
         updateFaceFilterSettings()
     }
 
     func toggleMoblinInMouth() {
-        database.debug.face.showMoblin.toggle()
+        database.face.showMoblin.toggle()
         toggleFilterQuickButton(type: .moblinInMouth)
         updateFaceFilterSettings()
     }

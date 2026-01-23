@@ -823,7 +823,7 @@ extension Model {
     }
 
     private func isFaceEnabled() -> Bool {
-        let settings = database.debug.face
+        let settings = database.face
         return settings.showBlur || settings.showBlurBackground || settings.showMoblin
     }
 
