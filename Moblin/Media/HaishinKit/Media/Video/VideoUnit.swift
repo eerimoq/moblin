@@ -106,6 +106,7 @@ private class FaceDetectionsCompletion {
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
     let isSceneSwitchTransition: Bool
+    let sceneVideoSourceId: UUID
     let faceDetectionJobs: [FaceDetectionJob]
     var faceDetections: [UUID: [VNFaceObservation]]
 
@@ -114,12 +115,14 @@ private class FaceDetectionsCompletion {
         sampleBuffer: CMSampleBuffer,
         isFirstAfterAttach: Bool,
         isSceneSwitchTransition: Bool,
+        sceneVideoSourceId: UUID,
         faceDetectionJobs: [FaceDetectionJob]
     ) {
         self.sequenceNumber = sequenceNumber
         self.sampleBuffer = sampleBuffer
         self.isFirstAfterAttach = isFirstAfterAttach
         self.isSceneSwitchTransition = isSceneSwitchTransition
+        self.sceneVideoSourceId = sceneVideoSourceId
         self.faceDetectionJobs = faceDetectionJobs
         faceDetections = [:]
     }
@@ -870,6 +873,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
+                              _ sceneVideoSourceId: UUID,
                               _ faceDetectionJobs: [FaceDetectionJob],
                               _ faceDetections: [UUID: [VNFaceObservation]],
                               _ isSceneSwitchTransition: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
@@ -1222,6 +1226,7 @@ final class VideoUnit: NSObject {
             sampleBuffer: sampleBuffer,
             isFirstAfterAttach: isFirstAfterAttach,
             isSceneSwitchTransition: isSceneSwitchTransition,
+            sceneVideoSourceId: sceneVideoSourceId,
             faceDetectionJobs: faceDetectionJobs
         )
         nextFaceDetectionsSequenceNumber += 1
@@ -1298,6 +1303,7 @@ final class VideoUnit: NSObject {
                 completion.sampleBuffer,
                 completion.isFirstAfterAttach,
                 completion.isSceneSwitchTransition,
+                completion.sceneVideoSourceId,
                 completion.faceDetectionJobs,
                 completion.faceDetections
             )
@@ -1316,6 +1322,7 @@ final class VideoUnit: NSObject {
         _ sampleBuffer: CMSampleBuffer,
         _ isFirstAfterAttach: Bool,
         _ isSceneSwitchTransition: Bool,
+        _ sceneVideoSourceId: UUID,
         _ faceDetectionJobs: [FaceDetectionJob],
         _ faceDetections: [UUID: [VNFaceObservation]]
     ) {
@@ -1335,6 +1342,7 @@ final class VideoUnit: NSObject {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
                 sampleBuffer,
+                sceneVideoSourceId,
                 faceDetectionJobs,
                 faceDetections,
                 isSceneSwitchTransition
