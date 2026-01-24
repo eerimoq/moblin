@@ -15,37 +15,22 @@ class SBRemoteControlServer {
     }
 
     private func startHttpServer() {
-        do {
-            httpListener = try NWListener(using: .tcp, on: 8080)
-            httpListener?.newConnectionHandler = { conn in
-                conn.stateUpdateHandler = { state in
-                    if case .ready = state {
-                        conn.receive(minimumIncompleteLength: 1, maximumLength: 1024) { data, _, _, _ in
-                            guard let data = data, let req = String(data: data, encoding: .utf8) else {
-                                conn.cancel()
-                                return
-                            }
-                            if req.contains("GET /volleyball.png") {
-                                self.serveIcon(on: conn)
-                            } else if req.contains("GET /scoreboard") {
-                                self.serveFile(
-                                    on: conn,
-                                    name: "scoreboard",
-                                    ext: "html",
-                                    type: "text/html"
-                                )
-                            } else {
-                                self.serveFile(on: conn, name: "remote", ext: "html", type: "text/html")
-                            }
+        httpListener = try? NWListener(using: .tcp, on: 8080)
+        httpListener?.newConnectionHandler = { conn in
+            conn.stateUpdateHandler = { state in
+                if case .ready = state {
+                    conn.receive(minimumIncompleteLength: 1, maximumLength: 1024) { data, _, _, _ in
+                        guard let data = data, let req = String(data: data, encoding: .utf8) else {
+                            conn.cancel()
+                            return
                         }
+                        self.serveFile(on: conn, name: "remote", ext: "html", type: "text/html")
                     }
                 }
-                conn.start(queue: .main)
             }
-            httpListener?.start(queue: .main)
-        } catch {
-            logger.info("SB Server: HTTP Error")
+            conn.start(queue: .main)
         }
+        httpListener?.start(queue: .main)
     }
 
     private func serveFile(on conn: NWConnection, name: String, ext: String, type: String) {
@@ -63,24 +48,6 @@ class SBRemoteControlServer {
         \(content)
         """
         conn.send(content: resp.data(using: .utf8), completion: .contentProcessed { _ in
-            conn.cancel()
-        })
-    }
-
-    private func serveIcon(on conn: NWConnection) {
-        guard let img = UIImage(named: "VolleyballIndicator"), let data = img.pngData() else {
-            conn.cancel()
-            return
-        }
-        let head = """
-        HTTP/1.1 200 OK\r\nContent-Type: image/png\r\n\
-        Content-Length: \(data.count)\r\n\
-        Connection: close\r\n\
-        \r\n
-        """
-        var out = Data(head.utf8)
-        out.append(data)
-        conn.send(content: out, completion: .contentProcessed { _ in
             conn.cancel()
         })
     }
