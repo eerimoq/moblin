@@ -90,7 +90,7 @@ private struct ColorsView: View {
                             .broadcastCurrentState(); updateEffect()
                     }
                     ColorPicker(
-                        "Background Color",
+                        "Background color",
                         selection: $scoreboard.team1BgColorColor,
                         supportsOpacity: false
                     )
@@ -101,7 +101,7 @@ private struct ColorsView: View {
                 } header: { Text("Team 1") }
                 Section {
                     ColorPicker(
-                        "Text Color",
+                        "Text color",
                         selection: $scoreboard.team2TextColorColor,
                         supportsOpacity: false
                     )
@@ -110,7 +110,7 @@ private struct ColorsView: View {
                             .broadcastCurrentState(); updateEffect()
                     }
                     ColorPicker(
-                        "Background Color",
+                        "Background color",
                         selection: $scoreboard.team2BgColorColor,
                         supportsOpacity: false
                     )
@@ -121,17 +121,17 @@ private struct ColorsView: View {
                 } header: { Text("Team 2") }
                 Section {
                     ColorPicker(
-                        "Main Background",
+                        "Main cackground",
                         selection: $scoreboard.secondaryBackgroundColorColor,
                         supportsOpacity: false
                     )
                     .onChange(of: scoreboard.secondaryBackgroundColorColor) {
                         if let rgb = $0.toRgb() { scoreboard.secondaryBackgroundColor = rgb }; updateEffect()
                     }
-                    Button("Reset All Colors") {
+                    Button("Reset all colors") {
                         scoreboard.resetColors(); model.broadcastCurrentState(); updateEffect()
                     }
-                } header: { Text("Global Style") }
+                } header: { Text("Global style") }
             }.navigationTitle("Colors")
         }
     }
@@ -147,7 +147,7 @@ private struct StackedSettingsView: View {
     }
 
     var body: some View {
-        NavigationLink("Stacked Layout Settings") {
+        NavigationLink("Stacked layout settings") {
             Form {
                 Section {
                     HStack { Text("Font size").layoutPriority(1); Slider(
@@ -180,24 +180,24 @@ private struct StackedSettingsView: View {
                         .onChange(of: scoreboard.stackedIsBold) { _ in updateEffect() }
                     Toggle("Italic", isOn: $scoreboard.stackedIsItalic)
                         .onChange(of: scoreboard.stackedIsItalic) { _ in updateEffect() }
-                    Toggle("Show Title", isOn: $scoreboard.showStackedHeader)
+                    Toggle("Show title", isOn: $scoreboard.showStackedHeader)
                         .onChange(of: scoreboard.showStackedHeader) { _ in updateEffect() }
                     if scoreboard
                         .showStackedHeader
                     {
-                        Toggle("Title on Top", isOn: $scoreboard.titleAbove)
+                        Toggle("Title on top", isOn: $scoreboard.titleAbove)
                             .onChange(of: scoreboard.titleAbove) { _ in updateEffect() }
                     }
                     Toggle("Show Moblin footer", isOn: $scoreboard.showStackedFooter)
                         .onChange(of: scoreboard.showStackedFooter) { _ in updateEffect() }
-                } header: { Text("Basic Style") }
+                } header: { Text("Basic style") }
                 Section {
-                    Toggle("Second Row (TO, Foul, etc.)", isOn: $scoreboard.showSecondaryRows)
+                    Toggle("Second row (TO, Foul, etc.)", isOn: $scoreboard.showSecondaryRows)
                         .onChange(of: scoreboard.showSecondaryRows) { _ in updateEffect() }
-                    Toggle("Info Box (Time, Period)", isOn: $scoreboard.showGlobalStatsBlock)
+                    Toggle("Info box (Time, Period)", isOn: $scoreboard.showGlobalStatsBlock)
                         .onChange(of: scoreboard.showGlobalStatsBlock) { _ in updateEffect() }
-                } header: { Text("Modular Layout") }
-            }.navigationTitle("Stacked Layout")
+                } header: { Text("Modular layout") }
+            }.navigationTitle("Stacked layout")
         }
     }
 }
@@ -212,7 +212,7 @@ private struct SideBySideSettingsView: View {
     }
 
     var body: some View {
-        NavigationLink("Side by Side Settings") {
+        NavigationLink("Side by side settings") {
             Form {
                 Section {
                     HStack { Text("Font size").layoutPriority(1); Slider(
@@ -245,16 +245,16 @@ private struct SideBySideSettingsView: View {
                         .onChange(of: scoreboard.sbsIsBold) { _ in updateEffect() }
                     Toggle("Italic", isOn: $scoreboard.sbsIsItalic)
                         .onChange(of: scoreboard.sbsIsItalic) { _ in updateEffect() }
-                    Toggle("Show Title", isOn: $scoreboard.showSbsTitle)
+                    Toggle("Show title", isOn: $scoreboard.showSbsTitle)
                         .onChange(of: scoreboard.showSbsTitle) { _ in updateEffect() }
-                } header: { Text("Basic Style") }
+                } header: { Text("Basic style") }
                 Section {
-                    Toggle("Second Row (TO, Foul, etc.)", isOn: $scoreboard.showSecondaryRows)
+                    Toggle("Second row (TO, Foul, etc.)", isOn: $scoreboard.showSecondaryRows)
                         .onChange(of: scoreboard.showSecondaryRows) { _ in updateEffect() }
-                    Toggle("Info Box (Time, Period)", isOn: $scoreboard.showGlobalStatsBlock)
+                    Toggle("Info box (Time, Period)", isOn: $scoreboard.showGlobalStatsBlock)
                         .onChange(of: scoreboard.showGlobalStatsBlock) { _ in updateEffect() }
-                } header: { Text("Modular Layout") }
-            }.navigationTitle("Side by Side")
+                } header: { Text("Modular layout") }
+            }.navigationTitle("Side by side")
         }
     }
 }
