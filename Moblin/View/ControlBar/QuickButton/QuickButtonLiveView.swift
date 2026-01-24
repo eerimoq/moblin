@@ -166,14 +166,10 @@ struct QuickButtonLiveView: View {
                 if !stream.soopChannelName.isEmpty {
                     SoopView(stream: stream)
                 }
-                if database.showAllSettings {
-                    if stream.goLiveNotificationDiscordWebhookUrl.isEmpty {
-                        Section {
-                            Text("No 'Go live notification' is configured.")
-                        }
-                    } else {
-                        GoLiveNotificationView(model: model, stream: stream)
-                    }
+                if database.showAllSettings,
+                   !stream.goLiveNotificationDiscordWebhookUrl.isEmpty
+                {
+                    GoLiveNotificationView(model: model, stream: stream)
                 }
                 ShortcutView(model: model, database: database, stream: stream)
             }
