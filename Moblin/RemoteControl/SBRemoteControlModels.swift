@@ -34,7 +34,7 @@ struct SBGlobalStats: Codable {
     var title: String
     var timer: String
     var timerDirection: String
-    var duration: Int? // New: Max clock time in minutes
+    var duration: Int?
     var period: String
     var periodLabel: String
     var subPeriod: String
@@ -44,8 +44,6 @@ struct SBGlobalStats: Codable {
     var scoringMode: String?
     var minSetScore: Int?
     var maxSetScore: Int?
-
-    // Visual Toggles
     var showTitle: Bool?
     var titleTop: Bool?
     var showStats: Bool?

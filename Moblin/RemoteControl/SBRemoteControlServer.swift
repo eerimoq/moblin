@@ -1,6 +1,5 @@
 import Foundation
 import Network
-import UIKit
 
 class SBRemoteControlServer {
     private var httpListener: NWListener?
