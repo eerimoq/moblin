@@ -2601,8 +2601,8 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
     @Published var showStackedHeader: Bool = false
     @Published var titleAbove: Bool = true
     @Published var showStackedFooter: Bool = false
-    @Published var showSecondaryRows: Bool = false // Stacked default off
-    @Published var showGlobalStatsBlock: Bool = false // Stacked default off
+    @Published var showSecondaryRows: Bool = false
+    @Published var showGlobalStatsBlock: Bool = false
     @Published var showSbsTitle: Bool = false
 
     enum CodingKeys: CodingKey {

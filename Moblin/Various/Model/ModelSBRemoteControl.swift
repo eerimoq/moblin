@@ -1,6 +1,293 @@
 import Foundation
 import Network
 
+private let basketballConfig = SBMatchConfig(
+    matchId: "basketball",
+    layout: "sideBySide",
+    team1: SBTeam(
+        name: "Home",
+        bgColor: "#1e40af",
+        possession: true,
+        stat1: "5",
+        stat1Label: "TO",
+        stat2: "0",
+        stat2Label: "FOUL",
+        stat3: "NO BONUS",
+        stat3Label: ""
+    ),
+    team2: SBTeam(
+        name: "Away",
+        bgColor: "#dc2626",
+        possession: false,
+        stat1: "5",
+        stat1Label: "TO",
+        stat2: "0",
+        stat2Label: "FOUL",
+        stat3: "NO BONUS",
+        stat3Label: ""
+    ),
+    global: SBGlobalStats(
+        title: "Varsity Basketball",
+        timer: "10:00",
+        timerDirection: "down",
+        period: "1",
+        periodLabel: "QTR",
+        subPeriod: "",
+        primaryScoreResetOnPeriod: false,
+        secondaryScoreResetOnPeriod: false,
+        changePossessionOnScore: false
+    ),
+    controls: [
+        "primaryScore": .init(type: "counter", label: "Pt", periodReset: false),
+        "stat1": .init(
+            type: "select",
+            label: "TO",
+            options: ["0", "1", "2", "3", "4", "5"],
+            periodReset: true
+        ),
+        "stat2": .init(type: "cycle",
+                       label: "FOUL",
+                       options: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+                       periodReset: true),
+        "stat3": .init(type: "cycle", label: "", options: ["NO BONUS", "BONUS", "DOUBLE"], periodReset: true),
+        "possession": .init(type: "toggleTeam", label: "POSS", periodReset: false),
+    ]
+)
+
+private let genericConfig = SBMatchConfig(
+    matchId: "generic",
+    layout: "stacked",
+    team1: SBTeam(
+        name: "Home",
+        bgColor: "#1e40af",
+        possession: false
+    ),
+    team2: SBTeam(
+        name: "Away",
+        bgColor: "#dc2626",
+        possession: false
+    ),
+    global: SBGlobalStats(
+        title: "",
+        timer: "",
+        timerDirection: "down",
+        period: "",
+        periodLabel: "",
+        subPeriod: "",
+        primaryScoreResetOnPeriod: false,
+        secondaryScoreResetOnPeriod: false,
+        changePossessionOnScore: false,
+        showTitle: false,
+        showStats: false
+    ),
+    controls: [
+        "primaryScore": .init(type: "counter", label: "Pt", periodReset: false),
+    ]
+)
+
+private let genericSetsConfig = SBMatchConfig(
+    matchId: "generic sets",
+    layout: "stacked",
+    team1: SBTeam(
+        name: "Home",
+        bgColor: "#1e40af",
+        possession: false,
+        secondaryScore: "0"
+    ),
+    team2: SBTeam(
+        name: "Away",
+        bgColor: "#dc2626",
+        possession: false,
+        secondaryScore: "0"
+    ),
+    global: SBGlobalStats(
+        title: "GENERIC MATCH",
+        timer: "00:00",
+        timerDirection: "up",
+        period: "1",
+        periodLabel: "SET",
+        subPeriod: "",
+        primaryScoreResetOnPeriod: true,
+        secondaryScoreResetOnPeriod: false,
+        changePossessionOnScore: false,
+        showTitle: false,
+        titleTop: true,
+        showStats: false,
+        showSecondaryRow: false
+    ),
+    controls: [
+        "primaryScore": .init(type: "counter", label: "Pt", periodReset: true),
+        "secondaryScore": .init(type: "counter", label: "Set", periodReset: false),
+        "possession": .init(type: "toggleTeam", label: "POSS", periodReset: false),
+    ]
+)
+
+private let hockeyConfig = SBMatchConfig(
+    matchId: "hockey",
+    layout: "sideBySide",
+    team1: SBTeam(
+        name: "Home",
+        bgColor: "#1e40af",
+        possession: false,
+        secondaryScore: "0",
+        secondaryScoreLabel: "SOG",
+        stat1: "NO PP",
+        stat1Label: "",
+        stat2: "NO EN",
+        stat2Label: "",
+        stat3: "NO DP",
+        stat3Label: ""
+    ),
+    team2: SBTeam(
+        name: "Away",
+        bgColor: "#dc2626",
+        textColor: "#ffffff",
+        possession: false,
+        secondaryScore: "0",
+        secondaryScoreLabel: "SOG",
+        stat1: "NO PP",
+        stat1Label: "",
+        stat2: "NO EN",
+        stat2Label: "",
+        stat3: "NO DP",
+        stat3Label: ""
+    ),
+    global: SBGlobalStats(
+        title: "Varsity Hockey",
+        timer: "15:00",
+        timerDirection: "down",
+        period: "1",
+        periodLabel: "PER",
+        subPeriod: "",
+        primaryScoreResetOnPeriod: false,
+        secondaryScoreResetOnPeriod: false,
+        changePossessionOnScore: false
+    ),
+    controls: [
+        "primaryScore": .init(type: "counter", label: "Goal", periodReset: false),
+        "secondaryScore": .init(type: "counter", label: "SOG", periodReset: false),
+        "stat1": .init(type: "cycle", label: "", options: ["NO PP", "PP"], periodReset: true),
+        "stat2": .init(type: "cycle", label: "", options: ["NO EN", "EN"], periodReset: true),
+        "stat3": .init(type: "cycle", label: "", options: ["NO DP", "DP"], periodReset: true),
+    ]
+)
+
+private let soccerConfig = SBMatchConfig(
+    matchId: "soccer",
+    layout: "stacked",
+    team1: SBTeam(
+        name: "Home",
+        bgColor: "#1e40af",
+        possession: false
+    ),
+    team2: SBTeam(
+        name: "Away",
+        bgColor: "#dc2626",
+        textColor: "#ffffff",
+        possession: false
+    ),
+    global: SBGlobalStats(
+        title: "VARSITY SOCCER",
+        timer: "30:00",
+        timerDirection: "down",
+        period: "1",
+        periodLabel: "HALF",
+        subPeriod: "",
+        primaryScoreResetOnPeriod: false,
+        secondaryScoreResetOnPeriod: false,
+        changePossessionOnScore: false
+    ),
+    controls: [
+        "primaryScore": .init(type: "counter", label: "Goal", periodReset: false),
+    ]
+)
+
+private let tennisConfig = SBMatchConfig(
+    matchId: "tennis",
+    layout: "stackhistory",
+    team1: SBTeam(
+        name: "Home",
+        bgColor: "#1e40af",
+        possession: true
+    ),
+    team2: SBTeam(
+        name: "Away",
+        bgColor: "#dc2626",
+        textColor: "#ffffff",
+        possession: false
+    ),
+    global: SBGlobalStats(
+        title: "TENNIS",
+        timer: "00:00",
+        timerDirection: "up",
+        period: "1",
+        periodLabel: "SET",
+        subPeriod: "",
+        primaryScoreResetOnPeriod: true,
+        secondaryScoreResetOnPeriod: false,
+        changePossessionOnScore: false,
+        scoringMode: "tennis",
+        minSetScore: 3,
+        maxSetScore: 15,
+        showStats: false
+    ),
+    controls: [
+        "primaryScore": .init(type: "counter", label: "Pt", periodReset: false),
+        "currentSetScore": .init(type: "counter", label: "Game", periodReset: true),
+        "possession": .init(type: "toggleTeam", label: "SERVE", periodReset: false),
+    ]
+)
+
+private let volleyballConfig = SBMatchConfig(
+    matchId: "volleyball",
+    layout: "stacked",
+    team1: SBTeam(
+        name: "Home",
+        bgColor: "#1e40af",
+        possession: true,
+        secondaryScore: "0",
+        stat1: "0",
+        stat1Label: "TO"
+    ),
+    team2: SBTeam(
+        name: "Away",
+        bgColor: "#dc2626",
+        possession: false,
+        secondaryScore: "0",
+        stat1: "0",
+        stat1Label: "TO"
+    ),
+    global: SBGlobalStats(
+        title: "Varsity Volleyball",
+        timer: "00:00",
+        timerDirection: "up",
+        period: "1",
+        periodLabel: "SET",
+        subPeriod: " ",
+        primaryScoreResetOnPeriod: true,
+        secondaryScoreResetOnPeriod: false,
+        changePossessionOnScore: true,
+        minSetScore: 15,
+        maxSetScore: 40
+    ),
+    controls: [
+        "primaryScore": .init(type: "counter", label: "Pt", periodReset: true),
+        "secondaryScore": .init(type: "counter", label: "Set", periodReset: false),
+        "stat1": .init(type: "select", label: "TO", options: ["0", "1", "2", "3"], periodReset: true),
+        "possession": .init(type: "toggleTeam", label: "SERVE", periodReset: false),
+    ]
+)
+
+private let configs: [String: SBMatchConfig] = [
+    "basketball": basketballConfig,
+    "generic": genericConfig,
+    "generic sets": genericSetsConfig,
+    "hockey": hockeyConfig,
+    "soccer": soccerConfig,
+    "tennis": tennisConfig,
+    "volleyball": volleyballConfig,
+]
+
 extension Model {
     func setupSBRemoteControlServer() {
         sbRemoteControlServer.onMessageReceived = { [weak self] message in
@@ -118,7 +405,7 @@ extension Model {
         for widget in database.widgets where widget.type == .scoreboard {
             let scoreboard = widget.scoreboard
             scoreboard.sportId = sportId
-            if let newConfig = loadConfigFromFile(sportId: sportId) {
+            if let newConfig = configs[sportId] {
                 scoreboard.config = newConfig
                 switch newConfig.layout {
                 case "sideBySide":
@@ -196,7 +483,7 @@ extension Model {
         var liveConfig: SBMatchConfig
         if let current = sb?.config, current.matchId == activeId {
             liveConfig = current
-        } else if let loaded = loadConfigFromFile(sportId: activeId) {
+        } else if let loaded = configs[activeId] {
             liveConfig = loaded
             sb?.config = loaded
         } else {
@@ -205,35 +492,18 @@ extension Model {
                 layout: "stacked",
                 team1: SBTeam(
                     name: "FILE MISSING",
-                    bgColor: "#000",
-                    textColor: "#fff",
+                    bgColor: "#000000",
                     possession: false,
                     primaryScore: "0",
-                    secondaryScore: "0",
-                    stat1: "",
-                    stat1Label: "",
-                    stat2: "",
-                    stat2Label: "",
-                    stat3: "",
-                    stat3Label: "",
-                    stat4: "",
-                    stat4Label: ""
+                    secondaryScore: "0"
                 ),
                 team2: SBTeam(
                     name: "ERROR",
-                    bgColor: "#000",
-                    textColor: "#fff",
+                    bgColor: "#000000",
+                    textColor: "#ffffff",
                     possession: false,
                     primaryScore: "0",
-                    secondaryScore: "0",
-                    stat1: "",
-                    stat1Label: "",
-                    stat2: "",
-                    stat2Label: "",
-                    stat3: "",
-                    stat3Label: "",
-                    stat4: "",
-                    stat4Label: ""
+                    secondaryScore: "0"
                 ),
                 global: SBGlobalStats(
                     title: "ERROR",
@@ -284,50 +554,9 @@ extension Model {
         return liveConfig
     }
 
-    private func loadConfigFromFile(sportId: String) -> SBMatchConfig? {
-        if let path = Bundle.main.path(forResource: sportId, ofType: "json", inDirectory: "Web") ??
-            Bundle.main.path(forResource: sportId, ofType: "json")
-        {
-            if let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
-               let config = try? JSONDecoder().decode(SBMatchConfig.self, from: data)
-            {
-                return config
-            }
-        }
-        return nil
-    }
-
     func getAvailableSports() -> [String] {
-        var sports: Set<String> = []
-        let fileManager = FileManager.default
-        let resourcePath = Bundle.main.resourcePath ?? ""
-        let webPath = (resourcePath as NSString).appendingPathComponent("Web")
-        if let files = try? fileManager.contentsOfDirectory(atPath: webPath) {
-            for file in files where file.hasSuffix(".json") {
-                sports.insert(file.replacingOccurrences(of: ".json", with: ""))
-            }
-        }
-        if let files = try? fileManager.contentsOfDirectory(atPath: resourcePath) {
-            let jsonFiles = files.filter { $0.hasSuffix(".json") }
-            for file in jsonFiles {
-                let name = file.replacingOccurrences(of: ".json", with: "")
-                if [
-                    "volleyball",
-                    "basketball",
-                    "hockey",
-                    "soccer",
-                    "football",
-                    "tennis",
-                    "generic",
-                    "generic_sets",
-                ].contains(name) || !sports.isEmpty {
-                    sports.insert(name)
-                } else if sports.isEmpty, !name.starts(with: "."), !name.contains("Config") {
-                    sports.insert(name)
-                }
-            }
-        }
-        let topPriority = ["generic", "generic_sets"]
+        let sports = configs.keys
+        let topPriority = ["generic", "generic sets"]
         let rest = sports.filter { !topPriority.contains($0) }.sorted()
         let finalSports = topPriority.filter { sports.contains($0) } + rest
         return finalSports.isEmpty ? ["volleyball", "basketball"] : finalSports

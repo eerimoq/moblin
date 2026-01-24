@@ -10,24 +10,24 @@ struct SBControl: Codable {
 struct SBTeam: Codable {
     var name: String
     var bgColor: String
-    var textColor: String
+    var textColor: String = "#ffffff"
     var possession: Bool
-    var primaryScore: String
-    var secondaryScore: String
-    var secondaryScoreLabel: String?
+    var primaryScore: String = "0"
+    var secondaryScore: String = ""
+    var secondaryScoreLabel: String? = ""
     var secondaryScore1: String?
     var secondaryScore2: String?
     var secondaryScore3: String?
     var secondaryScore4: String?
     var secondaryScore5: String?
-    var stat1: String
-    var stat1Label: String
-    var stat2: String
-    var stat2Label: String
-    var stat3: String
-    var stat3Label: String
-    var stat4: String
-    var stat4Label: String
+    var stat1: String = ""
+    var stat1Label: String = ""
+    var stat2: String = ""
+    var stat2Label: String = ""
+    var stat3: String = ""
+    var stat3Label: String = ""
+    var stat4: String = ""
+    var stat4Label: String = ""
 }
 
 struct SBGlobalStats: Codable {
