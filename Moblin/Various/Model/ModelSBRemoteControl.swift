@@ -89,10 +89,14 @@ extension Model {
             if let a = Int(config.team2.primaryScore) {
                 scoreboard.generic.score.away = a
             }
-            scoreboard.team1BgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? scoreboard.team1BgColor
-            scoreboard.team1TextColor = RgbColor.fromHex(string: config.team1.textColor) ?? scoreboard.team1TextColor
-            scoreboard.team2BgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? scoreboard.team2BgColor
-            scoreboard.team2TextColor = RgbColor.fromHex(string: config.team2.textColor) ?? scoreboard.team2TextColor
+            scoreboard.team1BgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? scoreboard
+                .team1BgColor
+            scoreboard.team1TextColor = RgbColor.fromHex(string: config.team1.textColor) ?? scoreboard
+                .team1TextColor
+            scoreboard.team2BgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? scoreboard
+                .team2BgColor
+            scoreboard.team2TextColor = RgbColor.fromHex(string: config.team2.textColor) ?? scoreboard
+                .team2TextColor
             scoreboard.loadColors()
             let parts = config.global.timer.split(separator: ":")
             if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
@@ -147,10 +151,14 @@ extension Model {
                 }
                 scoreboard.generic.clockDirection = (newConfig.global.timerDirection == "down") ? .down : .up
                 scoreboard.generic.isClockStopped = true
-                scoreboard.team1BgColor = RgbColor.fromHex(string: newConfig.team1.bgColor) ?? scoreboard.team1BgColor
-                scoreboard.team1TextColor = RgbColor.fromHex(string: newConfig.team1.textColor) ?? scoreboard.team1TextColor
-                scoreboard.team2BgColor = RgbColor.fromHex(string: newConfig.team2.bgColor) ?? scoreboard.team2BgColor
-                scoreboard.team2TextColor = RgbColor.fromHex(string: newConfig.team2.textColor) ?? scoreboard.team2TextColor
+                scoreboard.team1BgColor = RgbColor.fromHex(string: newConfig.team1.bgColor) ?? scoreboard
+                    .team1BgColor
+                scoreboard.team1TextColor = RgbColor.fromHex(string: newConfig.team1.textColor) ?? scoreboard
+                    .team1TextColor
+                scoreboard.team2BgColor = RgbColor.fromHex(string: newConfig.team2.bgColor) ?? scoreboard
+                    .team2BgColor
+                scoreboard.team2TextColor = RgbColor.fromHex(string: newConfig.team2.textColor) ?? scoreboard
+                    .team2TextColor
                 scoreboard.loadColors()
             }
         }
