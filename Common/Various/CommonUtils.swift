@@ -615,7 +615,6 @@ class RgbColor: Codable, Equatable {
         return .init(red: red + threshold, green: green + threshold, blue: blue + threshold)
     }
 
-    
     func toHex() -> String {
         return String(format: "#%02X%02X%02X", red, green, blue)
     }
@@ -623,9 +622,9 @@ class RgbColor: Codable, Equatable {
     static func fromHex(string: String) -> RgbColor? {
         let hex = string.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
-       
+
         guard Scanner(string: hex).scanHexInt64(&int) else { return nil }
-        
+
         let r, g, b: UInt64
         switch hex.count {
         case 3: // #RGB
@@ -666,7 +665,7 @@ extension Color {
         let rgb = RgbColor.fromHex(string: hex) ?? RgbColor.white
         self.init(red: Double(rgb.red) / 255, green: Double(rgb.green) / 255, blue: Double(rgb.blue) / 255)
     }
-    
+
     func toRgb() -> RgbColor? {
         guard let components = UIColor(self).cgColor.components else {
             return nil

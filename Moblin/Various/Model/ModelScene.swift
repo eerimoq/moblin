@@ -1050,7 +1050,7 @@ extension Model {
         }
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         DispatchQueue.main.async {
-            effect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+            effect.update(scoreboard: widget.scoreboard)
         }
 
         effects.append(effect)

@@ -68,24 +68,24 @@ struct SceneWidgetSettingsView: View {
                              layout: $sceneWidget.layout,
                              widget: widget,
                              numericInput: $database.sceneNumericInput)
-            .onChange(of: sceneWidget.layout.alignment) { alignment in
-                if widget.type == .scoreboard {
-                    if alignment == .center {
+                .onChange(of: sceneWidget.layout.alignment) { alignment in
+                    if widget.type == .scoreboard {
+                        if alignment == .center {
+                            sceneWidget.layout.x = 50.0
+                            sceneWidget.layout.y = 4.0
+                        } else if alignment == .topLeft {
+                            sceneWidget.layout.x = 0.5
+                            sceneWidget.layout.y = 0.5
+                        }
+                    } else if alignment == .center {
                         sceneWidget.layout.x = 50.0
-                        sceneWidget.layout.y = 4.0
-                    } else if alignment == .topLeft {
-                        sceneWidget.layout.x = 0.5
-                        sceneWidget.layout.y = 0.5
+                        sceneWidget.layout.y = 50.0
                     }
-                } else if alignment == .center {
-                    sceneWidget.layout.x = 50.0
-                    sceneWidget.layout.y = 50.0
+                    sceneWidget.layout.updateXString()
+                    sceneWidget.layout.updateYString()
+                    model.sceneUpdated()
                 }
-                sceneWidget.layout.updateXString()
-                sceneWidget.layout.updateYString()
-                model.sceneUpdated()
-            }
-            
+
             ShortcutSectionView {
                 WidgetShortcutView(database: model.database, widget: widget)
                 if widget.type == .scene,

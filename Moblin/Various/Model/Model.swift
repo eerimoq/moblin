@@ -1590,7 +1590,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             self.updateAutoSceneSwitcher(now: monotonicNow)
             self.sendPeriodicRemoteControlStreamerStatus()
             self.speechToTextProcess()
-            self.broadcastStreamStats() //to broadcast stream stats to remote control interface
+            self.broadcastStreamStats() // to broadcast stream stats to remote control interface
         }
         periodicTimer3s.startPeriodic(interval: 3) {
             self.teslaGetDriveState()

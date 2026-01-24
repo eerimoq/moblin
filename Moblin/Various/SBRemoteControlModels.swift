@@ -44,7 +44,7 @@ struct SBGlobalStats: Codable {
     var scoringMode: String?
     var minSetScore: Int?
     var maxSetScore: Int?
-    
+
     // Visual Toggles
     var showTitle: Bool?
     var titleTop: Bool?
@@ -73,9 +73,5 @@ struct SBMessage: Codable {
 
 struct SBStreamStats: Codable {
     var battery: String
-    var system: String
     var bitrate: String
-    var bonding: String
-    var rtts: String
-    var uptime: String
 }

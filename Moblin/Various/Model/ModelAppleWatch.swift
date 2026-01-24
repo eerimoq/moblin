@@ -424,10 +424,7 @@ extension Model {
                     }
                     widget.scoreboard.generic.tickClock()
                     DispatchQueue.main.async {
-                        scoreboardEffect.update(
-                            scoreboard: widget.scoreboard,
-                            players: self.database.scoreboardPlayers
-                        )
+                        scoreboardEffect.update(scoreboard: widget.scoreboard)
                         self.broadcastCurrentState()
                     }
                     sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
@@ -668,7 +665,7 @@ extension Model: WCSessionDelegate {
             guard let scoreboardEffect = self.scoreboardEffects[action.id] else {
                 return
             }
-            scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+            scoreboardEffect.update(scoreboard: widget.scoreboard)
             self.sendUpdatePadelScoreboardToWatch(id: action.id, padel: widget.scoreboard.padel)
         }
     }
@@ -782,7 +779,7 @@ extension Model: WCSessionDelegate {
             guard let scoreboardEffect = self.scoreboardEffects[action.id] else {
                 return
             }
-            scoreboardEffect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
+            scoreboardEffect.update(scoreboard: widget.scoreboard)
             self.sendUpdateGenericScoreboardToWatch(id: action.id, generic: widget.scoreboard.generic)
         }
     }
