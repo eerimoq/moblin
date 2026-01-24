@@ -1,21 +1,21 @@
 import SwiftUI
 
-private struct SmoothView: View {
+private struct SmoothnessView: View {
     let model: Model
     @ObservedObject var beauty: SettingsBeauty
 
     private func setSettings() {
-        model.beautyEffect.setSmoothSettings(radius: beauty.smoothRadius,
-                                             strength: beauty.smoothStrength)
+        model.beautyEffect.setSmoothnessSettings(radius: beauty.smoothnessRadius,
+                                                 strength: beauty.smoothnessStrength)
     }
 
     var body: some View {
-        EffectSlider(title: "RADIUS", range: 5 ... 20, value: $beauty.smoothRadius)
-            .onChange(of: beauty.smoothRadius) { _ in
+        EffectSlider(title: "RADIUS", range: 5 ... 20, value: $beauty.smoothnessRadius)
+            .onChange(of: beauty.smoothnessRadius) { _ in
                 setSettings()
             }
-        EffectSlider(title: "STRENGTH", range: 0 ... 1, value: $beauty.smoothStrength)
-            .onChange(of: beauty.smoothStrength) { _ in
+        EffectSlider(title: "STRENGTH", range: 0 ... 1, value: $beauty.smoothnessStrength)
+            .onChange(of: beauty.smoothnessStrength) { _ in
                 setSettings()
             }
     }
@@ -53,8 +53,8 @@ struct StreamOverlayRightBeautyView: View {
 
     var body: some View {
         switch beauty.settings {
-        case .smooth:
-            SmoothView(model: model, beauty: beauty)
+        case .smoothness:
+            SmoothnessView(model: model, beauty: beauty)
         case .shape:
             ShapeView(model: model, beauty: beauty)
         }

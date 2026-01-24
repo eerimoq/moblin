@@ -2,8 +2,8 @@ import MetalPetal
 import Vision
 
 final class BeautyEffect: VideoEffect {
-    private var smoothRadius: Float = 10.0
-    private var smoothStrength: Float = 0.65
+    private var smoothnessRadius: Float = 10.0
+    private var smoothnessStrength: Float = 0.65
     private var shapePosition: Float = 0.5
     private var shapeRadius: Float = 0.5
     private var shapeStrength: Float = 0.5
@@ -15,10 +15,10 @@ final class BeautyEffect: VideoEffect {
         framesPerFade = 15 * (fps / 30)
     }
 
-    func setSmoothSettings(radius: Float, strength: Float) {
+    func setSmoothnessSettings(radius: Float, strength: Float) {
         processorPipelineQueue.async {
-            self.smoothRadius = radius
-            self.smoothStrength = strength
+            self.smoothnessRadius = radius
+            self.smoothnessStrength = strength
         }
     }
 
@@ -35,8 +35,8 @@ final class BeautyEffect: VideoEffect {
         updateLastFaceDetectionsBefore(info.isFirstAfterAttach)
         updateScaleFactors(detections, info.isFirstAfterAttach)
         var image = image
-        if smoothStrength > 0 {
-            image = addBeautySmoothMetalPetal(image) ?? image
+        if smoothnessStrength > 0 {
+            image = addBeautySmoothnessMetalPetal(image) ?? image
         }
         if shapeStrength > 0 {
             image = addBeautyShapeMetalPetal(image, detections, info) ?? image
@@ -46,7 +46,7 @@ final class BeautyEffect: VideoEffect {
     }
 
     override func isEnabled() -> Bool {
-        return smoothStrength > 0 || shapeStrength > 0
+        return smoothnessStrength > 0 || shapeStrength > 0
     }
 
     override func isMetalPetal() -> Bool {
@@ -93,10 +93,10 @@ final class BeautyEffect: VideoEffect {
         }
     }
 
-    private func addBeautySmoothMetalPetal(_ image: MTIImage?) -> MTIImage? {
+    private func addBeautySmoothnessMetalPetal(_ image: MTIImage?) -> MTIImage? {
         let filter = MTIHighPassSkinSmoothingFilter()
-        filter.amount = smoothStrength
-        filter.radius = smoothRadius
+        filter.amount = smoothnessStrength
+        filter.radius = smoothnessRadius
         filter.inputImage = image
         return filter.outputImage
     }

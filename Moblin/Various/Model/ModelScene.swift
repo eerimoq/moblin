@@ -489,8 +489,8 @@ extension Model {
         glassesEffect = createGlassesEffect()
         sparkleEffect = createStarEffect()
         beautyEffect = BeautyEffect(fps: Float(stream.fps))
-        beautyEffect.setSmoothSettings(radius: database.beauty.smoothRadius,
-                                       strength: database.beauty.smoothStrength)
+        beautyEffect.setSmoothnessSettings(radius: database.beauty.smoothnessRadius,
+                                           strength: database.beauty.smoothnessStrength)
         beautyEffect.setShapeSettings(position: database.beauty.shapePosition,
                                       radius: database.beauty.shapeRadius,
                                       strength: database.beauty.shapeStrength)

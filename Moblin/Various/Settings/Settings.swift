@@ -1033,13 +1033,13 @@ class SettingsFace: Codable, ObservableObject {
 }
 
 enum SettingsBeautySettings: CaseIterable {
-    case smooth
+    case smoothness
     case shape
 
     func toString() -> String {
         switch self {
-        case .smooth:
-            return String(localized: "Smooth")
+        case .smoothness:
+            return String(localized: "Smoothness")
         case .shape:
             return String(localized: "Shape")
         }
@@ -1048,12 +1048,12 @@ enum SettingsBeautySettings: CaseIterable {
 
 class SettingsBeauty: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var smoothRadius: Float = 10.0
-    @Published var smoothStrength: Float = 0.65
+    @Published var smoothnessRadius: Float = 10.0
+    @Published var smoothnessStrength: Float = 0.65
     @Published var shapePosition: Float = 0.5
     @Published var shapeRadius: Float = 0.5
     @Published var shapeStrength: Float = 0.5
-    @Published var settings: SettingsBeautySettings = .smooth
+    @Published var settings: SettingsBeautySettings = .smoothness
 
     enum CodingKeys: CodingKey {
         case enabled,
@@ -1067,8 +1067,8 @@ class SettingsBeauty: Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
-        try container.encode(.smoothRadius, smoothRadius)
-        try container.encode(.smoothStrength, smoothStrength)
+        try container.encode(.smoothRadius, smoothnessRadius)
+        try container.encode(.smoothStrength, smoothnessStrength)
         try container.encode(.shapePosition, shapePosition)
         try container.encode(.shapeRadius, shapeRadius)
         try container.encode(.shapeStrength, shapeStrength)
@@ -1079,8 +1079,8 @@ class SettingsBeauty: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        smoothRadius = container.decode(.smoothRadius, Float.self, 10.0)
-        smoothStrength = container.decode(.smoothStrength, Float.self, 0.65)
+        smoothnessRadius = container.decode(.smoothRadius, Float.self, 10.0)
+        smoothnessStrength = container.decode(.smoothStrength, Float.self, 0.65)
         shapePosition = container.decode(.shapePosition, Float.self, 0.5)
         shapeRadius = container.decode(.shapeRadius, Float.self, 0.5)
         shapeStrength = container.decode(.shapeStrength, Float.self, 0.5)
