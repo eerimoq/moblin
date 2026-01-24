@@ -21,28 +21,20 @@ class SBRemoteControlServer {
                 conn.stateUpdateHandler = { state in
                     if case .ready = state {
                         conn.receive(minimumIncompleteLength: 1, maximumLength: 1024) { data, _, _, _ in
-                            guard let data = data,
-                                  let req = String(data: data, encoding: .utf8) else { conn.cancel(); return }
-                            if req.contains("GET /volleyball.png") { self.serveIcon(on: conn) }
-                            else if req.contains(".json") {
-                                // NEW: Dynamically serve JSON files for sport configs
-                                let fileName = req.components(separatedBy: " ").indices.contains(1) ? req
-                                    .components(separatedBy: " ")[1].replacingOccurrences(
-                                        of: "/",
-                                        with: ""
-                                    ).replacingOccurrences(of: ".json", with: "") : ""
+                            guard let data = data, let req = String(data: data, encoding: .utf8) else {
+                                conn.cancel()
+                                return
+                            }
+                            if req.contains("GET /volleyball.png") {
+                                self.serveIcon(on: conn)
+                            } else if req.contains("GET /scoreboard") {
                                 self.serveFile(
                                     on: conn,
-                                    name: fileName,
-                                    ext: "json",
-                                    type: "application/json"
+                                    name: "scoreboard",
+                                    ext: "html",
+                                    type: "text/html"
                                 )
-                            } else if req.contains("GET /scoreboard") { self.serveFile(
-                                on: conn,
-                                name: "scoreboard",
-                                ext: "html",
-                                type: "text/html"
-                            ) } else {
+                            } else {
                                 self.serveFile(on: conn, name: "remote", ext: "html", type: "text/html")
                             }
                         }
@@ -51,27 +43,36 @@ class SBRemoteControlServer {
                 conn.start(queue: .main)
             }
             httpListener?.start(queue: .main)
-        } catch { logger.info("SB Server: HTTP Error") }
+        } catch {
+            logger.info("SB Server: HTTP Error")
+        }
     }
 
     private func serveFile(on conn: NWConnection, name: String, ext: String, type: String) {
-        let path = Bundle.main.path(forResource: name, ofType: ext, inDirectory: "Web") ?? Bundle.main.path(
-            forResource: name,
-            ofType: ext
-        )
+        let path = Bundle.main.path(forResource: name, ofType: ext, inDirectory: "Web")
+            ?? Bundle.main.path(forResource: name, ofType: ext)
         guard let path = path, let content = try? String(contentsOfFile: path, encoding: .utf8) else {
-            conn.cancel(); return
+            conn.cancel()
+            return
         }
         let resp = "HTTP/1.1 200 OK\r\nContent-Type: \(type); charset=utf-8\r\nContent-Length: \(content.utf8.count)\r\nConnection: close\r\n\r\n\(content)"
-        conn.send(content: resp.data(using: .utf8), completion: .contentProcessed { _ in conn.cancel() })
+        conn.send(content: resp.data(using: .utf8), completion: .contentProcessed { _ in
+            conn.cancel()
+        })
     }
 
     private func serveIcon(on conn: NWConnection) {
         guard let img = UIImage(named: "VolleyballIndicator"),
-              let data = img.pngData() else { conn.cancel(); return }
+              let data = img.pngData()
+        else {
+            conn.cancel()
+            return
+        }
         let head = "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n"
         var out = Data(head.utf8); out.append(data)
-        conn.send(content: out, completion: .contentProcessed { _ in conn.cancel() })
+        conn.send(content: out, completion: .contentProcessed { _ in
+            conn.cancel()
+        })
     }
 
     private func startWsServer() {
@@ -95,8 +96,11 @@ class SBRemoteControlServer {
             if let d = content, let msg = try? JSONDecoder().decode(SBMessage.self, from: d) {
                 DispatchQueue.main.async { self.onMessageReceived?(msg) }
             }
-            if err == nil { self.receiveWs(on: conn) }
-            else { self.connectedClients.removeAll(where: { $0 === conn }) }
+            if err == nil {
+                self.receiveWs(on: conn)
+            } else {
+                self.connectedClients.removeAll(where: { $0 === conn })
+            }
         }
     }
 
