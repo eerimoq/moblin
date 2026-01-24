@@ -55,7 +55,13 @@ class SBRemoteControlServer {
             conn.cancel()
             return
         }
-        let resp = "HTTP/1.1 200 OK\r\nContent-Type: \(type); charset=utf-8\r\nContent-Length: \(content.utf8.count)\r\nConnection: close\r\n\r\n\(content)"
+        let resp = """
+        HTTP/1.1 200 OK\r\nContent-Type: \(type); charset=utf-8\r\n\
+        Content-Length: \(content.utf8.count)\r\n\
+        Connection: close\r\n\
+        \r\n\
+        \(content)
+        """
         conn.send(content: resp.data(using: .utf8), completion: .contentProcessed { _ in
             conn.cancel()
         })
@@ -68,7 +74,12 @@ class SBRemoteControlServer {
             conn.cancel()
             return
         }
-        let head = "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n"
+        let head = """
+        HTTP/1.1 200 OK\r\nContent-Type: image/png\r\n\
+        Content-Length: \(data.count)\r\n\
+        Connection: close\r\n\
+        \r\n
+        """
         var out = Data(head.utf8); out.append(data)
         conn.send(content: out, completion: .contentProcessed { _ in
             conn.cancel()
