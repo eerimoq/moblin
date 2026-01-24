@@ -27,7 +27,7 @@ final class ScoreboardEffect: VideoEffect {
 
     @MainActor
     func update(scoreboard: SettingsWidgetScoreboard) {
-        updateModular(sb: scoreboard)
+        updateModular(scoreboard: scoreboard)
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
@@ -49,21 +49,22 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     @MainActor
-    private func updateModular(sb: SettingsWidgetScoreboard) {
+    private func updateModular(scoreboard: SettingsWidgetScoreboard) {
         guard let config = MoblinApp.globalModel?.getCurrentConfigForEffect() else {
             return
         }
         let content = VStack(alignment: .center, spacing: 0) {
-            if sb.layout == .sideBySide {
-                renderSideBySide(sb: sb, ext: config)
-            } else if sb.layout == .stackhistory {
-                renderStackHistory(sb: sb, ext: config)
+            if scoreboard.layout == .sideBySide {
+                renderSideBySide(scoreboard: scoreboard, ext: config)
+            } else if scoreboard.layout == .stackhistory {
+                renderStackHistory(scoreboard: scoreboard, ext: config)
             } else {
-                renderStacked(sb: sb, ext: config)
+                renderStacked(scoreboard: scoreboard, ext: config)
             }
         }
         .padding(0)
-        .overlay(TopBottomBorder().stroke(Color.white, lineWidth: 0.5))
+        .overlay(TopBottomBorder()
+            .stroke(Color.white, lineWidth: 0.5))
         .padding(5)
         let renderer = ImageRenderer(content: content)
         renderer.scale = UIScreen.main.scale
@@ -85,10 +86,10 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     @ViewBuilder
-    private func renderStackHistory(sb: SettingsWidgetScoreboard, ext: SBMatchConfig) -> some View {
-        let fSize = CGFloat(sb.stackedFontSize)
-        let rowH = CGFloat(sb.stackedRowHeight)
-        let teamRowFullH = rowH + (sb.showSecondaryRows ? rowH * 0.6 : 0)
+    private func renderStackHistory(scoreboard: SettingsWidgetScoreboard, ext: SBMatchConfig) -> some View {
+        let fSize = CGFloat(scoreboard.stackedFontSize)
+        let rowH = CGFloat(scoreboard.stackedRowHeight)
+        let teamRowFullH = rowH + (scoreboard.showSecondaryRows ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
         let periodFull = "\(ext.global.periodLabel) \(ext.global.period)".trimmingCharacters(in: .whitespaces)
         let activeStats = [ext.global.timer, periodFull, ext.global.subPeriod].filter {
@@ -98,19 +99,19 @@ final class ScoreboardEffect: VideoEffect {
         let histW = fSize * 1.5
         let maxHistory = calculateMaxHistory(ext: ext)
         let extraWidth = CGFloat(maxHistory) * histW
-        let finalWidth = CGFloat(sb.stackedWidth) + extraWidth
+        let finalWidth = CGFloat(scoreboard.stackedWidth) + extraWidth
         VStack(spacing: 0) {
-            if sb.showStackedHeader && sb.titleAbove {
-                renderTitleBlock(title: ext.global.title, sb: sb, isStacked: true)
+            if scoreboard.showStackedHeader && scoreboard.titleAbove {
+                renderTitleBlock(title: ext.global.title, scorebaord: scoreboard, isStacked: true)
             }
             HStack(alignment: .top, spacing: 0) {
                 VStack(spacing: 0) {
                     renderStackHistoryRow(
                         team: ext.team1,
                         opp: ext.team2,
-                        sb: sb,
-                        bg: sb.team1BgColorColor,
-                        txt: sb.team1TextColorColor,
+                        scoreboard: scoreboard,
+                        backgroundColor: scoreboard.team1BgColorColor,
+                        textColor: scoreboard.team1TextColorColor,
                         histCount: maxHistory,
                         histW: histW,
                         currentPeriod: Int(ext.global.period) ?? 1
@@ -118,31 +119,31 @@ final class ScoreboardEffect: VideoEffect {
                     renderStackHistoryRow(
                         team: ext.team2,
                         opp: ext.team1,
-                        sb: sb,
-                        bg: sb.team2BgColorColor,
-                        txt: sb.team2TextColorColor,
+                        scoreboard: scoreboard,
+                        backgroundColor: scoreboard.team2BgColorColor,
+                        textColor: scoreboard.team2TextColorColor,
                         histCount: maxHistory,
                         histW: histW,
                         currentPeriod: Int(ext.global.period) ?? 1
                     )
                 }
                 .frame(width: finalWidth)
-                if sb.showGlobalStatsBlock && !activeStats.isEmpty {
+                if scoreboard.showGlobalStatsBlock && !activeStats.isEmpty {
                     VStack(spacing: 0) {
                         ForEach(0 ..< activeStats.count, id: \.self) { i in
-                            self.renderGlobalStatBox(val: activeStats[i], h: subH, sb: sb)
+                            self.renderGlobalStatBox(val: activeStats[i], h: subH, scoreboard: scoreboard)
                         }
                     }
-                    .frame(width: CGFloat(sb.stackedFontSize * 3.5))
+                    .frame(width: CGFloat(scoreboard.stackedFontSize * 3.5))
                     .frame(height: totalH)
                     .background(Color.black)
                 }
             }
-            if sb.showStackedHeader && !sb.titleAbove {
-                renderTitleBlock(title: ext.global.title, sb: sb, isStacked: true)
+            if scoreboard.showStackedHeader && !scoreboard.titleAbove {
+                renderTitleBlock(title: ext.global.title, scorebaord: scoreboard, isStacked: true)
             }
-            if sb.showStackedFooter {
-                renderFooterBlock(sb: sb)
+            if scoreboard.showStackedFooter {
+                renderFooterBlock(scoreboard: scoreboard)
             }
         }
     }
@@ -151,25 +152,27 @@ final class ScoreboardEffect: VideoEffect {
     private func renderStackHistoryRow(
         team: SBTeam,
         opp: SBTeam,
-        sb: SettingsWidgetScoreboard,
-        bg: Color,
-        txt: Color,
+        scoreboard: SettingsWidgetScoreboard,
+        backgroundColor: Color,
+        textColor: Color,
         histCount: Int,
         histW: CGFloat,
         currentPeriod: Int
     ) -> some View {
-        let fSize = CGFloat(sb.stackedFontSize), h = CGFloat(sb.stackedRowHeight), boxW = fSize * 1.55
+        let fSize = CGFloat(scoreboard.stackedFontSize), h = CGFloat(scoreboard.stackedRowHeight),
+            boxW = fSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 Text(team.name)
-                    .font(.system(size: fSize, weight: sb.stackedIsBold ? .bold : .regular))
-                    .italic(sb.stackedIsItalic)
+                    .font(.system(size: fSize, weight: scoreboard.stackedIsBold ? .bold : .regular))
+                    .italic(scoreboard.stackedIsItalic)
                     .lineLimit(1)
                     .padding(.leading, 6)
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .frame(height: h)
-                renderPossession(show: team.possession, size: fSize).padding(.horizontal, 2).frame(height: h)
+                renderPossession(show: team.possession, size: fSize)
+                    .padding(.horizontal, 2).frame(height: h)
                 if histCount > 0 {
                     ForEach(1 ... histCount, id: \.self) { i in
                         let val = self.getHistoryVal(team: team, i: i)
@@ -212,12 +215,12 @@ final class ScoreboardEffect: VideoEffect {
                     w: boxW,
                     h: h,
                     gray: false,
-                    it: sb.stackedIsItalic
+                    it: scoreboard.stackedIsItalic
                 )
             }
-            .background(bg)
-            .foregroundStyle(txt)
-            if sb.showSecondaryRows {
+            .background(backgroundColor)
+            .foregroundStyle(textColor)
+            if scoreboard.showSecondaryRows {
                 renderSecondaryRow(team: team, fSize: fSize, h: h * 0.6)
             }
         }
@@ -241,9 +244,9 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     @ViewBuilder
-    private func renderStacked(sb: SettingsWidgetScoreboard, ext: SBMatchConfig) -> some View {
-        let _ = CGFloat(sb.stackedFontSize), rowH = CGFloat(sb.stackedRowHeight)
-        let teamRowFullH = rowH + (sb.showSecondaryRows ? rowH * 0.6 : 0)
+    private func renderStacked(scoreboard: SettingsWidgetScoreboard, ext: SBMatchConfig) -> some View {
+        let _ = CGFloat(scoreboard.stackedFontSize), rowH = CGFloat(scoreboard.stackedRowHeight)
+        let teamRowFullH = rowH + (scoreboard.showSecondaryRows ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
         let periodFull = "\(ext.global.periodLabel) \(ext.global.period)".trimmingCharacters(in: .whitespaces)
         let activeStats = [ext.global.timer, periodFull, ext.global.subPeriod].filter {
@@ -251,64 +254,64 @@ final class ScoreboardEffect: VideoEffect {
         }
         let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
         VStack(spacing: 0) {
-            if sb.showStackedHeader && sb.titleAbove {
-                renderTitleBlock(title: ext.global.title, sb: sb, isStacked: true)
+            if scoreboard.showStackedHeader && scoreboard.titleAbove {
+                renderTitleBlock(title: ext.global.title, scorebaord: scoreboard, isStacked: true)
             }
             HStack(alignment: .top, spacing: 0) {
                 VStack(spacing: 0) {
                     renderStackedRow(
                         team: ext.team1,
-                        sb: sb,
-                        bg: sb.team1BgColorColor,
-                        txt: sb.team1TextColorColor
+                        scoreboard: scoreboard,
+                        backgroundColor: scoreboard.team1BgColorColor,
+                        textColor: scoreboard.team1TextColorColor
                     )
                     renderStackedRow(
                         team: ext.team2,
-                        sb: sb,
-                        bg: sb.team2BgColorColor,
-                        txt: sb.team2TextColorColor
+                        scoreboard: scoreboard,
+                        backgroundColor: scoreboard.team2BgColorColor,
+                        textColor: scoreboard.team2TextColorColor
                     )
                 }
-                .frame(width: CGFloat(sb.stackedWidth))
-                if sb.showGlobalStatsBlock && !activeStats.isEmpty {
+                .frame(width: CGFloat(scoreboard.stackedWidth))
+                if scoreboard.showGlobalStatsBlock && !activeStats.isEmpty {
                     VStack(spacing: 0) {
                         ForEach(0 ..< activeStats.count, id: \.self) { i in
-                            self.renderGlobalStatBox(val: activeStats[i], h: subH, sb: sb)
+                            self.renderGlobalStatBox(val: activeStats[i], h: subH, scoreboard: scoreboard)
                         }
                     }
-                    .frame(width: CGFloat(sb.stackedFontSize * 3.5))
+                    .frame(width: CGFloat(scoreboard.stackedFontSize * 3.5))
                     .frame(height: totalH)
                     .background(Color.black)
                 }
             }
-            if sb.showStackedHeader && !sb.titleAbove {
-                renderTitleBlock(title: ext.global.title, sb: sb, isStacked: true)
+            if scoreboard.showStackedHeader && !scoreboard.titleAbove {
+                renderTitleBlock(title: ext.global.title, scorebaord: scoreboard, isStacked: true)
             }
-            if sb.showStackedFooter {
-                renderFooterBlock(sb: sb)
+            if scoreboard.showStackedFooter {
+                renderFooterBlock(scoreboard: scoreboard)
             }
         }
     }
 
     @ViewBuilder
-    private func renderSideBySide(sb: SettingsWidgetScoreboard, ext: SBMatchConfig) -> some View {
-        let fSize = CGFloat(sb.sbsFontSize), h = CGFloat(sb.sbsRowHeight)
-        let teamRowFullH = h + (sb.showSecondaryRows ? h * 0.6 : 0)
+    private func renderSideBySide(scoreboard: SettingsWidgetScoreboard, ext: SBMatchConfig) -> some View {
+        let fSize = CGFloat(scoreboard.sbsFontSize), h = CGFloat(scoreboard.sbsRowHeight)
+        let teamRowFullH = h + (scoreboard.showSecondaryRows ? h * 0.6 : 0)
         let periodFull = "\(ext.global.periodLabel) \(ext.global.period)".trimmingCharacters(in: .whitespaces)
         VStack(spacing: 2) {
-            if sb.showSbsTitle && sb.titleAbove && !ext.global.title.isEmpty {
-                renderTitleBlock(title: ext.global.title, sb: sb, isStacked: false)
+            if scoreboard.showSbsTitle && scoreboard.titleAbove && !ext.global.title.isEmpty {
+                renderTitleBlock(title: ext.global.title, scorebaord: scoreboard, isStacked: false)
             }
             HStack(spacing: 0) {
                 renderSbsHalf(
                     team: ext.team1,
-                    sb: sb,
-                    bg: sb.team1BgColorColor,
-                    txt: sb.team1TextColorColor,
+                    scoreboard: scoreboard,
+                    backgroundColor: scoreboard.team1BgColorColor,
+                    textColor: scoreboard.team1TextColorColor,
                     mirrored: false
                 )
                 Group {
-                    if sb.showGlobalStatsBlock {
+                    if scoreboard.showGlobalStatsBlock {
                         VStack(spacing: 0) {
                             if !periodFull.isEmpty {
                                 Text(periodFull)
@@ -331,31 +334,32 @@ final class ScoreboardEffect: VideoEffect {
                 .foregroundStyle(.white)
                 renderSbsHalf(
                     team: ext.team2,
-                    sb: sb,
-                    bg: sb.team2BgColorColor,
-                    txt: sb.team2TextColorColor,
+                    scoreboard: scoreboard,
+                    backgroundColor: scoreboard.team2BgColorColor,
+                    textColor: scoreboard.team2TextColorColor,
                     mirrored: true
                 )
             }
-            .frame(width: CGFloat(sb.sbsWidth))
+            .frame(width: CGFloat(scoreboard.sbsWidth))
             .overlay(TopBottomBorder()
                 .stroke(Color.white, lineWidth: 0.5))
-            if sb.showSbsTitle && !sb.titleAbove && !ext.global.title.isEmpty {
-                renderTitleBlock(title: ext.global.title, sb: sb, isStacked: false)
+            if scoreboard.showSbsTitle && !scoreboard.titleAbove && !ext.global.title.isEmpty {
+                renderTitleBlock(title: ext.global.title, scorebaord: scoreboard, isStacked: false)
             }
         }
     }
 
     @ViewBuilder
     private func renderStackedRow(team: SBTeam,
-                                  sb: SettingsWidgetScoreboard,
-                                  bg: Color,
-                                  txt: Color) -> some View
+                                  scoreboard: SettingsWidgetScoreboard,
+                                  backgroundColor: Color,
+                                  textColor: Color) -> some View
     {
-        let fSize = CGFloat(sb.stackedFontSize), h = CGFloat(sb.stackedRowHeight), boxW = fSize * 1.55
+        let fSize = CGFloat(scoreboard.stackedFontSize), h = CGFloat(scoreboard.stackedRowHeight),
+            boxW = fSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                if sb.layout == .stacked {
+                if scoreboard.layout == .stacked {
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
@@ -363,16 +367,19 @@ final class ScoreboardEffect: VideoEffect {
                         w: boxW,
                         h: h,
                         gray: true,
-                        it: sb.stackedIsItalic
+                        it: scoreboard.stackedIsItalic
                     )
                 }
-                Text(team.name).font(.system(size: fSize, weight: sb.stackedIsBold ? .bold : .regular))
-                    .italic(sb.stackedIsItalic).lineLimit(1).padding(
-                        .leading,
-                        3
-                    ).frame(maxWidth: .infinity, alignment: .leading).frame(height: h)
+                Text(team.name).font(.system(
+                    size: fSize,
+                    weight: scoreboard.stackedIsBold ? .bold : .regular
+                ))
+                .italic(scoreboard.stackedIsItalic).lineLimit(1).padding(
+                    .leading,
+                    3
+                ).frame(maxWidth: .infinity, alignment: .leading).frame(height: h)
                 renderPossession(show: team.possession, size: fSize).padding(.horizontal, 2).frame(height: h)
-                if sb.layout == .stackedInline {
+                if scoreboard.layout == .stackedInline {
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
@@ -380,7 +387,7 @@ final class ScoreboardEffect: VideoEffect {
                         w: boxW,
                         h: h,
                         gray: true,
-                        it: sb.stackedIsItalic
+                        it: scoreboard.stackedIsItalic
                     )
                 }
                 renderStat(
@@ -390,39 +397,45 @@ final class ScoreboardEffect: VideoEffect {
                     w: boxW,
                     h: h,
                     gray: false,
-                    it: sb.stackedIsItalic
+                    it: scoreboard.stackedIsItalic
                 )
-            }.background(bg).foregroundStyle(txt)
-            // PASS COLORS HERE:
-            if sb.showSecondaryRows { renderSecondaryRow(
-                team: team,
-                fSize: fSize,
-                h: h * 0.6,
-                bg: bg,
-                txt: txt
-            ) }
+            }.background(backgroundColor).foregroundStyle(textColor)
+            if scoreboard.showSecondaryRows {
+                renderSecondaryRow(
+                    team: team,
+                    fSize: fSize,
+                    h: h * 0.6,
+                    backgroundColor: backgroundColor,
+                    textColor: textColor
+                )
+            }
         }
     }
 
     @ViewBuilder
     private func renderSbsHalf(
         team: SBTeam,
-        sb: SettingsWidgetScoreboard,
-        bg: Color,
-        txt: Color,
+        scoreboard: SettingsWidgetScoreboard,
+        backgroundColor: Color,
+        textColor: Color,
         mirrored: Bool
     ) -> some View {
-        let fSize = CGFloat(sb.sbsFontSize), h = CGFloat(sb.sbsRowHeight), boxW = fSize * 1.55
+        let fSize = CGFloat(scoreboard.sbsFontSize)
+        let h = CGFloat(scoreboard.sbsRowHeight)
+        let boxW = fSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 if !mirrored {
                     renderPossession(show: team.possession, size: fSize).padding(.horizontal, 2)
                         .frame(height: h)
-                    Text(team.name).font(.system(size: fSize, weight: sb.sbsIsBold ? .bold : .regular))
-                        .italic(sb.sbsIsItalic).lineLimit(1).padding(
-                            .trailing,
-                            4
-                        ).frame(maxWidth: .infinity, alignment: .trailing).frame(height: h)
+                    Text(team.name).font(.system(
+                        size: fSize,
+                        weight: scoreboard.sbsIsBold ? .bold : .regular
+                    ))
+                    .italic(scoreboard.sbsIsItalic).lineLimit(1).padding(
+                        .trailing,
+                        4
+                    ).frame(maxWidth: .infinity, alignment: .trailing).frame(height: h)
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
@@ -430,7 +443,7 @@ final class ScoreboardEffect: VideoEffect {
                         w: boxW,
                         h: h,
                         gray: true,
-                        it: sb.sbsIsItalic
+                        it: scoreboard.sbsIsItalic
                     )
                     renderStat(
                         team.primaryScore,
@@ -439,7 +452,7 @@ final class ScoreboardEffect: VideoEffect {
                         w: boxW,
                         h: h,
                         gray: false,
-                        it: sb.sbsIsItalic
+                        it: scoreboard.sbsIsItalic
                     )
                 } else {
                     renderStat(
@@ -449,7 +462,7 @@ final class ScoreboardEffect: VideoEffect {
                         w: boxW,
                         h: h,
                         gray: false,
-                        it: sb.sbsIsItalic
+                        it: scoreboard.sbsIsItalic
                     )
                     renderStat(
                         team.secondaryScore,
@@ -458,25 +471,28 @@ final class ScoreboardEffect: VideoEffect {
                         w: boxW,
                         h: h,
                         gray: true,
-                        it: sb.sbsIsItalic
+                        it: scoreboard.sbsIsItalic
                     )
-                    Text(team.name).font(.system(size: fSize, weight: sb.sbsIsBold ? .bold : .regular))
-                        .italic(sb.sbsIsItalic).lineLimit(1).padding(
-                            .leading,
-                            4
-                        ).frame(maxWidth: .infinity, alignment: .leading).frame(height: h)
+                    Text(team.name).font(.system(
+                        size: fSize,
+                        weight: scoreboard.sbsIsBold ? .bold : .regular
+                    ))
+                    .italic(scoreboard.sbsIsItalic).lineLimit(1).padding(
+                        .leading,
+                        4
+                    ).frame(maxWidth: .infinity, alignment: .leading).frame(height: h)
                     renderPossession(show: team.possession, size: fSize).padding(.horizontal, 2)
                         .frame(height: h)
                 }
-            }.background(bg).foregroundStyle(txt)
+            }.background(backgroundColor).foregroundStyle(textColor)
             // PASS COLORS HERE:
-            if sb.showSecondaryRows { renderSecondaryRow(
+            if scoreboard.showSecondaryRows { renderSecondaryRow(
                 team: team,
                 fSize: fSize,
                 h: h * 0.6,
                 alignRight: !mirrored,
-                bg: bg,
-                txt: txt
+                backgroundColor: backgroundColor,
+                textColor: textColor
             ) }
         }
     }
@@ -519,8 +535,8 @@ final class ScoreboardEffect: VideoEffect {
         fSize: CGFloat,
         h: CGFloat,
         alignRight: Bool = false,
-        bg: Color = .black,
-        txt: Color = .white
+        backgroundColor: Color = .black,
+        textColor: Color = .white
     ) -> some View {
         let stats = [
             (team.stat1Label, team.stat1),
@@ -529,10 +545,10 @@ final class ScoreboardEffect: VideoEffect {
             (team.stat4Label, team.stat4),
         ]
         .filter { !$0.1.isEmpty && !$0.1.hasPrefix("NO ") }
-
         HStack(spacing: 8) {
-            if alignRight { Spacer() }
-
+            if alignRight {
+                Spacer()
+            }
             ForEach(0 ..< stats.count, id: \.self) { i in
                 HStack(spacing: 2) {
                     if !stats[i].0.isEmpty { Text(stats[i].0 + ":").opacity(0.8) }
@@ -541,19 +557,20 @@ final class ScoreboardEffect: VideoEffect {
                 .font(.system(size: fSize * 0.65, weight: .bold))
                 .minimumScaleFactor(0.5)
             }
-
-            if !alignRight { Spacer() }
+            if !alignRight {
+                Spacer()
+            }
         }
         .padding(.horizontal, 6)
         .frame(maxWidth: .infinity)
         .frame(height: h)
         .background(
             ZStack {
-                bg
+                backgroundColor
                 Color.black.opacity(0.25)
             }
         )
-        .foregroundStyle(txt)
+        .foregroundStyle(textColor)
     }
 
     @ViewBuilder
@@ -571,16 +588,22 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     @ViewBuilder
-    private func renderGlobalStatBox(val: String, h: CGFloat, sb: SettingsWidgetScoreboard) -> some View {
-        let fSize = sb.layout == .stacked
-            || sb.layout == .stackhistory
-            || sb.layout == .stackedInline ? CGFloat(sb.stackedFontSize) : CGFloat(sb.sbsFontSize)
-        let weight: Font.Weight = (sb.layout == .stacked
-            || sb.layout == .stackhistory
-            || sb.layout == .stackedInline ? sb.stackedIsBold : sb.sbsIsBold) ? .bold : .regular
-        let italic = sb.layout == .stacked
-            || sb.layout == .stackhistory
-            || sb.layout == .stackedInline ? sb.stackedIsItalic : sb.sbsIsItalic
+    private func renderGlobalStatBox(val: String, h: CGFloat,
+                                     scoreboard: SettingsWidgetScoreboard) -> some View
+    {
+        let fSize = scoreboard.layout == .stacked
+            || scoreboard.layout == .stackhistory
+            || scoreboard
+            .layout == .stackedInline ? CGFloat(scoreboard.stackedFontSize) :
+            CGFloat(scoreboard.sbsFontSize)
+        let weight: Font.Weight = (scoreboard.layout == .stacked
+            || scoreboard.layout == .stackhistory
+            || scoreboard.layout == .stackedInline ? scoreboard.stackedIsBold : scoreboard.sbsIsBold) ?
+            .bold :
+            .regular
+        let italic = scoreboard.layout == .stacked
+            || scoreboard.layout == .stackhistory
+            || scoreboard.layout == .stackedInline ? scoreboard.stackedIsItalic : scoreboard.sbsIsItalic
         ZStack {
             Text(val)
                 .font(.system(size: fSize * 0.9, weight: weight))
@@ -595,30 +618,33 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     @ViewBuilder
-    private func renderTitleBlock(title: String, sb: SettingsWidgetScoreboard, isStacked: Bool) -> some View {
-        let fSize = isStacked ? CGFloat(sb.stackedFontSize) : CGFloat(sb.sbsFontSize)
-        let weight: Font.Weight = (isStacked ? sb.stackedIsBold : sb.sbsIsBold) ? .bold : .regular
-        let italic = isStacked ? sb.stackedIsItalic : sb.sbsIsItalic
+    private func renderTitleBlock(title: String, scorebaord: SettingsWidgetScoreboard,
+                                  isStacked: Bool) -> some View
+    {
+        let fSize = isStacked ? CGFloat(scorebaord.stackedFontSize) : CGFloat(scorebaord.sbsFontSize)
+        let weight: Font
+            .Weight = (isStacked ? scorebaord.stackedIsBold : scorebaord.sbsIsBold) ? .bold : .regular
+        let italic = isStacked ? scorebaord.stackedIsItalic : scorebaord.sbsIsItalic
         Text(title.uppercased())
             .font(.system(size: fSize * 0.7, weight: weight))
             .italic(italic)
-            .foregroundStyle(sb.team1TextColorColor)
+            .foregroundStyle(scorebaord.team1TextColorColor)
             .padding(.vertical, 2)
             .frame(maxWidth: .infinity)
-            .background(sb.secondaryBackgroundColorColor)
+            .background(scorebaord.secondaryBackgroundColorColor)
     }
 
     @ViewBuilder
-    private func renderFooterBlock(sb: SettingsWidgetScoreboard) -> some View {
+    private func renderFooterBlock(scoreboard: SettingsWidgetScoreboard) -> some View {
         HStack {
             Text("Powered by Moblin")
                 .fontDesign(.monospaced)
-                .font(.system(size: CGFloat(sb.stackedFontSize * 0.5), weight: .bold))
+                .font(.system(size: CGFloat(scoreboard.stackedFontSize * 0.5), weight: .bold))
             Spacer()
         }
         .padding(.horizontal, 5)
         .padding(.vertical, 2)
-        .background(sb.secondaryBackgroundColorColor)
-        .foregroundStyle(sb.team1TextColorColor)
+        .background(scoreboard.secondaryBackgroundColorColor)
+        .foregroundStyle(scoreboard.team1TextColorColor)
     }
 }

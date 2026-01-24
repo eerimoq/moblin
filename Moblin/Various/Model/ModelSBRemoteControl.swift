@@ -2,7 +2,7 @@ import Foundation
 import Network
 
 private let basketballConfig = SBMatchConfig(
-    matchId: "basketball",
+    sportId: "basketball",
     layout: "sideBySide",
     team1: SBTeam(
         name: "Home",
@@ -55,7 +55,7 @@ private let basketballConfig = SBMatchConfig(
 )
 
 private let genericConfig = SBMatchConfig(
-    matchId: "generic",
+    sportId: "generic",
     layout: "stacked",
     team1: SBTeam(
         name: "Home",
@@ -86,7 +86,7 @@ private let genericConfig = SBMatchConfig(
 )
 
 private let genericSetsConfig = SBMatchConfig(
-    matchId: "generic sets",
+    sportId: "generic sets",
     layout: "stacked",
     team1: SBTeam(
         name: "Home",
@@ -123,7 +123,7 @@ private let genericSetsConfig = SBMatchConfig(
 )
 
 private let hockeyConfig = SBMatchConfig(
-    matchId: "hockey",
+    sportId: "hockey",
     layout: "sideBySide",
     team1: SBTeam(
         name: "Home",
@@ -173,7 +173,7 @@ private let hockeyConfig = SBMatchConfig(
 )
 
 private let soccerConfig = SBMatchConfig(
-    matchId: "soccer",
+    sportId: "soccer",
     layout: "stacked",
     team1: SBTeam(
         name: "Home",
@@ -203,7 +203,7 @@ private let soccerConfig = SBMatchConfig(
 )
 
 private let tennisConfig = SBMatchConfig(
-    matchId: "tennis",
+    sportId: "tennis",
     layout: "stackhistory",
     team1: SBTeam(
         name: "Home",
@@ -239,7 +239,7 @@ private let tennisConfig = SBMatchConfig(
 )
 
 private let volleyballConfig = SBMatchConfig(
-    matchId: "volleyball",
+    sportId: "volleyball",
     layout: "stacked",
     team1: SBTeam(
         name: "Home",
@@ -340,8 +340,8 @@ extension Model {
         for widget in database.widgets where widget.type == .scoreboard {
             let scoreboard = widget.scoreboard
             scoreboard.config = config
-            if scoreboard.sportId != config.matchId {
-                scoreboard.sportId = config.matchId
+            if scoreboard.sportId != config.sportId {
+                scoreboard.sportId = config.sportId
             }
             switch config.layout {
             case "sideBySide":
@@ -451,7 +451,6 @@ extension Model {
         }
         sceneUpdated()
         broadcastCurrentState()
-        logger.info("sb-remote: Switched to \(sportId)")
     }
 
     func syncCurrentStateToRemote(connection: NWConnection) {
@@ -477,18 +476,17 @@ extension Model {
     }
 
     private func getCurrentConfig() -> SBMatchConfig {
-        let widget = database.widgets.first(where: { $0.type == .scoreboard })
-        let sb = widget?.scoreboard
-        let activeId = sb?.sportId ?? "volleyball"
+        let scoreboard = database.widgets.first(where: { $0.type == .scoreboard })?.scoreboard
+        let sportId = scoreboard?.sportId ?? "volleyball"
         var liveConfig: SBMatchConfig
-        if let current = sb?.config, current.matchId == activeId {
+        if let current = scoreboard?.config, current.sportId == sportId {
             liveConfig = current
-        } else if let loaded = configs[activeId] {
+        } else if let loaded = configs[sportId] {
             liveConfig = loaded
-            sb?.config = loaded
+            scoreboard?.config = loaded
         } else {
             return SBMatchConfig(
-                matchId: "error",
+                sportId: "error",
                 layout: "stacked",
                 team1: SBTeam(
                     name: "FILE MISSING",
@@ -518,8 +516,8 @@ extension Model {
                 controls: [:]
             )
         }
-        if let sb = sb {
-            switch sb.layout {
+        if let scoreboard {
+            switch scoreboard.layout {
             case .sideBySide:
                 liveConfig.layout = "sideBySide"
             case .stackhistory:
@@ -529,27 +527,27 @@ extension Model {
             default:
                 liveConfig.layout = "stacked"
             }
-            liveConfig.global.showTitle = sb.showStackedHeader || sb.showSbsTitle
-            liveConfig.global.titleTop = sb.titleAbove
-            liveConfig.global.showStats = sb.showGlobalStatsBlock
-            liveConfig.global.showSecondaryRow = sb.showSecondaryRows
-            liveConfig.team1.name = sb.generic.home
-            liveConfig.team2.name = sb.generic.away
-            liveConfig.global.title = sb.generic.title
-            if !sb.generic.period.isEmpty {
-                liveConfig.global.period = sb.generic.period
+            liveConfig.global.showTitle = scoreboard.showStackedHeader || scoreboard.showSbsTitle
+            liveConfig.global.titleTop = scoreboard.titleAbove
+            liveConfig.global.showStats = scoreboard.showGlobalStatsBlock
+            liveConfig.global.showSecondaryRow = scoreboard.showSecondaryRows
+            liveConfig.team1.name = scoreboard.generic.home
+            liveConfig.team2.name = scoreboard.generic.away
+            liveConfig.global.title = scoreboard.generic.title
+            if !scoreboard.generic.period.isEmpty {
+                liveConfig.global.period = scoreboard.generic.period
             }
             if liveConfig.global.scoringMode != "tennis" {
-                liveConfig.team1.primaryScore = String(sb.generic.score.home)
-                liveConfig.team2.primaryScore = String(sb.generic.score.away)
+                liveConfig.team1.primaryScore = String(scoreboard.generic.score.home)
+                liveConfig.team2.primaryScore = String(scoreboard.generic.score.away)
             }
-            liveConfig.global.timer = sb.generic.clock()
-            liveConfig.global.timerDirection = (sb.generic.clockDirection == .down) ? "down" : "up"
-            liveConfig.global.duration = sb.generic.clockMaximum // SYNC BACK
-            liveConfig.team1.bgColor = sb.team1BgColor.toHex()
-            liveConfig.team1.textColor = sb.team1TextColor.toHex()
-            liveConfig.team2.bgColor = sb.team2BgColor.toHex()
-            liveConfig.team2.textColor = sb.team2TextColor.toHex()
+            liveConfig.global.timer = scoreboard.generic.clock()
+            liveConfig.global.timerDirection = (scoreboard.generic.clockDirection == .down) ? "down" : "up"
+            liveConfig.global.duration = scoreboard.generic.clockMaximum
+            liveConfig.team1.bgColor = scoreboard.team1BgColor.toHex()
+            liveConfig.team1.textColor = scoreboard.team1TextColor.toHex()
+            liveConfig.team2.bgColor = scoreboard.team2BgColor.toHex()
+            liveConfig.team2.textColor = scoreboard.team2TextColor.toHex()
         }
         return liveConfig
     }

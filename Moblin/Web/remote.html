@@ -114,7 +114,7 @@
     <script>
         let wsConnected = false, ws, state = null;
         let activeInputId = null;
-        let currentMatchId = null;
+        let currentsportId = null;
         let rangeCache = {min: 0, max: 30};
 
         const CONTROL_ORDER = [
@@ -165,13 +165,14 @@
                     const currentVal = sel.value;
                     sel.innerHTML = '<option value="">CHANGE SPORT...</option>' +
                         m.sports.map(s => `<option value="${s}">${s.toUpperCase()}</option>`).join('');
-                    if (state && state.matchId) {
-                        sel.value = state.matchId;
+                    if (state && state.sportId) {
+                        sel.value = state.sportId;
                     } else if (currentVal && m.sports.includes(currentVal)) {
                         sel.value = currentVal;
                     }
                 } else if (m.type === "update-match") {
-                    state = m.updates; wsConnected = true;
+                    state = m.updates;
+                    wsConnected = true;
                     document.getElementById('ctrl').classList.remove('opacity-30', 'pointer-events-none');
                     updateStatus("Connected", "text-green-500");
                     document.getElementById('si').innerText = "SYNCED";
@@ -197,8 +198,8 @@
             if (!state || !state.controls) {
                 return;
             }
-            if (currentMatchId !== state.matchId) {
-                currentMatchId = state.matchId;
+            if (currentsportId !== state.sportId) {
+                currentsportId = state.sportId;
                 rangeCache.min = state.global.minSetScore || 0;
                 rangeCache.max = state.global.maxSetScore || 30;
                 buildHistoryGrid();
@@ -486,8 +487,8 @@
             }
             
             const sel = document.getElementById('sport-selector');
-            if (activeInputId !== 'sport-selector' && state.matchId && sel.querySelector(`option[value="${state.matchId}"]`)) {
-                sel.value = state.matchId;
+            if (activeInputId !== 'sport-selector' && state.sportId && sel.querySelector(`option[value="${state.sportId}"]`)) {
+                sel.value = state.sportId;
             }
             
             const lay = document.getElementById('layout-selector');

@@ -51,7 +51,7 @@ struct SBGlobalStats: Codable {
 }
 
 struct SBMatchConfig: Codable {
-    var matchId: String
+    var sportId: String
     var layout: String
     var team1: SBTeam
     var team2: SBTeam
