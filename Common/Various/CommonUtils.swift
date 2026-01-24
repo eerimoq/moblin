@@ -616,25 +616,18 @@ class RgbColor: Codable, Equatable {
     }
 
     func toHex() -> String {
-        return String(format: "#%02X%02X%02X", red, green, blue)
+        return String(format: "#%02x%02x%02x", red, green, blue)
     }
 
     static func fromHex(string: String) -> RgbColor? {
-        let hex = string.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-
-        guard Scanner(string: hex).scanHexInt64(&int) else { return nil }
-
-        let r, g, b: UInt64
-        switch hex.count {
-        case 3: // #RGB
-            (r, g, b) = ((int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // #RRGGBB
-            (r, g, b) = ((int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
-        default:
+        if let colorNumber = Int(string.suffix(6), radix: 16) {
+            return RgbColor(
+                red: (colorNumber >> 16) & 0xFF,
+                green: (colorNumber >> 8) & 0xFF,
+                blue: colorNumber & 0xFF)
+        } else {
             return nil
         }
-        return RgbColor(red: Int(r), green: Int(g), blue: Int(b))
     }
 }
 
