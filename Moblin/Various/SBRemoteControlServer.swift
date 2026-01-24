@@ -68,9 +68,7 @@ class SBRemoteControlServer {
     }
 
     private func serveIcon(on conn: NWConnection) {
-        guard let img = UIImage(named: "VolleyballIndicator"),
-              let data = img.pngData()
-        else {
+        guard let img = UIImage(named: "VolleyballIndicator"), let data = img.pngData() else {
             conn.cancel()
             return
         }
@@ -80,7 +78,8 @@ class SBRemoteControlServer {
         Connection: close\r\n\
         \r\n
         """
-        var out = Data(head.utf8); out.append(data)
+        var out = Data(head.utf8)
+        out.append(data)
         conn.send(content: out, completion: .contentProcessed { _ in
             conn.cancel()
         })
@@ -93,8 +92,9 @@ class SBRemoteControlServer {
         wsListener?.newConnectionHandler = { conn in
             conn.stateUpdateHandler = { state in
                 if case .ready = state {
-                    self.connectedClients.append(conn); self.onClientConnected?(conn); self
-                        .receiveWs(on: conn)
+                    self.connectedClients.append(conn)
+                    self.onClientConnected?(conn)
+                    self.receiveWs(on: conn)
                 }
             }
             conn.start(queue: .main)
@@ -122,13 +122,6 @@ class SBRemoteControlServer {
     }
 
     func sendMessageString(connection: NWConnection, message: String) {
-        let metadata = NWProtocolWebSocket.Metadata(opcode: .text)
-        let context = NWConnection.ContentContext(identifier: "text", metadata: [metadata])
-        connection.send(
-            content: message.data(using: .utf8),
-            contentContext: context,
-            isComplete: true,
-            completion: .idempotent
-        )
+        connection.sendWebSocket(data: message.data(using: .utf8), opcode: .text)
     }
 }
