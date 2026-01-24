@@ -1,11 +1,10 @@
 import Foundation
 import Network
-import SwiftUI
 
 extension Model {
     func setupSBRemoteControlServer() {
         sbRemoteControlServer.onMessageReceived = { [weak self] message in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             if message.type == "update-match", let config = message.updates {
@@ -22,30 +21,28 @@ extension Model {
             self?.syncCurrentStateToRemote(connection: connection)
         }
         sbRemoteControlServer.start()
-        let foundSports = getAvailableSports()
-        logger.info("sb-remote: Startup check found sports: \(foundSports)")
     }
 
     private func handleAction(action: String, value: String?) {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
-        let sb = widget.scoreboard
+        let scoreboard = widget.scoreboard
         if action == "toggle-clock" {
-            sb.generic.isClockStopped.toggle()
+            scoreboard.generic.isClockStopped.toggle()
         } else if action == "set-duration", let valStr = value, let mins = Int(valStr) {
-            sb.generic.clockMaximum = mins
-            if sb.generic.clockDirection == .down {
-                sb.generic.clockMinutes = mins
-                sb.generic.clockSeconds = 0
+            scoreboard.generic.clockMaximum = mins
+            if scoreboard.generic.clockDirection == .down {
+                scoreboard.generic.clockMinutes = mins
+                scoreboard.generic.clockSeconds = 0
             }
-            sb.generic.isClockStopped = true
+            scoreboard.generic.isClockStopped = true
         } else if action == "set-clock-manual", let timeStr = value {
             let parts = timeStr.split(separator: ":")
             if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
-                sb.generic.clockMinutes = m
-                sb.generic.clockSeconds = s
-                sb.generic.isClockStopped = true
+                scoreboard.generic.clockMinutes = m
+                scoreboard.generic.clockSeconds = s
+                scoreboard.generic.isClockStopped = true
             }
         }
         sceneUpdated()
@@ -55,58 +52,58 @@ extension Model {
     func handleExternalScoreboardUpdate(config: SBMatchConfig) {
         externalScoreboard = config
         for widget in database.widgets where widget.type == .scoreboard {
-            let sb = widget.scoreboard
-            sb.config = config
-            if sb.sportId != config.matchId {
-                sb.sportId = config.matchId
+            let scoreboard = widget.scoreboard
+            scoreboard.config = config
+            if scoreboard.sportId != config.matchId {
+                scoreboard.sportId = config.matchId
             }
             switch config.layout {
             case "sideBySide":
-                sb.layout = .sideBySide
+                scoreboard.layout = .sideBySide
             case "stackhistory":
-                sb.layout = .stackhistory
+                scoreboard.layout = .stackhistory
             case "stackedInline":
-                sb.layout = .stackedInline
+                scoreboard.layout = .stackedInline
             default:
-                sb.layout = .stacked
+                scoreboard.layout = .stacked
             }
             if let showTitle = config.global.showTitle {
-                sb.showStackedHeader = showTitle
-                sb.showSbsTitle = showTitle
+                scoreboard.showStackedHeader = showTitle
+                scoreboard.showSbsTitle = showTitle
             }
             if let titleTop = config.global.titleTop {
-                sb.titleAbove = titleTop
+                scoreboard.titleAbove = titleTop
             }
             if let showStats = config.global.showStats {
-                sb.showGlobalStatsBlock = showStats
+                scoreboard.showGlobalStatsBlock = showStats
             }
             if let show2nd = config.global.showSecondaryRow {
-                sb.showSecondaryRows = show2nd
+                scoreboard.showSecondaryRows = show2nd
             }
-            sb.generic.home = config.team1.name
-            sb.generic.away = config.team2.name
-            sb.generic.title = config.global.title
-            sb.generic.period = config.global.period
+            scoreboard.generic.home = config.team1.name
+            scoreboard.generic.away = config.team2.name
+            scoreboard.generic.title = config.global.title
+            scoreboard.generic.period = config.global.period
             if let h = Int(config.team1.primaryScore) {
-                sb.generic.score.home = h
+                scoreboard.generic.score.home = h
             }
             if let a = Int(config.team2.primaryScore) {
-                sb.generic.score.away = a
+                scoreboard.generic.score.away = a
             }
-            sb.team1BgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? sb.team1BgColor
-            sb.team1TextColor = RgbColor.fromHex(string: config.team1.textColor) ?? sb.team1TextColor
-            sb.team2BgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? sb.team2BgColor
-            sb.team2TextColor = RgbColor.fromHex(string: config.team2.textColor) ?? sb.team2TextColor
-            sb.loadColors()
+            scoreboard.team1BgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? scoreboard.team1BgColor
+            scoreboard.team1TextColor = RgbColor.fromHex(string: config.team1.textColor) ?? scoreboard.team1TextColor
+            scoreboard.team2BgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? scoreboard.team2BgColor
+            scoreboard.team2TextColor = RgbColor.fromHex(string: config.team2.textColor) ?? scoreboard.team2TextColor
+            scoreboard.loadColors()
             let parts = config.global.timer.split(separator: ":")
             if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
-                sb.generic.clockMinutes = m
-                sb.generic.clockSeconds = s
+                scoreboard.generic.clockMinutes = m
+                scoreboard.generic.clockSeconds = s
             }
-            sb.generic.clockDirection = (config.global.timerDirection == "down") ? .down : .up
+            scoreboard.generic.clockDirection = (config.global.timerDirection == "down") ? .down : .up
             if let effect = scoreboardEffects[widget.id] {
                 DispatchQueue.main.async {
-                    effect.update(scoreboard: sb)
+                    effect.update(scoreboard: scoreboard)
                 }
             }
         }
@@ -116,46 +113,46 @@ extension Model {
 
     private func handleSportSwitch(sportId: String) {
         for widget in database.widgets where widget.type == .scoreboard {
-            let sb = widget.scoreboard
-            sb.sportId = sportId
+            let scoreboard = widget.scoreboard
+            scoreboard.sportId = sportId
             if let newConfig = loadConfigFromFile(sportId: sportId) {
-                sb.config = newConfig
+                scoreboard.config = newConfig
                 switch newConfig.layout {
                 case "sideBySide":
-                    sb.layout = .sideBySide
-                    sb.showSecondaryRows = true
-                    sb.showGlobalStatsBlock = true
+                    scoreboard.layout = .sideBySide
+                    scoreboard.showSecondaryRows = true
+                    scoreboard.showGlobalStatsBlock = true
                 case "stackhistory":
-                    sb.layout = .stackhistory
-                    sb.showSecondaryRows = false
-                    sb.showGlobalStatsBlock = false
+                    scoreboard.layout = .stackhistory
+                    scoreboard.showSecondaryRows = false
+                    scoreboard.showGlobalStatsBlock = false
                 default:
-                    sb.layout = .stacked
-                    sb.showSecondaryRows = false
-                    sb.showGlobalStatsBlock = false
+                    scoreboard.layout = .stacked
+                    scoreboard.showSecondaryRows = false
+                    scoreboard.showGlobalStatsBlock = false
                 }
-                sb.showStackedHeader = false
-                sb.showSbsTitle = false
-                sb.showStackedFooter = false
-                sb.generic.score.home = Int(newConfig.team1.primaryScore) ?? 0
-                sb.generic.score.away = Int(newConfig.team2.primaryScore) ?? 0
-                sb.generic.period = newConfig.global.period
+                scoreboard.showStackedHeader = false
+                scoreboard.showSbsTitle = false
+                scoreboard.showStackedFooter = false
+                scoreboard.generic.score.home = Int(newConfig.team1.primaryScore) ?? 0
+                scoreboard.generic.score.away = Int(newConfig.team2.primaryScore) ?? 0
+                scoreboard.generic.period = newConfig.global.period
                 let parts = newConfig.global.timer.split(separator: ":")
                 if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
-                    sb.generic.clockMinutes = m
-                    sb.generic.clockSeconds = s
-                    sb.generic.clockMaximum = m + (s > 0 ? 1 : 0)
+                    scoreboard.generic.clockMinutes = m
+                    scoreboard.generic.clockSeconds = s
+                    scoreboard.generic.clockMaximum = m + (s > 0 ? 1 : 0)
                 } else {
-                    sb.generic.clockMinutes = 0
-                    sb.generic.clockSeconds = 0
+                    scoreboard.generic.clockMinutes = 0
+                    scoreboard.generic.clockSeconds = 0
                 }
-                sb.generic.clockDirection = (newConfig.global.timerDirection == "down") ? .down : .up
-                sb.generic.isClockStopped = true
-                sb.team1BgColor = RgbColor.fromHex(string: newConfig.team1.bgColor) ?? sb.team1BgColor
-                sb.team1TextColor = RgbColor.fromHex(string: newConfig.team1.textColor) ?? sb.team1TextColor
-                sb.team2BgColor = RgbColor.fromHex(string: newConfig.team2.bgColor) ?? sb.team2BgColor
-                sb.team2TextColor = RgbColor.fromHex(string: newConfig.team2.textColor) ?? sb.team2TextColor
-                sb.loadColors()
+                scoreboard.generic.clockDirection = (newConfig.global.timerDirection == "down") ? .down : .up
+                scoreboard.generic.isClockStopped = true
+                scoreboard.team1BgColor = RgbColor.fromHex(string: newConfig.team1.bgColor) ?? scoreboard.team1BgColor
+                scoreboard.team1TextColor = RgbColor.fromHex(string: newConfig.team1.textColor) ?? scoreboard.team1TextColor
+                scoreboard.team2BgColor = RgbColor.fromHex(string: newConfig.team2.bgColor) ?? scoreboard.team2BgColor
+                scoreboard.team2TextColor = RgbColor.fromHex(string: newConfig.team2.textColor) ?? scoreboard.team2TextColor
+                scoreboard.loadColors()
             }
         }
         externalScoreboard = nil
