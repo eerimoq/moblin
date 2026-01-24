@@ -183,7 +183,7 @@ private struct StackedSettingsView: View {
                             .onChange(of: scoreboard.stackedFontSize) { _ in
                                 updateEffect()
                             }
-                        Text("\(Int(scoreboard.stackedFontSize))")
+                        Text(String(Int(scoreboard.stackedFontSize)))
                             .frame(width: 35)
                     }
                     HStack {
@@ -193,7 +193,7 @@ private struct StackedSettingsView: View {
                             .onChange(of: scoreboard.stackedWidth) { _ in
                                 updateEffect()
                             }
-                        Text("\(Int(scoreboard.stackedWidth))")
+                        Text(String(Int(scoreboard.stackedWidth)))
                             .frame(width: 35)
                     }
                     HStack {
@@ -202,7 +202,7 @@ private struct StackedSettingsView: View {
                             .onChange(of: scoreboard.stackedRowHeight) { _ in
                                 updateEffect()
                             }
-                        Text("\(Int(scoreboard.stackedRowHeight))")
+                        Text(String(Int(scoreboard.stackedRowHeight)))
                             .frame(width: 35)
                     }
                 } header: {
@@ -272,7 +272,7 @@ private struct SideBySideSettingsView: View {
                             .onChange(of: scoreboard.sbsFontSize) { _ in
                                 updateEffect()
                             }
-                        Text("\(Int(scoreboard.sbsFontSize))")
+                        Text(String(Int(scoreboard.sbsFontSize)))
                             .frame(width: 35)
                     }
                     HStack {
@@ -282,16 +282,17 @@ private struct SideBySideSettingsView: View {
                             .onChange(of: scoreboard.sbsWidth) { _ in
                                 updateEffect()
                             }
-                        Text("\(Int(scoreboard.sbsWidth))")
+                        Text(String(Int(scoreboard.sbsWidth)))
                             .frame(width: 35)
                     }
-                    HStack { Text("Row height")
+                    HStack {
+                        Text("Row height")
                         .layoutPriority(1)
                         Slider(value: $scoreboard.sbsRowHeight, in: 10 ... 35)
                             .onChange(of: scoreboard.sbsRowHeight) { _ in
                                 updateEffect()
                             }
-                        Text("\(Int(scoreboard.sbsRowHeight))")
+                        Text(String(Int(scoreboard.sbsRowHeight)))
                             .frame(width: 35)
                     }
                 } header: {
