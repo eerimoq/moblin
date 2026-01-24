@@ -19,11 +19,15 @@ class SBRemoteControlServer {
             conn.stateUpdateHandler = { state in
                 if case .ready = state {
                     conn.receive(minimumIncompleteLength: 1, maximumLength: 1024) { data, _, _, _ in
-                        guard data != nil else {
+                        guard let data, let req = String(bytes: data, encoding: .utf8) else {
                             conn.cancel()
                             return
                         }
-                        self.serveFile(on: conn, name: "remote", ext: "html", type: "text/html")
+                        if req.contains("remote.html") {
+                            self.serveFile(on: conn, name: "remote", ext: "html", type: "text/html")
+                        } else {
+                            self.serveFile(on: conn, name: "scoreboard", ext: "html", type: "text/html")
+                        }
                     }
                 }
             }
