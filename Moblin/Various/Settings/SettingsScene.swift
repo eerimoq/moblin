@@ -429,11 +429,10 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
 }
 
 enum SettingsAlignment: String, Codable, CaseIterable {
-    case topLeft = "Top left"
-    case topRight = "Top right"
-    case bottomLeft = "Bottom left"
-    case bottomRight = "Bottom right"
-    case center = "Center"
+    case topLeft = "TopLeft"
+    case topRight = "TopRight"
+    case bottomLeft = "BottomLeft"
+    case bottomRight = "BottomRight"
 
     init(from decoder: Decoder) throws {
         self = try SettingsAlignment(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -458,8 +457,6 @@ enum SettingsAlignment: String, Codable, CaseIterable {
             return String(localized: "Bottom left")
         case .bottomRight:
             return String(localized: "Bottom right")
-        case .center:
-            return String(localized: "Center")
         }
     }
 }

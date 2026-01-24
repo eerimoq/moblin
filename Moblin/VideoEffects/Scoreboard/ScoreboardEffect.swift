@@ -35,26 +35,11 @@ final class ScoreboardEffect: VideoEffect {
             return image
         }
         let scale = image.extent.size.maximum() / 1920
-        var output = scoreboardImage.scaled(x: scale, y: scale)
-        if sceneWidget.layout.alignment == .center {
-            let bgSize = image.extent.size
-            let sbSize = output.extent.size
-            var x = (bgSize.width - sbSize.width) / 2
-            var y = (bgSize.height - sbSize.height) / 2
-            let xPercent = CGFloat(sceneWidget.layout.x - 50.0) / 100.0
-            let yPercent = CGFloat(sceneWidget.layout.y - 50.0) / 100.0
-            x += bgSize.width * xPercent
-            y += bgSize.height * yPercent
-            output = output.transformed(by: CGAffineTransform(translationX: x, y: y))
-            return output
-                .cropped(to: image.extent)
-                .composited(over: image)
-        } else {
-            return output
-                .move(sceneWidget.layout, image.extent.size)
-                .cropped(to: image.extent)
-                .composited(over: image)
-        }
+        return scoreboardImage
+            .scaled(x: scale, y: scale)
+            .move(sceneWidget.layout, image.extent.size)
+            .cropped(to: image.extent)
+            .composited(over: image)
     }
 
     private func setScoreboardImage(image: CIImage?) {
