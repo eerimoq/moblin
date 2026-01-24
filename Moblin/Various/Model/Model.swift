@@ -350,7 +350,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var sceneSettingsPanelSceneId = 1
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
-    @Published var externalScoreboard: SBMatchConfig?
     var activeBufferedVideoIds: Set<UUID> = []
 
     var streamState = StreamState.disconnected {

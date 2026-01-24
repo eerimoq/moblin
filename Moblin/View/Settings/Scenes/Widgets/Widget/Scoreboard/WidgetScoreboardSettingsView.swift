@@ -15,7 +15,6 @@ struct WidgetScoreboardSettingsView: View {
             }
             .onChange(of: scoreboard.sportId) { _ in
                 scoreboard.config = nil
-                model.externalScoreboard = nil
                 model.broadcastCurrentState()
                 model.sceneUpdated()
             }

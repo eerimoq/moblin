@@ -50,7 +50,6 @@ extension Model {
     }
 
     func handleExternalScoreboardUpdate(config: SBMatchConfig) {
-        externalScoreboard = config
         for widget in database.widgets where widget.type == .scoreboard {
             let scoreboard = widget.scoreboard
             scoreboard.config = config
@@ -155,7 +154,6 @@ extension Model {
                 scoreboard.loadColors()
             }
         }
-        externalScoreboard = nil
         sceneUpdated()
         broadcastCurrentState()
         logger.info("sb-remote: Switched to \(sportId)")
