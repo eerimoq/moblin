@@ -287,7 +287,7 @@ private struct SideBySideSettingsView: View {
                     }
                     HStack {
                         Text("Row height")
-                        .layoutPriority(1)
+                            .layoutPriority(1)
                         Slider(value: $scoreboard.sbsRowHeight, in: 10 ... 35)
                             .onChange(of: scoreboard.sbsRowHeight) { _ in
                                 updateEffect()

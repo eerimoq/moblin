@@ -624,7 +624,8 @@ class RgbColor: Codable, Equatable {
             return RgbColor(
                 red: (colorNumber >> 16) & 0xFF,
                 green: (colorNumber >> 8) & 0xFF,
-                blue: colorNumber & 0xFF)
+                blue: colorNumber & 0xFF
+            )
         } else {
             return nil
         }
@@ -654,11 +655,6 @@ extension RgbColor {
 }
 
 extension Color {
-    init(hex: String) {
-        let rgb = RgbColor.fromHex(string: hex) ?? RgbColor.white
-        self.init(red: Double(rgb.red) / 255, green: Double(rgb.green) / 255, blue: Double(rgb.blue) / 255)
-    }
-
     func toRgb() -> RgbColor? {
         guard let components = UIColor(self).cgColor.components else {
             return nil
