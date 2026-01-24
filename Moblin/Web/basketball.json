@@ -1,0 +1,56 @@
+{
+  "matchId": "basketball",
+  "layout": "sideBySide",
+  "controls": {
+    "primaryScore": { "type": "counter", "label": "Pt", "periodReset": false },
+    "stat1": { "type": "select", "label": "TO", "options": ["0", "1", "2", "3", "4", "5"], "periodReset": true },
+    "stat2": { "type": "cycle", "label": "FOUL", "options": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], "periodReset": true },
+    "stat3": { "type": "cycle", "label": "", "options": ["NO BONUS", "BONUS", "DOUBLE"], "periodReset": true },
+    "possession": { "type": "toggleTeam", "label": "POSS", "periodReset": false }
+  },
+  "team1": {
+    "name": "Home",
+    "bgColor": "#1e40af",
+    "textColor": "#ffffff",
+    "possession": true,
+    "primaryScore": "0",
+    "secondaryScore": "",
+    "secondaryScoreLabel": "",
+    "stat1": "5",
+    "stat1Label": "TO",
+    "stat2": "0",
+    "stat2Label": "FOUL",
+    "stat3": "NO BONUS",
+    "stat3Label": "",
+    "stat4": "",
+    "stat4Label": ""
+  },
+  "team2": {
+    "name": "Away",
+    "bgColor": "#dc2626",
+    "textColor": "#ffffff",
+    "possession": false,
+    "primaryScore": "0",
+    "secondaryScore": "",
+    "secondaryScoreLabel": "",
+    "stat1": "5",
+    "stat1Label": "TO",
+    "stat2": "0",
+    "stat2Label": "FOUL",
+    "stat3": "NO BONUS",
+    "stat3Label": "",
+    "stat4": "",
+    "stat4Label": ""
+  },
+  "global": {
+    "title": "Varsity Basketball",
+    "timer": "10:00",
+    "timerDirection": "down",
+    "period": "1",
+    "periodLabel": "QTR",
+    "subPeriod": "",
+    "primaryScoreResetOnPeriod": false,
+    "secondaryScoreResetOnPeriod": false,
+    "changePossessionOnScore": false
+  }
+}

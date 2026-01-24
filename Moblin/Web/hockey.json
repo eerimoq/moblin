@@ -1,0 +1,56 @@
+{
+  "matchId": "hockey",
+  "layout": "sideBySide",
+  "controls": {
+    "primaryScore": { "type": "counter", "label": "Goal", "periodReset": false },
+    "secondaryScore": { "type": "counter", "label": "SOG", "periodReset": false },
+    "stat1": { "type": "cycle", "label": "", "options": ["NO PP", "PP"], "periodReset": true },
+    "stat2": { "type": "cycle", "label": "", "options": ["NO EN", "EN"], "periodReset": true },
+    "stat3": { "type": "cycle", "label": "", "options": ["NO DP", "DP"], "periodReset": true }
+  },
+  "team1": {
+    "name": "Home",
+    "bgColor": "#1e40af",
+    "textColor": "#ffffff",
+    "possession": false,
+    "primaryScore": "0",
+    "secondaryScore": "0",
+    "secondaryScoreLabel": "SOG",
+    "stat1": "NO PP",
+    "stat1Label": "",
+    "stat2": "NO EN",
+    "stat2Label": "",
+    "stat3": "NO DP",
+    "stat3Label": "",
+    "stat4": "",
+    "stat4Label": ""
+  },
+  "team2": {
+    "name": "Away",
+    "bgColor": "#dc2626",
+    "textColor": "#ffffff",
+    "possession": false,
+    "primaryScore": "0",
+    "secondaryScore": "0",
+    "secondaryScoreLabel": "SOG",
+    "stat1": "NO PP",
+    "stat1Label": "",
+    "stat2": "NO EN",
+    "stat2Label": "",
+    "stat3": "NO DP",
+    "stat3Label": "",
+    "stat4": "",
+    "stat4Label": ""
+  },
+  "global": {
+    "title": "Varsity Hockey",
+    "timer": "15:00",
+    "timerDirection": "down",
+    "period": "1",
+    "periodLabel": "PER",
+    "subPeriod": "",
+    "primaryScoreResetOnPeriod": false,
+    "secondaryScoreResetOnPeriod": false,
+    "changePossessionOnScore": false
+  }
+}

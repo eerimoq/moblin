@@ -54,10 +54,9 @@ extension Model {
             }
             for id in scoreboardEffects.keys {
                 if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
-                    switch scoreboard.type {
-                    case .padel:
+                    if scoreboard.sportId == "padel" {
                         sendUpdatePadelScoreboardToWatch(id: id, padel: scoreboard.padel)
-                    case .generic:
+                    } else {
                         sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
                     }
                 } else {
@@ -415,10 +414,8 @@ extension Model {
         }
         for (id, scoreboardEffect) in scoreboardEffects {
             if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
-                switch scoreboard.type {
-                case .padel:
-                    break
-                case .generic:
+                if scoreboard.sportId == "padel" {
+                } else {
                     guard let widget = findWidget(id: id) else {
                         continue
                     }
@@ -431,6 +428,7 @@ extension Model {
                             scoreboard: widget.scoreboard,
                             players: self.database.scoreboardPlayers
                         )
+                        self.broadcastCurrentState()
                     }
                     sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
                 }

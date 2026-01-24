@@ -6,7 +6,6 @@ class SBRemoteControlServer {
     private var httpListener: NWListener?
     private var wsListener: NWListener?
     private var connectedClients: [NWConnection] = []
-    
     var onMessageReceived: ((SBMessage) -> Void)?
     var onClientConnected: ((NWConnection) -> Void)?
 
@@ -15,127 +14,68 @@ class SBRemoteControlServer {
         startWsServer()
     }
 
-    // --- PORT 8080: Serves the Web Pages and the PNG Icon ---
     private func startHttpServer() {
         do {
-            let params = NWParameters.tcp
-            self.httpListener = try NWListener(using: params, on: 8080)
-            
-            self.httpListener?.stateUpdateHandler = { state in
-                if case .ready = state { logger.info("SB Remote: HTTP Page Server ready on 8080") }
-            }
-            
-            self.httpListener?.newConnectionHandler = { connection in
-                connection.stateUpdateHandler = { state in
+            self.httpListener = try NWListener(using: .tcp, on: 8080)
+            self.httpListener?.newConnectionHandler = { conn in
+                conn.stateUpdateHandler = { state in
                     if case .ready = state {
-                        connection.receive(minimumIncompleteLength: 1, maximumLength: 1024) { data, _, _, _ in
-                            guard let data = data, let request = String(data: data, encoding: .utf8) else {
-                                connection.cancel(); return
+                        conn.receive(minimumIncompleteLength: 1, maximumLength: 1024) { data, _, _, _ in
+                            guard let data = data, let req = String(data: data, encoding: .utf8) else { conn.cancel(); return }
+                            if req.contains("GET /volleyball.png") { self.serveIcon(on: conn) }
+                            else if req.contains(".json") {
+                                // NEW: Dynamically serve JSON files for sport configs
+                                let fileName = req.components(separatedBy: " ").indices.contains(1) ? req.components(separatedBy: " ")[1].replacingOccurrences(of: "/", with: "").replacingOccurrences(of: ".json", with: "") : ""
+                                self.serveFile(on: conn, name: fileName, ext: "json", type: "application/json")
                             }
-                            
-                            if request.contains("GET /volleyball.png") {
-                                self.serveImage(on: connection)
-                            } else if request.contains("GET /scoreboard") {
-                                self.servePage(on: connection, name: "scoreboard")
-                            } else {
-                                self.servePage(on: connection, name: "remote")
-                            }
+                            else if req.contains("GET /scoreboard") { self.serveFile(on: conn, name: "scoreboard", ext: "html", type: "text/html") }
+                            else { self.serveFile(on: conn, name: "remote", ext: "html", type: "text/html") }
                         }
                     }
                 }
-                connection.start(queue: .main)
+                conn.start(queue: .main)
             }
             self.httpListener?.start(queue: .main)
-        } catch {
-            logger.info("SB Remote: HTTP Start Error")
-        }
+        } catch { logger.info("SB Server: HTTP Error") }
     }
 
-    private func serveImage(on connection: NWConnection) {
-        // Try to load the image from Xcode Assets
-        guard let image = UIImage(named: "VolleyballIndicator") else {
-            print("❌ SB Remote Error: Asset 'VolleyballIndicator' not found.")
-            connection.cancel(); return
+    private func serveFile(on conn: NWConnection, name: String, ext: String, type: String) {
+        let path = Bundle.main.path(forResource: name, ofType: ext, inDirectory: "Web") ?? Bundle.main.path(forResource: name, ofType: ext)
+        guard let path = path, let content = try? String(contentsOfFile: path, encoding: .utf8) else {
+            conn.cancel(); return
         }
-        
-        guard let data = image.pngData() else {
-            print("❌ SB Remote Error: Could not convert asset to PNG data.")
-            connection.cancel(); return
-        }
-        
-        // Construct standard binary HTTP response
-        let header = "HTTP/1.1 200 OK\r\n" +
-                     "Content-Type: image/png\r\n" +
-                     "Content-Length: \(data.count)\r\n" +
-                     "Connection: close\r\n\r\n"
-        
-        var responseData = Data(header.utf8)
-        responseData.append(data)
-        
-        connection.send(content: responseData, completion: .contentProcessed({ _ in
-            connection.cancel()
-        }))
+        let resp = "HTTP/1.1 200 OK\r\nContent-Type: \(type); charset=utf-8\r\nContent-Length: \(content.utf8.count)\r\nConnection: close\r\n\r\n\(content)"
+        conn.send(content: resp.data(using: .utf8), completion: .contentProcessed({ _ in conn.cancel() }))
     }
 
-    private func servePage(on connection: NWConnection, name: String) {
-        //check root first, then in directory
-        let path = Bundle.main.path(forResource: name, ofType: "html") ??
-                   Bundle.main.path(forResource: name, ofType: "html", inDirectory: "Web")
-
-        guard let path = path, let html = try? String(contentsOfFile: path, encoding: .utf8) else {
-            print("❌ SB Server: File not found: \(name).html")
-            let errorResponse = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\nFile Not Found"
-            connection.send(content: errorResponse.data(using: .utf8), completion: .contentProcessed({ _ in
-                connection.cancel()
-            }))
-            return
-        }
-
-        let response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: \(html.utf8.count)\r\nConnection: close\r\n\r\n\(html)"
-        connection.send(content: response.data(using: .utf8), completion: .contentProcessed({ _ in
-            connection.cancel()
-        }))
+    private func serveIcon(on conn: NWConnection) {
+        guard let img = UIImage(named: "VolleyballIndicator"), let data = img.pngData() else { conn.cancel(); return }
+        let head = "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: \(data.count)\r\nConnection: close\r\n\r\n"
+        var out = Data(head.utf8); out.append(data)
+        conn.send(content: out, completion: .contentProcessed({ _ in conn.cancel() }))
     }
-    
-    // --- PORT 8081: Handles the Real-Time WebSocket Data ---
+
     private func startWsServer() {
-        do {
-            let params = NWParameters.tcp
-            let stack = params.defaultProtocolStack
-            stack.applicationProtocols.insert(NWProtocolWebSocket.Options(), at: 0)
-            
-            self.wsListener = try NWListener(using: params, on: 8081)
-            self.wsListener?.newConnectionHandler = { connection in
-                connection.stateUpdateHandler = { state in
-                    switch state {
-                    case .ready:
-                        self.connectedClients.append(connection)
-                        self.onClientConnected?(connection)
-                        self.receiveWs(on: connection)
-                    case .failed, .cancelled:
-                        self.connectedClients.removeAll(where: { $0 === connection })
-                    default:
-                        break
-                    }
+        let params = NWParameters.tcp
+        params.defaultProtocolStack.applicationProtocols.insert(NWProtocolWebSocket.Options(), at: 0)
+        try? self.wsListener = NWListener(using: params, on: 8081)
+        self.wsListener?.newConnectionHandler = { conn in
+            conn.stateUpdateHandler = { state in
+                if case .ready = state {
+                    self.connectedClients.append(conn); self.onClientConnected?(conn); self.receiveWs(on: conn)
                 }
-                connection.start(queue: .main)
             }
-            self.wsListener?.start(queue: .main)
-        } catch {
-            logger.info("SB Remote: WS Start Error")
+            conn.start(queue: .main)
         }
+        self.wsListener?.start(queue: .main)
     }
 
-    private func receiveWs(on connection: NWConnection) {
-        connection.receiveMessage { content, _, _, error in
-            if let data = content, let message = try? JSONDecoder().decode(SBMessage.self, from: data) {
-                DispatchQueue.main.async { self.onMessageReceived?(message) }
+    private func receiveWs(on conn: NWConnection) {
+        conn.receiveMessage { content, _, _, err in
+            if let d = content, let msg = try? JSONDecoder().decode(SBMessage.self, from: d) {
+                DispatchQueue.main.async { self.onMessageReceived?(msg) }
             }
-            if let error = error {
-                self.connectedClients.removeAll(where: { $0 === connection })
-                return
-            }
-            self.receiveWs(on: connection)
+            if err == nil { self.receiveWs(on: conn) } else { self.connectedClients.removeAll(where: { $0 === conn }) }
         }
     }
 
@@ -146,8 +86,6 @@ class SBRemoteControlServer {
     func sendMessageString(connection: NWConnection, message: String) {
         let metadata = NWProtocolWebSocket.Metadata(opcode: .text)
         let context = NWConnection.ContentContext(identifier: "text", metadata: [metadata])
-        connection.send(content: message.data(using: .utf8), contentContext: context, isComplete: true, completion: .contentProcessed({ error in
-            if error != nil { self.connectedClients.removeAll(where: { $0 === connection }) }
-        }))
+        connection.send(content: message.data(using: .utf8), contentContext: context, isComplete: true, completion: .idempotent)
     }
 }

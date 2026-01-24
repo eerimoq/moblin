@@ -1,0 +1,58 @@
+{
+  "matchId": "tennis",
+  "layout": "stackhistory",
+  "controls": {
+    "primaryScore": { "type": "counter", "label": "Pt", "periodReset": false },
+    "currentSetScore": { "type": "counter", "label": "Game", "periodReset": true },
+    "possession": { "type": "toggleTeam", "label": "SERVE", "periodReset": false }
+  },
+  "team1": {
+    "name": "Home",
+    "bgColor": "#1e40af",
+    "textColor": "#ffffff",
+    "possession": true,
+    "primaryScore": "0",
+    "secondaryScore": "",
+    "secondaryScoreLabel": "",
+    "stat1": "",
+    "stat1Label": "",
+    "stat2": "",
+    "stat2Label": "",
+    "stat3": "",
+    "stat3Label": "",
+    "stat4": "",
+    "stat4Label": ""
+  },
+  "team2": {
+    "name": "Away",
+    "bgColor": "#dc2626",
+    "textColor": "#ffffff",
+    "possession": false,
+    "primaryScore": "0",
+    "secondaryScore": "",
+    "secondaryScoreLabel": "",
+    "stat1": "",
+    "stat1Label": "",
+    "stat2": "",
+    "stat2Label": "",
+    "stat3": "",
+    "stat3Label": "",
+    "stat4": "",
+    "stat4Label": ""
+  },
+  "global": {
+    "title": "TENNIS",
+    "timer": "00:00",
+    "timerDirection": "up",
+    "period": "1",
+    "periodLabel": "SET",
+    "subPeriod": "",
+    "primaryScoreResetOnPeriod": true,
+    "secondaryScoreResetOnPeriod": false,
+    "changePossessionOnScore": false,
+    "scoringMode": "tennis",
+    "minSetScore": 3,
+    "maxSetScore": 15,
+    "showStats": false
+  }
+}

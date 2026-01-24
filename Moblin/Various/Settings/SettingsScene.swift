@@ -429,10 +429,11 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
 }
 
 enum SettingsAlignment: String, Codable, CaseIterable {
-    case topLeft = "TopLeft"
-    case topRight = "TopRight"
-    case bottomLeft = "BottomLeft"
-    case bottomRight = "BottomRight"
+    case topLeft = "Top left"
+    case topRight = "Top right"
+    case bottomLeft = "Bottom left"
+    case bottomRight = "Bottom right"
+    case center = "Center"
 
     init(from decoder: Decoder) throws {
         self = try SettingsAlignment(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -457,6 +458,8 @@ enum SettingsAlignment: String, Codable, CaseIterable {
             return String(localized: "Bottom left")
         case .bottomRight:
             return String(localized: "Bottom right")
+        case .center:
+            return String(localized: "Center")
         }
     }
 }
@@ -2347,29 +2350,23 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
 }
 
 enum SettingsWidgetScoreboardType: String, Codable, CaseIterable {
-    case generic = "Generic"
+    case volleyball = "Volleyball"
+    case basketball = "Basketball"
     case padel = "Padel"
-
+    
     init(from decoder: Decoder) throws {
-        self = try SettingsWidgetScoreboardType(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ??
-            .padel
+        let container = try decoder.singleValueContainer()
+        let val = try container.decode(String.self)
+        self = SettingsWidgetScoreboardType(rawValue: val) ?? .volleyball
     }
-
-    func toString() -> String {
-        switch self {
-        case .generic:
-            return String(localized: "Generic")
-        case .padel:
-            return String(localized: "Padel")
-        }
-    }
+    func toString() -> String { self.rawValue }
 }
 
 enum SettingsWidgetScoreboardLayout: String, Codable, CaseIterable {
     case stacked = "Stacked"
+    case stackedInline = "Stacked Inline" // New
     case sideBySide = "Side by side"
-    //case scoreboard = "Scoreboard"
+    case stackhistory = "Stack history"
 }
 
 class SettingsWidgetScoreboardPlayer: Codable, Identifiable, ObservableObject, Named {
@@ -2488,6 +2485,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     @Published var home: String = baseName
     @Published var away: String = baseName
     @Published var title: String = baseTitle
+    @Published var period: String = "1"
     @Published var clockMaximum: Int = 45
     @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
     var score: SettingsWidgetScoreboardScore = .init()
@@ -2500,6 +2498,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         case home,
              away,
              title,
+             period,
              clockMaximum,
              clockDirection
     }
@@ -2511,6 +2510,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         try container.encode(.home, home)
         try container.encode(.away, away)
         try container.encode(.title, title)
+        try container.encode(.period, period)
         try container.encode(.clockMaximum, clockMaximum)
         try container.encode(.clockDirection, clockDirection)
     }
@@ -2520,6 +2520,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         home = container.decode(.home, String.self, Self.baseName)
         away = container.decode(.away, String.self, Self.baseName)
         title = container.decode(.title, String.self, Self.baseTitle)
+        period = container.decode(.period, String.self, "1")
         clockMaximum = container.decode(.clockMaximum, Int.self, 45)
         clockDirection = container.decode(.clockDirection,
                                           SettingsWidgetGenericScoreboardClockDirection.self,
@@ -2569,136 +2570,121 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         }
     }
 }
-
 class SettingsWidgetScoreboard: Codable, ObservableObject {
     static let baseTextColor = RgbColor.white
     static let basePrimaryBackgroundColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC)
     static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
-    @Published var type: SettingsWidgetScoreboardType = .generic
-    var textColor = baseTextColor
-    @Published var textColorColor: Color = .clear
-    var primaryBackgroundColor = basePrimaryBackgroundColor
-    @Published var primaryBackgroundColorColor: Color = .clear
-    var secondaryBackgroundColor = baseSecondaryBackgroundColor
-    @Published var secondaryBackgroundColorColor: Color = .clear
+    
+    @Published var sportId: String = "volleyball"
+    
     var padel: SettingsWidgetPadelScoreboard = .init()
     var generic: SettingsWidgetGenericScoreboard = .init()
-
     @Published var layout: SettingsWidgetScoreboardLayout = .stacked
-    
-    //stacked settings
-    @Published var stackedFontSize: Float = 20
-    @Published var stackedWidth: Float = 300
-    @Published var stackedRowHeight: Float = 30
+    @Published var config: SBMatchConfig?
+
+    var team1BgColor: RgbColor = .init(red: 11, green: 16, blue: 172)
+    @Published var team1BgColorColor: Color = .blue
+    var team1TextColor: RgbColor = .init(red: 255, green: 255, blue: 255)
+    @Published var team1TextColorColor: Color = .white
+    var team2BgColor: RgbColor = .init(red: 220, green: 38, blue: 38)
+    @Published var team2BgColorColor: Color = .red
+    var team2TextColor: RgbColor = .init(red: 255, green: 255, blue: 255)
+    @Published var team2TextColorColor: Color = .white
+    var secondaryBackgroundColor: RgbColor = .init(red: 0, green: 0, blue: 0)
+    @Published var secondaryBackgroundColorColor: Color = .black
+
+    // Stacked Defaults
+    @Published var stackedFontSize: Float = 12
+    @Published var stackedWidth: Float = 150
+    @Published var stackedRowHeight: Float = 16
     @Published var stackedIsBold: Bool = true
     @Published var stackedIsItalic: Bool = false
-    @Published var showStackedHeader: Bool = true
-    @Published var showStackedFooter: Bool = true
-
-    //side by side settings
-    @Published var sbsFontSize: Float = 20
-    @Published var sbsWidth: Float = 500
-    @Published var sbsRowHeight: Float = 30
+    
+    // Side by Side Defaults
+    @Published var sbsFontSize: Float = 12
+    @Published var sbsWidth: Float = 370
+    @Published var sbsRowHeight: Float = 16
     @Published var sbsIsBold: Bool = true
     @Published var sbsIsItalic: Bool = false
-    @Published var showSbsTitle: Bool = true
     
+    // Toggles
+    @Published var showStackedHeader: Bool = false
+    @Published var titleAbove: Bool = true
+    @Published var showStackedFooter: Bool = false
+    @Published var showSecondaryRows: Bool = false // Stacked default off
+    @Published var showGlobalStatsBlock: Bool = false // Stacked default off
+    @Published var showSbsTitle: Bool = false
+
     enum CodingKeys: CodingKey {
-        case type,
-             padel,
-             generic,
-             textColor,
-             primaryBackgroundColor,
-             secondaryBackgroundColor,
-             layout,
-             stackedFontSize,
-             stackedWidth,
-             stackedRowHeight,
-             stackedIsBold,
-             stackedIsItalic,
-             showStackedHeader,
-             showStackedFooter,
-             sbsFontSize,
-             sbsWidth,
-             sbsRowHeight,
-             sbsIsBold,
-             sbsIsItalic,
-             showSbsTitle
+        case sportId, padel, generic, layout, config, team1BgColor, team1TextColor, team2BgColor, team2TextColor, secondaryBackgroundColor,
+             stackedFontSize, stackedWidth, stackedRowHeight, stackedIsBold, stackedIsItalic,
+             sbsFontSize, sbsWidth, sbsRowHeight, sbsIsBold, sbsIsItalic,
+             showStackedHeader, titleAbove, showStackedFooter, showSecondaryRows, showGlobalStatsBlock, showSbsTitle
     }
 
-    init() {
-        loadColors()
-    }
+    init() { loadColors() }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(type, forKey: .type)
-        try container.encode(textColor, forKey: .textColor)
-        try container.encode(primaryBackgroundColor, forKey: .primaryBackgroundColor)
+        try container.encode(sportId, forKey: .sportId); try container.encode(padel, forKey: .padel); try container.encode(generic, forKey: .generic); try container.encode(layout, forKey: .layout); try container.encode(config, forKey: .config)
+        try container.encode(team1BgColor, forKey: .team1BgColor); try container.encode(team1TextColor, forKey: .team1TextColor)
+        try container.encode(team2BgColor, forKey: .team2BgColor); try container.encode(team2TextColor, forKey: .team2TextColor)
         try container.encode(secondaryBackgroundColor, forKey: .secondaryBackgroundColor)
-        try container.encode(padel, forKey: .padel)
-        try container.encode(generic, forKey: .generic)
-        try container.encode(layout, forKey: .layout)
-        
-        try container.encode(stackedFontSize, forKey: .stackedFontSize)
-        try container.encode(stackedWidth, forKey: .stackedWidth)
-        try container.encode(stackedRowHeight, forKey: .stackedRowHeight)
-        try container.encode(stackedIsBold, forKey: .stackedIsBold)
-        try container.encode(stackedIsItalic, forKey: .stackedIsItalic)
-        try container.encode(showStackedHeader, forKey: .showStackedHeader)
-        try container.encode(showStackedFooter, forKey: .showStackedFooter)
-        
-        try container.encode(sbsFontSize, forKey: .sbsFontSize)
-        try container.encode(sbsWidth, forKey: .sbsWidth)
-        try container.encode(sbsRowHeight, forKey: .sbsRowHeight)
-        try container.encode(sbsIsBold, forKey: .sbsIsBold)
-        try container.encode(sbsIsItalic, forKey: .sbsIsItalic)
-        try container.encode(showSbsTitle, forKey: .showSbsTitle)
+        try container.encode(stackedFontSize, forKey: .stackedFontSize); try container.encode(stackedWidth, forKey: .stackedWidth); try container.encode(stackedRowHeight, forKey: .stackedRowHeight)
+        try container.encode(stackedIsBold, forKey: .stackedIsBold); try container.encode(stackedIsItalic, forKey: .stackedIsItalic)
+        try container.encode(sbsFontSize, forKey: .sbsFontSize); try container.encode(sbsWidth, forKey: .sbsWidth); try container.encode(sbsRowHeight, forKey: .sbsRowHeight)
+        try container.encode(sbsIsBold, forKey: .sbsIsBold); try container.encode(sbsIsItalic, forKey: .sbsIsItalic)
+        try container.encode(showStackedHeader, forKey: .showStackedHeader); try container.encode(titleAbove, forKey: .titleAbove); try container.encode(showStackedFooter, forKey: .showStackedFooter)
+        try container.encode(showSecondaryRows, forKey: .showSecondaryRows); try container.encode(showGlobalStatsBlock, forKey: .showGlobalStatsBlock); try container.encode(showSbsTitle, forKey: .showSbsTitle)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        type = container.decode(.type, SettingsWidgetScoreboardType.self, .generic)
-        textColor = container.decode(.textColor, RgbColor.self, Self.baseTextColor)
-        primaryBackgroundColor = container.decode(.primaryBackgroundColor,
-                                                  RgbColor.self,
-                                                  Self.basePrimaryBackgroundColor)
-        secondaryBackgroundColor = container.decode(.secondaryBackgroundColor,
-                                                    RgbColor.self,
-                                                    Self.baseSecondaryBackgroundColor)
+        sportId = container.decode(.sportId, String.self, "volleyball")
         padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
         generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
-        
         layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
+        config = container.decode(.config, SBMatchConfig?.self, nil)
+        team1BgColor = container.decode(.team1BgColor, RgbColor.self, .init(red: 11, green: 16, blue: 172))
+        team1TextColor = container.decode(.team1TextColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
+        team2BgColor = container.decode(.team2BgColor, RgbColor.self, .init(red: 220, green: 38, blue: 38))
+        team2TextColor = container.decode(.team2TextColor, RgbColor.self, .init(red: 255, green: 255, blue: 255))
+        secondaryBackgroundColor = container.decode(.secondaryBackgroundColor, RgbColor.self, .init(red: 0, green: 0, blue: 0))
         
-        stackedFontSize = container.decode(.stackedFontSize, Float.self, 20)
-        stackedWidth = container.decode(.stackedWidth, Float.self, 300)
-        stackedRowHeight = container.decode(.stackedRowHeight, Float.self, 30)
+        // Stacked Defaults
+        stackedFontSize = container.decode(.stackedFontSize, Float.self, 12)
+        stackedWidth = container.decode(.stackedWidth, Float.self, 150)
+        stackedRowHeight = container.decode(.stackedRowHeight, Float.self, 16)
         stackedIsBold = container.decode(.stackedIsBold, Bool.self, true)
         stackedIsItalic = container.decode(.stackedIsItalic, Bool.self, false)
-        showStackedHeader = container.decode(.showStackedHeader, Bool.self, true)
-        showStackedFooter = container.decode(.showStackedFooter, Bool.self, true)
-
-        sbsFontSize = container.decode(.sbsFontSize, Float.self, 20)
-        sbsWidth = container.decode(.sbsWidth, Float.self, 400)
-        sbsRowHeight = container.decode(.sbsRowHeight, Float.self, 30)
+        
+        // SbS Defaults
+        sbsFontSize = container.decode(.sbsFontSize, Float.self, 12)
+        sbsWidth = container.decode(.sbsWidth, Float.self, 300)
+        sbsRowHeight = container.decode(.sbsRowHeight, Float.self, 16)
         sbsIsBold = container.decode(.sbsIsBold, Bool.self, true)
         sbsIsItalic = container.decode(.sbsIsItalic, Bool.self, false)
-        showSbsTitle = container.decode(.showSbsTitle, Bool.self, true)
+        
+        // Toggles
+        showStackedHeader = container.decode(.showStackedHeader, Bool.self, false)
+        titleAbove = container.decode(.titleAbove, Bool.self, true)
+        showStackedFooter = container.decode(.showStackedFooter, Bool.self, false)
+        showSecondaryRows = container.decode(.showSecondaryRows, Bool.self, false) // Default off
+        showGlobalStatsBlock = container.decode(.showGlobalStatsBlock, Bool.self, false) // Default off
+        showSbsTitle = container.decode(.showSbsTitle, Bool.self, false)
         
         loadColors()
     }
 
     func resetColors() {
-        textColor = Self.baseTextColor
-        primaryBackgroundColor = Self.basePrimaryBackgroundColor
-        secondaryBackgroundColor = Self.baseSecondaryBackgroundColor
-        loadColors()
+        team1BgColor = .init(red: 11, green: 16, blue: 172); team1TextColor = .init(red: 255, green: 255, blue: 255)
+        team2BgColor = .init(red: 220, green: 38, blue: 38); team2TextColor = .init(red: 255, green: 255, blue: 255)
+        secondaryBackgroundColor = .init(red: 0, green: 0, blue: 0); loadColors()
     }
 
-    private func loadColors() {
-        textColorColor = textColor.color()
-        primaryBackgroundColorColor = primaryBackgroundColor.color()
+    func loadColors() {
+        team1BgColorColor = team1BgColor.color(); team1TextColorColor = team1TextColor.color()
+        team2BgColorColor = team2BgColor.color(); team2TextColorColor = team2TextColor.color()
         secondaryBackgroundColorColor = secondaryBackgroundColor.color()
     }
 }

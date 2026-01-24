@@ -1052,14 +1052,7 @@ extension Model {
         DispatchQueue.main.async {
             effect.update(scoreboard: widget.scoreboard, players: self.database.scoreboardPlayers)
         }
-        if isWatchLocal() {
-            switch widget.scoreboard.type {
-            case .padel:
-                sendUpdatePadelScoreboardToWatch(id: widget.id, padel: widget.scoreboard.padel)
-            case .generic:
-                sendUpdateGenericScoreboardToWatch(id: widget.id, generic: widget.scoreboard.generic)
-            }
-        }
+
         effects.append(effect)
     }
 
