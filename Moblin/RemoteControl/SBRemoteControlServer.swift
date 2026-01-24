@@ -23,7 +23,9 @@ class SBRemoteControlServer {
                             conn.cancel()
                             return
                         }
-                        if req.contains("remote.html") {
+                        if req.contains("GET /volleyball.png") {
+                            self.serveFile(on: conn, name: "volleyball", ext: "png", type: "image/png")
+                        } else if req.contains("GET /remote") {
                             self.serveFile(on: conn, name: "remote", ext: "html", type: "text/html")
                         } else {
                             self.serveFile(on: conn, name: "scoreboard", ext: "html", type: "text/html")
@@ -37,20 +39,20 @@ class SBRemoteControlServer {
     }
 
     private func serveFile(on conn: NWConnection, name: String, ext: String, type: String) {
-        let path = Bundle.main.path(forResource: name, ofType: ext, inDirectory: "Web")
-            ?? Bundle.main.path(forResource: name, ofType: ext)
-        guard let path = path, let content = try? String(contentsOfFile: path, encoding: .utf8) else {
+        guard let url = Bundle.main.url(forResource: name, withExtension: ext),
+              let content = try? Data(contentsOf: url)
+        else {
             conn.cancel()
             return
         }
         let resp = """
-        HTTP/1.1 200 OK\r\nContent-Type: \(type); charset=utf-8\r\n\
-        Content-Length: \(content.utf8.count)\r\n\
+        HTTP/1.1 200 OK\r\n\
+        Content-Type: \(type); charset=utf-8\r\n\
+        Content-Length: \(content.count)\r\n\
         Connection: close\r\n\
-        \r\n\
-        \(content)
+        \r\n
         """
-        conn.send(content: resp.data(using: .utf8), completion: .contentProcessed { _ in
+        conn.send(content: resp.utf8Data + content, completion: .contentProcessed { _ in
             conn.cancel()
         })
     }
