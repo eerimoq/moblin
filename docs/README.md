@@ -10,13 +10,7 @@ and [OBS Studio](https://obsproject.com) as well (and probably more).
     <img src="https://github.com/eerimoq/moblin/raw/main/docs/watch-series-9-screenshot-chat.png" width="17%" >
 </p>
 
-Discord: https://discord.gg/kh3KMng4JV
-
-Github: https://github.com/eerimoq/moblin
-
-TestFlight: https://testflight.apple.com/join/PDpxEaGh
-
-Privacy policy: https://eerimoq.github.io/moblin/privacy-policy/en.html
+[Discord](https://discord.gg/kh3KMng4JV) [Github](https://github.com/eerimoq/moblin) [TestFlight](https://testflight.apple.com/join/PDpxEaGh) [Privacy policy](https://eerimoq.github.io/moblin/privacy-policy/en.html)
 
 # Features
 
