@@ -2,22 +2,26 @@ import SwiftUI
 
 struct GoLiveNotificationDiscordTextSettingsView: View {
     @ObservedObject var stream: SettingsStream
-    @FocusState var editingText: Bool
+    @FocusState private var editingText: Bool
 
     var body: some View {
-        VStack {
+        Section {
             MultiLineTextFieldView(value: $stream.goLiveNotificationDiscordMessage)
                 .keyboardType(.default)
                 .textInputAutocapitalization(.never)
                 .disableAutocorrection(true)
                 .focused($editingText)
-            HStack {
+        } header: {
+            Text("Message")
+        } footer: {
+            VStack(alignment: .leading) {
+                MultiLineTextFieldDoneButtonView(editingText: $editingText)
+                Text("""
+                Markdown works. Add emojis as <:myEmojiName:8912739817498174>. \
+                Send \\\\:myEmojiName: in Discord to get it.
+                """)
                 Text("")
-                Spacer()
-                Button("Done") {
-                    editingText = false
-                }
-                .disabled(!editingText)
+                Text("A snapshot will also be uploaded.")
             }
         }
     }
@@ -28,20 +32,7 @@ private struct GoLiveNotificationDiscordSettingsView: View {
 
     var body: some View {
         Form {
-            Section {
-                GoLiveNotificationDiscordTextSettingsView(stream: stream)
-            } header: {
-                Text("Message")
-            } footer: {
-                VStack(alignment: .leading) {
-                    Text("""
-                    Markdown works. Add emojis as <:myEmojiName:8912739817498174>. \
-                    Send \\\\:myEmojiName: in Discord to get it.
-                    """)
-                    Text("")
-                    Text("A snapshot will also be uploaded.")
-                }
-            }
+            GoLiveNotificationDiscordTextSettingsView(stream: stream)
             Section {
                 TextEditNavigationView(
                     title: String(localized: "Webhook URL"),

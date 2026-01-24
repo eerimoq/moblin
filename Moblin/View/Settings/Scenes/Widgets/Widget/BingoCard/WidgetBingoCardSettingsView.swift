@@ -11,15 +11,7 @@ struct BingCardWidgetSquaresView: View {
         } header: {
             Text("Squares")
         } footer: {
-            if isPhone() {
-                HStack {
-                    Spacer()
-                    Button("Done") {
-                        editingText = false
-                    }
-                }
-                .disabled(!editingText)
-            }
+            MultiLineTextFieldDoneButtonView(editingText: $editingText)
         }
     }
 }

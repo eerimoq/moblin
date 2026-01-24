@@ -80,3 +80,19 @@ private struct MultiLineTextFieldBindingView: View {
         .navigationTitle(title)
     }
 }
+
+struct MultiLineTextFieldDoneButtonView: View {
+    @FocusState.Binding var editingText: Bool
+
+    var body: some View {
+        if isPhone() {
+            HStack {
+                Spacer()
+                Button("Done") {
+                    editingText = false
+                }
+            }
+            .disabled(!editingText)
+        }
+    }
+}

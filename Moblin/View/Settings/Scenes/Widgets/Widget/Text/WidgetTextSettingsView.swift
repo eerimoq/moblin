@@ -538,7 +538,7 @@ private struct DebugVariablesView: View {
 
 struct TextWidgetTextView: View {
     @Binding var value: String
-    @FocusState var editingText: Bool
+    @FocusState private var editingText: Bool
 
     var body: some View {
         Section {
@@ -548,15 +548,7 @@ struct TextWidgetTextView: View {
                 .autocorrectionDisabled()
                 .focused($editingText)
         } footer: {
-            if isPhone() {
-                HStack {
-                    Spacer()
-                    Button("Done") {
-                        editingText = false
-                    }
-                }
-                .disabled(!editingText)
-            }
+            MultiLineTextFieldDoneButtonView(editingText: $editingText)
         }
     }
 }

@@ -56,15 +56,7 @@ struct WheelOfLuckWidgetOptionsView: View {
         } header: {
             Text("Options")
         } footer: {
-            if isPhone() {
-                HStack {
-                    Spacer()
-                    Button("Done") {
-                        editingText = false
-                    }
-                }
-                .disabled(!editingText)
-            }
+            MultiLineTextFieldDoneButtonView(editingText: $editingText)
         }
     }
 }
