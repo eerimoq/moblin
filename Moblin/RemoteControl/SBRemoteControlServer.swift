@@ -20,7 +20,7 @@ class SBRemoteControlServer {
             conn.stateUpdateHandler = { state in
                 if case .ready = state {
                     conn.receive(minimumIncompleteLength: 1, maximumLength: 1024) { data, _, _, _ in
-                        guard let data = data, let req = String(data: data, encoding: .utf8) else {
+                        guard data != nil else {
                             conn.cancel()
                             return
                         }
