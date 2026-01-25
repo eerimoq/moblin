@@ -14,12 +14,16 @@ function connect() {
   const socket = new WebSocket(
     `ws://${window.location.hostname}:${scoreboardWebsocketPort}`,
   );
-  socket.onopen = () => socket.send(JSON.stringify({ type: "request-sync" }));
-  socket.onclose = () => setTimeout(connect, 2000);
+  socket.onopen = () => {
+    socket.send(JSON.stringify({ type: "request-sync" }));
+  };
+  socket.onclose = () => {
+    setTimeout(connect, 2000);
+  };
   socket.onmessage = (e) => {
     try {
-      const msg = JSON.parse(e.data);
-      if (msg.type === "update-match" && msg.updates) {
+      const message = JSON.parse(e.data);
+      if (message.type === "update-match" && message.updates) {
         updateTeam(1, msg.updates.team1);
         updateTeam(2, msg.updates.team2);
       }
