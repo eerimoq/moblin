@@ -311,7 +311,7 @@ extension Model {
     }
 
     func broadcastCurrentState() {
-        let message: RemoteControlScoreboardMessageToClient = .updates(config: getCurrentConfig())
+        let message: RemoteControlScoreboardMessageToAssistant = .updates(config: getCurrentConfig())
         if let data = try? JSONEncoder().encode(message),
            let string = String(data: data, encoding: .utf8)
         {
@@ -416,8 +416,8 @@ extension Model {
     }
 
     func broadcastStreamStats() {
-        let message: RemoteControlScoreboardMessageToClient = .stats(battery: bitrate.speedMbpsOneDecimal,
-                                                                     bitrate: "\(Int(battery.level * 100))%")
+        let message: RemoteControlScoreboardMessageToAssistant = .stats(battery: bitrate.speedMbpsOneDecimal,
+                                                                        bitrate: "\(Int(battery.level * 100))%")
         if let d = try? JSONEncoder().encode(message), let s = String(data: d, encoding: .utf8) {
             remoteControlWeb?.scoreboardServer.broadcastMessage(s)
         }
@@ -610,7 +610,7 @@ extension Model {
     }
 
     private func syncCurrentStateToRemote(connection: NWConnection) {
-        var message: RemoteControlScoreboardMessageToClient = .sports(names: getAvailableSports())
+        var message: RemoteControlScoreboardMessageToAssistant = .sports(names: getAvailableSports())
         if let data = try? JSONEncoder().encode(message),
            let string = String(data: data, encoding: .utf8)
         {

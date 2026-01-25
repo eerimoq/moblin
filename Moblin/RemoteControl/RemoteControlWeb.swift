@@ -263,7 +263,7 @@ class RemoteControlWeb {
 class RemoteControlScoreboardServer {
     private var listener: NWListener?
     private var clients: [NWConnection] = []
-    var onMessageReceived: ((RemoteControlScoreboardMessageToServer) -> Void)?
+    var onMessageReceived: ((RemoteControlScoreboardMessageToStreamer) -> Void)?
     var onClientConnected: ((NWConnection) -> Void)?
     var port: UInt16 = 0
 
@@ -295,7 +295,7 @@ class RemoteControlScoreboardServer {
         connection.receiveMessage { data, _, _, err in
             if let data,
                let message = try? JSONDecoder().decode(
-                   RemoteControlScoreboardMessageToServer.self,
+                   RemoteControlScoreboardMessageToStreamer.self,
                    from: data
                )
             {
