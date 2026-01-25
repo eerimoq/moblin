@@ -294,7 +294,10 @@ class RemoteControlScoreboardServer {
     private func receive(connection: NWConnection) {
         connection.receiveMessage { data, _, _, err in
             if let data,
-               let message = try? JSONDecoder().decode(RemoteControlScoreboardMessageToServer.self, from: data)
+               let message = try? JSONDecoder().decode(
+                   RemoteControlScoreboardMessageToServer.self,
+                   from: data
+               )
             {
                 self.onMessageReceived?(message)
             }

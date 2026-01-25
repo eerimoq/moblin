@@ -417,7 +417,7 @@ extension Model {
 
     func broadcastStreamStats() {
         let message: RemoteControlScoreboardMessageToClient = .stats(battery: bitrate.speedMbpsOneDecimal,
-                                                             bitrate: "\(Int(battery.level * 100))%")
+                                                                     bitrate: "\(Int(battery.level * 100))%")
         if let d = try? JSONEncoder().encode(message), let s = String(data: d, encoding: .utf8) {
             remoteControlWeb?.scoreboardServer.broadcastMessage(s)
         }
