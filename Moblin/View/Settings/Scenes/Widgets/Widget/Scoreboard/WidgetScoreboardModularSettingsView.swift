@@ -73,7 +73,7 @@ private struct ColorsView: View {
                 }
                 Section {
                     ColorPicker(
-                        "Main cackground",
+                        "Main background",
                         selection: $modular.secondaryBackgroundColorColor,
                         supportsOpacity: false
                     )
