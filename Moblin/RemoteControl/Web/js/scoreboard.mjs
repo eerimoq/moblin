@@ -24,8 +24,8 @@ function connect() {
     try {
       const message = JSON.parse(e.data);
       if (message.updates !== undefined) {
-        updateTeam(1, msg.updates.team1);
-        updateTeam(2, msg.updates.team2);
+        updateTeam(1, message.updates.config.team1);
+        updateTeam(2, message.updates.config.team2);
       }
     } catch (err) {
       console.error(err);
