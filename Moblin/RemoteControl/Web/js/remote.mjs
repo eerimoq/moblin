@@ -43,7 +43,7 @@ function connect() {
     `ws://${window.location.hostname}:${scoreboardWebsocketPort}`,
   );
   ws.onopen = () => {
-    ws.send(JSON.stringify({ type: "request-sync" }));
+    ws.send(JSON.stringify({ requestSync: {} }));
   };
   ws.onclose = () => {
     wsConnected = false;
@@ -58,21 +58,22 @@ function connect() {
   };
   ws.onmessage = (e) => {
     const m = JSON.parse(e.data);
-    if (m.type === "available-sports" && m.sports) {
+    console.log(m);
+    if (m.sports !== undefined) {
       const sel = document.getElementById("sport-selector");
       const currentVal = sel.value;
       sel.innerHTML =
         '<option value="">CHANGE SPORT...</option>' +
-        m.sports
+        m.sports.names
           .map((s) => `<option value="${s}">${s.toUpperCase()}</option>`)
           .join("");
       if (state && state.sportId) {
         sel.value = state.sportId;
-      } else if (currentVal && m.sports.includes(currentVal)) {
+      } else if (currentVal && m.sports.names.includes(currentVal)) {
         sel.value = currentVal;
       }
-    } else if (m.type === "update-match") {
-      state = m.updates;
+    } else if (m.updates !== undefined) {
+      state = m.updates.config;
       wsConnected = true;
       document
         .getElementById("ctrl")
@@ -81,7 +82,7 @@ function connect() {
       document.getElementById("si").innerText = "SYNCED";
       document.getElementById("si").className = "text-green-500";
       syncUI();
-    } else if (m.type === "stream-stats" && m.stats) {
+    } else if (m.stats !== undefined) {
       document.getElementById("sb").innerText = m.stats.bitrate;
       document.getElementById("sp").innerText = m.stats.battery;
     }
@@ -328,7 +329,7 @@ function switchSport(val) {
   if (!val || !wsConnected) {
     return;
   }
-  ws.send(JSON.stringify({ type: "switch-sport", sport: val }));
+  ws.send(JSON.stringify({ sport: { id: val } }));
 }
 
 function switchLayout(val) {
@@ -441,7 +442,7 @@ function syncUI() {
 
 function sendAction(act, val) {
   if (wsConnected) {
-    ws.send(JSON.stringify({ type: "action", action: act, value: val }));
+    ws.send(JSON.stringify({ action: { action: act, value: val } }));
   }
 }
 
@@ -698,7 +699,7 @@ function upd() {
   state.global.period = document.getElementById("gp").value;
   state.global.subPeriod = document.getElementById("gi").value;
   if (wsConnected && ws.readyState === 1) {
-    ws.send(JSON.stringify({ type: "update-match", updates: state }));
+    ws.send(JSON.stringify({ updates: { config: state } }));
   }
 }
 connect();

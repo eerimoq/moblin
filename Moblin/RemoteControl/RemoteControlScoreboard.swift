@@ -70,21 +70,11 @@ struct RemoteControlScoreboardMatchConfig: Codable {
     var controls: [String: RemoteControlScoreboardControl]
 }
 
-struct RemoteControlScoreboardStreamStats: Codable {
-    // periphery: ignore
-    var battery: String
-    // periphery: ignore
-    var bitrate: String
-}
-
-struct RemoteControlScoreboardMessage: Codable {
-    var type: String
-    var updates: RemoteControlScoreboardMatchConfig?
-    // periphery: ignore
-    var stats: RemoteControlScoreboardStreamStats?
-    var sport: String?
-    var action: String?
-    var value: String?
-    // periphery: ignore
-    var sports: [String]?
+enum RemoteControlScoreboardMessage: Codable {
+    case updates(config: RemoteControlScoreboardMatchConfig)
+    case stats(battery: String, bitrate: String)
+    case sport(id: String)
+    case action(action: String, value: String?)
+    case sports(names: [String])
+    case requestSync
 }

@@ -294,14 +294,17 @@ extension Model {
             guard let self else {
                 return
             }
-            if message.type == "update-match", let config = message.updates {
+            switch message {
+            case let .updates(config):
                 self.handleExternalScoreboardUpdate(config: config)
-            } else if message.type == "switch-sport", let sportId = message.sport {
+            case let .action(action, value):
+                self.handleAction(action: action, value: value)
+            case let .sport(sportId):
                 self.handleSportSwitch(sportId: sportId)
-            } else if message.type == "action", let action = message.action {
-                self.handleAction(action: action, value: message.value)
-            } else if message.type == "request-sync" {
+            case .requestSync:
                 self.broadcastCurrentState()
+            default:
+                break
             }
         }
         remoteControlWeb?.scoreboardServer.onClientConnected = { [weak self] connection in
@@ -310,7 +313,7 @@ extension Model {
     }
 
     func broadcastCurrentState() {
-        let message = RemoteControlScoreboardMessage(type: "update-match", updates: getCurrentConfig())
+        let message: RemoteControlScoreboardMessage = .updates(config: getCurrentConfig())
         if let data = try? JSONEncoder().encode(message),
            let string = String(data: data, encoding: .utf8)
         {
@@ -415,9 +418,8 @@ extension Model {
     }
 
     func broadcastStreamStats() {
-        let stats = RemoteControlScoreboardStreamStats(battery: "\(Int(battery.level * 100))%",
-                                                       bitrate: bitrate.speedMbpsOneDecimal)
-        let message = RemoteControlScoreboardMessage(type: "stream-stats", stats: stats)
+        let message: RemoteControlScoreboardMessage = .stats(battery: bitrate.speedMbpsOneDecimal,
+                                                             bitrate: "\(Int(battery.level * 100))%")
         if let d = try? JSONEncoder().encode(message), let s = String(data: d, encoding: .utf8) {
             remoteControlWeb?.scoreboardServer.broadcastMessage(s)
         }
@@ -610,13 +612,13 @@ extension Model {
     }
 
     private func syncCurrentStateToRemote(connection: NWConnection) {
-        var message = RemoteControlScoreboardMessage(type: "available-sports", sports: getAvailableSports())
+        var message: RemoteControlScoreboardMessage = .sports(names: getAvailableSports())
         if let data = try? JSONEncoder().encode(message),
            let string = String(data: data, encoding: .utf8)
         {
             remoteControlWeb?.scoreboardServer.sendMessage(connection: connection, message: string)
         }
-        message = RemoteControlScoreboardMessage(type: "update-match", updates: getCurrentConfig())
+        message = .updates(config: getCurrentConfig())
         if let data = try? JSONEncoder().encode(message),
            let string = String(data: data, encoding: .utf8)
         {

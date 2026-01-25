@@ -15,7 +15,7 @@ function connect() {
     `ws://${window.location.hostname}:${scoreboardWebsocketPort}`,
   );
   socket.onopen = () => {
-    socket.send(JSON.stringify({ type: "request-sync" }));
+    socket.send(JSON.stringify({ requestSync: {} }));
   };
   socket.onclose = () => {
     setTimeout(connect, 2000);
@@ -23,7 +23,7 @@ function connect() {
   socket.onmessage = (e) => {
     try {
       const message = JSON.parse(e.data);
-      if (message.type === "update-match" && message.updates) {
+      if (message.updates !== undefined) {
         updateTeam(1, msg.updates.team1);
         updateTeam(2, msg.updates.team2);
       }
