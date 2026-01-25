@@ -70,11 +70,15 @@ struct RemoteControlScoreboardMatchConfig: Codable {
     var controls: [String: RemoteControlScoreboardControl]
 }
 
-enum RemoteControlScoreboardMessage: Codable {
+enum RemoteControlScoreboardMessageToClient: Codable {
     case updates(config: RemoteControlScoreboardMatchConfig)
     case stats(battery: String, bitrate: String)
+    case sports(names: [String])
+}
+
+enum RemoteControlScoreboardMessageToServer: Codable {
+    case updates(config: RemoteControlScoreboardMatchConfig)
     case sport(id: String)
     case action(action: String, value: String?)
-    case sports(names: [String])
     case requestSync
 }
