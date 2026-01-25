@@ -702,15 +702,21 @@ struct RemoteControlScoreboardMatchConfig: Codable {
     var controls: [String: RemoteControlScoreboardControl]
 }
 
-enum RemoteControlScoreboardMessageToStreamer: Codable {
-    case updates(config: RemoteControlScoreboardMatchConfig)
-    case sport(id: String)
-    case action(action: String, value: String?)
-    case requestSync
+enum RemoteControlScoreboardAction: Codable {
+    case toggleClock
+    case setDuration(minutes: Int)
+    case setClockManual(time: String)
 }
 
-enum RemoteControlScoreboardMessageToAssistant: Codable {
-    case updates(config: RemoteControlScoreboardMatchConfig)
+enum RemoteControlScoreboardToStreamer: Codable {
+    case update(config: RemoteControlScoreboardMatchConfig)
+    case sport(id: String)
+    case action(action: RemoteControlScoreboardAction)
+    case requestUpdate
+}
+
+enum RemoteControlScoreboardToAssistant: Codable {
+    case update(config: RemoteControlScoreboardMatchConfig)
     case stats(battery: String, bitrate: String)
     case sports(names: [String])
 }

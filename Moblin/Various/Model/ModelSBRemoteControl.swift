@@ -295,13 +295,13 @@ extension Model {
                 return
             }
             switch message {
-            case let .updates(config):
+            case let .update(config):
                 self.handleExternalScoreboardUpdate(config: config)
-            case let .action(action, value):
-                self.handleAction(action: action, value: value)
+            case let .action(action):
+                self.handleAction(action: action)
             case let .sport(sportId):
                 self.handleSportSwitch(sportId: sportId)
-            case .requestSync:
+            case .requestUpdate:
                 self.broadcastCurrentState()
             }
         }
@@ -311,7 +311,7 @@ extension Model {
     }
 
     func broadcastCurrentState() {
-        let message: RemoteControlScoreboardMessageToAssistant = .updates(config: getCurrentConfig())
+        let message: RemoteControlScoreboardToAssistant = .update(config: getCurrentConfig())
         if let data = try? JSONEncoder().encode(message),
            let string = String(data: data, encoding: .utf8)
         {
@@ -416,29 +416,30 @@ extension Model {
     }
 
     func broadcastStreamStats() {
-        let message: RemoteControlScoreboardMessageToAssistant = .stats(battery: bitrate.speedMbpsOneDecimal,
-                                                                        bitrate: "\(Int(battery.level * 100))%")
+        let message: RemoteControlScoreboardToAssistant = .stats(battery: "\(Int(battery.level * 100))%",
+                                                                 bitrate: bitrate.speedMbpsOneDecimal)
         if let d = try? JSONEncoder().encode(message), let s = String(data: d, encoding: .utf8) {
             remoteControlWeb?.scoreboardServer.broadcastMessage(s)
         }
     }
 
-    private func handleAction(action: String, value: String?) {
+    private func handleAction(action: RemoteControlScoreboardAction) {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
         let scoreboard = widget.scoreboard
-        if action == "toggle-clock" {
+        switch action {
+        case .toggleClock:
             scoreboard.modular.isClockStopped.toggle()
-        } else if action == "set-duration", let valStr = value, let mins = Int(valStr) {
-            scoreboard.modular.clockMaximum = mins
+        case let .setDuration(minutes):
+            scoreboard.modular.clockMaximum = minutes
             if scoreboard.modular.clockDirection == .down {
-                scoreboard.modular.clockMinutes = mins
+                scoreboard.modular.clockMinutes = minutes
                 scoreboard.modular.clockSeconds = 0
             }
             scoreboard.modular.isClockStopped = true
-        } else if action == "set-clock-manual", let timeStr = value {
-            let parts = timeStr.split(separator: ":")
+        case let .setClockManual(time):
+            let parts = time.split(separator: ":")
             if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
                 scoreboard.modular.clockMinutes = m
                 scoreboard.modular.clockSeconds = s
@@ -610,13 +611,13 @@ extension Model {
     }
 
     private func syncCurrentStateToRemote(connection: NWConnection) {
-        var message: RemoteControlScoreboardMessageToAssistant = .sports(names: getAvailableSports())
+        var message: RemoteControlScoreboardToAssistant = .sports(names: getAvailableSports())
         if let data = try? JSONEncoder().encode(message),
            let string = String(data: data, encoding: .utf8)
         {
             remoteControlWeb?.scoreboardServer.sendMessage(connection: connection, message: string)
         }
-        message = .updates(config: getCurrentConfig())
+        message = .update(config: getCurrentConfig())
         if let data = try? JSONEncoder().encode(message),
            let string = String(data: data, encoding: .utf8)
         {

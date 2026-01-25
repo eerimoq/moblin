@@ -72,8 +72,8 @@ function connect() {
       } else if (currentVal && m.sports.names.includes(currentVal)) {
         sel.value = currentVal;
       }
-    } else if (m.updates !== undefined) {
-      state = m.updates.config;
+    } else if (m.update !== undefined) {
+      state = m.update.config;
       wsConnected = true;
       document
         .getElementById("ctrl")
@@ -442,7 +442,21 @@ function syncUI() {
 
 function sendAction(act, val) {
   if (wsConnected) {
-    ws.send(JSON.stringify({ action: { action: act, value: val } }));
+    if (act === "set-duration") {
+      ws.send(
+        JSON.stringify({
+          action: { action: { setDuration: { minutes: val } } },
+        }),
+      );
+    } else if (act === "set-clock-manual") {
+      ws.send(
+        JSON.stringify({
+          action: { action: { setClockManual: { time: val } } },
+        }),
+      );
+    } else if (act === "toggle-clock") {
+      ws.send(JSON.stringify({ action: { action: { toggleClock: {} } } }));
+    }
   }
 }
 
@@ -699,7 +713,7 @@ function upd() {
   state.global.period = document.getElementById("gp").value;
   state.global.subPeriod = document.getElementById("gi").value;
   if (wsConnected && ws.readyState === 1) {
-    ws.send(JSON.stringify({ updates: { config: state } }));
+    ws.send(JSON.stringify({ update: { config: state } }));
   }
 }
 connect();
