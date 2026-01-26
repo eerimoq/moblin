@@ -31,6 +31,13 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSaveReplay()
     func remoteControlStreamerStartStatus(interval: Int, filter: RemoteControlStartStatusFilter)
     func remoteControlStreamerStopStatus()
+    func remoteControlStreamerGetScoreboardSports() -> [String]
+    func remoteControlStreamerSetScoreboardSport(sportId: String)
+    func remoteControlStreamerUpdateScoreboard(config: RemoteControlScoreboardMatchConfig)
+    func remoteControlStreamerToggleScoreboardClock()
+    func remoteControlStreamerSetScoreboardDuration(minutes: Int)
+    func remoteControlStreamerSetScoreboardClock(time: String)
+    func remoteControlStreamerRequestScoreboardUpdate()
 }
 
 class RemoteControlStreamer {
@@ -92,6 +99,10 @@ class RemoteControlStreamer {
             return
         }
         send(message: .event(data: .log(entry: entry)))
+    }
+
+    func sendScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
+        send(message: .event(data: .scoreboard(config: config)))
     }
 
     func sendPreview(preview: Data) {
@@ -278,6 +289,29 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case .stopStatus:
             delegate.remoteControlStreamerStopStatus()
+            sendEmptyOkResponse(id: id)
+        case .getScoreboardSports:
+            let sports = delegate.remoteControlStreamerGetScoreboardSports()
+            send(message: .response(id: id,
+                                    result: .ok,
+                                    data: .getScoreboardSports(names: sports)))
+        case let .setScoreboardSport(sportId):
+            delegate.remoteControlStreamerSetScoreboardSport(sportId: sportId)
+            sendEmptyOkResponse(id: id)
+        case let .updateScoreboard(config):
+            delegate.remoteControlStreamerUpdateScoreboard(config: config)
+            sendEmptyOkResponse(id: id)
+        case .toggleScoreboardClock:
+            delegate.remoteControlStreamerToggleScoreboardClock()
+            sendEmptyOkResponse(id: id)
+        case let .setScoreboardDuration(minutes):
+            delegate.remoteControlStreamerSetScoreboardDuration(minutes: minutes)
+            sendEmptyOkResponse(id: id)
+        case let .setScoreboardClock(time):
+            delegate.remoteControlStreamerSetScoreboardClock(time: time)
+            sendEmptyOkResponse(id: id)
+        case .requestScoreboardUpdate:
+            delegate.remoteControlStreamerRequestScoreboardUpdate()
             sendEmptyOkResponse(id: id)
         }
     }

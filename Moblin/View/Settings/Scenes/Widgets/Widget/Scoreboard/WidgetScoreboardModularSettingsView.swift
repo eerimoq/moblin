@@ -25,7 +25,7 @@ private struct ColorsView: View {
                         if let rgb = $0.toRgb() {
                             modular.homeTextColor = rgb
                         }
-                        model.broadcastCurrentState()
+                        model.remoteControlScoreboardUpdate()
                         updateEffect()
                     }
                     ColorPicker(
@@ -37,7 +37,7 @@ private struct ColorsView: View {
                         if let rgb = $0.toRgb() {
                             modular.homeBgColor = rgb
                         }
-                        model.broadcastCurrentState()
+                        model.remoteControlScoreboardUpdate()
                         updateEffect()
                     }
                 } header: {
@@ -53,7 +53,7 @@ private struct ColorsView: View {
                         if let rgb = $0.toRgb() {
                             modular.awayTextColor = rgb
                         }
-                        model.broadcastCurrentState()
+                        model.remoteControlScoreboardUpdate()
                         updateEffect()
                     }
                     ColorPicker(
@@ -65,7 +65,7 @@ private struct ColorsView: View {
                         if let rgb = $0.toRgb() {
                             modular.awayBgColor = rgb
                         }
-                        model.broadcastCurrentState()
+                        model.remoteControlScoreboardUpdate()
                         updateEffect()
                     }
                 } header: {
@@ -85,7 +85,7 @@ private struct ColorsView: View {
                     }
                     Button("Reset all colors") {
                         modular.resetColors()
-                        model.broadcastCurrentState()
+                        model.remoteControlScoreboardUpdate()
                         updateEffect()
                     }
                 } header: {
@@ -284,12 +284,12 @@ struct WidgetScoreboardModularSettingsView: View {
         Section {
             TextEditNavigationView(title: "Home", value: modular.home) {
                 modular.home = $0
-                model.broadcastCurrentState()
+                model.remoteControlScoreboardUpdate()
                 model.sceneUpdated()
             }
             TextEditNavigationView(title: "Away", value: modular.away) {
                 modular.away = $0
-                model.broadcastCurrentState()
+                model.remoteControlScoreboardUpdate()
                 model.sceneUpdated()
             }
             ColorsView(model: model, widget: widget, scoreboard: scoreboard, modular: modular)
@@ -315,7 +315,7 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
             model.getScoreboardEffect(id: widget.id)?.update(scoreboard: scoreboard,
                                                              config: model.getCurrentConfig(),
                                                              players: model.database.scoreboardPlayers)
-            model.broadcastCurrentState()
+            model.remoteControlScoreboardUpdate()
         }
         if modular.layout.isStacked() {
             StackedSettingsView(model: model,

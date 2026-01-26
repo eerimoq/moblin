@@ -433,10 +433,10 @@ class RemoteControlAssistant: NSObject {
             handleStateEvent(state: state)
         case let .log(entry: entry):
             handleLogEvent(entry: entry)
-        case .mediaShareSegmentReceived:
-            break
         case let .status(general: general, topLeft: topLeft, topRight: topRight):
             handleStatusEvent(general: general, topLeft: topLeft, topRight: topRight)
+        case .scoreboard:
+            break
         }
     }
 

@@ -1637,7 +1637,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         sendPeriodicRemoteControlStreamerStatus()
         speechToTextProcess()
         updateTwitchRaid()
-        broadcastStreamStats()
     }
 
     private func handle3sTimer() {

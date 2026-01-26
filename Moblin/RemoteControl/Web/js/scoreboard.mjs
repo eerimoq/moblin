@@ -1,4 +1,4 @@
-import { scoreboardWebsocketPort } from "./config.mjs";
+import { websocketPort } from "./config.mjs";
 
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
@@ -12,25 +12,28 @@ function toggleFullscreen() {
 
 function connect() {
   const socket = new WebSocket(
-    `ws://${window.location.hostname}:${scoreboardWebsocketPort}`,
+    `ws://${window.location.hostname}:${websocketPort}`,
   );
-  socket.onopen = () => {
-    socket.send(JSON.stringify({ requestSync: {} }));
-  };
   socket.onclose = () => {
-    setTimeout(connect, 2000);
+    setTimeout(connect, 3000);
   };
   socket.onmessage = (e) => {
-    try {
-      const message = JSON.parse(e.data);
-      if (message.updates !== undefined) {
-        updateTeam(1, message.updates.config.team1);
-        updateTeam(2, message.updates.config.team2);
-      }
-    } catch (err) {
-      console.error(err);
+    const message = JSON.parse(e.data);
+    if (message.event !== undefined) {
+      handleEvent(message.event.data);
     }
   };
+}
+
+function handleEvent(event) {
+  if (event.scoreboard !== undefined) {
+    handleEventScoreboard(event.scoreboard);
+  }
+}
+
+function handleEventScoreboard(scoreboard) {
+  updateTeam(1, scoreboard.config.team1);
+  updateTeam(2, scoreboard.config.team2);
 }
 
 function updateTeam(num, data) {

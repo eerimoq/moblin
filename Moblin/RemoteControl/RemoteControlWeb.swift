@@ -10,6 +10,13 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetDebugLogging(on: Bool)
     func remoteControlWebSetMute(on: Bool)
     func remoteControlWebSetTorch(on: Bool)
+    func remoteControlWebGetScoreboardSports() -> [String]
+    func remoteControlWebSetScoreboardSport(sportId: String)
+    func remoteControlWebUpdateScoreboard(config: RemoteControlScoreboardMatchConfig)
+    func remoteControlWebToggleScoreboardClock()
+    func remoteControlWebSetScoreboardDuration(minutes: Int)
+    func remoteControlWebSetScoreboardClock(time: String)
+    func remoteControlWebRequestScoreboardUpdate()
 }
 
 private struct StaticFile {
@@ -52,7 +59,6 @@ class RemoteControlWeb {
     private let websocketRetryTimer = SimpleTimer(queue: .main)
     private weak var delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
-    let scoreboardServer = RemoteControlScoreboardServer()
 
     init(delegate: RemoteControlWebDelegate) {
         self.delegate = delegate
@@ -62,14 +68,12 @@ class RemoteControlWeb {
         started = true
         startServer(port: port)
         startWebsocketServer(port: port + 1)
-        scoreboardServer.start(port: port + 2)
     }
 
     func stop() {
         started = false
         stopServer()
         stopWebsocketServer()
-        scoreboardServer.stop()
     }
 
     func stateChanged(state: RemoteControlAssistantStreamerState) {
@@ -81,6 +85,12 @@ class RemoteControlWeb {
     func log(entry: String) {
         for connection in connections {
             send(connection: connection, message: .event(data: .log(entry: entry)))
+        }
+    }
+
+    func sendScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
+        for connection in connections {
+            send(connection: connection, message: .event(data: .scoreboard(config: config)))
         }
     }
 
@@ -149,7 +159,6 @@ class RemoteControlWeb {
         }
         let configMjs = """
         export const websocketPort = \(websocketPort);
-        export const scoreboardWebsocketPort = \(scoreboardServer.port);
         """
         response.send(text: configMjs)
     }
@@ -241,6 +250,30 @@ class RemoteControlWeb {
         case let .setDebugLogging(on: on):
             delegate.remoteControlWebSetDebugLogging(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
+        case .getScoreboardSports:
+            let sports = delegate.remoteControlWebGetScoreboardSports()
+            send(connection: connection,
+                 message: .response(id: id,
+                                    result: .ok,
+                                    data: .getScoreboardSports(names: sports)))
+        case let .setScoreboardSport(sportId):
+            delegate.remoteControlWebSetScoreboardSport(sportId: sportId)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .updateScoreboard(config):
+            delegate.remoteControlWebUpdateScoreboard(config: config)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .toggleScoreboardClock:
+            delegate.remoteControlWebToggleScoreboardClock()
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setScoreboardDuration(minutes):
+            delegate.remoteControlWebSetScoreboardDuration(minutes: minutes)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setScoreboardClock(time):
+            delegate.remoteControlWebSetScoreboardClock(time: time)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .requestScoreboardUpdate:
+            delegate.remoteControlWebRequestScoreboardUpdate()
+            sendEmptyOkResponse(connection: connection, id: id)
         default:
             break
         }
@@ -257,65 +290,5 @@ class RemoteControlWeb {
 
     private func sendEmptyOkResponse(connection: NWConnection, id: Int) {
         send(connection: connection, message: .response(id: id, result: .ok, data: nil))
-    }
-}
-
-class RemoteControlScoreboardServer {
-    private var listener: NWListener?
-    private var clients: [NWConnection] = []
-    var onMessageReceived: ((RemoteControlScoreboardToStreamer) -> Void)?
-    var onClientConnected: ((NWConnection) -> Void)?
-    var port: UInt16 = 0
-
-    func start(port: UInt16) {
-        self.port = port
-        let params = NWParameters.tcp
-        params.defaultProtocolStack.applicationProtocols.insert(NWProtocolWebSocket.Options(), at: 0)
-        try? listener = NWListener(using: params, on: .init(integer: Int(port)))
-        listener?.newConnectionHandler = { connection in
-            connection.stateUpdateHandler = { state in
-                if case .ready = state {
-                    self.clients.append(connection)
-                    self.onClientConnected?(connection)
-                    self.receive(connection: connection)
-                }
-            }
-            connection.start(queue: .main)
-        }
-        listener?.start(queue: .main)
-    }
-
-    func stop() {
-        listener?.cancel()
-        listener = nil
-        clients.removeAll()
-    }
-
-    private func receive(connection: NWConnection) {
-        connection.receiveMessage { data, _, _, err in
-            if let data,
-               let message = try? JSONDecoder().decode(
-                   RemoteControlScoreboardToStreamer.self,
-                   from: data
-               )
-            {
-                self.onMessageReceived?(message)
-            }
-            if err == nil {
-                self.receive(connection: connection)
-            } else {
-                self.clients.removeAll(where: { $0 === connection })
-            }
-        }
-    }
-
-    func broadcastMessage(_ message: String) {
-        for client in clients {
-            sendMessage(connection: client, message: message)
-        }
-    }
-
-    func sendMessage(connection: NWConnection, message: String) {
-        connection.sendWebSocket(data: message.data(using: .utf8), opcode: .text)
     }
 }

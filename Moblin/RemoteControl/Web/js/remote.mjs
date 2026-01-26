@@ -1,11 +1,12 @@
-import { scoreboardWebsocketPort } from "./config.mjs";
+import { websocketPort } from "./config.mjs";
 
-let wsConnected = false,
-  ws,
-  state = null;
+let wsConnected = false;
+let ws;
+let state = null;
 let activeInputId = null;
 let currentsportId = null;
 let rangeCache = { min: 0, max: 30 };
+let requestId = 0;
 
 const CONTROL_ORDER = [
   "primaryScore",
@@ -38,12 +39,35 @@ function updateStatus(text, colorClass) {
   el.className = `status-text ${colorClass}`;
 }
 
-function connect() {
-  ws = new WebSocket(
-    `ws://${window.location.hostname}:${scoreboardWebsocketPort}`,
+function getRequestId() {
+  requestId += 1;
+  return requestId;
+}
+
+setInterval(() => {
+  if (!wsConnected) {
+    return;
+  }
+  ws.send(
+    JSON.stringify({
+      request: { id: getRequestId(), data: { getStatus: {} } },
+    }),
   );
+}, 5000);
+
+function connect() {
+  ws = new WebSocket(`ws://${window.location.hostname}:${websocketPort}`);
   ws.onopen = () => {
-    ws.send(JSON.stringify({ requestSync: {} }));
+    ws.send(
+      JSON.stringify({
+        request: { id: getRequestId(), data: { getScoreboardSports: {} } },
+      }),
+    );
+    ws.send(
+      JSON.stringify({
+        request: { id: getRequestId(), data: { getStatus: {} } },
+      }),
+    );
   };
   ws.onclose = () => {
     wsConnected = false;
@@ -57,37 +81,71 @@ function connect() {
     }, 3000);
   };
   ws.onmessage = (e) => {
-    const m = JSON.parse(e.data);
-    // console.log("Got", m);
-    if (m.sports !== undefined) {
-      const sel = document.getElementById("sport-selector");
-      const currentVal = sel.value;
-      sel.innerHTML =
-        '<option value="">CHANGE SPORT...</option>' +
-        m.sports.names
-          .map((s) => `<option value="${s}">${s.toUpperCase()}</option>`)
-          .join("");
-      if (state && state.sportId) {
-        sel.value = state.sportId;
-      } else if (currentVal && m.sports.names.includes(currentVal)) {
-        sel.value = currentVal;
-      }
-    } else if (m.update !== undefined) {
-      state = m.update.config;
-      window.state = state;
-      wsConnected = true;
-      document
-        .getElementById("ctrl")
-        .classList.remove("opacity-30", "pointer-events-none");
-      updateStatus("Connected", "text-green-500");
-      document.getElementById("si").innerText = "SYNCED";
-      document.getElementById("si").className = "text-green-500";
-      syncUI();
-    } else if (m.stats !== undefined) {
-      document.getElementById("sb").innerText = m.stats.bitrate;
-      document.getElementById("sp").innerText = m.stats.battery;
+    const message = JSON.parse(e.data);
+    if (message.event !== undefined) {
+      handleEvent(message.event.data);
+    } else if (message.response !== undefined) {
+      handleResponse(message.response);
     }
   };
+}
+
+function handleEvent(event) {
+  // console.log("Got event", event);
+  if (event.scoreboard !== undefined) {
+    handleEventScoreboard(event.scoreboard);
+  }
+}
+
+function handleEventScoreboard(scoreboard) {
+  state = scoreboard.config;
+  window.state = state;
+  wsConnected = true;
+  document
+    .getElementById("ctrl")
+    .classList.remove("opacity-30", "pointer-events-none");
+  updateStatus("Connected", "text-green-500");
+  document.getElementById("si").innerText = "SYNCED";
+  document.getElementById("si").className = "text-green-500";
+  syncUI();
+}
+
+function handleResponse(response) {
+  // console.log("Got response", response);
+  if (response.data === undefined) {
+    return;
+  }
+  if (response.data.getScoreboardSports !== undefined) {
+    handleResponseGetScoreboardSports(response.data.getScoreboardSports);
+  } else if (response.data.getStatus !== undefined) {
+    handleResponseGetStatus(response.data.getStatus);
+  }
+}
+
+function handleResponseGetScoreboardSports(getScoreboardSports) {
+  const sel = document.getElementById("sport-selector");
+  const currentVal = sel.value;
+  sel.innerHTML =
+    '<option value="">CHANGE SPORT...</option>' +
+    getScoreboardSports.names
+      .map((s) => `<option value="${s}">${s.toUpperCase()}</option>`)
+      .join("");
+  if (state && state.sportId) {
+    sel.value = state.sportId;
+  } else if (currentVal && getScoreboardSports.names.includes(currentVal)) {
+    sel.value = currentVal;
+  }
+}
+
+function handleResponseGetStatus(getStatus) {
+  if (getStatus.general !== undefined) {
+    document.getElementById("sp").innerText =
+      `${getStatus.general.batteryLevel}%`;
+  }
+  if (getStatus.topRight.bitrate !== undefined) {
+    document.getElementById("sb").innerText =
+      getStatus.topRight.bitrate.message;
+  }
 }
 
 function safeUpdate(id, value) {
@@ -330,7 +388,14 @@ function switchSport(val) {
   if (!val || !wsConnected) {
     return;
   }
-  ws.send(JSON.stringify({ sport: { id: val } }));
+  ws.send(
+    JSON.stringify({
+      request: {
+        id: getRequestId(),
+        data: { setScoreboardSport: { sportId: val } },
+      },
+    }),
+  );
 }
 
 function switchLayout(val) {
@@ -443,17 +508,17 @@ function syncUI() {
 
 function sendAction(act, value) {
   if (wsConnected) {
-    let action;
+    let data;
     if (act === "set-duration") {
-      action = { setDuration: { minutes: value } };
+      data = { setScoreboardDuration: { minutes: value } };
     } else if (act === "set-clock-manual") {
-      action = { setClockManual: { time: value } };
+      data = { setScoreboardClock: { time: value } };
     } else if (act === "toggle-clock") {
-      action = { toggleClock: {} };
+      data = { toggleScoreboardClock: {} };
     } else {
       return;
     }
-    ws.send(JSON.stringify({ action: { action: action } }));
+    ws.send(JSON.stringify({ request: { id: getRequestId(), data: data } }));
   }
 }
 
@@ -710,7 +775,14 @@ function upd() {
   state.global.period = document.getElementById("gp").value;
   state.global.subPeriod = document.getElementById("gi").value;
   if (wsConnected && ws.readyState === 1) {
-    ws.send(JSON.stringify({ update: { config: state } }));
+    ws.send(
+      JSON.stringify({
+        request: {
+          id: getRequestId(),
+          data: { updateScoreboard: { config: state } },
+        },
+      }),
+    );
   }
 }
 connect();

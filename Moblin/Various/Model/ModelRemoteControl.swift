@@ -500,6 +500,12 @@ extension Model {
         remoteControlWeb?.log(entry: entry)
     }
 
+    func remoteControlScoreboardUpdate() {
+        let config = getCurrentConfig()
+        remoteControlStreamer?.sendScoreboardUpdate(config: config)
+        remoteControlWeb?.sendScoreboardUpdate(config: config)
+    }
+
     func reloadRemoteControlWeb() {
         remoteControlWeb?.stop()
         remoteControlWeb = nil
@@ -507,7 +513,6 @@ extension Model {
             return
         }
         remoteControlWeb = RemoteControlWeb(delegate: self)
-        setupRemoteControlScoreboardServer()
         remoteControlWeb?.start(port: database.remoteControl.web.port)
     }
 }
@@ -761,6 +766,34 @@ extension Model: RemoteControlStreamerDelegate {
         isRemoteControlAssistantRequestingStatus = false
         remoteControlAssistantRequestingStatusFilter = nil
     }
+
+    func remoteControlStreamerGetScoreboardSports() -> [String] {
+        return getScoreboardSports()
+    }
+
+    func remoteControlStreamerSetScoreboardSport(sportId: String) {
+        handleSportSwitch(sportId: sportId)
+    }
+
+    func remoteControlStreamerUpdateScoreboard(config: RemoteControlScoreboardMatchConfig) {
+        handleExternalScoreboardUpdate(config: config)
+    }
+
+    func remoteControlStreamerToggleScoreboardClock() {
+        handleScoreboardToggleClock()
+    }
+
+    func remoteControlStreamerSetScoreboardDuration(minutes: Int) {
+        handleScoreboardSetDuration(minutes: minutes)
+    }
+
+    func remoteControlStreamerSetScoreboardClock(time: String) {
+        handleScoreboardSetClockManual(time: time)
+    }
+
+    func remoteControlStreamerRequestScoreboardUpdate() {
+        remoteControlScoreboardUpdate()
+    }
 }
 
 extension Model: RemoteControlAssistantDelegate {
@@ -862,6 +895,7 @@ extension Model: RemoteControlAssistantDelegate {
 extension Model: RemoteControlWebDelegate {
     func remoteControlWebConnected() {
         remoteControlWeb?.stateChanged(state: createRemoteControlStateChanged())
+        remoteControlWeb?.sendScoreboardUpdate(config: getCurrentConfig())
     }
 
     func remoteControlWebGetStatus()
@@ -888,5 +922,33 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetTorch(on: Bool) {
         remoteControlStreamerSetTorch(on: on)
+    }
+
+    func remoteControlWebGetScoreboardSports() -> [String] {
+        return getScoreboardSports()
+    }
+
+    func remoteControlWebSetScoreboardSport(sportId: String) {
+        handleSportSwitch(sportId: sportId)
+    }
+
+    func remoteControlWebUpdateScoreboard(config: RemoteControlScoreboardMatchConfig) {
+        handleExternalScoreboardUpdate(config: config)
+    }
+
+    func remoteControlWebToggleScoreboardClock() {
+        handleScoreboardToggleClock()
+    }
+
+    func remoteControlWebSetScoreboardDuration(minutes: Int) {
+        handleScoreboardSetDuration(minutes: minutes)
+    }
+
+    func remoteControlWebSetScoreboardClock(time: String) {
+        handleScoreboardSetClockManual(time: time)
+    }
+
+    func remoteControlWebRequestScoreboardUpdate() {
+        remoteControlScoreboardUpdate()
     }
 }

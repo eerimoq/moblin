@@ -36,6 +36,13 @@ enum RemoteControlRequest: Codable {
     case saveReplay
     case startStatus(interval: Int, filter: RemoteControlStartStatusFilter)
     case stopStatus
+    case getScoreboardSports
+    case setScoreboardSport(sportId: String)
+    case updateScoreboard(config: RemoteControlScoreboardMatchConfig)
+    case toggleScoreboardClock
+    case setScoreboardDuration(minutes: Int)
+    case setScoreboardClock(time: String)
+    case requestScoreboardUpdate
 }
 
 enum RemoteControlResponse: Codable {
@@ -45,15 +52,16 @@ enum RemoteControlResponse: Codable {
         topRight: RemoteControlStatusTopRight
     )
     case getSettings(data: RemoteControlSettings)
+    case getScoreboardSports(names: [String])
 }
 
 enum RemoteControlEvent: Codable {
     case state(data: RemoteControlAssistantStreamerState)
     case log(entry: String)
-    case mediaShareSegmentReceived(fileId: UUID)
     case status(general: RemoteControlStatusGeneral?,
                 topLeft: RemoteControlStatusTopLeft?,
                 topRight: RemoteControlStatusTopRight?)
+    case scoreboard(config: RemoteControlScoreboardMatchConfig)
 }
 
 struct RemoteControlChatMessage: Codable {
@@ -619,19 +627,6 @@ struct RemoteControlAssistantStreamerState: Codable {
     var batteryCharging: Bool?
 }
 
-struct RemoteControlAuthentication: Codable {
-    var challenge: String
-    var salt: String
-}
-
-enum RemoteControlResult: Codable {
-    case ok
-    case wrongPassword
-    case unknownRequest
-    case notIdentified
-    case alreadyIdentified
-}
-
 struct RemoteControlScoreboardControl: Codable {
     // periphery: ignore
     var type: String
@@ -702,23 +697,17 @@ struct RemoteControlScoreboardMatchConfig: Codable {
     var controls: [String: RemoteControlScoreboardControl]
 }
 
-enum RemoteControlScoreboardAction: Codable {
-    case toggleClock
-    case setDuration(minutes: Int)
-    case setClockManual(time: String)
+struct RemoteControlAuthentication: Codable {
+    var challenge: String
+    var salt: String
 }
 
-enum RemoteControlScoreboardToStreamer: Codable {
-    case update(config: RemoteControlScoreboardMatchConfig)
-    case sport(id: String)
-    case action(action: RemoteControlScoreboardAction)
-    case requestUpdate
-}
-
-enum RemoteControlScoreboardToAssistant: Codable {
-    case update(config: RemoteControlScoreboardMatchConfig)
-    case stats(battery: String, bitrate: String)
-    case sports(names: [String])
+enum RemoteControlResult: Codable {
+    case ok
+    case wrongPassword
+    case unknownRequest
+    case notIdentified
+    case alreadyIdentified
 }
 
 enum RemoteControlMessageToStreamer: Codable {

@@ -289,36 +289,6 @@ private let configs: [String: RemoteControlScoreboardMatchConfig] = [
 ]
 
 extension Model {
-    func setupRemoteControlScoreboardServer() {
-        remoteControlWeb?.scoreboardServer.onMessageReceived = { [weak self] message in
-            guard let self else {
-                return
-            }
-            switch message {
-            case let .update(config):
-                self.handleExternalScoreboardUpdate(config: config)
-            case let .action(action):
-                self.handleAction(action: action)
-            case let .sport(sportId):
-                self.handleSportSwitch(sportId: sportId)
-            case .requestUpdate:
-                self.broadcastCurrentState()
-            }
-        }
-        remoteControlWeb?.scoreboardServer.onClientConnected = { [weak self] connection in
-            self?.syncCurrentStateToRemote(connection: connection)
-        }
-    }
-
-    func broadcastCurrentState() {
-        let message: RemoteControlScoreboardToAssistant = .update(config: getCurrentConfig())
-        if let data = try? JSONEncoder().encode(message),
-           let string = String(data: data, encoding: .utf8)
-        {
-            remoteControlWeb?.scoreboardServer.broadcastMessage(string)
-        }
-    }
-
     func getCurrentConfig() -> RemoteControlScoreboardMatchConfig {
         let scoreboard = database.widgets.first(where: { $0.type == .scoreboard })?.scoreboard
         let sportId: String
@@ -415,42 +385,54 @@ extension Model {
         return liveConfig
     }
 
-    func broadcastStreamStats() {
-        let message: RemoteControlScoreboardToAssistant = .stats(battery: "\(Int(battery.level * 100))%",
-                                                                 bitrate: bitrate.speedMbpsOneDecimal)
-        if let d = try? JSONEncoder().encode(message), let s = String(data: d, encoding: .utf8) {
-            remoteControlWeb?.scoreboardServer.broadcastMessage(s)
-        }
+    func getScoreboardSports() -> [String] {
+        let sports = configs.keys
+        let topPriority = ["generic", "generic sets"]
+        let rest = sports.filter { !topPriority.contains($0) }.sorted()
+        let finalSports = topPriority.filter { sports.contains($0) } + rest
+        return finalSports.isEmpty ? ["volleyball", "basketball"] : finalSports
     }
 
-    private func handleAction(action: RemoteControlScoreboardAction) {
+    func handleScoreboardToggleClock() {
+        guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
+            return
+        }
+        widget.scoreboard.modular.isClockStopped.toggle()
+        sceneUpdated()
+        remoteControlScoreboardUpdate()
+    }
+
+    func handleScoreboardSetDuration(minutes: Int) {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
         let scoreboard = widget.scoreboard
-        switch action {
-        case .toggleClock:
-            scoreboard.modular.isClockStopped.toggle()
-        case let .setDuration(minutes):
-            scoreboard.modular.clockMaximum = minutes
-            if scoreboard.modular.clockDirection == .down {
-                scoreboard.modular.clockMinutes = minutes
-                scoreboard.modular.clockSeconds = 0
-            }
-            scoreboard.modular.isClockStopped = true
-        case let .setClockManual(time):
-            let parts = time.split(separator: ":")
-            if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
-                scoreboard.modular.clockMinutes = m
-                scoreboard.modular.clockSeconds = s
-                scoreboard.modular.isClockStopped = true
-            }
+        scoreboard.modular.clockMaximum = minutes
+        if scoreboard.modular.clockDirection == .down {
+            scoreboard.modular.clockMinutes = minutes
+            scoreboard.modular.clockSeconds = 0
         }
+        scoreboard.modular.isClockStopped = true
         sceneUpdated()
-        broadcastCurrentState()
+        remoteControlScoreboardUpdate()
     }
 
-    private func handleExternalScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
+    func handleScoreboardSetClockManual(time: String) {
+        guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
+            return
+        }
+        let scoreboard = widget.scoreboard
+        let parts = time.split(separator: ":")
+        if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
+            scoreboard.modular.clockMinutes = m
+            scoreboard.modular.clockSeconds = s
+            scoreboard.modular.isClockStopped = true
+        }
+        sceneUpdated()
+        remoteControlScoreboardUpdate()
+    }
+
+    func handleExternalScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
         for widget in database.widgets where widget.type == .scoreboard {
             let scoreboard = widget.scoreboard
             scoreboard.modular.config = config
@@ -529,10 +511,10 @@ extension Model {
             }
         }
         sceneUpdated()
-        broadcastCurrentState()
+        remoteControlScoreboardUpdate()
     }
 
-    private func handleSportSwitch(sportId: String) {
+    func handleSportSwitch(sportId: String) {
         for widget in database.widgets where widget.type == .scoreboard {
             let scoreboard = widget.scoreboard
             switch sportId {
@@ -596,32 +578,9 @@ extension Model {
                 modular.awayTextColor = RgbColor.fromHex(string: newConfig.team2.textColor) ?? scoreboard
                     .modular.awayTextColor
                 modular.loadColors()
+                sceneUpdated()
+                remoteControlScoreboardUpdate()
             }
-        }
-        sceneUpdated()
-        broadcastCurrentState()
-    }
-
-    private func getAvailableSports() -> [String] {
-        let sports = configs.keys
-        let topPriority = ["generic", "generic sets"]
-        let rest = sports.filter { !topPriority.contains($0) }.sorted()
-        let finalSports = topPriority.filter { sports.contains($0) } + rest
-        return finalSports.isEmpty ? ["volleyball", "basketball"] : finalSports
-    }
-
-    private func syncCurrentStateToRemote(connection: NWConnection) {
-        var message: RemoteControlScoreboardToAssistant = .sports(names: getAvailableSports())
-        if let data = try? JSONEncoder().encode(message),
-           let string = String(data: data, encoding: .utf8)
-        {
-            remoteControlWeb?.scoreboardServer.sendMessage(connection: connection, message: string)
-        }
-        message = .update(config: getCurrentConfig())
-        if let data = try? JSONEncoder().encode(message),
-           let string = String(data: data, encoding: .utf8)
-        {
-            remoteControlWeb?.scoreboardServer.sendMessage(connection: connection, message: string)
         }
     }
 }

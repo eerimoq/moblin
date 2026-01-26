@@ -416,44 +416,45 @@ extension Model {
             sceneWidgets = []
         }
         for (id, scoreboardEffect) in scoreboardEffects {
-            if let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard {
-                switch scoreboard.sport {
-                case .padel:
-                    break
-                default:
-                    guard let widget = findWidget(id: id) else {
-                        continue
-                    }
-                    switch scoreboard.sport {
-                    case .generic:
-                        guard !widget.scoreboard.generic.isClockStopped else {
-                            continue
-                        }
-                        widget.scoreboard.generic.tickClock()
-                        DispatchQueue.main.async {
-                            scoreboardEffect.update(
-                                scoreboard: widget.scoreboard,
-                                config: self.getCurrentConfig(),
-                                players: self.database.scoreboardPlayers
-                            )
-                        }
-                        sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
-                    default:
-                        guard !widget.scoreboard.modular.isClockStopped else {
-                            continue
-                        }
-                        widget.scoreboard.modular.tickClock()
-                        DispatchQueue.main.async {
-                            scoreboardEffect.update(
-                                scoreboard: widget.scoreboard,
-                                config: self.getCurrentConfig(),
-                                players: self.database.scoreboardPlayers
-                            )
-                            self.broadcastCurrentState()
-                        }
-                        sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
-                    }
+            guard let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard else {
+                continue
+            }
+            switch scoreboard.sport {
+            case .padel:
+                break
+            case .generic:
+                guard let widget = findWidget(id: id) else {
+                    continue
                 }
+                guard !widget.scoreboard.generic.isClockStopped else {
+                    continue
+                }
+                widget.scoreboard.generic.tickClock()
+                DispatchQueue.main.async {
+                    scoreboardEffect.update(
+                        scoreboard: widget.scoreboard,
+                        config: self.getCurrentConfig(),
+                        players: self.database.scoreboardPlayers
+                    )
+                }
+                sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
+            default:
+                guard let widget = findWidget(id: id) else {
+                    continue
+                }
+                guard !widget.scoreboard.modular.isClockStopped else {
+                    continue
+                }
+                widget.scoreboard.modular.tickClock()
+                DispatchQueue.main.async {
+                    scoreboardEffect.update(
+                        scoreboard: widget.scoreboard,
+                        config: self.getCurrentConfig(),
+                        players: self.database.scoreboardPlayers
+                    )
+                    self.remoteControlScoreboardUpdate()
+                }
+                sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
             }
         }
     }
