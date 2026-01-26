@@ -58,7 +58,7 @@ function connect() {
   };
   ws.onmessage = (e) => {
     const m = JSON.parse(e.data);
-    console.log(m);
+    // console.log("Got", m);
     if (m.sports !== undefined) {
       const sel = document.getElementById("sport-selector");
       const currentVal = sel.value;
@@ -74,6 +74,7 @@ function connect() {
       }
     } else if (m.update !== undefined) {
       state = m.update.config;
+      window.state = state;
       wsConnected = true;
       document
         .getElementById("ctrl")
@@ -440,23 +441,19 @@ function syncUI() {
   updateGlobalToggles();
 }
 
-function sendAction(act, val) {
+function sendAction(act, value) {
   if (wsConnected) {
+    let action;
     if (act === "set-duration") {
-      ws.send(
-        JSON.stringify({
-          action: { action: { setDuration: { minutes: val } } },
-        }),
-      );
+      action = { setDuration: { minutes: value } };
     } else if (act === "set-clock-manual") {
-      ws.send(
-        JSON.stringify({
-          action: { action: { setClockManual: { time: val } } },
-        }),
-      );
+      action = { setClockManual: { time: value } };
     } else if (act === "toggle-clock") {
-      ws.send(JSON.stringify({ action: { action: { toggleClock: {} } } }));
+      action = { toggleClock: {} };
+    } else {
+      return;
     }
+    ws.send(JSON.stringify({ action: { action: action } }));
   }
 }
 
