@@ -37,7 +37,6 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerToggleScoreboardClock()
     func remoteControlStreamerSetScoreboardDuration(minutes: Int)
     func remoteControlStreamerSetScoreboardClock(time: String)
-    func remoteControlStreamerRequestScoreboardUpdate()
 }
 
 class RemoteControlStreamer {
@@ -309,9 +308,6 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setScoreboardClock(time):
             delegate.remoteControlStreamerSetScoreboardClock(time: time)
-            sendEmptyOkResponse(id: id)
-        case .requestScoreboardUpdate:
-            delegate.remoteControlStreamerRequestScoreboardUpdate()
             sendEmptyOkResponse(id: id)
         }
     }

@@ -42,7 +42,6 @@ enum RemoteControlRequest: Codable {
     case toggleScoreboardClock
     case setScoreboardDuration(minutes: Int)
     case setScoreboardClock(time: String)
-    case requestScoreboardUpdate
 }
 
 enum RemoteControlResponse: Codable {

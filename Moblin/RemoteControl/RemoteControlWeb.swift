@@ -16,7 +16,6 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebToggleScoreboardClock()
     func remoteControlWebSetScoreboardDuration(minutes: Int)
     func remoteControlWebSetScoreboardClock(time: String)
-    func remoteControlWebRequestScoreboardUpdate()
 }
 
 private struct StaticFile {
@@ -270,9 +269,6 @@ class RemoteControlWeb {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setScoreboardClock(time):
             delegate.remoteControlWebSetScoreboardClock(time: time)
-            sendEmptyOkResponse(connection: connection, id: id)
-        case .requestScoreboardUpdate:
-            delegate.remoteControlWebRequestScoreboardUpdate()
             sendEmptyOkResponse(connection: connection, id: id)
         default:
             break

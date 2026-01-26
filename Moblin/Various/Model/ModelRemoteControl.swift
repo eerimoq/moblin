@@ -790,10 +790,6 @@ extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerSetScoreboardClock(time: String) {
         handleScoreboardSetClockManual(time: time)
     }
-
-    func remoteControlStreamerRequestScoreboardUpdate() {
-        remoteControlScoreboardUpdate()
-    }
 }
 
 extension Model: RemoteControlAssistantDelegate {
@@ -946,9 +942,5 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetScoreboardClock(time: String) {
         handleScoreboardSetClockManual(time: time)
-    }
-
-    func remoteControlWebRequestScoreboardUpdate() {
-        remoteControlScoreboardUpdate()
     }
 }
