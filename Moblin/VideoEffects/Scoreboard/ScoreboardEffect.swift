@@ -845,11 +845,11 @@ final class ScoreboardEffect: VideoEffect {
         let fSize = isStacked ? CGFloat(stacked.fontSize) : CGFloat(sideBySide.fontSize)
         let weight: Font.Weight = (isStacked ? stacked.isBold : sideBySide.isBold) ? .bold : .regular
         let italic = isStacked ? stacked.isItalic : sideBySide.isItalic
-        Text(title.uppercased())
+        Text(title)
             .font(.system(size: fSize * 0.7, weight: weight))
             .italic(italic)
             .foregroundStyle(modular.homeTextColorColor)
-            .padding(.vertical, 2)
+            .padding(.vertical, 1)
             .frame(maxWidth: .infinity)
             .background(modular.secondaryBackgroundColorColor)
     }
