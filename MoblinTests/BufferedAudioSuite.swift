@@ -4,7 +4,7 @@ import Testing
 
 struct BufferedAudioSuite {
     @Test
-    func processNormal() async throws {
+    func processNormal() {
         let bufferedAudio = createBufferedAudio()
         let sampleBuffer1 = createSampleBuffer(presentationTimeStamp: 1.000)
         let sampleBuffer2 = createSampleBuffer(presentationTimeStamp: 1.021)
@@ -22,7 +22,7 @@ struct BufferedAudioSuite {
     }
 
     @Test
-    func processGap() async throws {
+    func processGap() {
         let bufferedAudio = createBufferedAudio()
         let sampleBuffers = [
             createSampleBuffer(presentationTimeStamp: 1.000),
@@ -46,7 +46,7 @@ struct BufferedAudioSuite {
     }
 
     @Test
-    func processDriftChange() async throws {
+    func processDriftChange() {
         let bufferedAudio = createBufferedAudio()
         let sampleBuffers = [
             createSampleBuffer(presentationTimeStamp: 1.000),
@@ -107,7 +107,7 @@ struct BufferedAudioSuite {
     }
 
     @Test
-    func oa6BadAudioTimestamps() async throws {
+    func oa6BadAudioTimestamps() {
         let bufferedAudio = createBufferedAudio()
         let sampleBuffers = createOa6SampleBuffers()
         appendSampleBuffers(bufferedAudio, sampleBuffers)
@@ -118,7 +118,7 @@ struct BufferedAudioSuite {
     }
 
     @Test
-    func oa6BadAudioTimestampsOffsetOutputTime() async throws {
+    func oa6BadAudioTimestampsOffsetOutputTime() {
         let bufferedAudio = createBufferedAudio()
         let sampleBuffers = createOa6SampleBuffers()
         appendSampleBuffers(bufferedAudio, sampleBuffers)
@@ -131,7 +131,7 @@ struct BufferedAudioSuite {
     }
 
     @Test
-    func oa6BadAudioTimestampsOffsetOutputTime2() async throws {
+    func oa6BadAudioTimestampsOffsetOutputTime2() {
         let bufferedAudio = createBufferedAudio()
         let sampleBuffers = createOa6SampleBuffers()
         appendSampleBuffers(bufferedAudio, sampleBuffers)
@@ -142,7 +142,7 @@ struct BufferedAudioSuite {
     }
 
     @Test
-    func oa6BadAudioTimestampsBigOffsetOutputTime() async throws {
+    func oa6BadAudioTimestampsBigOffsetOutputTime() {
         let bufferedAudio = createBufferedAudio()
         let sampleBuffers = createOa6SampleBuffers()
         appendSampleBuffers(bufferedAudio, sampleBuffers)

@@ -11,11 +11,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Source code styling
         run: |
-          brew install swiftformat prettier
+          brew install swiftformat oxfmt
           make style-check
       - name: Linting
         run: |
-          brew install swiftlint
+          brew install swiftlint oxlint
           make lint
       - name: Spell checking
         run: |

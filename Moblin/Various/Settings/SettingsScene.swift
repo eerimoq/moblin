@@ -2889,7 +2889,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
              clockMaximum,
              clockDirection,
              layout,
-             config,
              homeBgColor,
              homeTextColor,
              awayBgColor,
@@ -2917,7 +2916,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.clockMaximum, clockMaximum)
         try container.encode(.clockDirection, clockDirection)
         try container.encode(.layout, layout)
-        try container.encode(.config, config)
         try container.encode(.homeBgColor, homeBgColor)
         try container.encode(.homeTextColor, homeTextColor)
         try container.encode(.awayBgColor, awayBgColor)
@@ -2942,7 +2940,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
                                           SettingsWidgetGenericScoreboardClockDirection.self,
                                           .up)
         layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
-        config = container.decode(.config, RemoteControlScoreboardMatchConfig?.self, nil)
         homeBgColor = container.decode(.homeBgColor, RgbColor.self, Self.baseHomeBgColor)
         homeTextColor = container.decode(.homeTextColor, RgbColor.self, Self.baseHomeTextColor)
         awayBgColor = container.decode(.awayBgColor, RgbColor.self, Self.baseAwayBgColor)

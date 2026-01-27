@@ -135,11 +135,10 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
     }
 
     static func fromString(settings: String) throws -> StreamingHistoryDatabase {
-        let database = try JSONDecoder().decode(
+        return try JSONDecoder().decode(
             StreamingHistoryDatabase.self,
             from: settings.data(using: .utf8)!
         )
-        return database
     }
 
     func toString() throws -> String {

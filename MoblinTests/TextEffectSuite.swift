@@ -4,19 +4,19 @@ import Testing
 
 struct TextEffectSuite {
     @Test
-    func time() async throws {
+    func time() {
         let lines = format(format: "{time}", stats: createStats())
         #expect(lines == createLine(data: .text("06:26:06")))
     }
 
     @Test
-    func date() async throws {
+    func date() {
         let lines = format(format: "{date}", stats: createStats())
         #expect(lines == createLine(data: .text("2024-08-11")))
     }
 
     @Test
-    func conditions() async throws {
+    func conditions() {
         var lines = format(format: "{conditions}", stats: createStats())
         #expect(lines == createLine(data: .text("-")))
         lines = format(format: "{conditions}", stats: createStats(conditions: "sun.max"))
@@ -24,7 +24,7 @@ struct TextEffectSuite {
     }
 
     @Test
-    func gForce() async throws {
+    func gForce() {
         var lines = format(format: "{gForce}", stats: createStats())
         #expect(lines == createLine(data: .text("-")))
         let stats = createStats(gForce: GForce(now: 3, recentMax: 4, max: 5))
@@ -33,7 +33,7 @@ struct TextEffectSuite {
     }
 
     @Test
-    func gForceRecentMax() async throws {
+    func gForceRecentMax() {
         var lines = format(format: "{gForceRecentMax}", stats: createStats())
         #expect(lines == createLine(data: .text("-")))
         let stats = createStats(gForce: GForce(now: 3, recentMax: 4, max: 5))
@@ -42,7 +42,7 @@ struct TextEffectSuite {
     }
 
     @Test
-    func gForceMax() async throws {
+    func gForceMax() {
         var lines = format(format: "{gForceMax}", stats: createStats())
         #expect(lines == createLine(data: .text("-")))
         let stats = createStats(gForce: GForce(now: 3, recentMax: 4, max: 5))
@@ -51,7 +51,7 @@ struct TextEffectSuite {
     }
 
     @Test
-    func heartRate() async throws {
+    func heartRate() {
         var lines = format(format: "{heartRate}", stats: createStats())
         #expect(lines == createLine(data: .text("-")))
         var stats = createStats(heartRates: ["": 132])
@@ -66,7 +66,7 @@ struct TextEffectSuite {
     }
 
     @Test
-    func multiple() async throws {
+    func multiple() {
         let lines = format(format: "time: {time}, date: {date}\nsecond line", stats: createStats())
         #expect(lines == [
             TextEffectLine(id: 0, parts: [

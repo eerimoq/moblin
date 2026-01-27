@@ -4,7 +4,7 @@ import Testing
 
 struct UtilsSuite {
     @Test
-    func fullDuration() async throws {
+    func fullDuration() {
         #expect(formatFullDuration(seconds: 0) == "0 seconds")
         #expect(formatFullDuration(seconds: 1) == "1 second")
         #expect(formatFullDuration(seconds: 30) == "30 seconds")
@@ -18,34 +18,34 @@ struct UtilsSuite {
     }
 
     @Test
-    func uuidAddEmpty() async throws {
-        let original = UUID(uuidString: "00000000-1111-2222-3333-000000000000")!
+    func uuidAddEmpty() throws {
+        let original = try #require(UUID(uuidString: "00000000-1111-2222-3333-000000000000"))
         let extra = Data()
-        let result = UUID(uuidString: "00000000-1111-2222-3333-000000000000")!
+        let result = try #require(UUID(uuidString: "00000000-1111-2222-3333-000000000000"))
         #expect(original.add(data: extra) == result)
     }
 
     @Test
-    func uuidAddShort() async throws {
-        let original = UUID(uuidString: "07080000-0000-0000-0000-010203040506")!
+    func uuidAddShort() throws {
+        let original = try #require(UUID(uuidString: "07080000-0000-0000-0000-010203040506"))
         let extra = Data([0x01, 0x23, 0x45, 0x67])
-        let result = UUID(uuidString: "07080000-0000-0000-0000-010204274A6D")!
+        let result = try #require(UUID(uuidString: "07080000-0000-0000-0000-010204274A6D"))
         #expect(original.add(data: extra) == result)
     }
 
     @Test
-    func uuidAddLong() async throws {
-        let original = UUID(uuidString: "07080000-0000-0000-0000-010203040506")!
+    func uuidAddLong() throws {
+        let original = try #require(UUID(uuidString: "07080000-0000-0000-0000-010203040506"))
         let extra = Data([0x01, 0x23, 0x45, 0x67]) + Data(count: 15)
-        let result = UUID(uuidString: "6E080000-0000-0000-0000-01020305284B")!
+        let result = try #require(UUID(uuidString: "6E080000-0000-0000-0000-01020305284B"))
         #expect(original.add(data: extra) == result)
     }
 
     @Test
-    func uuidAddByteWrap() async throws {
-        let original = UUID(uuidString: "00010000-0000-0000-0000-FAFBFCFDFEFF")!
+    func uuidAddByteWrap() throws {
+        let original = try #require(UUID(uuidString: "00010000-0000-0000-0000-FAFBFCFDFEFF"))
         let extra = Data([0x01, 0x23, 0x45, 0x67])
-        let result = UUID(uuidString: "00010000-0000-0000-0000-FAFBFD204366")!
+        let result = try #require(UUID(uuidString: "00010000-0000-0000-0000-FAFBFD204366"))
         #expect(original.add(data: extra) == result)
     }
 }

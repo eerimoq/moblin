@@ -13,11 +13,11 @@ private struct ColorsView: View {
     }
 
     var body: some View {
-        NavigationLink("Team Colors") {
+        NavigationLink("Colors") {
             Form {
                 Section {
                     ColorPicker(
-                        "Text Color",
+                        "Text",
                         selection: $modular.homeTextColorColor,
                         supportsOpacity: false
                     )
@@ -29,7 +29,7 @@ private struct ColorsView: View {
                         updateEffect()
                     }
                     ColorPicker(
-                        "Background color",
+                        "Background",
                         selection: $modular.homeBgColorColor,
                         supportsOpacity: false
                     )
@@ -41,11 +41,11 @@ private struct ColorsView: View {
                         updateEffect()
                     }
                 } header: {
-                    Text("Team 1")
+                    Text("Home")
                 }
                 Section {
                     ColorPicker(
-                        "Text color",
+                        "Text",
                         selection: $modular.awayTextColorColor,
                         supportsOpacity: false
                     )
@@ -57,7 +57,7 @@ private struct ColorsView: View {
                         updateEffect()
                     }
                     ColorPicker(
-                        "Background color",
+                        "Background",
                         selection: $modular.awayBgColorColor,
                         supportsOpacity: false
                     )
@@ -69,11 +69,11 @@ private struct ColorsView: View {
                         updateEffect()
                     }
                 } header: {
-                    Text("Team 2")
+                    Text("Away")
                 }
                 Section {
                     ColorPicker(
-                        "Main background",
+                        "Background",
                         selection: $modular.secondaryBackgroundColorColor,
                         supportsOpacity: false
                     )
@@ -83,13 +83,15 @@ private struct ColorsView: View {
                         }
                         updateEffect()
                     }
-                    Button("Reset all colors") {
+                } header: {
+                    Text("Global")
+                }
+                Section {
+                    TextButtonView("Reset") {
                         modular.resetColors()
                         model.remoteControlScoreboardUpdate()
                         updateEffect()
                     }
-                } header: {
-                    Text("Global style")
                 }
             }
             .navigationTitle("Colors")
@@ -282,12 +284,12 @@ struct WidgetScoreboardModularSettingsView: View {
 
     var body: some View {
         Section {
-            TextEditNavigationView(title: "Home", value: modular.home) {
+            TextEditNavigationView(title: String(localized: "Home"), value: modular.home) {
                 modular.home = $0
                 model.remoteControlScoreboardUpdate()
                 model.sceneUpdated()
             }
-            TextEditNavigationView(title: "Away", value: modular.away) {
+            TextEditNavigationView(title: String(localized: "Away"), value: modular.away) {
                 modular.away = $0
                 model.remoteControlScoreboardUpdate()
                 model.sceneUpdated()

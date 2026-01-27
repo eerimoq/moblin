@@ -9,13 +9,13 @@ struct AudioMixerSuite {
     func oneMonoInputMonoOutput() async throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
         let inputId = UUID()
-        let format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1)!
+        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1))
         #expect(mixer.numberOfInputs() == 0)
         mixer.add(inputId: inputId, format: format)
         #expect(mixer.numberOfInputs() == 1)
-        let inputBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)!
+        let inputBuffer = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
         inputBuffer.frameLength = 1024
-        var samples = inputBuffer.floatChannelData!.pointee
+        var samples = try #require(inputBuffer.floatChannelData?.pointee)
         samples[0] = 1
         samples[1] = 10
         samples[1023] = 100
@@ -25,7 +25,7 @@ struct AudioMixerSuite {
         #expect(outputBuffer?.format.sampleRate == 48000)
         #expect(outputBuffer?.format.channelCount == 1)
         #expect(outputBuffer?.frameLength == 1024)
-        samples = outputBuffer!.floatChannelData!.pointee
+        samples = try #require(outputBuffer?.floatChannelData?.pointee)
         #expect(samples[0] == 1 / sqrt(2))
         #expect(samples[1] == 10 / sqrt(2))
         #expect(samples[500] == 0)
@@ -39,11 +39,11 @@ struct AudioMixerSuite {
     func oneMonoInput24khzMonoOutput48khz() async throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
         let inputId = UUID()
-        let format = AVAudioFormat(standardFormatWithSampleRate: 24000, channels: 1)!
+        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: 24000, channels: 1))
         mixer.add(inputId: inputId, format: format)
-        let inputBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 512)!
+        let inputBuffer = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 512))
         inputBuffer.frameLength = 512
-        var samples = inputBuffer.floatChannelData!.pointee
+        var samples = try #require(inputBuffer.floatChannelData?.pointee)
         samples[0] = 10
         samples[1] = 20
         samples[2] = 30
@@ -59,7 +59,7 @@ struct AudioMixerSuite {
         #expect(outputBuffer?.format.sampleRate == 48000)
         #expect(outputBuffer?.format.channelCount == 1)
         #expect(outputBuffer?.frameLength == 1024)
-        samples = outputBuffer!.floatChannelData!.pointee
+        samples = try #require(outputBuffer?.floatChannelData?.pointee)
         #expect(isEqual(samples[0], 5.94, epsilon: 0.01))
         #expect(isEqual(samples[1], 10.53, epsilon: 0.01))
         #expect(isEqual(samples[2], 15.58, epsilon: 0.01))
@@ -85,27 +85,27 @@ struct AudioMixerSuite {
     func oneMonoInputMonoOutputThreeBuffers() async throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
         let inputId = UUID()
-        let format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1)!
+        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1))
         #expect(mixer.numberOfInputs() == 0)
         mixer.add(inputId: inputId, format: format)
         #expect(mixer.numberOfInputs() == 1)
-        let inputBuffer1 = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)!
+        let inputBuffer1 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
         inputBuffer1.frameLength = 1024
-        var samples = inputBuffer1.floatChannelData!.pointee
+        var samples = try #require(inputBuffer1.floatChannelData?.pointee)
         samples[0] = 1
         samples[1] = 10
         samples[1023] = 100
         mixer.append(inputId: inputId, buffer: inputBuffer1)
-        let inputBuffer2 = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)!
+        let inputBuffer2 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
         inputBuffer2.frameLength = 1024
-        samples = inputBuffer2.floatChannelData!.pointee
+        samples = try #require(inputBuffer2.floatChannelData?.pointee)
         samples[0] = 10
         samples[1] = 2
         samples[1023] = 1
         mixer.append(inputId: inputId, buffer: inputBuffer2)
-        let inputBuffer3 = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)!
+        let inputBuffer3 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
         inputBuffer3.frameLength = 1024
-        samples = inputBuffer3.floatChannelData!.pointee
+        samples = try #require(inputBuffer3.floatChannelData?.pointee)
         samples[0] = 100
         samples[1] = 2
         samples[1023] = 10000
@@ -115,21 +115,21 @@ struct AudioMixerSuite {
         #expect(outputBuffer1?.format.sampleRate == 48000)
         #expect(outputBuffer1?.format.channelCount == 1)
         #expect(outputBuffer1?.frameLength == 1024)
-        samples = outputBuffer1!.floatChannelData!.pointee
+        samples = try #require(outputBuffer1?.floatChannelData?.pointee)
         #expect(samples[0] == 1 / sqrt(2))
         #expect(samples[1] == 10 / sqrt(2))
         #expect(samples[1023] == 100 / sqrt(2))
         try? await sleep(milliSeconds: processDelayMs)
         let outputBuffer2 = mixer.process()
         #expect(outputBuffer2?.frameLength == 1024)
-        samples = outputBuffer2!.floatChannelData!.pointee
+        samples = try #require(outputBuffer2?.floatChannelData?.pointee)
         #expect(samples[0] == 10 / sqrt(2))
         #expect(samples[1] == 2 / sqrt(2))
         #expect(samples[1023] == 1 / sqrt(2))
         try? await sleep(milliSeconds: processDelayMs)
         let outputBuffer3 = mixer.process()
         #expect(outputBuffer3?.frameLength == 1024)
-        samples = outputBuffer3!.floatChannelData!.pointee
+        samples = try #require(outputBuffer3?.floatChannelData?.pointee)
         #expect(samples[0] == 100 / sqrt(2))
         #expect(samples[1] == 2 / sqrt(2))
         #expect(samples[1023] == 10000 / sqrt(2))
@@ -142,20 +142,20 @@ struct AudioMixerSuite {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
         let inputId1 = UUID()
         let inputId2 = UUID()
-        let format = AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1)!
+        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1))
         mixer.add(inputId: inputId1, format: format)
         mixer.add(inputId: inputId2, format: format)
         #expect(mixer.numberOfInputs() == 2)
-        let inputBuffer1 = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)!
+        let inputBuffer1 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
         inputBuffer1.frameLength = 1024
-        var samples = inputBuffer1.floatChannelData!.pointee
+        var samples = try #require(inputBuffer1.floatChannelData?.pointee)
         samples[0] = 1
         samples[1] = 10
         samples[1023] = 100
         mixer.append(inputId: inputId1, buffer: inputBuffer1)
-        let inputBuffer2 = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024)!
+        let inputBuffer2 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
         inputBuffer2.frameLength = 1024
-        samples = inputBuffer2.floatChannelData!.pointee
+        samples = try #require(inputBuffer2.floatChannelData?.pointee)
         samples[0] = 1
         samples[1] = 10
         samples[2] = 1
@@ -168,7 +168,7 @@ struct AudioMixerSuite {
         #expect(outputBuffer?.format.sampleRate == 48000)
         #expect(outputBuffer?.format.channelCount == 1)
         #expect(outputBuffer?.frameLength == 1024)
-        samples = outputBuffer!.floatChannelData!.pointee
+        samples = try #require(outputBuffer?.floatChannelData?.pointee)
         #expect(samples[0] == 2 / sqrt(2))
         #expect(samples[1] == 20 / sqrt(2))
         #expect(samples[2] == 1 / sqrt(2))
@@ -183,14 +183,14 @@ struct AudioMixerSuite {
     }
 
     @Test
-    func noInputStereoOutput() async throws {
+    func noInputStereoOutput() throws {
         let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 2, outputSamplesPerBuffer: 1024)
         let outputBuffer = mixer.process()
         #expect(outputBuffer?.format.sampleRate == 48000)
         #expect(outputBuffer?.format.channelCount == 2)
         #expect(outputBuffer?.frameLength == 1024)
         #expect(outputBuffer?.stride == 1)
-        let samples = outputBuffer!.floatChannelData!.pointee
+        let samples = try #require(outputBuffer?.floatChannelData?.pointee)
         #expect(samples[0] == 0)
         #expect(samples[1023] == 0)
         #expect(samples[1024] == 0)

@@ -3,7 +3,7 @@ import Testing
 
 struct SettingsSuite {
     @Test
-    func chatFilter() async throws {
+    func chatFilter() {
         let filter = SettingsChatFilter()
         filter.user = ""
         filter.messageStartWords = ["!"]

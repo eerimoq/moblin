@@ -1,7 +1,7 @@
-import { websocketPort } from "./config.mjs";
+import { websocketUrl } from "./utils.mjs";
 
 let wsConnected = false;
-let ws;
+let ws = null;
 let state = null;
 let activeInputId = null;
 let currentsportId = null;
@@ -22,7 +22,7 @@ const CONTROL_ORDER = [
 document.addEventListener("focusin", function (e) {
   activeInputId = e.target.id;
 });
-document.addEventListener("focusout", function (e) {
+document.addEventListener("focusout", function () {
   activeInputId = null;
 });
 
@@ -44,36 +44,40 @@ function getRequestId() {
   return requestId;
 }
 
+function send(message) {
+  ws.send(JSON.stringify(message));
+}
+
+function sendRequest(data) {
+  send({
+    request: {
+      id: getRequestId(),
+      data: data,
+    },
+  });
+}
+
+function sendGetStatusRequest() {
+  sendRequest({
+    getStatus: {},
+  });
+}
+
 setInterval(() => {
-  if (!wsConnected) {
-    return;
-  }
-  ws.send(
-    JSON.stringify({
-      request: { id: getRequestId(), data: { getStatus: {} } },
-    }),
-  );
-}, 5000);
+  sendGetStatusRequest();
+}, 2000);
 
 function connect() {
-  ws = new WebSocket(`ws://${window.location.hostname}:${websocketPort}`);
+  ws = new WebSocket(websocketUrl());
   ws.onopen = () => {
-    ws.send(
-      JSON.stringify({
-        request: { id: getRequestId(), data: { getScoreboardSports: {} } },
-      }),
-    );
-    ws.send(
-      JSON.stringify({
-        request: { id: getRequestId(), data: { getStatus: {} } },
-      }),
-    );
+    sendRequest({
+      getScoreboardSports: {},
+    });
+    sendGetStatusRequest();
   };
   ws.onclose = () => {
     wsConnected = false;
-    document
-      .getElementById("ctrl")
-      .classList.add("opacity-30", "pointer-events-none");
+    document.getElementById("ctrl").classList.add("opacity-30", "pointer-events-none");
     updateStatus("Disconnected", "text-red-500");
     setTimeout(() => {
       updateStatus("Reconnecting", "text-red-500");
@@ -101,9 +105,7 @@ function handleEventScoreboard(scoreboard) {
   state = scoreboard.config;
   window.state = state;
   wsConnected = true;
-  document
-    .getElementById("ctrl")
-    .classList.remove("opacity-30", "pointer-events-none");
+  document.getElementById("ctrl").classList.remove("opacity-30", "pointer-events-none");
   updateStatus("Connected", "text-green-500");
   document.getElementById("si").innerText = "SYNCED";
   document.getElementById("si").className = "text-green-500";
@@ -139,12 +141,10 @@ function handleResponseGetScoreboardSports(getScoreboardSports) {
 
 function handleResponseGetStatus(getStatus) {
   if (getStatus.general !== undefined) {
-    document.getElementById("sp").innerText =
-      `${getStatus.general.batteryLevel}%`;
+    document.getElementById("sp").innerText = `${getStatus.general.batteryLevel}%`;
   }
   if (getStatus.topRight.bitrate !== undefined) {
-    document.getElementById("sb").innerText =
-      getStatus.topRight.bitrate.message;
+    document.getElementById("sb").innerText = getStatus.topRight.bitrate.message;
   }
 }
 
@@ -240,10 +240,7 @@ function buildDom() {
       } else {
         let nextKey = null;
         for (let j = k + 1; j < CONTROL_ORDER.length; j++) {
-          if (
-            state.controls[CONTROL_ORDER[j]] &&
-            CONTROL_ORDER[j] !== "primaryScore"
-          ) {
+          if (state.controls[CONTROL_ORDER[j]] && CONTROL_ORDER[j] !== "primaryScore") {
             nextKey = CONTROL_ORDER[j];
             break;
           }
@@ -251,9 +248,7 @@ function buildDom() {
         const nextC = nextKey ? state.controls[nextKey] : null;
         const canPack =
           nextC &&
-          (nextC.type === "select" ||
-            nextC.type === "toggleTeam" ||
-            nextC.type === "cycle");
+          (nextC.type === "select" || nextC.type === "toggleTeam" || nextC.type === "cycle");
 
         let currentHtml = renderPacked(t, n, key, c, team);
         if (canPack) {
@@ -289,11 +284,9 @@ function renderPacked(t, n, key, c, team) {
   if (c.type === "select") {
     return `<div class="disp-sm bg-zinc-800"><select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;upd()">${c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("")}</select></div>`;
   } else if (c.type === "toggleTeam") {
-    return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n}, '${key}')" class="btn btn-ctrl">${c.label}</button>`;
+    return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">${c.label}</button>`;
   } else if (c.type === "cycle") {
-    const txt = c.label
-      ? `${c.label}: ${team[key] || "NONE"}`
-      : `${team[key] || "NONE"}`;
+    const txt = c.label ? `${c.label}: ${team[key] || "NONE"}` : `${team[key] || "NONE"}`;
     return `<button id="btn-${t}-${key}" onclick="window.cycle(${n},'${key}')" class="btn btn-ctrl">${txt}</button>`;
   }
   return "";
@@ -332,8 +325,7 @@ function updateDomValues() {
 
     for (let j = 1; j <= 5; j++) {
       const hSel = document.getElementById(`h-t${n}-${j}`);
-      if (hSel && activeInputId !== `h-t${n}-${j}`)
-        hSel.value = team["secondaryScore" + j] || "";
+      if (hSel && activeInputId !== `h-t${n}-${j}`) hSel.value = team["secondaryScore" + j] || "";
       const lbl = document.getElementById(`h-lbl-${j}`);
       if (lbl) {
         if (state.global.period == j.toString()) {
@@ -388,14 +380,11 @@ function switchSport(val) {
   if (!val || !wsConnected) {
     return;
   }
-  ws.send(
-    JSON.stringify({
-      request: {
-        id: getRequestId(),
-        data: { setScoreboardSport: { sportId: val } },
-      },
-    }),
-  );
+  sendRequest({
+    setScoreboardSport: {
+      sportId: val,
+    },
+  });
 }
 
 function switchLayout(val) {
@@ -466,8 +455,7 @@ function syncUI() {
   safeUpdate("gti", state.global.timer);
   safeUpdate("gp", state.global.period);
   safeUpdate("gi", state.global.subPeriod);
-  document.getElementById("lbl-period").innerText =
-    state.global.periodLabel || "PER";
+  document.getElementById("lbl-period").innerText = state.global.periodLabel || "PER";
 
   const gtd = document.getElementById("gtd");
   if (activeInputId !== "gtd") {
@@ -490,10 +478,7 @@ function syncUI() {
 
   const btnSet = document.getElementById("btn-reset-set");
   if (btnSet) {
-    btnSet.innerText =
-      state.global.scoringMode === "tennis"
-        ? "Start Next Set"
-        : "Next Set/Period";
+    btnSet.innerText = state.global.scoringMode === "tennis" ? "Start Next Set" : "Next Set/Period";
   }
 
   if (state.global.duration && activeInputId !== "dur-sel") {
@@ -518,14 +503,7 @@ function sendAction(act, value) {
     } else {
       return;
     }
-    ws.send(JSON.stringify({ request: { id: getRequestId(), data: data } }));
-  }
-}
-
-function setClockDef() {
-  const val = document.getElementById("dur-sel").value;
-  if (val) {
-    sendAction("set-duration", val);
+    sendRequest(data);
   }
 }
 
@@ -549,12 +527,9 @@ function adj(t, k, v) {
     }
     return;
   }
-  state["team" + t][k] = Math.max(
-    0,
-    parseInt(state["team" + t][k] || 0) + v,
-  ).toString();
+  state["team" + t][k] = Math.max(0, parseInt(state["team" + t][k] || 0) + v).toString();
   if (k === "primaryScore" && v > 0 && state.global.changePossessionOnScore) {
-    toggleTeam(t, "possession");
+    toggleTeam(t);
   }
   render();
   upd();
@@ -625,7 +600,7 @@ function winGame(t) {
   state.team2.primaryScore = "0";
   adj(t, "currentSetScore", 1);
   const nextServer = state.team1.possession ? 2 : 1;
-  toggleTeam(nextServer, "possession");
+  toggleTeam(nextServer);
   render();
   upd();
 }
@@ -638,7 +613,7 @@ function cycle(t, k) {
   upd();
 }
 
-function toggleTeam(tIndex, key) {
+function toggleTeam(tIndex) {
   state.team1.possession = tIndex === 1;
   state.team2.possession = tIndex === 2;
   render();
@@ -672,10 +647,7 @@ function resetSet() {
 
   let slot = -1;
   for (let i = 1; i <= 5; i++) {
-    if (
-      !state.team1["secondaryScore" + i] &&
-      !state.team2["secondaryScore" + i]
-    ) {
+    if (!state.team1["secondaryScore" + i] && !state.team2["secondaryScore" + i]) {
       slot = i;
       break;
     }
@@ -684,16 +656,10 @@ function resetSet() {
     state.team1["secondaryScore" + slot] = state.team1.primaryScore;
     state.team2["secondaryScore" + slot] = state.team2.primaryScore;
 
-    if (
-      state.team1["secondaryScore" + slot] &&
-      !state.team2["secondaryScore" + slot]
-    ) {
+    if (state.team1["secondaryScore" + slot] && !state.team2["secondaryScore" + slot]) {
       state.team2["secondaryScore" + slot] = "0";
     }
-    if (
-      state.team2["secondaryScore" + slot] &&
-      !state.team1["secondaryScore" + slot]
-    ) {
+    if (state.team2["secondaryScore" + slot] && !state.team1["secondaryScore" + slot]) {
       state.team1["secondaryScore" + slot] = "0";
     }
   }
@@ -780,17 +746,13 @@ function upd() {
   state.global.period = document.getElementById("gp").value;
   state.global.subPeriod = document.getElementById("gi").value;
   if (wsConnected && ws.readyState === 1) {
-    ws.send(
-      JSON.stringify({
-        request: {
-          id: getRequestId(),
-          data: { updateScoreboard: { config: state } },
-        },
-      }),
-    );
+    sendRequest({
+      updateScoreboard: {
+        config: state,
+      },
+    });
   }
 }
-connect();
 
 window.setPeriod = setPeriod;
 window.adj = adj;
@@ -808,3 +770,7 @@ window.state = state;
 window.setDuration = setDuration;
 window.setHist = setHist;
 window.liveColor = liveColor;
+
+window.addEventListener("DOMContentLoaded", async () => {
+  connect();
+});

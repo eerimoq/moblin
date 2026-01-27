@@ -797,7 +797,6 @@ final class ScoreboardEffect: VideoEffect {
         .foregroundStyle(textColor)
     }
 
-    @ViewBuilder
     private func renderPossession(show: Bool, size: CGFloat) -> some View {
         ZStack {
             if show {
@@ -854,7 +853,6 @@ final class ScoreboardEffect: VideoEffect {
             .background(modular.secondaryBackgroundColorColor)
     }
 
-    @ViewBuilder
     private func renderFooterBlock(modular: SettingsWidgetModularScoreboard) -> some View {
         HStack {
             Text("Powered by Moblin")

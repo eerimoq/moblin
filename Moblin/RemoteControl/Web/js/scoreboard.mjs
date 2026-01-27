@@ -1,23 +1,21 @@
-import { websocketPort } from "./config.mjs";
+import { addOnClick, websocketUrl } from "./utils.mjs";
+
+let ws = null;
 
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen();
   } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    }
+    document.exitFullscreen();
   }
 }
 
 function connect() {
-  const socket = new WebSocket(
-    `ws://${window.location.hostname}:${websocketPort}`,
-  );
-  socket.onclose = () => {
+  ws = new WebSocket(websocketUrl());
+  ws.onclose = () => {
     setTimeout(connect, 3000);
   };
-  socket.onmessage = (e) => {
+  ws.onmessage = (e) => {
     const message = JSON.parse(e.data);
     if (message.event !== undefined) {
       handleEvent(message.event.data);
@@ -36,31 +34,33 @@ function handleEventScoreboard(scoreboard) {
   updateTeam(2, scoreboard.config.team2);
 }
 
-function updateTeam(num, data) {
-  const col = document.getElementById("t" + num + "-column");
-  const bar = document.getElementById("t" + num + "-bar");
-  const score = document.getElementById("t" + num + "-set-score");
-  const name = document.getElementById("t" + num + "-name");
-  const match = document.getElementById("t" + num + "-match");
-  const icon = document.getElementById("t" + num + "-serve-icon");
+function updateTeam(teamNumber, team) {
+  const column = document.getElementById(`t${teamNumber}-column`);
+  const bar = document.getElementById(`t${teamNumber}-bar`);
+  const score = document.getElementById(`t${teamNumber}-set-score`);
+  const name = document.getElementById(`t${teamNumber}-name`);
+  const match = document.getElementById(`t${teamNumber}-match`);
+  const serveIcon = document.getElementById(`t${teamNumber}-serve-icon`);
 
-  col.style.backgroundColor = data.bgColor;
-  bar.style.backgroundColor = data.bgColor;
-  score.style.color = data.textColor;
-  name.style.color = data.textColor;
-  match.style.color = data.textColor;
+  column.style.backgroundColor = team.bgColor;
+  bar.style.backgroundColor = team.bgColor;
+  score.style.color = team.textColor;
+  name.style.color = team.textColor;
+  match.style.color = team.textColor;
 
   // Map new modular variables
-  score.innerText = data.primaryScore;
-  name.innerText = data.name;
-  match.innerText = data.secondaryScore;
+  score.innerText = team.primaryScore;
+  name.innerText = team.name;
+  match.innerText = team.secondaryScore;
 
-  if (data.possession) {
-    icon.classList.remove("hidden");
+  if (team.possession) {
+    serveIcon.classList.remove("hidden");
   } else {
-    icon.classList.add("hidden");
+    serveIcon.classList.add("hidden");
   }
 }
-connect();
 
-window.toggleFullscreen = toggleFullscreen;
+window.addEventListener("DOMContentLoaded", async () => {
+  addOnClick("body", toggleFullscreen);
+  connect();
+});

@@ -24,7 +24,6 @@
         position: relative;
         overflow: hidden;
       }
-
       /* Center large score in the 88% area, pulling up slightly for optical centering */
       .score-container {
         height: 88vh;
@@ -38,15 +37,12 @@
         line-height: 1;
         transform: translateY(-4vh);
       }
-
       .info-bar {
         height: 12vh;
         font-weight: 800;
         display: flex;
         width: 100%;
       }
-
-      /* Narrower Match Box (9vw) */
       .match-box {
         width: 9vw;
         background: rgba(0, 0, 0, 0.3);
@@ -55,7 +51,6 @@
         align-items: center;
         justify-content: center;
       }
-
       .team-name {
         font-size: 7vh;
         text-transform: uppercase;
@@ -67,8 +62,6 @@
         text-overflow: ellipsis;
         padding: 0 10px;
       }
-
-      /* Serving Icon Box */
       .serve-box {
         width: 9vw;
         display: flex;
@@ -87,7 +80,7 @@
       }
     </style>
   </head>
-  <body onclick="window.toggleFullscreen()">
+  <body id="body">
     <div class="h-screen w-screen flex overflow-hidden">
       <!-- Team 1 (Left) -->
       <div id="t1-column" class="team-column border-r border-white/10">
@@ -98,11 +91,7 @@
           <div class="match-box" id="t1-match">0</div>
           <div class="team-name" id="t1-name">TEAM 1</div>
           <div class="serve-box">
-            <img
-              id="t1-serve-icon"
-              src="/volleyball.png"
-              class="serve-img hidden"
-            />
+            <img id="t1-serve-icon" src="/volleyball.png" class="serve-img hidden" />
           </div>
         </div>
       </div>
@@ -116,11 +105,7 @@
           <div class="match-box" id="t2-match">0</div>
           <div class="team-name" id="t2-name">TEAM 2</div>
           <div class="serve-box">
-            <img
-              id="t2-serve-icon"
-              src="/volleyball.png"
-              class="serve-img hidden"
-            />
+            <img id="t2-serve-icon" src="/volleyball.png" class="serve-img hidden" />
           </div>
         </div>
       </div>

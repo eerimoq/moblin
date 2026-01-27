@@ -4,7 +4,7 @@ import Testing
 
 struct HttpClientSuite {
     @Test
-    func responseParserNoData() async throws {
+    func responseParserNoData() {
         let parser = HttpResponseParser()
         let (done, data) = parser.parse()
         #expect(!done)
@@ -12,7 +12,7 @@ struct HttpClientSuite {
     }
 
     @Test
-    func responseParserEmptyBody() async throws {
+    func responseParserEmptyBody() {
         let parser = HttpResponseParser()
         parser.append(data: "HTTP/1.1 200 OK\r\n\r\n".utf8Data)
         let (done, data) = parser.parse()
@@ -21,7 +21,7 @@ struct HttpClientSuite {
     }
 
     @Test
-    func responseParserBody() async throws {
+    func responseParserBody() {
         let parser = HttpResponseParser()
         let body = "1234567890".utf8Data
         parser.append(data: "HTTP/1.1 200 OK\r\nContent-Length: \(body.count)\r\n\r\n".utf8Data + body)
@@ -31,7 +31,7 @@ struct HttpClientSuite {
     }
 
     @Test
-    func responseParserHalfHeader() async throws {
+    func responseParserHalfHeader() {
         let parser = HttpResponseParser()
         let body = "1234567890".utf8Data
         parser.append(data: "HTTP/1.1 200 OK\r\nContent-Le".utf8Data)
@@ -45,7 +45,7 @@ struct HttpClientSuite {
     }
 
     @Test
-    func responseParserHalfBody() async throws {
+    func responseParserHalfBody() {
         let parser = HttpResponseParser()
         let body = "1234567890".utf8Data
         parser
@@ -60,7 +60,7 @@ struct HttpClientSuite {
     }
 
     @Test
-    func responseParserStatus400() async throws {
+    func responseParserStatus400() {
         let parser = HttpResponseParser()
         parser.append(data: "HTTP/1.1 400 OK\r\n\r\n".utf8Data)
         let (done, data) = parser.parse()
@@ -69,7 +69,7 @@ struct HttpClientSuite {
     }
 
     @Test
-    func responseParserGetLineCrash() async throws {
+    func responseParserGetLineCrash() {
         let parser = HttpResponseParser()
         parser.append(data: "HTTP/1.1 400 OK\r".utf8Data)
         var (done, data) = parser.parse()

@@ -3,17 +3,17 @@ import Testing
 
 struct RistSuite {
     @Test
-    func makeBondingUrl() async throws {
+    func makeBondingUrl() {
         #expect(makeRistBondingUrl("rist://foobar?secret=1234") == "rist://foobar?secret=1234&weight=1")
     }
 
     @Test
-    func makeBondingUrlWithPort() async throws {
+    func makeBondingUrlWithPort() {
         #expect(makeRistBondingUrl("rist://a.com:54") == "rist://a.com:54?weight=1")
     }
 
     @Test
-    func makeMoblinkBondingUrl() async throws {
+    func makeMoblinkBondingUrl() {
         #expect(makeRistMoblinkBondingUrl(
             "rist://foobar?secret=1234",
             .hostPort(host: .init("1.2.3.4"), port: .imap)

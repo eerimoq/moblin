@@ -4,7 +4,7 @@ import Testing
 
 struct RtmpSuite {
     @Test
-    func twitchUrl() async throws {
+    func twitchUrl() {
         let url = "rtmp://foo.com/app/live_asefwefwefwef"
         let streamUrl = makeRtmpUri(url: url)
         let streamKey = makeRtmpStreamKey(url: url)
@@ -13,7 +13,7 @@ struct RtmpSuite {
     }
 
     @Test
-    func kickUrl() async throws {
+    func kickUrl() {
         let url = "rtmp://foo.com/foobar"
         let streamUrl = makeRtmpUri(url: url)
         let streamKey = makeRtmpStreamKey(url: url)
@@ -22,7 +22,7 @@ struct RtmpSuite {
     }
 
     @Test
-    func bilibiliUrl() async throws {
+    func bilibiliUrl() {
         let url = "rtmp://foo.com/live/?foo=bar&a=b"
         let streamUrl = makeRtmpUri(url: url)
         let streamKey = makeRtmpStreamKey(url: url)
@@ -31,7 +31,7 @@ struct RtmpSuite {
     }
 
     @Test
-    func twitcastingUrl() async throws {
+    func twitcastingUrl() {
         let url = "rtmp://foo.com/live/g:3234234?key=1234"
         let streamUrl = makeRtmpUri(url: url)
         let streamKey = makeRtmpStreamKey(url: url)

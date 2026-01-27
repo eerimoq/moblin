@@ -4,13 +4,13 @@ import Testing
 
 struct TwitchChatSuite {
     @Test
-    func emptyMessage() async throws {
+    func emptyMessage() {
         let message = try? TwitchChatMessage(string: "")
         #expect(message == nil)
     }
 
     @Test
-    func basicMessage() async throws {
+    func basicMessage() throws {
         let message = try TwitchChatMessage(string: """
         @badge-info=subscriber/13;\
         badges=broadcaster/1,subscriber/0,turbo/1;\

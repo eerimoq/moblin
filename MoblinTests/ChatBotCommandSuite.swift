@@ -3,9 +3,9 @@ import Testing
 
 struct ChatBotCommandSuite {
     @Test
-    func simplePopFirst() async throws {
+    func simplePopFirst() throws {
         let message = createMessage(text: "!moblin widget Foo enable")
-        let command = ChatBotCommand(message: message, aliases: [])!
+        let command = try #require(ChatBotCommand(message: message, aliases: []))
         #expect(command.rest() == "widget Foo enable")
         #expect(command.popFirst() == "widget")
         #expect(command.popFirst() == "Foo")
@@ -15,18 +15,18 @@ struct ChatBotCommandSuite {
     }
 
     @Test
-    func simplePopAll() async throws {
+    func simplePopAll() throws {
         let message = createMessage(text: "!moblin widget Foo enable")
-        let command = ChatBotCommand(message: message, aliases: [])!
+        let command = try #require(ChatBotCommand(message: message, aliases: []))
         #expect(command.rest() == "widget Foo enable")
         #expect(command.popAll() == ["widget", "Foo", "enable"])
         #expect(command.rest() == "")
     }
 
     @Test
-    func quotesPopFirst() async throws {
+    func quotesPopFirst() throws {
         let message = createMessage(text: "!moblin widget \"My Foo 1\" enable \"\" a")
-        let command = ChatBotCommand(message: message, aliases: [])!
+        let command = try #require(ChatBotCommand(message: message, aliases: []))
         #expect(command.rest() == "widget \"My Foo 1\" enable \"\" a")
         #expect(command.popFirst() == "widget")
         #expect(command.popFirst() == "My Foo 1")
@@ -39,17 +39,17 @@ struct ChatBotCommandSuite {
     }
 
     @Test
-    func quotesPopAll() async throws {
+    func quotesPopAll() throws {
         let message = createMessage(text: "!moblin widget \"My Foo 1\" enable \"\" a")
-        let command = ChatBotCommand(message: message, aliases: [])!
+        let command = try #require(ChatBotCommand(message: message, aliases: []))
         #expect(command.popAll() == ["widget", "My Foo 1", "enable", "", "a"])
         #expect(command.rest() == "")
     }
 
     @Test
-    func whitespaces() async throws {
+    func whitespaces() throws {
         let message = createMessage(text: "!moblin  widget  \"My   Foo 1\"  enable \"    \"  a")
-        let command = ChatBotCommand(message: message, aliases: [])!
+        let command = try #require(ChatBotCommand(message: message, aliases: []))
         #expect(command.popAll() == ["widget", "My Foo 1", "enable", " ", "a"])
         #expect(command.rest() == "")
     }

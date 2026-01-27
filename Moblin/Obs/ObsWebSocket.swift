@@ -892,12 +892,12 @@ class ObsWebSocket {
         )
     }
 
-    private func performRequestNoResponse<T>(
+    private func performRequestNoResponse<T: Encodable>(
         type: RequestType,
         request: T?,
         onSuccess: @escaping () -> Void,
         onError: @escaping (RequestError) -> Void
-    ) where T: Encodable {
+    ) {
         performRequest(type: type,
                        request: request,
                        onSuccess: { _ in
@@ -906,12 +906,12 @@ class ObsWebSocket {
                        onError: onError)
     }
 
-    private func performRequestWithResponse<T>(
+    private func performRequestWithResponse<T: Encodable>(
         type: RequestType,
         request: T?,
         onSuccess: @escaping (Data) -> Void,
         onError: @escaping (RequestError) -> Void
-    ) where T: Encodable {
+    ) {
         performRequest(type: type,
                        request: request,
                        onSuccess: { response in
@@ -924,12 +924,12 @@ class ObsWebSocket {
                        onError: onError)
     }
 
-    private func performRequest<T>(
+    private func performRequest<T: Encodable>(
         type: RequestType,
         request: T?,
         onSuccess: @escaping (Data?) -> Void,
         onError: @escaping (RequestError) -> Void
-    ) where T: Encodable {
+    ) {
         guard isConnected() else {
             onError(.message("Not connected to server"))
             return
@@ -942,7 +942,7 @@ class ObsWebSocket {
         send(op: .request, data: request)
     }
 
-    private func packRequest<T>(type: RequestType, request: T?) throws -> (Data, String) where T: Encodable {
+    private func packRequest<T: Encodable>(type: RequestType, request: T?) throws -> (Data, String) {
         var data: Data?
         if let request {
             data = try JSONEncoder().encode(request)

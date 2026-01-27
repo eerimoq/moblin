@@ -1,11 +1,12 @@
-SWIFTFORMAT_ARGS=--maxwidth 110 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf --quiet
-PRETTIER_ARGS=--log-level silent "Moblin/**/*.js" "Moblin/**/*.mjs" "Moblin/**/*.html"
+SWIFTFORMAT_ARGS=--maxwidth 110 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf --disable docComments --quiet
 SWIFTLINT_ARGS=--strict --quiet
-CODESPELL_ARGS=--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
-		 --ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
+OXFMT_ARGS="Moblin/RemoteControl/Web"
+OXLINT_ARGS="Moblin/RemoteControl/Web"
 PERIPHERY_ARGS=--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 		--index-exclude "**/PrepareLicenseList/**" \
 		--disable-update-check
+CODESPELL_ARGS=--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
+		 --ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
 
 CODE_FOLDERS += "Common"
 CODE_FOLDERS += "Moblin"
@@ -18,14 +19,15 @@ all:
 
 style:
 	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS)
-	prettier $(PRETTIER_ARGS) --write
+	oxfmt $(OXFMT_ARGS)
 
 style-check:
 	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS) --lint
-	prettier $(PRETTIER_ARGS) --check
+	oxfmt $(OXFMT_ARGS) --check
 
 lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_FOLDERS)
+	oxlint $(OXLINT_ARGS)
 
 periphery:
 	periphery scan $(PERIPHERY_ARGS)

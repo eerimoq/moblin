@@ -4,7 +4,7 @@ import Testing
 
 struct TextAlignerSuite {
     @Test
-    func basic() async throws {
+    func basic() {
         let textAligner = TextAligner(text: "Cats have more fun than dogs")
         #expect(textAligner.position == 0)
         textAligner.update(text: "Cats have more fun than dogs")

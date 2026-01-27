@@ -4,7 +4,7 @@ import Testing
 
 struct AmfSuite {
     @Test
-    func number() async throws {
+    func number() throws {
         let value = 1.0
         let serializer = Amf0Encoder()
         serializer.encode(.number(value))
@@ -24,7 +24,7 @@ struct AmfSuite {
         BoolParameters(value: true, encoded: Data([1, 1])),
         BoolParameters(value: false, encoded: Data([1, 0])),
     ])
-    func bool(_ parameters: BoolParameters) async throws {
+    func bool(_ parameters: BoolParameters) throws {
         let serializer = Amf0Encoder()
         serializer.encode(.bool(parameters.value))
         let encoded = serializer.data
@@ -35,7 +35,7 @@ struct AmfSuite {
     }
 
     @Test
-    func string() async throws {
+    func string() throws {
         let value = "1234"
         let serializer = Amf0Encoder()
         serializer.encode(.string(value))
@@ -47,7 +47,7 @@ struct AmfSuite {
     }
 
     @Test
-    func object() async throws {
+    func object() throws {
         let value: AsObject = ["1": .string("2")]
         let serializer = Amf0Encoder()
         serializer.encode(.object(value))
@@ -59,7 +59,7 @@ struct AmfSuite {
     }
 
     @Test
-    func typedObject() async throws {
+    func typedObject() throws {
         let encoded = Data([
             0x10,
             // Type "21",
@@ -77,7 +77,7 @@ struct AmfSuite {
     }
 
     @Test
-    func null() async throws {
+    func null() throws {
         let serializer = Amf0Encoder()
         serializer.encode(.null)
         let encoded = serializer.data
@@ -88,7 +88,7 @@ struct AmfSuite {
     }
 
     @Test
-    func undefined() async throws {
+    func undefined() throws {
         let encoded = Data([0x06])
         let decoder = Amf0Decoder(data: encoded)
         let decoded = try decoder.decode()
@@ -96,7 +96,7 @@ struct AmfSuite {
     }
 
     @Test
-    func ecmaArray() async throws {
+    func ecmaArray() throws {
         let encoded = Data([
             0x08,
             // 2 elements.
@@ -124,7 +124,7 @@ struct AmfSuite {
     }
 
     @Test
-    func strictArray() async throws {
+    func strictArray() throws {
         let encoded = Data([
             0x0A,
             // 2 elements.
@@ -145,7 +145,7 @@ struct AmfSuite {
     }
 
     @Test
-    func date() async throws {
+    func date() throws {
         let value = Date(timeIntervalSince1970: 15)
         let serializer = Amf0Encoder()
         serializer.encode(.date(value))
@@ -157,7 +157,7 @@ struct AmfSuite {
     }
 
     @Test
-    func decodeRtmpFoo() async throws {
+    func decodeRtmpFoo() throws {
         let data = Data([
             0x02, 0x00, 0x07, 0x5F, 0x72, 0x65, 0x73, 0x75, 0x6C, 0x74,
             0x00, 0x3F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,

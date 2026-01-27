@@ -4,14 +4,14 @@ import Testing
 
 struct WavSuite {
     @Test
-    func mono() async throws {
+    func mono() {
         let samples: [[Int16]] = [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
         let wav = createWav(sampleRate: 48000, samples: samples)
         #expect(wav == createMonoWav(samples[0]))
     }
 
     @Test
-    func stereo() async throws {
+    func stereo() {
         let samplesRight: [Int16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         let samplesLeft: [Int16] = [0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
         let wav = createWav(sampleRate: 48000, samples: [samplesRight, samplesLeft])

@@ -4,7 +4,7 @@ import Testing
 
 struct WrappingTimestampSuite {
     @Test
-    func all() async throws {
+    func all() {
         let timestamp = WrappingTimestamp(name: "Test", maximumTimestamp: CMTime(seconds: 1024))
         #expect(timestamp.update(CMTime(seconds: 30)).seconds == 30)
         #expect(timestamp.update(CMTime(seconds: 1023)).seconds == -1)

@@ -4,7 +4,7 @@ import Testing
 
 struct SubtitlesSuite {
     @Test
-    func speechToTextOutput() async throws {
+    func speechToTextOutput() {
         let subtitles = Subtitles(languageIdentifier: nil)
         var position = 0
         var frozen = ""
@@ -89,14 +89,14 @@ struct SubtitlesSuite {
     }
 
     @Test
-    func speechToTextEmptyInput() async throws {
+    func speechToTextEmptyInput() {
         let subtitles = Subtitles(languageIdentifier: nil)
         subtitles.updateSubtitles(position: 0, text: "")
         #expect(subtitles.lines.isEmpty)
     }
 
     @Test
-    func speechToTextJumping() async throws {
+    func speechToTextJumping() {
         let subtitles = Subtitles(languageIdentifier: nil)
         subtitles.updateSubtitles(position: 0, text: "")
         #expect(subtitles.lines.isEmpty)

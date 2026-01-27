@@ -59,7 +59,7 @@ private class Cache {
 
 private let cache = Cache()
 
-struct CacheImage<Content>: View where Content: View {
+struct CacheImage<Content: View>: View {
     private let url: URL
     private let content: (Image) -> Content
     @State var image: Image?

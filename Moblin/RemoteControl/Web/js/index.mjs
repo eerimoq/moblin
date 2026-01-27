@@ -1,5 +1,4 @@
-import { appendToRow, getTableBodyNoHead, addOnChange } from "./utils.mjs";
-import { websocketPort } from "./config.mjs";
+import { appendToRow, getTableBodyNoHead, addOnChange, websocketUrl } from "./utils.mjs";
 
 export const connectionStatus = {
   connecting: "Connecting...",
@@ -16,18 +15,16 @@ class Connection {
   }
 
   connect() {
-    this.websocket = new WebSocket(
-      `ws://${window.location.hostname}:${websocketPort}`,
-    );
-    this.websocket.onopen = (event) => {
+    this.websocket = new WebSocket(websocketUrl());
+    this.websocket.onopen = () => {
       this.setStatus(connectionStatus.connected);
       this.sendStartStatusRequest();
       this.sendGetStatusRequest();
     };
-    this.websocket.onerror = (event) => {
+    this.websocket.onerror = () => {
       this.reconnectSoon();
     };
-    this.websocket.onclose = (event) => {
+    this.websocket.onclose = () => {
       this.reconnectSoon();
     };
     this.websocket.onmessage = async (event) => {
@@ -63,53 +60,33 @@ class Connection {
   }
 
   setLive(on) {
-    this.send({
-      request: {
-        id: this.getNextId(),
-        data: {
-          setStream: {
-            on: on,
-          },
-        },
+    this.sendRequest({
+      setStream: {
+        on: on,
       },
     });
   }
 
   setRecording(on) {
-    this.send({
-      request: {
-        id: this.getNextId(),
-        data: {
-          setRecord: {
-            on: on,
-          },
-        },
+    this.sendRequest({
+      setRecord: {
+        on: on,
       },
     });
   }
 
   setMuted(on) {
     this.send({
-      request: {
-        id: this.getNextId(),
-        data: {
-          setMute: {
-            on: on,
-          },
-        },
+      setMute: {
+        on: on,
       },
     });
   }
 
   setDebugLogging(on) {
     this.send({
-      request: {
-        id: this.getNextId(),
-        data: {
-          setDebugLogging: {
-            on: on,
-          },
-        },
+      setDebugLogging: {
+        on: on,
       },
     });
   }
@@ -124,11 +101,7 @@ class Connection {
     if (message.ping) {
       this.handlePing();
     } else if (message.response) {
-      this.handleResponse(
-        message.response.id,
-        message.response.result,
-        message.response.data,
-      );
+      this.handleResponse(message.response.id, message.response.result, message.response.data);
     } else if (message.event) {
       this.handleEvent(message.event.data);
     }
@@ -188,28 +161,27 @@ class Connection {
   }
 
   sendGetStatusRequest() {
-    this.send({
-      request: {
-        id: this.getNextId(),
-        data: {
-          getStatus: {},
+    this.sendRequest({
+      getStatus: {},
+    });
+  }
+
+  sendStartStatusRequest() {
+    this.sendRequest({
+      startStatus: {
+        interval: 1,
+        filter: {
+          topRight: true,
         },
       },
     });
   }
 
-  sendStartStatusRequest() {
+  sendRequest(data) {
     this.send({
       request: {
         id: this.getNextId(),
-        data: {
-          startStatus: {
-            interval: 1,
-            filter: {
-              topRight: true,
-            },
-          },
-        },
+        data: data,
       },
     });
   }
@@ -281,8 +253,7 @@ function appendStatuses(body, statuses) {
 function updateConnectionStatus() {
   let status = '<i class="p-icon--error"></i> Unknown server status';
   if (connection.status == connectionStatus.connecting) {
-    status =
-      '<i class="p-icon--spinner u-animation--spin"></i> Connecting to server';
+    status = '<i class="p-icon--spinner u-animation--spin"></i> Connecting to server';
   } else if (connection.status == connectionStatus.connected) {
     status = '<i class="p-icon--success"></i> Connected to server';
   }
@@ -323,7 +294,7 @@ function setDebugLogging(on) {
 
 let connection = new Connection();
 
-window.addEventListener("DOMContentLoaded", async (event) => {
+window.addEventListener("DOMContentLoaded", async () => {
   addOnChange("controlLive", toggleLive);
   addOnChange("controlRecording", toggleRecording);
   addOnChange("controlMuted", toggleMuted);

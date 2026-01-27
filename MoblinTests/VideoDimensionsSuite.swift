@@ -4,7 +4,7 @@ import Testing
 
 struct VideoDimensionsSuite {
     @Test
-    func landscape16x9() async throws {
+    func landscape16x9() {
         let resolution = CMVideoDimensions(width: 1920, height: 1080)
         #expect(resolution.convertTo(dimension: 720) == CMVideoDimensions(width: 1280, height: 720))
         #expect(resolution.convertTo(dimension: 480) == CMVideoDimensions(width: 854, height: 480))
@@ -13,7 +13,7 @@ struct VideoDimensionsSuite {
     }
 
     @Test
-    func portrait9x16() async throws {
+    func portrait9x16() {
         let resolution = CMVideoDimensions(width: 1080, height: 1920)
         #expect(resolution.convertTo(dimension: 720) == CMVideoDimensions(width: 720, height: 1280))
         #expect(resolution.convertTo(dimension: 480) == CMVideoDimensions(width: 480, height: 854))
@@ -22,7 +22,7 @@ struct VideoDimensionsSuite {
     }
 
     @Test
-    func landscape4x3() async throws {
+    func landscape4x3() {
         let resolution = CMVideoDimensions(width: 1920, height: 1440)
         #expect(resolution.convertTo(dimension: 1080) == CMVideoDimensions(width: 1440, height: 1080))
         #expect(resolution.convertTo(dimension: 720) == CMVideoDimensions(width: 960, height: 720))
@@ -32,7 +32,7 @@ struct VideoDimensionsSuite {
     }
 
     @Test
-    func portrait4x3() async throws {
+    func portrait4x3() {
         let resolution = CMVideoDimensions(width: 1440, height: 1920)
         #expect(resolution.convertTo(dimension: 1080) == CMVideoDimensions(width: 1080, height: 1440))
         #expect(resolution.convertTo(dimension: 720) == CMVideoDimensions(width: 720, height: 960))

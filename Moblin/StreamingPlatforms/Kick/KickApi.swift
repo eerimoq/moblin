@@ -42,7 +42,10 @@ struct KickCategory: Codable, Identifiable {
 }
 
 struct KickFollowedChannel: Codable, Identifiable {
-    var id: String { channel_slug }
+    var id: String {
+        channel_slug
+    }
+
     let is_live: Bool
     let profile_picture: String?
     let channel_slug: String
