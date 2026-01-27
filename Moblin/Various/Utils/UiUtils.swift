@@ -60,12 +60,13 @@ extension ImageRenderer {
     }
 }
 
-func getRootViewController() -> UIViewController? {
-    guard
-        let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-        let rootViewController = scene.windows.first?.rootViewController
-    else {
+func getWindow() -> UIWindow? {
+    guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
         return nil
     }
-    return rootViewController
+    return scene.windows.first
+}
+
+func getRootViewController() -> UIViewController? {
+    return getWindow()?.rootViewController
 }
