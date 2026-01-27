@@ -750,7 +750,7 @@ function resetMatch() {
   state.team1.possession = true;
   state.team1.primaryScore = "0";
   state.team2.primaryScore = "0";
-  if(state.team1.secondaryScore == ""){
+  if(state.team1.secondaryScore === ""){
       state.team1.secondaryScore = "";
       state.team2.secondaryScore = "";
   }
