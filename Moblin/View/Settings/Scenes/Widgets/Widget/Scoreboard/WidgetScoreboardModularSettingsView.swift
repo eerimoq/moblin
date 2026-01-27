@@ -282,6 +282,33 @@ struct WidgetScoreboardModularSettingsView: View {
     let scoreboard: SettingsWidgetScoreboard
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
+    private func isValidClockMaximum(value: String) -> String? {
+        guard let maximum = Int(value) else {
+            return String(localized: "Not a number")
+        }
+        guard maximum > 0 else {
+            return String(localized: "Too small")
+        }
+        guard maximum <= 180 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
+    private func submitClockMaximum(value: String) {
+        guard let maximum = Int(value) else {
+            return
+        }
+        modular.clockMaximum = maximum
+    }
+
+    private func formatMaximum(value: String) -> String {
+        guard let maximum = Int(value) else {
+            return ""
+        }
+        return formatFullDuration(seconds: 60 * maximum)
+    }
+
     var body: some View {
         Section {
             TextEditNavigationView(title: String(localized: "Home"), value: modular.home) {
@@ -297,6 +324,30 @@ struct WidgetScoreboardModularSettingsView: View {
             ColorsView(model: model, widget: widget, scoreboard: scoreboard, modular: modular)
         } header: {
             Text("Teams")
+        }
+        Section {
+            TextEditNavigationView(title: String(localized: "Maximum"),
+                                   value: String(modular.clockMaximum),
+                                   onChange: isValidClockMaximum,
+                                   onSubmit: submitClockMaximum,
+                                   valueFormat: formatMaximum)
+                .onChange(of: modular.clockMaximum) { _ in
+                    modular.resetClock()
+                    model.remoteControlScoreboardUpdate()
+                    model.sceneUpdated()
+                }
+            Picker("Direction", selection: $modular.clockDirection) {
+                ForEach(SettingsWidgetGenericScoreboardClockDirection.allCases, id: \.self) { direction in
+                    Text(direction.toString())
+                }
+            }
+            .onChange(of: modular.clockDirection) { _ in
+                modular.resetClock()
+                model.remoteControlScoreboardUpdate()
+                model.sceneUpdated()
+            }
+        } header: {
+            Text("Clock")
         }
     }
 }
@@ -331,19 +382,6 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                                    scoreboard: scoreboard,
                                    modular: modular,
                                    sideBySide: modular.sideBySide)
-        }
-        HStack {
-            Text("Timer duration")
-                .layoutPriority(1)
-            Spacer()
-            TextField("", value: $modular.clockMaximum, format: .number)
-                .multilineTextAlignment(.trailing)
-                .keyboardType(.numberPad)
-        }
-        Picker("Timer direction", selection: $modular.clockDirection) {
-            ForEach(SettingsWidgetGenericScoreboardClockDirection.allCases, id: \.self) {
-                Text($0.toString())
-            }
         }
     }
 }
