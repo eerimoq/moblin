@@ -1,0 +1,69 @@
+body {
+  background-color: black;
+  margin: 0;
+  overflow: hidden;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+}
+.team-column {
+  flex: 1 1 50%;
+  max-width: 50vw;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+/* Center large score in the 88% area, pulling up slightly for optical centering */
+.score-container {
+  height: 88vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.set-score {
+  font-size: 60vh;
+  font-weight: 900;
+  line-height: 1;
+  transform: translateY(-4vh);
+}
+.info-bar {
+  height: 12vh;
+  font-weight: 800;
+  display: flex;
+  width: 100%;
+}
+.match-box {
+  width: 9vw;
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 7vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.team-name {
+  font-size: 7vh;
+  text-transform: uppercase;
+  flex: 1;
+  text-align: center;
+  align-self: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0 10px;
+}
+.serve-box {
+  width: 9vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.serve-img {
+  height: 8vh;
+  width: 8vh;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
