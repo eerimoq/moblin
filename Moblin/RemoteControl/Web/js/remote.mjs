@@ -178,8 +178,8 @@ function buildHistoryGrid() {
   for (let i = 1; i <= 5; i++) {
     histHtml += `<div class="flex flex-col gap-1">
             <div id="h-lbl-${i}" onclick="window.setPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">SET ${i}</div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700 overflow-hidden"><select id="h-t1-${i}" onchange="window.setHist(1,${i},this.value)">${genOpts()}</select></div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700 overflow-hidden"><select id="h-t2-${i}" onchange="window.setHist(2,${i},this.value)">${genOpts()}</select></div>
+            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t1-${i}" onchange="window.setHist(1,${i},this.value)">${genOpts()}</select></div>
+            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t2-${i}" onchange="window.setHist(2,${i},this.value)">${genOpts()}</select></div>
         </div>`;
   }
   histGrid.innerHTML = histHtml;
@@ -267,8 +267,8 @@ function buildDom() {
                 <div class="grid grid-cols-4 gap-1 h-10 mb-2">
                     <div id="p-t${n}" class="disp-box" style="background:${team.bgColor};color:${team.textColor}">0</div>
                     <div id="s-t${n}" class="disp-box m-shadow" style="background:${team.bgColor};color:white">0</div>
-                    <div class="rounded overflow-hidden border border-zinc-700 bg-zinc-800"><input type="color" id="col-bg-${n}" oninput="window.liveColor(${n},'bgColor',this.value)"></div>
-                    <div class="rounded overflow-hidden border border-zinc-700 bg-zinc-800"><input type="color" id="col-txt-${n}" oninput="window.liveColor(${n},'textColor',this.value)"></div>
+                    <div class="rounded border border-zinc-700 bg-zinc-800"><input type="color" id="col-bg-${n}" oninput="window.liveColor(${n},'bgColor',this.value)"></div>
+                    <div class="rounded border border-zinc-700 bg-zinc-800"><input type="color" id="col-txt-${n}" oninput="window.liveColor(${n},'textColor',this.value)"></div>
                 </div>
                 <div class="grid grid-cols-3 gap-1 mb-2">
                     <button onclick="window.adj(${n},'primaryScore',1)" class="col-span-2 btn btn-score">+Pt</button>
