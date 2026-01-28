@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RemoveBackgroundEffectView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let widget: SettingsWidget
     let effect: SettingsVideoEffect
     @ObservedObject var removeBackground: SettingsVideoEffectRemoveBackground

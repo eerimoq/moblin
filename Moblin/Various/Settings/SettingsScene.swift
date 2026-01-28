@@ -37,6 +37,7 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case dewarp360
     case anamorphicLens
     case lut
+    case opacity
 
     func toString() -> String {
         switch self {
@@ -58,6 +59,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
             return String(localized: "Anamorphic lens")
         case .lut:
             return String(localized: "LUT")
+        case .opacity:
+            return String(localized: "Opacity")
         }
     }
 }
@@ -249,6 +252,26 @@ class SettingsVideoEffectLut: Codable, ObservableObject {
     }
 }
 
+class SettingsVideoEffectOpacity: Codable, ObservableObject {
+    @Published var opacity: Double = 0.5
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case opacity
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.opacity, opacity)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        opacity = container.decode(.opacity, Double.self, 0.5)
+    }
+}
+
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var enabled: Bool = true
@@ -258,6 +281,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var dewarp360: SettingsVideoEffectDewarp360 = .init()
     var anamorphicLens: SettingsVideoEffectAnamorphicLens = .init()
     var lut: SettingsVideoEffectLut = .init()
+    var opacity: SettingsVideoEffectOpacity = .init()
 
     enum CodingKeys: CodingKey {
         case id,
@@ -267,7 +291,8 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
              shape,
              dewarp360,
              anamorphicLens,
-             lut
+             lut,
+             opacity
     }
 
     init() {}
@@ -282,6 +307,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         try container.encode(.dewarp360, dewarp360)
         try container.encode(.anamorphicLens, anamorphicLens)
         try container.encode(.lut, lut)
+        try container.encode(.opacity, opacity)
     }
 
     required init(from decoder: Decoder) throws {
@@ -302,6 +328,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             .init()
         )
         lut = container.decode(.lut, SettingsVideoEffectLut.self, .init())
+        opacity = container.decode(.opacity, SettingsVideoEffectOpacity.self, .init())
     }
 
     func getEffect(model: Model) -> VideoEffect {
@@ -335,6 +362,10 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
                     model.makeErrorToastMain(title: title, subTitle: subTitle)
                 }
             }
+            return effect
+        case .opacity:
+            let effect = OpacityEffect()
+            effect.setOpacity(opacity: opacity.opacity)
             return effect
         }
     }

@@ -39,6 +39,7 @@ struct WidgetImagePickerView: View {
                         model.imageStorage.write(id: widget.id, data: data)
                         DispatchQueue.main.async {
                             loadImage()
+                            model.resetSelectedScene(changeScene: false, attachCamera: false)
                         }
                     case .success(nil):
                         logger.info("widget: image is nil")

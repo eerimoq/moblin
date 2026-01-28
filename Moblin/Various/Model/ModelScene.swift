@@ -107,6 +107,10 @@ extension Model {
         return getWidgetVideoEffect(widget, effect)
     }
 
+    func getWidgetOpacityEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> OpacityEffect? {
+        return getWidgetVideoEffect(widget, effect)
+    }
+
     func getWidgetRemoveBackgroundEffect(_ widget: SettingsWidget,
                                          _ effect: SettingsVideoEffect) -> RemoveBackgroundEffect?
     {

@@ -29,18 +29,21 @@ private struct EffectView: View {
                     )
                 case .removeBackground:
                     RemoveBackgroundEffectView(
+                        model: model,
                         widget: widget,
                         effect: effect,
                         removeBackground: effect.removeBackground
                     )
                 case .dewarp360:
                     Dewarp360EffectView(
+                        model: model,
                         widget: widget,
                         effect: effect,
                         dewarp360: effect.dewarp360
                     )
                 case .anamorphicLens:
                     AnamorphicLensEffectView(
+                        model: model,
                         widget: widget,
                         effect: effect,
                         anamorphicLens: effect.anamorphicLens
@@ -51,6 +54,13 @@ private struct EffectView: View {
                         widget: widget,
                         effect: effect,
                         lut: effect.lut
+                    )
+                case .opacity:
+                    OpacityEffectView(
+                        model: model,
+                        widget: widget,
+                        effect: effect,
+                        opacity: effect.opacity
                     )
                 default:
                     EmptyView()

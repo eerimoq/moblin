@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct Dewarp360EffectView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let widget: SettingsWidget
     let effect: SettingsVideoEffect
     @ObservedObject var dewarp360: SettingsVideoEffectDewarp360
