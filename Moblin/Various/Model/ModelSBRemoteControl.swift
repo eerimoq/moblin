@@ -554,7 +554,6 @@ extension Model {
                 }
                 modular.showStackedHeader = false
                 modular.sideBySide.showTitle = false
-                modular.stacked.showFooter = false
                 modular.score.home = Int(newConfig.team1.primaryScore) ?? 0
                 modular.score.away = Int(newConfig.team2.primaryScore) ?? 0
                 modular.period = newConfig.global.period

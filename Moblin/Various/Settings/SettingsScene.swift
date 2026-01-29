@@ -2801,15 +2801,13 @@ class SettingsWidgetModularStackedScoreboard: Codable, ObservableObject {
     @Published var rowHeight: Float = 16
     @Published var isBold: Bool = true
     @Published var isItalic: Bool = false
-    @Published var showFooter: Bool = false
 
     enum CodingKeys: CodingKey {
         case fontSize,
              width,
              rowHeight,
              isBold,
-             isItalic,
-             showFooter
+             isItalic
     }
 
     init() {}
@@ -2821,7 +2819,6 @@ class SettingsWidgetModularStackedScoreboard: Codable, ObservableObject {
         try container.encode(.rowHeight, rowHeight)
         try container.encode(.isBold, isBold)
         try container.encode(.isItalic, isItalic)
-        try container.encode(.showFooter, showFooter)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2831,7 +2828,6 @@ class SettingsWidgetModularStackedScoreboard: Codable, ObservableObject {
         rowHeight = container.decode(.rowHeight, Float.self, 16)
         isBold = container.decode(.isBold, Bool.self, true)
         isItalic = container.decode(.isItalic, Bool.self, false)
-        showFooter = container.decode(.showFooter, Bool.self, false)
     }
 }
 

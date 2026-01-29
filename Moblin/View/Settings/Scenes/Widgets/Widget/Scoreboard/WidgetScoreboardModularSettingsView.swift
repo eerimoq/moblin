@@ -129,7 +129,7 @@ private struct StackedSettingsView: View {
                     HStack {
                         Text("Width")
                             .layoutPriority(1)
-                        Slider(value: $stacked.width, in: 150 ... 650)
+                        Slider(value: $stacked.width, in: 100 ... 650)
                             .onChange(of: stacked.width) { _ in
                                 updateEffect()
                             }
@@ -160,10 +160,6 @@ private struct StackedSettingsView: View {
                 Section {
                     Toggle("Title", isOn: $modular.showStackedHeader)
                         .onChange(of: modular.showStackedHeader) { _ in
-                            updateEffect()
-                        }
-                    Toggle("Moblin footer", isOn: $stacked.showFooter)
-                        .onChange(of: stacked.showFooter) { _ in
                             updateEffect()
                         }
                     Toggle("Second row (TO, Foul, etc.)", isOn: $modular.showSecondaryRows)
@@ -261,8 +257,6 @@ private struct SideBySideSettingsView: View {
 
 struct WidgetScoreboardModularSettingsView: View {
     let model: Model
-    let widget: SettingsWidget
-    let scoreboard: SettingsWidgetScoreboard
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
     private func isValidClockMaximum(value: String) -> String? {

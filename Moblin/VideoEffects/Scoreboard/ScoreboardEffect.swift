@@ -344,9 +344,6 @@ final class ScoreboardEffect: VideoEffect {
             if modular.showStackedHeader && !modular.titleAbove {
                 renderTitleBlock(title: ext.global.title, modular: modular, isStacked: true)
             }
-            if stacked.showFooter {
-                renderFooterBlock(modular: modular)
-            }
         }
     }
 
@@ -495,9 +492,6 @@ final class ScoreboardEffect: VideoEffect {
             }
             if modular.showStackedHeader && !modular.titleAbove {
                 renderTitleBlock(title: ext.global.title, modular: modular, isStacked: true)
-            }
-            if stacked.showFooter {
-                renderFooterBlock(modular: modular)
             }
         }
     }
@@ -851,18 +845,5 @@ final class ScoreboardEffect: VideoEffect {
             .padding(.vertical, 1)
             .frame(maxWidth: .infinity)
             .background(modular.secondaryBackgroundColorColor)
-    }
-
-    private func renderFooterBlock(modular: SettingsWidgetModularScoreboard) -> some View {
-        HStack {
-            Text("Powered by Moblin")
-                .fontDesign(.monospaced)
-                .font(.system(size: CGFloat(modular.stacked.fontSize * 0.5), weight: .bold))
-            Spacer()
-        }
-        .padding(.horizontal, 5)
-        .padding(.vertical, 2)
-        .background(modular.secondaryBackgroundColorColor)
-        .foregroundStyle(modular.homeTextColorColor)
     }
 }
