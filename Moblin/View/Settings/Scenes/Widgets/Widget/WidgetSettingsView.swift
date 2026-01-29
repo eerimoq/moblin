@@ -105,7 +105,8 @@ struct WidgetSettingsView: View {
             case .scoreboard:
                 WidgetScoreboardSettingsView(model: model,
                                              widget: widget,
-                                             scoreboard: widget.scoreboard)
+                                             scoreboard: widget.scoreboard,
+                                             web: database.remoteControl.web)
             case .vTuber:
                 WidgetVTuberSettingsView(model: model, widget: widget, vTuber: widget.vTuber)
             case .pngTuber:

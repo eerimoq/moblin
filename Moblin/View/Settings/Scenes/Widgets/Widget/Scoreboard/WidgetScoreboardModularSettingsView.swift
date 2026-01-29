@@ -113,7 +113,7 @@ private struct StackedSettingsView: View {
     }
 
     var body: some View {
-        NavigationLink("Stacked layout settings") {
+        NavigationLink("Layout") {
             Form {
                 Section {
                     HStack {
@@ -127,7 +127,7 @@ private struct StackedSettingsView: View {
                             .frame(width: 35)
                     }
                     HStack {
-                        Text("Total width")
+                        Text("Width")
                             .layoutPriority(1)
                         Slider(value: $stacked.width, in: 150 ... 650)
                             .onChange(of: stacked.width) { _ in
@@ -137,7 +137,8 @@ private struct StackedSettingsView: View {
                             .frame(width: 35)
                     }
                     HStack {
-                        Text("Row height").layoutPriority(1)
+                        Text("Height")
+                            .layoutPriority(1)
                         Slider(value: $stacked.rowHeight, in: 10 ... 35)
                             .onChange(of: stacked.rowHeight) { _ in
                                 updateEffect()
@@ -145,8 +146,6 @@ private struct StackedSettingsView: View {
                         Text(String(Int(stacked.rowHeight)))
                             .frame(width: 35)
                     }
-                } header: {
-                    Text("Dimensions")
                 }
                 Section {
                     Toggle("Bold", isOn: $stacked.isBold)
@@ -157,24 +156,16 @@ private struct StackedSettingsView: View {
                         .onChange(of: stacked.isItalic) { _ in
                             updateEffect()
                         }
-                    Toggle("Show title", isOn: $modular.showStackedHeader)
+                }
+                Section {
+                    Toggle("Title", isOn: $modular.showStackedHeader)
                         .onChange(of: modular.showStackedHeader) { _ in
                             updateEffect()
                         }
-                    if modular.showStackedHeader {
-                        Toggle("Title on top", isOn: $modular.titleAbove)
-                            .onChange(of: modular.titleAbove) { _ in
-                                updateEffect()
-                            }
-                    }
-                    Toggle("Show Moblin footer", isOn: $stacked.showFooter)
+                    Toggle("Moblin footer", isOn: $stacked.showFooter)
                         .onChange(of: stacked.showFooter) { _ in
                             updateEffect()
                         }
-                } header: {
-                    Text("Basic style")
-                }
-                Section {
                     Toggle("Second row (TO, Foul, etc.)", isOn: $modular.showSecondaryRows)
                         .onChange(of: modular.showSecondaryRows) { _ in
                             updateEffect()
@@ -183,11 +174,9 @@ private struct StackedSettingsView: View {
                         .onChange(of: modular.showGlobalStatsBlock) { _ in
                             updateEffect()
                         }
-                } header: {
-                    Text("Modular layout")
                 }
             }
-            .navigationTitle("Stacked layout")
+            .navigationTitle("Layout")
         }
     }
 }
@@ -206,7 +195,7 @@ private struct SideBySideSettingsView: View {
     }
 
     var body: some View {
-        NavigationLink("Side by side") {
+        NavigationLink("Layout") {
             Form {
                 Section {
                     HStack {
@@ -230,7 +219,7 @@ private struct SideBySideSettingsView: View {
                             .frame(width: 35)
                     }
                     HStack {
-                        Text("Row height")
+                        Text("Height")
                             .layoutPriority(1)
                         Slider(value: $sideBySide.rowHeight, in: 10 ... 35)
                             .onChange(of: sideBySide.rowHeight) { _ in
@@ -239,8 +228,6 @@ private struct SideBySideSettingsView: View {
                         Text(String(Int(sideBySide.rowHeight)))
                             .frame(width: 35)
                     }
-                } header: {
-                    Text("Dimensions")
                 }
                 Section {
                     Toggle("Bold", isOn: $sideBySide.isBold)
@@ -251,14 +238,12 @@ private struct SideBySideSettingsView: View {
                         .onChange(of: sideBySide.isItalic) { _ in
                             updateEffect()
                         }
-                    Toggle("Show title", isOn: $sideBySide.showTitle)
+                }
+                Section {
+                    Toggle("Title", isOn: $sideBySide.showTitle)
                         .onChange(of: sideBySide.showTitle) { _ in
                             updateEffect()
                         }
-                } header: {
-                    Text("Basic style")
-                }
-                Section {
                     Toggle("Second row (TO, Foul, etc.)", isOn: $modular.showSecondaryRows)
                         .onChange(of: modular.showSecondaryRows) { _ in
                             updateEffect()
@@ -267,11 +252,9 @@ private struct SideBySideSettingsView: View {
                         .onChange(of: modular.showGlobalStatsBlock) { _ in
                             updateEffect()
                         }
-                } header: {
-                    Text("Layout")
                 }
             }
-            .navigationTitle("Side by side")
+            .navigationTitle("Layout")
         }
     }
 }
@@ -321,7 +304,6 @@ struct WidgetScoreboardModularSettingsView: View {
                 model.remoteControlScoreboardUpdate()
                 model.sceneUpdated()
             }
-            ColorsView(model: model, widget: widget, scoreboard: scoreboard, modular: modular)
         } header: {
             Text("Teams")
         }
@@ -359,7 +341,7 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
     var body: some View {
-        Picker("Layout", selection: $modular.layout) {
+        Picker("Type", selection: $modular.layout) {
             ForEach(SettingsWidgetScoreboardLayout.allCases, id: \.self) {
                 Text($0.toString())
             }
@@ -383,5 +365,6 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                                    modular: modular,
                                    sideBySide: modular.sideBySide)
         }
+        ColorsView(model: model, widget: widget, scoreboard: scoreboard, modular: modular)
     }
 }

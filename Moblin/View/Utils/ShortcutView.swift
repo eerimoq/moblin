@@ -53,3 +53,21 @@ struct StreamingPlatformsShortcutView: View {
         }
     }
 }
+
+struct RemoteControlWebShortcutView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                RemoteControlSettingsWebView(
+                    model: model,
+                    web: model.database.remoteControl.web
+                )
+            }
+            .navigationTitle("Web")
+        } label: {
+            Label("Remote control", systemImage: "appletvremote.gen1")
+        }
+    }
+}

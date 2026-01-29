@@ -60,6 +60,7 @@ struct WidgetScoreboardSettingsView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
+    @ObservedObject var web: SettingsRemoteControlWeb
 
     var body: some View {
         Section {
@@ -73,6 +74,23 @@ struct WidgetScoreboardSettingsView: View {
                 model.remoteControlScoreboardUpdate()
                 model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
+            switch scoreboard.sport {
+            case .padel, .generic:
+                Text("Use your Apple Watch to update the scoreboard.")
+            default:
+                Text("Use the web based remote control on another device to update the scoreboard.")
+                if web.enabled {
+                    RemoteControlWebDefaultUrlView(web: web,
+                                                   status: model.statusOther,
+                                                   path: "/remote.html")
+                }
+                RemoteControlWebShortcutView(model: model)
+                if !web.enabled {
+                    Text("⚠️ The web based remote control is not enabled.")
+                }
+            }
+        }
+        Section {
             switch scoreboard.sport {
             case .padel:
                 WidgetScoreboardPadelGeneralSettingsView(model: model,

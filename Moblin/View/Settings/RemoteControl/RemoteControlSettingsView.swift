@@ -350,16 +350,20 @@ struct RemoteControlStreamersView: View {
     }
 }
 
+private func formatUrl(ip: String, port: UInt16) -> String {
+    if port == 80 {
+        return "http://\(ip)"
+    } else {
+        return "http://\(ip):\(port)"
+    }
+}
+
 private struct WebUrlsView: View {
     @ObservedObject var web: SettingsRemoteControlWeb
     @ObservedObject var status: StatusOther
 
-    private func formatUrl(ip: String) -> String {
-        if web.port == 80 {
-            return "http://\(ip)"
-        } else {
-            return "http://\(ip):\(web.port)"
-        }
+    private func format(ip: String) -> String {
+        return formatUrl(ip: ip, port: web.port)
     }
 
     var body: some View {
@@ -369,7 +373,7 @@ private struct WebUrlsView: View {
                     TextField("My device name", text: $web.deviceName)
                     if !web.deviceName.isEmpty {
                         UrlCopyView(
-                            url: formatUrl(ip: makeMdnsHostname(deviceName: web.deviceName)),
+                            url: format(ip: makeMdnsHostname(deviceName: web.deviceName)),
                             image: "network"
                         )
                     }
@@ -378,8 +382,8 @@ private struct WebUrlsView: View {
                 } footer: {
                     Text("Copy your device name from iOS settings.")
                 }
-                UrlsIpv4View(status: status, formatUrl: formatUrl)
-                UrlsIpv6View(status: status, formatUrl: formatUrl)
+                UrlsIpv4View(status: status, formatUrl: format)
+                UrlsIpv6View(status: status, formatUrl: format)
             }
             .navigationTitle("URLs")
         } label: {
@@ -388,7 +392,35 @@ private struct WebUrlsView: View {
     }
 }
 
-private struct RemoteControlSettingsWebView: View {
+struct RemoteControlWebDefaultUrlView: View {
+    @ObservedObject var web: SettingsRemoteControlWeb
+    @ObservedObject var status: StatusOther
+    let path: String
+
+    private func format(ip: String) -> String {
+        return formatUrl(ip: ip, port: web.port)
+    }
+
+    var body: some View {
+        if !web.deviceName.isEmpty {
+            UrlCopyView(
+                url: format(ip: makeMdnsHostname(deviceName: web.deviceName)) + path,
+                image: "network"
+            )
+        } else if let status = status.ipStatuses
+            .first(where: {
+                $0.ipType == .ipv4 && ($0.interfaceType == .wifi || $0.interfaceType == .wiredEthernet)
+            })
+        {
+            UrlCopyView(
+                url: format(ip: status.ipType.formatAddress(status.ip)),
+                image: urlImage(interfaceType: status.interfaceType)
+            )
+        }
+    }
+}
+
+struct RemoteControlSettingsWebView: View {
     let model: Model
     @ObservedObject var web: SettingsRemoteControlWeb
 
