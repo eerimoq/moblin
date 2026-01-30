@@ -2795,82 +2795,6 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     }
 }
 
-class SettingsWidgetModularStackedScoreboard: Codable, ObservableObject {
-    @Published var fontSize: Float = 12
-    @Published var width: Float = 150
-    @Published var rowHeight: Float = 16
-    @Published var isBold: Bool = true
-    @Published var isItalic: Bool = false
-
-    enum CodingKeys: CodingKey {
-        case fontSize,
-             width,
-             rowHeight,
-             isBold,
-             isItalic
-    }
-
-    init() {}
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.fontSize, fontSize)
-        try container.encode(.width, width)
-        try container.encode(.rowHeight, rowHeight)
-        try container.encode(.isBold, isBold)
-        try container.encode(.isItalic, isItalic)
-    }
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        fontSize = container.decode(.fontSize, Float.self, 12)
-        width = container.decode(.width, Float.self, 150)
-        rowHeight = container.decode(.rowHeight, Float.self, 16)
-        isBold = container.decode(.isBold, Bool.self, true)
-        isItalic = container.decode(.isItalic, Bool.self, false)
-    }
-}
-
-class SettingsWidgetModularSideBySideScoreboard: Codable, ObservableObject {
-    @Published var fontSize: Float = 12
-    @Published var width: Float = 370
-    @Published var rowHeight: Float = 16
-    @Published var isBold: Bool = true
-    @Published var isItalic: Bool = false
-    @Published var showTitle: Bool = false
-
-    enum CodingKeys: CodingKey {
-        case fontSize,
-             width,
-             rowHeight,
-             isBold,
-             isItalic,
-             showTitle
-    }
-
-    init() {}
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.fontSize, fontSize)
-        try container.encode(.width, width)
-        try container.encode(.rowHeight, rowHeight)
-        try container.encode(.isBold, isBold)
-        try container.encode(.isItalic, isItalic)
-        try container.encode(.showTitle, showTitle)
-    }
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        fontSize = container.decode(.fontSize, Float.self, 12)
-        width = container.decode(.width, Float.self, 370)
-        rowHeight = container.decode(.rowHeight, Float.self, 16)
-        isBold = container.decode(.isBold, Bool.self, true)
-        isItalic = container.decode(.isItalic, Bool.self, false)
-        showTitle = container.decode(.showTitle, Bool.self, false)
-    }
-}
-
 class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     static let baseName = String(localized: "🇸🇪 Moblin")
     static let baseTitle = "⚽️"
@@ -2901,9 +2825,12 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     @Published var awayTextColorColor: Color = .clear
     var secondaryBackgroundColor: RgbColor = baseSecondaryBackgroundColor
     @Published var secondaryBackgroundColorColor: Color = .clear
-    var stacked: SettingsWidgetModularStackedScoreboard = .init()
-    var sideBySide: SettingsWidgetModularSideBySideScoreboard = .init()
-    @Published var showStackedHeader: Bool = false
+    @Published var fontSize: Float = 12
+    @Published var width: Float = 150
+    @Published var rowHeight: Float = 16
+    @Published var isBold: Bool = true
+    @Published var isItalic: Bool = false
+    @Published var showTitle: Bool = false
     @Published var titleAbove: Bool = true
     @Published var showSecondaryRows: Bool = false
     @Published var showGlobalStatsBlock: Bool = false
@@ -2921,13 +2848,16 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
              awayBgColor,
              awayTextColor,
              secondaryBackgroundColor,
+             width,
+             rowHeight,
+             isBold,
+             isItalic,
+             showTitle,
              stacked,
-             sideBySide,
-             showStackedHeader,
              titleAbove,
              showSecondaryRows,
              showGlobalStatsBlock,
-             showSbsTitle
+             fontSize
     }
 
     init() {
@@ -2948,9 +2878,12 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.awayBgColor, awayBgColor)
         try container.encode(.awayTextColor, awayTextColor)
         try container.encode(.secondaryBackgroundColor, secondaryBackgroundColor)
-        try container.encode(.stacked, stacked)
-        try container.encode(.sideBySide, sideBySide)
-        try container.encode(.showStackedHeader, showStackedHeader)
+        try container.encode(.fontSize, fontSize)
+        try container.encode(.width, width)
+        try container.encode(.rowHeight, rowHeight)
+        try container.encode(.isBold, isBold)
+        try container.encode(.isItalic, isItalic)
+        try container.encode(.showTitle, showTitle)
         try container.encode(.titleAbove, titleAbove)
         try container.encode(.showSecondaryRows, showSecondaryRows)
         try container.encode(.showGlobalStatsBlock, showGlobalStatsBlock)
@@ -2976,9 +2909,12 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
             RgbColor.self,
             Self.baseSecondaryBackgroundColor
         )
-        stacked = container.decode(.stacked, SettingsWidgetModularStackedScoreboard.self, .init())
-        sideBySide = container.decode(.sideBySide, SettingsWidgetModularSideBySideScoreboard.self, .init())
-        showStackedHeader = container.decode(.showStackedHeader, Bool.self, false)
+        fontSize = container.decode(.fontSize, Float.self, 12)
+        width = container.decode(.width, Float.self, 150)
+        rowHeight = container.decode(.rowHeight, Float.self, 16)
+        isBold = container.decode(.isBold, Bool.self, true)
+        isItalic = container.decode(.isItalic, Bool.self, false)
+        showTitle = container.decode(.showTitle, Bool.self, false)
         titleAbove = container.decode(.titleAbove, Bool.self, true)
         showSecondaryRows = container.decode(.showSecondaryRows, Bool.self, false)
         showGlobalStatsBlock = container.decode(.showGlobalStatsBlock, Bool.self, false)

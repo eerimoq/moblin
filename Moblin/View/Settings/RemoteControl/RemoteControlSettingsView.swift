@@ -413,7 +413,7 @@ struct RemoteControlWebDefaultUrlView: View {
             })
         {
             UrlCopyView(
-                url: format(ip: status.ipType.formatAddress(status.ip)),
+                url: format(ip: status.ipType.formatAddress(status.ip)) + path,
                 image: urlImage(interfaceType: status.interfaceType)
             )
         }

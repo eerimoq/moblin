@@ -99,12 +99,11 @@ private struct ColorsView: View {
     }
 }
 
-private struct StackedSettingsView: View {
+private struct LayoutSettingsView: View {
     let model: Model
     let widget: SettingsWidget
     let scoreboard: SettingsWidgetScoreboard
     @ObservedObject var modular: SettingsWidgetModularScoreboard
-    @ObservedObject var stacked: SettingsWidgetModularStackedScoreboard
 
     private func updateEffect() {
         model.getScoreboardEffect(id: widget.id)?.update(scoreboard: scoreboard,
@@ -119,132 +118,56 @@ private struct StackedSettingsView: View {
                     HStack {
                         Text("Font size")
                             .layoutPriority(1)
-                        Slider(value: $stacked.fontSize, in: 5 ... 25)
-                            .onChange(of: stacked.fontSize) { _ in
+                        Slider(value: $modular.fontSize, in: 5 ... 25)
+                            .onChange(of: modular.fontSize) { _ in
                                 updateEffect()
                             }
-                        Text(String(Int(stacked.fontSize)))
+                        Text(String(Int(modular.fontSize)))
                             .frame(width: 35)
                     }
                     HStack {
                         Text("Width")
                             .layoutPriority(1)
-                        Slider(value: $stacked.width, in: 100 ... 650)
-                            .onChange(of: stacked.width) { _ in
+                        Slider(value: $modular.width, in: 100 ... 650)
+                            .onChange(of: modular.width) { _ in
                                 updateEffect()
                             }
-                        Text(String(Int(stacked.width)))
+                        Text(String(Int(modular.width)))
                             .frame(width: 35)
                     }
                     HStack {
                         Text("Height")
                             .layoutPriority(1)
-                        Slider(value: $stacked.rowHeight, in: 10 ... 35)
-                            .onChange(of: stacked.rowHeight) { _ in
+                        Slider(value: $modular.rowHeight, in: 10 ... 50)
+                            .onChange(of: modular.rowHeight) { _ in
                                 updateEffect()
                             }
-                        Text(String(Int(stacked.rowHeight)))
+                        Text(String(Int(modular.rowHeight)))
                             .frame(width: 35)
                     }
                 }
                 Section {
-                    Toggle("Bold", isOn: $stacked.isBold)
-                        .onChange(of: stacked.isBold) { _ in
+                    Toggle("Bold", isOn: $modular.isBold)
+                        .onChange(of: modular.isBold) { _ in
                             updateEffect()
                         }
-                    Toggle("Italic", isOn: $stacked.isItalic)
-                        .onChange(of: stacked.isItalic) { _ in
+                    Toggle("Italic", isOn: $modular.isItalic)
+                        .onChange(of: modular.isItalic) { _ in
                             updateEffect()
                         }
                 }
                 Section {
-                    Toggle("Title", isOn: $modular.showStackedHeader)
-                        .onChange(of: modular.showStackedHeader) { _ in
-                            updateEffect()
-                        }
-                    Toggle("Second row (TO, Foul, etc.)", isOn: $modular.showSecondaryRows)
+                    if modular.layout.isStacked() {
+                        Toggle("Title", isOn: $modular.showTitle)
+                            .onChange(of: modular.showTitle) { _ in
+                                updateEffect()
+                            }
+                    }
+                    Toggle("Timeout, foul, etc.", isOn: $modular.showSecondaryRows)
                         .onChange(of: modular.showSecondaryRows) { _ in
                             updateEffect()
                         }
-                    Toggle("Info box (Time, Period)", isOn: $modular.showGlobalStatsBlock)
-                        .onChange(of: modular.showGlobalStatsBlock) { _ in
-                            updateEffect()
-                        }
-                }
-            }
-            .navigationTitle("Layout")
-        }
-    }
-}
-
-private struct SideBySideSettingsView: View {
-    let model: Model
-    let widget: SettingsWidget
-    let scoreboard: SettingsWidgetScoreboard
-    @ObservedObject var modular: SettingsWidgetModularScoreboard
-    @ObservedObject var sideBySide: SettingsWidgetModularSideBySideScoreboard
-
-    private func updateEffect() {
-        model.getScoreboardEffect(id: widget.id)?.update(scoreboard: scoreboard,
-                                                         config: model.getCurrentConfig(),
-                                                         players: model.database.scoreboardPlayers)
-    }
-
-    var body: some View {
-        NavigationLink("Layout") {
-            Form {
-                Section {
-                    HStack {
-                        Text("Font size")
-                            .layoutPriority(1)
-                        Slider(value: $sideBySide.fontSize, in: 5 ... 25)
-                            .onChange(of: sideBySide.fontSize) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(sideBySide.fontSize)))
-                            .frame(width: 35)
-                    }
-                    HStack {
-                        Text("Width")
-                            .layoutPriority(1)
-                        Slider(value: $sideBySide.width, in: 150 ... 650)
-                            .onChange(of: sideBySide.width) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(sideBySide.width)))
-                            .frame(width: 35)
-                    }
-                    HStack {
-                        Text("Height")
-                            .layoutPriority(1)
-                        Slider(value: $sideBySide.rowHeight, in: 10 ... 35)
-                            .onChange(of: sideBySide.rowHeight) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(sideBySide.rowHeight)))
-                            .frame(width: 35)
-                    }
-                }
-                Section {
-                    Toggle("Bold", isOn: $sideBySide.isBold)
-                        .onChange(of: sideBySide.isBold) { _ in
-                            updateEffect()
-                        }
-                    Toggle("Italic", isOn: $sideBySide.isItalic)
-                        .onChange(of: sideBySide.isItalic) { _ in
-                            updateEffect()
-                        }
-                }
-                Section {
-                    Toggle("Title", isOn: $sideBySide.showTitle)
-                        .onChange(of: sideBySide.showTitle) { _ in
-                            updateEffect()
-                        }
-                    Toggle("Second row (TO, Foul, etc.)", isOn: $modular.showSecondaryRows)
-                        .onChange(of: modular.showSecondaryRows) { _ in
-                            updateEffect()
-                        }
-                    Toggle("Info box (Time, Period)", isOn: $modular.showGlobalStatsBlock)
+                    Toggle("Clock, half, etc.", isOn: $modular.showGlobalStatsBlock)
                         .onChange(of: modular.showGlobalStatsBlock) { _ in
                             updateEffect()
                         }
@@ -346,19 +269,10 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                                                              players: model.database.scoreboardPlayers)
             model.remoteControlScoreboardUpdate()
         }
-        if modular.layout.isStacked() {
-            StackedSettingsView(model: model,
-                                widget: widget,
-                                scoreboard: scoreboard,
-                                modular: modular,
-                                stacked: modular.stacked)
-        } else {
-            SideBySideSettingsView(model: model,
-                                   widget: widget,
-                                   scoreboard: scoreboard,
-                                   modular: modular,
-                                   sideBySide: modular.sideBySide)
-        }
+        LayoutSettingsView(model: model,
+                           widget: widget,
+                           scoreboard: scoreboard,
+                           modular: modular)
         ColorsView(model: model, widget: widget, scoreboard: scoreboard, modular: modular)
     }
 }

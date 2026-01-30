@@ -359,8 +359,8 @@ extension Model {
             default:
                 liveConfig.layout = "stacked"
             }
-            liveConfig.global.showTitle = scoreboard.modular.showStackedHeader
-                || scoreboard.modular.sideBySide.showTitle
+            liveConfig.global.showTitle = scoreboard.modular.showTitle
+                || scoreboard.modular.showTitle
             liveConfig.global.titleTop = scoreboard.modular.titleAbove
             liveConfig.global.showStats = scoreboard.modular.showGlobalStatsBlock
             liveConfig.global.showSecondaryRow = scoreboard.modular.showSecondaryRows
@@ -465,8 +465,8 @@ extension Model {
                 scoreboard.modular.layout = .stacked
             }
             if let showTitle = config.global.showTitle {
-                scoreboard.modular.showStackedHeader = showTitle
-                scoreboard.modular.sideBySide.showTitle = showTitle
+                scoreboard.modular.showTitle = showTitle
+                scoreboard.modular.showTitle = showTitle
             }
             if let titleTop = config.global.titleTop {
                 scoreboard.modular.titleAbove = titleTop
@@ -552,8 +552,8 @@ extension Model {
                     modular.showSecondaryRows = false
                     modular.showGlobalStatsBlock = false
                 }
-                modular.showStackedHeader = false
-                modular.sideBySide.showTitle = false
+                modular.showTitle = false
+                modular.showTitle = false
                 modular.score.home = Int(newConfig.team1.primaryScore) ?? 0
                 modular.score.away = Int(newConfig.team2.primaryScore) ?? 0
                 modular.period = newConfig.global.period

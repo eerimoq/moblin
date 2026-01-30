@@ -253,11 +253,11 @@ final class ScoreboardEffect: VideoEffect {
     ) {
         let content = VStack(alignment: .center, spacing: 0) {
             if modular.layout == .sideBySide {
-                renderSideBySide(modular: modular, ext: config)
+                renderSideBySide(modular: modular, config: config)
             } else if modular.layout == .stackHistory {
-                renderStackHistory(modular: modular, ext: config)
+                renderStackHistory(modular: modular, config: config)
             } else {
-                renderStacked(modular: modular, ext: config)
+                renderStacked(modular: modular, config: config)
             }
         }
         .padding(0)
@@ -271,12 +271,12 @@ final class ScoreboardEffect: VideoEffect {
         }
     }
 
-    private func calculateMaxHistory(ext: RemoteControlScoreboardMatchConfig) -> Int {
+    private func calculateMaxHistory(config: RemoteControlScoreboardMatchConfig) -> Int {
         var maxHistory = 0
         for i in 1 ... 5 {
-            let t1Has = !(getHistoryVal(team: ext.team1, i: i).isEmpty)
-            let t2Has = !(getHistoryVal(team: ext.team2, i: i).isEmpty)
-            if t1Has || t2Has {
+            let homeHas = getHistoryVal(team: config.team1, i: i) != nil
+            let awayHas = getHistoryVal(team: config.team2, i: i) != nil
+            if homeHas || awayHas {
                 maxHistory = i
             }
         }
@@ -286,47 +286,46 @@ final class ScoreboardEffect: VideoEffect {
     @ViewBuilder
     private func renderStackHistory(
         modular: SettingsWidgetModularScoreboard,
-        ext: RemoteControlScoreboardMatchConfig
+        config: RemoteControlScoreboardMatchConfig
     ) -> some View {
-        let stacked = modular.stacked
-        let fSize = CGFloat(stacked.fontSize)
-        let rowH = CGFloat(stacked.rowHeight)
+        let fontSize = CGFloat(modular.fontSize)
+        let rowH = CGFloat(modular.rowHeight)
         let teamRowFullH = rowH + (modular.showSecondaryRows ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
-        let periodFull = "\(ext.global.periodLabel) \(ext.global.period)".trimmingCharacters(in: .whitespaces)
-        let activeStats = [ext.global.timer, periodFull, ext.global.subPeriod].filter {
+        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
+            .trimmingCharacters(in: .whitespaces)
+        let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
             !$0.trimmingCharacters(in: .whitespaces).isEmpty
         }
         let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
-        let histW = fSize * 1.5
-        let maxHistory = calculateMaxHistory(ext: ext)
-        let extraWidth = CGFloat(maxHistory) * histW
-        let finalWidth = CGFloat(stacked.width) + extraWidth
+        let histW = fontSize * 1.5
+        let maxHistory = calculateMaxHistory(config: config)
+        let finalWidth = CGFloat(modular.width) + CGFloat(maxHistory) * histW
         VStack(spacing: 0) {
-            if modular.showStackedHeader && modular.titleAbove {
-                renderTitleBlock(title: ext.global.title, modular: modular, isStacked: true)
+            if modular.showTitle && modular.titleAbove {
+                renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
             }
             HStack(alignment: .top, spacing: 0) {
                 VStack(spacing: 0) {
                     renderStackHistoryRow(
-                        team: ext.team1,
-                        opp: ext.team2,
+                        team: config.team1,
+                        otherTeam: config.team2,
                         modular: modular,
                         backgroundColor: modular.homeBgColorColor,
                         textColor: modular.homeTextColorColor,
                         histCount: maxHistory,
                         histW: histW,
-                        currentPeriod: Int(ext.global.period) ?? 1
+                        currentPeriod: Int(config.global.period) ?? 1
                     )
                     renderStackHistoryRow(
-                        team: ext.team2,
-                        opp: ext.team1,
+                        team: config.team2,
+                        otherTeam: config.team1,
                         modular: modular,
                         backgroundColor: modular.awayBgColorColor,
                         textColor: modular.awayTextColorColor,
                         histCount: maxHistory,
                         histW: histW,
-                        currentPeriod: Int(ext.global.period) ?? 1
+                        currentPeriod: Int(config.global.period) ?? 1
                     )
                 }
                 .frame(width: finalWidth)
@@ -336,13 +335,12 @@ final class ScoreboardEffect: VideoEffect {
                             self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
                         }
                     }
-                    .frame(width: CGFloat(stacked.fontSize * 3.5))
-                    .frame(height: totalH)
+                    .frame(width: CGFloat(modular.fontSize * 3.5), height: totalH)
                     .background(.black)
                 }
             }
-            if modular.showStackedHeader && !modular.titleAbove {
-                renderTitleBlock(title: ext.global.title, modular: modular, isStacked: true)
+            if modular.showTitle && !modular.titleAbove {
+                renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
             }
         }
     }
@@ -350,7 +348,7 @@ final class ScoreboardEffect: VideoEffect {
     @ViewBuilder
     private func renderStackHistoryRow(
         team: RemoteControlScoreboardTeam,
-        opp: RemoteControlScoreboardTeam,
+        otherTeam: RemoteControlScoreboardTeam,
         modular: SettingsWidgetModularScoreboard,
         backgroundColor: Color,
         textColor: Color,
@@ -358,27 +356,25 @@ final class ScoreboardEffect: VideoEffect {
         histW: CGFloat,
         currentPeriod: Int
     ) -> some View {
-        let stacked = modular.stacked
-        let fSize = CGFloat(stacked.fontSize)
-        let h = CGFloat(stacked.rowHeight)
-        let boxW = fSize * 1.55
+        let fontSize = CGFloat(modular.fontSize)
+        let h = CGFloat(modular.rowHeight)
+        let boxW = fontSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 Text(team.name)
-                    .font(.system(size: fSize, weight: stacked.isBold ? .bold : .regular))
-                    .italic(stacked.isItalic)
+                    .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
+                    .italic(modular.isItalic)
                     .lineLimit(1)
                     .padding(.leading, 6)
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .frame(height: h)
-                renderPossession(show: team.possession, size: fSize)
-                    .padding(.horizontal, 2)
+                renderPossession(show: team.possession, size: fontSize)
                     .frame(height: h)
                 if histCount > 0 {
                     ForEach(1 ... histCount, id: \.self) { i in
-                        let val = self.getHistoryVal(team: team, i: i)
-                        let oppVal = self.getHistoryVal(team: opp, i: i)
+                        let val = self.getHistoryVal(team: team, i: i) ?? ""
+                        let oppVal = self.getHistoryVal(team: otherTeam, i: i) ?? ""
                         let valInt = Int(val) ?? -1
                         let oppInt = Int(oppVal) ?? -1
                         let weight: Font.Weight = (i < currentPeriod && valInt > oppInt && valInt >= 0)
@@ -388,7 +384,7 @@ final class ScoreboardEffect: VideoEffect {
                             self.renderStat(
                                 val,
                                 label: nil,
-                                size: fSize * 0.9,
+                                size: fontSize * 0.9,
                                 w: histW,
                                 h: h,
                                 gray: true,
@@ -399,7 +395,7 @@ final class ScoreboardEffect: VideoEffect {
                             self.renderStat(
                                 "0",
                                 label: nil,
-                                size: fSize * 0.9,
+                                size: fontSize * 0.9,
                                 w: histW,
                                 h: h,
                                 gray: true,
@@ -414,84 +410,83 @@ final class ScoreboardEffect: VideoEffect {
                 renderStat(
                     team.primaryScore,
                     label: nil,
-                    size: fSize,
+                    size: fontSize,
                     w: boxW,
                     h: h,
                     gray: false,
-                    it: stacked.isItalic
+                    it: modular.isItalic
                 )
             }
             .background(backgroundColor)
             .foregroundStyle(textColor)
             if modular.showSecondaryRows {
-                renderSecondaryRow(team: team, fSize: fSize, h: h * 0.6)
+                renderSecondaryRow(team: team, fontSize: fontSize, h: h * 0.6)
             }
         }
     }
 
-    private func getHistoryVal(team: RemoteControlScoreboardTeam, i: Int) -> String {
+    private func getHistoryVal(team: RemoteControlScoreboardTeam, i: Int) -> String? {
         switch i {
         case 1:
-            return team.secondaryScore1 ?? ""
+            return team.secondaryScore1
         case 2:
-            return team.secondaryScore2 ?? ""
+            return team.secondaryScore2
         case 3:
-            return team.secondaryScore3 ?? ""
+            return team.secondaryScore3
         case 4:
-            return team.secondaryScore4 ?? ""
+            return team.secondaryScore4
         case 5:
-            return team.secondaryScore5 ?? ""
+            return team.secondaryScore5
         default:
-            return ""
+            return nil
         }
     }
 
     @ViewBuilder
     private func renderStacked(modular: SettingsWidgetModularScoreboard,
-                               ext: RemoteControlScoreboardMatchConfig) -> some View
+                               config: RemoteControlScoreboardMatchConfig) -> some View
     {
-        let stacked = modular.stacked
-        let rowH = CGFloat(stacked.rowHeight)
+        let rowH = CGFloat(modular.rowHeight)
         let teamRowFullH = rowH + (modular.showSecondaryRows ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
-        let periodFull = "\(ext.global.periodLabel) \(ext.global.period)".trimmingCharacters(in: .whitespaces)
-        let activeStats = [ext.global.timer, periodFull, ext.global.subPeriod].filter {
-            !$0.trimmingCharacters(in: .whitespaces).isEmpty
+        let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
+        let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
+            !$0.trim().isEmpty
         }
         let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
         VStack(spacing: 0) {
-            if modular.showStackedHeader && modular.titleAbove {
-                renderTitleBlock(title: ext.global.title, modular: modular, isStacked: true)
+            if modular.showTitle && modular.titleAbove {
+                renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
             }
             HStack(alignment: .top, spacing: 0) {
                 VStack(spacing: 0) {
                     renderStackedRow(
-                        team: ext.team1,
+                        team: config.team1,
                         modular: modular,
                         backgroundColor: modular.homeBgColorColor,
                         textColor: modular.homeTextColorColor
                     )
                     renderStackedRow(
-                        team: ext.team2,
+                        team: config.team2,
                         modular: modular,
                         backgroundColor: modular.awayBgColorColor,
                         textColor: modular.awayTextColorColor
                     )
                 }
-                .frame(width: CGFloat(stacked.width))
+                .frame(width: CGFloat(modular.width))
                 if modular.showGlobalStatsBlock && !activeStats.isEmpty {
                     VStack(spacing: 0) {
                         ForEach(0 ..< activeStats.count, id: \.self) { i in
                             self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
                         }
                     }
-                    .frame(width: CGFloat(stacked.fontSize * 3.5))
+                    .frame(width: CGFloat(modular.fontSize * 3.5))
                     .frame(height: totalH)
                     .background(.black)
                 }
             }
-            if modular.showStackedHeader && !modular.titleAbove {
-                renderTitleBlock(title: ext.global.title, modular: modular, isStacked: true)
+            if modular.showTitle && !modular.titleAbove {
+                renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
             }
         }
     }
@@ -499,20 +494,20 @@ final class ScoreboardEffect: VideoEffect {
     @ViewBuilder
     private func renderSideBySide(
         modular: SettingsWidgetModularScoreboard,
-        ext: RemoteControlScoreboardMatchConfig
+        config: RemoteControlScoreboardMatchConfig
     ) -> some View {
-        let sideBySide = modular.sideBySide
-        let fSize = CGFloat(sideBySide.fontSize)
-        let h = CGFloat(sideBySide.rowHeight)
+        let fontSize = CGFloat(modular.fontSize)
+        let h = CGFloat(modular.rowHeight)
         let teamRowFullH = h + (modular.showSecondaryRows ? h * 0.6 : 0)
-        let periodFull = "\(ext.global.periodLabel) \(ext.global.period)".trimmingCharacters(in: .whitespaces)
+        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
+            .trimmingCharacters(in: .whitespaces)
         VStack(spacing: 2) {
-            if sideBySide.showTitle && modular.titleAbove && !ext.global.title.isEmpty {
-                renderTitleBlock(title: ext.global.title, modular: modular, isStacked: false)
+            if modular.showTitle && modular.titleAbove && !config.global.title.isEmpty {
+                renderTitleBlock(title: config.global.title, modular: modular, isStacked: false)
             }
             HStack(spacing: 0) {
                 renderSideBySideHalf(
-                    team: ext.team1,
+                    team: config.team1,
                     modular: modular,
                     backgroundColor: modular.homeBgColorColor,
                     textColor: modular.homeTextColorColor,
@@ -523,36 +518,36 @@ final class ScoreboardEffect: VideoEffect {
                         VStack(spacing: 0) {
                             if !periodFull.isEmpty {
                                 Text(periodFull)
-                                    .font(.system(size: fSize * 0.6, weight: .bold))
+                                    .font(.system(size: fontSize * 0.6, weight: .bold))
                             }
-                            Text(ext.global.timer)
-                                .font(.system(size: fSize * 0.9, weight: .black))
+                            Text(config.global.timer)
+                                .font(.system(size: fontSize * 0.9, weight: .black))
                                 .monospacedDigit()
                         }
-                        .frame(width: fSize * 3.5)
+                        .frame(width: fontSize * 3.5)
                         .frame(height: teamRowFullH)
                     } else {
                         Text("-")
-                            .font(.system(size: fSize, weight: .black))
-                            .frame(width: fSize * 0.8)
+                            .font(.system(size: fontSize, weight: .black))
+                            .frame(width: fontSize * 0.8)
                             .frame(height: teamRowFullH)
                     }
                 }
                 .background(.black)
                 .foregroundStyle(.white)
                 renderSideBySideHalf(
-                    team: ext.team2,
+                    team: config.team2,
                     modular: modular,
                     backgroundColor: modular.awayBgColorColor,
                     textColor: modular.awayTextColorColor,
                     mirrored: true
                 )
             }
-            .frame(width: CGFloat(sideBySide.width))
+            .frame(width: CGFloat(modular.width))
             .overlay(TopBottomBorder()
                 .stroke(.white, lineWidth: 0.5))
-            if sideBySide.showTitle && !modular.titleAbove && !ext.global.title.isEmpty {
-                renderTitleBlock(title: ext.global.title, modular: modular, isStacked: false)
+            if modular.showTitle && !modular.titleAbove && !config.global.title.isEmpty {
+                renderTitleBlock(title: config.global.title, modular: modular, isStacked: false)
             }
         }
     }
@@ -563,50 +558,50 @@ final class ScoreboardEffect: VideoEffect {
                                   backgroundColor: Color,
                                   textColor: Color) -> some View
     {
-        let stacked = modular.stacked
-        let fSize = CGFloat(stacked.fontSize)
-        let h = CGFloat(stacked.rowHeight)
-        let boxW = fSize * 1.55
+        let fontSize = CGFloat(modular.fontSize)
+        let h = CGFloat(modular.rowHeight)
+        let boxW = fontSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 if modular.layout == .stacked {
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
-                        size: fSize,
+                        size: fontSize,
                         w: boxW,
                         h: h,
                         gray: true,
-                        it: stacked.isItalic
+                        it: modular.isItalic
                     )
                 }
                 Text(team.name)
-                    .font(.system(size: fSize, weight: stacked.isBold ? .bold : .regular))
-                    .italic(stacked.isItalic)
+                    .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
+                    .italic(modular.isItalic)
                     .lineLimit(1)
                     .padding(.leading, 3)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .frame(height: h)
-                renderPossession(show: team.possession, size: fSize).padding(.horizontal, 2).frame(height: h)
+                renderPossession(show: team.possession, size: fontSize)
+                    .frame(height: h)
                 if modular.layout == .stackedInline {
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
-                        size: fSize,
+                        size: fontSize,
                         w: boxW,
                         h: h,
                         gray: true,
-                        it: stacked.isItalic
+                        it: modular.isItalic
                     )
                 }
                 renderStat(
                     team.primaryScore,
                     label: nil,
-                    size: fSize,
+                    size: fontSize,
                     w: boxW,
                     h: h,
                     gray: false,
-                    it: stacked.isItalic
+                    it: modular.isItalic
                 )
             }
             .background(backgroundColor)
@@ -614,7 +609,7 @@ final class ScoreboardEffect: VideoEffect {
             if modular.showSecondaryRows {
                 renderSecondaryRow(
                     team: team,
-                    fSize: fSize,
+                    fontSize: fontSize,
                     h: h * 0.6,
                     backgroundColor: backgroundColor,
                     textColor: textColor
@@ -631,18 +626,17 @@ final class ScoreboardEffect: VideoEffect {
         textColor: Color,
         mirrored: Bool
     ) -> some View {
-        let sideBySide = modular.sideBySide
-        let fSize = CGFloat(sideBySide.fontSize)
-        let h = CGFloat(sideBySide.rowHeight)
-        let boxW = fSize * 1.55
+        let fontSize = CGFloat(modular.fontSize)
+        let h = CGFloat(modular.rowHeight)
+        let boxW = fontSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 if !mirrored {
-                    renderPossession(show: team.possession, size: fSize).padding(.horizontal, 2)
+                    renderPossession(show: team.possession, size: fontSize)
                         .frame(height: h)
                     Text(team.name)
-                        .font(.system(size: fSize, weight: sideBySide.isBold ? .bold : .regular))
-                        .italic(sideBySide.isItalic)
+                        .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
+                        .italic(modular.isItalic)
                         .lineLimit(1)
                         .padding(.trailing, 4)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -650,48 +644,48 @@ final class ScoreboardEffect: VideoEffect {
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
-                        size: fSize,
+                        size: fontSize,
                         w: boxW,
                         h: h,
                         gray: true,
-                        it: sideBySide.isItalic
+                        it: modular.isItalic
                     )
                     renderStat(
                         team.primaryScore,
                         label: nil,
-                        size: fSize,
+                        size: fontSize,
                         w: boxW,
                         h: h,
                         gray: false,
-                        it: sideBySide.isItalic
+                        it: modular.isItalic
                     )
                 } else {
                     renderStat(
                         team.primaryScore,
                         label: nil,
-                        size: fSize,
+                        size: fontSize,
                         w: boxW,
                         h: h,
                         gray: false,
-                        it: sideBySide.isItalic
+                        it: modular.isItalic
                     )
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
-                        size: fSize,
+                        size: fontSize,
                         w: boxW,
                         h: h,
                         gray: true,
-                        it: sideBySide.isItalic
+                        it: modular.isItalic
                     )
                     Text(team.name)
-                        .font(.system(size: fSize, weight: sideBySide.isBold ? .bold : .regular))
-                        .italic(sideBySide.isItalic)
+                        .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
+                        .italic(modular.isItalic)
                         .lineLimit(1)
                         .padding(.leading, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .frame(height: h)
-                    renderPossession(show: team.possession, size: fSize).padding(.horizontal, 2)
+                    renderPossession(show: team.possession, size: fontSize)
                         .frame(height: h)
                 }
             }
@@ -700,7 +694,7 @@ final class ScoreboardEffect: VideoEffect {
             if modular.showSecondaryRows {
                 renderSecondaryRow(
                     team: team,
-                    fSize: fSize,
+                    fontSize: fontSize,
                     h: h * 0.6,
                     alignRight: !mirrored,
                     backgroundColor: backgroundColor,
@@ -746,7 +740,7 @@ final class ScoreboardEffect: VideoEffect {
     @ViewBuilder
     private func renderSecondaryRow(
         team: RemoteControlScoreboardTeam,
-        fSize: CGFloat,
+        fontSize: CGFloat,
         h: CGFloat,
         alignRight: Bool = false,
         backgroundColor: Color = .black,
@@ -772,7 +766,7 @@ final class ScoreboardEffect: VideoEffect {
                     Text(stats[i].1)
                         .monospacedDigit()
                 }
-                .font(.system(size: fSize * 0.65, weight: .bold))
+                .font(.system(size: fontSize * 0.65, weight: .bold))
                 .minimumScaleFactor(0.5)
             }
             if !alignRight {
@@ -791,34 +785,28 @@ final class ScoreboardEffect: VideoEffect {
         .foregroundStyle(textColor)
     }
 
+    @ViewBuilder
     private func renderPossession(show: Bool, size: CGFloat) -> some View {
-        ZStack {
-            if show {
-                Image("VolleyballIndicator")
-                    .resizable()
-                    .renderingMode(.template)
-                    .scaledToFit()
-                    .frame(width: size * 1.1)
-                    .foregroundStyle(.white)
-            }
+        if show {
+            Image("VolleyballIndicator")
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .frame(width: size * 1.1)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 2)
         }
     }
 
-    @ViewBuilder
     private func renderGlobalStatBox(val: String,
                                      h: CGFloat,
                                      modular: SettingsWidgetModularScoreboard) -> some View
     {
-        let isStacked = modular.layout.isStacked()
-        let stacked = modular.stacked
-        let sideBySide = modular.sideBySide
-        let fSize = CGFloat(isStacked ? stacked.fontSize : sideBySide.fontSize)
-        let weight: Font.Weight = (isStacked ? stacked.isBold : sideBySide.isBold) ? .bold : .regular
-        let italic = isStacked ? stacked.isItalic : sideBySide.isItalic
         ZStack {
             Text(val)
-                .font(.system(size: fSize * 0.9, weight: weight))
-                .italic(italic)
+                .font(.system(size: CGFloat(modular.fontSize) * 0.9,
+                              weight: modular.isBold ? .bold : .regular))
+                .italic(modular.isItalic)
                 .monospacedDigit()
                 .minimumScaleFactor(0.1)
                 .lineLimit(1)
@@ -828,19 +816,14 @@ final class ScoreboardEffect: VideoEffect {
         .foregroundStyle(.white)
     }
 
-    @ViewBuilder
     private func renderTitleBlock(title: String,
                                   modular: SettingsWidgetModularScoreboard,
-                                  isStacked: Bool) -> some View
+                                  isStacked _: Bool) -> some View
     {
-        let stacked = modular.stacked
-        let sideBySide = modular.sideBySide
-        let fSize = isStacked ? CGFloat(stacked.fontSize) : CGFloat(sideBySide.fontSize)
-        let weight: Font.Weight = (isStacked ? stacked.isBold : sideBySide.isBold) ? .bold : .regular
-        let italic = isStacked ? stacked.isItalic : sideBySide.isItalic
         Text(title)
-            .font(.system(size: fSize * 0.7, weight: weight))
-            .italic(italic)
+            .font(.system(size: CGFloat(modular.fontSize) * 0.7,
+                          weight: modular.isBold ? .bold : .regular))
+            .italic(modular.isItalic)
             .foregroundStyle(modular.homeTextColorColor)
             .padding(.vertical, 1)
             .frame(maxWidth: .infinity)
