@@ -3,7 +3,7 @@ import SwiftUI
 struct WidgetScoreboardGenericGeneralSettingsView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget
-    @ObservedObject var scoreboard: SettingsWidgetScoreboard
+    let scoreboard: SettingsWidgetScoreboard
     @ObservedObject var generic: SettingsWidgetGenericScoreboard
 
     var body: some View {

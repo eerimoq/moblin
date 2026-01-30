@@ -360,7 +360,6 @@ extension Model {
                 liveConfig.layout = "stacked"
             }
             liveConfig.global.showTitle = scoreboard.modular.showTitle
-                || scoreboard.modular.showTitle
             liveConfig.global.titleTop = scoreboard.modular.titleAbove
             liveConfig.global.showStats = scoreboard.modular.showGlobalStatsBlock
             liveConfig.global.showSecondaryRow = scoreboard.modular.showSecondaryRows
@@ -393,12 +392,21 @@ extension Model {
         return finalSports.isEmpty ? ["volleyball", "basketball"] : finalSports
     }
 
+    func updateScoreboardEffect(widget: SettingsWidget) {
+        DispatchQueue.main.async {
+            self.getScoreboardEffect(id: widget.id)?
+                .update(scoreboard: widget.scoreboard,
+                        config: self.getCurrentConfig(),
+                        players: self.database.scoreboardPlayers)
+        }
+    }
+
     func handleScoreboardToggleClock() {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
         widget.scoreboard.modular.isClockStopped.toggle()
-        sceneUpdated()
+        updateScoreboardEffect(widget: widget)
         remoteControlScoreboardUpdate()
     }
 
@@ -406,14 +414,14 @@ extension Model {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
-        let scoreboard = widget.scoreboard
-        scoreboard.modular.clockMaximum = minutes
-        if scoreboard.modular.clockDirection == .down {
-            scoreboard.modular.clockMinutes = minutes
-            scoreboard.modular.clockSeconds = 0
+        let modular = widget.scoreboard.modular
+        modular.clockMaximum = minutes
+        if modular.clockDirection == .down {
+            modular.clockMinutes = minutes
+            modular.clockSeconds = 0
         }
-        scoreboard.modular.isClockStopped = true
-        sceneUpdated()
+        modular.isClockStopped = true
+        updateScoreboardEffect(widget: widget)
         remoteControlScoreboardUpdate()
     }
 
@@ -424,18 +432,20 @@ extension Model {
         let scoreboard = widget.scoreboard
         let parts = time.split(separator: ":")
         if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
-            scoreboard.modular.clockMinutes = m
-            scoreboard.modular.clockSeconds = s
-            scoreboard.modular.isClockStopped = true
+            let modular = scoreboard.modular
+            modular.clockMinutes = m
+            modular.clockSeconds = s
+            modular.isClockStopped = true
         }
-        sceneUpdated()
+        updateScoreboardEffect(widget: widget)
         remoteControlScoreboardUpdate()
     }
 
     func handleExternalScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
         for widget in database.widgets where widget.type == .scoreboard {
             let scoreboard = widget.scoreboard
-            scoreboard.modular.config = config
+            let modular = scoreboard.modular
+            modular.config = config
             switch config.sportId {
             case "basketball":
                 scoreboard.sport = .basketball
@@ -456,61 +466,49 @@ extension Model {
             }
             switch config.layout {
             case "sideBySide":
-                scoreboard.modular.layout = .sideBySide
+                modular.layout = .sideBySide
             case "stackHistory":
-                scoreboard.modular.layout = .stackHistory
+                modular.layout = .stackHistory
             case "stackedInline":
-                scoreboard.modular.layout = .stackedInline
+                modular.layout = .stackedInline
             default:
-                scoreboard.modular.layout = .stacked
+                modular.layout = .stacked
             }
             if let showTitle = config.global.showTitle {
-                scoreboard.modular.showTitle = showTitle
-                scoreboard.modular.showTitle = showTitle
+                modular.showTitle = showTitle
             }
             if let titleTop = config.global.titleTop {
-                scoreboard.modular.titleAbove = titleTop
+                modular.titleAbove = titleTop
             }
             if let showStats = config.global.showStats {
-                scoreboard.modular.showGlobalStatsBlock = showStats
+                modular.showGlobalStatsBlock = showStats
             }
             if let show2nd = config.global.showSecondaryRow {
-                scoreboard.modular.showSecondaryRows = show2nd
+                modular.showSecondaryRows = show2nd
             }
-            scoreboard.modular.home = config.team1.name
-            scoreboard.modular.away = config.team2.name
-            scoreboard.modular.title = config.global.title
-            scoreboard.modular.period = config.global.period
-            if let h = Int(config.team1.primaryScore) {
-                scoreboard.modular.score.home = h
+            modular.home = config.team1.name
+            modular.away = config.team2.name
+            modular.title = config.global.title
+            modular.period = config.global.period
+            if let score = Int(config.team1.primaryScore) {
+                modular.score.home = score
             }
-            if let a = Int(config.team2.primaryScore) {
-                scoreboard.modular.score.away = a
+            if let score = Int(config.team2.primaryScore) {
+                modular.score.away = score
             }
-            scoreboard.modular.homeBgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? scoreboard
-                .modular.homeBgColor
-            scoreboard.modular.homeTextColor = RgbColor.fromHex(string: config.team1.textColor) ?? scoreboard
-                .modular.homeTextColor
-            scoreboard.modular.awayBgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? scoreboard
-                .modular.awayBgColor
-            scoreboard.modular.awayTextColor = RgbColor.fromHex(string: config.team2.textColor) ?? scoreboard
-                .modular.awayTextColor
-            scoreboard.modular.loadColors()
+            modular.homeBgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? modular.homeBgColor
+            modular.homeTextColor = RgbColor.fromHex(string: config.team1.textColor) ?? modular.homeTextColor
+            modular.awayBgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? modular.awayBgColor
+            modular.awayTextColor = RgbColor.fromHex(string: config.team2.textColor) ?? modular.awayTextColor
+            modular.loadColors()
             let parts = config.global.timer.split(separator: ":")
-            if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
-                scoreboard.modular.clockMinutes = m
-                scoreboard.modular.clockSeconds = s
+            if parts.count == 2, let minutes = Int(parts[0]), let seconds = Int(parts[1]) {
+                modular.clockMinutes = minutes
+                modular.clockSeconds = seconds
             }
-            scoreboard.modular.clockDirection = (config.global.timerDirection == "down") ? .down : .up
-            if let effect = scoreboardEffects[widget.id] {
-                DispatchQueue.main.async {
-                    effect.update(scoreboard: scoreboard,
-                                  config: self.getCurrentConfig(),
-                                  players: self.database.scoreboardPlayers)
-                }
-            }
+            modular.clockDirection = (config.global.timerDirection == "down") ? .down : .up
+            updateScoreboardEffect(widget: widget)
         }
-        sceneUpdated()
         remoteControlScoreboardUpdate()
     }
 
@@ -535,10 +533,10 @@ extension Model {
             default:
                 break
             }
-            if let newConfig = configs[sportId] {
+            if let config = configs[sportId] {
                 let modular = scoreboard.modular
-                modular.config = newConfig
-                switch newConfig.layout {
+                modular.config = config
+                switch config.layout {
                 case "sideBySide":
                     modular.layout = .sideBySide
                     modular.showSecondaryRows = true
@@ -554,10 +552,10 @@ extension Model {
                 }
                 modular.showTitle = false
                 modular.showTitle = false
-                modular.score.home = Int(newConfig.team1.primaryScore) ?? 0
-                modular.score.away = Int(newConfig.team2.primaryScore) ?? 0
-                modular.period = newConfig.global.period
-                let parts = newConfig.global.timer.split(separator: ":")
+                modular.score.home = Int(config.team1.primaryScore) ?? 0
+                modular.score.away = Int(config.team2.primaryScore) ?? 0
+                modular.period = config.global.period
+                let parts = config.global.timer.split(separator: ":")
                 if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
                     modular.clockMinutes = m
                     modular.clockSeconds = s
@@ -566,18 +564,16 @@ extension Model {
                     modular.clockMinutes = 0
                     modular.clockSeconds = 0
                 }
-                modular.clockDirection = (newConfig.global.timerDirection == "down") ? .down : .up
+                modular.clockDirection = (config.global.timerDirection == "down") ? .down : .up
                 modular.isClockStopped = true
-                modular.homeBgColor = RgbColor.fromHex(string: newConfig.team1.bgColor) ?? scoreboard.modular
-                    .homeBgColor
-                modular.homeTextColor = RgbColor.fromHex(string: newConfig.team1.textColor) ?? scoreboard
-                    .modular.homeTextColor
-                modular.awayBgColor = RgbColor.fromHex(string: newConfig.team2.bgColor) ?? scoreboard.modular
-                    .awayBgColor
-                modular.awayTextColor = RgbColor.fromHex(string: newConfig.team2.textColor) ?? scoreboard
-                    .modular.awayTextColor
+                modular.homeBgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? modular.homeBgColor
+                modular.homeTextColor = RgbColor.fromHex(string: config.team1.textColor) ?? modular
+                    .homeTextColor
+                modular.awayBgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? modular.awayBgColor
+                modular.awayTextColor = RgbColor.fromHex(string: config.team2.textColor) ?? modular
+                    .awayTextColor
                 modular.loadColors()
-                sceneUpdated()
+                updateScoreboardEffect(widget: widget)
                 remoteControlScoreboardUpdate()
             }
         }

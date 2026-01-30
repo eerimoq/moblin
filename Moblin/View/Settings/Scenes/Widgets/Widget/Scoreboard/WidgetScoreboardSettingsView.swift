@@ -2,14 +2,11 @@ import SwiftUI
 
 struct ScoreboardColorsView: View {
     let model: Model
-    @ObservedObject var widget: SettingsWidget
+    let widget: SettingsWidget
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
 
     private func updateEffect() {
-        model.getScoreboardEffect(id: widget.id)?
-            .update(scoreboard: scoreboard,
-                    config: model.getCurrentConfig(),
-                    players: model.database.scoreboardPlayers)
+        model.updateScoreboardEffect(widget: widget)
     }
 
     var body: some View {
@@ -105,7 +102,6 @@ struct WidgetScoreboardSettingsView: View {
             default:
                 WidgetScoreboardModularGeneralSettingsView(model: model,
                                                            widget: widget,
-                                                           scoreboard: scoreboard,
                                                            modular: scoreboard.modular)
             }
         } header: {

@@ -3,13 +3,10 @@ import SwiftUI
 private struct ColorsView: View {
     let model: Model
     let widget: SettingsWidget
-    let scoreboard: SettingsWidgetScoreboard
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
     private func updateEffect() {
-        model.getScoreboardEffect(id: widget.id)?.update(scoreboard: scoreboard,
-                                                         config: model.getCurrentConfig(),
-                                                         players: model.database.scoreboardPlayers)
+        model.updateScoreboardEffect(widget: widget)
     }
 
     var body: some View {
@@ -102,13 +99,10 @@ private struct ColorsView: View {
 private struct LayoutSettingsView: View {
     let model: Model
     let widget: SettingsWidget
-    let scoreboard: SettingsWidgetScoreboard
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
     private func updateEffect() {
-        model.getScoreboardEffect(id: widget.id)?.update(scoreboard: scoreboard,
-                                                         config: model.getCurrentConfig(),
-                                                         players: model.database.scoreboardPlayers)
+        model.updateScoreboardEffect(widget: widget)
     }
 
     var body: some View {
@@ -254,7 +248,6 @@ struct WidgetScoreboardModularSettingsView: View {
 struct WidgetScoreboardModularGeneralSettingsView: View {
     let model: Model
     let widget: SettingsWidget
-    let scoreboard: SettingsWidgetScoreboard
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
     var body: some View {
@@ -264,15 +257,10 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
             }
         }
         .onChange(of: modular.layout) { _ in
-            model.getScoreboardEffect(id: widget.id)?.update(scoreboard: scoreboard,
-                                                             config: model.getCurrentConfig(),
-                                                             players: model.database.scoreboardPlayers)
+            model.updateScoreboardEffect(widget: widget)
             model.remoteControlScoreboardUpdate()
         }
-        LayoutSettingsView(model: model,
-                           widget: widget,
-                           scoreboard: scoreboard,
-                           modular: modular)
-        ColorsView(model: model, widget: widget, scoreboard: scoreboard, modular: modular)
+        LayoutSettingsView(model: model, widget: widget, modular: modular)
+        ColorsView(model: model, widget: widget, modular: modular)
     }
 }

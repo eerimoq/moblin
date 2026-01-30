@@ -29,7 +29,7 @@
         <input
           type="text"
           id="gti"
-          onblur="window.upd()"
+          onblur="window.update()"
           placeholder="00:00"
           class="btn-top font-mono text-lg text-indigo-400 bg-black rounded"
         />
@@ -42,7 +42,7 @@
           id="gtd"
           onchange="
             window.state.global.timerDirection = this.value;
-            window.upd();
+            window.update();
           "
           class="btn-top bg-black rounded"
         >
@@ -61,7 +61,7 @@
         <button onclick="window.resetSet()" id="btn-reset-set" class="btn btn-ctrl border-zinc-600">
           Next Set/Period
         </button>
-        <button onclick="window.resetMatch()" class="btn btn-ctrl border-red-900 text-red-400">
+        <button onclick="window.newMatch()" class="btn btn-ctrl border-red-900 text-red-400">
           New Match
         </button>
       </div>
@@ -95,12 +95,12 @@
           <input
             type="text"
             id="gt"
-            onblur="window.upd()"
+            onblur="window.update()"
             placeholder="TITLE"
             class="col-span-2 conf-input px-2"
           />
           <div id="lbl-period" class="conf-label">PER</div>
-          <input type="text" id="gp" onblur="window.upd()" class="conf-input" />
+          <input type="text" id="gp" onblur="window.update()" class="conf-input" />
 
           <button id="btn-show-title" onclick="window.tog('showTitle')" class="btn h-9 text-[10px]">
             Title
@@ -122,7 +122,7 @@
           <input
             type="text"
             id="gi"
-            onblur="window.upd()"
+            onblur="window.update()"
             placeholder="INFO BOX"
             class="col-span-4 conf-input px-2"
           />

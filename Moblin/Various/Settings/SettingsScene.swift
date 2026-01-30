@@ -2532,15 +2532,15 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
 }
 
 enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
-    case generic = "Generic"
-    case padel = "Padel"
-    case basketball = "Basketball"
-    case generic2 = "Generic 2"
-    case genericSets = "Generic sets"
-    case hockey = "Hockey"
-    case football = "Football"
-    case tennis = "Tennis"
-    case volleyball = "Volleyball"
+    case generic
+    case padel
+    case basketball
+    case generic2
+    case genericSets
+    case hockey
+    case football
+    case tennis
+    case volleyball
 
     func toString() -> String {
         switch self {

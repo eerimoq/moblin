@@ -1,6 +1,5 @@
 import { websocketUrl } from "./utils.mjs";
 
-let wsConnected = false;
 let ws = null;
 let state = null;
 let activeInputId = null;
@@ -45,7 +44,9 @@ function getRequestId() {
 }
 
 function send(message) {
-  ws.send(JSON.stringify(message));
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(message));
+  }
 }
 
 function sendRequest(data) {
@@ -76,7 +77,6 @@ function connect() {
     sendGetStatusRequest();
   };
   ws.onclose = () => {
-    wsConnected = false;
     document.getElementById("ctrl").classList.add("opacity-30", "pointer-events-none");
     updateStatus("Disconnected", "text-red-500");
     setTimeout(() => {
@@ -104,7 +104,6 @@ function handleEvent(event) {
 function handleEventScoreboard(scoreboard) {
   state = scoreboard.config;
   window.state = state;
-  wsConnected = true;
   document.getElementById("ctrl").classList.remove("opacity-30", "pointer-events-none");
   updateStatus("Connected", "text-green-500");
   document.getElementById("si").innerText = "SYNCED";
@@ -202,7 +201,7 @@ function setHist(team, idx, val) {
       state["team" + opp][oppKey] = "0";
     }
   }
-  upd();
+  update();
 }
 
 function setPeriod(p) {
@@ -212,7 +211,7 @@ function setPeriod(p) {
     el.value = p.toString();
   }
   render();
-  upd();
+  update();
 }
 
 function setDuration(val) {
@@ -262,7 +261,7 @@ function buildDom() {
     }
 
     document.getElementById(`t${n}a`).innerHTML = `
-            <div id="h-t${n}" class="rounded-t p-1" style="background:${team.bgColor}"><input type="text" id="in-n-${n}" onblur="window.state.${t}.name=this.value;upd()" class=""></div>
+            <div id="h-t${n}" class="rounded-t p-1" style="background:${team.bgColor}"><input type="text" id="in-n-${n}" onblur="window.state.${t}.name=this.value;update()" class=""></div>
             <div class="card rounded-t-none">
                 <div class="grid grid-cols-4 gap-1 h-10 mb-2">
                     <div id="p-t${n}" class="disp-box" style="background:${team.bgColor};color:${team.textColor}">0</div>
@@ -282,7 +281,7 @@ function buildDom() {
 
 function renderPacked(t, n, key, c, team) {
   if (c.type === "select") {
-    return `<div class="disp-sm bg-zinc-800"><select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;upd()">${c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("")}</select></div>`;
+    return `<div class="disp-sm bg-zinc-800"><select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;update()">${c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("")}</select></div>`;
   } else if (c.type === "toggleTeam") {
     return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">${c.label}</button>`;
   } else if (c.type === "cycle") {
@@ -377,7 +376,7 @@ function updateDomValues() {
 }
 
 function switchSport(val) {
-  if (!val || !wsConnected) {
+  if (!val) {
     return;
   }
   sendRequest({
@@ -388,17 +387,17 @@ function switchSport(val) {
 }
 
 function switchLayout(val) {
-  if (!val || !wsConnected) {
+  if (!val) {
     return;
   }
   state.layout = val;
-  upd();
+  update();
 }
 
 function tog(key) {
   state.global[key] = !state.global[key];
   updateGlobalToggles();
-  upd();
+  update();
 }
 
 function updateGlobalToggles() {
@@ -446,7 +445,7 @@ function liveColor(n, k, v) {
       s.style.color = "white";
     }
   }
-  upd();
+  update();
 }
 
 function syncUI() {
@@ -492,19 +491,17 @@ function syncUI() {
 }
 
 function sendAction(act, value) {
-  if (wsConnected) {
-    let data;
-    if (act === "set-duration") {
-      data = { setScoreboardDuration: { minutes: value } };
-    } else if (act === "set-clock-manual") {
-      data = { setScoreboardClock: { time: value } };
-    } else if (act === "toggle-clock") {
-      data = { toggleScoreboardClock: {} };
-    } else {
-      return;
-    }
-    sendRequest(data);
+  let data;
+  if (act === "set-duration") {
+    data = { setScoreboardDuration: { minutes: value } };
+  } else if (act === "set-clock-manual") {
+    data = { setScoreboardClock: { time: value } };
+  } else if (act === "toggle-clock") {
+    data = { toggleScoreboardClock: {} };
+  } else {
+    return;
   }
+  sendRequest(data);
 }
 
 function adj(t, k, v) {
@@ -523,7 +520,7 @@ function adj(t, k, v) {
       if (!state["team" + opp][oppKey] || state["team" + opp][oppKey] === "") {
         state["team" + opp][oppKey] = "0";
       }
-      upd();
+      update();
     }
     return;
   }
@@ -532,7 +529,7 @@ function adj(t, k, v) {
     toggleTeam(t);
   }
   render();
-  upd();
+  update();
 }
 
 function adjTennis(t, v) {
@@ -589,7 +586,7 @@ function adjTennis(t, v) {
 
   state[tKey].primaryScore = val;
   render();
-  upd();
+  update();
 }
 
 function winGame(t) {
@@ -602,7 +599,7 @@ function winGame(t) {
   const nextServer = state.team1.possession ? 2 : 1;
   toggleTeam(nextServer);
   render();
-  upd();
+  update();
 }
 
 function cycle(t, k) {
@@ -610,14 +607,14 @@ function cycle(t, k) {
   const curr = state["team" + t][k] || "";
   let idx = opts.indexOf(curr);
   state["team" + t][k] = opts[(idx + 1) % opts.length];
-  upd();
+  update();
 }
 
 function toggleTeam(tIndex) {
   state.team1.possession = tIndex === 1;
   state.team2.possession = tIndex === 2;
   render();
-  upd();
+  update();
 }
 
 function resetSet() {
@@ -637,7 +634,7 @@ function resetSet() {
     state.team2.primaryScore = "0";
     // Tennis doesn't reset possession usually, logic preserved
 
-    upd();
+    update();
     return;
   }
 
@@ -692,28 +689,27 @@ function resetSet() {
     state.team1.secondaryScore = "0";
     state.team2.secondaryScore = "0";
   }
-  upd();
+  update();
 }
 
-function resetMatch() {
-  if (!confirm("RESET MATCH? This clears scores and stats.")) {
+function newMatch() {
+  if (!confirm("NEW MATCH? This clears scores and stats.")) {
     return;
   }
   state.global.timer = "00:00";
   state.global.period = "1";
-
   Object.keys(state.controls).forEach((k) => {
     let def = "0";
     if (state.controls[k].options && state.controls[k].options.length > 0) {
       def = state.controls[k].options[0];
     } else if (state.controls[k].type === "toggleTeam") {
-      def = false;
+      state.team1.possession = true;
+      state.team2.possession = false;
+      return;
     }
-
     state.team1[k] = def;
     state.team2[k] = def;
   });
-  state.team1.possession = true;
   state.team1.primaryScore = "0";
   state.team2.primaryScore = "0";
   if (state.team1.secondaryScore === "") {
@@ -727,10 +723,10 @@ function resetMatch() {
     state.team1["secondaryScore" + i] = "";
     state.team2["secondaryScore" + i] = "";
   }
-  upd();
+  update();
 }
 
-function upd() {
+function update() {
   state.global.title = document.getElementById("gt").value;
 
   // Fix: Capture clock value to prevent revert, and send manual update if focused
@@ -745,13 +741,11 @@ function upd() {
 
   state.global.period = document.getElementById("gp").value;
   state.global.subPeriod = document.getElementById("gi").value;
-  if (wsConnected && ws.readyState === 1) {
-    sendRequest({
-      updateScoreboard: {
-        config: state,
-      },
-    });
-  }
+  sendRequest({
+    updateScoreboard: {
+      config: state,
+    },
+  });
 }
 
 window.setPeriod = setPeriod;
@@ -760,12 +754,12 @@ window.toggleTeam = toggleTeam;
 window.cycle = cycle;
 window.resetSet = resetSet;
 window.tog = tog;
-window.resetMatch = resetMatch;
+window.newMatch = newMatch;
 window.resetSet = resetSet;
 window.switchSport = switchSport;
 window.switchLayout = switchLayout;
 window.sendAction = sendAction;
-window.upd = upd;
+window.update = update;
 window.state = state;
 window.setDuration = setDuration;
 window.setHist = setHist;

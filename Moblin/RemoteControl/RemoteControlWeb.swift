@@ -215,11 +215,15 @@ class RemoteControlWeb {
         guard let message = String(bytes: packet, encoding: .utf8) else {
             return
         }
-        switch try? RemoteControlMessageToStreamer.fromJson(data: message) {
-        case let .request(id: id, data: data):
-            handleRequest(connection: connection, id: id, data: data)
-        default:
-            break
+        do {
+            switch try RemoteControlMessageToStreamer.fromJson(data: message) {
+            case let .request(id: id, data: data):
+                handleRequest(connection: connection, id: id, data: data)
+            default:
+                break
+            }
+        } catch {
+            logger.info("remote-control-web: Decode error \(error) for message \(message)")
         }
     }
 
@@ -282,7 +286,7 @@ class RemoteControlWeb {
             let message = try message.toJson()
             connection.sendWebSocket(data: message.utf8Data, opcode: .text)
         } catch {
-            logger.info("remote-control-web-ui: Encode failed")
+            logger.info("remote-control-web: Encode failed")
         }
     }
 
