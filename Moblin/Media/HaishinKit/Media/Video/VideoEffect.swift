@@ -11,6 +11,10 @@ struct VideoEffectInfo {
     let videoUnit: VideoUnit
     let isFirstAfterAttach: Bool
 
+    func sceneDetections() -> Detections? {
+        return detections[sceneVideoSourceId]
+    }
+
     func sceneFaceDetections() -> [VNFaceObservation]? {
         return detections[sceneVideoSourceId]?.face
     }

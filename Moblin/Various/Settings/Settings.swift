@@ -1025,8 +1025,9 @@ class SettingsFace: Codable, ObservableObject {
         case .pixellate:
             faceEffectPrivacyMode = .pixellate(strength: pixellateStrength)
         }
-        return FaceEffectSettings(showBlur: showBlur,
-                                  showBlurBackground: showBlurBackground,
+        return FaceEffectSettings(blurFaces: showBlur,
+                                  blurText: false,
+                                  blurBackground: showBlurBackground,
                                   showMouth: showMoblin,
                                   privacyMode: faceEffectPrivacyMode)
     }

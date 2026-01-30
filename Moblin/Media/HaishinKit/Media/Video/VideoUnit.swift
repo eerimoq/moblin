@@ -100,9 +100,14 @@ private func setOrientation(
     }
 }
 
+struct TextDetection {
+    let boundingBox: CGRect
+    let text: String
+}
+
 struct Detections {
     let face: [VNFaceObservation]
-    let text: [VNRecognizedText]
+    let text: [TextDetection]
 }
 
 private class DetectionsCompletion {
@@ -1254,6 +1259,7 @@ final class VideoUnit: NSObject {
                         if false {
                             textRequest = VNRecognizeTextRequest()
                             textRequest!.recognitionLevel = .fast
+                            // textRequest!.minimumTextHeight = 0.1
                             requests.append(textRequest!)
                         }
                         let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: detectionJob
@@ -1268,14 +1274,15 @@ final class VideoUnit: NSObject {
                         {
                             faceDetections += results
                         }
-                        var textDetections: [VNRecognizedText] = []
+                        var textDetections: [TextDetection] = []
                         if let results = textRequest?.results {
                             for result in results
                                 .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
                                 .prefix(5)
                             {
                                 if let text = result.topCandidates(1).first {
-                                    textDetections.append(text)
+                                    textDetections.append(TextDetection(boundingBox: result.boundingBox,
+                                                                        text: text.string))
                                 }
                             }
                         }

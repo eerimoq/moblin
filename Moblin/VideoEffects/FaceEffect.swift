@@ -3,8 +3,9 @@ import UIKit
 import Vision
 
 struct FaceEffectSettings {
-    var showBlur = true
-    var showBlurBackground = true
+    var blurFaces = true
+    var blurText = true
+    var blurBackground = true
     var showMouth = true
     var privacyMode: FaceEffectPrivacyMode = .blur(strength: 1.0)
 }
@@ -38,6 +39,29 @@ final class FaceEffect: VideoEffect {
         return .now(nil)
     }
 
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        guard let detections = info.sceneDetections() else {
+            return image
+        }
+        var outputImage: CIImage? = image
+        if (settings.blurFaces && !detections.face.isEmpty)
+            || (settings.blurText && !detections.text.isEmpty)
+            || settings.blurBackground
+        {
+            outputImage = applyBlur(
+                image: image,
+                detections: detections,
+                blurFaces: settings.blurFaces,
+                blurText: settings.blurText,
+                blurBackground: settings.blurBackground
+            )
+        }
+        if settings.showMouth {
+            outputImage = addMouth(image: outputImage, detections: detections.face)
+        }
+        return outputImage ?? image
+    }
+
     private func makePrivacyImage(image: CIImage) -> CIImage? {
         switch settings.privacyMode {
         case let .blur(strength: strength):
@@ -58,17 +82,17 @@ final class FaceEffect: VideoEffect {
         }
     }
 
-    private func createFacesMaskImage(imageExtent: CGRect, faceDetections: [VNFaceObservation]) -> CIImage? {
-        var facesMask = CIImage.empty().cropped(to: imageExtent)
-        for faceDetection in faceDetections {
-            guard let faceBoundingBox = faceDetection.stableBoundingBox(imageSize: imageExtent.size) else {
+    private func createFacesMaskImage(imageExtent: CGRect, detections: [VNFaceObservation]) -> CIImage? {
+        var mask = CIImage.empty().cropped(to: imageExtent)
+        for detection in detections {
+            guard let boundingBox = detection.stableBoundingBox(imageSize: imageExtent.size) else {
                 continue
             }
-            let faceCenter = CGPoint(x: faceBoundingBox.maxX - (faceBoundingBox.width / 2),
-                                     y: faceBoundingBox.maxY - (faceBoundingBox.height / 2))
+            let faceCenter = CGPoint(x: boundingBox.maxX - (boundingBox.width / 2),
+                                     y: boundingBox.maxY - (boundingBox.height / 2))
             let faceMask = CIFilter.radialGradient()
             faceMask.center = faceCenter
-            faceMask.radius0 = Float(faceBoundingBox.height / 1.7)
+            faceMask.radius0 = Float(boundingBox.height / 1.7)
             switch settings.privacyMode {
             case .blur:
                 faceMask.radius1 = faceMask.radius0 * 1.5
@@ -81,40 +105,64 @@ final class FaceEffect: VideoEffect {
             }
             faceMask.color0 = CIColor.white
             faceMask.color1 = CIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.0)
-            guard let faceMask = faceMask.outputImage?.cropped(to: faceBoundingBox.insetBy(
-                dx: -faceBoundingBox.width / 2,
-                dy: -faceBoundingBox.height / 2
+            guard let faceMask = faceMask.outputImage?.cropped(to: boundingBox.insetBy(
+                dx: -boundingBox.width / 2,
+                dy: -boundingBox.height / 2
             )) else {
                 continue
             }
-            facesMask = faceMask.composited(over: facesMask)
+            mask = faceMask.composited(over: mask)
         }
-        return facesMask
+        return mask
     }
 
-    private func applyFacesMask(image: CIImage,
-                                faceDetections: [VNFaceObservation],
-                                blurFaces: Bool,
-                                blurBackground: Bool) -> CIImage?
+    private func createTextsMaskImage(imageExtent: CGRect, detections: [TextDetection]) -> CIImage? {
+        var mask = CIImage.empty().cropped(to: imageExtent)
+        for detection in detections {
+            let x = detection.boundingBox.origin.x * 1920
+            let y = detection.boundingBox.origin.y * 1080
+            let width = detection.boundingBox.width * 1920
+            let height = detection.boundingBox.height * 1080
+            let boundingBox = CGRect(x: x, y: y, width: width, height: height)
+            mask = CIImage(color: .white)
+                .cropped(to: boundingBox)
+                .composited(over: mask)
+        }
+        return mask
+    }
+
+    private func applyBlur(image: CIImage,
+                           detections: Detections,
+                           blurFaces: Bool,
+                           blurText: Bool,
+                           blurBackground: Bool) -> CIImage?
     {
         let privacyImage = makePrivacyImage(image: image)
-        let mask = createFacesMaskImage(imageExtent: image.extent, faceDetections: faceDetections)
-        var outputImage = privacyImage
-        if blurFaces {
-            let faceBlender = CIFilter.blendWithMask()
-            faceBlender.inputImage = privacyImage
-            faceBlender.backgroundImage = image
-            faceBlender.maskImage = mask
-            outputImage = faceBlender.outputImage
-        } else {
-            outputImage = image
+        var outputImage: CIImage? = image
+        if (blurFaces && !detections.face.isEmpty) || blurBackground {
+            let mask = createFacesMaskImage(imageExtent: image.extent, detections: detections.face)
+            if blurFaces {
+                let blender = CIFilter.blendWithMask()
+                blender.inputImage = privacyImage
+                blender.backgroundImage = image
+                blender.maskImage = mask
+                outputImage = blender.outputImage
+            }
+            if blurBackground {
+                let blender = CIFilter.blendWithMask()
+                blender.inputImage = outputImage
+                blender.backgroundImage = privacyImage
+                blender.maskImage = mask
+                outputImage = blender.outputImage
+            }
         }
-        if blurBackground {
-            let faceBlender = CIFilter.blendWithMask()
-            faceBlender.inputImage = outputImage
-            faceBlender.backgroundImage = privacyImage
-            faceBlender.maskImage = mask
-            outputImage = faceBlender.outputImage
+        if blurText, !detections.text.isEmpty {
+            let mask = createTextsMaskImage(imageExtent: image.extent, detections: detections.text)
+            let blender = CIFilter.blendWithMask()
+            blender.inputImage = privacyImage
+            blender.backgroundImage = outputImage
+            blender.maskImage = mask
+            outputImage = blender.outputImage
         }
         return outputImage
     }
@@ -155,25 +203,5 @@ final class FaceEffect: VideoEffect {
                 .composited(over: outputImage)
         }
         return outputImage.cropped(to: image.extent)
-    }
-
-    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
-        let faceDetections = info.sceneFaceDetections()
-        guard let faceDetections else {
-            return image
-        }
-        var outputImage: CIImage? = image
-        if (settings.showBlur && !faceDetections.isEmpty) || settings.showBlurBackground {
-            outputImage = applyFacesMask(
-                image: image,
-                faceDetections: faceDetections,
-                blurFaces: settings.showBlur,
-                blurBackground: settings.showBlurBackground
-            )
-        }
-        if settings.showMouth {
-            outputImage = addMouth(image: outputImage, detections: faceDetections)
-        }
-        return outputImage ?? image
     }
 }
