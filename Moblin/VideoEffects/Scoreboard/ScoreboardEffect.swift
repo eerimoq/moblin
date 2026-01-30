@@ -81,17 +81,6 @@ private func padelScoreboardSettingsToEffect(_ scoreboard: SettingsWidgetPadelSc
     return PadelScoreboard(home: home, away: away, score: score)
 }
 
-struct TopBottomBorder: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        return path
-    }
-}
-
 final class ScoreboardEffect: VideoEffect {
     private var scoreboardImage: CIImage?
     private var sceneWidget: SettingsSceneWidget?
@@ -261,8 +250,6 @@ final class ScoreboardEffect: VideoEffect {
             }
         }
         .padding(0)
-        .overlay(TopBottomBorder()
-            .stroke(.white, lineWidth: 0.5))
         .padding(5)
         let renderer = ImageRenderer(content: content)
         renderer.scale = UIScreen.main.scale
@@ -540,8 +527,6 @@ final class ScoreboardEffect: VideoEffect {
                 )
             }
             .frame(width: CGFloat(modular.width))
-            .overlay(TopBottomBorder()
-                .stroke(.white, lineWidth: 0.5))
             if modular.showTitle && !modular.titleAbove && !config.global.title.isEmpty {
                 renderTitleBlock(title: config.global.title, modular: modular, isStacked: false)
             }
