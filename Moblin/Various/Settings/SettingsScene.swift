@@ -2829,7 +2829,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     @Published var width: Float = 150
     @Published var rowHeight: Float = 16
     @Published var isBold: Bool = true
-    @Published var isItalic: Bool = false
     @Published var showTitle: Bool = false
     @Published var titleAbove: Bool = true
     @Published var showSecondaryRows: Bool = false
@@ -2851,7 +2850,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
              width,
              rowHeight,
              isBold,
-             isItalic,
              showTitle,
              stacked,
              titleAbove,
@@ -2882,7 +2880,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.width, width)
         try container.encode(.rowHeight, rowHeight)
         try container.encode(.isBold, isBold)
-        try container.encode(.isItalic, isItalic)
         try container.encode(.showTitle, showTitle)
         try container.encode(.titleAbove, titleAbove)
         try container.encode(.showSecondaryRows, showSecondaryRows)
@@ -2913,7 +2910,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         width = container.decode(.width, Float.self, 150)
         rowHeight = container.decode(.rowHeight, Float.self, 16)
         isBold = container.decode(.isBold, Bool.self, true)
-        isItalic = container.decode(.isItalic, Bool.self, false)
         showTitle = container.decode(.showTitle, Bool.self, false)
         titleAbove = container.decode(.titleAbove, Bool.self, true)
         showSecondaryRows = container.decode(.showSecondaryRows, Bool.self, false)

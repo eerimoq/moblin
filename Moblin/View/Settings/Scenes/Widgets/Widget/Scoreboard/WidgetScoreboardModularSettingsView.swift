@@ -145,10 +145,6 @@ private struct LayoutSettingsView: View {
                         .onChange(of: modular.isBold) { _ in
                             updateEffect()
                         }
-                    Toggle("Italic", isOn: $modular.isItalic)
-                        .onChange(of: modular.isItalic) { _ in
-                            updateEffect()
-                        }
                 }
                 Section {
                     if modular.layout.isStacked() {

@@ -363,7 +363,6 @@ final class ScoreboardEffect: VideoEffect {
             HStack(spacing: 0) {
                 Text(team.name)
                     .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
-                    .italic(modular.isItalic)
                     .lineLimit(1)
                     .padding(.leading, 6)
                     .padding(.trailing, 2)
@@ -388,7 +387,6 @@ final class ScoreboardEffect: VideoEffect {
                                 w: histW,
                                 h: h,
                                 gray: true,
-                                it: false,
                                 weight: weight
                             )
                         } else if !oppVal.isEmpty {
@@ -399,7 +397,6 @@ final class ScoreboardEffect: VideoEffect {
                                 w: histW,
                                 h: h,
                                 gray: true,
-                                it: false,
                                 weight: .medium
                             )
                         } else {
@@ -413,8 +410,7 @@ final class ScoreboardEffect: VideoEffect {
                     size: fontSize,
                     w: boxW,
                     h: h,
-                    gray: false,
-                    it: modular.isItalic
+                    gray: false
                 )
             }
             .background(backgroundColor)
@@ -570,13 +566,11 @@ final class ScoreboardEffect: VideoEffect {
                         size: fontSize,
                         w: boxW,
                         h: h,
-                        gray: true,
-                        it: modular.isItalic
+                        gray: true
                     )
                 }
                 Text(team.name)
                     .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
-                    .italic(modular.isItalic)
                     .lineLimit(1)
                     .padding(.leading, 3)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -590,8 +584,7 @@ final class ScoreboardEffect: VideoEffect {
                         size: fontSize,
                         w: boxW,
                         h: h,
-                        gray: true,
-                        it: modular.isItalic
+                        gray: true
                     )
                 }
                 renderStat(
@@ -600,8 +593,7 @@ final class ScoreboardEffect: VideoEffect {
                     size: fontSize,
                     w: boxW,
                     h: h,
-                    gray: false,
-                    it: modular.isItalic
+                    gray: false
                 )
             }
             .background(backgroundColor)
@@ -636,7 +628,6 @@ final class ScoreboardEffect: VideoEffect {
                         .frame(height: h)
                     Text(team.name)
                         .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
-                        .italic(modular.isItalic)
                         .lineLimit(1)
                         .padding(.trailing, 4)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -647,8 +638,7 @@ final class ScoreboardEffect: VideoEffect {
                         size: fontSize,
                         w: boxW,
                         h: h,
-                        gray: true,
-                        it: modular.isItalic
+                        gray: true
                     )
                     renderStat(
                         team.primaryScore,
@@ -656,8 +646,7 @@ final class ScoreboardEffect: VideoEffect {
                         size: fontSize,
                         w: boxW,
                         h: h,
-                        gray: false,
-                        it: modular.isItalic
+                        gray: false
                     )
                 } else {
                     renderStat(
@@ -666,8 +655,7 @@ final class ScoreboardEffect: VideoEffect {
                         size: fontSize,
                         w: boxW,
                         h: h,
-                        gray: false,
-                        it: modular.isItalic
+                        gray: false
                     )
                     renderStat(
                         team.secondaryScore,
@@ -675,12 +663,10 @@ final class ScoreboardEffect: VideoEffect {
                         size: fontSize,
                         w: boxW,
                         h: h,
-                        gray: true,
-                        it: modular.isItalic
+                        gray: true
                     )
                     Text(team.name)
                         .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
-                        .italic(modular.isItalic)
                         .lineLimit(1)
                         .padding(.leading, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -712,26 +698,29 @@ final class ScoreboardEffect: VideoEffect {
         w: CGFloat,
         h: CGFloat,
         gray: Bool,
-        it: Bool,
         weight: Font.Weight = .black
     ) -> some View {
         if !val.trimmingCharacters(in: .whitespaces).isEmpty {
             ZStack {
                 if gray {
-                    Color.black.opacity(0.25)
+                    Color.black
+                        .opacity(0.25)
                         .frame(width: w, height: h)
                 }
                 if let label = label, !label.isEmpty {
                     VStack(spacing: -2) {
-                        Text(label).font(.system(size: size * 0.35, weight: .bold))
+                        Text(label)
+                            .font(.system(size: size * 0.35, weight: .bold))
                             .foregroundStyle(.white.opacity(0.8)).padding(
                                 .top,
                                 2
                             )
-                        Text(val).font(.system(size: size * 0.8, weight: weight)).italic(it)
+                        Text(val)
+                            .font(.system(size: size * 0.8, weight: weight))
                     }
                 } else {
-                    Text(val).font(.system(size: size, weight: weight)).italic(it)
+                    Text(val)
+                        .font(.system(size: size, weight: weight))
                 }
             }.frame(width: w, height: h)
         }
@@ -806,7 +795,6 @@ final class ScoreboardEffect: VideoEffect {
             Text(val)
                 .font(.system(size: CGFloat(modular.fontSize) * 0.9,
                               weight: modular.isBold ? .bold : .regular))
-                .italic(modular.isItalic)
                 .monospacedDigit()
                 .minimumScaleFactor(0.1)
                 .lineLimit(1)
@@ -823,7 +811,6 @@ final class ScoreboardEffect: VideoEffect {
         Text(title)
             .font(.system(size: CGFloat(modular.fontSize) * 0.7,
                           weight: modular.isBold ? .bold : .regular))
-            .italic(modular.isItalic)
             .foregroundStyle(modular.homeTextColorColor)
             .padding(.vertical, 1)
             .frame(maxWidth: .infinity)
