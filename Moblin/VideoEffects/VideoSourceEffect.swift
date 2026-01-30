@@ -171,7 +171,7 @@ final class VideoSourceEffect: VideoEffect {
         if settings.trackFaceEnabled {
             widgetImage = cropFace(
                 widgetImage,
-                info.faceDetections[videoSourceId],
+                info.faceDetections(videoSourceId),
                 info.presentationTimeStamp.seconds,
                 settings.trackFaceZoom
             )

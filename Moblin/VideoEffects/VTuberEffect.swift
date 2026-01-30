@@ -100,7 +100,7 @@ final class VTuberEffect: VideoEffect {
                                  time: Double,
                                  timeDelta: Double)
     {
-        if let detection = info.faceDetections[videoSourceId]?.first,
+        if let detection = info.faceDetections(videoSourceId)?.first,
            let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size),
            let sideAngle = detection.calcFaceAngleSide()
         {

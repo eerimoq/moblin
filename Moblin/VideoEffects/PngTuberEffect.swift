@@ -185,7 +185,7 @@ final class PngTuberEffect: VideoEffect {
     }
 
     private func updateModelPose(image: CIImage, info: VideoEffectInfo) {
-        if let detection = info.faceDetections[videoSourceId]?.first,
+        if let detection = info.faceDetections(videoSourceId)?.first,
            let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size)
         {
             isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle) > 0.15

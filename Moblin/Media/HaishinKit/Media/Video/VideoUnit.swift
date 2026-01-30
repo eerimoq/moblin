@@ -8,7 +8,7 @@ import Vision
 
 private let deltaLimit = 0.03
 
-struct FaceDetectionJob {
+struct DetectionJob {
     let videoSourceId: UUID
     let imageBuffer: CVPixelBuffer
 }
@@ -100,15 +100,20 @@ private func setOrientation(
     }
 }
 
-private class FaceDetectionsCompletion {
+struct Detections {
+    let face: [VNFaceObservation]
+    let text: [VNRecognizedText]
+}
+
+private class DetectionsCompletion {
     // periphery:ignore
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
     let isSceneSwitchTransition: Bool
     let sceneVideoSourceId: UUID
-    let faceDetectionJobs: [FaceDetectionJob]
-    var faceDetections: [UUID: [VNFaceObservation]]
+    let detectionJobs: [DetectionJob]
+    var detections: [UUID: Detections]
 
     init(
         sequenceNumber: UInt64,
@@ -116,15 +121,15 @@ private class FaceDetectionsCompletion {
         isFirstAfterAttach: Bool,
         isSceneSwitchTransition: Bool,
         sceneVideoSourceId: UUID,
-        faceDetectionJobs: [FaceDetectionJob]
+        detectionJobs: [DetectionJob]
     ) {
         self.sequenceNumber = sequenceNumber
         self.sampleBuffer = sampleBuffer
         self.isFirstAfterAttach = isFirstAfterAttach
         self.isSceneSwitchTransition = isSceneSwitchTransition
         self.sceneVideoSourceId = sceneVideoSourceId
-        self.faceDetectionJobs = faceDetectionJobs
-        faceDetections = [:]
+        self.detectionJobs = detectionJobs
+        detections = [:]
     }
 }
 
@@ -151,9 +156,9 @@ final class VideoUnit: NSObject {
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
-    private var nextFaceDetectionsSequenceNumber: UInt64 = 0
-    private var nextCompletedFaceDetectionsSequenceNumber: UInt64 = 0
-    private var completedFaceDetections: [UInt64: FaceDetectionsCompletion] = [:]
+    private var nextDetectionsSequenceNumber: UInt64 = 0
+    private var nextCompletedDetectionsSequenceNumber: UInt64 = 0
+    private var completedDetections: [UInt64: DetectionsCompletion] = [:]
     private var captureSize = CGSize(width: 1920, height: 1080)
     var canvasSize = CGSize(width: 1920, height: 1080)
     private var fillFrame = true
@@ -874,15 +879,15 @@ final class VideoUnit: NSObject {
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
                               _ sceneVideoSourceId: UUID,
-                              _ faceDetectionJobs: [FaceDetectionJob],
-                              _ faceDetections: [UUID: [VNFaceObservation]],
+                              _ detectionJobs: [DetectionJob],
+                              _ detections: [UUID: Detections],
                               _ isSceneSwitchTransition: Bool,
                               _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let info = VideoEffectInfo(
             sceneVideoSourceId: sceneVideoSourceId,
-            faceDetectionJobs: faceDetectionJobs,
-            faceDetections: faceDetections,
+            detectionJobs: detectionJobs,
+            detections: detections,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             videoUnit: self,
             isFirstAfterAttach: isFirstAfterAttach
@@ -1221,57 +1226,79 @@ final class VideoUnit: NSObject {
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         updateFps(presentationTimeStamp)
         let faceDetectionVideoSourceIds = needsFaceDetections(presentationTimeStamp)
-        let faceDetectionJobs = prepareFaceDetectionJobs(
+        let detectionJobs = prepareDetectionJobs(
             faceDetectionVideoSourceIds,
             sampleBuffer.presentationTimeStamp,
             imageBuffer
         )
-        let completion = FaceDetectionsCompletion(
-            sequenceNumber: nextFaceDetectionsSequenceNumber,
+        let completion = DetectionsCompletion(
+            sequenceNumber: nextDetectionsSequenceNumber,
             sampleBuffer: sampleBuffer,
             isFirstAfterAttach: isFirstAfterAttach,
             isSceneSwitchTransition: isSceneSwitchTransition,
             sceneVideoSourceId: sceneVideoSourceId,
-            faceDetectionJobs: faceDetectionJobs
+            detectionJobs: detectionJobs
         )
-        nextFaceDetectionsSequenceNumber += 1
-        if !faceDetectionJobs.isEmpty {
-            for faceDetectionJob in faceDetectionJobs {
+        nextDetectionsSequenceNumber += 1
+        if !detectionJobs.isEmpty {
+            for detectionJob in detectionJobs {
                 detectionsQueue.async {
-                    let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: faceDetectionJob
-                        .imageBuffer)
-                    let faceLandmarksRequest = VNDetectFaceLandmarksRequest { request, error in
-                        processorPipelineQueue.async {
-                            guard error == nil else {
-                                completion.faceDetections[faceDetectionJob.videoSourceId] = []
-                                self.faceDetectionsComplete(completion)
-                                return
-                            }
-                            // Only use 5 biggest to limit processing.
-                            if let results = (request as? VNDetectFaceLandmarksRequest)?
-                                .results?
+                    do {
+                        var faceLandmarksRequest: VNDetectFaceLandmarksRequest?
+                        var textRequest: VNRecognizeTextRequest?
+                        var requests: [VNRequest] = []
+                        if true {
+                            faceLandmarksRequest = VNDetectFaceLandmarksRequest()
+                            requests.append(faceLandmarksRequest!)
+                        }
+                        if false {
+                            textRequest = VNRecognizeTextRequest()
+                            textRequest!.recognitionLevel = .fast
+                            requests.append(textRequest!)
+                        }
+                        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: detectionJob
+                            .imageBuffer)
+                        try imageRequestHandler.perform(requests)
+                        // Only use 5 biggest to limit processing.
+                        var faceDetections: [VNFaceObservation] = []
+                        if let results = faceLandmarksRequest?
+                            .results?
+                            .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
+                            .prefix(5)
+                        {
+                            faceDetections += results
+                        }
+                        var textDetections: [VNRecognizedText] = []
+                        if let results = textRequest?.results {
+                            for result in results
                                 .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
                                 .prefix(5)
                             {
-                                completion.faceDetections[faceDetectionJob.videoSourceId] = Array(results)
-                            } else {
-                                completion.faceDetections[faceDetectionJob.videoSourceId] = []
+                                if let text = result.topCandidates(1).first {
+                                    textDetections.append(text)
+                                }
                             }
-                            self.faceDetectionsComplete(completion)
                         }
-                    }
-                    do {
-                        try imageRequestHandler.perform([faceLandmarksRequest])
+                        processorPipelineQueue.async {
+                            completion.detections[detectionJob.videoSourceId] = Detections(
+                                face: faceDetections,
+                                text: textDetections
+                            )
+                            self.detectionsComplete(completion)
+                        }
                     } catch {
                         processorPipelineQueue.async {
-                            completion.faceDetections[faceDetectionJob.videoSourceId] = []
-                            self.faceDetectionsComplete(completion)
+                            completion.detections[detectionJob.videoSourceId] = Detections(
+                                face: [],
+                                text: []
+                            )
+                            self.detectionsComplete(completion)
                         }
                     }
                 }
             }
         } else {
-            faceDetectionsComplete(completion)
+            detectionsComplete(completion)
         }
         return true
     }
@@ -1296,23 +1323,23 @@ final class VideoUnit: NSObject {
         nextFpsReportTime = presentationTimeStamp + 2
     }
 
-    private func faceDetectionsComplete(_ completion: FaceDetectionsCompletion) {
-        guard completion.faceDetections.count == completion.faceDetectionJobs.count else {
+    private func detectionsComplete(_ completion: DetectionsCompletion) {
+        guard completion.detections.count == completion.detections.count else {
             return
         }
-        completedFaceDetections[completion.sequenceNumber] = completion
-        while let completion = completedFaceDetections
-            .removeValue(forKey: nextCompletedFaceDetectionsSequenceNumber)
+        completedDetections[completion.sequenceNumber] = completion
+        while let completion = completedDetections
+            .removeValue(forKey: nextCompletedDetectionsSequenceNumber)
         {
-            appendSampleBufferWithFaceDetections(
+            appendSampleBufferWithDetections(
                 completion.sampleBuffer,
                 completion.isFirstAfterAttach,
                 completion.isSceneSwitchTransition,
                 completion.sceneVideoSourceId,
-                completion.faceDetectionJobs,
-                completion.faceDetections
+                completion.detectionJobs,
+                completion.detections
             )
-            nextCompletedFaceDetectionsSequenceNumber += 1
+            nextCompletedDetectionsSequenceNumber += 1
         }
     }
 
@@ -1323,13 +1350,13 @@ final class VideoUnit: NSObject {
         return false
     }
 
-    private func appendSampleBufferWithFaceDetections(
+    private func appendSampleBufferWithDetections(
         _ sampleBuffer: CMSampleBuffer,
         _ isFirstAfterAttach: Bool,
         _ isSceneSwitchTransition: Bool,
         _ sceneVideoSourceId: UUID,
-        _ faceDetectionJobs: [FaceDetectionJob],
-        _ faceDetections: [UUID: [VNFaceObservation]]
+        _ detectionJobs: [DetectionJob],
+        _ detections: [UUID: Detections]
     ) {
         guard let imageBuffer = sampleBuffer.imageBuffer else {
             return
@@ -1348,8 +1375,8 @@ final class VideoUnit: NSObject {
                 imageBuffer,
                 sampleBuffer,
                 sceneVideoSourceId,
-                faceDetectionJobs,
-                faceDetections,
+                detectionJobs,
+                detections,
                 isSceneSwitchTransition,
                 isFirstAfterAttach
             )
@@ -1546,12 +1573,12 @@ final class VideoUnit: NSObject {
         return ids
     }
 
-    private func prepareFaceDetectionJobs(
+    private func prepareDetectionJobs(
         _ faceDetectionVideoSourceIds: Set<UUID>,
         _ presentationTimeStamp: CMTime,
         _ imageBuffer: CVImageBuffer
-    ) -> [FaceDetectionJob] {
-        var faceDetectionVideoSources: [FaceDetectionJob] = []
+    ) -> [DetectionJob] {
+        var detectionJobs: [DetectionJob] = []
         for videoSourceId in faceDetectionVideoSourceIds {
             var videoSourceImageBuffer: CVPixelBuffer?
             if videoSourceId == sceneVideoSourceId {
@@ -1562,13 +1589,13 @@ final class VideoUnit: NSObject {
                     .imageBuffer
             }
             guard let videoSourceImageBuffer else {
-                faceDetectionVideoSources.removeAll()
+                detectionJobs.removeAll()
                 break
             }
-            faceDetectionVideoSources.append(FaceDetectionJob(videoSourceId: videoSourceId,
-                                                              imageBuffer: videoSourceImageBuffer))
+            detectionJobs.append(DetectionJob(videoSourceId: videoSourceId,
+                                              imageBuffer: videoSourceImageBuffer))
         }
-        return faceDetectionVideoSources
+        return detectionJobs
     }
 
     private func addSessionObservers() {
