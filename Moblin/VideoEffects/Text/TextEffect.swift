@@ -36,6 +36,11 @@ struct TextEffectStats {
     let teslaMedia: String
     let cyclingPower: String
     let cyclingCadence: String
+    let garminHeartRate: Int?
+    let garminPace: String
+    let garminCadence: String
+    let garminDistance: String
+    let garminBattery: String
     let browserTitle: String
     let gForce: GForce?
 }

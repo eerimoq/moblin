@@ -128,6 +128,11 @@ struct LocalOverlaysSettingsView: View {
                 } icon: {
                     Image(systemName: "heart")
                 }
+                Label {
+                    Toggle("Garmin devices", isOn: $show.garminDevice)
+                } icon: {
+                    Image(systemName: "watch")
+                }
             }
             Section {
                 Label {
