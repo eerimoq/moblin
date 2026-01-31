@@ -111,11 +111,14 @@ struct WidgetScoreboardSettingsView: View {
         case .padel:
             WidgetScoreboardPadelSettingsView(model: model, padel: scoreboard.padel)
         case .generic:
-            WidgetScoreboardGenericSettingsView(model: model, generic: scoreboard.generic)
+            WidgetScoreboardGenericSettingsView(model: model,
+                                                generic: scoreboard.generic,
+                                                clock: scoreboard.generic.clock)
         default:
             WidgetScoreboardModularSettingsView(model: model,
                                                 widget: widget,
-                                                modular: scoreboard.modular)
+                                                modular: scoreboard.modular,
+                                                clock: scoreboard.modular.clock)
         }
     }
 }

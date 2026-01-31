@@ -20,6 +20,7 @@ struct WidgetScoreboardGenericGeneralSettingsView: View {
 struct WidgetScoreboardGenericSettingsView: View {
     let model: Model
     @ObservedObject var generic: SettingsWidgetGenericScoreboard
+    @ObservedObject var clock: SettingsWidgetScoreboardClock
 
     private func isValidClockMaximum(value: String) -> String? {
         guard let maximum = Int(value) else {
@@ -38,7 +39,7 @@ struct WidgetScoreboardGenericSettingsView: View {
         guard let maximum = Int(value) else {
             return
         }
-        generic.clockMaximum = maximum
+        clock.maximum = maximum
     }
 
     private func formatMaximum(value: String) -> String {
@@ -67,21 +68,21 @@ struct WidgetScoreboardGenericSettingsView: View {
         }
         Section {
             TextEditNavigationView(title: String(localized: "Maximum"),
-                                   value: String(generic.clockMaximum),
+                                   value: String(clock.maximum),
                                    onChange: isValidClockMaximum,
                                    onSubmit: submitClockMaximum,
                                    valueFormat: formatMaximum)
-                .onChange(of: generic.clockMaximum) { _ in
-                    generic.resetClock()
+                .onChange(of: clock.maximum) { _ in
+                    clock.reset()
                     model.resetSelectedScene(changeScene: false, attachCamera: false)
                 }
-            Picker("Direction", selection: $generic.clockDirection) {
+            Picker("Direction", selection: $clock.direction) {
                 ForEach(SettingsWidgetGenericScoreboardClockDirection.allCases, id: \.self) { direction in
                     Text(direction.toString())
                 }
             }
-            .onChange(of: generic.clockDirection) { _ in
-                generic.resetClock()
+            .onChange(of: clock.direction) { _ in
+                clock.reset()
                 model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
         } header: {

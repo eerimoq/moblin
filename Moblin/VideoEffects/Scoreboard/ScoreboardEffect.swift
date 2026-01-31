@@ -194,7 +194,7 @@ final class ScoreboardEffect: VideoEffect {
             HStack {
                 Text(generic.title)
                 Spacer()
-                Text(generic.clock())
+                Text(generic.clock.format())
                     .monospacedDigit()
                     .font(.system(size: 25))
             }
@@ -277,7 +277,7 @@ final class ScoreboardEffect: VideoEffect {
     ) -> some View {
         let fontSize = CGFloat(modular.fontSize)
         let rowH = CGFloat(modular.rowHeight)
-        let teamRowFullH = rowH + (modular.showSecondaryRows ? rowH * 0.6 : 0)
+        let teamRowFullH = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
         let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
         let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
@@ -397,7 +397,7 @@ final class ScoreboardEffect: VideoEffect {
                 )
             }
             .background(backgroundColor)
-            if modular.showSecondaryRows {
+            if modular.showMoreStats {
                 renderSecondaryRow(team: team, fontSize: fontSize, h: h * 0.6)
             }
         }
@@ -426,7 +426,7 @@ final class ScoreboardEffect: VideoEffect {
                                config: RemoteControlScoreboardMatchConfig) -> some View
     {
         let rowH = CGFloat(modular.rowHeight)
-        let teamRowFullH = rowH + (modular.showSecondaryRows ? rowH * 0.6 : 0)
+        let teamRowFullH = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
         let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
         let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
@@ -474,7 +474,7 @@ final class ScoreboardEffect: VideoEffect {
     ) -> some View {
         let fontSize = CGFloat(modular.fontSize)
         let h = CGFloat(modular.rowHeight)
-        let teamRowFullH = h + (modular.showSecondaryRows ? h * 0.6 : 0)
+        let teamRowFullH = h + (modular.showMoreStats ? h * 0.6 : 0)
         let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
         VStack(spacing: 0) {
             if modular.showTitle {
@@ -571,7 +571,7 @@ final class ScoreboardEffect: VideoEffect {
                 )
             }
             .background(backgroundColor)
-            if modular.showSecondaryRows {
+            if modular.showMoreStats {
                 renderSecondaryRow(
                     team: team,
                     fontSize: fontSize,
@@ -649,7 +649,7 @@ final class ScoreboardEffect: VideoEffect {
                 }
             }
             .background(backgroundColor)
-            if modular.showSecondaryRows {
+            if modular.showMoreStats {
                 renderSecondaryRow(
                     team: team,
                     fontSize: fontSize,

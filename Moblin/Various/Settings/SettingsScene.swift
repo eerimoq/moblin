@@ -2697,21 +2697,16 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     @Published var away: String = baseName
     @Published var title: String = baseTitle
     @Published var period: String = "1"
-    @Published var clockMaximum: Int = 45
-    @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
+    var clock: SettingsWidgetScoreboardClock = .init()
     var score: SettingsWidgetScoreboardScore = .init()
     var scoreChanges: [SettingsWidgetScoreboardScoreIncrement] = []
-    var clockMinutes: Int = 0
-    var clockSeconds: Int = 0
-    var isClockStopped: Bool = true
 
     enum CodingKeys: CodingKey {
         case home,
              away,
              title,
              period,
-             clockMaximum,
-             clockDirection
+             clock
     }
 
     init() {}
@@ -2722,8 +2717,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         try container.encode(.away, away)
         try container.encode(.title, title)
         try container.encode(.period, period)
-        try container.encode(.clockMaximum, clockMaximum)
-        try container.encode(.clockDirection, clockDirection)
+        try container.encode(.clock, clock)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2732,53 +2726,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         away = container.decode(.away, String.self, Self.baseName)
         title = container.decode(.title, String.self, Self.baseTitle)
         period = container.decode(.period, String.self, "1")
-        clockMaximum = container.decode(.clockMaximum, Int.self, 45)
-        clockDirection = container.decode(.clockDirection,
-                                          SettingsWidgetGenericScoreboardClockDirection.self,
-                                          .up)
-        resetClock()
-    }
-
-    func clock() -> String {
-        if clockSeconds < 10 {
-            return "\(clockMinutes):0\(clockSeconds)"
-        } else {
-            return "\(clockMinutes):\(clockSeconds)"
-        }
-    }
-
-    func tickClock() {
-        switch clockDirection {
-        case .up:
-            if clockMinutes != clockMaximum {
-                if clockSeconds == 59 {
-                    clockSeconds = 0
-                    clockMinutes += 1
-                } else {
-                    clockSeconds += 1
-                }
-            }
-        case .down:
-            if clockMinutes != 0 || clockSeconds != 0 {
-                if clockSeconds == 0 {
-                    clockSeconds = 59
-                    clockMinutes -= 1
-                } else {
-                    clockSeconds -= 1
-                }
-            }
-        }
-    }
-
-    func resetClock() {
-        switch clockDirection {
-        case .up:
-            clockMinutes = 0
-            clockSeconds = 0
-        case .down:
-            clockMinutes = clockMaximum
-            clockSeconds = 0
-        }
+        clock = container.decode(.clock, SettingsWidgetScoreboardClock.self, .init())
     }
 }
 
@@ -2823,6 +2771,80 @@ class SettingsWidgetModularScoreboardTeam: Codable, ObservableObject {
     }
 }
 
+class SettingsWidgetScoreboardClock: Codable, ObservableObject {
+    @Published var maximum: Int = 45
+    @Published var direction: SettingsWidgetGenericScoreboardClockDirection = .up
+    var minutes: Int = 0
+    var seconds: Int = 0
+    var isStopped: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case maximum,
+             direction
+    }
+
+    init() {
+        reset()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.maximum, maximum)
+        try container.encode(.direction, direction)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        maximum = container.decode(.maximum, Int.self, 45)
+        direction = container.decode(.direction,
+                                     SettingsWidgetGenericScoreboardClockDirection.self,
+                                     .up)
+        reset()
+    }
+
+    func format() -> String {
+        if seconds < 10 {
+            return "\(minutes):0\(seconds)"
+        } else {
+            return "\(minutes):\(seconds)"
+        }
+    }
+
+    func tick() {
+        switch direction {
+        case .up:
+            if minutes != maximum {
+                if seconds == 59 {
+                    seconds = 0
+                    minutes += 1
+                } else {
+                    seconds += 1
+                }
+            }
+        case .down:
+            if minutes != 0 || seconds != 0 {
+                if seconds == 0 {
+                    seconds = 59
+                    minutes -= 1
+                } else {
+                    seconds -= 1
+                }
+            }
+        }
+    }
+
+    func reset() {
+        switch direction {
+        case .up:
+            minutes = 0
+            seconds = 0
+        case .down:
+            minutes = maximum
+            seconds = 0
+        }
+    }
+}
+
 class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     static let baseName = String(localized: "🇸🇪 Moblin")
     static let baseTitle = "⚽️"
@@ -2835,11 +2857,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     @Published var title: String = baseTitle
     @Published var period: String = "1"
     var score: SettingsWidgetScoreboardScore = .init()
-    @Published var clockMaximum: Int = 45
-    @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
-    var clockMinutes: Int = 0
-    var clockSeconds: Int = 0
-    var isClockStopped: Bool = true
+    var clock: SettingsWidgetScoreboardClock = .init()
     @Published var layout: SettingsWidgetScoreboardLayout = .stacked
     @Published var config: RemoteControlScoreboardMatchConfig?
     @Published var fontSize: Float = 12
@@ -2847,7 +2865,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     @Published var rowHeight: Float = 16
     @Published var isBold: Bool = true
     @Published var showTitle: Bool = false
-    @Published var showSecondaryRows: Bool = false
+    @Published var showMoreStats: Bool = false
     @Published var showGlobalStatsBlock: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -2855,15 +2873,14 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
              away,
              title,
              period,
-             clockMaximum,
-             clockDirection,
+             clock,
              layout,
              width,
              rowHeight,
              isBold,
              showTitle,
              stacked,
-             showSecondaryRows,
+             showMoreStats,
              showGlobalStatsBlock,
              fontSize
     }
@@ -2876,15 +2893,14 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.away, away)
         try container.encode(.title, title)
         try container.encode(.period, period)
-        try container.encode(.clockMaximum, clockMaximum)
-        try container.encode(.clockDirection, clockDirection)
+        try container.encode(.clock, clock)
         try container.encode(.layout, layout)
         try container.encode(.fontSize, fontSize)
         try container.encode(.width, width)
         try container.encode(.rowHeight, rowHeight)
         try container.encode(.isBold, isBold)
         try container.encode(.showTitle, showTitle)
-        try container.encode(.showSecondaryRows, showSecondaryRows)
+        try container.encode(.showMoreStats, showMoreStats)
         try container.encode(.showGlobalStatsBlock, showGlobalStatsBlock)
     }
 
@@ -2894,17 +2910,14 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         away = container.decode(.away, SettingsWidgetModularScoreboardTeam.self, Self.createAwayTeam())
         title = container.decode(.title, String.self, Self.baseTitle)
         period = container.decode(.period, String.self, "1")
-        clockMaximum = container.decode(.clockMaximum, Int.self, 45)
-        clockDirection = container.decode(.clockDirection,
-                                          SettingsWidgetGenericScoreboardClockDirection.self,
-                                          .up)
+        clock = container.decode(.clock, SettingsWidgetScoreboardClock.self, .init())
         layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
         fontSize = container.decode(.fontSize, Float.self, 12)
         width = container.decode(.width, Float.self, 150)
         rowHeight = container.decode(.rowHeight, Float.self, 16)
         isBold = container.decode(.isBold, Bool.self, true)
         showTitle = container.decode(.showTitle, Bool.self, false)
-        showSecondaryRows = container.decode(.showSecondaryRows, Bool.self, false)
+        showMoreStats = container.decode(.showMoreStats, Bool.self, false)
         showGlobalStatsBlock = container.decode(.showGlobalStatsBlock, Bool.self, false)
     }
 
@@ -2918,48 +2931,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         return SettingsWidgetModularScoreboardTeam(name: baseName,
                                                    textColor: baseAwayTextColor,
                                                    backgroundColor: baseAwayBackgroundColor)
-    }
-
-    func clock() -> String {
-        if clockSeconds < 10 {
-            return "\(clockMinutes):0\(clockSeconds)"
-        } else {
-            return "\(clockMinutes):\(clockSeconds)"
-        }
-    }
-
-    func tickClock() {
-        switch clockDirection {
-        case .up:
-            if clockMinutes != clockMaximum {
-                if clockSeconds == 59 {
-                    clockSeconds = 0
-                    clockMinutes += 1
-                } else {
-                    clockSeconds += 1
-                }
-            }
-        case .down:
-            if clockMinutes != 0 || clockSeconds != 0 {
-                if clockSeconds == 0 {
-                    clockSeconds = 59
-                    clockMinutes -= 1
-                } else {
-                    clockSeconds -= 1
-                }
-            }
-        }
-    }
-
-    func resetClock() {
-        switch clockDirection {
-        case .up:
-            clockMinutes = 0
-            clockSeconds = 0
-        case .down:
-            clockMinutes = clockMaximum
-            clockSeconds = 0
-        }
     }
 }
 

@@ -168,10 +168,10 @@ extension Model {
                                                          awayTeam: generic.away,
                                                          homeScore: generic.score.home,
                                                          awayScore: generic.score.away,
-                                                         clockMinutes: generic.clockMinutes,
-                                                         clockSeconds: generic.clockSeconds,
-                                                         clockMaximum: generic.clockMaximum,
-                                                         isClockStopped: generic.isClockStopped,
+                                                         clockMinutes: generic.clock.minutes,
+                                                         clockSeconds: generic.clock.seconds,
+                                                         clockMaximum: generic.clock.maximum,
+                                                         isClockStopped: generic.clock.isStopped,
                                                          title: generic.title)
             data = try JSONEncoder().encode(message)
         } catch {
@@ -426,10 +426,10 @@ extension Model {
                 guard let widget = findWidget(id: id) else {
                     continue
                 }
-                guard !widget.scoreboard.generic.isClockStopped else {
+                guard !widget.scoreboard.generic.clock.isStopped else {
                     continue
                 }
-                widget.scoreboard.generic.tickClock()
+                widget.scoreboard.generic.clock.tick()
                 DispatchQueue.main.async {
                     scoreboardEffect.update(
                         scoreboard: widget.scoreboard,
@@ -442,10 +442,10 @@ extension Model {
                 guard let widget = findWidget(id: id) else {
                     continue
                 }
-                guard !widget.scoreboard.modular.isClockStopped else {
+                guard !widget.scoreboard.modular.clock.isStopped else {
                     continue
                 }
-                widget.scoreboard.modular.tickClock()
+                widget.scoreboard.modular.clock.tick()
                 DispatchQueue.main.async {
                     scoreboardEffect.update(
                         scoreboard: widget.scoreboard,
@@ -856,18 +856,18 @@ extension Model: WCSessionDelegate {
                                                        minutes: Int,
                                                        seconds: Int)
     {
-        scoreboard.clockMinutes = minutes.clamped(to: 0 ... scoreboard.clockMaximum)
-        if scoreboard.clockMinutes == scoreboard.clockMaximum {
-            scoreboard.clockSeconds = 0
+        scoreboard.clock.minutes = minutes.clamped(to: 0 ... scoreboard.clock.maximum)
+        if scoreboard.clock.minutes == scoreboard.clock.maximum {
+            scoreboard.clock.seconds = 0
         } else {
-            scoreboard.clockSeconds = seconds.clamped(to: 0 ... 59)
+            scoreboard.clock.seconds = seconds.clamped(to: 0 ... 59)
         }
     }
 
     private func handleUpdateGenericScoreboardSetClockState(scoreboard: SettingsWidgetGenericScoreboard,
                                                             stopped: Bool)
     {
-        scoreboard.isClockStopped = stopped
+        scoreboard.clock.isStopped = stopped
     }
 
     private func padelScoreboardUpdateSetCompleted(scoreboard: SettingsWidgetPadelScoreboard) {

@@ -39,8 +39,8 @@ private struct LayoutSettingsView: View {
                         .onChange(of: modular.showGlobalStatsBlock) { _ in
                             updateEffect()
                         }
-                    Toggle("2nd row", isOn: $modular.showSecondaryRows)
-                        .onChange(of: modular.showSecondaryRows) { _ in
+                    Toggle("More stats", isOn: $modular.showMoreStats)
+                        .onChange(of: modular.showMoreStats) { _ in
                             updateEffect()
                         }
                 } header: {
@@ -122,6 +122,7 @@ struct WidgetScoreboardModularSettingsView: View {
     let model: Model
     let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
+    @ObservedObject var clock: SettingsWidgetScoreboardClock
 
     private func isValidClockMaximum(value: String) -> String? {
         guard let maximum = Int(value) else {
@@ -140,7 +141,7 @@ struct WidgetScoreboardModularSettingsView: View {
         guard let maximum = Int(value) else {
             return
         }
-        modular.clockMaximum = maximum
+        clock.maximum = maximum
     }
 
     private func formatMaximum(value: String) -> String {
@@ -159,22 +160,22 @@ struct WidgetScoreboardModularSettingsView: View {
         }
         Section {
             TextEditNavigationView(title: String(localized: "Maximum"),
-                                   value: String(modular.clockMaximum),
+                                   value: String(clock.maximum),
                                    onChange: isValidClockMaximum,
                                    onSubmit: submitClockMaximum,
                                    valueFormat: formatMaximum)
-                .onChange(of: modular.clockMaximum) { _ in
-                    modular.resetClock()
+                .onChange(of: clock.maximum) { _ in
+                    clock.reset()
                     model.remoteControlScoreboardUpdate()
                     model.sceneUpdated()
                 }
-            Picker("Direction", selection: $modular.clockDirection) {
+            Picker("Direction", selection: $clock.direction) {
                 ForEach(SettingsWidgetGenericScoreboardClockDirection.allCases, id: \.self) { direction in
                     Text(direction.toString())
                 }
             }
-            .onChange(of: modular.clockDirection) { _ in
-                modular.resetClock()
+            .onChange(of: clock.direction) { _ in
+                clock.reset()
                 model.remoteControlScoreboardUpdate()
                 model.sceneUpdated()
             }
