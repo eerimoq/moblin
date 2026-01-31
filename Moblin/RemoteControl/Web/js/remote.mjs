@@ -26,9 +26,9 @@ document.addEventListener("focusout", function () {
 });
 
 const durSel = document.getElementById("dur-sel");
-let durHtml = '<option value="">DUR</option>';
-for (let i = 0; i <= 120; i++) {
-  durHtml += `<option value="${i}">${i} min</option>`;
+let durHtml = "";
+for (let i = 1; i <= 120; i++) {
+  durHtml += `<option value=${i}>${i} min</option>`;
 }
 durSel.innerHTML = durHtml;
 
@@ -214,8 +214,8 @@ function setPeriod(p) {
   update();
 }
 
-function setDuration(val) {
-  sendAction("set-duration", val);
+function setDuration(minutes) {
+  sendAction("set-duration", minutes);
 }
 
 function buildDom() {
@@ -485,13 +485,13 @@ function syncUI() {
   updateGlobalToggles();
 }
 
-function sendAction(act, value) {
+function sendAction(action, value) {
   let data;
-  if (act === "set-duration") {
+  if (action === "set-duration") {
     data = { setScoreboardDuration: { minutes: value } };
-  } else if (act === "set-clock-manual") {
+  } else if (action === "set-clock-manual") {
     data = { setScoreboardClock: { time: value } };
-  } else if (act === "toggle-clock") {
+  } else if (action === "toggle-clock") {
     data = { toggleScoreboardClock: {} };
   } else {
     return;
