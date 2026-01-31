@@ -1402,7 +1402,6 @@ extension Model {
                 garminPace: garminPaceString(),
                 garminCadence: garminCadenceString(),
                 garminDistance: garminDistanceString(),
-                garminBattery: garminBatteryString(),
                 browserTitle: getBrowserTitle(),
                 gForce: gForceManager?.getLatest()
             )

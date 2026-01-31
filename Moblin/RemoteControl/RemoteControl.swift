@@ -389,7 +389,6 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var garminPace: String?
     var garminCadence: String?
     var garminDistance: String?
-    var garminBattery: String?
     var browserTitle: String
     var gForce: GForce?
 
@@ -429,7 +428,6 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         garminPace = stats.garminPace
         garminCadence = stats.garminCadence
         garminDistance = stats.garminDistance
-        garminBattery = stats.garminBattery
         browserTitle = stats.browserTitle
     }
 
@@ -470,7 +468,6 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                                garminPace: garminPace ?? "",
                                garminCadence: garminCadence ?? "",
                                garminDistance: garminDistance ?? "",
-                               garminBattery: garminBattery ?? "",
                                browserTitle: browserTitle,
                                gForce: gForce)
     }

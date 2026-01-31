@@ -20,7 +20,6 @@ struct GarminMetrics {
     var speedMetersPerSecond: Double?
     var cadence: Int?
     var distanceMeters: Double?
-    var batteryLevel: Int?
     var timestamp: ContinuousClock.Instant = .now
 }
 
@@ -28,13 +27,10 @@ private let garminHeartRateServiceId = CBUUID(string: "180D")
 private let garminHeartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
 private let garminRscServiceId = CBUUID(string: "1814")
 private let garminRscMeasurementCharacteristicId = CBUUID(string: "2A53")
-private let garminBatteryServiceId = CBUUID(string: "180F")
-private let garminBatteryCharacteristicId = CBUUID(string: "2A19")
 
 let garminScanner = BluetoothScanner(serviceIds: [
     garminHeartRateServiceId,
     garminRscServiceId,
-    garminBatteryServiceId,
 ])
 
 private let rscStrideLengthFlagIndex = 0
@@ -81,7 +77,6 @@ class GarminDevice: NSObject {
     private var peripheral: CBPeripheral?
     private var heartRateCharacteristic: CBCharacteristic?
     private var rscCharacteristic: CBCharacteristic?
-    private var batteryCharacteristic: CBCharacteristic?
     private var deviceId: UUID?
     private var metrics = GarminMetrics()
     private var lastRscUpdateTime: ContinuousClock.Instant?
@@ -120,7 +115,6 @@ class GarminDevice: NSObject {
         peripheral = nil
         heartRateCharacteristic = nil
         rscCharacteristic = nil
-        batteryCharacteristic = nil
         lastRscUpdateTime = nil
         distanceMetersFallback = 0
         usingDeviceDistance = false
@@ -152,6 +146,18 @@ extension GarminDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
+            if let deviceId, let connected = central.retrieveConnectedPeripherals(
+                withServices: [garminHeartRateServiceId, garminRscServiceId]
+            ).first(where: { $0.identifier == deviceId }) {
+                connectToPeripheral(central: central, peripheral: connected)
+                return
+            }
+            if let deviceId, let cached = central.retrievePeripherals(
+                withIdentifiers: [deviceId]
+            ).first {
+                connectToPeripheral(central: central, peripheral: cached)
+                return
+            }
             centralManager?.scanForPeripherals(withServices: nil)
         default:
             break
@@ -186,6 +192,18 @@ extension GarminDevice: CBCentralManagerDelegate {
     ) {
         reconnect()
     }
+
+    private func connectToPeripheral(central: CBCentralManager, peripheral: CBPeripheral) {
+        central.stopScan()
+        self.peripheral = peripheral
+        peripheral.delegate = self
+        setState(state: .connecting)
+        if peripheral.state == .connected {
+            peripheral.discoverServices(nil)
+        } else {
+            central.connect(peripheral, options: nil)
+        }
+    }
 }
 
 extension GarminDevice: CBPeripheralDelegate {
@@ -193,7 +211,6 @@ extension GarminDevice: CBPeripheralDelegate {
         for service in peripheral.services ?? [] {
             if service.uuid == garminHeartRateServiceId
                 || service.uuid == garminRscServiceId
-                || service.uuid == garminBatteryServiceId
             {
                 peripheral.discoverCharacteristics(nil, for: service)
             }
@@ -213,13 +230,6 @@ extension GarminDevice: CBPeripheralDelegate {
             case garminRscMeasurementCharacteristicId:
                 rscCharacteristic = characteristic
                 peripheral.setNotifyValue(true, for: characteristic)
-            case garminBatteryCharacteristicId:
-                batteryCharacteristic = characteristic
-                if characteristic.properties.contains(.notify) {
-                    peripheral.setNotifyValue(true, for: characteristic)
-                } else if characteristic.properties.contains(.read) {
-                    peripheral.readValue(for: characteristic)
-                }
             default:
                 break
             }
@@ -243,8 +253,6 @@ extension GarminDevice: CBPeripheralDelegate {
                 try handleHeartRateMeasurement(value: value)
             case garminRscMeasurementCharacteristicId:
                 try handleRscMeasurement(value: value)
-            case garminBatteryCharacteristicId:
-                handleBatteryMeasurement(value: value)
             default:
                 break
             }
@@ -283,11 +291,4 @@ extension GarminDevice: CBPeripheralDelegate {
         notifyMetricsUpdated()
     }
 
-    private func handleBatteryMeasurement(value: Data) {
-        guard let battery = value.first else {
-            return
-        }
-        metrics.batteryLevel = Int(battery)
-        notifyMetricsUpdated()
-    }
 }

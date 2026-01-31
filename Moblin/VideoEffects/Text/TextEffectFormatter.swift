@@ -169,8 +169,6 @@ class TextEffectFormatter {
                 formatGarminCadence(stats: stats)
             case .garminDistance:
                 formatGarminDistance(stats: stats)
-            case .garminBattery:
-                formatGarminBattery(stats: stats)
             case .lapTimes:
                 formatLapTimes()
             case .browserTitle:
@@ -432,10 +430,6 @@ class TextEffectFormatter {
 
     private func formatGarminDistance(stats: TextEffectStats) {
         appendTextPart(value: stats.garminDistance)
-    }
-
-    private func formatGarminBattery(stats: TextEffectStats) {
-        appendTextPart(value: stats.garminBattery)
     }
 
     private func formatLapTimes() {

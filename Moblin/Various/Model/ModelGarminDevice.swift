@@ -176,15 +176,6 @@ extension Model {
         let formatted = String(format: "%.2f", value)
         return "\(formatted) \(database.garminUnits.distanceUnit.suffix)"
     }
-
-    func garminBatteryString() -> String {
-        guard let (_, metrics) = currentGarminDeviceAndMetrics(),
-              let battery = metrics.batteryLevel
-        else {
-            return "-"
-        }
-        return "\(battery)%"
-    }
 }
 
 extension Model: GarminDeviceDelegate {

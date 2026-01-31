@@ -47,7 +47,7 @@ struct GarminDeviceSettingsView: View {
                 Section {
                     NameEditView(name: $device.name, existingNames: garminDevices.devices)
                 } footer: {
-                    Text("Use {garminHeartRate}, {garminPace}, {garminCadence}, {garminDistance} or {garminBattery} in a text widget.")
+                    Text("Use {garminHeartRate}, {garminPace}, {garminCadence} or {garminDistance} in a text widget.")
                 }
                 Section {
                     NavigationLink {

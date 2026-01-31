@@ -45,7 +45,6 @@ enum TextFormatPart: Equatable {
     case garminPace
     case garminCadence
     case garminDistance
-    case garminBattery
     case lapTimes
     case browserTitle
     case gForce
@@ -150,8 +149,6 @@ class TextFormatLoader {
                     loadItem(part: .garminCadence, offsetBy: 15)
                 } else if formatFromIndex.hasPrefix("{garmindistance}") {
                     loadItem(part: .garminDistance, offsetBy: 16)
-                } else if formatFromIndex.hasPrefix("{garminbattery}") {
-                    loadItem(part: .garminBattery, offsetBy: 15)
                 } else if formatFromIndex.hasPrefix("{laptimes}") {
                     loadItem(part: .lapTimes, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{browsertitle}") {

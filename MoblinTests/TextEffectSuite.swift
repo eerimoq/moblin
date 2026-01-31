@@ -131,7 +131,6 @@ struct TextEffectSuite {
                                garminPace: "",
                                garminCadence: "",
                                garminDistance: "",
-                               garminBattery: "",
                                browserTitle: "",
                                gForce: gForce)
     }

@@ -27,7 +27,7 @@ private let suggestionWorkoutTest = "{activeEnergyBurned} {power} {stepCount} {w
 private let suggestionTesla = "🚗 Tesla\n⚙️ {teslaDrive}\n🔋 {teslaBatteryLevel}\n🔈 {teslaMedia}"
 private let suggestionRacing = "🏎️ Racing 🏎️\n{lapTimes}"
 private let suggestionGarmin =
-    "Garmin {garminHeartRate} {garminPace} {garminCadence} {garminDistance} {garminBattery}"
+    "Garmin {garminHeartRate} {garminPace} {garminCadence} {garminDistance}"
 
 private let suggestions = createSuggestions()
 
@@ -524,11 +524,6 @@ private struct GarminVariablesView: View {
                 VariableView(
                     title: "{garminDistance}",
                     description: String(localized: "Show Garmin distance"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{garminBattery}",
-                    description: String(localized: "Show Garmin battery level"),
                     text: $value
                 )
             }

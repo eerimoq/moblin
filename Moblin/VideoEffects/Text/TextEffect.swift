@@ -40,7 +40,6 @@ struct TextEffectStats {
     let garminPace: String
     let garminCadence: String
     let garminDistance: String
-    let garminBattery: String
     let browserTitle: String
     let gForce: GForce?
 }
