@@ -340,7 +340,7 @@ final class ScoreboardEffect: VideoEffect {
         currentPeriod: Int
     ) -> some View {
         let fontSize = CGFloat(modular.fontSize)
-        let h = CGFloat(modular.rowHeight)
+        let height = CGFloat(modular.rowHeight)
         let boxW = fontSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
@@ -350,9 +350,9 @@ final class ScoreboardEffect: VideoEffect {
                     .padding(.leading, 6)
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: h)
+                    .frame(height: height)
                 renderPossession(show: team.possession, size: fontSize)
-                    .frame(height: h)
+                    .frame(height: height)
                 if histCount > 0 {
                     ForEach(1 ... histCount, id: \.self) { i in
                         let val = self.getHistoryVal(team: team, i: i) ?? ""
@@ -367,8 +367,8 @@ final class ScoreboardEffect: VideoEffect {
                                 val,
                                 label: nil,
                                 size: fontSize * 0.9,
-                                w: histW,
-                                h: h,
+                                width: histW,
+                                height: height,
                                 gray: true,
                                 weight: weight
                             )
@@ -377,13 +377,13 @@ final class ScoreboardEffect: VideoEffect {
                                 "0",
                                 label: nil,
                                 size: fontSize * 0.9,
-                                w: histW,
-                                h: h,
+                                width: histW,
+                                height: height,
                                 gray: true,
                                 weight: .medium
                             )
                         } else {
-                            Color.clear.frame(width: histW, height: h)
+                            Color.clear.frame(width: histW, height: height)
                         }
                     }
                 }
@@ -391,14 +391,14 @@ final class ScoreboardEffect: VideoEffect {
                     team.primaryScore,
                     label: nil,
                     size: fontSize,
-                    w: boxW,
-                    h: h,
+                    width: boxW,
+                    height: height,
                     gray: false
                 )
             }
             .background(backgroundColor)
             if modular.showMoreStats {
-                renderSecondaryRow(team: team, fontSize: fontSize, h: h * 0.6)
+                renderSecondaryRow(team: team, fontSize: fontSize, h: height * 0.6)
             }
         }
         .foregroundStyle(textColor)
@@ -538,8 +538,8 @@ final class ScoreboardEffect: VideoEffect {
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
-                        w: boxW,
-                        h: h,
+                        width: boxW,
+                        height: h,
                         gray: true
                     )
                 }
@@ -556,8 +556,8 @@ final class ScoreboardEffect: VideoEffect {
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
-                        w: boxW,
-                        h: h,
+                        width: boxW,
+                        height: h,
                         gray: true
                     )
                 }
@@ -565,8 +565,8 @@ final class ScoreboardEffect: VideoEffect {
                     team.primaryScore,
                     label: nil,
                     size: fontSize,
-                    w: boxW,
-                    h: h,
+                    width: boxW,
+                    height: h,
                     gray: false
                 )
             }
@@ -609,16 +609,16 @@ final class ScoreboardEffect: VideoEffect {
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
-                        w: boxW,
-                        h: h,
+                        width: boxW,
+                        height: h,
                         gray: true
                     )
                     renderStat(
                         team.primaryScore,
                         label: nil,
                         size: fontSize,
-                        w: boxW,
-                        h: h,
+                        width: boxW,
+                        height: h,
                         gray: false
                     )
                 } else {
@@ -626,16 +626,16 @@ final class ScoreboardEffect: VideoEffect {
                         team.primaryScore,
                         label: nil,
                         size: fontSize,
-                        w: boxW,
-                        h: h,
+                        width: boxW,
+                        height: h,
                         gray: false
                     )
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
-                        w: boxW,
-                        h: h,
+                        width: boxW,
+                        height: h,
                         gray: true
                     )
                     Text(team.name)
@@ -667,8 +667,8 @@ final class ScoreboardEffect: VideoEffect {
         _ val: String,
         label: String?,
         size: CGFloat,
-        w: CGFloat,
-        h: CGFloat,
+        width: CGFloat,
+        height: CGFloat,
         gray: Bool,
         weight: Font.Weight = .black
     ) -> some View {
@@ -677,7 +677,7 @@ final class ScoreboardEffect: VideoEffect {
                 if gray {
                     Color.black
                         .opacity(0.25)
-                        .frame(width: w, height: h)
+                        .frame(width: width, height: height)
                 }
                 if let label = label, !label.isEmpty {
                     VStack(spacing: -2) {
@@ -692,7 +692,7 @@ final class ScoreboardEffect: VideoEffect {
                         .font(.system(size: size, weight: weight))
                 }
             }
-            .frame(width: w, height: h)
+            .frame(width: width, height: height)
         }
     }
 
