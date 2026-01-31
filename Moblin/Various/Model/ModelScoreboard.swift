@@ -416,14 +416,11 @@ extension Model {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
-        let scoreboard = widget.scoreboard
-        let parts = time.split(separator: ":")
-        if parts.count == 2, let minutes = Int(parts[0]), let seconds = Int(parts[1]) {
-            let clock = scoreboard.modular.clock
-            clock.minutes = minutes
-            clock.seconds = seconds
-            clock.isStopped = true
-        }
+        let (minutes, seconds) = clockAsMinutesAndSeconds(clock: time)
+        let clock = widget.scoreboard.modular.clock
+        clock.minutes = minutes
+        clock.seconds = seconds
+        clock.isStopped = true
         updateScoreboardEffect(widget: widget)
         remoteControlScoreboardUpdate()
     }
@@ -482,11 +479,9 @@ extension Model {
             }
             modular.home.setHexColors(config.team1.textColor, config.team1.bgColor)
             modular.away.setHexColors(config.team2.textColor, config.team2.bgColor)
-            let parts = config.global.timer.split(separator: ":")
-            if parts.count == 2, let minutes = Int(parts[0]), let seconds = Int(parts[1]) {
-                modular.clock.minutes = minutes
-                modular.clock.seconds = seconds
-            }
+            let (minutes, seconds) = config.global.minutesAndSeconds()
+            modular.clock.minutes = minutes
+            modular.clock.seconds = seconds
             modular.clock.direction = (config.global.timerDirection == "down") ? .down : .up
             updateScoreboardEffect(widget: widget)
         }
@@ -535,15 +530,10 @@ extension Model {
                 modular.score.home = Int(config.team1.primaryScore) ?? 0
                 modular.score.away = Int(config.team2.primaryScore) ?? 0
                 modular.period = config.global.period
-                let parts = config.global.timer.split(separator: ":")
-                if parts.count == 2, let minutes = Int(parts[0]), let seconds = Int(parts[1]) {
-                    modular.clock.minutes = minutes
-                    modular.clock.seconds = seconds
-                    modular.clock.maximum = minutes + (seconds > 0 ? 1 : 0)
-                } else {
-                    modular.clock.minutes = 0
-                    modular.clock.seconds = 0
-                }
+                let (minutes, seconds) = config.global.minutesAndSeconds()
+                modular.clock.minutes = minutes
+                modular.clock.seconds = seconds
+                modular.clock.maximum = minutes + (seconds > 0 ? 1 : 0)
                 modular.clock.direction = (config.global.timerDirection == "down") ? .down : .up
                 modular.clock.isStopped = true
                 modular.home.setHexColors(config.team1.textColor, config.team1.bgColor)

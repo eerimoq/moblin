@@ -683,6 +683,10 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     var showTitle: Bool?
     var showStats: Bool?
     var showSecondaryRow: Bool?
+
+    func minutesAndSeconds() -> (Int, Int) {
+        return clockAsMinutesAndSeconds(clock: timer)
+    }
 }
 
 struct RemoteControlScoreboardMatchConfig: Codable {
