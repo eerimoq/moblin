@@ -406,11 +406,6 @@ function updateGlobalToggles() {
     bTitle.className = state.global.showTitle ? "btn btn-active" : "btn";
   }
 
-  const bTop = document.getElementById("btn-title-top");
-  if (bTop) {
-    bTop.className = state.global.titleTop ? "btn btn-active" : "btn";
-  }
-
   const bStats = document.getElementById("btn-show-stats");
   if (bStats) {
     bStats.className = state.global.showStats ? "btn btn-active" : "btn";

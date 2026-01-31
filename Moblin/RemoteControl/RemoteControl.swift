@@ -681,7 +681,6 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     // periphery: ignore
     var maxSetScore: Int?
     var showTitle: Bool?
-    var titleTop: Bool?
     var showStats: Bool?
     var showSecondaryRow: Bool?
 }

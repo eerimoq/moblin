@@ -113,7 +113,9 @@ struct WidgetScoreboardSettingsView: View {
         case .generic:
             WidgetScoreboardGenericSettingsView(model: model, generic: scoreboard.generic)
         default:
-            WidgetScoreboardModularSettingsView(model: model, modular: scoreboard.modular)
+            WidgetScoreboardModularSettingsView(model: model,
+                                                widget: widget,
+                                                modular: scoreboard.modular)
         }
     }
 }

@@ -1,101 +1,5 @@
 import SwiftUI
 
-private struct ColorsView: View {
-    let model: Model
-    let widget: SettingsWidget
-    @ObservedObject var modular: SettingsWidgetModularScoreboard
-
-    private func updateEffect() {
-        model.updateScoreboardEffect(widget: widget)
-    }
-
-    var body: some View {
-        NavigationLink("Colors") {
-            Form {
-                Section {
-                    ColorPicker(
-                        "Text",
-                        selection: $modular.homeTextColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.homeTextColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.homeTextColor = rgb
-                        }
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                    ColorPicker(
-                        "Background",
-                        selection: $modular.homeBgColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.homeBgColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.homeBgColor = rgb
-                        }
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                } header: {
-                    Text("Home")
-                }
-                Section {
-                    ColorPicker(
-                        "Text",
-                        selection: $modular.awayTextColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.awayTextColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.awayTextColor = rgb
-                        }
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                    ColorPicker(
-                        "Background",
-                        selection: $modular.awayBgColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.awayBgColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.awayBgColor = rgb
-                        }
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                } header: {
-                    Text("Away")
-                }
-                Section {
-                    ColorPicker(
-                        "Background",
-                        selection: $modular.secondaryBackgroundColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.secondaryBackgroundColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.secondaryBackgroundColor = rgb
-                        }
-                        updateEffect()
-                    }
-                } header: {
-                    Text("Global")
-                }
-                Section {
-                    TextButtonView("Reset") {
-                        modular.resetColors()
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                }
-            }
-            .navigationTitle("Colors")
-        }
-    }
-}
-
 private struct LayoutSettingsView: View {
     let model: Model
     let widget: SettingsWidget
@@ -106,22 +10,11 @@ private struct LayoutSettingsView: View {
     }
 
     var body: some View {
-        NavigationLink("Layout") {
+        NavigationLink("Appearance") {
             Form {
                 Section {
                     HStack {
-                        Text("Font size")
-                            .layoutPriority(1)
-                        Slider(value: $modular.fontSize, in: 5 ... 25)
-                            .onChange(of: modular.fontSize) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(modular.fontSize)))
-                            .frame(width: 35)
-                    }
-                    HStack {
                         Text("Width")
-                            .layoutPriority(1)
                         Slider(value: $modular.width, in: 100 ... 650)
                             .onChange(of: modular.width) { _ in
                                 updateEffect()
@@ -131,7 +24,6 @@ private struct LayoutSettingsView: View {
                     }
                     HStack {
                         Text("Height")
-                            .layoutPriority(1)
                         Slider(value: $modular.rowHeight, in: 10 ... 50)
                             .onChange(of: modular.rowHeight) { _ in
                                 updateEffect()
@@ -139,37 +31,96 @@ private struct LayoutSettingsView: View {
                         Text(String(Int(modular.rowHeight)))
                             .frame(width: 35)
                     }
+                    Toggle("Title", isOn: $modular.showTitle)
+                        .onChange(of: modular.showTitle) { _ in
+                            updateEffect()
+                        }
+                    Toggle("Info box", isOn: $modular.showGlobalStatsBlock)
+                        .onChange(of: modular.showGlobalStatsBlock) { _ in
+                            updateEffect()
+                        }
+                    Toggle("2nd row", isOn: $modular.showSecondaryRows)
+                        .onChange(of: modular.showSecondaryRows) { _ in
+                            updateEffect()
+                        }
+                } header: {
+                    Text("Layout")
                 }
                 Section {
+                    HStack {
+                        Text("Size")
+                        Slider(value: $modular.fontSize, in: 5 ... 25)
+                            .onChange(of: modular.fontSize) { _ in
+                                updateEffect()
+                            }
+                        Text(String(Int(modular.fontSize)))
+                            .frame(width: 35)
+                    }
                     Toggle("Bold", isOn: $modular.isBold)
                         .onChange(of: modular.isBold) { _ in
                             updateEffect()
                         }
+                } header: {
+                    Text("Font")
                 }
+            }
+            .navigationTitle("Appearance")
+        }
+    }
+}
+
+private struct TeamView: View {
+    let model: Model
+    let widget: SettingsWidget
+    let side: String
+    @ObservedObject var team: SettingsWidgetModularScoreboardTeam
+
+    private func updateEffect() {
+        model.updateScoreboardEffect(widget: widget)
+    }
+
+    var body: some View {
+        NavigationLink {
+            Form {
                 Section {
-                    if modular.layout.isStacked() {
-                        Toggle("Title", isOn: $modular.showTitle)
-                            .onChange(of: modular.showTitle) { _ in
-                                updateEffect()
-                            }
+                    TextEditNavigationView(title: String(localized: "Name"), value: team.name) {
+                        team.name = $0
+                        model.remoteControlScoreboardUpdate()
+                        model.sceneUpdated()
                     }
-                    Toggle("Timeout, foul, etc.", isOn: $modular.showSecondaryRows)
-                        .onChange(of: modular.showSecondaryRows) { _ in
+                    ColorPicker("Text", selection: $team.textColorColor, supportsOpacity: false)
+                        .onChange(of: team.textColorColor) {
+                            if let rgb = $0.toRgb() {
+                                team.textColor = rgb
+                            }
+                            model.remoteControlScoreboardUpdate()
                             updateEffect()
                         }
-                    Toggle("Clock, half, etc.", isOn: $modular.showGlobalStatsBlock)
-                        .onChange(of: modular.showGlobalStatsBlock) { _ in
+                    ColorPicker("Background", selection: $team.backgroundColorColor, supportsOpacity: false)
+                        .onChange(of: team.backgroundColorColor) {
+                            if let rgb = $0.toRgb() {
+                                team.backgroundColor = rgb
+                            }
+                            model.remoteControlScoreboardUpdate()
                             updateEffect()
                         }
                 }
             }
-            .navigationTitle("Layout")
+            .navigationTitle(side)
+        } label: {
+            HStack {
+                Text(side)
+                Spacer()
+                Text(team.name)
+                    .foregroundStyle(.gray)
+            }
         }
     }
 }
 
 struct WidgetScoreboardModularSettingsView: View {
     let model: Model
+    let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
     private func isValidClockMaximum(value: String) -> String? {
@@ -201,16 +152,8 @@ struct WidgetScoreboardModularSettingsView: View {
 
     var body: some View {
         Section {
-            TextEditNavigationView(title: String(localized: "Home"), value: modular.home) {
-                modular.home = $0
-                model.remoteControlScoreboardUpdate()
-                model.sceneUpdated()
-            }
-            TextEditNavigationView(title: String(localized: "Away"), value: modular.away) {
-                modular.away = $0
-                model.remoteControlScoreboardUpdate()
-                model.sceneUpdated()
-            }
+            TeamView(model: model, widget: widget, side: String(localized: "Home"), team: modular.home)
+            TeamView(model: model, widget: widget, side: String(localized: "Away"), team: modular.away)
         } header: {
             Text("Teams")
         }
@@ -257,6 +200,5 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
             model.remoteControlScoreboardUpdate()
         }
         LayoutSettingsView(model: model, widget: widget, modular: modular)
-        ColorsView(model: model, widget: widget, modular: modular)
     }
 }

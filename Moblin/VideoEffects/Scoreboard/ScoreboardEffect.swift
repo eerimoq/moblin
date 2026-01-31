@@ -279,17 +279,16 @@ final class ScoreboardEffect: VideoEffect {
         let rowH = CGFloat(modular.rowHeight)
         let teamRowFullH = rowH + (modular.showSecondaryRows ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
-        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
-            .trimmingCharacters(in: .whitespaces)
+        let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
         let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
-            !$0.trimmingCharacters(in: .whitespaces).isEmpty
+            !$0.trim().isEmpty
         }
         let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
         let histW = fontSize * 1.5
         let maxHistory = calculateMaxHistory(config: config)
         let finalWidth = CGFloat(modular.width) + CGFloat(maxHistory) * histW
         VStack(spacing: 0) {
-            if modular.showTitle && modular.titleAbove {
+            if modular.showTitle {
                 renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
             }
             HStack(alignment: .top, spacing: 0) {
@@ -298,8 +297,8 @@ final class ScoreboardEffect: VideoEffect {
                         team: config.team1,
                         otherTeam: config.team2,
                         modular: modular,
-                        backgroundColor: modular.homeBgColorColor,
-                        textColor: modular.homeTextColorColor,
+                        textColor: modular.home.textColorColor,
+                        backgroundColor: modular.home.backgroundColorColor,
                         histCount: maxHistory,
                         histW: histW,
                         currentPeriod: Int(config.global.period) ?? 1
@@ -308,8 +307,8 @@ final class ScoreboardEffect: VideoEffect {
                         team: config.team2,
                         otherTeam: config.team1,
                         modular: modular,
-                        backgroundColor: modular.awayBgColorColor,
-                        textColor: modular.awayTextColorColor,
+                        textColor: modular.away.textColorColor,
+                        backgroundColor: modular.away.backgroundColorColor,
                         histCount: maxHistory,
                         histW: histW,
                         currentPeriod: Int(config.global.period) ?? 1
@@ -326,9 +325,6 @@ final class ScoreboardEffect: VideoEffect {
                     .background(.black)
                 }
             }
-            if modular.showTitle && !modular.titleAbove {
-                renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
-            }
         }
     }
 
@@ -337,8 +333,8 @@ final class ScoreboardEffect: VideoEffect {
         team: RemoteControlScoreboardTeam,
         otherTeam: RemoteControlScoreboardTeam,
         modular: SettingsWidgetModularScoreboard,
-        backgroundColor: Color,
         textColor: Color,
+        backgroundColor: Color,
         histCount: Int,
         histW: CGFloat,
         currentPeriod: Int
@@ -401,11 +397,11 @@ final class ScoreboardEffect: VideoEffect {
                 )
             }
             .background(backgroundColor)
-            .foregroundStyle(textColor)
             if modular.showSecondaryRows {
                 renderSecondaryRow(team: team, fontSize: fontSize, h: h * 0.6)
             }
         }
+        .foregroundStyle(textColor)
     }
 
     private func getHistoryVal(team: RemoteControlScoreboardTeam, i: Int) -> String? {
@@ -438,7 +434,7 @@ final class ScoreboardEffect: VideoEffect {
         }
         let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
         VStack(spacing: 0) {
-            if modular.showTitle && modular.titleAbove {
+            if modular.showTitle {
                 renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
             }
             HStack(alignment: .top, spacing: 0) {
@@ -446,14 +442,14 @@ final class ScoreboardEffect: VideoEffect {
                     renderStackedRow(
                         team: config.team1,
                         modular: modular,
-                        backgroundColor: modular.homeBgColorColor,
-                        textColor: modular.homeTextColorColor
+                        textColor: modular.home.textColorColor,
+                        backgroundColor: modular.home.backgroundColorColor
                     )
                     renderStackedRow(
                         team: config.team2,
                         modular: modular,
-                        backgroundColor: modular.awayBgColorColor,
-                        textColor: modular.awayTextColorColor
+                        textColor: modular.away.textColorColor,
+                        backgroundColor: modular.away.backgroundColorColor
                     )
                 }
                 .frame(width: CGFloat(modular.width))
@@ -468,9 +464,6 @@ final class ScoreboardEffect: VideoEffect {
                     .background(.black)
                 }
             }
-            if modular.showTitle && !modular.titleAbove {
-                renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
-            }
         }
     }
 
@@ -482,18 +475,17 @@ final class ScoreboardEffect: VideoEffect {
         let fontSize = CGFloat(modular.fontSize)
         let h = CGFloat(modular.rowHeight)
         let teamRowFullH = h + (modular.showSecondaryRows ? h * 0.6 : 0)
-        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
-            .trimmingCharacters(in: .whitespaces)
-        VStack(spacing: 2) {
-            if modular.showTitle && modular.titleAbove && !config.global.title.isEmpty {
+        let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
+        VStack(spacing: 0) {
+            if modular.showTitle {
                 renderTitleBlock(title: config.global.title, modular: modular, isStacked: false)
             }
             HStack(spacing: 0) {
                 renderSideBySideHalf(
                     team: config.team1,
                     modular: modular,
-                    backgroundColor: modular.homeBgColorColor,
-                    textColor: modular.homeTextColorColor,
+                    textColor: modular.home.textColorColor,
+                    backgroundColor: modular.home.backgroundColorColor,
                     mirrored: false
                 )
                 Group {
@@ -521,23 +513,20 @@ final class ScoreboardEffect: VideoEffect {
                 renderSideBySideHalf(
                     team: config.team2,
                     modular: modular,
-                    backgroundColor: modular.awayBgColorColor,
-                    textColor: modular.awayTextColorColor,
+                    textColor: modular.away.textColorColor,
+                    backgroundColor: modular.away.backgroundColorColor,
                     mirrored: true
                 )
             }
             .frame(width: CGFloat(modular.width))
-            if modular.showTitle && !modular.titleAbove && !config.global.title.isEmpty {
-                renderTitleBlock(title: config.global.title, modular: modular, isStacked: false)
-            }
         }
     }
 
     @ViewBuilder
     private func renderStackedRow(team: RemoteControlScoreboardTeam,
                                   modular: SettingsWidgetModularScoreboard,
-                                  backgroundColor: Color,
-                                  textColor: Color) -> some View
+                                  textColor: Color,
+                                  backgroundColor: Color) -> some View
     {
         let fontSize = CGFloat(modular.fontSize)
         let h = CGFloat(modular.rowHeight)
@@ -582,25 +571,24 @@ final class ScoreboardEffect: VideoEffect {
                 )
             }
             .background(backgroundColor)
-            .foregroundStyle(textColor)
             if modular.showSecondaryRows {
                 renderSecondaryRow(
                     team: team,
                     fontSize: fontSize,
                     h: h * 0.6,
-                    backgroundColor: backgroundColor,
-                    textColor: textColor
+                    backgroundColor: backgroundColor
                 )
             }
         }
+        .foregroundStyle(textColor)
     }
 
     @ViewBuilder
     private func renderSideBySideHalf(
         team: RemoteControlScoreboardTeam,
         modular: SettingsWidgetModularScoreboard,
-        backgroundColor: Color,
         textColor: Color,
+        backgroundColor: Color,
         mirrored: Bool
     ) -> some View {
         let fontSize = CGFloat(modular.fontSize)
@@ -661,18 +649,17 @@ final class ScoreboardEffect: VideoEffect {
                 }
             }
             .background(backgroundColor)
-            .foregroundStyle(textColor)
             if modular.showSecondaryRows {
                 renderSecondaryRow(
                     team: team,
                     fontSize: fontSize,
                     h: h * 0.6,
                     alignRight: !mirrored,
-                    backgroundColor: backgroundColor,
-                    textColor: textColor
+                    backgroundColor: backgroundColor
                 )
             }
         }
+        .foregroundStyle(textColor)
     }
 
     @ViewBuilder
@@ -685,7 +672,7 @@ final class ScoreboardEffect: VideoEffect {
         gray: Bool,
         weight: Font.Weight = .black
     ) -> some View {
-        if !val.trimmingCharacters(in: .whitespaces).isEmpty {
+        if !val.trim().isEmpty {
             ZStack {
                 if gray {
                     Color.black
@@ -696,10 +683,7 @@ final class ScoreboardEffect: VideoEffect {
                     VStack(spacing: -2) {
                         Text(label)
                             .font(.system(size: size * 0.35, weight: .bold))
-                            .foregroundStyle(.white.opacity(0.8)).padding(
-                                .top,
-                                2
-                            )
+                            .padding(.top, 2)
                         Text(val)
                             .font(.system(size: size * 0.8, weight: weight))
                     }
@@ -707,7 +691,8 @@ final class ScoreboardEffect: VideoEffect {
                     Text(val)
                         .font(.system(size: size, weight: weight))
                 }
-            }.frame(width: w, height: h)
+            }
+            .frame(width: w, height: h)
         }
     }
 
@@ -717,8 +702,7 @@ final class ScoreboardEffect: VideoEffect {
         fontSize: CGFloat,
         h: CGFloat,
         alignRight: Bool = false,
-        backgroundColor: Color = .black,
-        textColor: Color = .white
+        backgroundColor: Color = .black
     ) -> some View {
         let stats = [
             (team.stat1Label, team.stat1),
@@ -756,7 +740,6 @@ final class ScoreboardEffect: VideoEffect {
                 Color.black.opacity(0.25)
             }
         )
-        .foregroundStyle(textColor)
     }
 
     @ViewBuilder
@@ -796,9 +779,9 @@ final class ScoreboardEffect: VideoEffect {
         Text(title)
             .font(.system(size: CGFloat(modular.fontSize) * 0.7,
                           weight: modular.isBold ? .bold : .regular))
-            .foregroundStyle(modular.homeTextColorColor)
+            .foregroundStyle(.white)
             .padding(.vertical, 1)
             .frame(maxWidth: .infinity)
-            .background(modular.secondaryBackgroundColorColor)
+            .background(.black)
     }
 }
