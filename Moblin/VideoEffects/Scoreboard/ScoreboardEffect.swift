@@ -398,7 +398,7 @@ final class ScoreboardEffect: VideoEffect {
             }
             .background(backgroundColor)
             if modular.showMoreStats {
-                renderSecondaryRow(team: team, fontSize: fontSize, h: height * 0.6)
+                renderMoreStats(team: team, fontSize: fontSize, height: height * 0.6)
             }
         }
         .foregroundStyle(textColor)
@@ -572,10 +572,10 @@ final class ScoreboardEffect: VideoEffect {
             }
             .background(backgroundColor)
             if modular.showMoreStats {
-                renderSecondaryRow(
+                renderMoreStats(
                     team: team,
                     fontSize: fontSize,
-                    h: height * 0.6,
+                    height: height * 0.6,
                     backgroundColor: backgroundColor
                 )
             }
@@ -650,10 +650,10 @@ final class ScoreboardEffect: VideoEffect {
             }
             .background(backgroundColor)
             if modular.showMoreStats {
-                renderSecondaryRow(
+                renderMoreStats(
                     team: team,
                     fontSize: fontSize,
-                    h: height * 0.6,
+                    height: height * 0.6,
                     alignRight: !mirrored,
                     backgroundColor: backgroundColor
                 )
@@ -697,31 +697,31 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     @ViewBuilder
-    private func renderSecondaryRow(
+    private func renderMoreStats(
         team: RemoteControlScoreboardTeam,
         fontSize: CGFloat,
-        h: CGFloat,
+        height: CGFloat,
         alignRight: Bool = false,
         backgroundColor: Color = .black
     ) -> some View {
         let stats = [
-            (team.stat1Label, team.stat1),
-            (team.stat2Label, team.stat2),
-            (team.stat3Label, team.stat3),
-            (team.stat4Label, team.stat4),
+            (0, team.stat1Label, team.stat1),
+            (1, team.stat2Label, team.stat2),
+            (2, team.stat3Label, team.stat3),
+            (3, team.stat4Label, team.stat4),
         ]
-        .filter { !$0.1.isEmpty && !$0.1.hasPrefix("NO ") }
+        .filter { !$0.2.isEmpty && !$0.2.hasPrefix("NO ") }
         HStack(spacing: 8) {
             if alignRight {
                 Spacer()
             }
-            ForEach(0 ..< stats.count, id: \.self) { i in
+            ForEach(stats, id: \.0) { stat in
                 HStack(spacing: 2) {
-                    if !stats[i].0.isEmpty {
-                        Text(stats[i].0 + ":")
+                    if !stat.1.isEmpty {
+                        Text(stat.1 + ":")
                             .opacity(0.8)
                     }
-                    Text(stats[i].1)
+                    Text(stat.2)
                         .monospacedDigit()
                 }
                 .font(.system(size: fontSize * 0.65, weight: .bold))
@@ -733,7 +733,7 @@ final class ScoreboardEffect: VideoEffect {
         }
         .padding(.horizontal, 6)
         .frame(maxWidth: .infinity)
-        .frame(height: h)
+        .frame(height: height)
         .background(
             ZStack {
                 backgroundColor
