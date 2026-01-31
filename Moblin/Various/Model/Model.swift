@@ -224,6 +224,7 @@ class StatusTopRight: ObservableObject {
     @Published var catPrinterStatus = noValue
     @Published var cyclingPowerDeviceStatus = noValue
     @Published var heartRateDeviceStatus = noValue
+    @Published var garminDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
     @Published var blackSharkCoolerPhoneTemp: Int?
@@ -234,6 +235,7 @@ class StatusTopRight: ObservableObject {
     @Published var catPrinterState: CatPrinterState?
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
+    @Published var garminDeviceState: GarminDeviceState?
     @Published var location = noValue
     @Published var isLowPowerMode = false
 }
@@ -574,6 +576,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let periodicTimerBatteryLevel = SimpleTimer(queue: .main)
     var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
+    var currentGarminDeviceSettings: SettingsGarminDevice?
+    var garminDevices: [UUID: GarminDevice] = [:]
+    var garminMetrics: [UUID: GarminMetrics] = [:]
+    var garminDistanceOffsets: [UUID: Double] = [:]
     var blackSharkCoolerDevices: [UUID: BlackSharkCoolerDevice] = [:]
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -1114,6 +1120,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         autoStartCatPrinters()
         autoStartCyclingPowerDevices()
         autoStartHeartRateDevices()
+        autoStartGarminDevices()
         autoStartBlackSharkCoolerDevices()
         startWeatherManager()
         startGeographyManager()
@@ -1417,6 +1424,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartCatPrinters()
             autoStartCyclingPowerDevices()
             autoStartHeartRateDevices()
+            autoStartGarminDevices()
             autoStartBlackSharkCoolerDevices()
             if showBackgroundStreamingDisabledToast {
                 makeStreamEndedToast(subTitle: String(
@@ -1469,6 +1477,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopCatPrinters()
         stopCyclingPowerDevices()
         stopHeartRateDevices()
+        stopGarminDevices()
         stopRemoteControlAssistant()
         fixedHorizonEffect.stop()
         cameraLevel.stop()
@@ -3076,6 +3085,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isShowingStatusHeartRateDevice() -> Bool {
         return database.show.heartRateDevice && isAnyHeartRateDeviceConfigured()
+    }
+
+    func isShowingStatusGarminDevice() -> Bool {
+        return database.show.garminDevice && isAnyGarminDeviceConfigured()
     }
 
     func isShowingStatusFixedHorizon() -> Bool {

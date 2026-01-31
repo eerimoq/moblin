@@ -26,6 +26,8 @@ private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 private let suggestionWorkoutTest = "{activeEnergyBurned} {power} {stepCount} {workoutDistance}"
 private let suggestionTesla = "🚗 Tesla\n⚙️ {teslaDrive}\n🔋 {teslaBatteryLevel}\n🔈 {teslaMedia}"
 private let suggestionRacing = "🏎️ Racing 🏎️\n{lapTimes}"
+private let suggestionGarmin =
+    "Garmin {garminHeartRate} {garminPace} {garminCadence} {garminDistance}"
 
 private let suggestions = createSuggestions()
 
@@ -53,7 +55,8 @@ private func createSuggestions() -> [Suggestion] {
         Suggestion(id: 13, name: "Debug", text: suggestionDebug),
         Suggestion(id: 14, name: "Workout test", text: suggestionWorkoutTest),
         Suggestion(id: 15, name: "Tesla", text: suggestionTesla),
-        Suggestion(id: 16, name: "Racing", text: suggestionRacing),
+        Suggestion(id: 16, name: "Garmin", text: suggestionGarmin),
+        Suggestion(id: 17, name: "Racing", text: suggestionRacing),
     ]
     return suggestions
 }
@@ -497,6 +500,40 @@ private struct CyclingVariablesView: View {
     }
 }
 
+private struct GarminVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(
+                    title: "{garminHeartRate}",
+                    description: String(localized: "Show Garmin heart rate"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{garminPace}",
+                    description: String(localized: "Show Garmin pace"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{garminCadence}",
+                    description: String(localized: "Show Garmin cadence"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{garminDistance}",
+                    description: String(localized: "Show Garmin distance"),
+                    text: $value
+                )
+            }
+            .navigationTitle("Garmin")
+        } label: {
+            Text("Garmin")
+        }
+    }
+}
+
 private struct DebugVariablesView: View {
     @Binding var value: String
 
@@ -575,6 +612,7 @@ private struct TextSelectionView: View {
                 WorkoutVariablesView(model: model, value: $value)
                 TeslaVariablesView(value: $value)
                 CyclingVariablesView(value: $value)
+                GarminVariablesView(value: $value)
                 DebugVariablesView(value: $value)
             } header: {
                 Text("Variables")

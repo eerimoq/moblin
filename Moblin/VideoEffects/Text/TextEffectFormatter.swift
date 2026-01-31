@@ -161,6 +161,14 @@ class TextEffectFormatter {
                 formatCyclingPower(stats: stats)
             case .cyclingCadence:
                 formatCyclingCadence(stats: stats)
+            case .garminHeartRate:
+                formatGarminHeartRate(stats: stats)
+            case .garminPace:
+                formatGarminPace(stats: stats)
+            case .garminCadence:
+                formatGarminCadence(stats: stats)
+            case .garminDistance:
+                formatGarminDistance(stats: stats)
             case .lapTimes:
                 formatLapTimes()
             case .browserTitle:
@@ -406,6 +414,22 @@ class TextEffectFormatter {
 
     private func formatCyclingCadence(stats: TextEffectStats) {
         appendTextPart(value: stats.cyclingCadence)
+    }
+
+    private func formatGarminHeartRate(stats: TextEffectStats) {
+        appendTextPart(value: formatOptional(value: stats.garminHeartRate))
+    }
+
+    private func formatGarminPace(stats: TextEffectStats) {
+        appendTextPart(value: stats.garminPace)
+    }
+
+    private func formatGarminCadence(stats: TextEffectStats) {
+        appendTextPart(value: stats.garminCadence)
+    }
+
+    private func formatGarminDistance(stats: TextEffectStats) {
+        appendTextPart(value: stats.garminDistance)
     }
 
     private func formatLapTimes() {

@@ -557,6 +557,32 @@ private struct HeartRateDeviceStatusView: View {
     }
 }
 
+private struct GarminDeviceStatusView: View {
+    @EnvironmentObject var model: Model
+    // periphery:ignore
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    private func garminDeviceColor() -> Color {
+        if model.isAnyGarminDeviceConfigured() && !model.areAllGarminDevicesConnected() {
+            return .red
+        }
+        return .white
+    }
+
+    var body: some View {
+        if model.isShowingStatusGarminDevice() {
+            StreamOverlayIconAndTextView(
+                icon: "watch",
+                text: status.garminDeviceStatus,
+                textPlacement: textPlacement,
+                color: garminDeviceColor()
+            )
+        }
+    }
+}
+
 private struct FixedHorizonStatusView: View {
     let model: Model
     // periphery:ignore
@@ -704,6 +730,11 @@ private struct StatusesView: View {
             textPlacement: textPlacement
         )
         HeartRateDeviceStatusView(
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        GarminDeviceStatusView(
             show: model.database.show,
             status: model.statusTopRight,
             textPlacement: textPlacement
