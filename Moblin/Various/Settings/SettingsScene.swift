@@ -2765,6 +2765,16 @@ class SettingsWidgetModularScoreboardTeam: Codable, ObservableObject {
         loadColors()
     }
 
+    func setHexColors(_ textColor: String, _ backgroundColor: String) {
+        if let color = RgbColor.fromHex(string: textColor) {
+            self.textColor = color
+        }
+        if let color = RgbColor.fromHex(string: backgroundColor) {
+            self.backgroundColor = color
+        }
+        loadColors()
+    }
+
     func loadColors() {
         textColorColor = textColor.color()
         backgroundColorColor = backgroundColor.color()

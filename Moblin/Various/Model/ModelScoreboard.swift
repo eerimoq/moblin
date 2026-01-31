@@ -22,7 +22,7 @@ private let basketballConfig = RemoteControlScoreboardMatchConfig(
         stat1Label: "TO",
         stat2: "0",
         stat2Label: "FOUL",
-        stat3: "NO BONUS",
+        stat3: "NO BONUS"
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "Varsity Basketball",
@@ -480,16 +480,8 @@ extension Model {
             if let score = Int(config.team2.primaryScore) {
                 modular.score.away = score
             }
-            modular.home.textColor = RgbColor.fromHex(string: config.team1.textColor) ?? modular.home
-                .textColor
-            modular.home.backgroundColor = RgbColor.fromHex(string: config.team1.bgColor) ?? modular.home
-                .backgroundColor
-            modular.home.loadColors()
-            modular.away.textColor = RgbColor.fromHex(string: config.team2.textColor) ?? modular.away
-                .textColor
-            modular.away.backgroundColor = RgbColor.fromHex(string: config.team2.bgColor) ?? modular.away
-                .backgroundColor
-            modular.away.loadColors()
+            modular.home.setHexColors(config.team1.textColor, config.team1.bgColor)
+            modular.away.setHexColors(config.team2.textColor, config.team2.bgColor)
             let parts = config.global.timer.split(separator: ":")
             if parts.count == 2, let minutes = Int(parts[0]), let seconds = Int(parts[1]) {
                 modular.clock.minutes = minutes
@@ -554,16 +546,8 @@ extension Model {
                 }
                 modular.clock.direction = (config.global.timerDirection == "down") ? .down : .up
                 modular.clock.isStopped = true
-                modular.home.textColor = RgbColor.fromHex(string: config.team1.textColor) ?? modular.home
-                    .textColor
-                modular.home.backgroundColor = RgbColor.fromHex(string: config.team1.bgColor) ?? modular.home
-                    .backgroundColor
-                modular.home.loadColors()
-                modular.away.textColor = RgbColor.fromHex(string: config.team2.textColor) ?? modular.away
-                    .textColor
-                modular.away.backgroundColor = RgbColor.fromHex(string: config.team2.bgColor) ?? modular.away
-                    .backgroundColor
-                modular.away.loadColors()
+                modular.home.setHexColors(config.team1.textColor, config.team1.bgColor)
+                modular.away.setHexColors(config.team2.textColor, config.team2.bgColor)
                 updateScoreboardEffect(widget: widget)
                 remoteControlScoreboardUpdate()
             }
