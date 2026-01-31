@@ -1,12 +1,15 @@
 import Foundation
 import Network
 
+private let homeBackgroundColor = "#1e40af"
+private let awayBackgroundColor = "#dc2626"
+
 private let basketballConfig = RemoteControlScoreboardMatchConfig(
     sportId: "basketball",
     layout: "sideBySide",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: true,
         stat1: "5",
         stat1Label: "TO",
@@ -16,7 +19,7 @@ private let basketballConfig = RemoteControlScoreboardMatchConfig(
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         possession: false,
         stat1: "5",
         stat1Label: "TO",
@@ -57,12 +60,12 @@ private let genericConfig = RemoteControlScoreboardMatchConfig(
     layout: "stacked",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: false
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         possession: false
     ),
     global: RemoteControlScoreboardGlobalStats(
@@ -88,13 +91,13 @@ private let genericSetsConfig = RemoteControlScoreboardMatchConfig(
     layout: "stacked",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: false,
         secondaryScore: "0"
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         possession: false,
         secondaryScore: "0"
     ),
@@ -124,7 +127,7 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
     layout: "sideBySide",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: false,
         secondaryScore: "0",
         secondaryScoreLabel: "SOG",
@@ -134,7 +137,7 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         textColor: "#ffffff",
         possession: false,
         secondaryScore: "0",
@@ -168,12 +171,12 @@ private let footballConfig = RemoteControlScoreboardMatchConfig(
     layout: "stacked",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: false
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         textColor: "#ffffff",
         possession: false
     ),
@@ -198,12 +201,12 @@ private let tennisConfig = RemoteControlScoreboardMatchConfig(
     layout: "stackHistory",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: true
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         textColor: "#ffffff",
         possession: false
     ),
@@ -234,7 +237,7 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
     layout: "stacked",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: true,
         secondaryScore: "0",
         stat1: "0",
@@ -242,7 +245,7 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         possession: false,
         secondaryScore: "0",
         stat1: "0",
