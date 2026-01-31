@@ -21,7 +21,7 @@
       <!-- Persistent Controls (Clock & Info) -->
       <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
         <button
-          onclick="window.sendAction('toggle-clock')"
+          onclick="window.sendToggleClock()"
           class="btn btn-top bg-indigo-600 text-white border-none"
         >
           CLOCK
@@ -35,7 +35,7 @@
         />
         <select
           id="dur-sel"
-          onchange="window.setDuration(parseInt(this.value))"
+          onchange="window.setDuration(this.value)"
           class="btn-top bg-black rounded"
         ></select>
         <select

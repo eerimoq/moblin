@@ -215,7 +215,7 @@ function setPeriod(p) {
 }
 
 function setDuration(minutes) {
-  sendAction("set-duration", minutes);
+  sendRequest({ setScoreboardDuration: { minutes: parseInt(minutes) } });
 }
 
 function buildDom() {
@@ -485,18 +485,8 @@ function syncUI() {
   updateGlobalToggles();
 }
 
-function sendAction(action, value) {
-  let data;
-  if (action === "set-duration") {
-    data = { setScoreboardDuration: { minutes: value } };
-  } else if (action === "set-clock-manual") {
-    data = { setScoreboardClock: { time: value } };
-  } else if (action === "toggle-clock") {
-    data = { toggleScoreboardClock: {} };
-  } else {
-    return;
-  }
-  sendRequest(data);
+function sendToggleClock() {
+  sendRequest({ toggleScoreboardClock: {} });
 }
 
 function adj(t, k, v) {
@@ -727,7 +717,7 @@ function update() {
   // Fix: Capture clock value to prevent revert, and send manual update if focused
   if (activeInputId === "gti") {
     state.global.timer = document.getElementById("gti").value; // Update local state so it doesn't revert on echo
-    sendAction("set-clock-manual", state.global.timer);
+    sendRequest({ setScoreboardClock: { time: state.global.timer } });
   } else {
     // If not focused, we don't send clock back, we let server drive it
     // But we need to ensure we don't send "00:00" if we haven't rendered yet
@@ -753,12 +743,12 @@ window.newMatch = newMatch;
 window.resetSet = resetSet;
 window.switchSport = switchSport;
 window.switchLayout = switchLayout;
-window.sendAction = sendAction;
 window.update = update;
 window.state = state;
 window.setDuration = setDuration;
 window.setHist = setHist;
 window.liveColor = liveColor;
+window.sendToggleClock = sendToggleClock;
 
 window.addEventListener("DOMContentLoaded", async () => {
   connect();
