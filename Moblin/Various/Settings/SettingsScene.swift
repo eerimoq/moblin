@@ -2942,6 +2942,19 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
                                                    textColor: baseAwayTextColor,
                                                    backgroundColor: baseAwayBackgroundColor)
     }
+
+    func setLayout(name: String) {
+        switch name {
+        case "sideBySide":
+            layout = .sideBySide
+        case "stackHistory":
+            layout = .stackHistory
+        case "stackedInline":
+            layout = .stackedInline
+        default:
+            layout = .stacked
+        }
+    }
 }
 
 class SettingsWidgetScoreboard: Codable, ObservableObject {
@@ -3011,6 +3024,27 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
         textColorColor = textColor.color()
         primaryBackgroundColorColor = primaryBackgroundColor.color()
         secondaryBackgroundColorColor = secondaryBackgroundColor.color()
+    }
+
+    func setModularSport(sportId: String) {
+        switch sportId {
+        case "basketball":
+            sport = .basketball
+        case "generic":
+            sport = .generic2
+        case "generic sets":
+            sport = .genericSets
+        case "hockey":
+            sport = .hockey
+        case "football":
+            sport = .football
+        case "tennis":
+            sport = .tennis
+        case "volleyball":
+            sport = .volleyball
+        default:
+            break
+        }
     }
 }
 

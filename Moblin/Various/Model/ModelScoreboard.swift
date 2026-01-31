@@ -430,34 +430,8 @@ extension Model {
             let scoreboard = widget.scoreboard
             let modular = scoreboard.modular
             modular.config = config
-            switch config.sportId {
-            case "basketball":
-                scoreboard.sport = .basketball
-            case "generic":
-                scoreboard.sport = .generic2
-            case "generic sets":
-                scoreboard.sport = .genericSets
-            case "hockey":
-                scoreboard.sport = .hockey
-            case "football":
-                scoreboard.sport = .football
-            case "tennis":
-                scoreboard.sport = .tennis
-            case "volleyball":
-                scoreboard.sport = .volleyball
-            default:
-                break
-            }
-            switch config.layout {
-            case "sideBySide":
-                modular.layout = .sideBySide
-            case "stackHistory":
-                modular.layout = .stackHistory
-            case "stackedInline":
-                modular.layout = .stackedInline
-            default:
-                modular.layout = .stacked
-            }
+            scoreboard.setModularSport(sportId: config.sportId)
+            modular.setLayout(name: config.layout)
             if let showTitle = config.global.showTitle {
                 modular.showTitle = showTitle
             }
@@ -491,38 +465,16 @@ extension Model {
     func handleSportSwitch(sportId: String) {
         for widget in database.widgets where widget.type == .scoreboard {
             let scoreboard = widget.scoreboard
-            switch sportId {
-            case "basketball":
-                scoreboard.sport = .basketball
-            case "generic":
-                scoreboard.sport = .generic2
-            case "generic sets":
-                scoreboard.sport = .genericSets
-            case "hockey":
-                scoreboard.sport = .hockey
-            case "football":
-                scoreboard.sport = .football
-            case "tennis":
-                scoreboard.sport = .tennis
-            case "volleyball":
-                scoreboard.sport = .volleyball
-            default:
-                break
-            }
+            scoreboard.setModularSport(sportId: sportId)
             if let config = configs[sportId] {
                 let modular = scoreboard.modular
                 modular.config = config
-                switch config.layout {
-                case "sideBySide":
-                    modular.layout = .sideBySide
+                modular.setLayout(name: config.layout)
+                switch modular.layout {
+                case .sideBySide:
                     modular.showMoreStats = true
                     modular.showGlobalStatsBlock = true
-                case "stackHistory":
-                    modular.layout = .stackHistory
-                    modular.showMoreStats = false
-                    modular.showGlobalStatsBlock = false
                 default:
-                    modular.layout = .stacked
                     modular.showMoreStats = false
                     modular.showGlobalStatsBlock = false
                 }
