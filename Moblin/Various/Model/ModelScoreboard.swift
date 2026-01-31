@@ -12,8 +12,7 @@ private let basketballConfig = RemoteControlScoreboardMatchConfig(
         stat1Label: "TO",
         stat2: "0",
         stat2Label: "FOUL",
-        stat3: "NO BONUS",
-        stat3Label: ""
+        stat3: "NO BONUS"
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
@@ -24,7 +23,6 @@ private let basketballConfig = RemoteControlScoreboardMatchConfig(
         stat2: "0",
         stat2Label: "FOUL",
         stat3: "NO BONUS",
-        stat3Label: ""
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "Varsity Basketball",
@@ -131,11 +129,8 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
         secondaryScore: "0",
         secondaryScoreLabel: "SOG",
         stat1: "NO PP",
-        stat1Label: "",
         stat2: "NO EN",
-        stat2Label: "",
-        stat3: "NO DP",
-        stat3Label: ""
+        stat3: "NO DP"
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
@@ -145,11 +140,8 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
         secondaryScore: "0",
         secondaryScoreLabel: "SOG",
         stat1: "NO PP",
-        stat1Label: "",
         stat2: "NO EN",
-        stat2Label: "",
-        stat3: "NO DP",
-        stat3Label: ""
+        stat3: "NO DP"
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "Varsity Hockey",
