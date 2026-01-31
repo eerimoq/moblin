@@ -341,7 +341,7 @@ final class ScoreboardEffect: VideoEffect {
     ) -> some View {
         let fontSize = CGFloat(modular.fontSize)
         let height = CGFloat(modular.rowHeight)
-        let boxW = fontSize * 1.55
+        let width = fontSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 Text(team.name)
@@ -391,7 +391,7 @@ final class ScoreboardEffect: VideoEffect {
                     team.primaryScore,
                     label: nil,
                     size: fontSize,
-                    width: boxW,
+                    width: width,
                     height: height,
                     gray: false
                 )
@@ -529,8 +529,8 @@ final class ScoreboardEffect: VideoEffect {
                                   backgroundColor: Color) -> some View
     {
         let fontSize = CGFloat(modular.fontSize)
-        let h = CGFloat(modular.rowHeight)
-        let boxW = fontSize * 1.55
+        let height = CGFloat(modular.rowHeight)
+        let width = fontSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 if modular.layout == .stacked {
@@ -538,8 +538,8 @@ final class ScoreboardEffect: VideoEffect {
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
-                        width: boxW,
-                        height: h,
+                        width: width,
+                        height: height,
                         gray: true
                     )
                 }
@@ -548,16 +548,16 @@ final class ScoreboardEffect: VideoEffect {
                     .lineLimit(1)
                     .padding(.leading, 3)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: h)
+                    .frame(height: height)
                 renderPossession(show: team.possession, size: fontSize)
-                    .frame(height: h)
+                    .frame(height: height)
                 if modular.layout == .stackedInline {
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
-                        width: boxW,
-                        height: h,
+                        width: width,
+                        height: height,
                         gray: true
                     )
                 }
@@ -565,8 +565,8 @@ final class ScoreboardEffect: VideoEffect {
                     team.primaryScore,
                     label: nil,
                     size: fontSize,
-                    width: boxW,
-                    height: h,
+                    width: width,
+                    height: height,
                     gray: false
                 )
             }
@@ -575,7 +575,7 @@ final class ScoreboardEffect: VideoEffect {
                 renderSecondaryRow(
                     team: team,
                     fontSize: fontSize,
-                    h: h * 0.6,
+                    h: height * 0.6,
                     backgroundColor: backgroundColor
                 )
             }
@@ -592,33 +592,33 @@ final class ScoreboardEffect: VideoEffect {
         mirrored: Bool
     ) -> some View {
         let fontSize = CGFloat(modular.fontSize)
-        let h = CGFloat(modular.rowHeight)
-        let boxW = fontSize * 1.55
+        let height = CGFloat(modular.rowHeight)
+        let width = fontSize * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 if !mirrored {
                     renderPossession(show: team.possession, size: fontSize)
-                        .frame(height: h)
+                        .frame(height: height)
                     Text(team.name)
                         .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
                         .lineLimit(1)
                         .padding(.trailing, 4)
                         .frame(maxWidth: .infinity, alignment: .trailing)
-                        .frame(height: h)
+                        .frame(height: height)
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
-                        width: boxW,
-                        height: h,
+                        width: width,
+                        height: height,
                         gray: true
                     )
                     renderStat(
                         team.primaryScore,
                         label: nil,
                         size: fontSize,
-                        width: boxW,
-                        height: h,
+                        width: width,
+                        height: height,
                         gray: false
                     )
                 } else {
@@ -626,16 +626,16 @@ final class ScoreboardEffect: VideoEffect {
                         team.primaryScore,
                         label: nil,
                         size: fontSize,
-                        width: boxW,
-                        height: h,
+                        width: width,
+                        height: height,
                         gray: false
                     )
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
-                        width: boxW,
-                        height: h,
+                        width: width,
+                        height: height,
                         gray: true
                     )
                     Text(team.name)
@@ -643,9 +643,9 @@ final class ScoreboardEffect: VideoEffect {
                         .lineLimit(1)
                         .padding(.leading, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .frame(height: h)
+                        .frame(height: height)
                     renderPossession(show: team.possession, size: fontSize)
-                        .frame(height: h)
+                        .frame(height: height)
                 }
             }
             .background(backgroundColor)
@@ -653,7 +653,7 @@ final class ScoreboardEffect: VideoEffect {
                 renderSecondaryRow(
                     team: team,
                     fontSize: fontSize,
-                    h: h * 0.6,
+                    h: height * 0.6,
                     alignRight: !mirrored,
                     backgroundColor: backgroundColor
                 )
