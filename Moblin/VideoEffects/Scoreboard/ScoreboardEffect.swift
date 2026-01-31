@@ -345,7 +345,8 @@ final class ScoreboardEffect: VideoEffect {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 Text(team.name)
-                    .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
+                    .font(.system(size: fontSize))
+                    .bold(modular.isBold)
                     .lineLimit(1)
                     .padding(.leading, 6)
                     .padding(.trailing, 2)
@@ -398,7 +399,10 @@ final class ScoreboardEffect: VideoEffect {
             }
             .background(backgroundColor)
             if modular.showMoreStats {
-                renderMoreStats(team: team, fontSize: fontSize, height: height * 0.6)
+                renderMoreStats(team: team,
+                                fontSize: fontSize,
+                                height: height * 0.6,
+                                backgroundColor: backgroundColor)
             }
         }
         .foregroundStyle(textColor)
@@ -544,7 +548,8 @@ final class ScoreboardEffect: VideoEffect {
                     )
                 }
                 Text(team.name)
-                    .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
+                    .font(.system(size: fontSize))
+                    .bold(modular.isBold)
                     .lineLimit(1)
                     .padding(.leading, 3)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -600,7 +605,8 @@ final class ScoreboardEffect: VideoEffect {
                     renderPossession(show: team.possession, size: fontSize)
                         .frame(height: height)
                     Text(team.name)
-                        .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
+                        .font(.system(size: fontSize))
+                        .bold(modular.isBold)
                         .lineLimit(1)
                         .padding(.trailing, 4)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -639,7 +645,8 @@ final class ScoreboardEffect: VideoEffect {
                         gray: true
                     )
                     Text(team.name)
-                        .font(.system(size: fontSize, weight: modular.isBold ? .bold : .regular))
+                        .font(.system(size: fontSize))
+                        .bold(modular.isBold)
                         .lineLimit(1)
                         .padding(.leading, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -654,8 +661,8 @@ final class ScoreboardEffect: VideoEffect {
                     team: team,
                     fontSize: fontSize,
                     height: height * 0.6,
-                    alignRight: !mirrored,
-                    backgroundColor: backgroundColor
+                    backgroundColor: backgroundColor,
+                    alignRight: !mirrored
                 )
             }
         }
@@ -701,8 +708,8 @@ final class ScoreboardEffect: VideoEffect {
         team: RemoteControlScoreboardTeam,
         fontSize: CGFloat,
         height: CGFloat,
-        alignRight: Bool = false,
-        backgroundColor: Color = .black
+        backgroundColor: Color,
+        alignRight: Bool = false
     ) -> some View {
         let stats = [
             (0, team.stat1Label, team.stat1),
@@ -732,7 +739,6 @@ final class ScoreboardEffect: VideoEffect {
             }
         }
         .padding(.horizontal, 6)
-        .frame(maxWidth: .infinity)
         .frame(height: height)
         .background(
             ZStack {
@@ -761,8 +767,8 @@ final class ScoreboardEffect: VideoEffect {
     {
         ZStack {
             Text(val)
-                .font(.system(size: CGFloat(modular.fontSize) * 0.9,
-                              weight: modular.isBold ? .bold : .regular))
+                .font(.system(size: CGFloat(modular.fontSize) * 0.9))
+                .bold(modular.isBold)
                 .monospacedDigit()
                 .minimumScaleFactor(0.1)
                 .lineLimit(1)
@@ -777,8 +783,8 @@ final class ScoreboardEffect: VideoEffect {
                                   isStacked _: Bool) -> some View
     {
         Text(title)
-            .font(.system(size: CGFloat(modular.fontSize) * 0.7,
-                          weight: modular.isBold ? .bold : .regular))
+            .font(.system(size: CGFloat(modular.fontSize) * 0.7))
+            .bold(modular.isBold)
             .foregroundStyle(.white)
             .padding(.vertical, 1)
             .frame(maxWidth: .infinity)
