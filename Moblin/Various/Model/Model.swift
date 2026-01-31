@@ -1122,8 +1122,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
         updateQuickButtonStates()
-        setQuickButtonState(type: .blurFaces, isOn: database.face.showBlur)
-        setQuickButtonState(type: .privacy, isOn: database.face.showBlurBackground)
+        setQuickButtonState(type: .blurFaces, isOn: database.face.blurFaces)
+        setQuickButtonState(type: .blurText, isOn: database.face.blurText)
+        setQuickButtonState(type: .privacy, isOn: database.face.blurBackground)
         setQuickButtonState(type: .moblinInMouth, isOn: database.face.showMoblin)
         setQuickButtonState(type: .beauty, isOn: database.beauty.enabled)
         updateLutsButtonState()
@@ -3094,13 +3095,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleBlurFaces() {
-        database.face.showBlur.toggle()
+        database.face.blurFaces.toggle()
         toggleFilterQuickButton(type: .blurFaces)
         updateFaceFilterSettings()
     }
 
+    func toggleBlurText() {
+        database.face.blurText.toggle()
+        toggleFilterQuickButton(type: .blurText)
+        updateFaceFilterSettings()
+    }
+
     func togglePrivacy() {
-        database.face.showBlurBackground.toggle()
+        database.face.blurBackground.toggle()
         toggleFilterQuickButton(type: .privacy)
         updateFaceFilterSettings()
     }

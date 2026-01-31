@@ -34,7 +34,7 @@ struct VideoEffectInfo {
     }
 }
 
-enum VideoEffectFaceDetectionsMode {
+enum VideoEffectDetectionsMode {
     case off
     case now(UUID?)
     case interval(UUID?, Double)
@@ -43,7 +43,11 @@ enum VideoEffectFaceDetectionsMode {
 class VideoEffect: NSObject {
     var effects: [VideoEffect] = []
 
-    func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
+    func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
+        return .off
+    }
+
+    func needsTextDetections(_: Double) -> VideoEffectDetectionsMode {
         return .off
     }
 

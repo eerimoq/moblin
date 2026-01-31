@@ -53,7 +53,7 @@ final class BeautyEffect: VideoEffect {
         return true
     }
 
-    override func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
+    override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
         if shapeStrength > 0 {
             return .now(nil)
         } else {

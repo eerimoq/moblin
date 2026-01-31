@@ -366,6 +366,10 @@ struct QuickButtonsInnerView: View {
         model.toggleBlurFaces()
     }
 
+    private func blurTextAction() {
+        model.toggleBlurText()
+    }
+
     private func privacyAction() {
         model.togglePrivacy()
     }
@@ -840,6 +844,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             blurFacesAction()
+                        }
+                    case .blurText:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            blurTextAction()
                         }
                     case .moblinInMouth:
                         ZStack {

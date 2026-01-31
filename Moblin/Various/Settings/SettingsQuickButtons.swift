@@ -55,6 +55,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case live = "Live"
     case navigation = "Navigation"
     case blurFaces = "Blur faces"
+    case blurText = "Blur text"
     case privacy = "Privacy"
     case moblinInMouth = "Moblin in mouth"
     case glasses = "Glasses"
