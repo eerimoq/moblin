@@ -342,8 +342,8 @@ extension Model {
                 controls: [:]
             )
         }
-        if let scoreboard {
-            switch scoreboard.modular.layout {
+        if let modular = scoreboard?.modular {
+            switch modular.layout {
             case .sideBySide:
                 liveConfig.layout = "sideBySide"
             case .stackHistory:
@@ -353,26 +353,26 @@ extension Model {
             default:
                 liveConfig.layout = "stacked"
             }
-            liveConfig.global.showTitle = scoreboard.modular.showTitle
-            liveConfig.global.showStats = scoreboard.modular.showGlobalStatsBlock
-            liveConfig.global.showSecondaryRow = scoreboard.modular.showMoreStats
-            liveConfig.team1.name = scoreboard.modular.home.name
-            liveConfig.team2.name = scoreboard.modular.away.name
-            liveConfig.global.title = scoreboard.modular.title
-            if !scoreboard.modular.period.isEmpty {
-                liveConfig.global.period = scoreboard.modular.period
+            liveConfig.global.showTitle = modular.showTitle
+            liveConfig.global.showStats = modular.showGlobalStatsBlock
+            liveConfig.global.showSecondaryRow = modular.showMoreStats
+            liveConfig.global.title = modular.title
+            liveConfig.global.timer = modular.clock.format()
+            liveConfig.global.timerDirection = (modular.clock.direction == .down) ? "down" : "up"
+            liveConfig.global.duration = modular.clock.maximum
+            if !modular.period.isEmpty {
+                liveConfig.global.period = modular.period
             }
+            liveConfig.team1.name = modular.home.name
+            liveConfig.team2.name = modular.away.name
+            liveConfig.team1.textColor = modular.home.textColor.toHex()
+            liveConfig.team2.textColor = modular.away.textColor.toHex()
+            liveConfig.team1.bgColor = modular.home.backgroundColor.toHex()
+            liveConfig.team2.bgColor = modular.away.backgroundColor.toHex()
             if liveConfig.global.scoringMode != "tennis" {
-                liveConfig.team1.primaryScore = String(scoreboard.modular.score.home)
-                liveConfig.team2.primaryScore = String(scoreboard.modular.score.away)
+                liveConfig.team1.primaryScore = String(modular.score.home)
+                liveConfig.team2.primaryScore = String(modular.score.away)
             }
-            liveConfig.global.timer = scoreboard.modular.clock.format()
-            liveConfig.global.timerDirection = (scoreboard.modular.clock.direction == .down) ? "down" : "up"
-            liveConfig.global.duration = scoreboard.modular.clock.maximum
-            liveConfig.team1.textColor = scoreboard.modular.home.textColor.toHex()
-            liveConfig.team1.bgColor = scoreboard.modular.home.backgroundColor.toHex()
-            liveConfig.team2.textColor = scoreboard.modular.away.textColor.toHex()
-            liveConfig.team2.bgColor = scoreboard.modular.away.backgroundColor.toHex()
         }
         return liveConfig
     }
