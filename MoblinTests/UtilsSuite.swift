@@ -3,7 +3,7 @@ import Foundation
 import Testing
 
 struct UtilsSuite {
-    @Test
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func fullDuration() {
         #expect(formatFullDuration(seconds: 0) == "0 seconds")
         #expect(formatFullDuration(seconds: 1) == "1 second")

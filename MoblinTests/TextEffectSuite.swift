@@ -3,13 +3,13 @@ import AVFoundation
 import Testing
 
 struct TextEffectSuite {
-    @Test
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func time() {
         let lines = format(format: "{time}", stats: createStats())
         #expect(lines == createLine(data: .text("06:26:06")))
     }
 
-    @Test
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func date() {
         let lines = format(format: "{date}", stats: createStats())
         #expect(lines == createLine(data: .text("2024-08-11")))
