@@ -385,20 +385,22 @@ function switchLayout(event) {
   update();
 }
 
-function tog(key) {
+function toggleButtonState(key) {
   state.global[key] = !state.global[key];
   updateGlobalToggles();
   update();
 }
 
 function buttonClassName(enabled) {
-    return enabled ? "btn btn-active" : "btn";
+  return enabled ? "btn btn-active" : "btn";
 }
 
 function updateGlobalToggles() {
   document.getElementById("btn-show-title").className = buttonClassName(state.global.showTitle);
-  document.getElementById("btn-info-box").className = buttonClassName(state.global.showStats)
-  document.getElementById("btn-show-2nd").className = buttonClassName(state.global.showSecondaryRow)
+  document.getElementById("btn-info-box").className = buttonClassName(state.global.showStats);
+  document.getElementById("btn-more-stats").className = buttonClassName(
+    state.global.showSecondaryRow,
+  );
 }
 
 function liveColor(n, k, v) {
@@ -732,13 +734,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnClick("next-set", resetSet);
   addOnClick("new-match", newMatch);
   addOnClick("btn-show-title", () => {
-    tog("showTitle");
+    toggleButtonState("showTitle");
   });
-  addOnClick("btn-show-2nd", () => {
-    tog("showSecondaryRow");
+  addOnClick("btn-more-stats", () => {
+    toggleButtonState("showSecondaryRow");
   });
   addOnClick("btn-info-box", () => {
-    tog("showStats");
+    toggleButtonState("showStats");
   });
   addOnBlur("info-box", update);
   addOnBlur("title", update);
