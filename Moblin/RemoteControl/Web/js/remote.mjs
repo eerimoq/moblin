@@ -150,32 +150,31 @@ function render() {
     currentsportId = state.sportId;
     rangeCache.min = state.global.minSetScore || 0;
     rangeCache.max = state.global.maxSetScore || 30;
-    buildHistoryGrid();
+    buildHistoricScores();
     buildDom();
   } else {
     updateDomValues();
   }
 }
 
-function buildHistoryGrid() {
-  const histGrid = document.getElementById("history-grid");
+function buildHistoricScores() {
   let histHtml = "";
   for (let i = 1; i <= 5; i++) {
     histHtml += `<div class="flex flex-col gap-1">
             <div id="h-lbl-${i}" onclick="window.setPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">SET ${i}</div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t1-${i}" onchange="window.setHist(1,${i},this.value)">${genOpts()}</select></div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t2-${i}" onchange="window.setHist(2,${i},this.value)">${genOpts()}</select></div>
+            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t1-${i}" onchange="window.setHist(1,${i},this.value)">${historicScoreOptions()}</select></div>
+            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t2-${i}" onchange="window.setHist(2,${i},this.value)">${historicScoreOptions()}</select></div>
         </div>`;
   }
-  histGrid.innerHTML = histHtml;
+  document.getElementById("history-grid").innerHTML = histHtml;
 }
 
-function genOpts() {
-  let s = '<option value="">-</option>';
+function historicScoreOptions() {
+  let options = '<option value="">-</option>';
   for (let i = 0; i <= rangeCache.max; i++) {
-    s += `<option value="${i}">${i}</option>`;
+    options += `<option value="${i}">${i}</option>`;
   }
-  return s;
+  return options;
 }
 
 function setHist(team, idx, val) {
