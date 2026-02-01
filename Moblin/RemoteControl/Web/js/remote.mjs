@@ -411,19 +411,11 @@ function tog(key) {
 
 function updateGlobalToggles() {
   const bTitle = document.getElementById("btn-show-title");
-  if (bTitle) {
-    bTitle.className = state.global.showTitle ? "btn btn-active" : "btn";
-  }
-
+  bTitle.className = state.global.showTitle ? "btn btn-active" : "btn";
   const bStats = document.getElementById("btn-show-stats");
-  if (bStats) {
-    bStats.className = state.global.showStats ? "btn btn-active" : "btn";
-  }
-
+  bStats.className = state.global.showStats ? "btn btn-active" : "btn";
   const b2nd = document.getElementById("btn-show-2nd");
-  if (b2nd) {
-    b2nd.className = state.global.showSecondaryRow ? "btn btn-active" : "btn";
-  }
+  b2nd.className = state.global.showSecondaryRow ? "btn btn-active" : "btn";
 }
 
 function liveColor(n, k, v) {
@@ -762,6 +754,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnClick("new-match", newMatch);
   addOnClick("btn-show-title", () => {
     tog("showTitle");
+  });
+  addOnClick("btn-show-2nd", () => {
+    tog("showSecondaryRow");
   });
   connect();
 });
