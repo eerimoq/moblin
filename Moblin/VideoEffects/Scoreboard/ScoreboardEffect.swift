@@ -264,9 +264,7 @@ private struct ModularScoreboardView: View {
                     .padding(.leading, 6)
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: height)
                 renderPossession(show: team.possession, size: fontSize)
-                    .frame(height: height)
                 if histCount > 0 {
                     ForEach(1 ... histCount, id: \.self) { i in
                         let val = getHistoricScore(team: team, indexPlusOne: i) ?? ""
@@ -282,7 +280,6 @@ private struct ModularScoreboardView: View {
                                 label: nil,
                                 size: fontSize * 0.9,
                                 width: histW,
-                                height: height,
                                 gray: true,
                                 weight: weight
                             )
@@ -292,12 +289,11 @@ private struct ModularScoreboardView: View {
                                 label: nil,
                                 size: fontSize * 0.9,
                                 width: histW,
-                                height: height,
                                 gray: true,
                                 weight: .medium
                             )
                         } else {
-                            Color.clear.frame(width: histW, height: height)
+                            Color.clear.frame(width: histW)
                         }
                     }
                 }
@@ -306,10 +302,10 @@ private struct ModularScoreboardView: View {
                     label: nil,
                     size: fontSize,
                     width: width,
-                    height: height,
                     gray: false
                 )
             }
+            .frame(height: height)
             .background(backgroundColor)
             if modular.showMoreStats {
                 renderMoreStats(team: team,
@@ -438,7 +434,6 @@ private struct ModularScoreboardView: View {
                         label: team.secondaryScoreLabel,
                         size: fontSize,
                         width: width,
-                        height: height,
                         gray: true
                     )
                 }
@@ -448,16 +443,13 @@ private struct ModularScoreboardView: View {
                     .lineLimit(1)
                     .padding(.leading, 3)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: height)
                 renderPossession(show: team.possession, size: fontSize)
-                    .frame(height: height)
                 if modular.layout == .stackedInline {
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
                         width: width,
-                        height: height,
                         gray: true
                     )
                 }
@@ -466,10 +458,10 @@ private struct ModularScoreboardView: View {
                     label: nil,
                     size: fontSize,
                     width: width,
-                    height: height,
                     gray: false
                 )
             }
+            .frame(height: height)
             .background(backgroundColor)
             if modular.showMoreStats {
                 renderMoreStats(team: team,
@@ -496,20 +488,17 @@ private struct ModularScoreboardView: View {
             HStack(spacing: 0) {
                 if !mirrored {
                     renderPossession(show: team.possession, size: fontSize)
-                        .frame(height: height)
                     Text(team.name)
                         .font(.system(size: fontSize))
                         .bold(modular.isBold)
                         .lineLimit(1)
                         .padding(.trailing, 4)
                         .frame(maxWidth: .infinity, alignment: .trailing)
-                        .frame(height: height)
                     renderStat(
                         team.secondaryScore,
                         label: team.secondaryScoreLabel,
                         size: fontSize,
                         width: width,
-                        height: height,
                         gray: true
                     )
                     renderStat(
@@ -517,7 +506,6 @@ private struct ModularScoreboardView: View {
                         label: nil,
                         size: fontSize,
                         width: width,
-                        height: height,
                         gray: false
                     )
                 } else {
@@ -526,7 +514,6 @@ private struct ModularScoreboardView: View {
                         label: nil,
                         size: fontSize,
                         width: width,
-                        height: height,
                         gray: false
                     )
                     renderStat(
@@ -534,7 +521,6 @@ private struct ModularScoreboardView: View {
                         label: team.secondaryScoreLabel,
                         size: fontSize,
                         width: width,
-                        height: height,
                         gray: true
                     )
                     Text(team.name)
@@ -543,11 +529,10 @@ private struct ModularScoreboardView: View {
                         .lineLimit(1)
                         .padding(.leading, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .frame(height: height)
                     renderPossession(show: team.possession, size: fontSize)
-                        .frame(height: height)
                 }
             }
+            .frame(height: height)
             .background(backgroundColor)
             if modular.showMoreStats {
                 renderMoreStats(team: team,
@@ -566,16 +551,13 @@ private struct ModularScoreboardView: View {
         label: String?,
         size: CGFloat,
         width: CGFloat,
-        height: CGFloat,
         gray: Bool,
         weight: Font.Weight = .black
     ) -> some View {
         if !val.isEmpty {
             ZStack {
                 if gray {
-                    Color.black
-                        .opacity(0.25)
-                        .frame(width: width, height: height)
+                    Color.black.opacity(0.25)
                 }
                 if let label, !label.isEmpty {
                     VStack(spacing: -2) {
@@ -590,7 +572,7 @@ private struct ModularScoreboardView: View {
                         .font(.system(size: size, weight: weight))
                 }
             }
-            .frame(width: width, height: height)
+            .frame(width: width)
         }
     }
 
