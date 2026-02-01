@@ -687,6 +687,10 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     func minutesAndSeconds() -> (Int, Int) {
         return clockAsMinutesAndSeconds(clock: timer)
     }
+
+    func periodFull() -> String {
+        return "\(periodLabel) \(period)"
+    }
 }
 
 struct RemoteControlScoreboardMatchConfig: Codable {

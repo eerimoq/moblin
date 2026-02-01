@@ -92,7 +92,7 @@ struct ScoreboardEffectPadelView: View {
                 }
                 Spacer()
             }
-            .padding([.leading, .trailing], 3)
+            .padding([.horizontal], 3)
             .padding([.top], 3)
             .background(primaryBackgroundColor)
             PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)

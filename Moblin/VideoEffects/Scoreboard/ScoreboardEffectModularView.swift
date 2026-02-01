@@ -1,20 +1,37 @@
 import SwiftUI
 
+private func getHistoricScore(team: RemoteControlScoreboardTeam, indexPlusOne: Int) -> String? {
+    switch indexPlusOne {
+    case 1:
+        return team.secondaryScore1
+    case 2:
+        return team.secondaryScore2
+    case 3:
+        return team.secondaryScore3
+    case 4:
+        return team.secondaryScore4
+    case 5:
+        return team.secondaryScore5
+    default:
+        return nil
+    }
+}
+
+private func calculateMaxHistory(config: RemoteControlScoreboardMatchConfig) -> Int {
+    var maxHistory = 0
+    for indexPlusOne in 1 ... 5 {
+        let homeHas = getHistoricScore(team: config.team1, indexPlusOne: indexPlusOne) != nil
+        let awayHas = getHistoricScore(team: config.team2, indexPlusOne: indexPlusOne) != nil
+        if homeHas || awayHas {
+            maxHistory = indexPlusOne
+        }
+    }
+    return maxHistory
+}
+
 struct ScoreboardEffectModularView: View {
     let modular: SettingsWidgetModularScoreboard
     let config: RemoteControlScoreboardMatchConfig
-
-    private func calculateMaxHistory(config: RemoteControlScoreboardMatchConfig) -> Int {
-        var maxHistory = 0
-        for indexPlusOne in 1 ... 5 {
-            let homeHas = getHistoricScore(team: config.team1, indexPlusOne: indexPlusOne) != nil
-            let awayHas = getHistoricScore(team: config.team2, indexPlusOne: indexPlusOne) != nil
-            if homeHas || awayHas {
-                maxHistory = indexPlusOne
-            }
-        }
-        return maxHistory
-    }
 
     @ViewBuilder
     private func renderStackHistory(
@@ -23,13 +40,13 @@ struct ScoreboardEffectModularView: View {
     ) -> some View {
         let fontSize = modular.fontSize()
         let rowH = CGFloat(modular.rowHeight)
-        let teamRowFullH = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
-        let totalH = teamRowFullH * 2
-        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
+        let teamRowFullHeight = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
+        let totalHeight = teamRowFullHeight * 2
+        let periodFull = config.global.periodFull()
         let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
             !$0.isEmpty
         }
-        let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
+        let subH = activeStats.isEmpty ? 0 : totalHeight / CGFloat(activeStats.count)
         let histW = fontSize * 1.5
         let maxHistory = calculateMaxHistory(config: config)
         let finalWidth = CGFloat(modular.width) + CGFloat(maxHistory) * histW
@@ -58,7 +75,7 @@ struct ScoreboardEffectModularView: View {
                 )
             }
             .frame(width: finalWidth)
-            renderInfoBox(stats: activeStats, height: subH, totalHeight: totalH, modular: modular)
+            renderInfoBox(stats: activeStats, height: subH, totalHeight: totalHeight, modular: modular)
         }
     }
 
@@ -139,35 +156,18 @@ struct ScoreboardEffectModularView: View {
         .foregroundStyle(textColor)
     }
 
-    private func getHistoricScore(team: RemoteControlScoreboardTeam, indexPlusOne: Int) -> String? {
-        switch indexPlusOne {
-        case 1:
-            return team.secondaryScore1
-        case 2:
-            return team.secondaryScore2
-        case 3:
-            return team.secondaryScore3
-        case 4:
-            return team.secondaryScore4
-        case 5:
-            return team.secondaryScore5
-        default:
-            return nil
-        }
-    }
-
     @ViewBuilder
     private func renderStacked(modular: SettingsWidgetModularScoreboard,
                                config: RemoteControlScoreboardMatchConfig) -> some View
     {
         let rowH = CGFloat(modular.rowHeight)
-        let teamRowFullH = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
-        let totalH = teamRowFullH * 2
-        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
+        let teamRowFullHeight = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
+        let totalHeight = teamRowFullHeight * 2
+        let periodFull = config.global.periodFull()
         let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
             !$0.isEmpty
         }
-        let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
+        let subH = activeStats.isEmpty ? 0 : totalHeight / CGFloat(activeStats.count)
         renderTitle(title: config.global.title, modular: modular)
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 0) {
@@ -185,7 +185,7 @@ struct ScoreboardEffectModularView: View {
                 )
             }
             .frame(width: CGFloat(modular.width))
-            renderInfoBox(stats: activeStats, height: subH, totalHeight: totalH, modular: modular)
+            renderInfoBox(stats: activeStats, height: subH, totalHeight: totalHeight, modular: modular)
         }
     }
 
@@ -196,8 +196,8 @@ struct ScoreboardEffectModularView: View {
     ) -> some View {
         let fontSize = modular.fontSize()
         let height = CGFloat(modular.rowHeight)
-        let teamRowFullH = height + (modular.showMoreStats ? height * 0.6 : 0)
-        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
+        let teamRowFullHeight = height + (modular.showMoreStats ? height * 0.6 : 0)
+        let periodFull = config.global.periodFull()
         renderTitle(title: config.global.title, modular: modular)
         HStack(spacing: 0) {
             renderSideBySideHalf(
@@ -219,11 +219,11 @@ struct ScoreboardEffectModularView: View {
                             .font(.system(size: fontSize * 0.9, weight: .black))
                             .monospacedDigit()
                     }
-                    .frame(width: fontSize * 3.5, height: teamRowFullH)
+                    .frame(width: fontSize * 3.5, height: teamRowFullHeight)
                 } else {
                     Text("-")
                         .font(.system(size: fontSize, weight: .black))
-                        .frame(width: fontSize * 0.8, height: teamRowFullH)
+                        .frame(width: fontSize * 0.8, height: teamRowFullHeight)
                 }
             }
             .background(.black)
