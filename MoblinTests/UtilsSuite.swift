@@ -17,6 +17,17 @@ struct UtilsSuite {
         #expect(formatFullDuration(seconds: 90 * 86400) == "90 days")
     }
 
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    func pace() {
+        #expect(formatPace(speed: 0) == "- min/km")
+        #expect(formatPace(speed: 1) == "16:40 min/km")
+        #expect(formatPace(speed: 3) == "5:33 min/km")
+        #expect(formatPace(speed: 5) == "3:20 min/km")
+        #expect(formatPace(speed: 10) == "1:40 min/km")
+        #expect(formatPace(speed: 16.66) == "1:00 min/km")
+        #expect(formatPace(speed: 16.667) == "0:59 min/km")
+    }
+
     @Test
     func uuidAddEmpty() throws {
         let original = try #require(UUID(uuidString: "00000000-1111-2222-3333-000000000000"))
