@@ -81,116 +81,14 @@ private func padelScoreboardSettingsToEffect(_ scoreboard: SettingsWidgetPadelSc
     return PadelScoreboard(home: home, away: away, score: score)
 }
 
-final class ScoreboardEffect: VideoEffect {
-    private var scoreboardImage: CIImage?
-    private var sceneWidget: SettingsSceneWidget?
+private struct GenericScoreboardView: View {
+    let textColor: Color
+    let primaryBackgroundColor: Color
+    let secondaryBackgroundColor: Color
+    @ObservedObject var generic: SettingsWidgetGenericScoreboard
 
-    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        processorPipelineQueue.async {
-            self.sceneWidget = sceneWidget
-        }
-    }
-
-    @MainActor
-    func update(scoreboard: SettingsWidgetScoreboard,
-                config: RemoteControlScoreboardMatchConfig,
-                players: [SettingsWidgetScoreboardPlayer])
-    {
-        switch scoreboard.sport {
-        case .padel:
-            updatePadel(textColor: scoreboard.textColorColor,
-                        primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
-                        secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
-                        padel: scoreboard.padel,
-                        players: players)
-        case .generic:
-            updateGeneric(textColor: scoreboard.textColorColor,
-                          primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
-                          secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
-                          generic: scoreboard.generic)
-        default:
-            updateModular(modular: scoreboard.modular, config: config)
-        }
-    }
-
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        guard let scoreboardImage, let sceneWidget else {
-            return image
-        }
-        let scale = image.extent.size.maximum() / 1920
-        return scoreboardImage
-            .scaled(x: scale, y: scale)
-            .move(sceneWidget.layout, image.extent.size)
-            .cropped(to: image.extent)
-            .composited(over: image)
-    }
-
-    private func setScoreboardImage(image: CIImage?) {
-        processorPipelineQueue.async {
-            self.scoreboardImage = image
-        }
-    }
-
-    @MainActor
-    private func updatePadel(textColor: Color,
-                             primaryBackgroundColor: Color,
-                             secondaryBackgroundColor: Color,
-                             padel: SettingsWidgetPadelScoreboard,
-                             players: [SettingsWidgetScoreboardPlayer])
-    {
-        let scoreboard = padelScoreboardSettingsToEffect(padel, players)
-        let scoreBoard = VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .center, spacing: 18) {
-                VStack(alignment: .leading) {
-                    VStack(alignment: .leading) {
-                        Spacer(minLength: 0)
-                        ForEach(scoreboard.home.players) { player in
-                            Text(player.name.uppercased())
-                        }
-                        Spacer(minLength: 0)
-                    }
-                    VStack(alignment: .leading) {
-                        Spacer(minLength: 0)
-                        ForEach(scoreboard.away.players) { player in
-                            Text(player.name.uppercased())
-                        }
-                        Spacer(minLength: 0)
-                    }
-                }
-                .font(.system(size: 25))
-                ForEach(scoreboard.score) { score in
-                    VStack {
-                        TeamScoreView(score: score.home)
-                            .bold(score.isHomeWin())
-                        TeamScoreView(score: score.away)
-                            .bold(score.isAwayWin())
-                    }
-                    .frame(width: 28)
-                    .font(.system(size: 45))
-                }
-                Spacer()
-            }
-            .padding([.leading, .trailing], 3)
-            .padding([.top], 3)
-            .background(primaryBackgroundColor)
-            PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 5))
-        .foregroundStyle(textColor)
-        let renderer = ImageRenderer(content: scoreBoard)
-        guard let image = renderer.uiImage else {
-            return
-        }
-        setScoreboardImage(image: CIImage(image: image))
-    }
-
-    @MainActor
-    private func updateGeneric(textColor: Color,
-                               primaryBackgroundColor: Color,
-                               secondaryBackgroundColor: Color,
-                               generic: SettingsWidgetGenericScoreboard)
-    {
-        let scoreBoard = VStack(alignment: .leading, spacing: 0) {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text(generic.title)
                 Spacer()
@@ -228,30 +126,62 @@ final class ScoreboardEffect: VideoEffect {
         }
         .clipShape(RoundedRectangle(cornerRadius: 5))
         .foregroundStyle(textColor)
-        let renderer = ImageRenderer(content: scoreBoard)
-        guard let image = renderer.uiImage else {
-            return
-        }
-        setScoreboardImage(image: CIImage(image: image))
     }
+}
 
-    @MainActor
-    private func updateModular(
-        modular: SettingsWidgetModularScoreboard,
-        config: RemoteControlScoreboardMatchConfig
-    ) {
-        let content = VStack(alignment: .center, spacing: 0) {
-            switch modular.layout {
-            case .sideBySide:
-                renderSideBySide(modular: modular, config: config)
-            case .stackHistory:
-                renderStackHistory(modular: modular, config: config)
-            default:
-                renderStacked(modular: modular, config: config)
+private struct PadelScoreboardView: View {
+    let textColor: Color
+    let primaryBackgroundColor: Color
+    let secondaryBackgroundColor: Color
+    let padel: SettingsWidgetPadelScoreboard
+    let players: [SettingsWidgetScoreboardPlayer]
+
+    var body: some View {
+        let scoreboard = padelScoreboardSettingsToEffect(padel, players)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .center, spacing: 18) {
+                VStack(alignment: .leading) {
+                    VStack(alignment: .leading) {
+                        Spacer(minLength: 0)
+                        ForEach(scoreboard.home.players) { player in
+                            Text(player.name.uppercased())
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    VStack(alignment: .leading) {
+                        Spacer(minLength: 0)
+                        ForEach(scoreboard.away.players) { player in
+                            Text(player.name.uppercased())
+                        }
+                        Spacer(minLength: 0)
+                    }
+                }
+                .font(.system(size: 25))
+                ForEach(scoreboard.score) { score in
+                    VStack {
+                        TeamScoreView(score: score.home)
+                            .bold(score.isHomeWin())
+                        TeamScoreView(score: score.away)
+                            .bold(score.isAwayWin())
+                    }
+                    .frame(width: 28)
+                    .font(.system(size: 45))
+                }
+                Spacer()
             }
+            .padding([.leading, .trailing], 3)
+            .padding([.top], 3)
+            .background(primaryBackgroundColor)
+            PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }
-        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .foregroundStyle(textColor)
     }
+}
+
+private struct ModularScoreboardView: View {
+    let modular: SettingsWidgetModularScoreboard
+    let config: RemoteControlScoreboardMatchConfig
 
     private func calculateMaxHistory(config: RemoteControlScoreboardMatchConfig) -> Int {
         var maxHistory = 0
@@ -673,7 +603,7 @@ final class ScoreboardEffect: VideoEffect {
                         .opacity(0.25)
                         .frame(width: width, height: height)
                 }
-                if let label = label, !label.isEmpty {
+                if let label, !label.isEmpty {
                     VStack(spacing: -2) {
                         Text(label)
                             .font(.system(size: size * 0.35, weight: .bold))
@@ -766,12 +696,114 @@ final class ScoreboardEffect: VideoEffect {
     }
 
     private func renderTitleBlock(title: String, modular: SettingsWidgetModularScoreboard) -> some View {
-        Text(title)
-            .font(.system(size: modular.fontSize() * 0.7))
-            .bold(modular.isBold)
-            .foregroundStyle(.white)
-            .padding(.vertical, 1)
-            .frame(maxWidth: .infinity)
-            .background(.black)
+        HCenter {
+            Text(title)
+                .font(.system(size: modular.fontSize() * 0.7))
+                .bold(modular.isBold)
+                .foregroundStyle(.white)
+                .padding(.vertical, 1)
+        }
+        .background(.black)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            switch modular.layout {
+            case .sideBySide:
+                renderSideBySide(modular: modular, config: config)
+            case .stackHistory:
+                renderStackHistory(modular: modular, config: config)
+            default:
+                renderStacked(modular: modular, config: config)
+            }
+        }
+    }
+}
+
+final class ScoreboardEffect: VideoEffect {
+    private var scoreboardImage: CIImage?
+    private var sceneWidget: SettingsSceneWidget?
+
+    func setSceneWidget(sceneWidget: SettingsSceneWidget) {
+        processorPipelineQueue.async {
+            self.sceneWidget = sceneWidget
+        }
+    }
+
+    @MainActor
+    func update(scoreboard: SettingsWidgetScoreboard,
+                config: RemoteControlScoreboardMatchConfig,
+                players: [SettingsWidgetScoreboardPlayer])
+    {
+        switch scoreboard.sport {
+        case .generic:
+            updateGeneric(textColor: scoreboard.textColorColor,
+                          primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
+                          secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
+                          generic: scoreboard.generic)
+        case .padel:
+            updatePadel(textColor: scoreboard.textColorColor,
+                        primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
+                        secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
+                        padel: scoreboard.padel,
+                        players: players)
+        default:
+            updateModular(modular: scoreboard.modular, config: config)
+        }
+    }
+
+    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
+        guard let scoreboardImage, let sceneWidget else {
+            return image
+        }
+        let scale = image.extent.size.maximum() / 1920
+        return scoreboardImage
+            .scaled(x: scale, y: scale)
+            .move(sceneWidget.layout, image.extent.size)
+            .cropped(to: image.extent)
+            .composited(over: image)
+    }
+
+    private func setScoreboardImage(image: CIImage?) {
+        processorPipelineQueue.async {
+            self.scoreboardImage = image
+        }
+    }
+
+    @MainActor
+    private func updateGeneric(textColor: Color,
+                               primaryBackgroundColor: Color,
+                               secondaryBackgroundColor: Color,
+                               generic: SettingsWidgetGenericScoreboard)
+    {
+        let scoreboard = GenericScoreboardView(textColor: textColor,
+                                               primaryBackgroundColor: primaryBackgroundColor,
+                                               secondaryBackgroundColor: secondaryBackgroundColor,
+                                               generic: generic)
+        setScoreboardImage(image: ImageRenderer(content: scoreboard).ciImage())
+    }
+
+    @MainActor
+    private func updatePadel(textColor: Color,
+                             primaryBackgroundColor: Color,
+                             secondaryBackgroundColor: Color,
+                             padel: SettingsWidgetPadelScoreboard,
+                             players: [SettingsWidgetScoreboardPlayer])
+    {
+        let scoreboard = PadelScoreboardView(textColor: textColor,
+                                             primaryBackgroundColor: primaryBackgroundColor,
+                                             secondaryBackgroundColor: secondaryBackgroundColor,
+                                             padel: padel,
+                                             players: players)
+        setScoreboardImage(image: ImageRenderer(content: scoreboard).ciImage())
+    }
+
+    @MainActor
+    private func updateModular(
+        modular: SettingsWidgetModularScoreboard,
+        config: RemoteControlScoreboardMatchConfig
+    ) {
+        let scoreboard = ModularScoreboardView(modular: modular, config: config)
+        setScoreboardImage(image: ImageRenderer(content: scoreboard).ciImage())
     }
 }
