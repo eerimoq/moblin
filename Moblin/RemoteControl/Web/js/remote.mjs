@@ -18,20 +18,6 @@ const CONTROL_ORDER = [
   "possession",
 ];
 
-document.addEventListener("focusin", function (e) {
-  activeInputId = e.target.id;
-});
-document.addEventListener("focusout", function () {
-  activeInputId = null;
-});
-
-const durSel = document.getElementById("dur-sel");
-let durHtml = "";
-for (let i = 1; i <= 120; i++) {
-  durHtml += `<option value=${i}>${i} min</option>`;
-}
-durSel.innerHTML = durHtml;
-
 function updateStatus(text, colorClass) {
   const el = document.getElementById("stat");
   el.innerText = text;
@@ -744,6 +730,12 @@ window.setHist = setHist;
 window.liveColor = liveColor;
 
 window.addEventListener("DOMContentLoaded", async () => {
+  const durSel = document.getElementById("dur-sel");
+  let durHtml = "";
+  for (let i = 1; i <= 120; i++) {
+    durHtml += `<option value=${i}>${i} min</option>`;
+  }
+  durSel.innerHTML = durHtml;
   addOnChange("dur-sel", setDuration);
   addOnChange("gtd", setClockDirection);
   addOnChange("layout-selector", switchLayout);
@@ -765,4 +757,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnBlur("gti", update);
   addOnBlur("gp", update);
   connect();
+});
+
+document.addEventListener("focusin", function (e) {
+  activeInputId = e.target.id;
+});
+
+document.addEventListener("focusout", function () {
+  activeInputId = null;
 });
