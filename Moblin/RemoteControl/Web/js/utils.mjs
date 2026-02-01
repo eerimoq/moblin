@@ -21,6 +21,10 @@ export function addOnClick(elementId, func) {
   document.getElementById(elementId).addEventListener("click", func);
 }
 
+export function addOnBlur(elementId, func) {
+  document.getElementById(elementId).addEventListener("blur", func);
+}
+
 export function websocketUrl() {
   return `ws://${window.location.hostname}:${websocketPort}`;
 }

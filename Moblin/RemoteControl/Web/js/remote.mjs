@@ -1,4 +1,4 @@
-import { addOnChange, addOnClick, websocketUrl } from "./utils.mjs";
+import { addOnChange, addOnClick, addOnBlur, websocketUrl } from "./utils.mjs";
 
 let ws = null;
 let state = null;
@@ -738,7 +738,6 @@ window.setPeriod = setPeriod;
 window.adj = adj;
 window.toggleTeam = toggleTeam;
 window.cycle = cycle;
-window.tog = tog;
 window.switchSport = switchSport;
 window.update = update;
 window.state = state;
@@ -758,5 +757,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnClick("btn-show-2nd", () => {
     tog("showSecondaryRow");
   });
+  addOnClick("btn-show-stats", () => {
+    tog("showStats");
+  });
+  addOnBlur("gi", update);
   connect();
 });
