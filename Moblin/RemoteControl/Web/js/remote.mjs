@@ -763,5 +763,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnBlur("gi", update);
   addOnBlur("gt", update);
   addOnBlur("gti", update);
+  addOnBlur("gp", update);
   connect();
 });
