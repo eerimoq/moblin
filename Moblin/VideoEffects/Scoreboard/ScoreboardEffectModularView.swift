@@ -38,15 +38,10 @@ struct ScoreboardEffectModularView: View {
         modular: SettingsWidgetModularScoreboard,
         config: RemoteControlScoreboardMatchConfig
     ) -> some View {
-        let fontSize = modular.fontSize()
-        let rowH = CGFloat(modular.rowHeight)
-        let teamRowFullHeight = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
-        let totalHeight = teamRowFullHeight * 2
-        let histWidth = fontSize * 1.5
-        let maxHistory = calculateMaxHistory(config: config)
-        let finalWidth = CGFloat(modular.width) + CGFloat(maxHistory) * histWidth
         renderTitle(title: config.global.title, modular: modular)
         HStack(alignment: .top, spacing: 0) {
+            let histWidth = modular.fontSize() * 1.5
+            let maxHistory = calculateMaxHistory(config: config)
             VStack(spacing: 0) {
                 renderStackHistoryRow(
                     team: config.team1,
@@ -69,12 +64,11 @@ struct ScoreboardEffectModularView: View {
                     currentPeriod: Int(config.global.period) ?? 1
                 )
             }
-            .frame(width: finalWidth)
-            renderInfoBox(stats: config.global.infoBoxStats(), height: totalHeight, modular: modular)
+            .frame(width: CGFloat(modular.width) + CGFloat(maxHistory) * histWidth)
+            renderInfoBox(stats: config.global.infoBoxStats(), modular: modular)
         }
     }
 
-    @ViewBuilder
     private func renderStackHistoryRow(
         team: RemoteControlScoreboardTeam,
         otherTeam: RemoteControlScoreboardTeam,
@@ -85,10 +79,9 @@ struct ScoreboardEffectModularView: View {
         histW: CGFloat,
         currentPeriod: Int
     ) -> some View {
-        let fontSize = modular.fontSize()
-        let height = CGFloat(modular.rowHeight)
-        let width = fontSize * 1.55
         VStack(spacing: 0) {
+            let fontSize = modular.fontSize()
+            let height = CGFloat(modular.rowHeight)
             HStack(spacing: 0) {
                 Text(team.name)
                     .font(.system(size: fontSize))
@@ -135,7 +128,7 @@ struct ScoreboardEffectModularView: View {
                     team.primaryScore,
                     label: nil,
                     size: fontSize,
-                    width: width,
+                    width: fontSize * 1.55,
                     gray: false
                 )
             }
@@ -155,9 +148,6 @@ struct ScoreboardEffectModularView: View {
     private func renderStacked(modular: SettingsWidgetModularScoreboard,
                                config: RemoteControlScoreboardMatchConfig) -> some View
     {
-        let rowH = CGFloat(modular.rowHeight)
-        let teamRowFullHeight = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
-        let totalHeight = teamRowFullHeight * 2
         renderTitle(title: config.global.title, modular: modular)
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 0) {
@@ -175,7 +165,7 @@ struct ScoreboardEffectModularView: View {
                 )
             }
             .frame(width: CGFloat(modular.width))
-            renderInfoBox(stats: config.global.infoBoxStats(), height: totalHeight, modular: modular)
+            renderInfoBox(stats: config.global.infoBoxStats(), modular: modular)
         }
     }
 
@@ -229,16 +219,15 @@ struct ScoreboardEffectModularView: View {
         }
     }
 
-    @ViewBuilder
     private func renderStackedRow(team: RemoteControlScoreboardTeam,
                                   modular: SettingsWidgetModularScoreboard,
                                   textColor: Color,
                                   backgroundColor: Color) -> some View
     {
-        let fontSize = modular.fontSize()
-        let height = CGFloat(modular.rowHeight)
-        let width = fontSize * 1.55
         VStack(spacing: 0) {
+            let fontSize = modular.fontSize()
+            let height = CGFloat(modular.rowHeight)
+            let width = fontSize * 1.55
             HStack(spacing: 0) {
                 if modular.layout == .stacked {
                     renderStat(
@@ -447,10 +436,10 @@ struct ScoreboardEffectModularView: View {
     }
 
     @ViewBuilder
-    private func renderInfoBox(stats: [String],
-                               height: CGFloat,
-                               modular: SettingsWidgetModularScoreboard) -> some View
-    {
+    private func renderInfoBox(stats: [String], modular: SettingsWidgetModularScoreboard) -> some View {
+        let rowHeight = CGFloat(modular.rowHeight)
+        let fullHeight = rowHeight + (modular.showMoreStats ? rowHeight * 0.6 : 0)
+        let height = fullHeight * 2
         if modular.showGlobalStatsBlock && !stats.isEmpty {
             VStack(spacing: 0) {
                 ForEach(0 ..< stats.count, id: \.self) { i in
