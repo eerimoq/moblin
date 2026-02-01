@@ -691,6 +691,10 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     func periodFull() -> String {
         return "\(periodLabel) \(period)"
     }
+
+    func infoBoxStats() -> [String] {
+        return [timer, periodFull(), subPeriod].filter { !$0.isEmpty }
+    }
 }
 
 struct RemoteControlScoreboardMatchConfig: Codable {

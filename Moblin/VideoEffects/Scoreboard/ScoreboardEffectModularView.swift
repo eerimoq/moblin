@@ -42,14 +42,9 @@ struct ScoreboardEffectModularView: View {
         let rowH = CGFloat(modular.rowHeight)
         let teamRowFullHeight = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
         let totalHeight = teamRowFullHeight * 2
-        let periodFull = config.global.periodFull()
-        let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
-            !$0.isEmpty
-        }
-        let subH = activeStats.isEmpty ? 0 : totalHeight / CGFloat(activeStats.count)
-        let histW = fontSize * 1.5
+        let histWidth = fontSize * 1.5
         let maxHistory = calculateMaxHistory(config: config)
-        let finalWidth = CGFloat(modular.width) + CGFloat(maxHistory) * histW
+        let finalWidth = CGFloat(modular.width) + CGFloat(maxHistory) * histWidth
         renderTitle(title: config.global.title, modular: modular)
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 0) {
@@ -60,7 +55,7 @@ struct ScoreboardEffectModularView: View {
                     textColor: modular.home.textColorColor,
                     backgroundColor: modular.home.backgroundColorColor,
                     histCount: maxHistory,
-                    histW: histW,
+                    histW: histWidth,
                     currentPeriod: Int(config.global.period) ?? 1
                 )
                 renderStackHistoryRow(
@@ -70,12 +65,12 @@ struct ScoreboardEffectModularView: View {
                     textColor: modular.away.textColorColor,
                     backgroundColor: modular.away.backgroundColorColor,
                     histCount: maxHistory,
-                    histW: histW,
+                    histW: histWidth,
                     currentPeriod: Int(config.global.period) ?? 1
                 )
             }
             .frame(width: finalWidth)
-            renderInfoBox(stats: activeStats, height: subH, totalHeight: totalHeight, modular: modular)
+            renderInfoBox(stats: config.global.infoBoxStats(), height: totalHeight, modular: modular)
         }
     }
 
@@ -163,11 +158,6 @@ struct ScoreboardEffectModularView: View {
         let rowH = CGFloat(modular.rowHeight)
         let teamRowFullHeight = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
         let totalHeight = teamRowFullHeight * 2
-        let periodFull = config.global.periodFull()
-        let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
-            !$0.isEmpty
-        }
-        let subH = activeStats.isEmpty ? 0 : totalHeight / CGFloat(activeStats.count)
         renderTitle(title: config.global.title, modular: modular)
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 0) {
@@ -185,7 +175,7 @@ struct ScoreboardEffectModularView: View {
                 )
             }
             .frame(width: CGFloat(modular.width))
-            renderInfoBox(stats: activeStats, height: subH, totalHeight: totalHeight, modular: modular)
+            renderInfoBox(stats: config.global.infoBoxStats(), height: totalHeight, modular: modular)
         }
     }
 
@@ -197,7 +187,6 @@ struct ScoreboardEffectModularView: View {
         let fontSize = modular.fontSize()
         let height = CGFloat(modular.rowHeight)
         let teamRowFullHeight = height + (modular.showMoreStats ? height * 0.6 : 0)
-        let periodFull = config.global.periodFull()
         renderTitle(title: config.global.title, modular: modular)
         HStack(spacing: 0) {
             renderSideBySideHalf(
@@ -211,6 +200,7 @@ struct ScoreboardEffectModularView: View {
             Group {
                 if modular.showGlobalStatsBlock {
                     VStack(spacing: 0) {
+                        let periodFull = config.global.periodFull()
                         if !periodFull.isEmpty {
                             Text(periodFull)
                                 .font(.system(size: fontSize * 0.6, weight: .bold))
@@ -459,7 +449,6 @@ struct ScoreboardEffectModularView: View {
     @ViewBuilder
     private func renderInfoBox(stats: [String],
                                height: CGFloat,
-                               totalHeight: CGFloat,
                                modular: SettingsWidgetModularScoreboard) -> some View
     {
         if modular.showGlobalStatsBlock && !stats.isEmpty {
@@ -472,10 +461,10 @@ struct ScoreboardEffectModularView: View {
                         .minimumScaleFactor(0.1)
                         .lineLimit(1)
                         .frame(maxWidth: .infinity)
-                        .frame(height: height)
+                        .frame(height: stats.isEmpty ? 0 : height / CGFloat(stats.count))
                 }
             }
-            .frame(width: modular.fontSize() * 3.5, height: totalHeight)
+            .frame(width: modular.fontSize() * 3.5, height: height)
             .background(.black)
             .foregroundStyle(.white)
         }
