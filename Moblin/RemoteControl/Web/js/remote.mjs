@@ -391,16 +391,19 @@ function toggleButtonState(key) {
   update();
 }
 
-function buttonClassName(enabled) {
-  return enabled ? "btn btn-active" : "btn";
+function toggleButtonStyle(elementId, enabled) {
+  const element = document.getElementById(elementId);
+  if (enabled) {
+    element.classList.add("btn-active");
+  } else {
+    element.classList.remove("btn-active");
+  }
 }
 
 function updateGlobalToggles() {
-  document.getElementById("btn-show-title").className = buttonClassName(state.global.showTitle);
-  document.getElementById("btn-info-box").className = buttonClassName(state.global.showStats);
-  document.getElementById("btn-more-stats").className = buttonClassName(
-    state.global.showSecondaryRow,
-  );
+  toggleButtonStyle("btn-show-title", state.global.showTitle);
+  toggleButtonStyle("btn-info-box", state.global.showStats);
+  toggleButtonStyle("btn-more-stats", state.global.showSecondaryRow);
 }
 
 function liveColor(n, k, v) {
