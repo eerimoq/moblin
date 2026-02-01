@@ -287,9 +287,9 @@ function updateDomValues() {
     const n = i + 1;
     const team = state[t];
 
-    const h = document.getElementById(`h-t${n}`),
-      p = document.getElementById(`p-t${n}`),
-      s = document.getElementById(`s-t${n}`);
+    const h = document.getElementById(`h-t${n}`);
+    const p = document.getElementById(`p-t${n}`);
+    const s = document.getElementById(`s-t${n}`);
     h.style.background = team.bgColor;
     p.style.background = team.bgColor;
     s.style.background = team.bgColor;
@@ -391,16 +391,14 @@ function tog(key) {
   update();
 }
 
+function buttonClassName(enabled) {
+    return enabled ? "btn btn-active" : "btn";
+}
+
 function updateGlobalToggles() {
-  document.getElementById("btn-show-title").className = state.global.showTitle
-    ? "btn btn-active"
-    : "btn";
-  document.getElementById("btn-info-box").className = state.global.showStats
-    ? "btn btn-active"
-    : "btn";
-  document.getElementById("btn-show-2nd").className = state.global.showSecondaryRow
-    ? "btn btn-active"
-    : "btn";
+  document.getElementById("btn-show-title").className = buttonClassName(state.global.showTitle);
+  document.getElementById("btn-info-box").className = buttonClassName(state.global.showStats)
+  document.getElementById("btn-show-2nd").className = buttonClassName(state.global.showSecondaryRow)
 }
 
 function liveColor(n, k, v) {
