@@ -266,12 +266,13 @@ private struct ModularScoreboardView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 renderPossession(show: team.possession, size: fontSize)
                 if histCount > 0 {
-                    ForEach(1 ... histCount, id: \.self) { i in
-                        let val = getHistoricScore(team: team, indexPlusOne: i) ?? ""
-                        let oppVal = getHistoricScore(team: otherTeam, indexPlusOne: i) ?? ""
+                    ForEach(1 ... histCount, id: \.self) { indexPlusOne in
+                        let val = getHistoricScore(team: team, indexPlusOne: indexPlusOne) ?? ""
+                        let oppVal = getHistoricScore(team: otherTeam, indexPlusOne: indexPlusOne) ?? ""
                         let valInt = Int(val) ?? -1
                         let oppInt = Int(oppVal) ?? -1
-                        let weight: Font.Weight = (i < currentPeriod && valInt > oppInt && valInt >= 0)
+                        let weight: Font
+                            .Weight = (indexPlusOne < currentPeriod && valInt > oppInt && valInt >= 0)
                             ? .black
                             : .medium
                         if !val.isEmpty {
