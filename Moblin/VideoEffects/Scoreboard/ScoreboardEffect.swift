@@ -212,9 +212,7 @@ private struct ModularScoreboardView: View {
         let histW = fontSize * 1.5
         let maxHistory = calculateMaxHistory(config: config)
         let finalWidth = CGFloat(modular.width) + CGFloat(maxHistory) * histW
-        if modular.showTitle {
-            renderTitleBlock(title: config.global.title, modular: modular)
-        }
+        renderTitle(title: config.global.title, modular: modular)
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 0) {
                 renderStackHistoryRow(
@@ -271,15 +269,15 @@ private struct ModularScoreboardView: View {
                     .frame(height: height)
                 if histCount > 0 {
                     ForEach(1 ... histCount, id: \.self) { i in
-                        let val = self.getHistoricScore(team: team, indexPlusOne: i) ?? ""
-                        let oppVal = self.getHistoricScore(team: otherTeam, indexPlusOne: i) ?? ""
+                        let val = getHistoricScore(team: team, indexPlusOne: i) ?? ""
+                        let oppVal = getHistoricScore(team: otherTeam, indexPlusOne: i) ?? ""
                         let valInt = Int(val) ?? -1
                         let oppInt = Int(oppVal) ?? -1
                         let weight: Font.Weight = (i < currentPeriod && valInt > oppInt && valInt >= 0)
                             ? .black
                             : .medium
                         if !val.isEmpty {
-                            self.renderStat(
+                            renderStat(
                                 val,
                                 label: nil,
                                 size: fontSize * 0.9,
@@ -289,7 +287,7 @@ private struct ModularScoreboardView: View {
                                 weight: weight
                             )
                         } else if !oppVal.isEmpty {
-                            self.renderStat(
+                            renderStat(
                                 "0",
                                 label: nil,
                                 size: fontSize * 0.9,
@@ -352,9 +350,7 @@ private struct ModularScoreboardView: View {
             !$0.isEmpty
         }
         let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
-        if modular.showTitle {
-            renderTitleBlock(title: config.global.title, modular: modular)
-        }
+        renderTitle(title: config.global.title, modular: modular)
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: 0) {
                 renderStackedRow(
@@ -381,12 +377,10 @@ private struct ModularScoreboardView: View {
         config: RemoteControlScoreboardMatchConfig
     ) -> some View {
         let fontSize = modular.fontSize()
-        let h = CGFloat(modular.rowHeight)
-        let teamRowFullH = h + (modular.showMoreStats ? h * 0.6 : 0)
+        let height = CGFloat(modular.rowHeight)
+        let teamRowFullH = height + (modular.showMoreStats ? height * 0.6 : 0)
         let periodFull = "\(config.global.periodLabel) \(config.global.period)"
-        if modular.showTitle {
-            renderTitleBlock(title: config.global.title, modular: modular)
-        }
+        renderTitle(title: config.global.title, modular: modular)
         HStack(spacing: 0) {
             renderSideBySideHalf(
                 team: config.team1,
@@ -683,15 +677,18 @@ private struct ModularScoreboardView: View {
         }
     }
 
-    private func renderTitleBlock(title: String, modular: SettingsWidgetModularScoreboard) -> some View {
-        HCenter {
-            Text(title)
-                .font(.system(size: modular.fontSize() * 0.7))
-                .bold(modular.isBold)
-                .foregroundStyle(.white)
-                .padding(.vertical, 1)
+    @ViewBuilder
+    private func renderTitle(title: String, modular: SettingsWidgetModularScoreboard) -> some View {
+        if modular.showTitle {
+            HCenter {
+                Text(title)
+                    .font(.system(size: modular.fontSize() * 0.7))
+                    .bold(modular.isBold)
+                    .padding(.vertical, 1)
+            }
+            .background(.black)
+            .foregroundStyle(.white)
         }
-        .background(.black)
     }
 
     var body: some View {
