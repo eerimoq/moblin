@@ -724,7 +724,6 @@ window.setPeriod = setPeriod;
 window.adj = adj;
 window.toggleTeam = toggleTeam;
 window.cycle = cycle;
-window.update = update;
 window.state = state;
 window.setHist = setHist;
 window.liveColor = liveColor;
