@@ -185,11 +185,11 @@ private struct ModularScoreboardView: View {
 
     private func calculateMaxHistory(config: RemoteControlScoreboardMatchConfig) -> Int {
         var maxHistory = 0
-        for i in 1 ... 5 {
-            let homeHas = getHistoryVal(team: config.team1, i: i) != nil
-            let awayHas = getHistoryVal(team: config.team2, i: i) != nil
+        for indexPlusOne in 1 ... 5 {
+            let homeHas = getHistoricScore(team: config.team1, indexPlusOne: indexPlusOne) != nil
+            let awayHas = getHistoricScore(team: config.team2, indexPlusOne: indexPlusOne) != nil
             if homeHas || awayHas {
-                maxHistory = i
+                maxHistory = indexPlusOne
             }
         }
         return maxHistory
@@ -279,8 +279,8 @@ private struct ModularScoreboardView: View {
                     .frame(height: height)
                 if histCount > 0 {
                     ForEach(1 ... histCount, id: \.self) { i in
-                        let val = self.getHistoryVal(team: team, i: i) ?? ""
-                        let oppVal = self.getHistoryVal(team: otherTeam, i: i) ?? ""
+                        let val = self.getHistoricScore(team: team, indexPlusOne: i) ?? ""
+                        let oppVal = self.getHistoricScore(team: otherTeam, indexPlusOne: i) ?? ""
                         let valInt = Int(val) ?? -1
                         let oppInt = Int(oppVal) ?? -1
                         let weight: Font.Weight = (i < currentPeriod && valInt > oppInt && valInt >= 0)
@@ -331,8 +331,8 @@ private struct ModularScoreboardView: View {
         .foregroundStyle(textColor)
     }
 
-    private func getHistoryVal(team: RemoteControlScoreboardTeam, i: Int) -> String? {
-        switch i {
+    private func getHistoricScore(team: RemoteControlScoreboardTeam, indexPlusOne: Int) -> String? {
+        switch indexPlusOne {
         case 1:
             return team.secondaryScore1
         case 2:
