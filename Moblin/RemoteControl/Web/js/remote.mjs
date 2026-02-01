@@ -384,13 +384,13 @@ function updateDomValues() {
   });
 }
 
-function switchSport(val) {
-  if (!val) {
+function switchSport(event) {
+  if (!event.target.value) {
     return;
   }
   sendRequest({
     setScoreboardSport: {
-      sportId: val,
+      sportId: event.target.value,
     },
   });
 }
@@ -738,7 +738,6 @@ window.setPeriod = setPeriod;
 window.adj = adj;
 window.toggleTeam = toggleTeam;
 window.cycle = cycle;
-window.switchSport = switchSport;
 window.update = update;
 window.state = state;
 window.setHist = setHist;
@@ -748,6 +747,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnChange("dur-sel", setDuration);
   addOnChange("gtd", setClockDirection);
   addOnChange("layout-selector", switchLayout);
+  addOnChange("sport-selector", switchSport);
   addOnClick("clock", sendToggleClock);
   addOnClick("btn-reset-set", resetSet);
   addOnClick("new-match", newMatch);
