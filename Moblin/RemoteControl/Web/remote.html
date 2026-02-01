@@ -20,12 +20,7 @@
 
       <!-- Persistent Controls (Clock & Info) -->
       <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
-        <button
-          onclick="window.sendToggleClock()"
-          class="btn btn-top bg-indigo-600 text-white border-none"
-        >
-          CLOCK
-        </button>
+        <button id="clock" class="btn btn-top bg-indigo-600 text-white border-none">CLOCK</button>
         <input
           type="text"
           id="gti"
@@ -47,12 +42,8 @@
 
       <!-- Actions -->
       <div class="grid grid-cols-2 gap-2">
-        <button onclick="window.resetSet()" id="btn-reset-set" class="btn btn-ctrl border-zinc-600">
-          Next Set/Period
-        </button>
-        <button onclick="window.newMatch()" class="btn btn-ctrl border-red-900 text-red-400">
-          New Match
-        </button>
+        <button id="btn-reset-set" class="btn btn-ctrl border-zinc-600">Next Set/Period</button>
+        <button id="new-match" class="btn btn-ctrl border-red-900 text-red-400">New Match</button>
       </div>
 
       <!-- Config Menu -->
@@ -70,11 +61,7 @@
           >
             <option value="">LOADING...</option>
           </select>
-          <select
-            id="layout-selector"
-            onchange="window.switchLayout(this.value)"
-            class="col-span-2 btn h-9 text-[10px] bg-black"
-          >
+          <select id="layout-selector" class="col-span-2 btn h-9 text-[10px] bg-black">
             <option value="stacked">Stacked</option>
             <option value="stackedInline">Stacked Inline</option>
             <option value="sideBySide">Side by Side</option>

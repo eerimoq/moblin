@@ -1,4 +1,4 @@
-import { addOnChange, websocketUrl } from "./utils.mjs";
+import { addOnChange, addOnClick, websocketUrl } from "./utils.mjs";
 
 let ws = null;
 let state = null;
@@ -395,11 +395,11 @@ function switchSport(val) {
   });
 }
 
-function switchLayout(val) {
-  if (!val) {
+function switchLayout(event) {
+  if (!event.target.value) {
     return;
   }
-  state.layout = val;
+  state.layout = event.target.value;
   update();
 }
 
@@ -746,20 +746,19 @@ window.setPeriod = setPeriod;
 window.adj = adj;
 window.toggleTeam = toggleTeam;
 window.cycle = cycle;
-window.resetSet = resetSet;
 window.tog = tog;
-window.newMatch = newMatch;
-window.resetSet = resetSet;
 window.switchSport = switchSport;
-window.switchLayout = switchLayout;
 window.update = update;
 window.state = state;
 window.setHist = setHist;
 window.liveColor = liveColor;
-window.sendToggleClock = sendToggleClock;
 
 window.addEventListener("DOMContentLoaded", async () => {
   addOnChange("dur-sel", setDuration);
   addOnChange("gtd", setClockDirection);
+  addOnChange("layout-selector", switchLayout);
+  addOnClick("clock", sendToggleClock);
+  addOnClick("btn-reset-set", resetSet);
+  addOnClick("new-match", newMatch);
   connect();
 });
