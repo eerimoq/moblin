@@ -761,5 +761,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     tog("showStats");
   });
   addOnBlur("gi", update);
+  addOnBlur("gt", update);
   connect();
 });
