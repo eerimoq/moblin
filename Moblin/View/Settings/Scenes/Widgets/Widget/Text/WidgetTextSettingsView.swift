@@ -436,6 +436,16 @@ private struct WorkoutVariablesView: View {
                         text: $value
                     )
                 }
+                VariableView(
+                    title: "{cyclingPower}",
+                    description: String(localized: "Show cycling power"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{cyclingCadence}",
+                    description: String(localized: "Show cycling cadence"),
+                    text: $value
+                )
             }
             .navigationTitle("Workout")
         } label: {
@@ -469,30 +479,6 @@ private struct TeslaVariablesView: View {
             .navigationTitle("Tesla")
         } label: {
             Text("Tesla")
-        }
-    }
-}
-
-private struct CyclingVariablesView: View {
-    @Binding var value: String
-
-    var body: some View {
-        NavigationLink {
-            Form {
-                VariableView(
-                    title: "{cyclingPower}",
-                    description: String(localized: "Show cycling power"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{cyclingCadence}",
-                    description: String(localized: "Show cycling cadence"),
-                    text: $value
-                )
-            }
-            .navigationTitle("Cycling")
-        } label: {
-            Text("Cycling")
         }
     }
 }
@@ -574,7 +560,6 @@ private struct TextSelectionView: View {
                 LanguageVariablesView(value: $value)
                 WorkoutVariablesView(model: model, value: $value)
                 TeslaVariablesView(value: $value)
-                CyclingVariablesView(value: $value)
                 DebugVariablesView(value: $value)
             } header: {
                 Text("Variables")
