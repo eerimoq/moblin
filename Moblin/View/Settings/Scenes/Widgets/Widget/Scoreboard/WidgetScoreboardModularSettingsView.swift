@@ -15,7 +15,7 @@ private struct LayoutSettingsView: View {
                 Section {
                     HStack {
                         Text("Width")
-                        Slider(value: $modular.width, in: 100 ... 650)
+                        Slider(value: $modular.width, in: 100 ... 1000)
                             .onChange(of: modular.width) { _ in
                                 updateEffect()
                             }
@@ -24,7 +24,7 @@ private struct LayoutSettingsView: View {
                     }
                     HStack {
                         Text("Height")
-                        Slider(value: $modular.rowHeight, in: 10 ... 50)
+                        Slider(value: $modular.rowHeight, in: 10 ... 150)
                             .onChange(of: modular.rowHeight) { _ in
                                 updateEffect()
                             }
@@ -49,7 +49,7 @@ private struct LayoutSettingsView: View {
                 Section {
                     HStack {
                         Text("Size")
-                        Slider(value: $modular.fontSize, in: 5 ... 25)
+                        Slider(value: $modular.fontSize, in: 15 ... 120)
                             .onChange(of: modular.fontSize) { _ in
                                 updateEffect()
                             }

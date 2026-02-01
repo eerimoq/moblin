@@ -249,10 +249,7 @@ final class ScoreboardEffect: VideoEffect {
                 renderStacked(modular: modular, config: config)
             }
         }
-        .padding(0)
-        .padding(5)
         let renderer = ImageRenderer(content: content)
-        renderer.scale = UIScreen.main.scale
         if let image = renderer.uiImage {
             setScoreboardImage(image: CIImage(image: image))
         }
@@ -492,6 +489,7 @@ final class ScoreboardEffect: VideoEffect {
                     backgroundColor: modular.home.backgroundColorColor,
                     mirrored: false
                 )
+                .frame(width: CGFloat(modular.width))
                 Group {
                     if modular.showGlobalStatsBlock {
                         VStack(spacing: 0) {
@@ -521,8 +519,8 @@ final class ScoreboardEffect: VideoEffect {
                     backgroundColor: modular.away.backgroundColorColor,
                     mirrored: true
                 )
+                .frame(width: CGFloat(modular.width))
             }
-            .frame(width: CGFloat(modular.width))
         }
     }
 

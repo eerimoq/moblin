@@ -2870,9 +2870,9 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     var clock: SettingsWidgetScoreboardClock = .init()
     @Published var layout: SettingsWidgetScoreboardLayout = .stacked
     @Published var config: RemoteControlScoreboardMatchConfig?
-    @Published var fontSize: Float = 12
-    @Published var width: Float = 150
-    @Published var rowHeight: Float = 16
+    @Published var fontSize: Float = 35
+    @Published var width: Float = 350
+    @Published var rowHeight: Float = 45
     @Published var isBold: Bool = true
     @Published var showTitle: Bool = false
     @Published var showMoreStats: Bool = false
@@ -2922,9 +2922,9 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         period = container.decode(.period, String.self, "1")
         clock = container.decode(.clock, SettingsWidgetScoreboardClock.self, .init())
         layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
-        fontSize = container.decode(.fontSize, Float.self, 12)
-        width = container.decode(.width, Float.self, 150)
-        rowHeight = container.decode(.rowHeight, Float.self, 16)
+        fontSize = container.decode(.fontSize, Float.self, 35)
+        width = container.decode(.width, Float.self, 350)
+        rowHeight = container.decode(.rowHeight, Float.self, 45)
         isBold = container.decode(.isBold, Bool.self, true)
         showTitle = container.decode(.showTitle, Bool.self, false)
         showMoreStats = container.decode(.showMoreStats, Bool.self, false)
