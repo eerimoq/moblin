@@ -239,15 +239,7 @@ private struct ModularScoreboardView: View {
                 )
             }
             .frame(width: finalWidth)
-            if modular.showGlobalStatsBlock && !activeStats.isEmpty {
-                VStack(spacing: 0) {
-                    ForEach(0 ..< activeStats.count, id: \.self) { i in
-                        self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
-                    }
-                }
-                .frame(width: modular.fontSize() * 3.5, height: totalH)
-                .background(.black)
-            }
+            renderInfoBox(stats: activeStats, height: subH, totalHeight: totalH, modular: modular)
         }
     }
 
@@ -379,15 +371,7 @@ private struct ModularScoreboardView: View {
                 )
             }
             .frame(width: CGFloat(modular.width))
-            if modular.showGlobalStatsBlock && !activeStats.isEmpty {
-                VStack(spacing: 0) {
-                    ForEach(0 ..< activeStats.count, id: \.self) { i in
-                        self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
-                    }
-                }
-                .frame(width: modular.fontSize() * 3.5, height: totalH)
-                .background(.black)
-            }
+            renderInfoBox(stats: activeStats, height: subH, totalHeight: totalH, modular: modular)
         }
     }
 
@@ -494,12 +478,10 @@ private struct ModularScoreboardView: View {
             }
             .background(backgroundColor)
             if modular.showMoreStats {
-                renderMoreStats(
-                    team: team,
-                    fontSize: fontSize,
-                    height: height * 0.6,
-                    backgroundColor: backgroundColor
-                )
+                renderMoreStats(team: team,
+                                fontSize: fontSize,
+                                height: height * 0.6,
+                                backgroundColor: backgroundColor)
             }
         }
         .foregroundStyle(textColor)
@@ -574,13 +556,11 @@ private struct ModularScoreboardView: View {
             }
             .background(backgroundColor)
             if modular.showMoreStats {
-                renderMoreStats(
-                    team: team,
-                    fontSize: fontSize,
-                    height: height * 0.6,
-                    backgroundColor: backgroundColor,
-                    alignRight: !mirrored
-                )
+                renderMoreStats(team: team,
+                                fontSize: fontSize,
+                                height: height * 0.6,
+                                backgroundColor: backgroundColor,
+                                alignRight: !mirrored)
             }
         }
         .foregroundStyle(textColor)
@@ -678,21 +658,29 @@ private struct ModularScoreboardView: View {
         }
     }
 
-    private func renderGlobalStatBox(val: String,
-                                     h: CGFloat,
-                                     modular: SettingsWidgetModularScoreboard) -> some View
+    @ViewBuilder
+    private func renderInfoBox(stats: [String],
+                               height: CGFloat,
+                               totalHeight: CGFloat,
+                               modular: SettingsWidgetModularScoreboard) -> some View
     {
-        ZStack {
-            Text(val)
-                .font(.system(size: modular.fontSize() * 0.9))
-                .bold(modular.isBold)
-                .monospacedDigit()
-                .minimumScaleFactor(0.1)
-                .lineLimit(1)
+        if modular.showGlobalStatsBlock && !stats.isEmpty {
+            VStack(spacing: 0) {
+                ForEach(0 ..< stats.count, id: \.self) { i in
+                    Text(stats[i])
+                        .font(.system(size: modular.fontSize() * 0.9))
+                        .bold(modular.isBold)
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.1)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: height)
+                }
+            }
+            .frame(width: modular.fontSize() * 3.5, height: totalHeight)
+            .background(.black)
+            .foregroundStyle(.white)
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: h)
-        .foregroundStyle(.white)
     }
 
     private func renderTitleBlock(title: String, modular: SettingsWidgetModularScoreboard) -> some View {
