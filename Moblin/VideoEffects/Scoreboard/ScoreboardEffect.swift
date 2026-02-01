@@ -241,18 +241,16 @@ final class ScoreboardEffect: VideoEffect {
         config: RemoteControlScoreboardMatchConfig
     ) {
         let content = VStack(alignment: .center, spacing: 0) {
-            if modular.layout == .sideBySide {
+            switch modular.layout {
+            case .sideBySide:
                 renderSideBySide(modular: modular, config: config)
-            } else if modular.layout == .stackHistory {
+            case .stackHistory:
                 renderStackHistory(modular: modular, config: config)
-            } else {
+            default:
                 renderStacked(modular: modular, config: config)
             }
         }
-        let renderer = ImageRenderer(content: content)
-        if let image = renderer.uiImage {
-            setScoreboardImage(image: CIImage(image: image))
-        }
+        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
     }
 
     private func calculateMaxHistory(config: RemoteControlScoreboardMatchConfig) -> Int {
@@ -276,51 +274,49 @@ final class ScoreboardEffect: VideoEffect {
         let rowH = CGFloat(modular.rowHeight)
         let teamRowFullH = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
-        let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
+        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
         let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
-            !$0.trim().isEmpty
+            !$0.isEmpty
         }
         let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
         let histW = fontSize * 1.5
         let maxHistory = calculateMaxHistory(config: config)
         let finalWidth = CGFloat(modular.width) + CGFloat(maxHistory) * histW
-        VStack(spacing: 0) {
-            if modular.showTitle {
-                renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
+        if modular.showTitle {
+            renderTitleBlock(title: config.global.title, modular: modular)
+        }
+        HStack(alignment: .top, spacing: 0) {
+            VStack(spacing: 0) {
+                renderStackHistoryRow(
+                    team: config.team1,
+                    otherTeam: config.team2,
+                    modular: modular,
+                    textColor: modular.home.textColorColor,
+                    backgroundColor: modular.home.backgroundColorColor,
+                    histCount: maxHistory,
+                    histW: histW,
+                    currentPeriod: Int(config.global.period) ?? 1
+                )
+                renderStackHistoryRow(
+                    team: config.team2,
+                    otherTeam: config.team1,
+                    modular: modular,
+                    textColor: modular.away.textColorColor,
+                    backgroundColor: modular.away.backgroundColorColor,
+                    histCount: maxHistory,
+                    histW: histW,
+                    currentPeriod: Int(config.global.period) ?? 1
+                )
             }
-            HStack(alignment: .top, spacing: 0) {
+            .frame(width: finalWidth)
+            if modular.showGlobalStatsBlock && !activeStats.isEmpty {
                 VStack(spacing: 0) {
-                    renderStackHistoryRow(
-                        team: config.team1,
-                        otherTeam: config.team2,
-                        modular: modular,
-                        textColor: modular.home.textColorColor,
-                        backgroundColor: modular.home.backgroundColorColor,
-                        histCount: maxHistory,
-                        histW: histW,
-                        currentPeriod: Int(config.global.period) ?? 1
-                    )
-                    renderStackHistoryRow(
-                        team: config.team2,
-                        otherTeam: config.team1,
-                        modular: modular,
-                        textColor: modular.away.textColorColor,
-                        backgroundColor: modular.away.backgroundColorColor,
-                        histCount: maxHistory,
-                        histW: histW,
-                        currentPeriod: Int(config.global.period) ?? 1
-                    )
-                }
-                .frame(width: finalWidth)
-                if modular.showGlobalStatsBlock && !activeStats.isEmpty {
-                    VStack(spacing: 0) {
-                        ForEach(0 ..< activeStats.count, id: \.self) { i in
-                            self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
-                        }
+                    ForEach(0 ..< activeStats.count, id: \.self) { i in
+                        self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
                     }
-                    .frame(width: modular.fontSize() * 3.5, height: totalH)
-                    .background(.black)
                 }
+                .frame(width: modular.fontSize() * 3.5, height: totalH)
+                .background(.black)
             }
         }
     }
@@ -429,41 +425,38 @@ final class ScoreboardEffect: VideoEffect {
         let rowH = CGFloat(modular.rowHeight)
         let teamRowFullH = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
-        let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
+        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
         let activeStats = [config.global.timer, periodFull, config.global.subPeriod].filter {
-            !$0.trim().isEmpty
+            !$0.isEmpty
         }
         let subH = activeStats.isEmpty ? 0 : totalH / CGFloat(activeStats.count)
-        VStack(spacing: 0) {
-            if modular.showTitle {
-                renderTitleBlock(title: config.global.title, modular: modular, isStacked: true)
+        if modular.showTitle {
+            renderTitleBlock(title: config.global.title, modular: modular)
+        }
+        HStack(alignment: .top, spacing: 0) {
+            VStack(spacing: 0) {
+                renderStackedRow(
+                    team: config.team1,
+                    modular: modular,
+                    textColor: modular.home.textColorColor,
+                    backgroundColor: modular.home.backgroundColorColor
+                )
+                renderStackedRow(
+                    team: config.team2,
+                    modular: modular,
+                    textColor: modular.away.textColorColor,
+                    backgroundColor: modular.away.backgroundColorColor
+                )
             }
-            HStack(alignment: .top, spacing: 0) {
+            .frame(width: CGFloat(modular.width))
+            if modular.showGlobalStatsBlock && !activeStats.isEmpty {
                 VStack(spacing: 0) {
-                    renderStackedRow(
-                        team: config.team1,
-                        modular: modular,
-                        textColor: modular.home.textColorColor,
-                        backgroundColor: modular.home.backgroundColorColor
-                    )
-                    renderStackedRow(
-                        team: config.team2,
-                        modular: modular,
-                        textColor: modular.away.textColorColor,
-                        backgroundColor: modular.away.backgroundColorColor
-                    )
-                }
-                .frame(width: CGFloat(modular.width))
-                if modular.showGlobalStatsBlock && !activeStats.isEmpty {
-                    VStack(spacing: 0) {
-                        ForEach(0 ..< activeStats.count, id: \.self) { i in
-                            self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
-                        }
+                    ForEach(0 ..< activeStats.count, id: \.self) { i in
+                        self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
                     }
-                    .frame(width: modular.fontSize() * 3.5)
-                    .frame(height: totalH)
-                    .background(.black)
                 }
+                .frame(width: modular.fontSize() * 3.5, height: totalH)
+                .background(.black)
             }
         }
     }
@@ -476,51 +469,47 @@ final class ScoreboardEffect: VideoEffect {
         let fontSize = modular.fontSize()
         let h = CGFloat(modular.rowHeight)
         let teamRowFullH = h + (modular.showMoreStats ? h * 0.6 : 0)
-        let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
-        VStack(spacing: 0) {
-            if modular.showTitle {
-                renderTitleBlock(title: config.global.title, modular: modular, isStacked: false)
-            }
-            HStack(spacing: 0) {
-                renderSideBySideHalf(
-                    team: config.team1,
-                    modular: modular,
-                    textColor: modular.home.textColorColor,
-                    backgroundColor: modular.home.backgroundColorColor,
-                    mirrored: false
-                )
-                .frame(width: CGFloat(modular.width))
-                Group {
-                    if modular.showGlobalStatsBlock {
-                        VStack(spacing: 0) {
-                            if !periodFull.isEmpty {
-                                Text(periodFull)
-                                    .font(.system(size: fontSize * 0.6, weight: .bold))
-                            }
-                            Text(config.global.timer)
-                                .font(.system(size: fontSize * 0.9, weight: .black))
-                                .monospacedDigit()
+        let periodFull = "\(config.global.periodLabel) \(config.global.period)"
+        if modular.showTitle {
+            renderTitleBlock(title: config.global.title, modular: modular)
+        }
+        HStack(spacing: 0) {
+            renderSideBySideHalf(
+                team: config.team1,
+                modular: modular,
+                textColor: modular.home.textColorColor,
+                backgroundColor: modular.home.backgroundColorColor,
+                mirrored: false
+            )
+            .frame(width: CGFloat(modular.width))
+            Group {
+                if modular.showGlobalStatsBlock {
+                    VStack(spacing: 0) {
+                        if !periodFull.isEmpty {
+                            Text(periodFull)
+                                .font(.system(size: fontSize * 0.6, weight: .bold))
                         }
-                        .frame(width: fontSize * 3.5)
-                        .frame(height: teamRowFullH)
-                    } else {
-                        Text("-")
-                            .font(.system(size: fontSize, weight: .black))
-                            .frame(width: fontSize * 0.8)
-                            .frame(height: teamRowFullH)
+                        Text(config.global.timer)
+                            .font(.system(size: fontSize * 0.9, weight: .black))
+                            .monospacedDigit()
                     }
+                    .frame(width: fontSize * 3.5, height: teamRowFullH)
+                } else {
+                    Text("-")
+                        .font(.system(size: fontSize, weight: .black))
+                        .frame(width: fontSize * 0.8, height: teamRowFullH)
                 }
-                .background(.black)
-                .foregroundStyle(.white)
-                renderSideBySideHalf(
-                    team: config.team2,
-                    modular: modular,
-                    textColor: modular.away.textColorColor,
-                    backgroundColor: modular.away.backgroundColorColor,
-                    mirrored: true
-                )
-                .frame(width: CGFloat(modular.width))
             }
+            .background(.black)
+            .foregroundStyle(.white)
+            renderSideBySideHalf(
+                team: config.team2,
+                modular: modular,
+                textColor: modular.away.textColorColor,
+                backgroundColor: modular.away.backgroundColorColor,
+                mirrored: true
+            )
+            .frame(width: CGFloat(modular.width))
         }
     }
 
@@ -677,7 +666,7 @@ final class ScoreboardEffect: VideoEffect {
         gray: Bool,
         weight: Font.Weight = .black
     ) -> some View {
-        if !val.trim().isEmpty {
+        if !val.isEmpty {
             ZStack {
                 if gray {
                     Color.black
@@ -776,10 +765,7 @@ final class ScoreboardEffect: VideoEffect {
         .foregroundStyle(.white)
     }
 
-    private func renderTitleBlock(title: String,
-                                  modular: SettingsWidgetModularScoreboard,
-                                  isStacked _: Bool) -> some View
-    {
+    private func renderTitleBlock(title: String, modular: SettingsWidgetModularScoreboard) -> some View {
         Text(title)
             .font(.system(size: modular.fontSize() * 0.7))
             .bold(modular.isBold)
