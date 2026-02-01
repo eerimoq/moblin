@@ -2870,7 +2870,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     var clock: SettingsWidgetScoreboardClock = .init()
     @Published var layout: SettingsWidgetScoreboardLayout = .stacked
     @Published var config: RemoteControlScoreboardMatchConfig?
-    @Published var fontSize: Float = 35
     @Published var width: Float = 350
     @Published var rowHeight: Float = 45
     @Published var isBold: Bool = true
@@ -2891,8 +2890,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
              showTitle,
              stacked,
              showMoreStats,
-             showGlobalStatsBlock,
-             fontSize
+             showGlobalStatsBlock
     }
 
     init() {}
@@ -2905,7 +2903,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.period, period)
         try container.encode(.clock, clock)
         try container.encode(.layout, layout)
-        try container.encode(.fontSize, fontSize)
         try container.encode(.width, width)
         try container.encode(.rowHeight, rowHeight)
         try container.encode(.isBold, isBold)
@@ -2922,7 +2919,6 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         period = container.decode(.period, String.self, "1")
         clock = container.decode(.clock, SettingsWidgetScoreboardClock.self, .init())
         layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
-        fontSize = container.decode(.fontSize, Float.self, 35)
         width = container.decode(.width, Float.self, 350)
         rowHeight = container.decode(.rowHeight, Float.self, 45)
         isBold = container.decode(.isBold, Bool.self, true)
@@ -2941,6 +2937,10 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         return SettingsWidgetModularScoreboardTeam(name: baseName,
                                                    textColor: baseAwayTextColor,
                                                    backgroundColor: baseAwayBackgroundColor)
+    }
+
+    func fontSize() -> Double {
+        return Double(rowHeight * 0.8)
     }
 
     func setLayout(name: String) {

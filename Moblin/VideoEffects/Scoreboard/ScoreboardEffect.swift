@@ -272,7 +272,7 @@ final class ScoreboardEffect: VideoEffect {
         modular: SettingsWidgetModularScoreboard,
         config: RemoteControlScoreboardMatchConfig
     ) -> some View {
-        let fontSize = CGFloat(modular.fontSize)
+        let fontSize = modular.fontSize()
         let rowH = CGFloat(modular.rowHeight)
         let teamRowFullH = rowH + (modular.showMoreStats ? rowH * 0.6 : 0)
         let totalH = teamRowFullH * 2
@@ -318,7 +318,7 @@ final class ScoreboardEffect: VideoEffect {
                             self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
                         }
                     }
-                    .frame(width: CGFloat(modular.fontSize * 3.5), height: totalH)
+                    .frame(width: modular.fontSize() * 3.5, height: totalH)
                     .background(.black)
                 }
             }
@@ -336,7 +336,7 @@ final class ScoreboardEffect: VideoEffect {
         histW: CGFloat,
         currentPeriod: Int
     ) -> some View {
-        let fontSize = CGFloat(modular.fontSize)
+        let fontSize = modular.fontSize()
         let height = CGFloat(modular.rowHeight)
         let width = fontSize * 1.55
         VStack(spacing: 0) {
@@ -460,7 +460,7 @@ final class ScoreboardEffect: VideoEffect {
                             self.renderGlobalStatBox(val: activeStats[i], h: subH, modular: modular)
                         }
                     }
-                    .frame(width: CGFloat(modular.fontSize * 3.5))
+                    .frame(width: modular.fontSize() * 3.5)
                     .frame(height: totalH)
                     .background(.black)
                 }
@@ -473,7 +473,7 @@ final class ScoreboardEffect: VideoEffect {
         modular: SettingsWidgetModularScoreboard,
         config: RemoteControlScoreboardMatchConfig
     ) -> some View {
-        let fontSize = CGFloat(modular.fontSize)
+        let fontSize = modular.fontSize()
         let h = CGFloat(modular.rowHeight)
         let teamRowFullH = h + (modular.showMoreStats ? h * 0.6 : 0)
         let periodFull = "\(config.global.periodLabel) \(config.global.period)".trim()
@@ -530,7 +530,7 @@ final class ScoreboardEffect: VideoEffect {
                                   textColor: Color,
                                   backgroundColor: Color) -> some View
     {
-        let fontSize = CGFloat(modular.fontSize)
+        let fontSize = modular.fontSize()
         let height = CGFloat(modular.rowHeight)
         let width = fontSize * 1.55
         VStack(spacing: 0) {
@@ -594,7 +594,7 @@ final class ScoreboardEffect: VideoEffect {
         backgroundColor: Color,
         mirrored: Bool
     ) -> some View {
-        let fontSize = CGFloat(modular.fontSize)
+        let fontSize = modular.fontSize()
         let height = CGFloat(modular.rowHeight)
         let width = fontSize * 1.55
         VStack(spacing: 0) {
@@ -765,7 +765,7 @@ final class ScoreboardEffect: VideoEffect {
     {
         ZStack {
             Text(val)
-                .font(.system(size: CGFloat(modular.fontSize) * 0.9))
+                .font(.system(size: modular.fontSize() * 0.9))
                 .bold(modular.isBold)
                 .monospacedDigit()
                 .minimumScaleFactor(0.1)
@@ -781,7 +781,7 @@ final class ScoreboardEffect: VideoEffect {
                                   isStacked _: Bool) -> some View
     {
         Text(title)
-            .font(.system(size: CGFloat(modular.fontSize) * 0.7))
+            .font(.system(size: modular.fontSize() * 0.7))
             .bold(modular.isBold)
             .foregroundStyle(.white)
             .padding(.vertical, 1)

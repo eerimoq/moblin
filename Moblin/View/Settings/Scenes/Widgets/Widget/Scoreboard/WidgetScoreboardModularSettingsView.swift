@@ -10,7 +10,7 @@ private struct LayoutSettingsView: View {
     }
 
     var body: some View {
-        NavigationLink("Appearance") {
+        NavigationLink("Layout") {
             Form {
                 Section {
                     HStack {
@@ -43,28 +43,13 @@ private struct LayoutSettingsView: View {
                         .onChange(of: modular.showMoreStats) { _ in
                             updateEffect()
                         }
-                } header: {
-                    Text("Layout")
-                }
-                Section {
-                    HStack {
-                        Text("Size")
-                        Slider(value: $modular.fontSize, in: 15 ... 120)
-                            .onChange(of: modular.fontSize) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(modular.fontSize)))
-                            .frame(width: 35)
-                    }
                     Toggle("Bold", isOn: $modular.isBold)
                         .onChange(of: modular.isBold) { _ in
                             updateEffect()
                         }
-                } header: {
-                    Text("Font")
                 }
             }
-            .navigationTitle("Appearance")
+            .navigationTitle("Layout")
         }
     }
 }
