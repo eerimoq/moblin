@@ -20,15 +20,17 @@
 
       <!-- Persistent Controls (Clock & Info) -->
       <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
-        <button id="clock" class="btn btn-top bg-indigo-600 text-white border-none">CLOCK</button>
+        <button id="toggle-clock" class="btn btn-top bg-indigo-600 text-white border-none">
+          CLOCK
+        </button>
         <input
           type="text"
-          id="gti"
+          id="clock"
           placeholder="00:00"
           class="btn-top font-mono text-lg text-indigo-400 bg-black rounded"
         />
-        <select id="dur-sel" class="btn-top bg-black rounded"></select>
-        <select id="gtd" class="btn-top bg-black rounded">
+        <select id="clock-maximum" class="btn-top bg-black rounded"></select>
+        <select id="clock-direction" class="btn-top bg-black rounded">
           <option value="up">UP</option>
           <option value="down">DOWN</option>
         </select>
@@ -41,7 +43,7 @@
 
       <!-- Actions -->
       <div class="grid grid-cols-2 gap-2">
-        <button id="btn-reset-set" class="btn btn-ctrl border-zinc-600">Next Set/Period</button>
+        <button id="next-set" class="btn btn-ctrl border-zinc-600">Next Set/Period</button>
         <button id="new-match" class="btn btn-ctrl border-red-900 text-red-400">New Match</button>
       </div>
 
@@ -63,14 +65,14 @@
             <option value="stackHistory">Stack History</option>
           </select>
 
-          <input type="text" id="gt" placeholder="TITLE" class="col-span-2 conf-input px-2" />
+          <input type="text" id="title" placeholder="TITLE" class="col-span-2 conf-input px-2" />
           <div id="lbl-period" class="conf-label">PER</div>
-          <input type="text" id="gp" class="conf-input" />
+          <input type="text" id="period" class="conf-input" />
 
           <button id="btn-show-title" class="btn h-9 text-[10px]">Title</button>
           <button id="btn-show-2nd" class="btn h-9 text-[10px]">More stats</button>
-          <button id="btn-show-stats" class="btn h-9 text-[10px]">Info Box</button>
-          <input type="text" id="gi" placeholder="INFO BOX" class="conf-input px-2" />
+          <button id="btn-info-box" class="btn h-9 text-[10px]">Info Box</button>
+          <input type="text" id="info-box" placeholder="INFO BOX" class="conf-input px-2" />
         </div>
       </details>
 

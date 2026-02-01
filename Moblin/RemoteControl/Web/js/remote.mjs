@@ -162,8 +162,8 @@ function buildHistoricScores() {
   for (let i = 1; i <= 5; i++) {
     histHtml += `<div class="flex flex-col gap-1">
             <div id="h-lbl-${i}" onclick="window.setPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">SET ${i}</div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t1-${i}" onchange="window.setHist(1,${i},this.value)">${historicScoreOptions()}</select></div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t2-${i}" onchange="window.setHist(2,${i},this.value)">${historicScoreOptions()}</select></div>
+            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t1-${i}" onchange="window.setHistoricScore(1,${i},this.value)">${historicScoreOptions()}</select></div>
+            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t2-${i}" onchange="window.setHistoricScore(2,${i},this.value)">${historicScoreOptions()}</select></div>
         </div>`;
   }
   document.getElementById("history-grid").innerHTML = histHtml;
@@ -177,9 +177,9 @@ function historicScoreOptions() {
   return options;
 }
 
-function setHist(team, idx, val) {
-  state["team" + team]["secondaryScore" + idx] = val;
-  if (val !== "") {
+function setHistoricScore(team, idx, score) {
+  state["team" + team]["secondaryScore" + idx] = score;
+  if (score !== "") {
     const opp = team === 1 ? 2 : 1;
     const oppKey = "secondaryScore" + idx;
     if (!state["team" + opp][oppKey] || state["team" + opp][oppKey] === "") {
@@ -189,12 +189,9 @@ function setHist(team, idx, val) {
   update();
 }
 
-function setPeriod(p) {
-  state.global.period = p.toString();
-  const el = document.getElementById("gp");
-  if (el) {
-    el.value = p.toString();
-  }
+function setPeriod(period) {
+  state.global.period = period.toString();
+  document.getElementById("period").value = period.toString();
   render();
   update();
 }
@@ -395,12 +392,15 @@ function tog(key) {
 }
 
 function updateGlobalToggles() {
-  const bTitle = document.getElementById("btn-show-title");
-  bTitle.className = state.global.showTitle ? "btn btn-active" : "btn";
-  const bStats = document.getElementById("btn-show-stats");
-  bStats.className = state.global.showStats ? "btn btn-active" : "btn";
-  const b2nd = document.getElementById("btn-show-2nd");
-  b2nd.className = state.global.showSecondaryRow ? "btn btn-active" : "btn";
+  document.getElementById("btn-show-title").className = state.global.showTitle
+    ? "btn btn-active"
+    : "btn";
+  document.getElementById("btn-info-box").className = state.global.showStats
+    ? "btn btn-active"
+    : "btn";
+  document.getElementById("btn-show-2nd").className = state.global.showSecondaryRow
+    ? "btn btn-active"
+    : "btn";
 }
 
 function liveColor(n, k, v) {
@@ -431,15 +431,14 @@ function liveColor(n, k, v) {
 
 function syncUI() {
   render();
-  safeUpdate("gt", state.global.title);
-  safeUpdate("gti", state.global.timer);
-  safeUpdate("gp", state.global.period);
-  safeUpdate("gi", state.global.subPeriod);
+  safeUpdate("title", state.global.title);
+  safeUpdate("clock", state.global.timer);
+  safeUpdate("period", state.global.period);
+  safeUpdate("info-box", state.global.subPeriod);
   document.getElementById("lbl-period").innerText = state.global.periodLabel || "PER";
 
-  const gtd = document.getElementById("gtd");
-  if (activeInputId !== "gtd") {
-    gtd.value = state.global.timerDirection;
+  if (activeInputId !== "clock-direction") {
+    document.getElementById("clock-direction").value = state.global.timerDirection;
   }
 
   const sel = document.getElementById("sport-selector");
@@ -451,21 +450,15 @@ function syncUI() {
     sel.value = state.sportId;
   }
 
-  const lay = document.getElementById("layout-selector");
   if (activeInputId !== "layout-selector" && state.layout) {
-    lay.value = state.layout;
+    document.getElementById("layout-selector").value = state.layout;
   }
 
-  const btnSet = document.getElementById("btn-reset-set");
-  if (btnSet) {
-    btnSet.innerText = state.global.scoringMode === "tennis" ? "Start Next Set" : "Next Set/Period";
-  }
+  document.getElementById("next-set").innerText =
+    state.global.scoringMode === "tennis" ? "Start Next Set" : "Next Set/Period";
 
-  if (state.global.duration && activeInputId !== "dur-sel") {
-    const ds = document.getElementById("dur-sel");
-    if (ds) {
-      ds.value = state.global.duration;
-    }
+  if (state.global.duration && activeInputId !== "clock-maximum") {
+    document.getElementById("clock-maximum").value = state.global.duration;
   }
 
   updateGlobalToggles();
@@ -596,7 +589,7 @@ function resetSet() {
     let p = parseInt(state.global.period) || 0;
     state.global.period = (p + 1).toString();
 
-    const el = document.getElementById("gp");
+    const el = document.getElementById("period");
     if (el) {
       el.value = state.global.period;
     }
@@ -635,7 +628,7 @@ function resetSet() {
   let p = parseInt(state.global.period) || 0;
   state.global.period = (p + 1).toString();
 
-  const el = document.getElementById("gp");
+  const el = document.getElementById("period");
   if (el) el.value = state.global.period;
 
   Object.keys(state.controls).forEach((k) => {
@@ -698,11 +691,11 @@ function newMatch() {
 }
 
 function update() {
-  state.global.title = document.getElementById("gt").value;
+  state.global.title = document.getElementById("title").value;
 
   // Fix: Capture clock value to prevent revert, and send manual update if focused
-  if (activeInputId === "gti") {
-    state.global.timer = document.getElementById("gti").value; // Update local state so it doesn't revert on echo
+  if (activeInputId === "clock") {
+    state.global.timer = document.getElementById("clock").value; // Update local state so it doesn't revert on echo
     sendRequest({ setScoreboardClock: { time: state.global.timer } });
   } else {
     // If not focused, we don't send clock back, we let server drive it
@@ -710,8 +703,8 @@ function update() {
     // state.global.timer is authoritative from server usually
   }
 
-  state.global.period = document.getElementById("gp").value;
-  state.global.subPeriod = document.getElementById("gi").value;
+  state.global.period = document.getElementById("period").value;
+  state.global.subPeriod = document.getElementById("info-box").value;
   sendRequest({
     updateScoreboard: {
       config: state,
@@ -724,22 +717,21 @@ window.adj = adj;
 window.toggleTeam = toggleTeam;
 window.cycle = cycle;
 window.state = state;
-window.setHist = setHist;
+window.setHistoricScore = setHistoricScore;
 window.liveColor = liveColor;
 
 window.addEventListener("DOMContentLoaded", async () => {
-  const durSel = document.getElementById("dur-sel");
-  let durHtml = "";
+  let clockMaximumOptions = "";
   for (let i = 1; i <= 120; i++) {
-    durHtml += `<option value=${i}>${i} min</option>`;
+    clockMaximumOptions += `<option value=${i}>${i} min</option>`;
   }
-  durSel.innerHTML = durHtml;
-  addOnChange("dur-sel", setDuration);
-  addOnChange("gtd", setClockDirection);
+  document.getElementById("clock-maximum").innerHTML = clockMaximumOptions;
+  addOnChange("clock-maximum", setDuration);
+  addOnChange("clock-direction", setClockDirection);
   addOnChange("layout-selector", switchLayout);
   addOnChange("sport-selector", switchSport);
-  addOnClick("clock", sendToggleClock);
-  addOnClick("btn-reset-set", resetSet);
+  addOnClick("toggle-clock", sendToggleClock);
+  addOnClick("next-set", resetSet);
   addOnClick("new-match", newMatch);
   addOnClick("btn-show-title", () => {
     tog("showTitle");
@@ -747,13 +739,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnClick("btn-show-2nd", () => {
     tog("showSecondaryRow");
   });
-  addOnClick("btn-show-stats", () => {
+  addOnClick("btn-info-box", () => {
     tog("showStats");
   });
-  addOnBlur("gi", update);
-  addOnBlur("gt", update);
-  addOnBlur("gti", update);
-  addOnBlur("gp", update);
+  addOnBlur("info-box", update);
+  addOnBlur("title", update);
+  addOnBlur("clock", update);
+  addOnBlur("period", update);
   connect();
 });
 
