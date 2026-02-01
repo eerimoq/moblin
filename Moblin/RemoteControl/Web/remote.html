@@ -33,19 +33,8 @@
           placeholder="00:00"
           class="btn-top font-mono text-lg text-indigo-400 bg-black rounded"
         />
-        <select
-          id="dur-sel"
-          onchange="window.setDuration(this.value)"
-          class="btn-top bg-black rounded"
-        ></select>
-        <select
-          id="gtd"
-          onchange="
-            window.state.global.timerDirection = this.value;
-            window.update();
-          "
-          class="btn-top bg-black rounded"
-        >
+        <select id="dur-sel" class="btn-top bg-black rounded"></select>
+        <select id="gtd" class="btn-top bg-black rounded">
           <option value="up">UP</option>
           <option value="down">DOWN</option>
         </select>

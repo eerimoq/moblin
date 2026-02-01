@@ -1,4 +1,4 @@
-import { websocketUrl } from "./utils.mjs";
+import { addOnChange, websocketUrl } from "./utils.mjs";
 
 let ws = null;
 let state = null;
@@ -214,8 +214,17 @@ function setPeriod(p) {
   update();
 }
 
-function setDuration(minutes) {
-  sendRequest({ setScoreboardDuration: { minutes: parseInt(minutes) } });
+function setDuration(event) {
+  sendRequest({
+    setScoreboardDuration: {
+      minutes: parseInt(event.target.value),
+    },
+  });
+}
+
+function setClockDirection(event) {
+  state.global.timerDirection = event.target.value;
+  update();
 }
 
 function buildDom() {
@@ -745,11 +754,12 @@ window.switchSport = switchSport;
 window.switchLayout = switchLayout;
 window.update = update;
 window.state = state;
-window.setDuration = setDuration;
 window.setHist = setHist;
 window.liveColor = liveColor;
 window.sendToggleClock = sendToggleClock;
 
 window.addEventListener("DOMContentLoaded", async () => {
+  addOnChange("dur-sel", setDuration);
+  addOnChange("gtd", setClockDirection);
   connect();
 });
