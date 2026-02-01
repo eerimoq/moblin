@@ -760,5 +760,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnClick("clock", sendToggleClock);
   addOnClick("btn-reset-set", resetSet);
   addOnClick("new-match", newMatch);
+  addOnClick("btn-show-title", () => {
+    tog("showTitle");
+  });
   connect();
 });
