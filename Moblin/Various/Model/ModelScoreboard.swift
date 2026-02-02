@@ -297,11 +297,11 @@ extension Model {
         default:
             sportId = "generic"
         }
-        var liveConfig: RemoteControlScoreboardMatchConfig
+        var config: RemoteControlScoreboardMatchConfig
         if let current = scoreboard?.modular.config, current.sportId == sportId {
-            liveConfig = current
+            config = current
         } else if let loaded = configs[sportId] {
-            liveConfig = loaded
+            config = loaded
             scoreboard?.modular.config = loaded
         } else {
             return RemoteControlScoreboardMatchConfig(
@@ -337,37 +337,37 @@ extension Model {
         if let modular = scoreboard?.modular {
             switch modular.layout {
             case .sideBySide:
-                liveConfig.layout = "sideBySide"
+                config.layout = "sideBySide"
             case .stackHistory:
-                liveConfig.layout = "stackHistory"
+                config.layout = "stackHistory"
             case .stackedInline:
-                liveConfig.layout = "stackedInline"
+                config.layout = "stackedInline"
             default:
-                liveConfig.layout = "stacked"
+                config.layout = "stacked"
             }
-            liveConfig.global.showTitle = modular.showTitle
-            liveConfig.global.showStats = modular.showGlobalStatsBlock
-            liveConfig.global.showSecondaryRow = modular.showMoreStats
-            liveConfig.global.title = modular.title
-            liveConfig.global.timer = modular.clock.format()
-            liveConfig.global.timerDirection = (modular.clock.direction == .down) ? "down" : "up"
-            liveConfig.global.duration = modular.clock.maximum
+            config.global.showTitle = modular.showTitle
+            config.global.showStats = modular.showGlobalStatsBlock
+            config.global.showSecondaryRow = modular.showMoreStats
+            config.global.title = modular.title
+            config.global.timer = modular.clock.format()
+            config.global.timerDirection = (modular.clock.direction == .down) ? "down" : "up"
+            config.global.duration = modular.clock.maximum
             if !modular.period.isEmpty {
-                liveConfig.global.period = modular.period
+                config.global.period = modular.period
             }
-            liveConfig.global.infoBoxText = modular.infoBoxText
-            liveConfig.team1.name = modular.home.name
-            liveConfig.team2.name = modular.away.name
-            liveConfig.team1.textColor = modular.home.textColor.toHex()
-            liveConfig.team2.textColor = modular.away.textColor.toHex()
-            liveConfig.team1.bgColor = modular.home.backgroundColor.toHex()
-            liveConfig.team2.bgColor = modular.away.backgroundColor.toHex()
-            if liveConfig.global.scoringMode != "tennis" {
-                liveConfig.team1.primaryScore = String(modular.score.home)
-                liveConfig.team2.primaryScore = String(modular.score.away)
+            config.global.infoBoxText = modular.infoBoxText
+            config.team1.name = modular.home.name
+            config.team2.name = modular.away.name
+            config.team1.textColor = modular.home.textColor.toHex()
+            config.team2.textColor = modular.away.textColor.toHex()
+            config.team1.bgColor = modular.home.backgroundColor.toHex()
+            config.team2.bgColor = modular.away.backgroundColor.toHex()
+            if config.global.scoringMode != "tennis" {
+                config.team1.primaryScore = String(modular.score.home)
+                config.team2.primaryScore = String(modular.score.away)
             }
         }
-        return liveConfig
+        return config
     }
 
     func getScoreboardSports() -> [String] {
