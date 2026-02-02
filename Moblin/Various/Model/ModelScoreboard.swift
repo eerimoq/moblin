@@ -257,7 +257,7 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
-        subPeriod: " ",
+        subPeriod: "",
         primaryScoreResetOnPeriod: true,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: true,
