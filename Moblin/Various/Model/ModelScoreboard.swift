@@ -110,7 +110,7 @@ private let genericSetsConfig = RemoteControlScoreboardMatchConfig(
         changePossessionOnScore: false,
         showTitle: false,
         showStats: false,
-        showSecondaryRow: false
+        showMoreStats: false
     ),
     controls: [
         "primaryScore": .init(type: "counter", label: "Pt", periodReset: true),
@@ -347,7 +347,7 @@ extension Model {
             }
             config.global.showTitle = modular.showTitle
             config.global.showStats = modular.showGlobalStatsBlock
-            config.global.showSecondaryRow = modular.showMoreStats
+            config.global.showMoreStats = modular.showMoreStats
             config.global.title = modular.title
             config.global.timer = modular.clock.format()
             switch modular.clock.direction {
@@ -439,7 +439,7 @@ extension Model {
             if let showStats = config.global.showStats {
                 modular.showGlobalStatsBlock = showStats
             }
-            if let show2nd = config.global.showSecondaryRow {
+            if let show2nd = config.global.showMoreStats {
                 modular.showMoreStats = show2nd
             }
             modular.home.name = config.team1.name
@@ -472,15 +472,6 @@ extension Model {
                 let modular = scoreboard.modular
                 modular.config = config
                 modular.setLayout(name: config.layout)
-                switch modular.layout {
-                case .sideBySide:
-                    modular.showMoreStats = true
-                    modular.showGlobalStatsBlock = true
-                default:
-                    modular.showMoreStats = false
-                    modular.showGlobalStatsBlock = false
-                }
-                modular.showTitle = false
                 modular.score.home = Int(config.team1.primaryScore) ?? 0
                 modular.score.away = Int(config.team2.primaryScore) ?? 0
                 modular.period = config.global.period

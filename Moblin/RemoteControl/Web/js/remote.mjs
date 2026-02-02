@@ -403,7 +403,7 @@ function toggleButtonStyle(elementId, enabled) {
 function updateGlobalToggles() {
   toggleButtonStyle("btn-show-title", state.global.showTitle);
   toggleButtonStyle("btn-info-box", state.global.showStats);
-  toggleButtonStyle("btn-more-stats", state.global.showSecondaryRow);
+  toggleButtonStyle("btn-more-stats", state.global.showMoreStats);
 }
 
 function liveColor(n, k, v) {
@@ -740,7 +740,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     toggleButtonState("showTitle");
   });
   addOnClick("btn-more-stats", () => {
-    toggleButtonState("showSecondaryRow");
+    toggleButtonState("showMoreStats");
   });
   addOnClick("btn-info-box", () => {
     toggleButtonState("showStats");
