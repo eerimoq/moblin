@@ -2866,6 +2866,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     @Published var away: SettingsWidgetModularScoreboardTeam = createAwayTeam()
     @Published var title: String = baseTitle
     @Published var period: String = "1"
+    @Published var infoBoxText: String = ""
     var score: SettingsWidgetScoreboardScore = .init()
     var clock: SettingsWidgetScoreboardClock = .init()
     @Published var layout: SettingsWidgetScoreboardLayout = .stacked
@@ -2882,6 +2883,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
              away,
              title,
              period,
+             infoBoxText,
              clock,
              layout,
              width,
@@ -2901,6 +2903,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.away, away)
         try container.encode(.title, title)
         try container.encode(.period, period)
+        try container.encode(.infoBoxText, infoBoxText)
         try container.encode(.clock, clock)
         try container.encode(.layout, layout)
         try container.encode(.width, width)
@@ -2917,6 +2920,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         away = container.decode(.away, SettingsWidgetModularScoreboardTeam.self, Self.createAwayTeam())
         title = container.decode(.title, String.self, Self.baseTitle)
         period = container.decode(.period, String.self, "1")
+        infoBoxText = container.decode(.infoBoxText, String.self, "")
         clock = container.decode(.clock, SettingsWidgetScoreboardClock.self, .init())
         layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
         width = container.decode(.width, Float.self, 350)

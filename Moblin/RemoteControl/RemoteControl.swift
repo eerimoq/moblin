@@ -668,7 +668,7 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     var duration: Int?
     var period: String
     var periodLabel: String
-    var subPeriod: String
+    var infoBoxText: String = ""
     // periphery: ignore
     var primaryScoreResetOnPeriod: Bool?
     // periphery: ignore
@@ -709,7 +709,7 @@ struct RemoteControlScoreboardMatchConfig: Codable {
     }
 
     func infoBoxStats() -> [String] {
-        return [global.timer, periodFull(), global.subPeriod].filter { !$0.isEmpty }
+        return [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
     }
 }
 

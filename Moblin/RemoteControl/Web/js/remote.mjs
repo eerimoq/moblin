@@ -437,7 +437,7 @@ function syncUI() {
   safeUpdate("title", state.global.title);
   safeUpdate("clock", state.global.timer);
   safeUpdate("period", state.global.period);
-  safeUpdate("info-box", state.global.subPeriod);
+  safeUpdate("info-box", state.global.infoBoxText);
   document.getElementById("lbl-period").innerText = state.global.periodLabel || "PER";
 
   if (activeInputId !== "clock-direction") {
@@ -707,7 +707,7 @@ function update() {
   }
 
   state.global.period = document.getElementById("period").value;
-  state.global.subPeriod = document.getElementById("info-box").value;
+  state.global.infoBoxText = document.getElementById("info-box").value;
   sendRequest({
     updateScoreboard: {
       config: state,

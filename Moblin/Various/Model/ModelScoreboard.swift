@@ -33,7 +33,6 @@ private let basketballConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "down",
         period: "1",
         periodLabel: "QTR",
-        subPeriod: "",
         primaryScoreResetOnPeriod: false,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
@@ -74,7 +73,6 @@ private let genericConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "down",
         period: "",
         periodLabel: "",
-        subPeriod: "",
         primaryScoreResetOnPeriod: false,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
@@ -107,7 +105,6 @@ private let genericSetsConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
-        subPeriod: "",
         primaryScoreResetOnPeriod: true,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
@@ -152,7 +149,6 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "down",
         period: "1",
         periodLabel: "PER",
-        subPeriod: "",
         primaryScoreResetOnPeriod: false,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
@@ -186,7 +182,6 @@ private let footballConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "down",
         period: "1",
         periodLabel: "HALF",
-        subPeriod: "",
         primaryScoreResetOnPeriod: false,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
@@ -216,7 +211,6 @@ private let tennisConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
-        subPeriod: "",
         primaryScoreResetOnPeriod: true,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
@@ -257,7 +251,6 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
-        subPeriod: "",
         primaryScoreResetOnPeriod: true,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: true,
@@ -335,7 +328,6 @@ extension Model {
                     timerDirection: "up",
                     period: "1",
                     periodLabel: "SET",
-                    subPeriod: "",
                     primaryScoreResetOnPeriod: false,
                     secondaryScoreResetOnPeriod: false
                 ),
@@ -363,6 +355,7 @@ extension Model {
             if !modular.period.isEmpty {
                 liveConfig.global.period = modular.period
             }
+            liveConfig.global.infoBoxText = modular.infoBoxText
             liveConfig.team1.name = modular.home.name
             liveConfig.team2.name = modular.away.name
             liveConfig.team1.textColor = modular.home.textColor.toHex()
@@ -448,6 +441,7 @@ extension Model {
             modular.away.name = config.team2.name
             modular.title = config.global.title
             modular.period = config.global.period
+            modular.infoBoxText = config.global.infoBoxText
             if let score = Int(config.team1.primaryScore) {
                 modular.score.home = score
             }
