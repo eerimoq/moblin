@@ -350,7 +350,12 @@ extension Model {
             config.global.showSecondaryRow = modular.showMoreStats
             config.global.title = modular.title
             config.global.timer = modular.clock.format()
-            config.global.timerDirection = (modular.clock.direction == .down) ? "down" : "up"
+            switch modular.clock.direction {
+            case .up:
+                config.global.timerDirection = "up"
+            case .down:
+                config.global.timerDirection = "down"
+            }
             config.global.duration = modular.clock.maximum
             if !modular.period.isEmpty {
                 config.global.period = modular.period
