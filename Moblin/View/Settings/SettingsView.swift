@@ -153,6 +153,14 @@ struct SettingsView: View {
                         Label("Heart rate devices", systemImage: "heart")
                     }
                     NavigationLink {
+                        GarminDevicesSettingsView(
+                            garminDevices: database.garminDevices,
+                            garminUnits: database.garminUnits
+                        )
+                    } label: {
+                        Label("Garmin devices", systemImage: "watch")
+                    }
+                    NavigationLink {
                         BlackSharkCoolerDevicesSettingsView(blackSharkCoolerDevices: database
                             .blackSharkCoolerDevices)
                     } label: {

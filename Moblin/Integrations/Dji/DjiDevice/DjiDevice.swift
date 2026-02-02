@@ -165,6 +165,12 @@ extension DjiDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
+            if let deviceId, let cached = central.retrievePeripherals(
+                withIdentifiers: [deviceId]
+            ).first {
+                connectToPeripheral(central: central, peripheral: cached)
+                return
+            }
             centralManager?.scanForPeripherals(withServices: nil)
         default:
             break
@@ -195,6 +201,19 @@ extension DjiDevice: CBCentralManagerDelegate {
 
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
         reset()
+    }
+
+    private func connectToPeripheral(central: CBCentralManager, peripheral: CBPeripheral) {
+        central.stopScan()
+        cameraPeripheral = peripheral
+        peripheral.delegate = self
+        startStartStreamingTimer()
+        setState(state: .connecting)
+        if peripheral.state == .connected {
+            peripheral.discoverServices(nil)
+        } else {
+            central.connect(peripheral, options: nil)
+        }
     }
 }
 

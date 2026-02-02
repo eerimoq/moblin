@@ -280,6 +280,18 @@ extension CyclingPowerDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
+            if let deviceId, let connected = central.retrieveConnectedPeripherals(
+                withServices: [cyclingPowerServiceId]
+            ).first(where: { $0.identifier == deviceId }) {
+                connectToPeripheral(central: central, peripheral: connected)
+                return
+            }
+            if let deviceId, let cached = central.retrievePeripherals(
+                withIdentifiers: [deviceId]
+            ).first {
+                connectToPeripheral(central: central, peripheral: cached)
+                return
+            }
             centralManager?.scanForPeripherals(withServices: nil)
         default:
             break
@@ -313,6 +325,18 @@ extension CyclingPowerDevice: CBCentralManagerDelegate {
         error _: Error?
     ) {
         reconnect()
+    }
+
+    private func connectToPeripheral(central: CBCentralManager, peripheral: CBPeripheral) {
+        central.stopScan()
+        self.peripheral = peripheral
+        peripheral.delegate = self
+        setState(state: .connecting)
+        if peripheral.state == .connected {
+            peripheral.discoverServices(nil)
+        } else {
+            central.connect(peripheral, options: nil)
+        }
     }
 }
 

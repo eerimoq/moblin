@@ -540,6 +540,12 @@ extension TeslaVehicle: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
+            if let connected = central.retrieveConnectedPeripherals(
+                withServices: [vehicleServiceUuid]
+            ).first(where: { $0.name == self.localName() }) {
+                connectToPeripheral(central: central, peripheral: connected)
+                return
+            }
             centralManager?.scanForPeripherals(withServices: nil)
         default:
             break
@@ -559,11 +565,7 @@ extension TeslaVehicle: CBCentralManagerDelegate {
             return
         }
         logger.info("tesla-vehicle: Connecting to \(localName)")
-        central.stopScan()
-        vehiclePeripheral = peripheral
-        peripheral.delegate = self
-        central.connect(peripheral, options: nil)
-        setState(state: .connecting)
+        connectToPeripheral(central: central, peripheral: peripheral)
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {
@@ -579,6 +581,18 @@ extension TeslaVehicle: CBCentralManagerDelegate {
     func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
         logger.debug("tesla-vehicle: Disconnected")
         reset()
+    }
+
+    private func connectToPeripheral(central: CBCentralManager, peripheral: CBPeripheral) {
+        central.stopScan()
+        vehiclePeripheral = peripheral
+        peripheral.delegate = self
+        setState(state: .connecting)
+        if peripheral.state == .connected {
+            peripheral.discoverServices([vehicleServiceUuid])
+        } else {
+            central.connect(peripheral, options: nil)
+        }
     }
 }
 

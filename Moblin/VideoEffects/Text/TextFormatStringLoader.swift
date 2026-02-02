@@ -41,6 +41,10 @@ enum TextFormatPart: Equatable {
     case teslaMedia
     case cyclingPower
     case cyclingCadence
+    case garminHeartRate
+    case garminPace
+    case garminCadence
+    case garminDistance
     case lapTimes
     case browserTitle
     case gForce
@@ -137,6 +141,14 @@ class TextFormatLoader {
                     loadItem(part: .cyclingPower, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{cyclingcadence}") {
                     loadItem(part: .cyclingCadence, offsetBy: 16)
+                } else if formatFromIndex.hasPrefix("{garminheartrate}") {
+                    loadItem(part: .garminHeartRate, offsetBy: 17)
+                } else if formatFromIndex.hasPrefix("{garminpace}") {
+                    loadItem(part: .garminPace, offsetBy: 12)
+                } else if formatFromIndex.hasPrefix("{garmincadence}") {
+                    loadItem(part: .garminCadence, offsetBy: 15)
+                } else if formatFromIndex.hasPrefix("{garmindistance}") {
+                    loadItem(part: .garminDistance, offsetBy: 16)
                 } else if formatFromIndex.hasPrefix("{laptimes}") {
                     loadItem(part: .lapTimes, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{browsertitle}") {

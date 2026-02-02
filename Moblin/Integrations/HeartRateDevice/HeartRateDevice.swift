@@ -15,11 +15,11 @@ enum HeartRateDeviceState {
     case connected
 }
 
-private let heartRateServiceId = CBUUID(string: "180D")
+let heartRateServiceId = CBUUID(string: "180D")
 
 let heartRateScanner = BluetoothScanner(serviceIds: [heartRateServiceId])
 
-private let measurementCharacteristicId = CBUUID(string: "2A37")
+let heartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
 
 private let measurementHeartRateValueFormatIndex = 0
 
@@ -98,6 +98,18 @@ extension HeartRateDevice: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
+            if let deviceId, let connected = central.retrieveConnectedPeripherals(
+                withServices: [heartRateServiceId]
+            ).first(where: { $0.identifier == deviceId }) {
+                connectToPeripheral(central: central, peripheral: connected)
+                return
+            }
+            if let deviceId, let cached = central.retrievePeripherals(
+                withIdentifiers: [deviceId]
+            ).first {
+                connectToPeripheral(central: central, peripheral: cached)
+                return
+            }
             centralManager?.scanForPeripherals(withServices: nil)
         default:
             break
@@ -132,6 +144,18 @@ extension HeartRateDevice: CBCentralManagerDelegate {
     ) {
         reconnect()
     }
+
+    private func connectToPeripheral(central: CBCentralManager, peripheral: CBPeripheral) {
+        central.stopScan()
+        self.peripheral = peripheral
+        peripheral.delegate = self
+        setState(state: .connecting)
+        if peripheral.state == .connected {
+            peripheral.discoverServices(nil)
+        } else {
+            central.connect(peripheral, options: nil)
+        }
+    }
 }
 
 extension HeartRateDevice: CBPeripheralDelegate {
@@ -148,7 +172,7 @@ extension HeartRateDevice: CBPeripheralDelegate {
     ) {
         for characteristic in service.characteristics ?? [] {
             switch characteristic.uuid {
-            case measurementCharacteristicId:
+            case heartRateMeasurementCharacteristicId:
                 measurementCharacteristic = characteristic
                 peripheral?.setNotifyValue(true, for: characteristic)
             default:
@@ -166,7 +190,7 @@ extension HeartRateDevice: CBPeripheralDelegate {
         }
         do {
             switch characteristic.uuid {
-            case measurementCharacteristicId:
+            case heartRateMeasurementCharacteristicId:
                 try handlePowerMeasurement(value: value)
             default:
                 break
