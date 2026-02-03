@@ -18,10 +18,15 @@ struct YouTubeApiLiveBroadcastStatus: Codable {
     let privacyStatus: String
 }
 
+struct YouTubeApiLiveBroadcastContentDetails: Codable {
+    let enableAutoStop: Bool
+}
+
 struct YouTubeApiLiveBroadcast: Codable, Identifiable {
     let id: String
     let snippet: YouTubeApiLiveBroadcastSnippet
     let status: YouTubeApiLiveBroadcastStatus
+    let contentDetails: YouTubeApiLiveBroadcastContentDetails
 }
 
 struct YouTubeApiLiveStreamIngestInfo: Codable {
@@ -140,6 +145,7 @@ class YouTubeApi {
 
     func insertLiveBroadcast(title: String,
                              visibility: YouTubeApiLiveBroadcaseVisibility,
+                             autoStop: Bool,
                              onCompleted: @escaping (NetworkResponse<YouTubeApiLiveBroadcast>) -> Void)
     {
         let subPath = makeUrl("liveBroadcasts", [("part", "snippet,contentDetails,status")])
@@ -148,13 +154,13 @@ class YouTubeApi {
                 "title": title,
                 "scheduledStartTime": Date().ISO8601Format(),
             ],
-            "contentDetails": [
-                "enableAutoStart": true,
-                "enableAutoStop": true,
-            ],
             "status": [
                 "privacyStatus": visibility.rawValue,
                 "selfDeclaredMadeForKids": false,
+            ],
+            "contentDetails": [
+                "enableAutoStart": true,
+                "enableAutoStop": autoStop,
             ],
         ]
         doPost(subPath: subPath, body: serialize(body)) {
