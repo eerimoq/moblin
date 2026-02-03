@@ -72,23 +72,6 @@ struct WidgetScoreboardSettingsView: View {
                 model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
             switch scoreboard.sport {
-            case .padel, .generic:
-                Text("Use your Apple Watch to update the scoreboard.")
-            default:
-                Text("Use the web based remote control on another device to update the scoreboard.")
-                if web.enabled {
-                    RemoteControlWebDefaultUrlView(web: web,
-                                                   status: model.statusOther,
-                                                   path: "/remote.html")
-                }
-                RemoteControlWebShortcutView(model: model)
-                if !web.enabled {
-                    Text("⚠️ The web based remote control is not enabled.")
-                }
-            }
-        }
-        Section {
-            switch scoreboard.sport {
             case .padel:
                 WidgetScoreboardPadelGeneralSettingsView(model: model,
                                                          widget: widget,
@@ -104,8 +87,25 @@ struct WidgetScoreboardSettingsView: View {
                                                            widget: widget,
                                                            modular: scoreboard.modular)
             }
+        }
+        Section {
+            switch scoreboard.sport {
+            case .padel, .generic:
+                Text("Use your Apple Watch to update the scoreboard.")
+            default:
+                Text("Use the web based remote control on another device to update the scoreboard.")
+                if web.enabled {
+                    RemoteControlWebDefaultUrlView(web: web,
+                                                   status: model.statusOther,
+                                                   path: "/remote.html")
+                }
+                RemoteControlWebShortcutView(model: model)
+                if !web.enabled {
+                    Text("⚠️ The web based remote control is not enabled.")
+                }
+            }
         } header: {
-            Text("General")
+            Text("Remote control")
         }
         switch scoreboard.sport {
         case .padel:

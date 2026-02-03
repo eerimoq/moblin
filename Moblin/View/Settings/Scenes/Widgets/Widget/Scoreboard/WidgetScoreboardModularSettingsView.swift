@@ -1,59 +1,5 @@
 import SwiftUI
 
-private struct LayoutSettingsView: View {
-    let model: Model
-    let widget: SettingsWidget
-    @ObservedObject var modular: SettingsWidgetModularScoreboard
-
-    private func updateEffect() {
-        model.updateScoreboardEffect(widget: widget)
-    }
-
-    var body: some View {
-        NavigationLink("Layout") {
-            Form {
-                Section {
-                    HStack {
-                        Text("Width")
-                        Slider(value: $modular.width, in: 100 ... 1000)
-                            .onChange(of: modular.width) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(modular.width)))
-                            .frame(width: 35)
-                    }
-                    HStack {
-                        Text("Height")
-                        Slider(value: $modular.rowHeight, in: 10 ... 150)
-                            .onChange(of: modular.rowHeight) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(modular.rowHeight)))
-                            .frame(width: 35)
-                    }
-                    Toggle("Title", isOn: $modular.showTitle)
-                        .onChange(of: modular.showTitle) { _ in
-                            updateEffect()
-                        }
-                    Toggle("Info box", isOn: $modular.showGlobalStatsBlock)
-                        .onChange(of: modular.showGlobalStatsBlock) { _ in
-                            updateEffect()
-                        }
-                    Toggle("More stats", isOn: $modular.showMoreStats)
-                        .onChange(of: modular.showMoreStats) { _ in
-                            updateEffect()
-                        }
-                    Toggle("Bold", isOn: $modular.isBold)
-                        .onChange(of: modular.isBold) { _ in
-                            updateEffect()
-                        }
-                }
-            }
-            .navigationTitle("Layout")
-        }
-    }
-}
-
 private struct TeamView: View {
     let model: Model
     let widget: SettingsWidget
@@ -175,16 +121,64 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
     let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
+    private func updateEffect() {
+        model.updateScoreboardEffect(widget: widget)
+    }
+
     var body: some View {
-        Picker("Type", selection: $modular.layout) {
-            ForEach(SettingsWidgetScoreboardLayout.allCases, id: \.self) {
-                Text($0.toString())
+        NavigationLink("Layout") {
+            Form {
+                Section {
+                    Picker("Type", selection: $modular.layout) {
+                        ForEach(SettingsWidgetScoreboardLayout.allCases, id: \.self) {
+                            Text($0.toString())
+                        }
+                    }
+                    .onChange(of: modular.layout) { _ in
+                        model.updateScoreboardEffect(widget: widget)
+                        model.remoteControlScoreboardUpdate()
+                    }
+                }
+                Section {
+                    HStack {
+                        Text("Width")
+                        Slider(value: $modular.width, in: 100 ... 1000)
+                            .onChange(of: modular.width) { _ in
+                                updateEffect()
+                            }
+                        Text(String(Int(modular.width)))
+                            .frame(width: 35)
+                    }
+                    HStack {
+                        Text("Height")
+                        Slider(value: $modular.rowHeight, in: 10 ... 150)
+                            .onChange(of: modular.rowHeight) { _ in
+                                updateEffect()
+                            }
+                        Text(String(Int(modular.rowHeight)))
+                            .frame(width: 35)
+                    }
+                }
+                Section {
+                    Toggle("Title", isOn: $modular.showTitle)
+                        .onChange(of: modular.showTitle) { _ in
+                            updateEffect()
+                        }
+                    Toggle("Info box", isOn: $modular.showGlobalStatsBlock)
+                        .onChange(of: modular.showGlobalStatsBlock) { _ in
+                            updateEffect()
+                        }
+                    Toggle("More stats", isOn: $modular.showMoreStats)
+                        .onChange(of: modular.showMoreStats) { _ in
+                            updateEffect()
+                        }
+                    Toggle("Bold", isOn: $modular.isBold)
+                        .onChange(of: modular.isBold) { _ in
+                            updateEffect()
+                        }
+                }
             }
+            .navigationTitle("Layout")
         }
-        .onChange(of: modular.layout) { _ in
-            model.updateScoreboardEffect(widget: widget)
-            model.remoteControlScoreboardUpdate()
-        }
-        LayoutSettingsView(model: model, widget: widget, modular: modular)
     }
 }
