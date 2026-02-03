@@ -338,34 +338,32 @@ struct ScoreboardEffectModularView: View {
                 (3, team.stat4Label, team.stat4),
             ]
             .filter { _, _, value in !value.isEmpty && !value.hasPrefix("NO ") }
-            HStack(spacing: 8) {
-                if alignRight {
-                    Spacer()
-                }
-                ForEach(stats, id: \.0) { _, label, value in
-                    HStack(spacing: 2) {
-                        if !label.isEmpty {
-                            Text(label + ":")
-                                .opacity(0.8)
-                        }
-                        Text(value)
-                            .monospacedDigit()
+            ZStack {
+                Color.black.opacity(0.25)
+                HStack(spacing: 8) {
+                    if alignRight {
+                        Spacer()
                     }
-                    .font(.system(size: fontSize() * 0.65, weight: .bold))
-                    .minimumScaleFactor(0.5)
+                    ForEach(stats, id: \.0) { _, label, value in
+                        HStack(spacing: 2) {
+                            if !label.isEmpty {
+                                Text(label + ":")
+                                    .opacity(0.8)
+                            }
+                            Text(value)
+                                .monospacedDigit()
+                        }
+                        .font(.system(size: fontSize() * 0.65, weight: .bold))
+                        .minimumScaleFactor(0.5)
+                    }
+                    if !alignRight {
+                        Spacer()
+                    }
                 }
-                if !alignRight {
-                    Spacer()
-                }
+                .padding(.horizontal, 6)
             }
-            .padding(.horizontal, 6)
             .frame(height: height)
-            .background(
-                ZStack {
-                    backgroundColor
-                    Color.black.opacity(0.25)
-                }
-            )
+            .background(backgroundColor)
         }
     }
 
