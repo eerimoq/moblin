@@ -95,10 +95,9 @@ struct ScoreboardEffectModularView: View {
                         let otherValue = getHistoricScore(team: otherTeam, indexPlusOne: indexPlusOne) ?? ""
                         let valueInt = Int(value) ?? -1
                         let otherValueInt = Int(otherValue) ?? -1
-                        let weight: Font
-                            .Weight =
+                        let weight: Font.Weight =
                             (indexPlusOne < currentPeriod && valueInt > otherValueInt && valueInt >= 0)
-                                ? .black
+                                ? .bold
                                 : .medium
                         if !value.isEmpty {
                             stat(
@@ -182,14 +181,14 @@ struct ScoreboardEffectModularView: View {
                                 .minimumScaleFactor(0.1)
                         }
                         Text(config.global.timer)
-                            .font(.system(size: fontSize * 0.9, weight: .black))
+                            .font(.system(size: fontSize * 0.9, weight: .bold))
                             .monospacedDigit()
                             .minimumScaleFactor(0.1)
                     }
                     .frame(width: fontSize * 3.5, height: teamRowFullHeight)
                 } else {
                     Text("-")
-                        .font(.system(size: fontSize, weight: .black))
+                        .font(.system(size: fontSize, weight: .bold))
                         .frame(width: fontSize * 0.8, height: teamRowFullHeight)
                 }
             }
@@ -334,7 +333,7 @@ struct ScoreboardEffectModularView: View {
         fontSize: CGFloat,
         width: CGFloat,
         gray: Bool,
-        weight: Font.Weight = .black
+        weight: Font.Weight = .bold
     ) -> some View {
         if !value.isEmpty {
             ZStack {
