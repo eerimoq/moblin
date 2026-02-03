@@ -119,11 +119,9 @@ struct ScoreboardEffectModularView: View {
             }
             .frame(height: height)
             .background(modularTeam.backgroundColorColor)
-            if modular.showMoreStats {
-                moreStats(team: team,
-                          height: height * 0.6,
-                          backgroundColor: modularTeam.backgroundColorColor)
-            }
+            moreStats(team: team,
+                      height: height * 0.6,
+                      backgroundColor: modularTeam.backgroundColorColor)
         }
         .foregroundStyle(modularTeam.textColorColor)
     }
@@ -222,11 +220,9 @@ struct ScoreboardEffectModularView: View {
             }
             .frame(height: height)
             .background(modularTeam.backgroundColorColor)
-            if modular.showMoreStats {
-                moreStats(team: team,
-                          height: height * 0.6,
-                          backgroundColor: modularTeam.backgroundColorColor)
-            }
+            moreStats(team: team,
+                      height: height * 0.6,
+                      backgroundColor: modularTeam.backgroundColorColor)
         }
         .foregroundStyle(modularTeam.textColorColor)
     }
@@ -279,12 +275,10 @@ struct ScoreboardEffectModularView: View {
             }
             .frame(height: height)
             .background(modularTeam.backgroundColorColor)
-            if modular.showMoreStats {
-                moreStats(team: team,
-                          height: height * 0.6,
-                          backgroundColor: modularTeam.backgroundColorColor,
-                          alignRight: !mirrored)
-            }
+            moreStats(team: team,
+                      height: height * 0.6,
+                      backgroundColor: modularTeam.backgroundColorColor,
+                      alignRight: !mirrored)
         }
         .foregroundStyle(modularTeam.textColorColor)
     }
@@ -306,10 +300,10 @@ struct ScoreboardEffectModularView: View {
                 if let label, !label.isEmpty {
                     VStack(spacing: -2) {
                         Text(label)
-                            .font(.system(size: fontSize * 0.35, weight: .bold))
-                            .padding(.top, 2)
+                            .font(.system(size: fontSize * 0.25, weight: .bold))
+                            .offset(x: 0, y: fontSize * 0.04)
                         Text(value)
-                            .font(.system(size: fontSize * 0.8, weight: weight))
+                            .font(.system(size: fontSize * 0.75, weight: weight))
                     }
                 } else {
                     Text(value)
@@ -336,41 +330,43 @@ struct ScoreboardEffectModularView: View {
         backgroundColor: Color,
         alignRight: Bool = false
     ) -> some View {
-        let stats = [
-            (0, team.stat1Label, team.stat1),
-            (1, team.stat2Label, team.stat2),
-            (2, team.stat3Label, team.stat3),
-            (3, team.stat4Label, team.stat4),
-        ]
-        .filter { !$0.2.isEmpty && !$0.2.hasPrefix("NO ") }
-        HStack(spacing: 8) {
-            if alignRight {
-                Spacer()
-            }
-            ForEach(stats, id: \.0) { stat in
-                HStack(spacing: 2) {
-                    if !stat.1.isEmpty {
-                        Text(stat.1 + ":")
-                            .opacity(0.8)
-                    }
-                    Text(stat.2)
-                        .monospacedDigit()
+        if modular.showMoreStats {
+            let stats = [
+                (0, team.stat1Label, team.stat1),
+                (1, team.stat2Label, team.stat2),
+                (2, team.stat3Label, team.stat3),
+                (3, team.stat4Label, team.stat4),
+            ]
+            .filter { _, _, value in !value.isEmpty && !value.hasPrefix("NO ") }
+            HStack(spacing: 8) {
+                if alignRight {
+                    Spacer()
                 }
-                .font(.system(size: fontSize() * 0.65, weight: .bold))
-                .minimumScaleFactor(0.5)
+                ForEach(stats, id: \.0) { _, label, value in
+                    HStack(spacing: 2) {
+                        if !label.isEmpty {
+                            Text(label + ":")
+                                .opacity(0.8)
+                        }
+                        Text(value)
+                            .monospacedDigit()
+                    }
+                    .font(.system(size: fontSize() * 0.65, weight: .bold))
+                    .minimumScaleFactor(0.5)
+                }
+                if !alignRight {
+                    Spacer()
+                }
             }
-            if !alignRight {
-                Spacer()
-            }
+            .padding(.horizontal, 6)
+            .frame(height: height)
+            .background(
+                ZStack {
+                    backgroundColor
+                    Color.black.opacity(0.25)
+                }
+            )
         }
-        .padding(.horizontal, 6)
-        .frame(height: height)
-        .background(
-            ZStack {
-                backgroundColor
-                Color.black.opacity(0.25)
-            }
-        )
     }
 
     @ViewBuilder
