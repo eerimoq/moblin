@@ -685,7 +685,7 @@ async function newMatch() {
     return;
   }
   if (state.global.timerDirection == "up") {
-    state.global.timer = "00:00";
+    state.global.timer = "0:00";
   } else {
     state.global.timer = `${parseInt(state.global.duration)}:00`;
   }
@@ -727,7 +727,7 @@ function update() {
     sendRequest({ setScoreboardClock: { time: state.global.timer } });
   } else {
     // If not focused, we don't send clock back, we let server drive it
-    // But we need to ensure we don't send "00:00" if we haven't rendered yet
+    // But we need to ensure we don't send "0:00" if we haven't rendered yet
     // state.global.timer is authoritative from server usually
   }
 

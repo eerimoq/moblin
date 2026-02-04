@@ -101,7 +101,7 @@ private let genericSetsConfig = RemoteControlScoreboardMatchConfig(
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "GENERIC MATCH",
-        timer: "00:00",
+        timer: "0:00",
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
@@ -207,7 +207,7 @@ private let tennisConfig = RemoteControlScoreboardMatchConfig(
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "TENNIS",
-        timer: "00:00",
+        timer: "0:00",
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
@@ -247,7 +247,7 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "Varsity Volleyball",
-        timer: "00:00",
+        timer: "0:00",
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
@@ -324,7 +324,7 @@ extension Model {
                 ),
                 global: RemoteControlScoreboardGlobalStats(
                     title: "ERROR",
-                    timer: "00:00",
+                    timer: "0:00",
                     timerDirection: "up",
                     period: "1",
                     periodLabel: "SET",
