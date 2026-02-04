@@ -163,10 +163,18 @@ function buildHistoricScores() {
   let histHtml = "";
   for (let i = 1; i <= 5; i++) {
     histHtml += `<div class="flex flex-col gap-1">
-            <div id="h-lbl-${i}" onclick="window.setPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">SET ${i}</div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t1-${i}" onchange="window.setHistoricScore(1,${i},this.value)">${historicScoreOptions()}</select></div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t2-${i}" onchange="window.setHistoricScore(2,${i},this.value)">${historicScoreOptions()}</select></div>
-        </div>`;
+                    <div id="h-lbl-${i}" onclick="window.setPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">
+                        SET ${i}
+                    </div>
+                    <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
+                        <select id="h-t1-${i}" onchange="window.setHistoricScore(1,${i},this.value)">
+                            ${historicScoreOptions()}
+                        </select></div>
+                    <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
+                        <select id="h-t2-${i}" onchange="window.setHistoricScore(2,${i},this.value)">
+                            ${historicScoreOptions()}
+                        </select></div>
+                </div>`;
   }
   document.getElementById("history-grid").innerHTML = histHtml;
 }
@@ -254,13 +262,23 @@ function buildDom() {
     }
 
     document.getElementById(`t${n}a`).innerHTML = `
-            <div id="h-t${n}" class="rounded-t p-1" style="background:${team.bgColor}"><input type="text" id="in-n-${n}" onblur="window.state.${t}.name=this.value;update()" class=""></div>
+            <div id="h-t${n}" class="rounded-t p-1" style="background:${team.bgColor}">
+              <input type="text" id="in-n-${n}" onblur="window.state.${t}.name=this.value;window.update()" class="">
+            </div>
             <div class="card rounded-t-none">
                 <div class="grid grid-cols-4 gap-1 h-10 mb-2">
-                    <div id="p-t${n}" class="disp-box" style="background:${team.bgColor};color:${team.textColor}">0</div>
-                    <div id="s-t${n}" class="disp-box m-shadow" style="background:${team.bgColor};color:white">0</div>
-                    <div class="rounded border border-zinc-700 bg-zinc-800"><input type="color" id="col-bg-${n}" oninput="window.liveColor(${n},'bgColor',this.value)"></div>
-                    <div class="rounded border border-zinc-700 bg-zinc-800"><input type="color" id="col-txt-${n}" oninput="window.liveColor(${n},'textColor',this.value)"></div>
+                    <div id="p-t${n}" class="disp-box" style="background:${team.bgColor};color:${team.textColor}">
+                        0
+                    </div>
+                    <div id="s-t${n}" class="disp-box m-shadow" style="background:${team.bgColor};color:white">
+                        0
+                    </div>
+                    <div class="rounded border border-zinc-700 bg-zinc-800">
+                        <input type="color" id="col-bg-${n}" oninput="window.liveColor(${n},'bgColor',this.value)">
+                    </div>
+                    <div class="rounded border border-zinc-700 bg-zinc-800">
+                        <input type="color" id="col-txt-${n}" oninput="window.liveColor(${n},'textColor',this.value)">
+                    </div>
                 </div>
                 <div class="grid grid-cols-3 gap-1 mb-2">
                     <button onclick="window.adj(${n},'primaryScore',1)" class="col-span-2 btn btn-score">+Pt</button>
@@ -274,7 +292,11 @@ function buildDom() {
 
 function renderPacked(t, n, key, c, team) {
   if (c.type === "select") {
-    return `<div class="disp-sm bg-zinc-800"><select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;update()">${c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("")}</select></div>`;
+    return `<div class="disp-sm bg-zinc-800">
+                <select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;update()">
+                    ${c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("")}
+                </select>
+            </div>`;
   } else if (c.type === "toggleTeam") {
     return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">${c.label}</button>`;
   } else if (c.type === "cycle") {
@@ -747,6 +769,7 @@ window.cycle = cycle;
 window.state = state;
 window.setHistoricScore = setHistoricScore;
 window.liveColor = liveColor;
+window.update = update;
 
 window.addEventListener("DOMContentLoaded", async () => {
   let clockMaximumOptions = "";
