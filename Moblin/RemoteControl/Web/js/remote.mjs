@@ -52,6 +52,10 @@ function sendGetStatusRequest() {
   });
 }
 
+function sendSetScoreboardClock(time) {
+  sendRequest({ setScoreboardClock: { time: time } });
+}
+
 setInterval(() => {
   sendGetStatusRequest();
 }, 2000);
@@ -163,7 +167,7 @@ function buildHistoricScores() {
   let histHtml = "";
   for (let i = 1; i <= 5; i++) {
     histHtml += `<div class="flex flex-col gap-1">
-                    <div id="h-lbl-${i}" onclick="window.setPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">
+                    <div id="h-lbl-${i}" onclick="window.setHistoricPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">
                         SET ${i}
                     </div>
                     <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
@@ -196,14 +200,7 @@ function setHistoricScore(team, idx, score) {
       state["team" + opp][oppKey] = "0";
     }
   }
-  update();
-}
-
-function setPeriod(period) {
-  state.global.period = period.toString();
-  document.getElementById("period").value = period.toString();
-  render();
-  update();
+  sendUpdateScoreboard();
 }
 
 function setDuration(event) {
@@ -216,7 +213,33 @@ function setDuration(event) {
 
 function setClockDirection(event) {
   state.global.timerDirection = event.target.value;
-  update();
+  sendUpdateScoreboard();
+}
+
+function setClock(event) {
+  sendSetScoreboardClock(event.target.value);
+}
+
+function setTitle(event) {
+  state.global.title = event.target.value;
+  sendUpdateScoreboard();
+}
+
+function setPeriod(event) {
+  state.global.period = event.target.value;
+  sendUpdateScoreboard();
+}
+
+function setInfoBoxText(event) {
+  state.global.infoBoxText = event.target.value;
+  sendUpdateScoreboard();
+}
+
+function setHistoricPeriod(period) {
+  state.global.period = period.toString();
+  document.getElementById("period").value = period.toString();
+  render();
+  sendUpdateScoreboard();
 }
 
 function buildDom() {
@@ -263,7 +286,7 @@ function buildDom() {
 
     document.getElementById(`t${n}a`).innerHTML = `
             <div id="h-t${n}" class="rounded-t p-1" style="background:${team.bgColor}">
-              <input type="text" id="in-n-${n}" onblur="window.state.${t}.name=this.value;window.update()" class="">
+              <input type="text" id="in-n-${n}" onblur="window.state.${t}.name=this.value;window.sendUpdateScoreboard()" class="">
             </div>
             <div class="card rounded-t-none">
                 <div class="grid grid-cols-4 gap-1 h-10 mb-2">
@@ -293,7 +316,7 @@ function buildDom() {
 function renderPacked(t, n, key, c, team) {
   if (c.type === "select") {
     return `<div class="disp-sm bg-zinc-800">
-                <select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;update()">
+                <select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;sendUpdateScoreboard()">
                     ${c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("")}
                 </select>
             </div>`;
@@ -406,13 +429,13 @@ function switchLayout(event) {
     return;
   }
   state.layout = event.target.value;
-  update();
+  sendUpdateScoreboard();
 }
 
 function toggleButtonState(key) {
   state.global[key] = !state.global[key];
   updateGlobalToggles();
-  update();
+  sendUpdateScoreboard();
 }
 
 function toggleButtonStyle(elementId, enabled) {
@@ -453,7 +476,7 @@ function liveColor(n, k, v) {
       s.style.color = "white";
     }
   }
-  update();
+  sendUpdateScoreboard();
 }
 
 function syncUI() {
@@ -511,7 +534,7 @@ function adj(t, k, v) {
       if (!state["team" + opp][oppKey] || state["team" + opp][oppKey] === "") {
         state["team" + opp][oppKey] = "0";
       }
-      update();
+      sendUpdateScoreboard();
     }
     return;
   }
@@ -520,7 +543,7 @@ function adj(t, k, v) {
     toggleTeam(t);
   }
   render();
-  update();
+  sendUpdateScoreboard();
 }
 
 function adjTennis(t, v) {
@@ -577,7 +600,7 @@ function adjTennis(t, v) {
 
   state[tKey].primaryScore = val;
   render();
-  update();
+  sendUpdateScoreboard();
 }
 
 async function confirm(message) {
@@ -609,7 +632,7 @@ function winGame(t) {
   const nextServer = state.team1.possession ? 2 : 1;
   toggleTeam(nextServer);
   render();
-  update();
+  sendUpdateScoreboard();
 }
 
 function cycle(t, k) {
@@ -617,14 +640,14 @@ function cycle(t, k) {
   const curr = state["team" + t][k] || "";
   let idx = opts.indexOf(curr);
   state["team" + t][k] = opts[(idx + 1) % opts.length];
-  update();
+  sendUpdateScoreboard();
 }
 
 function toggleTeam(tIndex) {
   state.team1.possession = tIndex === 1;
   state.team2.possession = tIndex === 2;
   render();
-  update();
+  sendUpdateScoreboard();
 }
 
 async function resetSet() {
@@ -644,7 +667,7 @@ async function resetSet() {
     state.team2.primaryScore = "0";
     // Tennis doesn't reset possession usually, logic preserved
 
-    update();
+    sendUpdateScoreboard();
     return;
   }
 
@@ -699,7 +722,7 @@ async function resetSet() {
     state.team1.secondaryScore = "0";
     state.team2.secondaryScore = "0";
   }
-  update();
+  sendUpdateScoreboard();
 }
 
 async function newMatch() {
@@ -737,24 +760,10 @@ async function newMatch() {
     state.team1["secondaryScore" + i] = null;
     state.team2["secondaryScore" + i] = null;
   }
-  update();
+  sendUpdateScoreboard();
 }
 
-function update() {
-  state.global.title = document.getElementById("title").value;
-
-  // Fix: Capture clock value to prevent revert, and send manual update if focused
-  if (activeInputId === "clock") {
-    state.global.timer = document.getElementById("clock").value; // Update local state so it doesn't revert on echo
-    sendRequest({ setScoreboardClock: { time: state.global.timer } });
-  } else {
-    // If not focused, we don't send clock back, we let server drive it
-    // But we need to ensure we don't send "0:00" if we haven't rendered yet
-    // state.global.timer is authoritative from server usually
-  }
-
-  state.global.period = document.getElementById("period").value;
-  state.global.infoBoxText = document.getElementById("info-box").value;
+function sendUpdateScoreboard() {
   sendRequest({
     updateScoreboard: {
       config: state,
@@ -762,14 +771,14 @@ function update() {
   });
 }
 
-window.setPeriod = setPeriod;
+window.setHistoricPeriod = setHistoricPeriod;
 window.adj = adj;
 window.toggleTeam = toggleTeam;
 window.cycle = cycle;
 window.state = state;
 window.setHistoricScore = setHistoricScore;
 window.liveColor = liveColor;
-window.update = update;
+window.sendUpdateScoreboard = sendUpdateScoreboard;
 
 window.addEventListener("DOMContentLoaded", async () => {
   let clockMaximumOptions = "";
@@ -795,10 +804,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
   addOnClick("confirm-ok", confirmOk);
   addOnClick("confirm-cancel", confirmCancel);
-  addOnBlur("info-box", update);
-  addOnBlur("title", update);
-  addOnBlur("clock", update);
-  addOnBlur("period", update);
+  addOnBlur("info-box", setInfoBoxText);
+  addOnBlur("title", setTitle);
+  addOnBlur("clock", setClock);
+  addOnBlur("period", setPeriod);
   connect();
 });
 
