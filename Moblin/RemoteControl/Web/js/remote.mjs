@@ -563,21 +563,21 @@ async function confirm(message) {
   const dialog = document.getElementById("confirm");
   dialog.showModal();
   await new Promise((resolve) => {
-      confirmComplete = (result) => {
-          confirmResult = result;
-          resolve();
-      };
+    confirmComplete = (result) => {
+      confirmResult = result;
+      resolve();
+    };
   });
   dialog.close();
   return confirmResult;
 }
 
 function confirmOk() {
-    confirmComplete(true);
+  confirmComplete(true);
 }
 
 function confirmCancel() {
-      confirmComplete(false);
+  confirmComplete(false);
 }
 
 function winGame(t) {
@@ -684,8 +684,12 @@ async function newMatch() {
   if (!(await confirm("Start new match? This clears scores and stats."))) {
     return;
   }
-  state.global.timer = "00:00";
-  state.global.period = "1";
+  if (state.global.timerDirection == "up") {
+    state.global.timer = "00:00";
+  } else {
+    state.global.timer = `${parseInt(state.global.duration)}:00`;
+  }
+  document.getElementById("period").value = "1";
   Object.keys(state.controls).forEach((k) => {
     let def = "0";
     if (state.controls[k].options && state.controls[k].options.length > 0) {
@@ -708,8 +712,8 @@ async function newMatch() {
     state.team2.secondaryScore = "0";
   }
   for (let i = 1; i <= 5; i++) {
-    state.team1["secondaryScore" + i] = "";
-    state.team2["secondaryScore" + i] = "";
+    state.team1["secondaryScore" + i] = null;
+    state.team2["secondaryScore" + i] = null;
   }
   update();
 }
