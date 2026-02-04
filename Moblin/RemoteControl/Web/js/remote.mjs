@@ -678,11 +678,9 @@ function confirmCancel() {
 function winGame(t) {
   state.team1.primaryScore = "0";
   state.team2.primaryScore = "0";
-  adjust(t, "currentSetScore", 1);
   const nextServer = state.team1.possession ? 2 : 1;
   toggleTeam(nextServer);
-  render();
-  sendUpdateScoreboard();
+  adjust(t, "currentSetScore", 1);
 }
 
 function cycle(t, k) {
