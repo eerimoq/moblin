@@ -6,6 +6,8 @@ let activeInputId = null;
 let currentsportId = null;
 let rangeCache = { min: 0, max: 30 };
 let requestId = 0;
+let confirmResolve = null;
+let confirmOk = false;
 
 const CONTROL_ORDER = [
   "primaryScore",
@@ -458,7 +460,7 @@ function syncUI() {
   }
 
   document.getElementById("next-set").innerText =
-    state.global.scoringMode === "tennis" ? "Start Next Set" : "Next Set/Period";
+    state.global.scoringMode === "tennis" ? "Start next set" : "Next set/period";
 
   if (state.global.duration && activeInputId !== "clock-maximum") {
     document.getElementById("clock-maximum").value = state.global.duration;
@@ -556,10 +558,18 @@ function adjTennis(t, v) {
   update();
 }
 
+async function confirm(message) {
+  document.getElementById("confirm-message").innerHTML = message;
+  const dialog = document.getElementById("confirm");
+  dialog.showModal();
+  await new Promise((resolve) => {
+    confirmResolve = resolve;
+  });
+  dialog.close();
+  return confirmOk;
+}
+
 function winGame(t) {
-  if (!confirm("Confirm Game Won?")) {
-    return;
-  }
   state.team1.primaryScore = "0";
   state.team2.primaryScore = "0";
   adj(t, "currentSetScore", 1);
@@ -584,9 +594,9 @@ function toggleTeam(tIndex) {
   update();
 }
 
-function resetSet() {
+async function resetSet() {
   if (state.global.scoringMode === "tennis") {
-    if (!confirm("Start Next Set?")) {
+    if (!(await confirm("Start next set?"))) {
       return;
     }
     let p = parseInt(state.global.period) || 0;
@@ -605,7 +615,7 @@ function resetSet() {
     return;
   }
 
-  if (!confirm("Next Set/Period?")) {
+  if (!(await confirm("Start next set/period?"))) {
     return;
   }
 
@@ -659,8 +669,8 @@ function resetSet() {
   update();
 }
 
-function newMatch() {
-  if (!confirm("NEW MATCH? This clears scores and stats.")) {
+async function newMatch() {
+  if (!(await confirm("Start new match? This clears scores and stats."))) {
     return;
   }
   state.global.timer = "00:00";
@@ -744,6 +754,14 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
   addOnClick("btn-info-box", () => {
     toggleButtonState("showStats");
+  });
+  addOnClick("confirm-ok", () => {
+    confirmOk = true;
+    confirmResolve();
+  });
+  addOnClick("confirm-cancel", () => {
+    confirmOk = false;
+    confirmResolve();
   });
   addOnBlur("info-box", update);
   addOnBlur("title", update);

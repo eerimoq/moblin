@@ -75,11 +75,7 @@ struct ScoreboardEffectModularView: View {
             let currentPeriod = Int(config.global.period) ?? 1
             let height = CGFloat(modular.rowHeight)
             HStack(spacing: 0) {
-                Text(team.name)
-                    .font(.system(size: fontSize()))
-                    .bold(modular.isBold)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.1)
+                teamName(team: modularTeam)
                     .padding(.leading, 6)
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -199,11 +195,7 @@ struct ScoreboardEffectModularView: View {
                         gray: true
                     )
                 }
-                Text(team.name)
-                    .font(.system(size: fontSize()))
-                    .bold(modular.isBold)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.1)
+                teamName(team: modularTeam)
                     .padding(.leading, 3)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 possession(show: team.possession)
@@ -239,11 +231,7 @@ struct ScoreboardEffectModularView: View {
             HStack(spacing: 0) {
                 if !mirrored {
                     possession(show: team.possession)
-                    Text(team.name)
-                        .font(.system(size: fontSize()))
-                        .bold(modular.isBold)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
+                    teamName(team: modularTeam)
                         .padding(.horizontal, 4)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     stat(
@@ -263,11 +251,7 @@ struct ScoreboardEffectModularView: View {
                         width: width,
                         gray: true
                     )
-                    Text(team.name)
-                        .font(.system(size: fontSize()))
-                        .bold(modular.isBold)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.1)
+                    teamName(team: modularTeam)
                         .padding(.horizontal, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     possession(show: team.possession)
@@ -323,6 +307,24 @@ struct ScoreboardEffectModularView: View {
         )
     }
 
+    private func teamName(team: SettingsWidgetModularScoreboardTeam) -> some View {
+        Text(team.name)
+            .font(.system(size: fontSize()))
+            .bold(modular.isBold)
+            .lineLimit(1)
+            .minimumScaleFactor(0.1)
+    }
+
+    @ViewBuilder
+    private func possession(show: Bool) -> some View {
+        if show {
+            Image("VolleyballIndicator")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding(fontSize() * 0.1)
+        }
+    }
+
     @ViewBuilder
     private func moreStats(
         team: RemoteControlScoreboardTeam,
@@ -353,8 +355,8 @@ struct ScoreboardEffectModularView: View {
                             Text(value)
                                 .monospacedDigit()
                         }
-                        .font(.system(size: fontSize() * 0.65, weight: .bold))
-                        .minimumScaleFactor(0.5)
+                        .font(.system(size: fontSize(), weight: .bold))
+                        .minimumScaleFactor(0.3)
                     }
                     if !alignRight {
                         Spacer()
@@ -364,16 +366,6 @@ struct ScoreboardEffectModularView: View {
             }
             .frame(height: height)
             .background(backgroundColor)
-        }
-    }
-
-    @ViewBuilder
-    private func possession(show: Bool) -> some View {
-        if show {
-            Image("VolleyballIndicator")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .padding(fontSize() * 0.1)
         }
     }
 

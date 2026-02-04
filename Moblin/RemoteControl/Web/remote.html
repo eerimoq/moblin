@@ -21,7 +21,7 @@
       <!-- Persistent Controls (Clock & Info) -->
       <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
         <button id="toggle-clock" class="btn btn-top bg-indigo-600 text-white border-none">
-          CLOCK
+          Clock
         </button>
         <input
           type="text"
@@ -31,8 +31,8 @@
         />
         <select id="clock-maximum" class="btn-top bg-black rounded"></select>
         <select id="clock-direction" class="btn-top bg-black rounded">
-          <option value="up">UP</option>
-          <option value="down">DOWN</option>
+          <option value="up">Up</option>
+          <option value="down">Down</option>
         </select>
       </div>
 
@@ -43,8 +43,8 @@
 
       <!-- Actions -->
       <div class="grid grid-cols-2 gap-2">
-        <button id="next-set" class="btn btn-ctrl border-zinc-600">Next Set/Period</button>
-        <button id="new-match" class="btn btn-ctrl border-red-900 text-red-400">New Match</button>
+        <button id="next-set" class="btn btn-ctrl border-zinc-600">Next set/period</button>
+        <button id="new-match" class="btn btn-ctrl border-red-900 text-red-400">New match</button>
       </div>
 
       <!-- Config Menu -->
@@ -60,9 +60,9 @@
           </select>
           <select id="layout-selector" class="col-span-2 btn h-9 text-[10px] bg-black">
             <option value="stacked">Stacked</option>
-            <option value="stackedInline">Stacked Inline</option>
-            <option value="sideBySide">Side by Side</option>
-            <option value="stackHistory">Stack History</option>
+            <option value="stackedInline">Stacked inline</option>
+            <option value="sideBySide">Side by side</option>
+            <option value="stackHistory">Stack history</option>
           </select>
 
           <input type="text" id="title" placeholder="TITLE" class="col-span-2 conf-input px-2" />
@@ -71,7 +71,7 @@
 
           <button id="btn-show-title" class="btn h-9 text-[10px]">Title</button>
           <button id="btn-more-stats" class="btn h-9 text-[10px]">More stats</button>
-          <button id="btn-info-box" class="btn h-9 text-[10px]">Info Box</button>
+          <button id="btn-info-box" class="btn h-9 text-[10px]">Info box</button>
           <input type="text" id="info-box" placeholder="INFO BOX" class="conf-input px-2" />
         </div>
       </details>
@@ -85,7 +85,27 @@
         <div id="si" class="text-amber-500">Syncing...</div>
       </div>
     </div>
-
+    <dialog id="confirm" class="backdrop:bg-black/60 rounded-xl p-0">
+      <form method="dialog" class="bg-zinc-900 text-zinc-100">
+        <div class="p-4">
+          <p id="confirm-message" class="text-zinc-300">The message</p>
+        </div>
+        <div class="bg-zinc-800/60 px-4 py-3 sm:px-5 flex items-center justify-end gap-2">
+          <button
+            id="confirm-ok"
+            class="px-3 py-1.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            OK
+          </button>
+          <button
+            id="confirm-cancel"
+            class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500/40"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </dialog>
     <script src="js/remote.mjs" type="module"></script>
   </body>
 </html>
