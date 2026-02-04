@@ -171,11 +171,11 @@ function buildHistoricScores() {
                         SET ${i}
                     </div>
                     <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
-                        <select id="h-t1-${i}" onchange="window.setHistoricScore(1,${i},this.value)">
+                        <select id="h-t1-${i}" onchange="window.setHistoricScore(1, ${i}, this.value)">
                             ${historicScoreOptions()}
                         </select></div>
                     <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
-                        <select id="h-t2-${i}" onchange="window.setHistoricScore(2,${i},this.value)">
+                        <select id="h-t2-${i}" onchange="window.setHistoricScore(2, ${i}, this.value)">
                             ${historicScoreOptions()}
                         </select></div>
                 </div>`;
@@ -235,6 +235,11 @@ function setInfoBoxText(event) {
   sendUpdateScoreboard();
 }
 
+function setTeamName(teamNumber, value) {
+  state["team" + teamNumber].name = value;
+  sendUpdateScoreboard();
+}
+
 function setHistoricPeriod(period) {
   state.global.period = period.toString();
   document.getElementById("period").value = period.toString();
@@ -259,7 +264,14 @@ function buildDom() {
       }
 
       if (c.type === "counter") {
-        controlsHtml += `<div class="grid grid-cols-2 gap-1 mb-1"><button onclick="window.adj(${n},'${key}',1)" class="btn btn-ctrl">+${c.label}</button><button onclick="window.adj(${n},'${key}',-1)" class="btn btn-ctrl">-${c.label}</button></div>`;
+        controlsHtml += `<div class="grid grid-cols-2 gap-1 mb-1">
+                            <button onclick="window.adjust(${n}, '${key}', 1)" class="btn btn-ctrl">
+                                +${c.label}
+                            </button>
+                            <button onclick="window.adjust(${n}, '${key}', -1)" class="btn btn-ctrl">
+                                -${c.label}
+                            </button>
+                        </div>`;
       } else {
         let nextKey = null;
         for (let j = k + 1; j < CONTROL_ORDER.length; j++) {
@@ -286,7 +298,7 @@ function buildDom() {
 
     document.getElementById(`t${n}a`).innerHTML = `
             <div id="h-t${n}" class="rounded-t p-1" style="background:${team.bgColor}">
-              <input type="text" id="in-n-${n}" onblur="window.state.${t}.name=this.value;window.sendUpdateScoreboard()" class="">
+              <input type="text" id="in-n-${n}" onblur="window.setTeamName(${n}, this.value)" class="">
             </div>
             <div class="card rounded-t-none">
                 <div class="grid grid-cols-4 gap-1 h-10 mb-2">
@@ -297,15 +309,19 @@ function buildDom() {
                         0
                     </div>
                     <div class="rounded border border-zinc-700 bg-zinc-800">
-                        <input type="color" id="col-bg-${n}" oninput="window.liveColor(${n},'bgColor',this.value)">
+                        <input type="color" id="col-bg-${n}" oninput="window.setBackgroundColor(${n}, this.value)">
                     </div>
                     <div class="rounded border border-zinc-700 bg-zinc-800">
-                        <input type="color" id="col-txt-${n}" oninput="window.liveColor(${n},'textColor',this.value)">
+                        <input type="color" id="col-txt-${n}" oninput="window.setTextColor(${n}, this.value)">
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-1 mb-2">
-                    <button onclick="window.adj(${n},'primaryScore',1)" class="col-span-2 btn btn-score">+Pt</button>
-                    <button onclick="window.adj(${n},'primaryScore',-1)" class="col-span-1 btn btn-score">-Pt</button>
+                    <button onclick="window.adjust(${n}, 'primaryScore', 1)" class="col-span-2 btn btn-score">
+                        +Pt
+                    </button>
+                    <button onclick="window.adjust(${n}, 'primaryScore', -1)" class="col-span-1 btn btn-score">
+                        -Pt
+                    </button>
                 </div>
                 ${controlsHtml}
             </div>`;
@@ -315,16 +331,21 @@ function buildDom() {
 
 function renderPacked(t, n, key, c, team) {
   if (c.type === "select") {
+    const options = c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("");
     return `<div class="disp-sm bg-zinc-800">
-                <select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;sendUpdateScoreboard()">
-                    ${c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("")}
+                <select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value; sendUpdateScoreboard()">
+                    ${options}
                 </select>
             </div>`;
   } else if (c.type === "toggleTeam") {
-    return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">${c.label}</button>`;
+    return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">
+                ${c.label}
+            </button>`;
   } else if (c.type === "cycle") {
     const txt = c.label ? `${c.label}: ${team[key] || "NONE"}` : `${team[key] || "NONE"}`;
-    return `<button id="btn-${t}-${key}" onclick="window.cycle(${n},'${key}')" class="btn btn-ctrl">${txt}</button>`;
+    return `<button id="btn-${t}-${key}" onclick="window.cycle(${n},'${key}')" class="btn btn-ctrl">
+                ${txt}
+            </button>`;
   }
   return "";
 }
@@ -453,6 +474,14 @@ function updateGlobalToggles() {
   toggleButtonStyle("btn-more-stats", state.global.showMoreStats);
 }
 
+function setTextColor(teamNumber, value) {
+  liveColor(teamNumber, "textColor", value);
+}
+
+function setBackgroundColor(teamNumber, value) {
+  liveColor(teamNumber, "bgColor", value);
+}
+
 function liveColor(n, k, v) {
   state["team" + n][k] = v;
   const h = document.getElementById(`h-t${n}`),
@@ -518,7 +547,7 @@ function sendToggleClock() {
   sendRequest({ toggleScoreboardClock: {} });
 }
 
-function adj(t, k, v) {
+function adjust(t, k, v) {
   if (state.global.scoringMode === "tennis" && k === "primaryScore") {
     adjTennis(t, v);
     return;
@@ -628,7 +657,7 @@ function confirmCancel() {
 function winGame(t) {
   state.team1.primaryScore = "0";
   state.team2.primaryScore = "0";
-  adj(t, "currentSetScore", 1);
+  adjust(t, "currentSetScore", 1);
   const nextServer = state.team1.possession ? 2 : 1;
   toggleTeam(nextServer);
   render();
@@ -772,13 +801,15 @@ function sendUpdateScoreboard() {
 }
 
 window.setHistoricPeriod = setHistoricPeriod;
-window.adj = adj;
+window.adjust = adjust;
 window.toggleTeam = toggleTeam;
 window.cycle = cycle;
 window.state = state;
 window.setHistoricScore = setHistoricScore;
-window.liveColor = liveColor;
 window.sendUpdateScoreboard = sendUpdateScoreboard;
+window.setTeamName = setTeamName;
+window.setTextColor = setTextColor;
+window.setBackgroundColor = setBackgroundColor;
 
 window.addEventListener("DOMContentLoaded", async () => {
   let clockMaximumOptions = "";
