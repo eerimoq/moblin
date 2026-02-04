@@ -2,6 +2,10 @@ import Foundation
 
 private let metersPerMile = 1609.344
 
+private func garminDeviceKey(device: SettingsGarminDevice) -> String {
+    return device.name.lowercased()
+}
+
 private func formatGarminDeviceState(state: GarminDeviceState?) -> String {
     if state == nil || state == .disconnected {
         return String(localized: "Disconnected")
@@ -45,8 +49,7 @@ extension Model {
 
     func disableGarminDevice(device: SettingsGarminDevice) {
         garminDevices[device.id]?.stop()
-        garminMetrics.removeValue(forKey: device.id)
-        let deviceKey = device.name.lowercased()
+        let deviceKey = garminDeviceKey(device: device)
         heartRates.removeValue(forKey: deviceKey)
         runMetricsByDeviceName.removeValue(forKey: deviceKey)
         updateGarminDeviceStatus()
@@ -89,7 +92,8 @@ extension Model {
     }
 
     func resetGarminDistance(device: SettingsGarminDevice) {
-        if let metrics = garminMetrics[device.id], let distance = metrics.distanceMeters {
+        let deviceKey = garminDeviceKey(device: device)
+        if let metrics = runMetricsByDeviceName[deviceKey], let distance = metrics.distanceMeters {
             garminDistanceOffsets[device.id] = distance
         } else {
             garminDistanceOffsets[device.id] = 0
@@ -113,37 +117,47 @@ extension Model {
         statusTopRight.garminDeviceStatus = "\(connectedCount)/\(enabledDevices.count)"
     }
 
-    private func currentGarminDeviceAndMetrics() -> (SettingsGarminDevice, GarminMetrics)? {
+    private func currentGarminDevice(matching predicate: (SettingsGarminDevice) -> Bool)
+        -> SettingsGarminDevice?
+    {
         if let currentGarminDeviceSettings,
-           let metrics = garminMetrics[currentGarminDeviceSettings.id]
+           currentGarminDeviceSettings.enabled,
+           predicate(currentGarminDeviceSettings)
         {
-            return (currentGarminDeviceSettings, metrics)
+            return currentGarminDeviceSettings
         }
-        if let device = database.garminDevices.devices.first(where: { $0.enabled }),
-           let metrics = garminMetrics[device.id]
-        {
-            return (device, metrics)
-        }
-        return nil
+        return database.garminDevices.devices.first(where: { $0.enabled && predicate($0) })
     }
 
     func garminHeartRate() -> Int? {
-        return currentGarminDeviceAndMetrics()?.1.heartRate
+        guard let device = currentGarminDevice(
+            matching: { runMetricsByDeviceName[garminDeviceKey(device: $0)] != nil }
+        ) else {
+            return nil
+        }
+        let deviceKey = garminDeviceKey(device: device)
+        return heartRates[deviceKey] ?? nil
     }
 
     func garminPaceString() -> String {
-        guard let (_, metrics) = currentGarminDeviceAndMetrics(),
-              let speed = metrics.speedMetersPerSecond,
-              speed > 0
+        guard let device = currentGarminDevice(
+            matching: { runMetricsByDeviceName[garminDeviceKey(device: $0)] != nil }
+        ) else {
+            return "-"
+        }
+        let deviceKey = garminDeviceKey(device: device)
+        guard let metrics = runMetricsByDeviceName[deviceKey],
+              let paceSecondsPerMeter = metrics.paceSecondsPerMeter,
+              paceSecondsPerMeter > 0
         else {
             return "-"
         }
         let secondsPerUnit: Double
         switch database.garminUnits.paceUnit {
         case .minutesPerKilometer:
-            secondsPerUnit = 1000.0 / speed
+            secondsPerUnit = paceSecondsPerMeter * 1000.0
         case .minutesPerMile:
-            secondsPerUnit = metersPerMile / speed
+            secondsPerUnit = paceSecondsPerMeter * metersPerMile
         }
         let totalSeconds = max(0, Int(secondsPerUnit.rounded()))
         let minutes = totalSeconds / 60
@@ -153,18 +167,26 @@ extension Model {
     }
 
     func garminCadenceString() -> String {
-        guard let (_, metrics) = currentGarminDeviceAndMetrics(),
-              let cadence = metrics.cadence
-        else {
+        guard let device = currentGarminDevice(
+            matching: { runMetricsByDeviceName[garminDeviceKey(device: $0)] != nil }
+        ) else {
+            return "-"
+        }
+        let deviceKey = garminDeviceKey(device: device)
+        guard let cadence = runMetricsByDeviceName[deviceKey]?.cadence else {
             return "-"
         }
         return "\(cadence) spm"
     }
 
     func garminDistanceString() -> String {
-        guard let (device, metrics) = currentGarminDeviceAndMetrics(),
-              let distanceMetersRaw = metrics.distanceMeters
-        else {
+        guard let device = currentGarminDevice(
+            matching: { runMetricsByDeviceName[garminDeviceKey(device: $0)] != nil }
+        ) else {
+            return "-"
+        }
+        let deviceKey = garminDeviceKey(device: device)
+        guard let distanceMetersRaw = runMetricsByDeviceName[deviceKey]?.distanceMeters else {
             return "-"
         }
         let offset = garminDistanceOffsets[device.id] ?? 0
@@ -188,8 +210,7 @@ extension Model: GarminDeviceDelegate {
                 return
             }
             if state != .connected {
-                self.garminMetrics.removeValue(forKey: device.id)
-                let deviceKey = device.name.lowercased()
+                let deviceKey = garminDeviceKey(device: device)
                 self.heartRates.removeValue(forKey: deviceKey)
                 self.runMetricsByDeviceName.removeValue(forKey: deviceKey)
             }
@@ -205,22 +226,16 @@ extension Model: GarminDeviceDelegate {
             guard let device = self.getGarminDeviceSettings(device: device) else {
                 return
             }
-            self.garminMetrics[device.id] = metrics
-            let deviceKey = device.name.lowercased()
+            let deviceKey = garminDeviceKey(device: device)
             if let heartRate = metrics.heartRate {
                 self.heartRates[deviceKey] = heartRate
             }
-            var paceSecondsPerUnit: Double?
+            var paceSecondsPerMeter: Double?
             if let speed = metrics.speedMetersPerSecond, speed > 0 {
-                switch self.database.garminUnits.paceUnit {
-                case .minutesPerKilometer:
-                    paceSecondsPerUnit = 1000.0 / speed
-                case .minutesPerMile:
-                    paceSecondsPerUnit = metersPerMile / speed
-                }
+                paceSecondsPerMeter = 1.0 / speed
             }
             self.runMetricsByDeviceName[deviceKey] = DeviceRunMetrics(
-                paceSecondsPerUnit: paceSecondsPerUnit,
+                paceSecondsPerMeter: paceSecondsPerMeter,
                 cadence: metrics.cadence,
                 distanceMeters: metrics.distanceMeters
             )

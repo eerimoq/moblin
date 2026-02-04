@@ -141,6 +141,7 @@ class TeslaVehicle: NSObject {
     weak var delegate: (any TeslaVehicleDelegate)?
     private let vehicleSecurityHandshakeTimer = SimpleTimer(queue: .main)
     private let infotainmentHandshakeTimer = SimpleTimer(queue: .main)
+    private let scanFallbackTimer = SimpleTimer(queue: .main)
 
     init?(vin: String, privateKeyPem: String, handshake _: Bool = true) {
         self.vin = vin
@@ -168,6 +169,7 @@ class TeslaVehicle: NSObject {
     private func reset() {
         vehicleSecurityHandshakeTimer.stop()
         infotainmentHandshakeTimer.stop()
+        scanFallbackTimer.stop()
         centralManager = nil
         vehiclePeripheral = nil
         toVehicleCharacteristic = nil
@@ -546,7 +548,14 @@ extension TeslaVehicle: CBCentralManagerDelegate {
                 connectToPeripheral(central: central, peripheral: connected)
                 return
             }
-            centralManager?.scanForPeripherals(withServices: nil)
+            centralManager?.scanForPeripherals(withServices: [vehicleServiceUuid])
+            scanFallbackTimer.startSingleShot(timeout: 5.0) { [weak self] in
+                guard let self, self.state == .discovering, self.vehiclePeripheral == nil else {
+                    return
+                }
+                self.centralManager?.stopScan()
+                self.centralManager?.scanForPeripherals(withServices: nil)
+            }
         default:
             break
         }
@@ -584,6 +593,7 @@ extension TeslaVehicle: CBCentralManagerDelegate {
     }
 
     private func connectToPeripheral(central: CBCentralManager, peripheral: CBPeripheral) {
+        scanFallbackTimer.stop()
         central.stopScan()
         vehiclePeripheral = peripheral
         peripheral.delegate = self

@@ -460,11 +460,7 @@ extension CatPrinter: CBCentralManagerDelegate {
         guard peripheral.identifier == deviceId else {
             return
         }
-        central.stopScan()
-        self.peripheral = peripheral
-        peripheral.delegate = self
-        central.connect(peripheral, options: nil)
-        setState(state: .connecting)
+        connectToPeripheral(central: central, peripheral: peripheral)
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}

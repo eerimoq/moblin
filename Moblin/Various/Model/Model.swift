@@ -110,7 +110,7 @@ struct LogEntry: Identifiable {
 }
 
 struct DeviceRunMetrics {
-    var paceSecondsPerUnit: Double?
+    var paceSecondsPerMeter: Double?
     var cadence: Int?
     var distanceMeters: Double?
 }
@@ -585,7 +585,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var heartRateDevices: [UUID: HeartRateDevice] = [:]
     var currentGarminDeviceSettings: SettingsGarminDevice?
     var garminDevices: [UUID: GarminDevice] = [:]
-    var garminMetrics: [UUID: GarminMetrics] = [:]
     var garminDistanceOffsets: [UUID: Double] = [:]
     var blackSharkCoolerDevices: [UUID: BlackSharkCoolerDevice] = [:]
     var cameraDevice: AVCaptureDevice?
