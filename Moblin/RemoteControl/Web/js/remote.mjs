@@ -330,24 +330,28 @@ function buildDom() {
 }
 
 function renderPacked(t, n, key, c, team) {
-  if (c.type === "select") {
-    const options = c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("");
-    return `<div class="disp-sm bg-zinc-800">
+  switch (c.type) {
+    case "select":
+      const options = c.options
+        .map((v) => `<option value="${v}">${c.label}: ${v}</option>`)
+        .join("");
+      return `<div class="disp-sm bg-zinc-800">
                 <select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value; sendUpdateScoreboard()">
                     ${options}
                 </select>
             </div>`;
-  } else if (c.type === "toggleTeam") {
-    return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">
+    case "toggleTeam":
+      return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">
                 ${c.label}
             </button>`;
-  } else if (c.type === "cycle") {
-    const txt = c.label ? `${c.label}: ${team[key] || "NONE"}` : `${team[key] || "NONE"}`;
-    return `<button id="btn-${t}-${key}" onclick="window.cycle(${n},'${key}')" class="btn btn-ctrl">
+    case "cycle":
+      const txt = c.label ? `${c.label}: ${team[key] || "NONE"}` : `${team[key] || "NONE"}`;
+      return `<button id="btn-${t}-${key}" onclick="window.cycle(${n},'${key}')" class="btn btn-ctrl">
                 ${txt}
             </button>`;
+    default:
+      return "";
   }
-  return "";
 }
 
 function updateDomValues() {
@@ -400,34 +404,39 @@ function updateDomValues() {
       }
       const c = state.controls[key];
       const val = team[key] || "";
-
-      if (c.type === "cycle") {
-        const btn = document.getElementById(`btn-${t}-${key}`);
-        if (btn) {
-          btn.innerText = c.label ? `${c.label}: ${val}` : val;
-          const isActive = val && val !== "NONE" && !val.startsWith("NO ");
-          if (isActive) {
-            btn.classList.add("btn-accent");
-          } else {
-            btn.classList.remove("btn-accent");
+      switch (c.type) {
+        case "cycle": {
+          const btn = document.getElementById(`btn-${t}-${key}`);
+          if (btn) {
+            btn.innerText = c.label ? `${c.label}: ${val}` : val;
+            const isActive = val && val !== "NONE" && !val.startsWith("NO ");
+            if (isActive) {
+              btn.classList.add("btn-accent");
+            } else {
+              btn.classList.remove("btn-accent");
+            }
           }
+          break;
         }
-      } else if (c.type === "select") {
-        const sel = document.getElementById(`sel-${t}-${key}`);
-        if (sel && activeInputId !== `sel-${t}-${key}`) {
-          sel.value = val;
-        }
-      } else if (c.type === "toggleTeam") {
-        const btn = document.getElementById(`btn-tog-${n}-${key}`);
-        if (btn) {
-          const isActive = team.possession === true;
-          if (isActive) {
-            btn.classList.add("btn-accent");
-            btn.classList.remove("text-zinc-500");
-          } else {
-            btn.classList.remove("btn-accent");
-            btn.classList.add("text-zinc-500");
+        case "select":
+          const sel = document.getElementById(`sel-${t}-${key}`);
+          if (sel && activeInputId !== `sel-${t}-${key}`) {
+            sel.value = val;
           }
+          break;
+        case "toggleTeam": {
+          const btn = document.getElementById(`btn-tog-${n}-${key}`);
+          if (btn) {
+            const isActive = team.possession === true;
+            if (isActive) {
+              btn.classList.add("btn-accent");
+              btn.classList.remove("text-zinc-500");
+            } else {
+              btn.classList.remove("btn-accent");
+              btn.classList.add("text-zinc-500");
+            }
+          }
+          break;
         }
       }
     });
@@ -582,48 +591,60 @@ function adjTennis(t, v) {
   let oppVal = state[oKey].primaryScore;
 
   if (v > 0) {
-    if (val === "0") {
-      val = "15";
-    } else if (val === "15") {
-      val = "30";
-    } else if (val === "30") {
-      if (oppVal === "40") {
-        val = "D";
-        state[oKey].primaryScore = "D";
-      } else {
-        val = "40";
-      }
-    } else if (val === "40") {
-      if (oppVal === "Ad") {
-        val = "D";
-        state[oKey].primaryScore = "D";
-      } else if (oppVal === "40" || oppVal === "D") {
-        val = "Ad";
-      } else {
+    switch (val) {
+      case "0":
+        val = "15";
+        break;
+      case "15":
+        val = "30";
+        break;
+      case "30":
+        if (oppVal === "40") {
+          val = "D";
+          state[oKey].primaryScore = "D";
+        } else {
+          val = "40";
+        }
+        break;
+      case "40":
+        if (oppVal === "Ad") {
+          val = "D";
+          state[oKey].primaryScore = "D";
+        } else if (oppVal === "40" || oppVal === "D") {
+          val = "Ad";
+        } else {
+          winGame(t);
+          return;
+        }
+        break;
+      case "D":
+        if (oppVal === "Ad") {
+          state[oKey].primaryScore = "D";
+        } else {
+          val = "Ad";
+        }
+        break;
+      case "Ad":
         winGame(t);
         return;
-      }
-    } else if (val === "D") {
-      if (oppVal === "Ad") {
-        state[oKey].primaryScore = "D";
-      } else {
-        val = "Ad";
-      }
-    } else if (val === "Ad") {
-      winGame(t);
-      return;
     }
   } else {
-    if (val === "Ad") {
-      val = "D";
-    } else if (val === "D") {
-      val = "40";
-    } else if (val === "40") {
-      val = "30";
-    } else if (val === "30") {
-      val = "15";
-    } else if (val === "15") {
-      val = "0";
+    switch (val) {
+      case "Ad":
+        val = "D";
+        break;
+      case "D":
+        val = "40";
+        break;
+      case "40":
+        val = "30";
+        break;
+      case "30":
+        val = "15";
+        break;
+      case "15":
+        val = "0";
+        break;
     }
   }
 
