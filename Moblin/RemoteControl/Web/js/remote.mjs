@@ -6,8 +6,8 @@ let activeInputId = null;
 let currentsportId = null;
 let rangeCache = { min: 0, max: 30 };
 let requestId = 0;
-let confirmResolve = null;
-let confirmOk = false;
+let confirmComplete = null;
+let confirmResult = false;
 
 const CONTROL_ORDER = [
   "primaryScore",
@@ -563,10 +563,21 @@ async function confirm(message) {
   const dialog = document.getElementById("confirm");
   dialog.showModal();
   await new Promise((resolve) => {
-    confirmResolve = resolve;
+      confirmComplete = (result) => {
+          confirmResult = result;
+          resolve();
+      };
   });
   dialog.close();
-  return confirmOk;
+  return confirmResult;
+}
+
+function confirmOk() {
+    confirmComplete(true);
+}
+
+function confirmCancel() {
+      confirmComplete(false);
 }
 
 function winGame(t) {
@@ -755,14 +766,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   addOnClick("btn-info-box", () => {
     toggleButtonState("showStats");
   });
-  addOnClick("confirm-ok", () => {
-    confirmOk = true;
-    confirmResolve();
-  });
-  addOnClick("confirm-cancel", () => {
-    confirmOk = false;
-    confirmResolve();
-  });
+  addOnClick("confirm-ok", confirmOk);
+  addOnClick("confirm-cancel", confirmCancel);
   addOnBlur("info-box", update);
   addOnBlur("title", update);
   addOnBlur("clock", update);
