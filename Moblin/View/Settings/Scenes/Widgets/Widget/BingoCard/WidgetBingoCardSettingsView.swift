@@ -38,15 +38,15 @@ struct BingoCardMarksView: View {
     }
 }
 
-struct BingoCardCompactMarksView: View {
+struct WidgetBingoCardQuickButtonControlsView: View {
     @ObservedObject var bingoCard: SettingsWidgetBingoCard
     let updateEffect: () -> Void
 
     var body: some View {
         let squaresCountSide = bingoCard.size()
-        VStack(spacing: 9) {
+        VStack(spacing: 13) {
             ForEach(0 ..< squaresCountSide, id: \.self) { row in
-                HStack {
+                HStack(spacing: 13) {
                     Spacer()
                     ForEach(0 ..< squaresCountSide, id: \.self) { column in
                         let index = row * squaresCountSide + column
@@ -63,6 +63,7 @@ struct BingoCardCompactMarksView: View {
                             .buttonStyle(.borderless)
                         } else {
                             Image(systemName: "square")
+                                .foregroundColor(.gray)
                                 .font(.title)
                         }
                     }

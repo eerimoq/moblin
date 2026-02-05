@@ -1,5 +1,172 @@
 import SwiftUI
 
+private struct TimePickerView: View {
+    let model: Model
+    let widget: SettingsWidget
+    var clock: SettingsWidgetScoreboardClock
+    @Binding var presenting: Bool
+    @State private var minutes: Int = 0
+    @State private var seconds: Int = 0
+
+    var body: some View {
+        VStack {
+            HStack {
+                TimeComponentPickerView(title: "Minutes", range: 0 ..< 120, time: $minutes)
+                TimeComponentPickerView(title: "Seconds", range: 0 ..< 60, time: $seconds)
+            }
+            .padding()
+            HStack {
+                TimeButtonView(text: "Set") {
+                    model.handleUpdateGenericScoreboard(action: .init(
+                        id: widget.id,
+                        action: .setClock(minutes: minutes, seconds: seconds)
+                    ))
+                    presenting = false
+                }
+                TimeButtonView(text: "Cancel") {
+                    presenting = false
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .padding()
+        }
+        .padding()
+        .onAppear {
+            minutes = clock.minutes
+            seconds = clock.seconds
+        }
+    }
+}
+
+private struct ScoreboardSetClockButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+    @ObservedObject var clock: SettingsWidgetScoreboardClock
+    @State private var presenting: Bool = false
+
+    var body: some View {
+        Button {
+            presenting = true
+        } label: {
+            Image(systemName: "clock")
+                .font(.title)
+        }
+        .buttonStyle(.borderless)
+        .popover(isPresented: $presenting) {
+            TimePickerView(model: model,
+                           widget: widget,
+                           clock: clock,
+                           presenting: $presenting)
+        }
+    }
+}
+
+private struct ScoreboardStartStopClockButtonView: View {
+    @ObservedObject var clock: SettingsWidgetScoreboardClock
+
+    var body: some View {
+        Button {
+            clock.isStopped.toggle()
+        } label: {
+            Image(systemName: clock.isStopped ? "play" : "stop")
+                .font(.title)
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
+private struct ScoreboardUndoButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        Button {
+            model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .undo))
+        } label: {
+            Image(systemName: "arrow.uturn.backward")
+                .font(.title)
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
+private struct ScoreboardIncrementHomeButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        Button {
+            model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .incrementHome))
+        } label: {
+            Image(systemName: "plus")
+                .font(.title)
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
+private struct ScoreboardIncrementAwayButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        Button {
+            model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .incrementAway))
+        } label: {
+            Image(systemName: "plus")
+                .font(.title)
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
+private struct ScoreboardResetScoreButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+    @State private var presentingResetConfirimation = false
+
+    var body: some View {
+        Button {
+            presentingResetConfirimation = true
+        } label: {
+            Image(systemName: "trash")
+                .font(.title)
+        }
+        .buttonStyle(.borderless)
+        .tint(.red)
+        .confirmationDialog("", isPresented: $presentingResetConfirimation) {
+            Button("Reset score", role: .destructive) {
+                model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .reset))
+            }
+        }
+    }
+}
+
+struct WidgetScoreboardGenericQuickButtonControlsView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        HStack(spacing: 13) {
+            Spacer()
+            VStack(spacing: 13) {
+                ScoreboardStartStopClockButtonView(clock: widget.scoreboard.generic.clock)
+                ScoreboardSetClockButtonView(model: model,
+                                             widget: widget,
+                                             clock: widget.scoreboard.generic.clock)
+            }
+            VStack(spacing: 13) {
+                ScoreboardUndoButtonView(model: model, widget: widget)
+                ScoreboardResetScoreButtonView(model: model, widget: widget)
+            }
+            VStack(spacing: 13) {
+                ScoreboardIncrementHomeButtonView(model: model, widget: widget)
+                ScoreboardIncrementAwayButtonView(model: model, widget: widget)
+            }
+        }
+    }
+}
+
 struct WidgetScoreboardGenericGeneralSettingsView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget

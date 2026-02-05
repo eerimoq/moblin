@@ -1,5 +1,22 @@
 import SwiftUI
 
+struct WidgetScoreboardQuickButtonControlsView: View {
+    let model: Model
+    let widget: SettingsWidget
+    @ObservedObject var scoreboard: SettingsWidgetScoreboard
+
+    var body: some View {
+        switch scoreboard.sport {
+        case .generic:
+            WidgetScoreboardGenericQuickButtonControlsView(model: model, widget: widget)
+        case .padel:
+            WidgetScoreboardPadelQuickButtonControlsView(model: model, widget: widget)
+        default:
+            EmptyView()
+        }
+    }
+}
+
 struct ScoreboardColorsView: View {
     let model: Model
     let widget: SettingsWidget

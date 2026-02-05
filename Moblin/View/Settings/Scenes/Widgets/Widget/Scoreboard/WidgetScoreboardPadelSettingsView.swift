@@ -70,6 +70,90 @@ private struct PlayerView: View {
     }
 }
 
+private struct ScoreboardUndoButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        Button {
+            model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .undo))
+        } label: {
+            Image(systemName: "arrow.uturn.backward")
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
+private struct ScoreboardIncrementHomeButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        Button {
+            model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .incrementHome))
+        } label: {
+            Image(systemName: "plus")
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
+private struct ScoreboardIncrementAwayButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        Button {
+            model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .incrementAway))
+        } label: {
+            Image(systemName: "plus")
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
+private struct ScoreboardResetScoreButtonView: View {
+    let model: Model
+    let widget: SettingsWidget
+    @State private var presentingResetConfirimation = false
+
+    var body: some View {
+        Button {
+            presentingResetConfirimation = true
+        } label: {
+            Image(systemName: "trash")
+        }
+        .buttonStyle(.borderless)
+        .tint(.red)
+        .confirmationDialog("", isPresented: $presentingResetConfirimation) {
+            Button("Reset score", role: .destructive) {
+                model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .reset))
+            }
+        }
+    }
+}
+
+struct WidgetScoreboardPadelQuickButtonControlsView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        VStack(spacing: 13) {
+            HStack(spacing: 13) {
+                Spacer()
+                ScoreboardUndoButtonView(model: model, widget: widget)
+                ScoreboardIncrementHomeButtonView(model: model, widget: widget)
+            }
+            HStack(spacing: 13) {
+                Spacer()
+                ScoreboardResetScoreButtonView(model: model, widget: widget)
+                ScoreboardIncrementAwayButtonView(model: model, widget: widget)
+            }
+        }
+        .font(.title)
+    }
+}
+
 struct WidgetScoreboardPadelGeneralSettingsView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget

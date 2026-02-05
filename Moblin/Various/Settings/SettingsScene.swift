@@ -2786,7 +2786,7 @@ class SettingsWidgetScoreboardClock: Codable, ObservableObject {
     @Published var direction: SettingsWidgetGenericScoreboardClockDirection = .up
     var minutes: Int = 0
     var seconds: Int = 0
-    var isStopped: Bool = true
+    @Published var isStopped: Bool = true
 
     enum CodingKeys: CodingKey {
         case maximum,
