@@ -80,6 +80,7 @@ struct DeepLinkCreatorSettingsView: View {
             settings.quickButtons!.buttons = settings.quickButtons!.buttons ?? .init()
             let newButton = MoblinSettingsButton(type: button.type)
             newButton.enabled = true
+            newButton.page = button.page
             settings.quickButtons!.buttons!.append(newButton)
         }
     }

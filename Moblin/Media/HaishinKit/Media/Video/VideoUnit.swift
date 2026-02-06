@@ -11,6 +11,8 @@ private let deltaLimit = 0.03
 struct DetectionJob {
     let videoSourceId: UUID
     let imageBuffer: CVPixelBuffer
+    let detectFaces: Bool
+    let detectText: Bool
 }
 
 struct VideoUnitAttachParams {
@@ -102,7 +104,6 @@ private func setOrientation(
 
 struct TextDetection {
     let boundingBox: CGRect
-    let text: String
 }
 
 struct Detections {
@@ -213,6 +214,7 @@ final class VideoUnit: NSObject {
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
     private var previousFaceDetectionTimes: [UUID: Double] = [:]
+    private var previousTextDetectionTimes: [UUID: Double] = [:]
     private var fps = VideoUnit.defaultFrameRate
     private var preferAutoFps = false
     private var colorSpace: AVCaptureColorSpace = .sRGB
@@ -1230,9 +1232,9 @@ final class VideoUnit: NSObject {
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         updateFps(presentationTimeStamp)
-        let faceDetectionVideoSourceIds = needsFaceDetections(presentationTimeStamp)
         let detectionJobs = prepareDetectionJobs(
-            faceDetectionVideoSourceIds,
+            needsFaceDetections(presentationTimeStamp),
+            needsTextDetections(presentationTimeStamp),
             sampleBuffer.presentationTimeStamp,
             imageBuffer
         )
@@ -1248,64 +1250,11 @@ final class VideoUnit: NSObject {
         if !detectionJobs.isEmpty {
             for detectionJob in detectionJobs {
                 detectionsQueue.async {
-                    do {
-                        var faceLandmarksRequest: VNDetectFaceLandmarksRequest?
-                        var textRequest: VNRecognizeTextRequest?
-                        var requests: [VNRequest] = []
-                        if true {
-                            faceLandmarksRequest = VNDetectFaceLandmarksRequest()
-                            requests.append(faceLandmarksRequest!)
-                        }
-                        if false {
-                            textRequest = VNRecognizeTextRequest()
-                            textRequest!.recognitionLevel = .fast
-                            // textRequest!.minimumTextHeight = 0.1
-                            requests.append(textRequest!)
-                        }
-                        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: detectionJob
-                            .imageBuffer)
-                        try imageRequestHandler.perform(requests)
-                        // Only use 5 biggest to limit processing.
-                        var faceDetections: [VNFaceObservation] = []
-                        if let results = faceLandmarksRequest?
-                            .results?
-                            .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
-                            .prefix(5)
-                        {
-                            faceDetections += results
-                        }
-                        var textDetections: [TextDetection] = []
-                        if let results = textRequest?.results {
-                            for result in results
-                                .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
-                                .prefix(5)
-                            {
-                                if let text = result.topCandidates(1).first {
-                                    textDetections.append(TextDetection(boundingBox: result.boundingBox,
-                                                                        text: text.string))
-                                }
-                            }
-                        }
-                        processorPipelineQueue.async {
-                            completion.detections[detectionJob.videoSourceId] = Detections(
-                                face: faceDetections,
-                                text: textDetections
-                            )
-                            self.detectionsComplete(completion)
-                        }
-                    } catch {
-                        processorPipelineQueue.async {
-                            completion.detections[detectionJob.videoSourceId] = Detections(
-                                face: [],
-                                text: []
-                            )
-                            self.detectionsComplete(completion)
-                        }
-                    }
+                    self.detectObjects(detectionJob: detectionJob, completion: completion)
                 }
             }
         } else {
-            detectionsComplete(completion)
+            detectObjectsComplete(completion)
         }
         return true
     }
@@ -1330,7 +1279,53 @@ final class VideoUnit: NSObject {
         nextFpsReportTime = presentationTimeStamp + 2
     }
 
-    private func detectionsComplete(_ completion: DetectionsCompletion) {
+    private func detectObjects(detectionJob: DetectionJob, completion: DetectionsCompletion) {
+        var faceDetections: [VNFaceObservation] = []
+        var textDetections: [TextDetection] = []
+        var faceLandmarksRequest: VNDetectFaceLandmarksRequest?
+        var textRequest: VNRecognizeTextRequest?
+        var requests: [VNRequest] = []
+        if detectionJob.detectFaces {
+            faceLandmarksRequest = VNDetectFaceLandmarksRequest()
+            requests.append(faceLandmarksRequest!)
+        }
+        if detectionJob.detectText {
+            textRequest = VNRecognizeTextRequest()
+            textRequest!.recognitionLevel = .fast
+            textRequest!.usesLanguageCorrection = false
+            textRequest!.minimumTextHeight = 0.05
+            requests.append(textRequest!)
+        }
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: detectionJob.imageBuffer)
+        if (try? imageRequestHandler.perform(requests)) != nil {
+            if let results = faceLandmarksRequest?
+                .results?
+                .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
+                .prefix(5)
+            {
+                faceDetections += results
+            }
+            if let results = textRequest?.results {
+                for result in results
+                    .sorted(by: { $0.boundingBox.height > $1.boundingBox.height })
+                    .prefix(10)
+                {
+                    if let text = result.topCandidates(1).first, text.confidence >= 0.5 {
+                        textDetections.append(TextDetection(boundingBox: result.boundingBox))
+                    }
+                }
+            }
+        }
+        processorPipelineQueue.async {
+            completion.detections[detectionJob.videoSourceId] = Detections(
+                face: faceDetections,
+                text: textDetections
+            )
+            self.detectObjectsComplete(completion)
+        }
+    }
+
+    private func detectObjectsComplete(_ completion: DetectionsCompletion) {
         guard completion.detections.count == completion.detections.count else {
             return
         }
@@ -1545,7 +1540,7 @@ final class VideoUnit: NSObject {
     }
 
     private func needsFaceDetections(_ presentationTimeStamp: Double) -> Set<UUID> {
-        var faceDetectionsIntervals: [UUID: Double] = [:]
+        var detectionsIntervals: [UUID: Double] = [:]
         var ids: Set<UUID> = []
         for effect in effects where effect.isEnabled() {
             switch effect.needsFaceDetections(presentationTimeStamp) {
@@ -1557,16 +1552,16 @@ final class VideoUnit: NSObject {
                 previousFaceDetectionTimes[videoSourceId] = presentationTimeStamp
             case let .interval(videoSourceId, interval):
                 let videoSourceId = videoSourceId ?? sceneVideoSourceId
-                if let currentInterval = faceDetectionsIntervals[videoSourceId] {
+                if let currentInterval = detectionsIntervals[videoSourceId] {
                     if interval < currentInterval {
-                        faceDetectionsIntervals[videoSourceId] = interval
+                        detectionsIntervals[videoSourceId] = interval
                     }
                 } else {
-                    faceDetectionsIntervals[videoSourceId] = interval
+                    detectionsIntervals[videoSourceId] = interval
                 }
             }
         }
-        for (videoSourceId, interval) in faceDetectionsIntervals {
+        for (videoSourceId, interval) in detectionsIntervals {
             if let previousPresentationTimeStamp = previousFaceDetectionTimes[videoSourceId] {
                 if presentationTimeStamp - previousPresentationTimeStamp > interval {
                     ids.insert(videoSourceId)
@@ -1580,13 +1575,50 @@ final class VideoUnit: NSObject {
         return ids
     }
 
+    private func needsTextDetections(_ presentationTimeStamp: Double) -> Set<UUID> {
+        var detectionsIntervals: [UUID: Double] = [:]
+        var ids: Set<UUID> = []
+        for effect in effects where effect.isEnabled() {
+            switch effect.needsTextDetections(presentationTimeStamp) {
+            case .off:
+                break
+            case let .now(videoSourceId):
+                let videoSourceId = videoSourceId ?? sceneVideoSourceId
+                ids.insert(videoSourceId)
+                previousTextDetectionTimes[videoSourceId] = presentationTimeStamp
+            case let .interval(videoSourceId, interval):
+                let videoSourceId = videoSourceId ?? sceneVideoSourceId
+                if let currentInterval = detectionsIntervals[videoSourceId] {
+                    if interval < currentInterval {
+                        detectionsIntervals[videoSourceId] = interval
+                    }
+                } else {
+                    detectionsIntervals[videoSourceId] = interval
+                }
+            }
+        }
+        for (videoSourceId, interval) in detectionsIntervals {
+            if let previousPresentationTimeStamp = previousTextDetectionTimes[videoSourceId] {
+                if presentationTimeStamp - previousPresentationTimeStamp > interval {
+                    ids.insert(videoSourceId)
+                    previousTextDetectionTimes[videoSourceId] = presentationTimeStamp
+                }
+            } else {
+                ids.insert(videoSourceId)
+                previousTextDetectionTimes[videoSourceId] = presentationTimeStamp
+            }
+        }
+        return ids
+    }
+
     private func prepareDetectionJobs(
         _ faceDetectionVideoSourceIds: Set<UUID>,
+        _ textDetectionVideoSourceIds: Set<UUID>,
         _ presentationTimeStamp: CMTime,
         _ imageBuffer: CVImageBuffer
     ) -> [DetectionJob] {
         var detectionJobs: [DetectionJob] = []
-        for videoSourceId in faceDetectionVideoSourceIds {
+        for videoSourceId in faceDetectionVideoSourceIds.union(textDetectionVideoSourceIds) {
             var videoSourceImageBuffer: CVPixelBuffer?
             if videoSourceId == sceneVideoSourceId {
                 videoSourceImageBuffer = imageBuffer
@@ -1600,7 +1632,11 @@ final class VideoUnit: NSObject {
                 break
             }
             detectionJobs.append(DetectionJob(videoSourceId: videoSourceId,
-                                              imageBuffer: videoSourceImageBuffer))
+                                              imageBuffer: videoSourceImageBuffer,
+                                              detectFaces: faceDetectionVideoSourceIds
+                                                  .contains(videoSourceId),
+                                              detectText: textDetectionVideoSourceIds
+                                                  .contains(videoSourceId)))
         }
         return detectionJobs
     }

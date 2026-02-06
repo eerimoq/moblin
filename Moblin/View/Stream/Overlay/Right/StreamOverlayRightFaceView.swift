@@ -29,7 +29,7 @@ struct StreamOverlayRightFaceView: View {
     @ObservedObject var face: SettingsFace
 
     var body: some View {
-        if face.showBlur || face.showBlurBackground {
+        if face.blurFaces || face.blurText || face.blurBackground {
             HStack {
                 Spacer()
                 VStack(alignment: .trailing, spacing: 0) {

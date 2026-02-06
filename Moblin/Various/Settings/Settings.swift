@@ -1080,8 +1080,9 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
 }
 
 class SettingsFace: Codable, ObservableObject {
-    @Published var showBlur = false
-    @Published var showBlurBackground: Bool = false
+    @Published var blurFaces = false
+    @Published var blurText = false
+    @Published var blurBackground: Bool = false
     @Published var showMoblin = false
     @Published var privacyMode: SettingsFacePrivacyMode = .blur
     @Published var blurStrength: Float = 0.8
@@ -1104,8 +1105,9 @@ class SettingsFace: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        showBlur = false
-        showBlurBackground = false
+        blurFaces = false
+        blurText = false
+        blurBackground = false
         showMoblin = false
         privacyMode = container.decode(.privacyMode, SettingsFacePrivacyMode.self, .blur)
         blurStrength = container.decode(.blurStrength, Float.self, 0.8)
@@ -1120,9 +1122,9 @@ class SettingsFace: Codable, ObservableObject {
         case .pixellate:
             faceEffectPrivacyMode = .pixellate(strength: pixellateStrength)
         }
-        return FaceEffectSettings(blurFaces: showBlur,
-                                  blurText: false,
-                                  blurBackground: showBlurBackground,
+        return FaceEffectSettings(blurFaces: blurFaces,
+                                  blurText: blurText,
+                                  blurBackground: blurBackground,
                                   showMouth: showMoblin,
                                   privacyMode: faceEffectPrivacyMode)
     }
@@ -1772,6 +1774,12 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  imageOff: "circle.rectangle.dashed",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Blur text"),
+                                 type: .blurText,
+                                 imageOn: "text.redaction",
+                                 imageOff: "text.redaction",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Glasses"),
                                  type: .glasses,
                                  imageOn: "sunglasses",
@@ -2010,6 +2018,7 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
         let buttonExists = quickButtons.buttons.contains(where: { quickButton.type == $0.type })
         if !buttonExists {
             button.type = quickButton.type
+            button.page = quickButton.page
             quickButtons.buttons.append(button)
         }
     }

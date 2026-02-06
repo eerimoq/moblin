@@ -1,4 +1,4 @@
-import { websocketUrl } from "./utils.mjs";
+import { addOnChange, addOnClick, addOnBlur, websocketUrl } from "./utils.mjs";
 
 let ws = null;
 let state = null;
@@ -6,6 +6,8 @@ let activeInputId = null;
 let currentsportId = null;
 let rangeCache = { min: 0, max: 30 };
 let requestId = 0;
+let confirmComplete = null;
+let confirmResult = false;
 
 const CONTROL_ORDER = [
   "primaryScore",
@@ -17,20 +19,6 @@ const CONTROL_ORDER = [
   "stat4",
   "possession",
 ];
-
-document.addEventListener("focusin", function (e) {
-  activeInputId = e.target.id;
-});
-document.addEventListener("focusout", function () {
-  activeInputId = null;
-});
-
-const durSel = document.getElementById("dur-sel");
-let durHtml = '<option value="">DUR</option>';
-for (let i = 0; i <= 120; i++) {
-  durHtml += `<option value="${i}">${i} min</option>`;
-}
-durSel.innerHTML = durHtml;
 
 function updateStatus(text, colorClass) {
   const el = document.getElementById("stat");
@@ -62,6 +50,10 @@ function sendGetStatusRequest() {
   sendRequest({
     getStatus: {},
   });
+}
+
+function sendSetScoreboardClock(time) {
+  sendRequest({ setScoreboardClock: { time: time } });
 }
 
 setInterval(() => {
@@ -164,58 +156,95 @@ function render() {
     currentsportId = state.sportId;
     rangeCache.min = state.global.minSetScore || 0;
     rangeCache.max = state.global.maxSetScore || 30;
-    buildHistoryGrid();
+    buildHistoricScores();
     buildDom();
   } else {
     updateDomValues();
   }
 }
 
-function buildHistoryGrid() {
-  const histGrid = document.getElementById("history-grid");
+function buildHistoricScores() {
   let histHtml = "";
   for (let i = 1; i <= 5; i++) {
     histHtml += `<div class="flex flex-col gap-1">
-            <div id="h-lbl-${i}" onclick="window.setPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">SET ${i}</div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t1-${i}" onchange="window.setHist(1,${i},this.value)">${genOpts()}</select></div>
-            <div class="h-8 rounded bg-zinc-800 border border-zinc-700"><select id="h-t2-${i}" onchange="window.setHist(2,${i},this.value)">${genOpts()}</select></div>
-        </div>`;
+                    <div id="h-lbl-${i}" onclick="window.setHistoricPeriod(${i})" class="text-center text-[9px] text-zinc-500 border border-transparent rounded cursor-pointer hover:border-zinc-600">
+                        SET ${i}
+                    </div>
+                    <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
+                        <select id="h-t1-${i}" onchange="window.setHistoricScore(1, ${i}, this.value)">
+                            ${historicScoreOptions()}
+                        </select></div>
+                    <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
+                        <select id="h-t2-${i}" onchange="window.setHistoricScore(2, ${i}, this.value)">
+                            ${historicScoreOptions()}
+                        </select></div>
+                </div>`;
   }
-  histGrid.innerHTML = histHtml;
+  document.getElementById("history-grid").innerHTML = histHtml;
 }
 
-function genOpts() {
-  let s = '<option value="">-</option>';
+function historicScoreOptions() {
+  let options = '<option value="">-</option>';
   for (let i = 0; i <= rangeCache.max; i++) {
-    s += `<option value="${i}">${i}</option>`;
+    options += `<option value="${i}">${i}</option>`;
   }
-  return s;
+  return options;
 }
 
-function setHist(team, idx, val) {
-  state["team" + team]["secondaryScore" + idx] = val;
-  if (val !== "") {
+function setHistoricScore(team, idx, score) {
+  state["team" + team]["secondaryScore" + idx] = score;
+  if (score !== "") {
     const opp = team === 1 ? 2 : 1;
     const oppKey = "secondaryScore" + idx;
     if (!state["team" + opp][oppKey] || state["team" + opp][oppKey] === "") {
       state["team" + opp][oppKey] = "0";
     }
   }
-  update();
+  sendUpdateScoreboard();
 }
 
-function setPeriod(p) {
-  state.global.period = p.toString();
-  const el = document.getElementById("gp");
-  if (el) {
-    el.value = p.toString();
-  }
+function setDuration(event) {
+  sendRequest({
+    setScoreboardDuration: {
+      minutes: parseInt(event.target.value),
+    },
+  });
+}
+
+function setClockDirection(event) {
+  state.global.timerDirection = event.target.value;
+  sendUpdateScoreboard();
+}
+
+function setClock(event) {
+  sendSetScoreboardClock(event.target.value);
+}
+
+function setTitle(event) {
+  state.global.title = event.target.value;
+  sendUpdateScoreboard();
+}
+
+function setPeriod(event) {
+  state.global.period = event.target.value;
+  sendUpdateScoreboard();
+}
+
+function setInfoBoxText(event) {
+  state.global.infoBoxText = event.target.value;
+  sendUpdateScoreboard();
+}
+
+function setTeamName(teamNumber, value) {
+  state["team" + teamNumber].name = value;
+  sendUpdateScoreboard();
+}
+
+function setHistoricPeriod(period) {
+  state.global.period = period.toString();
+  document.getElementById("period").value = period.toString();
   render();
-  update();
-}
-
-function setDuration(val) {
-  sendAction("set-duration", val);
+  sendUpdateScoreboard();
 }
 
 function buildDom() {
@@ -235,7 +264,14 @@ function buildDom() {
       }
 
       if (c.type === "counter") {
-        controlsHtml += `<div class="grid grid-cols-2 gap-1 mb-1"><button onclick="window.adj(${n},'${key}',1)" class="btn btn-ctrl">+${c.label}</button><button onclick="window.adj(${n},'${key}',-1)" class="btn btn-ctrl">-${c.label}</button></div>`;
+        controlsHtml += `<div class="grid grid-cols-2 gap-1 mb-1">
+                            <button onclick="window.adjust(${n}, '${key}', 1)" class="btn btn-ctrl">
+                                +${c.label}
+                            </button>
+                            <button onclick="window.adjust(${n}, '${key}', -1)" class="btn btn-ctrl">
+                                -${c.label}
+                            </button>
+                        </div>`;
       } else {
         let nextKey = null;
         for (let j = k + 1; j < CONTROL_ORDER.length; j++) {
@@ -261,17 +297,31 @@ function buildDom() {
     }
 
     document.getElementById(`t${n}a`).innerHTML = `
-            <div id="h-t${n}" class="rounded-t p-1" style="background:${team.bgColor}"><input type="text" id="in-n-${n}" onblur="window.state.${t}.name=this.value;update()" class=""></div>
+            <div id="h-t${n}" class="rounded-t p-1" style="background:${team.bgColor}">
+              <input type="text" id="in-n-${n}" onblur="window.setTeamName(${n}, this.value)" class="">
+            </div>
             <div class="card rounded-t-none">
                 <div class="grid grid-cols-4 gap-1 h-10 mb-2">
-                    <div id="p-t${n}" class="disp-box" style="background:${team.bgColor};color:${team.textColor}">0</div>
-                    <div id="s-t${n}" class="disp-box m-shadow" style="background:${team.bgColor};color:white">0</div>
-                    <div class="rounded border border-zinc-700 bg-zinc-800"><input type="color" id="col-bg-${n}" oninput="window.liveColor(${n},'bgColor',this.value)"></div>
-                    <div class="rounded border border-zinc-700 bg-zinc-800"><input type="color" id="col-txt-${n}" oninput="window.liveColor(${n},'textColor',this.value)"></div>
+                    <div id="p-t${n}" class="disp-box" style="background:${team.bgColor};color:${team.textColor}">
+                        0
+                    </div>
+                    <div id="s-t${n}" class="disp-box m-shadow" style="background:${team.bgColor};color:white">
+                        0
+                    </div>
+                    <div class="rounded border border-zinc-700 bg-zinc-800">
+                        <input type="color" id="col-bg-${n}" oninput="window.setBackgroundColor(${n}, this.value)">
+                    </div>
+                    <div class="rounded border border-zinc-700 bg-zinc-800">
+                        <input type="color" id="col-txt-${n}" oninput="window.setTextColor(${n}, this.value)">
+                    </div>
                 </div>
                 <div class="grid grid-cols-3 gap-1 mb-2">
-                    <button onclick="window.adj(${n},'primaryScore',1)" class="col-span-2 btn btn-score">+Pt</button>
-                    <button onclick="window.adj(${n},'primaryScore',-1)" class="col-span-1 btn btn-score">-Pt</button>
+                    <button onclick="window.adjust(${n}, 'primaryScore', 1)" class="col-span-2 btn btn-score">
+                        +Pt
+                    </button>
+                    <button onclick="window.adjust(${n}, 'primaryScore', -1)" class="col-span-1 btn btn-score">
+                        -Pt
+                    </button>
                 </div>
                 ${controlsHtml}
             </div>`;
@@ -280,15 +330,28 @@ function buildDom() {
 }
 
 function renderPacked(t, n, key, c, team) {
-  if (c.type === "select") {
-    return `<div class="disp-sm bg-zinc-800"><select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value;update()">${c.options.map((v) => `<option value="${v}">${c.label}: ${v}</option>`).join("")}</select></div>`;
-  } else if (c.type === "toggleTeam") {
-    return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">${c.label}</button>`;
-  } else if (c.type === "cycle") {
-    const txt = c.label ? `${c.label}: ${team[key] || "NONE"}` : `${team[key] || "NONE"}`;
-    return `<button id="btn-${t}-${key}" onclick="window.cycle(${n},'${key}')" class="btn btn-ctrl">${txt}</button>`;
+  switch (c.type) {
+    case "select":
+      const options = c.options
+        .map((v) => `<option value="${v}">${c.label}: ${v}</option>`)
+        .join("");
+      return `<div class="disp-sm bg-zinc-800">
+                <select id="sel-${t}-${key}" onchange="window.state.${t}.${key}=this.value; sendUpdateScoreboard()">
+                    ${options}
+                </select>
+            </div>`;
+    case "toggleTeam":
+      return `<button id="btn-tog-${n}-${key}" onclick="window.toggleTeam(${n})" class="btn btn-ctrl">
+                ${c.label}
+            </button>`;
+    case "cycle":
+      const txt = c.label ? `${c.label}: ${team[key] || "NONE"}` : `${team[key] || "NONE"}`;
+      return `<button id="btn-${t}-${key}" onclick="window.cycle(${n},'${key}')" class="btn btn-ctrl">
+                ${txt}
+            </button>`;
+    default:
+      return "";
   }
-  return "";
 }
 
 function updateDomValues() {
@@ -296,9 +359,9 @@ function updateDomValues() {
     const n = i + 1;
     const team = state[t];
 
-    const h = document.getElementById(`h-t${n}`),
-      p = document.getElementById(`p-t${n}`),
-      s = document.getElementById(`s-t${n}`);
+    const h = document.getElementById(`h-t${n}`);
+    const p = document.getElementById(`p-t${n}`);
+    const s = document.getElementById(`s-t${n}`);
     h.style.background = team.bgColor;
     p.style.background = team.bgColor;
     s.style.background = team.bgColor;
@@ -341,85 +404,91 @@ function updateDomValues() {
       }
       const c = state.controls[key];
       const val = team[key] || "";
-
-      if (c.type === "cycle") {
-        const btn = document.getElementById(`btn-${t}-${key}`);
-        if (btn) {
-          btn.innerText = c.label ? `${c.label}: ${val}` : val;
-          const isActive = val && val !== "NONE" && !val.startsWith("NO ");
-          if (isActive) {
-            btn.classList.add("btn-accent");
-          } else {
-            btn.classList.remove("btn-accent");
+      switch (c.type) {
+        case "cycle": {
+          const btn = document.getElementById(`btn-${t}-${key}`);
+          if (btn) {
+            btn.innerText = c.label ? `${c.label}: ${val}` : val;
+            const isActive = val && val !== "NONE" && !val.startsWith("NO ");
+            if (isActive) {
+              btn.classList.add("btn-accent");
+            } else {
+              btn.classList.remove("btn-accent");
+            }
           }
+          break;
         }
-      } else if (c.type === "select") {
-        const sel = document.getElementById(`sel-${t}-${key}`);
-        if (sel && activeInputId !== `sel-${t}-${key}`) {
-          sel.value = val;
-        }
-      } else if (c.type === "toggleTeam") {
-        const btn = document.getElementById(`btn-tog-${n}-${key}`);
-        if (btn) {
-          const isActive = team.possession === true;
-          if (isActive) {
-            btn.classList.add("btn-accent");
-            btn.classList.remove("text-zinc-500");
-          } else {
-            btn.classList.remove("btn-accent");
-            btn.classList.add("text-zinc-500");
+        case "select":
+          const sel = document.getElementById(`sel-${t}-${key}`);
+          if (sel && activeInputId !== `sel-${t}-${key}`) {
+            sel.value = val;
           }
+          break;
+        case "toggleTeam": {
+          const btn = document.getElementById(`btn-tog-${n}-${key}`);
+          if (btn) {
+            const isActive = team.possession === true;
+            if (isActive) {
+              btn.classList.add("btn-accent");
+              btn.classList.remove("text-zinc-500");
+            } else {
+              btn.classList.remove("btn-accent");
+              btn.classList.add("text-zinc-500");
+            }
+          }
+          break;
         }
       }
     });
   });
 }
 
-function switchSport(val) {
-  if (!val) {
+function switchSport(event) {
+  if (!event.target.value) {
     return;
   }
   sendRequest({
     setScoreboardSport: {
-      sportId: val,
+      sportId: event.target.value,
     },
   });
 }
 
-function switchLayout(val) {
-  if (!val) {
+function switchLayout(event) {
+  if (!event.target.value) {
     return;
   }
-  state.layout = val;
-  update();
+  state.layout = event.target.value;
+  sendUpdateScoreboard();
 }
 
-function tog(key) {
+function toggleButtonState(key) {
   state.global[key] = !state.global[key];
   updateGlobalToggles();
-  update();
+  sendUpdateScoreboard();
+}
+
+function toggleButtonStyle(elementId, enabled) {
+  const element = document.getElementById(elementId);
+  if (enabled) {
+    element.classList.add("btn-active");
+  } else {
+    element.classList.remove("btn-active");
+  }
 }
 
 function updateGlobalToggles() {
-  const bTitle = document.getElementById("btn-show-title");
-  if (bTitle) {
-    bTitle.className = state.global.showTitle ? "btn btn-active" : "btn";
-  }
+  toggleButtonStyle("btn-show-title", state.global.showTitle);
+  toggleButtonStyle("btn-info-box", state.global.showStats);
+  toggleButtonStyle("btn-more-stats", state.global.showMoreStats);
+}
 
-  const bTop = document.getElementById("btn-title-top");
-  if (bTop) {
-    bTop.className = state.global.titleTop ? "btn btn-active" : "btn";
-  }
+function setTextColor(teamNumber, value) {
+  liveColor(teamNumber, "textColor", value);
+}
 
-  const bStats = document.getElementById("btn-show-stats");
-  if (bStats) {
-    bStats.className = state.global.showStats ? "btn btn-active" : "btn";
-  }
-
-  const b2nd = document.getElementById("btn-show-2nd");
-  if (b2nd) {
-    b2nd.className = state.global.showSecondaryRow ? "btn btn-active" : "btn";
-  }
+function setBackgroundColor(teamNumber, value) {
+  liveColor(teamNumber, "bgColor", value);
 }
 
 function liveColor(n, k, v) {
@@ -445,20 +514,19 @@ function liveColor(n, k, v) {
       s.style.color = "white";
     }
   }
-  update();
+  sendUpdateScoreboard();
 }
 
 function syncUI() {
   render();
-  safeUpdate("gt", state.global.title);
-  safeUpdate("gti", state.global.timer);
-  safeUpdate("gp", state.global.period);
-  safeUpdate("gi", state.global.subPeriod);
+  safeUpdate("title", state.global.title);
+  safeUpdate("clock", state.global.timer);
+  safeUpdate("period", state.global.period);
+  safeUpdate("info-box", state.global.infoBoxText);
   document.getElementById("lbl-period").innerText = state.global.periodLabel || "PER";
 
-  const gtd = document.getElementById("gtd");
-  if (activeInputId !== "gtd") {
-    gtd.value = state.global.timerDirection;
+  if (activeInputId !== "clock-direction") {
+    document.getElementById("clock-direction").value = state.global.timerDirection;
   }
 
   const sel = document.getElementById("sport-selector");
@@ -470,41 +538,25 @@ function syncUI() {
     sel.value = state.sportId;
   }
 
-  const lay = document.getElementById("layout-selector");
   if (activeInputId !== "layout-selector" && state.layout) {
-    lay.value = state.layout;
+    document.getElementById("layout-selector").value = state.layout;
   }
 
-  const btnSet = document.getElementById("btn-reset-set");
-  if (btnSet) {
-    btnSet.innerText = state.global.scoringMode === "tennis" ? "Start Next Set" : "Next Set/Period";
-  }
+  document.getElementById("next-set").innerText =
+    state.global.scoringMode === "tennis" ? "Start next set" : "Next set/period";
 
-  if (state.global.duration && activeInputId !== "dur-sel") {
-    const ds = document.getElementById("dur-sel");
-    if (ds) {
-      ds.value = state.global.duration;
-    }
+  if (state.global.duration && activeInputId !== "clock-maximum") {
+    document.getElementById("clock-maximum").value = state.global.duration;
   }
 
   updateGlobalToggles();
 }
 
-function sendAction(act, value) {
-  let data;
-  if (act === "set-duration") {
-    data = { setScoreboardDuration: { minutes: value } };
-  } else if (act === "set-clock-manual") {
-    data = { setScoreboardClock: { time: value } };
-  } else if (act === "toggle-clock") {
-    data = { toggleScoreboardClock: {} };
-  } else {
-    return;
-  }
-  sendRequest(data);
+function sendToggleClock() {
+  sendRequest({ toggleScoreboardClock: {} });
 }
 
-function adj(t, k, v) {
+function adjust(t, k, v) {
   if (state.global.scoringMode === "tennis" && k === "primaryScore") {
     adjTennis(t, v);
     return;
@@ -520,7 +572,7 @@ function adj(t, k, v) {
       if (!state["team" + opp][oppKey] || state["team" + opp][oppKey] === "") {
         state["team" + opp][oppKey] = "0";
       }
-      update();
+      sendUpdateScoreboard();
     }
     return;
   }
@@ -529,7 +581,7 @@ function adj(t, k, v) {
     toggleTeam(t);
   }
   render();
-  update();
+  sendUpdateScoreboard();
 }
 
 function adjTennis(t, v) {
@@ -539,67 +591,96 @@ function adjTennis(t, v) {
   let oppVal = state[oKey].primaryScore;
 
   if (v > 0) {
-    if (val === "0") {
-      val = "15";
-    } else if (val === "15") {
-      val = "30";
-    } else if (val === "30") {
-      if (oppVal === "40") {
-        val = "D";
-        state[oKey].primaryScore = "D";
-      } else {
-        val = "40";
-      }
-    } else if (val === "40") {
-      if (oppVal === "Ad") {
-        val = "D";
-        state[oKey].primaryScore = "D";
-      } else if (oppVal === "40" || oppVal === "D") {
-        val = "Ad";
-      } else {
+    switch (val) {
+      case "0":
+        val = "15";
+        break;
+      case "15":
+        val = "30";
+        break;
+      case "30":
+        if (oppVal === "40") {
+          val = "D";
+          state[oKey].primaryScore = "D";
+        } else {
+          val = "40";
+        }
+        break;
+      case "40":
+        if (oppVal === "Ad") {
+          val = "D";
+          state[oKey].primaryScore = "D";
+        } else if (oppVal === "40" || oppVal === "D") {
+          val = "Ad";
+        } else {
+          winGame(t);
+          return;
+        }
+        break;
+      case "D":
+        if (oppVal === "Ad") {
+          state[oKey].primaryScore = "D";
+        } else {
+          val = "Ad";
+        }
+        break;
+      case "Ad":
         winGame(t);
         return;
-      }
-    } else if (val === "D") {
-      if (oppVal === "Ad") {
-        state[oKey].primaryScore = "D";
-      } else {
-        val = "Ad";
-      }
-    } else if (val === "Ad") {
-      winGame(t);
-      return;
     }
   } else {
-    if (val === "Ad") {
-      val = "D";
-    } else if (val === "D") {
-      val = "40";
-    } else if (val === "40") {
-      val = "30";
-    } else if (val === "30") {
-      val = "15";
-    } else if (val === "15") {
-      val = "0";
+    switch (val) {
+      case "Ad":
+        val = "D";
+        break;
+      case "D":
+        val = "40";
+        break;
+      case "40":
+        val = "30";
+        break;
+      case "30":
+        val = "15";
+        break;
+      case "15":
+        val = "0";
+        break;
     }
   }
 
   state[tKey].primaryScore = val;
   render();
-  update();
+  sendUpdateScoreboard();
+}
+
+async function confirm(message) {
+  document.getElementById("confirm-message").innerHTML = message;
+  const dialog = document.getElementById("confirm");
+  dialog.showModal();
+  await new Promise((resolve) => {
+    confirmComplete = (result) => {
+      confirmResult = result;
+      resolve();
+    };
+  });
+  dialog.close();
+  return confirmResult;
+}
+
+function confirmOk() {
+  confirmComplete(true);
+}
+
+function confirmCancel() {
+  confirmComplete(false);
 }
 
 function winGame(t) {
-  if (!confirm("Confirm Game Won?")) {
-    return;
-  }
   state.team1.primaryScore = "0";
   state.team2.primaryScore = "0";
-  adj(t, "currentSetScore", 1);
   const nextServer = state.team1.possession ? 2 : 1;
   toggleTeam(nextServer);
-  render();
-  update();
+  adjust(t, "currentSetScore", 1);
 }
 
 function cycle(t, k) {
@@ -607,25 +688,25 @@ function cycle(t, k) {
   const curr = state["team" + t][k] || "";
   let idx = opts.indexOf(curr);
   state["team" + t][k] = opts[(idx + 1) % opts.length];
-  update();
+  sendUpdateScoreboard();
 }
 
 function toggleTeam(tIndex) {
   state.team1.possession = tIndex === 1;
   state.team2.possession = tIndex === 2;
   render();
-  update();
+  sendUpdateScoreboard();
 }
 
-function resetSet() {
+async function resetSet() {
   if (state.global.scoringMode === "tennis") {
-    if (!confirm("Start Next Set?")) {
+    if (!(await confirm("Start next set?"))) {
       return;
     }
     let p = parseInt(state.global.period) || 0;
     state.global.period = (p + 1).toString();
 
-    const el = document.getElementById("gp");
+    const el = document.getElementById("period");
     if (el) {
       el.value = state.global.period;
     }
@@ -634,11 +715,11 @@ function resetSet() {
     state.team2.primaryScore = "0";
     // Tennis doesn't reset possession usually, logic preserved
 
-    update();
+    sendUpdateScoreboard();
     return;
   }
 
-  if (!confirm("Next Set/Period?")) {
+  if (!(await confirm("Start next set/period?"))) {
     return;
   }
 
@@ -664,7 +745,7 @@ function resetSet() {
   let p = parseInt(state.global.period) || 0;
   state.global.period = (p + 1).toString();
 
-  const el = document.getElementById("gp");
+  const el = document.getElementById("period");
   if (el) el.value = state.global.period;
 
   Object.keys(state.controls).forEach((k) => {
@@ -689,15 +770,19 @@ function resetSet() {
     state.team1.secondaryScore = "0";
     state.team2.secondaryScore = "0";
   }
-  update();
+  sendUpdateScoreboard();
 }
 
-function newMatch() {
-  if (!confirm("NEW MATCH? This clears scores and stats.")) {
+async function newMatch() {
+  if (!(await confirm("Start new match? This clears scores and stats."))) {
     return;
   }
-  state.global.timer = "00:00";
-  state.global.period = "1";
+  if (state.global.timerDirection == "up") {
+    state.global.timer = "0:00";
+  } else {
+    state.global.timer = `${parseInt(state.global.duration)}:00`;
+  }
+  document.getElementById("period").value = "1";
   Object.keys(state.controls).forEach((k) => {
     let def = "0";
     if (state.controls[k].options && state.controls[k].options.length > 0) {
@@ -720,27 +805,13 @@ function newMatch() {
     state.team2.secondaryScore = "0";
   }
   for (let i = 1; i <= 5; i++) {
-    state.team1["secondaryScore" + i] = "";
-    state.team2["secondaryScore" + i] = "";
+    state.team1["secondaryScore" + i] = null;
+    state.team2["secondaryScore" + i] = null;
   }
-  update();
+  sendUpdateScoreboard();
 }
 
-function update() {
-  state.global.title = document.getElementById("gt").value;
-
-  // Fix: Capture clock value to prevent revert, and send manual update if focused
-  if (activeInputId === "gti") {
-    state.global.timer = document.getElementById("gti").value; // Update local state so it doesn't revert on echo
-    sendAction("set-clock-manual", state.global.timer);
-  } else {
-    // If not focused, we don't send clock back, we let server drive it
-    // But we need to ensure we don't send "00:00" if we haven't rendered yet
-    // state.global.timer is authoritative from server usually
-  }
-
-  state.global.period = document.getElementById("gp").value;
-  state.global.subPeriod = document.getElementById("gi").value;
+function sendUpdateScoreboard() {
   sendRequest({
     updateScoreboard: {
       config: state,
@@ -748,23 +819,52 @@ function update() {
   });
 }
 
-window.setPeriod = setPeriod;
-window.adj = adj;
+window.setHistoricPeriod = setHistoricPeriod;
+window.adjust = adjust;
 window.toggleTeam = toggleTeam;
 window.cycle = cycle;
-window.resetSet = resetSet;
-window.tog = tog;
-window.newMatch = newMatch;
-window.resetSet = resetSet;
-window.switchSport = switchSport;
-window.switchLayout = switchLayout;
-window.sendAction = sendAction;
-window.update = update;
 window.state = state;
-window.setDuration = setDuration;
-window.setHist = setHist;
-window.liveColor = liveColor;
+window.setHistoricScore = setHistoricScore;
+window.sendUpdateScoreboard = sendUpdateScoreboard;
+window.setTeamName = setTeamName;
+window.setTextColor = setTextColor;
+window.setBackgroundColor = setBackgroundColor;
 
 window.addEventListener("DOMContentLoaded", async () => {
+  let clockMaximumOptions = "";
+  for (let i = 1; i <= 120; i++) {
+    clockMaximumOptions += `<option value=${i}>${i} min</option>`;
+  }
+  document.getElementById("clock-maximum").innerHTML = clockMaximumOptions;
+  addOnChange("clock-maximum", setDuration);
+  addOnChange("clock-direction", setClockDirection);
+  addOnChange("layout-selector", switchLayout);
+  addOnChange("sport-selector", switchSport);
+  addOnClick("toggle-clock", sendToggleClock);
+  addOnClick("next-set", resetSet);
+  addOnClick("new-match", newMatch);
+  addOnClick("btn-show-title", () => {
+    toggleButtonState("showTitle");
+  });
+  addOnClick("btn-more-stats", () => {
+    toggleButtonState("showMoreStats");
+  });
+  addOnClick("btn-info-box", () => {
+    toggleButtonState("showStats");
+  });
+  addOnClick("confirm-ok", confirmOk);
+  addOnClick("confirm-cancel", confirmCancel);
+  addOnBlur("info-box", setInfoBoxText);
+  addOnBlur("title", setTitle);
+  addOnBlur("clock", setClock);
+  addOnBlur("period", setPeriod);
   connect();
+});
+
+document.addEventListener("focusin", function (e) {
+  activeInputId = e.target.id;
+});
+
+document.addEventListener("focusout", function () {
+  activeInputId = null;
 });

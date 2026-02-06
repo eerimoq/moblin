@@ -35,8 +35,20 @@ final class FaceEffect: VideoEffect {
         }
     }
 
-    override func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
-        return .now(nil)
+    override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
+        if settings.blurFaces || settings.blurBackground {
+            return .now(nil)
+        } else {
+            return .off
+        }
+    }
+
+    override func needsTextDetections(_: Double) -> VideoEffectDetectionsMode {
+        if settings.blurText {
+            return .now(nil)
+        } else {
+            return .off
+        }
     }
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {

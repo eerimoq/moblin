@@ -1,30 +1,31 @@
 import Foundation
 import Network
 
+private let homeBackgroundColor = "#1e40af"
+private let awayBackgroundColor = "#dc2626"
+
 private let basketballConfig = RemoteControlScoreboardMatchConfig(
     sportId: "basketball",
     layout: "sideBySide",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: true,
         stat1: "5",
         stat1Label: "TO",
         stat2: "0",
         stat2Label: "FOUL",
-        stat3: "NO BONUS",
-        stat3Label: ""
+        stat3: "NO BONUS"
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         possession: false,
         stat1: "5",
         stat1Label: "TO",
         stat2: "0",
         stat2Label: "FOUL",
-        stat3: "NO BONUS",
-        stat3Label: ""
+        stat3: "NO BONUS"
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "Varsity Basketball",
@@ -32,7 +33,6 @@ private let basketballConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "down",
         period: "1",
         periodLabel: "QTR",
-        subPeriod: "",
         primaryScoreResetOnPeriod: false,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
@@ -59,12 +59,12 @@ private let genericConfig = RemoteControlScoreboardMatchConfig(
     layout: "stacked",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: false
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         possession: false
     ),
     global: RemoteControlScoreboardGlobalStats(
@@ -73,7 +73,6 @@ private let genericConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "down",
         period: "",
         periodLabel: "",
-        subPeriod: "",
         primaryScoreResetOnPeriod: false,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
@@ -90,30 +89,28 @@ private let genericSetsConfig = RemoteControlScoreboardMatchConfig(
     layout: "stacked",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: false,
         secondaryScore: "0"
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         possession: false,
         secondaryScore: "0"
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "GENERIC MATCH",
-        timer: "00:00",
+        timer: "0:00",
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
-        subPeriod: "",
         primaryScoreResetOnPeriod: true,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
         showTitle: false,
-        titleTop: true,
         showStats: false,
-        showSecondaryRow: false
+        showMoreStats: false
     ),
     controls: [
         "primaryScore": .init(type: "counter", label: "Pt", periodReset: true),
@@ -127,30 +124,24 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
     layout: "sideBySide",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: false,
         secondaryScore: "0",
         secondaryScoreLabel: "SOG",
         stat1: "NO PP",
-        stat1Label: "",
         stat2: "NO EN",
-        stat2Label: "",
-        stat3: "NO DP",
-        stat3Label: ""
+        stat3: "NO DP"
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         textColor: "#ffffff",
         possession: false,
         secondaryScore: "0",
         secondaryScoreLabel: "SOG",
         stat1: "NO PP",
-        stat1Label: "",
         stat2: "NO EN",
-        stat2Label: "",
-        stat3: "NO DP",
-        stat3Label: ""
+        stat3: "NO DP"
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "Varsity Hockey",
@@ -158,7 +149,6 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "down",
         period: "1",
         periodLabel: "PER",
-        subPeriod: "",
         primaryScoreResetOnPeriod: false,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
@@ -177,12 +167,12 @@ private let footballConfig = RemoteControlScoreboardMatchConfig(
     layout: "stacked",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: false
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         textColor: "#ffffff",
         possession: false
     ),
@@ -192,7 +182,6 @@ private let footballConfig = RemoteControlScoreboardMatchConfig(
         timerDirection: "down",
         period: "1",
         periodLabel: "HALF",
-        subPeriod: "",
         primaryScoreResetOnPeriod: false,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
@@ -207,22 +196,21 @@ private let tennisConfig = RemoteControlScoreboardMatchConfig(
     layout: "stackHistory",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: true
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         textColor: "#ffffff",
         possession: false
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "TENNIS",
-        timer: "00:00",
+        timer: "0:00",
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
-        subPeriod: "",
         primaryScoreResetOnPeriod: true,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
@@ -243,7 +231,7 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
     layout: "stacked",
     team1: RemoteControlScoreboardTeam(
         name: "Home",
-        bgColor: "#1e40af",
+        bgColor: homeBackgroundColor,
         possession: true,
         secondaryScore: "0",
         stat1: "0",
@@ -251,7 +239,7 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
     ),
     team2: RemoteControlScoreboardTeam(
         name: "Away",
-        bgColor: "#dc2626",
+        bgColor: awayBackgroundColor,
         possession: false,
         secondaryScore: "0",
         stat1: "0",
@@ -259,11 +247,10 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
     ),
     global: RemoteControlScoreboardGlobalStats(
         title: "Varsity Volleyball",
-        timer: "00:00",
+        timer: "0:00",
         timerDirection: "up",
         period: "1",
         periodLabel: "SET",
-        subPeriod: " ",
         primaryScoreResetOnPeriod: true,
         secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: true,
@@ -289,6 +276,69 @@ private let configs: [String: RemoteControlScoreboardMatchConfig] = [
 ]
 
 extension Model {
+    @MainActor
+    func handleUpdatePadelScoreboard(action: WatchProtocolPadelScoreboardAction) {
+        guard let widget = findWidget(id: action.id) else {
+            return
+        }
+        switch action.action {
+        case .reset:
+            handleUpdatePadelScoreboardReset(scoreboard: widget.scoreboard.padel)
+        case .undo:
+            handleUpdatePadelScoreboardUndo(scoreboard: widget.scoreboard.padel)
+        case .incrementHome:
+            handleUpdatePadelScoreboardIncrementHome(scoreboard: widget.scoreboard.padel)
+        case .incrementAway:
+            handleUpdatePadelScoreboardIncrementAway(scoreboard: widget.scoreboard.padel)
+        case let .players(players):
+            handleUpdatePadelScoreboardChangePlayers(scoreboard: widget.scoreboard.padel,
+                                                     players: players)
+        }
+        guard let scoreboardEffect = scoreboardEffects[action.id] else {
+            return
+        }
+        scoreboardEffect.update(scoreboard: widget.scoreboard,
+                                config: getCurrentConfig(),
+                                players: database.scoreboardPlayers)
+        sendUpdatePadelScoreboardToWatch(id: action.id, padel: widget.scoreboard.padel)
+    }
+
+    @MainActor
+    func handleUpdateGenericScoreboard(action: WatchProtocolGenericScoreboardAction) {
+        guard let widget = findWidget(id: action.id) else {
+            return
+        }
+        switch action.action {
+        case .reset:
+            handleUpdateGenericScoreboardReset(scoreboard: widget.scoreboard.generic)
+        case .undo:
+            handleUpdateGenericScoreboardUndo(scoreboard: widget.scoreboard.generic)
+        case .incrementHome:
+            handleUpdateGenericScoreboardIncrementHome(scoreboard: widget.scoreboard.generic)
+        case .incrementAway:
+            handleUpdateGenericScoreboardIncrementAway(scoreboard: widget.scoreboard.generic)
+        case let .setTitle(title):
+            handleUpdateGenericScoreboardSetTitle(
+                scoreboard: widget.scoreboard.generic,
+                title: title
+            )
+        case let .setClock(minutes, seconds):
+            handleUpdateGenericScoreboardSetClock(scoreboard: widget.scoreboard.generic,
+                                                  minutes: minutes,
+                                                  seconds: seconds)
+        case let .setClockState(stopped: stopped):
+            handleUpdateGenericScoreboardSetClockState(scoreboard: widget.scoreboard.generic,
+                                                       stopped: stopped)
+        }
+        guard let scoreboardEffect = scoreboardEffects[action.id] else {
+            return
+        }
+        scoreboardEffect.update(scoreboard: widget.scoreboard,
+                                config: getCurrentConfig(),
+                                players: database.scoreboardPlayers)
+        sendUpdateGenericScoreboardToWatch(id: action.id, generic: widget.scoreboard.generic)
+    }
+
     func getCurrentConfig() -> RemoteControlScoreboardMatchConfig {
         let scoreboard = database.widgets.first(where: { $0.type == .scoreboard })?.scoreboard
         let sportId: String
@@ -310,11 +360,11 @@ extension Model {
         default:
             sportId = "generic"
         }
-        var liveConfig: RemoteControlScoreboardMatchConfig
+        var config: RemoteControlScoreboardMatchConfig
         if let current = scoreboard?.modular.config, current.sportId == sportId {
-            liveConfig = current
+            config = current
         } else if let loaded = configs[sportId] {
-            liveConfig = loaded
+            config = loaded
             scoreboard?.modular.config = loaded
         } else {
             return RemoteControlScoreboardMatchConfig(
@@ -337,51 +387,55 @@ extension Model {
                 ),
                 global: RemoteControlScoreboardGlobalStats(
                     title: "ERROR",
-                    timer: "00:00",
+                    timer: "0:00",
                     timerDirection: "up",
                     period: "1",
                     periodLabel: "SET",
-                    subPeriod: "",
                     primaryScoreResetOnPeriod: false,
                     secondaryScoreResetOnPeriod: false
                 ),
                 controls: [:]
             )
         }
-        if let scoreboard {
-            switch scoreboard.modular.layout {
+        if let modular = scoreboard?.modular {
+            switch modular.layout {
             case .sideBySide:
-                liveConfig.layout = "sideBySide"
+                config.layout = "sideBySide"
             case .stackHistory:
-                liveConfig.layout = "stackHistory"
+                config.layout = "stackHistory"
             case .stackedInline:
-                liveConfig.layout = "stackedInline"
+                config.layout = "stackedInline"
             default:
-                liveConfig.layout = "stacked"
+                config.layout = "stacked"
             }
-            liveConfig.global.showTitle = scoreboard.modular.showTitle
-            liveConfig.global.titleTop = scoreboard.modular.titleAbove
-            liveConfig.global.showStats = scoreboard.modular.showGlobalStatsBlock
-            liveConfig.global.showSecondaryRow = scoreboard.modular.showSecondaryRows
-            liveConfig.team1.name = scoreboard.modular.home
-            liveConfig.team2.name = scoreboard.modular.away
-            liveConfig.global.title = scoreboard.modular.title
-            if !scoreboard.modular.period.isEmpty {
-                liveConfig.global.period = scoreboard.modular.period
+            config.global.showTitle = modular.showTitle
+            config.global.showStats = modular.showGlobalStatsBlock
+            config.global.showMoreStats = modular.showMoreStats
+            config.global.title = modular.title
+            config.global.timer = modular.clock.format()
+            switch modular.clock.direction {
+            case .up:
+                config.global.timerDirection = "up"
+            case .down:
+                config.global.timerDirection = "down"
             }
-            if liveConfig.global.scoringMode != "tennis" {
-                liveConfig.team1.primaryScore = String(scoreboard.modular.score.home)
-                liveConfig.team2.primaryScore = String(scoreboard.modular.score.away)
+            config.global.duration = modular.clock.maximum
+            if !modular.period.isEmpty {
+                config.global.period = modular.period
             }
-            liveConfig.global.timer = scoreboard.modular.clock()
-            liveConfig.global.timerDirection = (scoreboard.modular.clockDirection == .down) ? "down" : "up"
-            liveConfig.global.duration = scoreboard.modular.clockMaximum
-            liveConfig.team1.bgColor = scoreboard.modular.homeBgColor.toHex()
-            liveConfig.team1.textColor = scoreboard.modular.homeTextColor.toHex()
-            liveConfig.team2.bgColor = scoreboard.modular.awayBgColor.toHex()
-            liveConfig.team2.textColor = scoreboard.modular.awayTextColor.toHex()
+            config.global.infoBoxText = modular.infoBoxText
+            config.team1.name = modular.home.name
+            config.team2.name = modular.away.name
+            config.team1.textColor = modular.home.textColor.toHex()
+            config.team2.textColor = modular.away.textColor.toHex()
+            config.team1.bgColor = modular.home.backgroundColor.toHex()
+            config.team2.bgColor = modular.away.backgroundColor.toHex()
+            if config.global.scoringMode != "tennis" {
+                config.team1.primaryScore = String(modular.score.home)
+                config.team2.primaryScore = String(modular.score.away)
+            }
         }
-        return liveConfig
+        return config
     }
 
     func getScoreboardSports() -> [String] {
@@ -405,7 +459,7 @@ extension Model {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
-        widget.scoreboard.modular.isClockStopped.toggle()
+        widget.scoreboard.modular.clock.isStopped.toggle()
         updateScoreboardEffect(widget: widget)
         remoteControlScoreboardUpdate()
     }
@@ -414,13 +468,10 @@ extension Model {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
-        let modular = widget.scoreboard.modular
-        modular.clockMaximum = minutes
-        if modular.clockDirection == .down {
-            modular.clockMinutes = minutes
-            modular.clockSeconds = 0
-        }
-        modular.isClockStopped = true
+        let clock = widget.scoreboard.modular.clock
+        clock.maximum = minutes
+        clock.reset()
+        clock.isStopped = true
         updateScoreboardEffect(widget: widget)
         remoteControlScoreboardUpdate()
     }
@@ -429,14 +480,11 @@ extension Model {
         guard let widget = database.widgets.first(where: { $0.type == .scoreboard }) else {
             return
         }
-        let scoreboard = widget.scoreboard
-        let parts = time.split(separator: ":")
-        if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
-            let modular = scoreboard.modular
-            modular.clockMinutes = m
-            modular.clockSeconds = s
-            modular.isClockStopped = true
-        }
+        let (minutes, seconds) = clockAsMinutesAndSeconds(clock: time)
+        let clock = widget.scoreboard.modular.clock
+        clock.minutes = minutes
+        clock.seconds = seconds
+        clock.isStopped = true
         updateScoreboardEffect(widget: widget)
         remoteControlScoreboardUpdate()
     }
@@ -446,67 +494,34 @@ extension Model {
             let scoreboard = widget.scoreboard
             let modular = scoreboard.modular
             modular.config = config
-            switch config.sportId {
-            case "basketball":
-                scoreboard.sport = .basketball
-            case "generic":
-                scoreboard.sport = .generic2
-            case "generic sets":
-                scoreboard.sport = .genericSets
-            case "hockey":
-                scoreboard.sport = .hockey
-            case "football":
-                scoreboard.sport = .football
-            case "tennis":
-                scoreboard.sport = .tennis
-            case "volleyball":
-                scoreboard.sport = .volleyball
-            default:
-                break
-            }
-            switch config.layout {
-            case "sideBySide":
-                modular.layout = .sideBySide
-            case "stackHistory":
-                modular.layout = .stackHistory
-            case "stackedInline":
-                modular.layout = .stackedInline
-            default:
-                modular.layout = .stacked
-            }
+            scoreboard.setModularSport(sportId: config.sportId)
+            modular.setLayout(name: config.layout)
             if let showTitle = config.global.showTitle {
                 modular.showTitle = showTitle
-            }
-            if let titleTop = config.global.titleTop {
-                modular.titleAbove = titleTop
             }
             if let showStats = config.global.showStats {
                 modular.showGlobalStatsBlock = showStats
             }
-            if let show2nd = config.global.showSecondaryRow {
-                modular.showSecondaryRows = show2nd
+            if let show2nd = config.global.showMoreStats {
+                modular.showMoreStats = show2nd
             }
-            modular.home = config.team1.name
-            modular.away = config.team2.name
+            modular.home.name = config.team1.name
+            modular.away.name = config.team2.name
             modular.title = config.global.title
             modular.period = config.global.period
+            modular.infoBoxText = config.global.infoBoxText
             if let score = Int(config.team1.primaryScore) {
                 modular.score.home = score
             }
             if let score = Int(config.team2.primaryScore) {
                 modular.score.away = score
             }
-            modular.homeBgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? modular.homeBgColor
-            modular.homeTextColor = RgbColor.fromHex(string: config.team1.textColor) ?? modular.homeTextColor
-            modular.awayBgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? modular.awayBgColor
-            modular.awayTextColor = RgbColor.fromHex(string: config.team2.textColor) ?? modular.awayTextColor
-            modular.loadColors()
-            let parts = config.global.timer.split(separator: ":")
-            if parts.count == 2, let minutes = Int(parts[0]), let seconds = Int(parts[1]) {
-                modular.clockMinutes = minutes
-                modular.clockSeconds = seconds
-            }
-            modular.clockDirection = (config.global.timerDirection == "down") ? .down : .up
+            modular.home.setHexColors(config.team1.textColor, config.team1.bgColor)
+            modular.away.setHexColors(config.team2.textColor, config.team2.bgColor)
+            let (minutes, seconds) = config.global.minutesAndSeconds()
+            modular.clock.minutes = minutes
+            modular.clock.seconds = seconds
+            modular.clock.direction = (config.global.timerDirection == "down") ? .down : .up
             updateScoreboardEffect(widget: widget)
         }
         remoteControlScoreboardUpdate()
@@ -515,67 +530,192 @@ extension Model {
     func handleSportSwitch(sportId: String) {
         for widget in database.widgets where widget.type == .scoreboard {
             let scoreboard = widget.scoreboard
-            switch sportId {
-            case "basketball":
-                scoreboard.sport = .basketball
-            case "generic":
-                scoreboard.sport = .generic2
-            case "generic sets":
-                scoreboard.sport = .genericSets
-            case "hockey":
-                scoreboard.sport = .hockey
-            case "football":
-                scoreboard.sport = .football
-            case "tennis":
-                scoreboard.sport = .tennis
-            case "volleyball":
-                scoreboard.sport = .volleyball
-            default:
-                break
-            }
+            scoreboard.setModularSport(sportId: sportId)
             if let config = configs[sportId] {
                 let modular = scoreboard.modular
                 modular.config = config
-                switch config.layout {
-                case "sideBySide":
-                    modular.layout = .sideBySide
-                    modular.showSecondaryRows = true
-                    modular.showGlobalStatsBlock = true
-                case "stackHistory":
-                    modular.layout = .stackHistory
-                    modular.showSecondaryRows = false
-                    modular.showGlobalStatsBlock = false
-                default:
-                    modular.layout = .stacked
-                    modular.showSecondaryRows = false
-                    modular.showGlobalStatsBlock = false
-                }
-                modular.showTitle = false
-                modular.showTitle = false
+                modular.setLayout(name: config.layout)
                 modular.score.home = Int(config.team1.primaryScore) ?? 0
                 modular.score.away = Int(config.team2.primaryScore) ?? 0
                 modular.period = config.global.period
-                let parts = config.global.timer.split(separator: ":")
-                if parts.count == 2, let m = Int(parts[0]), let s = Int(parts[1]) {
-                    modular.clockMinutes = m
-                    modular.clockSeconds = s
-                    modular.clockMaximum = m + (s > 0 ? 1 : 0)
-                } else {
-                    modular.clockMinutes = 0
-                    modular.clockSeconds = 0
-                }
-                modular.clockDirection = (config.global.timerDirection == "down") ? .down : .up
-                modular.isClockStopped = true
-                modular.homeBgColor = RgbColor.fromHex(string: config.team1.bgColor) ?? modular.homeBgColor
-                modular.homeTextColor = RgbColor.fromHex(string: config.team1.textColor) ?? modular
-                    .homeTextColor
-                modular.awayBgColor = RgbColor.fromHex(string: config.team2.bgColor) ?? modular.awayBgColor
-                modular.awayTextColor = RgbColor.fromHex(string: config.team2.textColor) ?? modular
-                    .awayTextColor
-                modular.loadColors()
+                let (minutes, seconds) = config.global.minutesAndSeconds()
+                modular.clock.minutes = minutes
+                modular.clock.seconds = seconds
+                modular.clock.maximum = minutes + (seconds > 0 ? 1 : 0)
+                modular.clock.direction = (config.global.timerDirection == "down") ? .down : .up
+                modular.clock.isStopped = true
+                modular.home.setHexColors(config.team1.textColor, config.team1.bgColor)
+                modular.away.setHexColors(config.team2.textColor, config.team2.bgColor)
                 updateScoreboardEffect(widget: widget)
                 remoteControlScoreboardUpdate()
             }
         }
+    }
+
+    private func handleUpdatePadelScoreboardReset(scoreboard: SettingsWidgetPadelScoreboard) {
+        scoreboard.score = [.init()]
+        scoreboard.scoreChanges.removeAll()
+    }
+
+    private func handleUpdatePadelScoreboardUndo(scoreboard: SettingsWidgetPadelScoreboard) {
+        guard let team = scoreboard.scoreChanges.popLast() else {
+            return
+        }
+        guard let score = scoreboard.score.last else {
+            return
+        }
+        if score.home == 0, score.away == 0, scoreboard.score.count > 1 {
+            scoreboard.score.removeLast()
+        }
+        let index = scoreboard.score.count - 1
+        switch team {
+        case .home:
+            if scoreboard.score[index].home > 0 {
+                scoreboard.score[index].home -= 1
+            }
+        case .away:
+            if scoreboard.score[index].away > 0 {
+                scoreboard.score[index].away -= 1
+            }
+        }
+    }
+
+    private func handleUpdatePadelScoreboardIncrementHome(scoreboard: SettingsWidgetPadelScoreboard) {
+        if !isCurrentSetCompleted(scoreboard: scoreboard) {
+            guard !isMatchCompleted(scoreboard: scoreboard) else {
+                return
+            }
+            scoreboard.score[scoreboard.score.count - 1].home += 1
+            scoreboard.scoreChanges.append(.home)
+        } else {
+            padelScoreboardUpdateSetCompleted(scoreboard: scoreboard)
+        }
+    }
+
+    private func handleUpdatePadelScoreboardIncrementAway(scoreboard: SettingsWidgetPadelScoreboard) {
+        if !isCurrentSetCompleted(scoreboard: scoreboard) {
+            guard !isMatchCompleted(scoreboard: scoreboard) else {
+                return
+            }
+            scoreboard.score[scoreboard.score.count - 1].away += 1
+            scoreboard.scoreChanges.append(.away)
+        } else {
+            padelScoreboardUpdateSetCompleted(scoreboard: scoreboard)
+        }
+    }
+
+    private func handleUpdatePadelScoreboardChangePlayers(scoreboard: SettingsWidgetPadelScoreboard,
+                                                          players: WatchProtocolPadelScoreboardActionPlayers)
+    {
+        if players.home.count > 0 {
+            scoreboard.homePlayer1 = players.home[0]
+            if players.home.count > 1 {
+                scoreboard.homePlayer2 = players.home[1]
+            }
+        }
+        if players.away.count > 0 {
+            scoreboard.awayPlayer1 = players.away[0]
+            if players.away.count > 1 {
+                scoreboard.awayPlayer2 = players.away[1]
+            }
+        }
+    }
+
+    private func handleUpdateGenericScoreboardReset(scoreboard: SettingsWidgetGenericScoreboard) {
+        scoreboard.score.home = 0
+        scoreboard.score.away = 0
+        scoreboard.scoreChanges.removeAll()
+    }
+
+    private func handleUpdateGenericScoreboardUndo(scoreboard: SettingsWidgetGenericScoreboard) {
+        guard let team = scoreboard.scoreChanges.popLast() else {
+            return
+        }
+        switch team {
+        case .home:
+            if scoreboard.score.home > 0 {
+                scoreboard.score.home -= 1
+            }
+        case .away:
+            if scoreboard.score.away > 0 {
+                scoreboard.score.away -= 1
+            }
+        }
+    }
+
+    private func handleUpdateGenericScoreboardIncrementHome(scoreboard: SettingsWidgetGenericScoreboard) {
+        scoreboard.score.home += 1
+        scoreboard.scoreChanges.append(.home)
+    }
+
+    private func handleUpdateGenericScoreboardIncrementAway(scoreboard: SettingsWidgetGenericScoreboard) {
+        scoreboard.score.away += 1
+        scoreboard.scoreChanges.append(.away)
+    }
+
+    private func handleUpdateGenericScoreboardSetTitle(scoreboard: SettingsWidgetGenericScoreboard,
+                                                       title: String)
+    {
+        scoreboard.title = title
+    }
+
+    private func handleUpdateGenericScoreboardSetClock(scoreboard: SettingsWidgetGenericScoreboard,
+                                                       minutes: Int,
+                                                       seconds: Int)
+    {
+        scoreboard.clock.minutes = minutes.clamped(to: 0 ... scoreboard.clock.maximum)
+        if scoreboard.clock.minutes == scoreboard.clock.maximum {
+            scoreboard.clock.seconds = 0
+        } else {
+            scoreboard.clock.seconds = seconds.clamped(to: 0 ... 59)
+        }
+    }
+
+    private func handleUpdateGenericScoreboardSetClockState(scoreboard: SettingsWidgetGenericScoreboard,
+                                                            stopped: Bool)
+    {
+        scoreboard.clock.isStopped = stopped
+    }
+
+    private func padelScoreboardUpdateSetCompleted(scoreboard: SettingsWidgetPadelScoreboard) {
+        guard let score = scoreboard.score.last else {
+            return
+        }
+        guard isSetCompleted(score: score) else {
+            return
+        }
+        guard !isMatchCompleted(scoreboard: scoreboard) else {
+            return
+        }
+        scoreboard.score.append(.init())
+    }
+
+    private func isCurrentSetCompleted(scoreboard: SettingsWidgetPadelScoreboard) -> Bool {
+        guard let score = scoreboard.score.last else {
+            return false
+        }
+        return isSetCompleted(score: score)
+    }
+
+    private func isSetCompleted(score: SettingsWidgetScoreboardScore) -> Bool {
+        let maxScore = max(score.home, score.away)
+        let minScore = min(score.home, score.away)
+        if maxScore == 6 && minScore <= 4 {
+            return true
+        }
+        if maxScore == 7 {
+            return true
+        }
+        return false
+    }
+
+    private func isMatchCompleted(scoreboard: SettingsWidgetPadelScoreboard) -> Bool {
+        if scoreboard.score.count < 5 {
+            return false
+        }
+        guard let score = scoreboard.score.last else {
+            return false
+        }
+        return isSetCompleted(score: score)
     }
 }

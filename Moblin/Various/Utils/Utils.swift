@@ -352,3 +352,12 @@ extension UUID {
         ))
     }
 }
+
+func clockAsMinutesAndSeconds(clock: String) -> (Int, Int) {
+    let parts = clock.split(separator: ":")
+    if parts.count == 2, let minutes = Int(parts[0]), let seconds = Int(parts[1]) {
+        return (minutes, seconds)
+    } else {
+        return (0, 0)
+    }
+}

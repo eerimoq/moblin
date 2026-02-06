@@ -1,176 +1,59 @@
 import SwiftUI
 
-private struct ColorsView: View {
+private struct TeamView: View {
     let model: Model
     let widget: SettingsWidget
-    @ObservedObject var modular: SettingsWidgetModularScoreboard
+    let side: String
+    @ObservedObject var team: SettingsWidgetModularScoreboardTeam
 
     private func updateEffect() {
         model.updateScoreboardEffect(widget: widget)
     }
 
     var body: some View {
-        NavigationLink("Colors") {
+        NavigationLink {
             Form {
                 Section {
-                    ColorPicker(
-                        "Text",
-                        selection: $modular.homeTextColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.homeTextColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.homeTextColor = rgb
-                        }
+                    TextEditNavigationView(title: String(localized: "Name"), value: team.name) {
+                        team.name = $0
                         model.remoteControlScoreboardUpdate()
-                        updateEffect()
+                        model.sceneUpdated()
                     }
-                    ColorPicker(
-                        "Background",
-                        selection: $modular.homeBgColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.homeBgColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.homeBgColor = rgb
-                        }
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                } header: {
-                    Text("Home")
-                }
-                Section {
-                    ColorPicker(
-                        "Text",
-                        selection: $modular.awayTextColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.awayTextColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.awayTextColor = rgb
-                        }
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                    ColorPicker(
-                        "Background",
-                        selection: $modular.awayBgColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.awayBgColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.awayBgColor = rgb
-                        }
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                } header: {
-                    Text("Away")
-                }
-                Section {
-                    ColorPicker(
-                        "Background",
-                        selection: $modular.secondaryBackgroundColorColor,
-                        supportsOpacity: false
-                    )
-                    .onChange(of: modular.secondaryBackgroundColorColor) {
-                        if let rgb = $0.toRgb() {
-                            modular.secondaryBackgroundColor = rgb
-                        }
-                        updateEffect()
-                    }
-                } header: {
-                    Text("Global")
-                }
-                Section {
-                    TextButtonView("Reset") {
-                        modular.resetColors()
-                        model.remoteControlScoreboardUpdate()
-                        updateEffect()
-                    }
-                }
-            }
-            .navigationTitle("Colors")
-        }
-    }
-}
-
-private struct LayoutSettingsView: View {
-    let model: Model
-    let widget: SettingsWidget
-    @ObservedObject var modular: SettingsWidgetModularScoreboard
-
-    private func updateEffect() {
-        model.updateScoreboardEffect(widget: widget)
-    }
-
-    var body: some View {
-        NavigationLink("Layout") {
-            Form {
-                Section {
-                    HStack {
-                        Text("Font size")
-                            .layoutPriority(1)
-                        Slider(value: $modular.fontSize, in: 5 ... 25)
-                            .onChange(of: modular.fontSize) { _ in
-                                updateEffect()
+                    ColorPicker("Text", selection: $team.textColorColor, supportsOpacity: false)
+                        .onChange(of: team.textColorColor) {
+                            if let rgb = $0.toRgb() {
+                                team.textColor = rgb
                             }
-                        Text(String(Int(modular.fontSize)))
-                            .frame(width: 35)
-                    }
-                    HStack {
-                        Text("Width")
-                            .layoutPriority(1)
-                        Slider(value: $modular.width, in: 100 ... 650)
-                            .onChange(of: modular.width) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(modular.width)))
-                            .frame(width: 35)
-                    }
-                    HStack {
-                        Text("Height")
-                            .layoutPriority(1)
-                        Slider(value: $modular.rowHeight, in: 10 ... 50)
-                            .onChange(of: modular.rowHeight) { _ in
-                                updateEffect()
-                            }
-                        Text(String(Int(modular.rowHeight)))
-                            .frame(width: 35)
-                    }
-                }
-                Section {
-                    Toggle("Bold", isOn: $modular.isBold)
-                        .onChange(of: modular.isBold) { _ in
+                            model.remoteControlScoreboardUpdate()
                             updateEffect()
                         }
-                }
-                Section {
-                    if modular.layout.isStacked() {
-                        Toggle("Title", isOn: $modular.showTitle)
-                            .onChange(of: modular.showTitle) { _ in
-                                updateEffect()
+                    ColorPicker("Background", selection: $team.backgroundColorColor, supportsOpacity: false)
+                        .onChange(of: team.backgroundColorColor) {
+                            if let rgb = $0.toRgb() {
+                                team.backgroundColor = rgb
                             }
-                    }
-                    Toggle("Timeout, foul, etc.", isOn: $modular.showSecondaryRows)
-                        .onChange(of: modular.showSecondaryRows) { _ in
-                            updateEffect()
-                        }
-                    Toggle("Clock, half, etc.", isOn: $modular.showGlobalStatsBlock)
-                        .onChange(of: modular.showGlobalStatsBlock) { _ in
+                            model.remoteControlScoreboardUpdate()
                             updateEffect()
                         }
                 }
             }
-            .navigationTitle("Layout")
+            .navigationTitle(side)
+        } label: {
+            HStack {
+                Text(side)
+                Spacer()
+                Text(team.name)
+                    .foregroundStyle(.gray)
+            }
         }
     }
 }
 
 struct WidgetScoreboardModularSettingsView: View {
     let model: Model
+    let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
+    @ObservedObject var clock: SettingsWidgetScoreboardClock
 
     private func isValidClockMaximum(value: String) -> String? {
         guard let maximum = Int(value) else {
@@ -189,7 +72,7 @@ struct WidgetScoreboardModularSettingsView: View {
         guard let maximum = Int(value) else {
             return
         }
-        modular.clockMaximum = maximum
+        clock.maximum = maximum
     }
 
     private func formatMaximum(value: String) -> String {
@@ -201,37 +84,29 @@ struct WidgetScoreboardModularSettingsView: View {
 
     var body: some View {
         Section {
-            TextEditNavigationView(title: String(localized: "Home"), value: modular.home) {
-                modular.home = $0
-                model.remoteControlScoreboardUpdate()
-                model.sceneUpdated()
-            }
-            TextEditNavigationView(title: String(localized: "Away"), value: modular.away) {
-                modular.away = $0
-                model.remoteControlScoreboardUpdate()
-                model.sceneUpdated()
-            }
+            TeamView(model: model, widget: widget, side: String(localized: "Home"), team: modular.home)
+            TeamView(model: model, widget: widget, side: String(localized: "Away"), team: modular.away)
         } header: {
             Text("Teams")
         }
         Section {
             TextEditNavigationView(title: String(localized: "Maximum"),
-                                   value: String(modular.clockMaximum),
+                                   value: String(clock.maximum),
                                    onChange: isValidClockMaximum,
                                    onSubmit: submitClockMaximum,
                                    valueFormat: formatMaximum)
-                .onChange(of: modular.clockMaximum) { _ in
-                    modular.resetClock()
+                .onChange(of: clock.maximum) { _ in
+                    clock.reset()
                     model.remoteControlScoreboardUpdate()
                     model.sceneUpdated()
                 }
-            Picker("Direction", selection: $modular.clockDirection) {
+            Picker("Direction", selection: $clock.direction) {
                 ForEach(SettingsWidgetGenericScoreboardClockDirection.allCases, id: \.self) { direction in
                     Text(direction.toString())
                 }
             }
-            .onChange(of: modular.clockDirection) { _ in
-                modular.resetClock()
+            .onChange(of: clock.direction) { _ in
+                clock.reset()
                 model.remoteControlScoreboardUpdate()
                 model.sceneUpdated()
             }
@@ -246,17 +121,64 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
     let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
 
+    private func updateEffect() {
+        model.updateScoreboardEffect(widget: widget)
+    }
+
     var body: some View {
-        Picker("Type", selection: $modular.layout) {
-            ForEach(SettingsWidgetScoreboardLayout.allCases, id: \.self) {
-                Text($0.toString())
+        NavigationLink("Layout") {
+            Form {
+                Section {
+                    Picker("Type", selection: $modular.layout) {
+                        ForEach(SettingsWidgetScoreboardLayout.allCases, id: \.self) {
+                            Text($0.toString())
+                        }
+                    }
+                    .onChange(of: modular.layout) { _ in
+                        model.updateScoreboardEffect(widget: widget)
+                        model.remoteControlScoreboardUpdate()
+                    }
+                }
+                Section {
+                    HStack {
+                        Text("Width")
+                        Slider(value: $modular.width, in: 100 ... 1000)
+                            .onChange(of: modular.width) { _ in
+                                updateEffect()
+                            }
+                        Text(String(Int(modular.width)))
+                            .frame(width: 35)
+                    }
+                    HStack {
+                        Text("Height")
+                        Slider(value: $modular.rowHeight, in: 10 ... 150)
+                            .onChange(of: modular.rowHeight) { _ in
+                                updateEffect()
+                            }
+                        Text(String(Int(modular.rowHeight)))
+                            .frame(width: 35)
+                    }
+                }
+                Section {
+                    Toggle("Title", isOn: $modular.showTitle)
+                        .onChange(of: modular.showTitle) { _ in
+                            updateEffect()
+                        }
+                    Toggle("Info box", isOn: $modular.showGlobalStatsBlock)
+                        .onChange(of: modular.showGlobalStatsBlock) { _ in
+                            updateEffect()
+                        }
+                    Toggle("More stats", isOn: $modular.showMoreStats)
+                        .onChange(of: modular.showMoreStats) { _ in
+                            updateEffect()
+                        }
+                    Toggle("Bold", isOn: $modular.isBold)
+                        .onChange(of: modular.isBold) { _ in
+                            updateEffect()
+                        }
+                }
             }
+            .navigationTitle("Layout")
         }
-        .onChange(of: modular.layout) { _ in
-            model.updateScoreboardEffect(widget: widget)
-            model.remoteControlScoreboardUpdate()
-        }
-        LayoutSettingsView(model: model, widget: widget, modular: modular)
-        ColorsView(model: model, widget: widget, modular: modular)
     }
 }

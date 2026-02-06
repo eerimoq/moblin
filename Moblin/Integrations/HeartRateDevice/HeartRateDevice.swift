@@ -15,27 +15,7 @@ enum HeartRateDeviceState {
     case connected
 }
 
-let heartRateServiceId = CBUUID(string: "180D")
-
 let heartRateScanner = BluetoothScanner(serviceIds: [heartRateServiceId])
-
-let heartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
-
-private let measurementHeartRateValueFormatIndex = 0
-
-struct HeartRateMeasurement {
-    var heartRate: UInt16 = 0
-
-    init(value: Data) throws {
-        let reader = ByteReader(data: value)
-        let flags = try reader.readUInt8()
-        if flags.isBitSet(index: measurementHeartRateValueFormatIndex) {
-            heartRate = try reader.readUInt16Le()
-        } else {
-            heartRate = try UInt16(reader.readUInt8())
-        }
-    }
-}
 
 class HeartRateDevice: NSObject {
     private var state: HeartRateDeviceState = .disconnected
@@ -110,7 +90,7 @@ extension HeartRateDevice: CBCentralManagerDelegate {
                 connectToPeripheral(central: central, peripheral: cached)
                 return
             }
-            centralManager?.scanForPeripherals(withServices: nil)
+            centralManager?.scanForPeripherals(withServices: [heartRateServiceId])
         default:
             break
         }
@@ -124,11 +104,7 @@ extension HeartRateDevice: CBCentralManagerDelegate {
         guard peripheral.identifier == deviceId else {
             return
         }
-        central.stopScan()
-        self.peripheral = peripheral
-        peripheral.delegate = self
-        central.connect(peripheral, options: nil)
-        setState(state: .connecting)
+        connectToPeripheral(central: central, peripheral: peripheral)
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}

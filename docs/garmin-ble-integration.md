@@ -28,7 +28,10 @@ File: `Moblin/Integrations/GarminDevice/GarminDevice.swift`
 
 ## Model + State
 File: `Moblin/Various/Model/ModelGarminDevice.swift`
-- Maintains Garmin devices + metrics keyed by Settings device UUID.
+- Maintains Garmin devices keyed by Settings device UUID.
+- Metrics are stored in shared dictionaries keyed by device name (lowercased):
+  - Heart rate in `heartRates`
+  - Pace/cadence/distance in `runMetricsByDeviceName`
 - Status logic:
   - If 1 enabled device: status text shows connection state (Disconnected/Discovering/Connecting/Connected).
   - If >1 enabled devices: status text shows "connected/total" count (e.g. 1/2).
@@ -115,12 +118,14 @@ File: `Moblin/RemoteControl/RemoteControl.swift`
 ## Files Modified/Added
 Added:
 - `Moblin/Integrations/GarminDevice/GarminDevice.swift`
+- `Moblin/Integrations/HeartRateDevice/BleHeartRateProfile.swift`
 - `Moblin/Various/Model/ModelGarminDevice.swift`
 - `Moblin/View/Settings/GarminDevices/GarminDevicesSettingsView.swift`
 - `Moblin/View/Settings/GarminDevices/GarminDeviceSettingsView.swift`
 - `Moblin/View/Settings/GarminDevices/GarminDeviceScannerSettingsView.swift`
 
 Modified:
+- `Moblin/Integrations/HeartRateDevice/HeartRateDevice.swift`
 - `Moblin/Various/Model/Model.swift`
 - `Moblin/Various/Model/ModelScene.swift`
 - `Moblin/Various/Settings/Settings.swift`
