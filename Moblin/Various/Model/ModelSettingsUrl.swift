@@ -80,17 +80,17 @@ extension Model {
             database.quickButtonsGeneral.enableScroll = enableScroll
         }
         if quickButtons.disableAllButtons == true {
-            for quickButton in database.quickButtons {
-                quickButton.enabled = false
+            for databaseQuickButton in database.quickButtons {
+                databaseQuickButton.enabled = false
             }
         }
-        for button in quickButtons.buttons ?? [] {
-            for quickButton in database.quickButtons {
-                guard button.type == quickButton.type else {
-                    continue
+        for quickButton in quickButtons.buttons ?? [] {
+            if let databaseQuickButton = database.quickButtons.first(where: { quickButton.type == $0.type }) {
+                if let enabled = quickButton.enabled {
+                    databaseQuickButton.enabled = enabled
                 }
-                if let enabled = button.enabled {
-                    quickButton.enabled = enabled
+                if let page = quickButton.page {
+                    databaseQuickButton.page = page
                 }
             }
         }

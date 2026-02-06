@@ -1915,6 +1915,7 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
         let buttonExists = quickButtons.buttons.contains(where: { quickButton.type == $0.type })
         if !buttonExists {
             button.type = quickButton.type
+            button.page = quickButton.page
             quickButtons.buttons.append(button)
         }
     }

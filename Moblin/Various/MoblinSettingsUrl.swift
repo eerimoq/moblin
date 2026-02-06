@@ -71,6 +71,7 @@ class MoblinSettingsUrlStream: Codable {
 class MoblinSettingsButton: Codable {
     var type: SettingsQuickButtonType
     var enabled: Bool?
+    var page: Int?
 
     init(type: SettingsQuickButtonType) {
         self.type = type
