@@ -155,6 +155,7 @@ struct WidgetScoreboardGenericQuickButtonControlsView: View {
                                              widget: widget,
                                              clock: widget.scoreboard.generic.clock)
             }
+            Divider()
             VStack(spacing: 13) {
                 ScoreboardUndoButtonView(model: model, widget: widget)
                 ScoreboardResetScoreButtonView(model: model, widget: widget)
