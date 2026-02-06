@@ -59,6 +59,15 @@ struct ScoreboardEffectPadelView: View {
     let padel: SettingsWidgetPadelScoreboard
     let players: [SettingsWidgetScoreboardPlayer]
 
+    private func scoreFontSize() -> Double {
+        switch padel.type {
+        case .doubles:
+            return scoreboardScoreBigFontSize
+        case .singles:
+            return scoreboardScoreFontSize
+        }
+    }
+
     var body: some View {
         let scoreboard = padelScoreboardSettingsToEffect(padel, players)
         VStack(alignment: .leading, spacing: 0) {
@@ -88,11 +97,11 @@ struct ScoreboardEffectPadelView: View {
                             .bold(score.isAwayWin())
                     }
                     .frame(width: 28)
-                    .font(.system(size: 45))
+                    .font(.system(size: scoreFontSize()))
                 }
-                Spacer()
             }
-            .padding([.horizontal], 3)
+            .padding([.leading], 3)
+            .padding([.trailing], 18)
             .padding([.top], 3)
             .background(primaryBackgroundColor)
             PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)

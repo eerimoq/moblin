@@ -17,7 +17,7 @@ struct ScoreboardEffectGenericView: View {
             }
             .padding(5)
             .background(secondaryBackgroundColor)
-            HStack(alignment: .center, spacing: 18) {
+            HStack(alignment: .center, spacing: 6) {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
                         Spacer(minLength: 0)
@@ -36,10 +36,10 @@ struct ScoreboardEffectGenericView: View {
                     TeamScoreView(score: generic.score.home)
                     TeamScoreView(score: generic.score.away)
                 }
-                .frame(width: 28)
-                .font(.system(size: 45))
+                .font(.system(size: scoreboardScoreFontSize))
+                .frame(width: scoreboardScoreFontSize * 1.33)
             }
-            .padding([.leading, .trailing], 5)
+            .padding([.horizontal], 5)
             .background(primaryBackgroundColor)
             PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }
