@@ -1,4 +1,4 @@
-SWIFTFORMAT_ARGS=--maxwidth 110 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf --disable docComments --quiet
+SWIFTFORMAT_ARGS=--maxwidth 110 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf --disable docComments
 SWIFTLINT_ARGS=--strict --quiet
 OXFMT_ARGS="Moblin/RemoteControl/Web"
 OXLINT_ARGS="Moblin/RemoteControl/Web"

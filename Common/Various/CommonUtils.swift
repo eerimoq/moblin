@@ -188,6 +188,21 @@ func format(distance: Double) -> String {
     return distanceFormatter.string(fromMeters: distance)
 }
 
+func formatPace(speed: Double) -> String {
+    let unit: UnitLength = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+    let pace: String
+    if speed > 0 {
+        let metersPerUnit = Measurement(value: 1, unit: unit).converted(to: .meters).value
+        let secondsPerUnit = Int(metersPerUnit / speed)
+        let minutes = secondsPerUnit / 60
+        let seconds = secondsPerUnit % 60
+        pace = String(format: "%d:%02d", minutes, seconds)
+    } else {
+        pace = "-"
+    }
+    return String(localized: "\(pace) min/\(unit.symbol)")
+}
+
 private func createAltitudeFormatter() -> MeasurementFormatter {
     let formatter = MeasurementFormatter()
     var options: MeasurementFormatter.UnitOptions = []

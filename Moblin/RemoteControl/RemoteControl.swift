@@ -680,7 +680,7 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     var duration: Int?
     var period: String
     var periodLabel: String
-    var subPeriod: String
+    var infoBoxText: String = ""
     // periphery: ignore
     var primaryScoreResetOnPeriod: Bool?
     // periphery: ignore
@@ -693,9 +693,12 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     // periphery: ignore
     var maxSetScore: Int?
     var showTitle: Bool?
-    var titleTop: Bool?
     var showStats: Bool?
-    var showSecondaryRow: Bool?
+    var showMoreStats: Bool?
+
+    func minutesAndSeconds() -> (Int, Int) {
+        return clockAsMinutesAndSeconds(clock: timer)
+    }
 }
 
 struct RemoteControlScoreboardMatchConfig: Codable {
@@ -706,6 +709,20 @@ struct RemoteControlScoreboardMatchConfig: Codable {
     var global: RemoteControlScoreboardGlobalStats
     // periphery: ignore
     var controls: [String: RemoteControlScoreboardControl]
+
+    func periodFull() -> String {
+        switch sportId {
+        case "football":
+            return ""
+        default:
+            break
+        }
+        return "\(global.periodLabel) \(global.period)".trim()
+    }
+
+    func infoBoxStats() -> [String] {
+        return [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+    }
 }
 
 struct RemoteControlAuthentication: Codable {

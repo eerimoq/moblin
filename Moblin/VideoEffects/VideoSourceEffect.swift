@@ -39,7 +39,7 @@ final class VideoSourceEffect: VideoEffect {
     private let trackFaceBottom = PositionInterpolator()
     private var trackFacePresentationTimeStamp = 0.0
 
-    override func needsFaceDetections(_: Double) -> VideoEffectFaceDetectionsMode {
+    override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
         if settings.trackFaceEnabled {
             return .interval(videoSourceId, 0.5)
         } else {

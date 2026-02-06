@@ -12,6 +12,14 @@ private struct StreamDescriptionView: View {
     let thumbnailUrl: URL
     let startTime: Date
 
+    private func details() -> String {
+        var details = [stream.status.privacyStatus]
+        if stream.contentDetails.enableAutoStop {
+            details.append(String(localized: "Auto-stop"))
+        }
+        return details.joined(separator: ", ").capitalized
+    }
+
     var body: some View {
         CacheAsyncImage(url: thumbnailUrl) { image in
             image
@@ -28,7 +36,7 @@ private struct StreamDescriptionView: View {
             Text(stream.snippet.title)
             Text(startTime.formatted())
                 .font(.caption)
-            Text(stream.status.privacyStatus.capitalized)
+            Text(details())
                 .font(.caption)
         }
     }
@@ -155,7 +163,8 @@ private struct ScheduleStreamView: View {
                 return
             }
             youTubeApi.insertLiveBroadcast(title: stream.youTubeScheduleStreamTitle,
-                                           visibility: stream.youTubeScheduleStreamVisibility)
+                                           visibility: stream.youTubeScheduleStreamVisibility,
+                                           autoStop: stream.youTubeScheduleStreamAutoStop)
             {
                 handleInsertLiveBroadcastResponse(
                     youTubeApi: youTubeApi,
@@ -217,6 +226,7 @@ private struct ScheduleStreamView: View {
                     Text($0.toString())
                 }
             }
+            Toggle("Auto-stop", isOn: $stream.youTubeScheduleStreamAutoStop)
             switch schedulingStreamState {
             case .idle:
                 TextButtonView("Create") {

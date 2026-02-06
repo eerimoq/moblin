@@ -113,8 +113,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 
     func application(_: UIApplication,
-                     supportedInterfaceOrientationsFor _: UIWindow?)
-        -> UIInterfaceOrientationMask
+                     supportedInterfaceOrientationsFor _: UIWindow?) -> UIInterfaceOrientationMask
     {
         return AppDelegate.orientationLock
     }

@@ -3,7 +3,7 @@ import Foundation
 import Testing
 
 struct UtilsSuite {
-    @Test
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func fullDuration() {
         #expect(formatFullDuration(seconds: 0) == "0 seconds")
         #expect(formatFullDuration(seconds: 1) == "1 second")
@@ -15,6 +15,17 @@ struct UtilsSuite {
         #expect(formatFullDuration(seconds: 7 * 86400) == "7 days")
         #expect(formatFullDuration(seconds: 30 * 86400) == "30 days")
         #expect(formatFullDuration(seconds: 90 * 86400) == "90 days")
+    }
+
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    func pace() {
+        #expect(formatPace(speed: 0) == "- min/km")
+        #expect(formatPace(speed: 1) == "16:40 min/km")
+        #expect(formatPace(speed: 3) == "5:33 min/km")
+        #expect(formatPace(speed: 5) == "3:20 min/km")
+        #expect(formatPace(speed: 10) == "1:40 min/km")
+        #expect(formatPace(speed: 16.66) == "1:00 min/km")
+        #expect(formatPace(speed: 16.667) == "0:59 min/km")
     }
 
     @Test

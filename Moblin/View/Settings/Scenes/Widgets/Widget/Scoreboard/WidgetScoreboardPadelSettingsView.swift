@@ -70,6 +70,35 @@ private struct PlayerView: View {
     }
 }
 
+struct WidgetScoreboardPadelQuickButtonControlsView: View {
+    let model: Model
+    let widget: SettingsWidget
+
+    var body: some View {
+        VStack(spacing: 13) {
+            HStack(spacing: 13) {
+                Spacer()
+                ScoreboardUndoButtonView {
+                    model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .undo))
+                }
+                ScoreboardIncrementButtonView {
+                    model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .incrementHome))
+                }
+            }
+            HStack(spacing: 13) {
+                Spacer()
+                ScoreboardResetScoreButtonView {
+                    model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .reset))
+                }
+                ScoreboardIncrementButtonView {
+                    model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .incrementAway))
+                }
+            }
+        }
+        .font(.title)
+    }
+}
+
 struct WidgetScoreboardPadelGeneralSettingsView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget

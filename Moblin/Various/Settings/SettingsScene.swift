@@ -2584,19 +2584,6 @@ enum SettingsWidgetScoreboardLayout: Codable, CaseIterable {
             return String(localized: "Stack history")
         }
     }
-
-    func isStacked() -> Bool {
-        switch self {
-        case .stacked:
-            return true
-        case .stackedInline:
-            return true
-        case .sideBySide:
-            return false
-        case .stackHistory:
-            return true
-        }
-    }
 }
 
 class SettingsWidgetScoreboardPlayer: Codable, Identifiable, ObservableObject, Named {
@@ -2710,21 +2697,16 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     @Published var away: String = baseName
     @Published var title: String = baseTitle
     @Published var period: String = "1"
-    @Published var clockMaximum: Int = 45
-    @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
+    var clock: SettingsWidgetScoreboardClock = .init()
     var score: SettingsWidgetScoreboardScore = .init()
     var scoreChanges: [SettingsWidgetScoreboardScoreIncrement] = []
-    var clockMinutes: Int = 0
-    var clockSeconds: Int = 0
-    var isClockStopped: Bool = true
 
     enum CodingKeys: CodingKey {
         case home,
              away,
              title,
              period,
-             clockMaximum,
-             clockDirection
+             clock
     }
 
     init() {}
@@ -2735,8 +2717,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         try container.encode(.away, away)
         try container.encode(.title, title)
         try container.encode(.period, period)
-        try container.encode(.clockMaximum, clockMaximum)
-        try container.encode(.clockDirection, clockDirection)
+        try container.encode(.clock, clock)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2745,52 +2726,131 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         away = container.decode(.away, String.self, Self.baseName)
         title = container.decode(.title, String.self, Self.baseTitle)
         period = container.decode(.period, String.self, "1")
-        clockMaximum = container.decode(.clockMaximum, Int.self, 45)
-        clockDirection = container.decode(.clockDirection,
-                                          SettingsWidgetGenericScoreboardClockDirection.self,
-                                          .up)
-        resetClock()
+        clock = container.decode(.clock, SettingsWidgetScoreboardClock.self, .init())
+    }
+}
+
+class SettingsWidgetModularScoreboardTeam: Codable, ObservableObject {
+    @Published var name: String = ""
+    var textColor: RgbColor = .black
+    @Published var textColorColor: Color = .clear
+    var backgroundColor: RgbColor = .black
+    @Published var backgroundColorColor: Color = .clear
+
+    enum CodingKeys: CodingKey {
+        case name,
+             textColor,
+             backgroundColor
     }
 
-    func clock() -> String {
-        if clockSeconds < 10 {
-            return "\(clockMinutes):0\(clockSeconds)"
+    init(name: String, textColor: RgbColor, backgroundColor: RgbColor) {
+        self.name = name
+        self.textColor = textColor
+        self.backgroundColor = backgroundColor
+        loadColors()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.name, name)
+        try container.encode(.textColor, textColor)
+        try container.encode(.backgroundColor, backgroundColor)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = container.decode(.name, String.self, "")
+        textColor = container.decode(.textColor, RgbColor.self, .black)
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, .black)
+        loadColors()
+    }
+
+    func setHexColors(_ textColor: String, _ backgroundColor: String) {
+        if let color = RgbColor.fromHex(string: textColor) {
+            self.textColor = color
+        }
+        if let color = RgbColor.fromHex(string: backgroundColor) {
+            self.backgroundColor = color
+        }
+        loadColors()
+    }
+
+    func loadColors() {
+        textColorColor = textColor.color()
+        backgroundColorColor = backgroundColor.color()
+    }
+}
+
+class SettingsWidgetScoreboardClock: Codable, ObservableObject {
+    @Published var maximum: Int = 45
+    @Published var direction: SettingsWidgetGenericScoreboardClockDirection = .up
+    var minutes: Int = 0
+    var seconds: Int = 0
+    @Published var isStopped: Bool = true
+
+    enum CodingKeys: CodingKey {
+        case maximum,
+             direction
+    }
+
+    init() {
+        reset()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.maximum, maximum)
+        try container.encode(.direction, direction)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        maximum = container.decode(.maximum, Int.self, 45)
+        direction = container.decode(.direction,
+                                     SettingsWidgetGenericScoreboardClockDirection.self,
+                                     .up)
+        reset()
+    }
+
+    func format() -> String {
+        if seconds < 10 {
+            return "\(minutes):0\(seconds)"
         } else {
-            return "\(clockMinutes):\(clockSeconds)"
+            return "\(minutes):\(seconds)"
         }
     }
 
-    func tickClock() {
-        switch clockDirection {
+    func tick() {
+        switch direction {
         case .up:
-            if clockMinutes != clockMaximum {
-                if clockSeconds == 59 {
-                    clockSeconds = 0
-                    clockMinutes += 1
+            if minutes != maximum {
+                if seconds == 59 {
+                    seconds = 0
+                    minutes += 1
                 } else {
-                    clockSeconds += 1
+                    seconds += 1
                 }
             }
         case .down:
-            if clockMinutes != 0 || clockSeconds != 0 {
-                if clockSeconds == 0 {
-                    clockSeconds = 59
-                    clockMinutes -= 1
+            if minutes != 0 || seconds != 0 {
+                if seconds == 0 {
+                    seconds = 59
+                    minutes -= 1
                 } else {
-                    clockSeconds -= 1
+                    seconds -= 1
                 }
             }
         }
     }
 
-    func resetClock() {
-        switch clockDirection {
+    func reset() {
+        switch direction {
         case .up:
-            clockMinutes = 0
-            clockSeconds = 0
+            minutes = 0
+            seconds = 0
         case .down:
-            clockMinutes = clockMaximum
-            clockSeconds = 0
+            minutes = maximum
+            seconds = 0
         }
     }
 }
@@ -2798,40 +2858,24 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
 class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     static let baseName = String(localized: "🇸🇪 Moblin")
     static let baseTitle = "⚽️"
-    static let baseHomeBgColor: RgbColor = .init(red: 11, green: 16, blue: 172)
     static let baseHomeTextColor: RgbColor = .white
-    static let baseAwayBgColor: RgbColor = .init(red: 220, green: 38, blue: 38)
+    static let baseHomeBackgroundColor: RgbColor = .init(red: 11, green: 16, blue: 172)
     static let baseAwayTextColor: RgbColor = .white
-    static let baseSecondaryBackgroundColor: RgbColor = .black
-    @Published var home: String = baseName
-    @Published var away: String = baseName
+    static let baseAwayBackgroundColor: RgbColor = .init(red: 220, green: 38, blue: 38)
+    @Published var home: SettingsWidgetModularScoreboardTeam = createHomeTeam()
+    @Published var away: SettingsWidgetModularScoreboardTeam = createAwayTeam()
     @Published var title: String = baseTitle
     @Published var period: String = "1"
+    @Published var infoBoxText: String = ""
     var score: SettingsWidgetScoreboardScore = .init()
-    @Published var clockMaximum: Int = 45
-    @Published var clockDirection: SettingsWidgetGenericScoreboardClockDirection = .up
-    var clockMinutes: Int = 0
-    var clockSeconds: Int = 0
-    var isClockStopped: Bool = true
+    var clock: SettingsWidgetScoreboardClock = .init()
     @Published var layout: SettingsWidgetScoreboardLayout = .stacked
     @Published var config: RemoteControlScoreboardMatchConfig?
-    var homeBgColor: RgbColor = baseHomeBgColor
-    @Published var homeBgColorColor: Color = .clear
-    var homeTextColor: RgbColor = baseHomeTextColor
-    @Published var homeTextColorColor: Color = .clear
-    var awayBgColor: RgbColor = baseAwayBgColor
-    @Published var awayBgColorColor: Color = .clear
-    var awayTextColor: RgbColor = baseAwayTextColor
-    @Published var awayTextColorColor: Color = .clear
-    var secondaryBackgroundColor: RgbColor = baseSecondaryBackgroundColor
-    @Published var secondaryBackgroundColorColor: Color = .clear
-    @Published var fontSize: Float = 12
-    @Published var width: Float = 150
-    @Published var rowHeight: Float = 16
+    @Published var width: Float = 350
+    @Published var rowHeight: Float = 45
     @Published var isBold: Bool = true
     @Published var showTitle: Bool = false
-    @Published var titleAbove: Bool = true
-    @Published var showSecondaryRows: Bool = false
+    @Published var showMoreStats: Bool = false
     @Published var showGlobalStatsBlock: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -2839,28 +2883,19 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
              away,
              title,
              period,
-             clockMaximum,
-             clockDirection,
+             infoBoxText,
+             clock,
              layout,
-             homeBgColor,
-             homeTextColor,
-             awayBgColor,
-             awayTextColor,
-             secondaryBackgroundColor,
              width,
              rowHeight,
              isBold,
              showTitle,
              stacked,
-             titleAbove,
-             showSecondaryRows,
-             showGlobalStatsBlock,
-             fontSize
+             showMoreStats,
+             showGlobalStatsBlock
     }
 
-    init() {
-        loadColors()
-    }
+    init() {}
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
@@ -2868,113 +2903,61 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.away, away)
         try container.encode(.title, title)
         try container.encode(.period, period)
-        try container.encode(.clockMaximum, clockMaximum)
-        try container.encode(.clockDirection, clockDirection)
+        try container.encode(.infoBoxText, infoBoxText)
+        try container.encode(.clock, clock)
         try container.encode(.layout, layout)
-        try container.encode(.homeBgColor, homeBgColor)
-        try container.encode(.homeTextColor, homeTextColor)
-        try container.encode(.awayBgColor, awayBgColor)
-        try container.encode(.awayTextColor, awayTextColor)
-        try container.encode(.secondaryBackgroundColor, secondaryBackgroundColor)
-        try container.encode(.fontSize, fontSize)
         try container.encode(.width, width)
         try container.encode(.rowHeight, rowHeight)
         try container.encode(.isBold, isBold)
         try container.encode(.showTitle, showTitle)
-        try container.encode(.titleAbove, titleAbove)
-        try container.encode(.showSecondaryRows, showSecondaryRows)
+        try container.encode(.showMoreStats, showMoreStats)
         try container.encode(.showGlobalStatsBlock, showGlobalStatsBlock)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        home = container.decode(.home, String.self, Self.baseName)
-        away = container.decode(.away, String.self, Self.baseName)
+        home = container.decode(.home, SettingsWidgetModularScoreboardTeam.self, Self.createHomeTeam())
+        away = container.decode(.away, SettingsWidgetModularScoreboardTeam.self, Self.createAwayTeam())
         title = container.decode(.title, String.self, Self.baseTitle)
         period = container.decode(.period, String.self, "1")
-        clockMaximum = container.decode(.clockMaximum, Int.self, 45)
-        clockDirection = container.decode(.clockDirection,
-                                          SettingsWidgetGenericScoreboardClockDirection.self,
-                                          .up)
+        infoBoxText = container.decode(.infoBoxText, String.self, "")
+        clock = container.decode(.clock, SettingsWidgetScoreboardClock.self, .init())
         layout = container.decode(.layout, SettingsWidgetScoreboardLayout.self, .stacked)
-        homeBgColor = container.decode(.homeBgColor, RgbColor.self, Self.baseHomeBgColor)
-        homeTextColor = container.decode(.homeTextColor, RgbColor.self, Self.baseHomeTextColor)
-        awayBgColor = container.decode(.awayBgColor, RgbColor.self, Self.baseAwayBgColor)
-        awayTextColor = container.decode(.awayTextColor, RgbColor.self, Self.baseAwayTextColor)
-        secondaryBackgroundColor = container.decode(
-            .secondaryBackgroundColor,
-            RgbColor.self,
-            Self.baseSecondaryBackgroundColor
-        )
-        fontSize = container.decode(.fontSize, Float.self, 12)
-        width = container.decode(.width, Float.self, 150)
-        rowHeight = container.decode(.rowHeight, Float.self, 16)
+        width = container.decode(.width, Float.self, 350)
+        rowHeight = container.decode(.rowHeight, Float.self, 45)
         isBold = container.decode(.isBold, Bool.self, true)
         showTitle = container.decode(.showTitle, Bool.self, false)
-        titleAbove = container.decode(.titleAbove, Bool.self, true)
-        showSecondaryRows = container.decode(.showSecondaryRows, Bool.self, false)
+        showMoreStats = container.decode(.showMoreStats, Bool.self, false)
         showGlobalStatsBlock = container.decode(.showGlobalStatsBlock, Bool.self, false)
-        loadColors()
-        resetClock()
     }
 
-    func clock() -> String {
-        if clockSeconds < 10 {
-            return "\(clockMinutes):0\(clockSeconds)"
-        } else {
-            return "\(clockMinutes):\(clockSeconds)"
+    private static func createHomeTeam() -> SettingsWidgetModularScoreboardTeam {
+        return SettingsWidgetModularScoreboardTeam(name: baseName,
+                                                   textColor: baseHomeTextColor,
+                                                   backgroundColor: baseHomeBackgroundColor)
+    }
+
+    private static func createAwayTeam() -> SettingsWidgetModularScoreboardTeam {
+        return SettingsWidgetModularScoreboardTeam(name: baseName,
+                                                   textColor: baseAwayTextColor,
+                                                   backgroundColor: baseAwayBackgroundColor)
+    }
+
+    func fontSize() -> Double {
+        return Double(rowHeight * 0.8)
+    }
+
+    func setLayout(name: String) {
+        switch name {
+        case "sideBySide":
+            layout = .sideBySide
+        case "stackHistory":
+            layout = .stackHistory
+        case "stackedInline":
+            layout = .stackedInline
+        default:
+            layout = .stacked
         }
-    }
-
-    func tickClock() {
-        switch clockDirection {
-        case .up:
-            if clockMinutes != clockMaximum {
-                if clockSeconds == 59 {
-                    clockSeconds = 0
-                    clockMinutes += 1
-                } else {
-                    clockSeconds += 1
-                }
-            }
-        case .down:
-            if clockMinutes != 0 || clockSeconds != 0 {
-                if clockSeconds == 0 {
-                    clockSeconds = 59
-                    clockMinutes -= 1
-                } else {
-                    clockSeconds -= 1
-                }
-            }
-        }
-    }
-
-    func resetClock() {
-        switch clockDirection {
-        case .up:
-            clockMinutes = 0
-            clockSeconds = 0
-        case .down:
-            clockMinutes = clockMaximum
-            clockSeconds = 0
-        }
-    }
-
-    func resetColors() {
-        homeBgColor = Self.baseHomeBgColor
-        homeTextColor = Self.baseHomeTextColor
-        awayBgColor = Self.baseAwayBgColor
-        awayTextColor = Self.baseAwayTextColor
-        secondaryBackgroundColor = Self.baseSecondaryBackgroundColor
-        loadColors()
-    }
-
-    func loadColors() {
-        homeBgColorColor = homeBgColor.color()
-        homeTextColorColor = homeTextColor.color()
-        awayBgColorColor = awayBgColor.color()
-        awayTextColorColor = awayTextColor.color()
-        secondaryBackgroundColorColor = secondaryBackgroundColor.color()
     }
 }
 
@@ -3045,6 +3028,27 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
         textColorColor = textColor.color()
         primaryBackgroundColorColor = primaryBackgroundColor.color()
         secondaryBackgroundColorColor = secondaryBackgroundColor.color()
+    }
+
+    func setModularSport(sportId: String) {
+        switch sportId {
+        case "basketball":
+            sport = .basketball
+        case "generic":
+            sport = .generic2
+        case "generic sets":
+            sport = .genericSets
+        case "hockey":
+            sport = .hockey
+        case "football":
+            sport = .football
+        case "tennis":
+            sport = .tennis
+        case "volleyball":
+            sport = .volleyball
+        default:
+            break
+        }
     }
 }
 
