@@ -75,13 +75,12 @@ private struct ScoreboardStartStopClockButtonView: View {
     }
 }
 
-private struct ScoreboardUndoButtonView: View {
-    let model: Model
-    let widget: SettingsWidget
+struct ScoreboardUndoButtonView: View {
+    let action: () -> Void
 
     var body: some View {
         Button {
-            model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .undo))
+            action()
         } label: {
             Image(systemName: "arrow.uturn.backward")
                 .font(.title)
@@ -90,13 +89,12 @@ private struct ScoreboardUndoButtonView: View {
     }
 }
 
-private struct ScoreboardIncrementHomeButtonView: View {
-    let model: Model
-    let widget: SettingsWidget
+struct ScoreboardIncrementButtonView: View {
+    let action: () -> Void
 
     var body: some View {
         Button {
-            model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .incrementHome))
+            action()
         } label: {
             Image(systemName: "plus")
                 .font(.title)
@@ -105,24 +103,8 @@ private struct ScoreboardIncrementHomeButtonView: View {
     }
 }
 
-private struct ScoreboardIncrementAwayButtonView: View {
-    let model: Model
-    let widget: SettingsWidget
-
-    var body: some View {
-        Button {
-            model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .incrementAway))
-        } label: {
-            Image(systemName: "plus")
-                .font(.title)
-        }
-        .buttonStyle(.borderless)
-    }
-}
-
-private struct ScoreboardResetScoreButtonView: View {
-    let model: Model
-    let widget: SettingsWidget
+struct ScoreboardResetScoreButtonView: View {
+    let action: () -> Void
     @State private var presentingResetConfirimation = false
 
     var body: some View {
@@ -136,7 +118,7 @@ private struct ScoreboardResetScoreButtonView: View {
         .tint(.red)
         .confirmationDialog("", isPresented: $presentingResetConfirimation) {
             Button("Reset score", role: .destructive) {
-                model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .reset))
+                action()
             }
         }
     }
@@ -157,12 +139,20 @@ struct WidgetScoreboardGenericQuickButtonControlsView: View {
             }
             Divider()
             VStack(spacing: 13) {
-                ScoreboardUndoButtonView(model: model, widget: widget)
-                ScoreboardResetScoreButtonView(model: model, widget: widget)
+                ScoreboardUndoButtonView {
+                    model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .undo))
+                }
+                ScoreboardResetScoreButtonView {
+                    model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .reset))
+                }
             }
             VStack(spacing: 13) {
-                ScoreboardIncrementHomeButtonView(model: model, widget: widget)
-                ScoreboardIncrementAwayButtonView(model: model, widget: widget)
+                ScoreboardIncrementButtonView {
+                    model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .incrementHome))
+                }
+                ScoreboardIncrementButtonView {
+                    model.handleUpdateGenericScoreboard(action: .init(id: widget.id, action: .incrementAway))
+                }
             }
         }
     }
