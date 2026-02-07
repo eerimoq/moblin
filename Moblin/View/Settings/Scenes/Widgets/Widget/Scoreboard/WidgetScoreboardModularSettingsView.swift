@@ -161,12 +161,12 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                         .onChange(of: modular.showTitle) { _ in
                             updated()
                         }
-                    Toggle("Info box", isOn: $modular.showGlobalStatsBlock)
-                        .onChange(of: modular.showGlobalStatsBlock) { _ in
-                            updated()
-                        }
                     Toggle("More stats", isOn: $modular.showMoreStats)
                         .onChange(of: modular.showMoreStats) { _ in
+                            updated()
+                        }
+                    Toggle("Info box", isOn: $modular.showGlobalStatsBlock)
+                        .onChange(of: modular.showGlobalStatsBlock) { _ in
                             updated()
                         }
                     Toggle("Bold", isOn: $modular.isBold)
