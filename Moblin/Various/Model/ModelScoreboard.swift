@@ -339,6 +339,57 @@ extension Model {
         sendUpdateGenericScoreboardToWatch(id: action.id, generic: widget.scoreboard.generic)
     }
 
+    func updateScoreboardEffects() {
+        let sceneWidgets: [SettingsWidget]
+        if let scene = getSelectedScene() {
+            sceneWidgets = getSceneWidgets(scene: scene, onlyEnabled: true).map { $0.widget }
+        } else {
+            sceneWidgets = []
+        }
+        for (id, scoreboardEffect) in scoreboardEffects {
+            guard let scoreboard = sceneWidgets.first(where: { $0.id == id })?.scoreboard else {
+                continue
+            }
+            switch scoreboard.sport {
+            case .padel:
+                break
+            case .generic:
+                guard let widget = findWidget(id: id) else {
+                    continue
+                }
+                guard !widget.scoreboard.generic.clock.isStopped else {
+                    continue
+                }
+                widget.scoreboard.generic.clock.tick()
+                DispatchQueue.main.async {
+                    scoreboardEffect.update(
+                        scoreboard: widget.scoreboard,
+                        config: self.getCurrentConfig(),
+                        players: self.database.scoreboardPlayers
+                    )
+                }
+                sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
+            default:
+                guard let widget = findWidget(id: id) else {
+                    continue
+                }
+                guard !widget.scoreboard.modular.clock.isStopped else {
+                    continue
+                }
+                widget.scoreboard.modular.clock.tick()
+                DispatchQueue.main.async {
+                    scoreboardEffect.update(
+                        scoreboard: widget.scoreboard,
+                        config: self.getCurrentConfig(),
+                        players: self.database.scoreboardPlayers
+                    )
+                    self.remoteControlScoreboardUpdate()
+                }
+                sendUpdateGenericScoreboardToWatch(id: id, generic: scoreboard.generic)
+            }
+        }
+    }
+
     func getCurrentConfig() -> RemoteControlScoreboardMatchConfig {
         let scoreboard = database.widgets.first(where: { $0.type == .scoreboard })?.scoreboard
         let sportId: String
