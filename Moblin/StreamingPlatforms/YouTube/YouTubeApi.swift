@@ -16,6 +16,10 @@ struct YouTubeApiLiveBroadcastSnippet: Codable {
 
 struct YouTubeApiLiveBroadcastStatus: Codable {
     let privacyStatus: String
+
+    func visibility() -> YouTubeApiLiveBroadcaseVisibility? {
+        return YouTubeApiLiveBroadcaseVisibility(rawValue: privacyStatus)
+    }
 }
 
 struct YouTubeApiLiveBroadcastContentDetails: Codable {
