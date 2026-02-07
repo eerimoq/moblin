@@ -175,18 +175,18 @@ struct QuickButtonGoProView: View {
                                     QuickButtonGoProLaunchLiveStreamView(
                                         goProState: goProState,
                                         goPro: goPro,
-                                        height: metrics.size.height
+                                        height: qrCodeHeight(metrics)
                                     )
                                     .id(0)
                                     QuickButtonGoProWifiCredentialsView(
                                         goProState: goProState,
                                         goPro: goPro,
-                                        height: metrics.size.height
+                                        height: qrCodeHeight(metrics)
                                     )
                                     .id(1)
                                     QuickButtonGoProRtmpUrlView(goProState: goProState,
                                                                 goPro: goPro,
-                                                                height: metrics.size.height)
+                                                                height: qrCodeHeight(metrics))
                                         .id(2)
                                 }
                                 .containerRelativeFrame(.horizontal, count: 1, spacing: 0)
