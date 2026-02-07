@@ -1,8 +1,6 @@
 import SwiftUI
 
 private struct TeamView: View {
-    let model: Model
-    let widget: SettingsWidget
     let side: String
     @ObservedObject var team: SettingsWidgetModularScoreboardTeam
     let updated: () -> Void
@@ -44,8 +42,6 @@ private struct TeamView: View {
 }
 
 struct WidgetScoreboardModularSettingsView: View {
-    let model: Model
-    let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
     @ObservedObject var clock: SettingsWidgetScoreboardClock
     let updated: () -> Void
@@ -79,16 +75,8 @@ struct WidgetScoreboardModularSettingsView: View {
 
     var body: some View {
         Section {
-            TeamView(model: model,
-                     widget: widget,
-                     side: String(localized: "Home"),
-                     team: modular.home,
-                     updated: updated)
-            TeamView(model: model,
-                     widget: widget,
-                     side: String(localized: "Away"),
-                     team: modular.away,
-                     updated: updated)
+            TeamView(side: String(localized: "Home"), team: modular.home, updated: updated)
+            TeamView(side: String(localized: "Away"), team: modular.away, updated: updated)
         } header: {
             Text("Teams")
         }
@@ -118,8 +106,6 @@ struct WidgetScoreboardModularSettingsView: View {
 }
 
 struct WidgetScoreboardModularGeneralSettingsView: View {
-    let model: Model
-    let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
     let updated: () -> Void
 

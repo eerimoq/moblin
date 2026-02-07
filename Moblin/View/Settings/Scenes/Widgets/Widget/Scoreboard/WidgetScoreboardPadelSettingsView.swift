@@ -101,7 +101,6 @@ struct WidgetScoreboardPadelQuickButtonControlsView: View {
 }
 
 struct WidgetScoreboardPadelGeneralSettingsView: View {
-    let model: Model
     @ObservedObject var widget: SettingsWidget
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
     @ObservedObject var padel: SettingsWidgetPadelScoreboard
@@ -121,10 +120,7 @@ struct WidgetScoreboardPadelGeneralSettingsView: View {
                 updated()
             }
         }
-        ScoreboardColorsView(model: model,
-                             widget: widget,
-                             scoreboard: scoreboard,
-                             updated: updated)
+        ScoreboardColorsView(scoreboard: scoreboard, updated: updated)
     }
 }
 

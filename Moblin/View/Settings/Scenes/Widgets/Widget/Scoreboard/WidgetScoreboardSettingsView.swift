@@ -18,8 +18,6 @@ struct WidgetScoreboardQuickButtonControlsView: View {
 }
 
 struct ScoreboardColorsView: View {
-    let model: Model
-    let widget: SettingsWidget
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
     let updated: () -> Void
 
@@ -104,21 +102,17 @@ struct WidgetScoreboardSettingsView: View {
             }
             switch scoreboard.sport {
             case .padel:
-                WidgetScoreboardPadelGeneralSettingsView(model: model,
-                                                         widget: widget,
+                WidgetScoreboardPadelGeneralSettingsView(widget: widget,
                                                          scoreboard: scoreboard,
                                                          padel: scoreboard.padel,
                                                          updated: updated)
             case .generic:
-                WidgetScoreboardGenericGeneralSettingsView(model: model,
-                                                           widget: widget,
+                WidgetScoreboardGenericGeneralSettingsView(widget: widget,
                                                            scoreboard: scoreboard,
                                                            generic: scoreboard.generic,
                                                            updated: updated)
             default:
-                WidgetScoreboardModularGeneralSettingsView(model: model,
-                                                           widget: widget,
-                                                           modular: scoreboard.modular,
+                WidgetScoreboardModularGeneralSettingsView(modular: scoreboard.modular,
                                                            updated: updated)
             }
         }
@@ -145,14 +139,11 @@ struct WidgetScoreboardSettingsView: View {
         case .padel:
             WidgetScoreboardPadelSettingsView(model: model, padel: scoreboard.padel, updated: updated)
         case .generic:
-            WidgetScoreboardGenericSettingsView(model: model,
-                                                generic: scoreboard.generic,
+            WidgetScoreboardGenericSettingsView(generic: scoreboard.generic,
                                                 clock: scoreboard.generic.clock,
                                                 updated: updated)
         default:
-            WidgetScoreboardModularSettingsView(model: model,
-                                                widget: widget,
-                                                modular: scoreboard.modular,
+            WidgetScoreboardModularSettingsView(modular: scoreboard.modular,
                                                 clock: scoreboard.modular.clock,
                                                 updated: updated)
         }

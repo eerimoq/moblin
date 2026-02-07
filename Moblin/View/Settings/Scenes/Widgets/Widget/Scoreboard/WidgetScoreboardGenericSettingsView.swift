@@ -159,7 +159,6 @@ struct WidgetScoreboardGenericQuickButtonControlsView: View {
 }
 
 struct WidgetScoreboardGenericGeneralSettingsView: View {
-    let model: Model
     @ObservedObject var widget: SettingsWidget
     let scoreboard: SettingsWidgetScoreboard
     @ObservedObject var generic: SettingsWidgetGenericScoreboard
@@ -172,12 +171,11 @@ struct WidgetScoreboardGenericGeneralSettingsView: View {
         .onChange(of: generic.title) { _ in
             updated()
         }
-        ScoreboardColorsView(model: model, widget: widget, scoreboard: scoreboard, updated: updated)
+        ScoreboardColorsView(scoreboard: scoreboard, updated: updated)
     }
 }
 
 struct WidgetScoreboardGenericSettingsView: View {
-    let model: Model
     @ObservedObject var generic: SettingsWidgetGenericScoreboard
     @ObservedObject var clock: SettingsWidgetScoreboardClock
     let updated: () -> Void
