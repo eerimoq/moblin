@@ -434,18 +434,6 @@ extension CatPrinter: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            if let deviceId, let connected = central.retrieveConnectedPeripherals(
-                withServices: catPrinterServices
-            ).first(where: { $0.identifier == deviceId }) {
-                connectToPeripheral(central: central, peripheral: connected)
-                return
-            }
-            if let deviceId, let cached = central.retrievePeripherals(
-                withIdentifiers: [deviceId]
-            ).first {
-                connectToPeripheral(central: central, peripheral: cached)
-                return
-            }
             centralManager?.scanForPeripherals(withServices: catPrinterServices)
         default:
             break
@@ -460,7 +448,11 @@ extension CatPrinter: CBCentralManagerDelegate {
         guard peripheral.identifier == deviceId else {
             return
         }
-        connectToPeripheral(central: central, peripheral: peripheral)
+        central.stopScan()
+        self.peripheral = peripheral
+        peripheral.delegate = self
+        central.connect(peripheral, options: nil)
+        setState(state: .connecting)
     }
 
     func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
@@ -475,18 +467,6 @@ extension CatPrinter: CBCentralManagerDelegate {
         error _: Error?
     ) {
         reconnect()
-    }
-
-    private func connectToPeripheral(central: CBCentralManager, peripheral: CBPeripheral) {
-        central.stopScan()
-        self.peripheral = peripheral
-        peripheral.delegate = self
-        setState(state: .connecting)
-        if peripheral.state == .connected {
-            peripheral.discoverServices(nil)
-        } else {
-            central.connect(peripheral, options: nil)
-        }
     }
 }
 

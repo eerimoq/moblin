@@ -385,9 +385,6 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var teslaMedia: String
     var cyclingPower: String
     var cyclingCadence: String
-    var paces: [String: String]?
-    var runCadences: [String: String]?
-    var runDistances: [String: String]?
     var browserTitle: String
     var gForce: GForce?
 
@@ -423,9 +420,6 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         teslaMedia = stats.teslaMedia
         cyclingPower = stats.cyclingPower
         cyclingCadence = stats.cyclingCadence
-        paces = stats.paces
-        runCadences = stats.runCadences
-        runDistances = stats.runDistances
         browserTitle = stats.browserTitle
     }
 
@@ -462,9 +456,6 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                                teslaMedia: teslaMedia,
                                cyclingPower: cyclingPower,
                                cyclingCadence: cyclingCadence,
-                               paces: paces ?? [:],
-                               runCadences: runCadences ?? [:],
-                               runDistances: runDistances ?? [:],
                                browserTitle: browserTitle,
                                gForce: gForce)
     }
