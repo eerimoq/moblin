@@ -19,6 +19,7 @@ struct YouTubeApiLiveBroadcastStatus: Codable {
 }
 
 struct YouTubeApiLiveBroadcastContentDetails: Codable {
+    let enableAutoStart: Bool
     let enableAutoStop: Bool
 }
 
