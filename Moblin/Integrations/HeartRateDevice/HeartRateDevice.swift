@@ -19,7 +19,7 @@ private struct RscMeasurement {
         let flags = try reader.readUInt8()
         let speedRaw = try reader.readUInt16Le()
         speedMetersPerSecond = Double(speedRaw) / 256.0
-        cadence = Int(try reader.readUInt8())
+        cadence = try Int(reader.readUInt8())
         if flags.isBitSet(index: rscStrideLengthFlagIndex) {
             _ = try reader.readUInt16Le()
         }

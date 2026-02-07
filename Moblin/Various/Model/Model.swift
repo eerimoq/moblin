@@ -3085,7 +3085,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.heartRateDevice && isAnyHeartRateDeviceConfigured()
     }
 
-
     func isShowingStatusFixedHorizon() -> Bool {
         if let scene = getSelectedScene() {
             return isFixedHorizonEnabled(scene: scene)
