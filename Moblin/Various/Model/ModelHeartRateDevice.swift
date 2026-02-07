@@ -60,7 +60,9 @@ extension Model: HeartRateDeviceDelegate {
             guard let device = self.getHeartRateDeviceSettings(device: device) else {
                 return
             }
-            self.heartRates.removeValue(forKey: device.name.lowercased())
+            let key = device.name.lowercased()
+            self.heartRates.removeValue(forKey: key)
+            self.runMetricsByDeviceName.removeValue(forKey: key)
             if device === self.currentHeartRateDeviceSettings {
                 self.statusTopRight.heartRateDeviceState = state
             }
@@ -73,6 +75,15 @@ extension Model: HeartRateDeviceDelegate {
                 return
             }
             self.heartRates[device.name.lowercased()] = heartRate
+        }
+    }
+
+    func heartRateDeviceRunMetrics(_ device: HeartRateDevice, metrics: DeviceRunMetrics) {
+        DispatchQueue.main.async {
+            guard let device = self.getHeartRateDeviceSettings(device: device) else {
+                return
+            }
+            self.runMetricsByDeviceName[device.name.lowercased()] = metrics
         }
     }
 }

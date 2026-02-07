@@ -712,6 +712,97 @@ class SettingsHeartRateDevices: Codable, ObservableObject {
     }
 }
 
+enum SettingsGarminPaceUnit: String, Codable, CaseIterable {
+    case minutesPerKilometer = "min/km"
+    case minutesPerMile = "min/mi"
+}
+
+enum SettingsGarminDistanceUnit: String, Codable, CaseIterable {
+    case kilometers = "km"
+    case miles = "mi"
+}
+
+class SettingsGarminUnits: Codable, ObservableObject {
+    @Published var paceUnit: SettingsGarminPaceUnit = .minutesPerKilometer
+    @Published var distanceUnit: SettingsGarminDistanceUnit = .kilometers
+
+    enum CodingKeys: CodingKey {
+        case paceUnit,
+             distanceUnit
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.paceUnit, paceUnit)
+        try container.encode(.distanceUnit, distanceUnit)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        paceUnit = container.decode(.paceUnit, SettingsGarminPaceUnit.self, .minutesPerKilometer)
+        distanceUnit = container.decode(.distanceUnit, SettingsGarminDistanceUnit.self, .kilometers)
+    }
+}
+
+class SettingsGarminDevice: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My Garmin")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var enabled: Bool = false
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             enabled,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        enabled = container.decode(.enabled, Bool.self, false)
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+    }
+}
+
+class SettingsGarminDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsGarminDevice] = []
+
+    enum CodingKeys: CodingKey {
+        case devices
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsGarminDevice].self, [])
+    }
+}
+
 private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
 class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, Named {
@@ -1142,6 +1233,8 @@ class Database: Codable, ObservableObject {
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
+    var garminDevices: SettingsGarminDevices = .init()
+    var garminUnits: SettingsGarminUnits = .init()
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
@@ -1245,6 +1338,8 @@ class Database: Codable, ObservableObject {
              externalDisplayContent,
              cyclingPowerDevices,
              heartRateDevices,
+             garminDevices,
+             garminUnits,
              phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
@@ -1319,6 +1414,8 @@ class Database: Codable, ObservableObject {
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
+        try container.encode(.garminDevices, garminDevices)
+        try container.encode(.garminUnits, garminUnits)
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
@@ -1420,6 +1517,8 @@ class Database: Codable, ObservableObject {
             .init()
         )
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
+        garminDevices = container.decode(.garminDevices, SettingsGarminDevices.self, .init())
+        garminUnits = container.decode(.garminUnits, SettingsGarminUnits.self, .init())
         blackSharkCoolerDevices = container.decode(
             .phoneCoolerDevices,
             SettingsBlackSharkCoolerDevices.self,

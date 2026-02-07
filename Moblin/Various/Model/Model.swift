@@ -109,6 +109,12 @@ struct LogEntry: Identifiable {
     var message: String
 }
 
+struct DeviceRunMetrics {
+    var paceSecondsPerMeter: Double?
+    var cadence: Int?
+    var distanceMeters: Double?
+}
+
 class DebugOverlayProvider: ObservableObject {
     @Published var debugLines: [String] = []
 }
@@ -510,6 +516,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var serversSpeed: Int64 = 0
     var adsEndDate: Date?
     var heartRates: [String: Int?] = [:]
+    var runMetricsByDeviceName: [String: DeviceRunMetrics] = [:]
     var workoutActiveEnergyBurned: Int?
     var workoutDistance: Int?
     var workoutPower: Int?

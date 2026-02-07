@@ -161,6 +161,12 @@ class TextEffectFormatter {
                 formatCyclingPower(stats: stats)
             case .cyclingCadence:
                 formatCyclingCadence(stats: stats)
+            case let .pace(deviceName):
+                formatPace(stats: stats, deviceName: deviceName)
+            case let .runCadence(deviceName):
+                formatRunCadence(stats: stats, deviceName: deviceName)
+            case let .runDistance(deviceName):
+                formatRunDistance(stats: stats, deviceName: deviceName)
             case .lapTimes:
                 formatLapTimes()
             case .browserTitle:
@@ -369,7 +375,8 @@ class TextEffectFormatter {
     }
 
     private func formatHeartRate(stats: TextEffectStats, deviceName: String) {
-        appendTextPart(value: formatOptional(value: stats.heartRates[deviceName] ?? nil))
+        let key = deviceName.lowercased()
+        appendTextPart(value: formatOptional(value: stats.heartRates[key] ?? nil))
     }
 
     private func formatActiveEnergyBurned(stats: TextEffectStats) {
@@ -406,6 +413,21 @@ class TextEffectFormatter {
 
     private func formatCyclingCadence(stats: TextEffectStats) {
         appendTextPart(value: stats.cyclingCadence)
+    }
+
+    private func formatPace(stats: TextEffectStats, deviceName: String) {
+        let key = deviceName.lowercased()
+        appendTextPart(value: stats.paces[key] ?? "-")
+    }
+
+    private func formatRunCadence(stats: TextEffectStats, deviceName: String) {
+        let key = deviceName.lowercased()
+        appendTextPart(value: stats.runCadences[key] ?? "-")
+    }
+
+    private func formatRunDistance(stats: TextEffectStats, deviceName: String) {
+        let key = deviceName.lowercased()
+        appendTextPart(value: stats.runDistances[key] ?? "-")
     }
 
     private func formatLapTimes() {
