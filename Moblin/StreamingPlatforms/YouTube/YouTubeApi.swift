@@ -70,7 +70,13 @@ enum YouTubeApiLiveBroadcaseVisibility: String, Codable, CaseIterable {
 }
 
 struct YouTubeApiListVideoStreamingDetails: Codable {
-    let concurrentViewers: String
+    let concurrentViewers: String?
+    let actualStartTime: String?
+    let actualEndTime: String?
+
+    func isLive() -> Bool {
+        return actualStartTime != nil && actualEndTime == nil
+    }
 }
 
 struct YouTubeApiListVideo: Codable {
