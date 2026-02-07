@@ -85,7 +85,7 @@ struct WidgetScoreboardSettingsView: View {
             }
             .onChange(of: scoreboard.sport) { _ in
                 scoreboard.modular.config = nil
-                model.remoteControlScoreboardUpdate()
+                model.remoteControlScoreboardUpdate(scoreboard: scoreboard)
                 model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
             switch scoreboard.sport {

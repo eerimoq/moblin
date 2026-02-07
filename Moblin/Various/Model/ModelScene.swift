@@ -1135,7 +1135,7 @@ extension Model {
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         DispatchQueue.main.async {
             effect.update(scoreboard: widget.scoreboard,
-                          config: self.getCurrentConfig(),
+                          config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
                           players: self.database.scoreboardPlayers)
         }
         if isWatchLocal() {

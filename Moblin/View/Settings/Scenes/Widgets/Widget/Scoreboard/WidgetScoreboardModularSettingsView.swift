@@ -16,7 +16,7 @@ private struct TeamView: View {
                 Section {
                     TextEditNavigationView(title: String(localized: "Name"), value: team.name) {
                         team.name = $0
-                        model.remoteControlScoreboardUpdate()
+                        model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
                         model.sceneUpdated()
                     }
                     ColorPicker("Text", selection: $team.textColorColor, supportsOpacity: false)
@@ -24,7 +24,7 @@ private struct TeamView: View {
                             if let rgb = $0.toRgb() {
                                 team.textColor = rgb
                             }
-                            model.remoteControlScoreboardUpdate()
+                            model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
                             updateEffect()
                         }
                     ColorPicker("Background", selection: $team.backgroundColorColor, supportsOpacity: false)
@@ -32,7 +32,7 @@ private struct TeamView: View {
                             if let rgb = $0.toRgb() {
                                 team.backgroundColor = rgb
                             }
-                            model.remoteControlScoreboardUpdate()
+                            model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
                             updateEffect()
                         }
                 }
@@ -97,7 +97,7 @@ struct WidgetScoreboardModularSettingsView: View {
                                    valueFormat: formatMaximum)
                 .onChange(of: clock.maximum) { _ in
                     clock.reset()
-                    model.remoteControlScoreboardUpdate()
+                    model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
                     model.sceneUpdated()
                 }
             Picker("Direction", selection: $clock.direction) {
@@ -107,7 +107,7 @@ struct WidgetScoreboardModularSettingsView: View {
             }
             .onChange(of: clock.direction) { _ in
                 clock.reset()
-                model.remoteControlScoreboardUpdate()
+                model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
                 model.sceneUpdated()
             }
         } header: {
@@ -136,7 +136,7 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                     }
                     .onChange(of: modular.layout) { _ in
                         model.updateScoreboardEffect(widget: widget)
-                        model.remoteControlScoreboardUpdate()
+                        model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
                     }
                 }
                 Section {

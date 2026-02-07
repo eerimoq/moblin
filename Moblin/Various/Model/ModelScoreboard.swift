@@ -278,77 +278,79 @@ private let configs: [String: RemoteControlScoreboardMatchConfig] = [
 extension Model {
     @MainActor
     func handleUpdatePadelScoreboard(action: WatchProtocolPadelScoreboardAction) {
-        guard let widget = findWidget(id: action.id) else {
+        guard let scoreboard = findWidget(id: action.id)?.scoreboard else {
             return
         }
         switch action.action {
         case .reset:
-            handleUpdatePadelScoreboardReset(scoreboard: widget.scoreboard.padel)
+            handleUpdatePadelScoreboardReset(scoreboard: scoreboard.padel)
         case .undo:
-            handleUpdatePadelScoreboardUndo(scoreboard: widget.scoreboard.padel)
+            handleUpdatePadelScoreboardUndo(scoreboard: scoreboard.padel)
         case .incrementHome:
-            handleUpdatePadelScoreboardIncrementHome(scoreboard: widget.scoreboard.padel)
+            handleUpdatePadelScoreboardIncrementHome(scoreboard: scoreboard.padel)
         case .incrementAway:
-            handleUpdatePadelScoreboardIncrementAway(scoreboard: widget.scoreboard.padel)
+            handleUpdatePadelScoreboardIncrementAway(scoreboard: scoreboard.padel)
         case let .players(players):
-            handleUpdatePadelScoreboardChangePlayers(scoreboard: widget.scoreboard.padel,
+            handleUpdatePadelScoreboardChangePlayers(scoreboard: scoreboard.padel,
                                                      players: players)
         }
         guard let scoreboardEffect = scoreboardEffects[action.id] else {
             return
         }
-        scoreboardEffect.update(scoreboard: widget.scoreboard,
-                                config: getCurrentConfig(),
+        scoreboardEffect.update(scoreboard: scoreboard,
+                                config: getModularScoreboardConfig(scoreboard: scoreboard),
                                 players: database.scoreboardPlayers)
-        sendUpdatePadelScoreboardToWatch(id: action.id, padel: widget.scoreboard.padel)
+        sendUpdatePadelScoreboardToWatch(id: action.id, padel: scoreboard.padel)
     }
 
     @MainActor
     func handleUpdateGenericScoreboard(action: WatchProtocolGenericScoreboardAction) {
-        guard let widget = findWidget(id: action.id) else {
+        guard let scoreboard = findWidget(id: action.id)?.scoreboard else {
             return
         }
         switch action.action {
         case .reset:
-            handleUpdateGenericScoreboardReset(scoreboard: widget.scoreboard.generic)
+            handleUpdateGenericScoreboardReset(scoreboard: scoreboard.generic)
         case .undo:
-            handleUpdateGenericScoreboardUndo(scoreboard: widget.scoreboard.generic)
+            handleUpdateGenericScoreboardUndo(scoreboard: scoreboard.generic)
         case .incrementHome:
-            handleUpdateGenericScoreboardIncrementHome(scoreboard: widget.scoreboard.generic)
+            handleUpdateGenericScoreboardIncrementHome(scoreboard: scoreboard.generic)
         case .incrementAway:
-            handleUpdateGenericScoreboardIncrementAway(scoreboard: widget.scoreboard.generic)
+            handleUpdateGenericScoreboardIncrementAway(scoreboard: scoreboard.generic)
         case let .setTitle(title):
             handleUpdateGenericScoreboardSetTitle(
-                scoreboard: widget.scoreboard.generic,
+                scoreboard: scoreboard.generic,
                 title: title
             )
         case let .setClock(minutes, seconds):
-            handleUpdateGenericScoreboardSetClock(scoreboard: widget.scoreboard.generic,
+            handleUpdateGenericScoreboardSetClock(scoreboard: scoreboard.generic,
                                                   minutes: minutes,
                                                   seconds: seconds)
         case let .setClockState(stopped: stopped):
-            handleUpdateGenericScoreboardSetClockState(scoreboard: widget.scoreboard.generic,
+            handleUpdateGenericScoreboardSetClockState(scoreboard: scoreboard.generic,
                                                        stopped: stopped)
         }
         guard let scoreboardEffect = scoreboardEffects[action.id] else {
             return
         }
-        scoreboardEffect.update(scoreboard: widget.scoreboard,
-                                config: getCurrentConfig(),
+        scoreboardEffect.update(scoreboard: scoreboard,
+                                config: getModularScoreboardConfig(scoreboard: scoreboard),
                                 players: database.scoreboardPlayers)
-        sendUpdateGenericScoreboardToWatch(id: action.id, generic: widget.scoreboard.generic)
+        sendUpdateGenericScoreboardToWatch(id: action.id, generic: scoreboard.generic)
     }
 
-    func updateScoreboardEffects() {
-        let widgets: [SettingsWidget]
+    func getEnabledScoreboardWidgetsInSelectedScene() -> [SettingsWidget] {
         if let scene = getSelectedScene() {
-            widgets = getSceneWidgets(scene: scene, onlyEnabled: true)
+            return getSceneWidgets(scene: scene, onlyEnabled: true)
                 .filter { $0.widget.type == .scoreboard }
                 .map { $0.widget }
         } else {
-            widgets = []
+            return []
         }
-        for widget in widgets {
+    }
+
+    func updateScoreboardEffects() {
+        for widget in getEnabledScoreboardWidgetsInSelectedScene() {
             guard let effect = scoreboardEffects[widget.id] else {
                 continue
             }
@@ -364,7 +366,7 @@ extension Model {
                 DispatchQueue.main.async {
                     effect.update(
                         scoreboard: scoreboard,
-                        config: self.getCurrentConfig(),
+                        config: self.getModularScoreboardConfig(scoreboard: scoreboard),
                         players: self.database.scoreboardPlayers
                     )
                 }
@@ -377,17 +379,18 @@ extension Model {
                 DispatchQueue.main.async {
                     effect.update(
                         scoreboard: scoreboard,
-                        config: self.getCurrentConfig(),
+                        config: self.getModularScoreboardConfig(scoreboard: scoreboard),
                         players: self.database.scoreboardPlayers
                     )
                 }
-                remoteControlScoreboardUpdate()
+                remoteControlScoreboardUpdate(scoreboard: scoreboard)
             }
         }
     }
 
-    func getCurrentConfig() -> RemoteControlScoreboardMatchConfig {
-        let scoreboard = database.widgets.first(where: { $0.type == .scoreboard })?.scoreboard
+    func getModularScoreboardConfig(scoreboard: SettingsWidgetScoreboard?)
+        -> RemoteControlScoreboardMatchConfig
+    {
         let sportId: String
         switch scoreboard?.sport {
         case .basketball:
@@ -497,7 +500,7 @@ extension Model {
         DispatchQueue.main.async {
             self.getScoreboardEffect(id: widget.id)?
                 .update(scoreboard: widget.scoreboard,
-                        config: self.getCurrentConfig(),
+                        config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
                         players: self.database.scoreboardPlayers)
         }
     }
@@ -508,7 +511,7 @@ extension Model {
         }
         widget.scoreboard.modular.clock.isStopped.toggle()
         updateScoreboardEffect(widget: widget)
-        remoteControlScoreboardUpdate()
+        remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
     }
 
     func handleScoreboardSetDuration(minutes: Int) {
@@ -520,7 +523,7 @@ extension Model {
         clock.reset()
         clock.isStopped = true
         updateScoreboardEffect(widget: widget)
-        remoteControlScoreboardUpdate()
+        remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
     }
 
     func handleScoreboardSetClockManual(time: String) {
@@ -533,7 +536,7 @@ extension Model {
         clock.seconds = seconds
         clock.isStopped = true
         updateScoreboardEffect(widget: widget)
-        remoteControlScoreboardUpdate()
+        remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
     }
 
     func handleExternalScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
@@ -570,8 +573,8 @@ extension Model {
             modular.clock.seconds = seconds
             modular.clock.direction = (config.global.timerDirection == "down") ? .down : .up
             updateScoreboardEffect(widget: widget)
+            remoteControlScoreboardUpdate(scoreboard: scoreboard)
         }
-        remoteControlScoreboardUpdate()
     }
 
     func handleSportSwitch(sportId: String) {
@@ -594,7 +597,7 @@ extension Model {
                 modular.home.setHexColors(config.team1.textColor, config.team1.bgColor)
                 modular.away.setHexColors(config.team2.textColor, config.team2.bgColor)
                 updateScoreboardEffect(widget: widget)
-                remoteControlScoreboardUpdate()
+                remoteControlScoreboardUpdate(scoreboard: scoreboard)
             }
         }
     }
