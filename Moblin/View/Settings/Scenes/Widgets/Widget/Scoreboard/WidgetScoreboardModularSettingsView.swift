@@ -5,10 +5,7 @@ private struct TeamView: View {
     let widget: SettingsWidget
     let side: String
     @ObservedObject var team: SettingsWidgetModularScoreboardTeam
-
-    private func updateEffect() {
-        model.updateScoreboardEffect(widget: widget)
-    }
+    let updated: () -> Void
 
     var body: some View {
         NavigationLink {
@@ -16,24 +13,21 @@ private struct TeamView: View {
                 Section {
                     TextEditNavigationView(title: String(localized: "Name"), value: team.name) {
                         team.name = $0
-                        model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
-                        model.sceneUpdated()
+                        updated()
                     }
                     ColorPicker("Text", selection: $team.textColorColor, supportsOpacity: false)
                         .onChange(of: team.textColorColor) {
                             if let rgb = $0.toRgb() {
                                 team.textColor = rgb
                             }
-                            model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
-                            updateEffect()
+                            updated()
                         }
                     ColorPicker("Background", selection: $team.backgroundColorColor, supportsOpacity: false)
                         .onChange(of: team.backgroundColorColor) {
                             if let rgb = $0.toRgb() {
                                 team.backgroundColor = rgb
                             }
-                            model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
-                            updateEffect()
+                            updated()
                         }
                 }
             }
@@ -54,6 +48,7 @@ struct WidgetScoreboardModularSettingsView: View {
     let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
     @ObservedObject var clock: SettingsWidgetScoreboardClock
+    let updated: () -> Void
 
     private func isValidClockMaximum(value: String) -> String? {
         guard let maximum = Int(value) else {
@@ -84,8 +79,16 @@ struct WidgetScoreboardModularSettingsView: View {
 
     var body: some View {
         Section {
-            TeamView(model: model, widget: widget, side: String(localized: "Home"), team: modular.home)
-            TeamView(model: model, widget: widget, side: String(localized: "Away"), team: modular.away)
+            TeamView(model: model,
+                     widget: widget,
+                     side: String(localized: "Home"),
+                     team: modular.home,
+                     updated: updated)
+            TeamView(model: model,
+                     widget: widget,
+                     side: String(localized: "Away"),
+                     team: modular.away,
+                     updated: updated)
         } header: {
             Text("Teams")
         }
@@ -97,8 +100,7 @@ struct WidgetScoreboardModularSettingsView: View {
                                    valueFormat: formatMaximum)
                 .onChange(of: clock.maximum) { _ in
                     clock.reset()
-                    model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
-                    model.sceneUpdated()
+                    updated()
                 }
             Picker("Direction", selection: $clock.direction) {
                 ForEach(SettingsWidgetGenericScoreboardClockDirection.allCases, id: \.self) { direction in
@@ -107,8 +109,7 @@ struct WidgetScoreboardModularSettingsView: View {
             }
             .onChange(of: clock.direction) { _ in
                 clock.reset()
-                model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
-                model.sceneUpdated()
+                updated()
             }
         } header: {
             Text("Clock")
@@ -120,10 +121,7 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
     let model: Model
     let widget: SettingsWidget
     @ObservedObject var modular: SettingsWidgetModularScoreboard
-
-    private func updateEffect() {
-        model.updateScoreboardEffect(widget: widget)
-    }
+    let updated: () -> Void
 
     var body: some View {
         NavigationLink("Layout") {
@@ -135,8 +133,7 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                         }
                     }
                     .onChange(of: modular.layout) { _ in
-                        model.updateScoreboardEffect(widget: widget)
-                        model.remoteControlScoreboardUpdate(scoreboard: widget.scoreboard)
+                        updated()
                     }
                 }
                 Section {
@@ -144,7 +141,7 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                         Text("Width")
                         Slider(value: $modular.width, in: 100 ... 1000)
                             .onChange(of: modular.width) { _ in
-                                updateEffect()
+                                updated()
                             }
                         Text(String(Int(modular.width)))
                             .frame(width: 35)
@@ -153,7 +150,7 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                         Text("Height")
                         Slider(value: $modular.rowHeight, in: 10 ... 150)
                             .onChange(of: modular.rowHeight) { _ in
-                                updateEffect()
+                                updated()
                             }
                         Text(String(Int(modular.rowHeight)))
                             .frame(width: 35)
@@ -162,19 +159,19 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                 Section {
                     Toggle("Title", isOn: $modular.showTitle)
                         .onChange(of: modular.showTitle) { _ in
-                            updateEffect()
+                            updated()
                         }
                     Toggle("Info box", isOn: $modular.showGlobalStatsBlock)
                         .onChange(of: modular.showGlobalStatsBlock) { _ in
-                            updateEffect()
+                            updated()
                         }
                     Toggle("More stats", isOn: $modular.showMoreStats)
                         .onChange(of: modular.showMoreStats) { _ in
-                            updateEffect()
+                            updated()
                         }
                     Toggle("Bold", isOn: $modular.isBold)
                         .onChange(of: modular.isBold) { _ in
-                            updateEffect()
+                            updated()
                         }
                 }
             }

@@ -8,7 +8,7 @@ private struct PlayersPlayerView: View {
     var body: some View {
         NameEditView(name: $player.name, existingNames: database.scoreboardPlayers)
             .onChange(of: player.name) { _ in
-                model.resetSelectedScene(changeScene: false, attachCamera: false)
+                model.sceneUpdated()
                 model.sendScoreboardPlayersToWatch()
             }
     }
@@ -17,6 +17,7 @@ private struct PlayersPlayerView: View {
 private struct PlayersView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    let updated: () -> Void
 
     var body: some View {
         Section {
@@ -26,12 +27,12 @@ private struct PlayersView: View {
                 }
                 .onMove { froms, to in
                     database.scoreboardPlayers.move(fromOffsets: froms, toOffset: to)
-                    model.resetSelectedScene(changeScene: false, attachCamera: false)
+                    updated()
                     model.sendScoreboardPlayersToWatch()
                 }
                 .onDelete { offsets in
                     database.scoreboardPlayers.remove(atOffsets: offsets)
-                    model.resetSelectedScene(changeScene: false, attachCamera: false)
+                    updated()
                     model.sendScoreboardPlayersToWatch()
                 }
             }
@@ -104,6 +105,7 @@ struct WidgetScoreboardPadelGeneralSettingsView: View {
     @ObservedObject var widget: SettingsWidget
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
     @ObservedObject var padel: SettingsWidgetPadelScoreboard
+    let updated: () -> Void
 
     var body: some View {
         HStack {
@@ -116,27 +118,31 @@ struct WidgetScoreboardPadelGeneralSettingsView: View {
                 }
             }
             .onChange(of: padel.type) { _ in
-                model.resetSelectedScene(changeScene: false, attachCamera: false)
+                updated()
             }
         }
-        ScoreboardColorsView(model: model, widget: widget, scoreboard: scoreboard)
+        ScoreboardColorsView(model: model,
+                             widget: widget,
+                             scoreboard: scoreboard,
+                             updated: updated)
     }
 }
 
 struct WidgetScoreboardPadelSettingsView: View {
     let model: Model
     @ObservedObject var padel: SettingsWidgetPadelScoreboard
+    let updated: () -> Void
 
     var body: some View {
         Section {
             PlayerView(playerId: $padel.homePlayer1)
                 .onChange(of: padel.homePlayer1) { _ in
-                    model.resetSelectedScene(changeScene: false, attachCamera: false)
+                    updated()
                 }
             if padel.type == .doubles {
                 PlayerView(playerId: $padel.homePlayer2)
                     .onChange(of: padel.homePlayer2) { _ in
-                        model.resetSelectedScene(changeScene: false, attachCamera: false)
+                        updated()
                     }
             }
         } header: {
@@ -145,17 +151,17 @@ struct WidgetScoreboardPadelSettingsView: View {
         Section {
             PlayerView(playerId: $padel.awayPlayer1)
                 .onChange(of: padel.awayPlayer1) { _ in
-                    model.resetSelectedScene(changeScene: false, attachCamera: false)
+                    updated()
                 }
             if padel.type == .doubles {
                 PlayerView(playerId: $padel.awayPlayer2)
                     .onChange(of: padel.awayPlayer2) { _ in
-                        model.resetSelectedScene(changeScene: false, attachCamera: false)
+                        updated()
                     }
             }
         } header: {
             Text("Away")
         }
-        PlayersView(database: model.database)
+        PlayersView(database: model.database, updated: updated)
     }
 }

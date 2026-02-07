@@ -294,12 +294,9 @@ extension Model {
             handleUpdatePadelScoreboardChangePlayers(scoreboard: scoreboard.padel,
                                                      players: players)
         }
-        guard let scoreboardEffect = scoreboardEffects[action.id] else {
-            return
-        }
-        scoreboardEffect.update(scoreboard: scoreboard,
-                                config: getModularScoreboardConfig(scoreboard: scoreboard),
-                                players: database.scoreboardPlayers)
+        getScoreboardEffect(id: action.id)?.update(scoreboard: scoreboard,
+                                                   config: getModularScoreboardConfig(scoreboard: scoreboard),
+                                                   players: database.scoreboardPlayers)
         sendUpdatePadelScoreboardToWatch(id: action.id, padel: scoreboard.padel)
     }
 
@@ -330,12 +327,9 @@ extension Model {
             handleUpdateGenericScoreboardSetClockState(scoreboard: scoreboard.generic,
                                                        stopped: stopped)
         }
-        guard let scoreboardEffect = scoreboardEffects[action.id] else {
-            return
-        }
-        scoreboardEffect.update(scoreboard: scoreboard,
-                                config: getModularScoreboardConfig(scoreboard: scoreboard),
-                                players: database.scoreboardPlayers)
+        getScoreboardEffect(id: action.id)?.update(scoreboard: scoreboard,
+                                                   config: getModularScoreboardConfig(scoreboard: scoreboard),
+                                                   players: database.scoreboardPlayers)
         sendUpdateGenericScoreboardToWatch(id: action.id, generic: scoreboard.generic)
     }
 
@@ -351,7 +345,7 @@ extension Model {
 
     func updateScoreboardEffects() {
         for widget in getEnabledScoreboardWidgetsInSelectedScene() {
-            guard let effect = scoreboardEffects[widget.id] else {
+            guard let effect = getScoreboardEffect(id: widget.id) else {
                 continue
             }
             let scoreboard = widget.scoreboard
@@ -496,7 +490,7 @@ extension Model {
         return finalSports.isEmpty ? ["volleyball", "basketball"] : finalSports
     }
 
-    func updateScoreboardEffect(widget: SettingsWidget) {
+    private func updateScoreboardEffect(widget: SettingsWidget) {
         DispatchQueue.main.async {
             self.getScoreboardEffect(id: widget.id)?
                 .update(scoreboard: widget.scoreboard,
