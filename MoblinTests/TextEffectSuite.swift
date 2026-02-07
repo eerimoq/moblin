@@ -127,10 +127,9 @@ struct TextEffectSuite {
                                teslaMedia: "",
                                cyclingPower: "",
                                cyclingCadence: "",
-                               garminHeartRate: nil,
-                               garminPace: "",
-                               garminCadence: "",
-                               garminDistance: "",
+                               paces: [:],
+                               runCadences: [:],
+                               runDistances: [:],
                                browserTitle: "",
                                gForce: gForce)
     }

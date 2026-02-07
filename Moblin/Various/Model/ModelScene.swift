@@ -1398,10 +1398,9 @@ extension Model {
                 teslaMedia: textEffectTeslaMedia(),
                 cyclingPower: "\(cyclingPower) W",
                 cyclingCadence: "\(cyclingCadence)",
-                garminHeartRate: garminHeartRate(),
-                garminPace: garminPaceString(),
-                garminCadence: garminCadenceString(),
-                garminDistance: garminDistanceString(),
+                paces: allDevicePaces(),
+                runCadences: allDeviceCadences(),
+                runDistances: allDeviceRunDistances(),
                 browserTitle: getBrowserTitle(),
                 gForce: gForceManager?.getLatest()
             )

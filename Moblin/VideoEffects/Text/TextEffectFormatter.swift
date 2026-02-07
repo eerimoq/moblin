@@ -161,14 +161,12 @@ class TextEffectFormatter {
                 formatCyclingPower(stats: stats)
             case .cyclingCadence:
                 formatCyclingCadence(stats: stats)
-            case .garminHeartRate:
-                formatGarminHeartRate(stats: stats)
-            case .garminPace:
-                formatGarminPace(stats: stats)
-            case .garminCadence:
-                formatGarminCadence(stats: stats)
-            case .garminDistance:
-                formatGarminDistance(stats: stats)
+            case let .pace(deviceName):
+                formatPace(stats: stats, deviceName: deviceName)
+            case let .runCadence(deviceName):
+                formatRunCadence(stats: stats, deviceName: deviceName)
+            case let .runDistance(deviceName):
+                formatRunDistance(stats: stats, deviceName: deviceName)
             case .lapTimes:
                 formatLapTimes()
             case .browserTitle:
@@ -417,20 +415,19 @@ class TextEffectFormatter {
         appendTextPart(value: stats.cyclingCadence)
     }
 
-    private func formatGarminHeartRate(stats: TextEffectStats) {
-        appendTextPart(value: formatOptional(value: stats.garminHeartRate))
+    private func formatPace(stats: TextEffectStats, deviceName: String) {
+        let key = deviceName.lowercased()
+        appendTextPart(value: stats.paces[key] ?? "-")
     }
 
-    private func formatGarminPace(stats: TextEffectStats) {
-        appendTextPart(value: stats.garminPace)
+    private func formatRunCadence(stats: TextEffectStats, deviceName: String) {
+        let key = deviceName.lowercased()
+        appendTextPart(value: stats.runCadences[key] ?? "-")
     }
 
-    private func formatGarminCadence(stats: TextEffectStats) {
-        appendTextPart(value: stats.garminCadence)
-    }
-
-    private func formatGarminDistance(stats: TextEffectStats) {
-        appendTextPart(value: stats.garminDistance)
+    private func formatRunDistance(stats: TextEffectStats, deviceName: String) {
+        let key = deviceName.lowercased()
+        appendTextPart(value: stats.runDistances[key] ?? "-")
     }
 
     private func formatLapTimes() {
