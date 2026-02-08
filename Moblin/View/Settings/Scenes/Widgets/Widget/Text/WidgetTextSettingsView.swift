@@ -831,33 +831,6 @@ private struct WorkoutVariablesView: View {
                         text: $value
                     )
                 }
-                ForEach(model.database.workoutDevices.devices) { device in
-                    VariableView(
-                        title: "{heartRate:\(device.name)}",
-                        description: String(
-                            localized: "Show heart rate for workout device called \"\(device.name)\""
-                        ),
-                        text: $value
-                    )
-                }
-                ForEach(model.database.workoutDevices.devices) { device in
-                    VariableView(
-                        title: "{cyclingPower:\(device.name)}",
-                        description: String(
-                            localized: "Show cycling power for workout device called \"\(device.name)\""
-                        ),
-                        text: $value
-                    )
-                }
-                ForEach(model.database.workoutDevices.devices) { device in
-                    VariableView(
-                        title: "{cyclingCadence:\(device.name)}",
-                        description: String(
-                            localized: "Show cycling cadence for workout device called \"\(device.name)\""
-                        ),
-                        text: $value
-                    )
-                }
                 VariableView(
                     title: "{cyclingPower}",
                     description: String(localized: "Show cycling power"),
