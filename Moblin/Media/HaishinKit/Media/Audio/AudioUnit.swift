@@ -268,10 +268,15 @@ final class AudioUnit: NSObject {
         else {
             return
         }
-        let format = AVAudioFormat(
+        let format: AVAudioFormat
+        if let f = AVAudioFormat(
             standardFormatWithSampleRate: asbd.mSampleRate,
             channels: AVAudioChannelCount(asbd.mChannelsPerFrame)
-        )!
+        ) {
+            format = f
+        } else {
+            return
+        }
         if mixerInputFormats[inputId] == nil {
             mixer.add(inputId: inputId, format: format)
             mixerInputFormats[inputId] = format
@@ -388,7 +393,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         }
         if shouldUseMixer(), mixerSourceIds.contains(builtinInputId) {
             appendToMixer(inputId: builtinInputId, sampleBuffer: sampleBuffer)
-        } else if selectedBufferedAudioId == nil, !shouldUseMixer() {
+        } else if selectedBufferedAudioId == nil {
             if shouldUpdateAudioLevel(sampleBuffer) {
                 var audioLevel: Float
                 if muted {
@@ -414,7 +419,7 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
         }
         if shouldUseMixer(), mixerSourceIds.contains(cameraId) {
             appendToMixer(inputId: cameraId, sampleBuffer: sampleBuffer)
-        } else if selectedBufferedAudioId == cameraId, !shouldUseMixer() {
+        } else if selectedBufferedAudioId == cameraId {
             if shouldUpdateAudioLevel(sampleBuffer) {
                 let numberOfAudioChannels = Int(
                     sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0

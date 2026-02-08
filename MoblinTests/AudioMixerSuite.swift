@@ -196,4 +196,95 @@ struct AudioMixerSuite {
         #expect(samples[1024] == 0)
         #expect(samples[2047] == 0)
     }
+
+    @Test
+    func threeMonoInputsMonoOutput() async throws {
+        let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
+        let inputId1 = UUID()
+        let inputId2 = UUID()
+        let inputId3 = UUID()
+        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1))
+        mixer.add(inputId: inputId1, format: format)
+        mixer.add(inputId: inputId2, format: format)
+        mixer.add(inputId: inputId3, format: format)
+        #expect(mixer.numberOfInputs() == 3)
+        let inputBuffer1 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
+        inputBuffer1.frameLength = 1024
+        var samples = try #require(inputBuffer1.floatChannelData?.pointee)
+        samples[0] = 10
+        mixer.append(inputId: inputId1, buffer: inputBuffer1)
+        let inputBuffer2 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
+        inputBuffer2.frameLength = 1024
+        samples = try #require(inputBuffer2.floatChannelData?.pointee)
+        samples[0] = 20
+        mixer.append(inputId: inputId2, buffer: inputBuffer2)
+        let inputBuffer3 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
+        inputBuffer3.frameLength = 1024
+        samples = try #require(inputBuffer3.floatChannelData?.pointee)
+        samples[0] = 30
+        mixer.append(inputId: inputId3, buffer: inputBuffer3)
+        try? await sleep(milliSeconds: processDelayMs)
+        let outputBuffer = mixer.process()
+        #expect(outputBuffer?.format.sampleRate == 48000)
+        #expect(outputBuffer?.format.channelCount == 1)
+        #expect(outputBuffer?.frameLength == 1024)
+        samples = try #require(outputBuffer?.floatChannelData?.pointee)
+        #expect(samples[0] == 60 / sqrt(2))
+        #expect(samples[500] == 0)
+        #expect(samples[1023] == 0)
+        mixer.remove(inputId: inputId1)
+        #expect(mixer.numberOfInputs() == 2)
+        mixer.remove(inputId: inputId2)
+        #expect(mixer.numberOfInputs() == 1)
+        mixer.remove(inputId: inputId3)
+        #expect(mixer.numberOfInputs() == 0)
+    }
+
+    @Test
+    func addAndRemoveInputsDynamically() async throws {
+        let mixer = AudioMixer(outputSampleRate: 48000, outputChannels: 1, outputSamplesPerBuffer: 1024)
+        let inputId1 = UUID()
+        let inputId2 = UUID()
+        let format = try #require(AVAudioFormat(standardFormatWithSampleRate: 48000, channels: 1))
+        mixer.add(inputId: inputId1, format: format)
+        #expect(mixer.numberOfInputs() == 1)
+        let inputBuffer1 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
+        inputBuffer1.frameLength = 1024
+        var samples = try #require(inputBuffer1.floatChannelData?.pointee)
+        samples[0] = 50
+        mixer.append(inputId: inputId1, buffer: inputBuffer1)
+        try? await sleep(milliSeconds: processDelayMs)
+        var outputBuffer = mixer.process()
+        samples = try #require(outputBuffer?.floatChannelData?.pointee)
+        #expect(samples[0] == 50 / sqrt(2))
+        mixer.add(inputId: inputId2, format: format)
+        #expect(mixer.numberOfInputs() == 2)
+        let inputBuffer1b = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
+        inputBuffer1b.frameLength = 1024
+        samples = try #require(inputBuffer1b.floatChannelData?.pointee)
+        samples[0] = 30
+        mixer.append(inputId: inputId1, buffer: inputBuffer1b)
+        let inputBuffer2 = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
+        inputBuffer2.frameLength = 1024
+        samples = try #require(inputBuffer2.floatChannelData?.pointee)
+        samples[0] = 20
+        mixer.append(inputId: inputId2, buffer: inputBuffer2)
+        try? await sleep(milliSeconds: processDelayMs)
+        outputBuffer = mixer.process()
+        samples = try #require(outputBuffer?.floatChannelData?.pointee)
+        #expect(samples[0] == 50 / sqrt(2))
+        mixer.remove(inputId: inputId1)
+        #expect(mixer.numberOfInputs() == 1)
+        let inputBuffer2b = try #require(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 1024))
+        inputBuffer2b.frameLength = 1024
+        samples = try #require(inputBuffer2b.floatChannelData?.pointee)
+        samples[0] = 100
+        mixer.append(inputId: inputId2, buffer: inputBuffer2b)
+        try? await sleep(milliSeconds: processDelayMs)
+        outputBuffer = mixer.process()
+        samples = try #require(outputBuffer?.floatChannelData?.pointee)
+        #expect(samples[0] == 100 / sqrt(2))
+        mixer.remove(inputId: inputId2)
+        #expect(mixer.numberOfInputs() == 0)
+    }
 }
