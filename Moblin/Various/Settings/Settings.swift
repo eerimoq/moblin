@@ -1181,9 +1181,7 @@ class Database: Codable, ObservableObject {
              forceSceneSwitchTransition,
              cameraControlsEnabled,
              externalDisplayContent,
-             cyclingPowerDevices,
              heartRateDevices,
-             workoutDevices,
              phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
@@ -1256,7 +1254,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.forceSceneSwitchTransition, forceSceneSwitchTransition)
         try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.externalDisplayContent, externalDisplayContent)
-        try container.encode(.workoutDevices, workoutDevices)
+        try container.encode(.heartRateDevices, workoutDevices)
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
@@ -1352,7 +1350,7 @@ class Database: Codable, ObservableObject {
             SettingsExternalDisplayContent.self,
             .stream
         )
-        workoutDevices = container.decode(.workoutDevices, SettingsWorkoutDevices.self, .init())
+        workoutDevices = container.decode(.heartRateDevices, SettingsWorkoutDevices.self, .init())
         blackSharkCoolerDevices = container.decode(
             .phoneCoolerDevices,
             SettingsBlackSharkCoolerDevices.self,
