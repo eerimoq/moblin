@@ -67,7 +67,7 @@ extension Model: WorkoutDeviceDelegate {
         }
     }
 
-    func heartRateStatus(_ device: WorkoutDevice, heartRate: Int) {
+    func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int) {
         DispatchQueue.main.async {
             guard let device = self.getWorkoutDeviceSettings(device: device) else {
                 return
@@ -76,7 +76,7 @@ extension Model: WorkoutDeviceDelegate {
         }
     }
 
-    func cyclingPowerStatus(_: WorkoutDevice, power: Int, cadence: Int) {
+    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int) {
         DispatchQueue.main.async {
             self.cyclingPower = power
             self.cyclingCadence = cadence

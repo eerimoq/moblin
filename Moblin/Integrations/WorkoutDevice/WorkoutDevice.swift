@@ -6,8 +6,8 @@ private let workoutDeviceDispatchQueue = DispatchQueue(label: "com.eerimoq.worko
 
 protocol WorkoutDeviceDelegate: AnyObject {
     func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState)
-    func heartRateStatus(_ device: WorkoutDevice, heartRate: Int)
-    func cyclingPowerStatus(_ device: WorkoutDevice, power: Int, cadence: Int)
+    func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int)
+    func workoutDeviceCyclingPower(_ device: WorkoutDevice, power: Int, cadence: Int)
 }
 
 enum WorkoutDeviceState {
@@ -179,13 +179,13 @@ extension WorkoutDevice: CBPeripheralDelegate {
 
     private func handleHeartRateMeasurement(value: Data) throws {
         let measurement = try HeartRateMeasurement(value: value)
-        delegate?.heartRateStatus(self, heartRate: Int(measurement.heartRate))
+        delegate?.workoutDeviceHeartRate(self, heartRate: Int(measurement.heartRate))
     }
 
     private func handleCyclingPowerMeasurement(value: Data) throws {
         let measurement = try CyclingPowerMeasurement(value: value)
         let result = cyclingPowerState.processMeasurement(measurement)
-        delegate?.cyclingPowerStatus(self, power: result.power, cadence: result.cadence)
+        delegate?.workoutDeviceCyclingPower(self, power: result.power, cadence: result.cadence)
     }
 
     private func handlePowerVector(value: Data) throws {
