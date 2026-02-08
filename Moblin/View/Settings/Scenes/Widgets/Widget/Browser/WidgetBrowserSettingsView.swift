@@ -93,6 +93,7 @@ struct WidgetBrowserSettingsView: View {
                     Text($0.toString())
                 }
             }
+            .pickerStyle(.inline)
             .onChange(of: browser.mode) { _ in
                 model.resetSelectedScene(changeScene: false)
             }
