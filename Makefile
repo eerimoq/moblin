@@ -1,12 +1,14 @@
-SWIFTFORMAT_ARGS=--maxwidth 110 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf --disable docComments
-SWIFTLINT_ARGS=--strict --quiet
-OXFMT_ARGS="Moblin/RemoteControl/Web"
-OXLINT_ARGS="Moblin/RemoteControl/Web"
-PERIPHERY_ARGS=--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
-		--index-exclude "**/PrepareLicenseList/**" \
-		--disable-update-check
-CODESPELL_ARGS=--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
-		 --ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
+SWIFTFORMAT_ARGS = --maxwidth 110 --swiftversion 5 --exclude Moblin/Integrations/Tesla/Protobuf --disable docComments
+SWIFTLINT_ARGS = --strict --quiet
+OXFMT_ARGS = "Moblin/RemoteControl/Web"
+OXLINT_ARGS = "Moblin/RemoteControl/Web"
+PERIPHERY_ARGS = \
+	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
+	--index-exclude "**/PrepareLicenseList/**" \
+	--disable-update-check
+CODESPELL_ARGS = \
+	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
+	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
 
 CODE_FOLDERS += "Common"
 CODE_FOLDERS += "Moblin"
@@ -14,6 +16,8 @@ CODE_FOLDERS += "Moblin Watch"
 CODE_FOLDERS += "Moblin Widget"
 CODE_FOLDERS += "Moblin Screen Recording"
 CODE_FOLDERS += "MoblinTests"
+
+SHELL = /usr/bin/env bash
 
 all:
 
@@ -48,4 +52,4 @@ pack-exported-localizations:
 
 generate-web-remote-control-css:
 	cd Moblin/RemoteControl/Web/ && \
-	tailwindcss -i css/app.input.css -o css/app.css
+	tailwindcss -i <(echo '@import "tailwindcss";') -o css/app.css

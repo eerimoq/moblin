@@ -8,9 +8,12 @@ export function getTableBodyNoHead(id) {
   return table.tBodies[0];
 }
 
-export function appendToRow(row, value) {
+export function appendToRow(row, value, className) {
   let cell = row.insertCell(-1);
   cell.innerHTML = value;
+  if (className) {
+    cell.className = className;
+  }
 }
 
 export function addOnChange(elementId, func) {
