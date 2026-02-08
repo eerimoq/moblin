@@ -199,12 +199,59 @@ function appendStatusRow(body, name, value) {
   appendToRow(row, value, "py-1.5 text-zinc-200");
 }
 
+function appendIconStatusRow(body, icon, value) {
+  let row = body.insertRow(-1);
+  row.className = "border-b border-zinc-800";
+  appendToRow(row, icon, "py-1.5 pr-3 text-zinc-400 whitespace-nowrap w-8 align-middle");
+  appendToRow(row, value, "py-1.5 text-zinc-200 align-middle");
+}
+
+const svgBattery =
+  '<svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>';
+
+const svgFlame =
+  '<svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-1 5-5 7-5 12a5 5 0 0 0 10 0c0-5-4-7-5-12z"/></svg>';
+
+const svgMic =
+  '<svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+
+const svgWifi =
+  '<svg xmlns="http://www.w3.org/2000/svg" class="inline w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 8.5c3.5-3.5 6.5-5 10-5s6.5 1.5 10 5"/><path d="M6 12.5c2-2 4-3 6-3s4 1 6 3"/><path d="M10 16.5c1-1 1.5-1.5 2-1.5s1 .5 2 1.5"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>';
+
+function flameColor(flame) {
+  if (flame === "Red") return "text-red-500";
+  if (flame === "Yellow") return "text-yellow-400";
+  return "text-zinc-200";
+}
+
+const flameDisplayName = {
+  White: "White",
+  Yellow: "Yellow",
+  Red: "Red",
+};
+
 function updateStatus(status) {
   let generalBody = getTableBodyNoHead("statusGeneral");
-  appendStatusRow(generalBody, "Battery level", status.general.batteryLevel);
-  appendStatusRow(generalBody, "Muted", status.general.isMuted);
-  appendStatusRow(generalBody, "Flame", status.general.flame);
-  appendStatusRow(generalBody, "WiFi", status.general.wiFiSsid);
+  appendIconStatusRow(
+    generalBody,
+    svgBattery,
+    status.general.batteryLevel !== null && status.general.batteryLevel !== undefined
+      ? status.general.batteryLevel + "%"
+      : "—",
+  );
+  const fc = flameColor(status.general.flame);
+  const flameName = flameDisplayName[status.general.flame] ?? "—";
+  appendIconStatusRow(
+    generalBody,
+    `<span class="${fc}">${svgFlame}</span>`,
+    `<span class="${fc}">${flameName}</span>`,
+  );
+  appendIconStatusRow(
+    generalBody,
+    svgMic,
+    status.general.isMuted === true ? "Muted" : status.general.isMuted === false ? "Unmuted" : "—",
+  );
+  appendIconStatusRow(generalBody, svgWifi, status.general.wiFiSsid ?? "—");
   let topLeftBody = getTableBodyNoHead("statusTopLeft");
   appendStatuses(topLeftBody, status.topLeft);
   let topRightBody = getTableBodyNoHead("statusTopRight");
