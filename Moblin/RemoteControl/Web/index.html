@@ -5,122 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Moblin Remote Control</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="stylesheet" href="css/vanilla-framework-version-4.14.0.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .toggle-checkbox:checked {
+        right: 0;
+        border-color: #4f46e5;
+        background-color: #4f46e5;
+      }
+      .toggle-checkbox {
+        right: 1.25rem;
+        transition: all 0.2s ease-in-out;
+      }
+      .toggle-label {
+        transition: background-color 0.2s ease-in-out;
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #4f46e5;
+      }
+    </style>
   </head>
 
-  <body class="is-dark" style="background: #09090b">
-    <div class="row">
-      <div class="col-2"></div>
-      <div class="col-8" style="margin: auto">
-        <h1>Moblin Remote Control</h1>
-      </div>
-      <div class="col-2"></div>
-    </div>
+  <body class="bg-zinc-950 text-zinc-100 font-sans p-4">
+    <div class="max-w-3xl mx-auto space-y-4">
+      <h1 class="text-2xl font-bold text-center">Moblin Remote Control</h1>
 
-    <div class="row" style="padding-bottom: 20px">
-      <div class="col-12" style="margin: auto">
-        <span id="status"></span>
+      <div class="pb-2 text-center">
+        <span id="status" class="text-sm"></span>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col-2"></div>
-      <div class="col-8">
-        <div class="p-card">
-          <h2>Status</h2>
-          <h3>General</h3>
-          <div>
-            <table id="statusGeneral" style="table-layout: auto">
-              <tbody></tbody>
-            </table>
-          </div>
-          <h3>Top left</h3>
-          <div>
-            <table id="statusTopLeft" style="table-layout: auto">
-              <tbody></tbody>
-            </table>
-          </div>
-          <h3>Top right</h3>
-          <div>
-            <table id="statusTopRight" style="table-layout: auto">
-              <tbody></tbody>
-            </table>
-          </div>
+      <!-- Status -->
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+        <h2 class="text-xl font-semibold mb-3">Status</h2>
+        <h3 class="text-base font-medium text-zinc-300 mb-1">General</h3>
+        <div class="overflow-x-auto">
+          <table id="statusGeneral" class="w-full text-sm text-left text-zinc-300 table-auto">
+            <tbody></tbody>
+          </table>
+        </div>
+        <h3 class="text-base font-medium text-zinc-300 mt-3 mb-1">Top left</h3>
+        <div class="overflow-x-auto">
+          <table id="statusTopLeft" class="w-full text-sm text-left text-zinc-300 table-auto">
+            <tbody></tbody>
+          </table>
+        </div>
+        <h3 class="text-base font-medium text-zinc-300 mt-3 mb-1">Top right</h3>
+        <div class="overflow-x-auto">
+          <table id="statusTopRight" class="w-full text-sm text-left text-zinc-300 table-auto">
+            <tbody></tbody>
+          </table>
         </div>
       </div>
-      <div class="col-2"></div>
-    </div>
 
-    <div class="row">
-      <div class="col-2"></div>
-      <div class="col-8">
-        <div class="p-card">
-          <h2>Control</h2>
-          <label class="p-switch">
-            <input
-              id="controlLive"
-              type="checkbox"
-              class="p-switch__input"
-              checked=""
-              role="switch"
-            />
-            <span class="p-switch__slider"></span>
-            <span class="p-switch__label">Live</span>
+      <!-- Control -->
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+        <h2 class="text-xl font-semibold mb-3">Control</h2>
+        <div class="space-y-3">
+          <label class="flex items-center cursor-pointer">
+            <div class="relative">
+              <input
+                id="controlLive"
+                type="checkbox"
+                class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-zinc-500 appearance-none cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                checked=""
+                role="switch"
+              />
+              <div class="toggle-label block w-10 h-5 rounded-full bg-zinc-600"></div>
+            </div>
+            <span class="ml-3 text-sm text-zinc-200">Live</span>
           </label>
-          <label class="p-switch">
-            <input
-              id="controlRecording"
-              type="checkbox"
-              class="p-switch__input"
-              checked=""
-              role="switch"
-            />
-            <span class="p-switch__slider"></span>
-            <span class="p-switch__label">Recording</span>
+          <label class="flex items-center cursor-pointer">
+            <div class="relative">
+              <input
+                id="controlRecording"
+                type="checkbox"
+                class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-zinc-500 appearance-none cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                checked=""
+                role="switch"
+              />
+              <div class="toggle-label block w-10 h-5 rounded-full bg-zinc-600"></div>
+            </div>
+            <span class="ml-3 text-sm text-zinc-200">Recording</span>
           </label>
-          <label class="p-switch">
-            <input
-              id="controlMuted"
-              type="checkbox"
-              class="p-switch__input"
-              checked=""
-              role="switch"
-            />
-            <span class="p-switch__slider"></span>
-            <span class="p-switch__label">Muted</span>
+          <label class="flex items-center cursor-pointer">
+            <div class="relative">
+              <input
+                id="controlMuted"
+                type="checkbox"
+                class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-zinc-500 appearance-none cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                checked=""
+                role="switch"
+              />
+              <div class="toggle-label block w-10 h-5 rounded-full bg-zinc-600"></div>
+            </div>
+            <span class="ml-3 text-sm text-zinc-200">Muted</span>
           </label>
-          <label class="p-switch">
-            <input
-              id="controlDebugLogging"
-              type="checkbox"
-              class="p-switch__input"
-              checked=""
-              role="switch"
-            />
-            <span class="p-switch__slider"></span>
-            <span class="p-switch__label">Debug logging</span>
+          <label class="flex items-center cursor-pointer">
+            <div class="relative">
+              <input
+                id="controlDebugLogging"
+                type="checkbox"
+                class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-2 border-zinc-500 appearance-none cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                checked=""
+                role="switch"
+              />
+              <div class="toggle-label block w-10 h-5 rounded-full bg-zinc-600"></div>
+            </div>
+            <span class="ml-3 text-sm text-zinc-200">Debug logging</span>
           </label>
         </div>
       </div>
-      <div class="col-2"></div>
-    </div>
 
-    <div class="row">
-      <div class="col-2"></div>
-      <div class="col-8">
-        <div class="p-card">
-          <h2>Log</h2>
-          <div id="log" style="overflow-y: scroll; height: 400px"></div>
-        </div>
+      <!-- Log -->
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+        <h2 class="text-xl font-semibold mb-3">Log</h2>
+        <div id="log" class="overflow-y-auto h-96 text-sm text-zinc-300"></div>
       </div>
-      <div class="col-2"></div>
-    </div>
 
-    <div class="row" style="padding-bottom: 20px">
-      <div class="col-12" style="margin: auto">
-        <a href="./remote.html" style="padding: 10px">Scoreboard Control</a>
-        <a href="./scoreboard.html" style="padding: 10px">Scoreboard Display</a>
-        <a href="https://github.com/eerimoq/moblin" target="_blank" style="padding: 10px">
+      <!-- Footer links -->
+      <div class="pb-5 text-center space-x-4">
+        <a href="./remote.html" class="text-indigo-400 hover:text-indigo-300 text-sm"
+          >Scoreboard Control</a
+        >
+        <a href="./scoreboard.html" class="text-indigo-400 hover:text-indigo-300 text-sm"
+          >Scoreboard Display</a
+        >
+        <a
+          href="https://github.com/eerimoq/moblin"
+          target="_blank"
+          class="text-indigo-400 hover:text-indigo-300 text-sm"
+        >
           Github
         </a>
       </div>

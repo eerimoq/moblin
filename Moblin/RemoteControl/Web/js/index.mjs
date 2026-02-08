@@ -251,11 +251,11 @@ function appendStatuses(body, statuses) {
 }
 
 function updateConnectionStatus() {
-  let status = '<i class="p-icon--error"></i> Unknown server status';
+  let status = '<span class="text-red-500">&#x2716; Unknown server status</span>';
   if (connection.status == connectionStatus.connecting) {
-    status = '<i class="p-icon--spinner u-animation--spin"></i> Connecting to server';
+    status = '<span class="text-yellow-400">&#x25cf; Connecting to server</span>';
   } else if (connection.status == connectionStatus.connected) {
-    status = '<i class="p-icon--success"></i> Connected to server';
+    status = '<span class="text-green-500">&#x2714; Connected to server</span>';
   }
   document.getElementById("status").innerHTML = status;
 }
