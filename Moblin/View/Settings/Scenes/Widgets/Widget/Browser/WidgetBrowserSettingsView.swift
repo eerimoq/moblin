@@ -88,11 +88,15 @@ struct WidgetBrowserSettingsView: View {
                                    keyboardType: .numbersAndPunctuation)
         }
         Section {
-            Toggle("Audio and video only", isOn: $browser.audioAndVideoOnly)
-                .onChange(of: browser.audioAndVideoOnly) { _ in
-                    model.resetSelectedScene(changeScene: false)
+            Picker("Mode", selection: $browser.mode) {
+                ForEach(SettingsWidgetBrowserMode.allCases, id: \.self) {
+                    Text($0.toString())
                 }
-            if !browser.audioAndVideoOnly {
+            }
+            .onChange(of: browser.mode) { _ in
+                model.resetSelectedScene(changeScene: false)
+            }
+            if browser.mode == .periodicAudioAndVideo {
                 HStack {
                     Text("Base FPS")
                     SliderView(
@@ -108,7 +112,7 @@ struct WidgetBrowserSettingsView: View {
             }
         } footer: {
             Text("""
-            When \"Audio and video only\" is enabled, images, text, GIFs etc. \
+            When \"Audio and video only\" mode is selected, images, text, GIFs etc. \
             will only be shown when a video (.mp4/.mov) is playing, reducing overall \
             energy consumption.
             """)

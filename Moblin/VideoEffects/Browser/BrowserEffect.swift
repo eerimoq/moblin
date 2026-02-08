@@ -75,7 +75,7 @@ final class BrowserEffect: VideoEffect {
         baseFps = Double(widget.baseFps)
         fps = baseFps
         isLoaded = false
-        audioAndVideoOnly = widget.audioAndVideoOnly
+        audioAndVideoOnly = widget.mode == .audioAndVideoOnly
         width = Double(widget.width)
         height = Double(widget.height)
         snapshotConfiguration = WKSnapshotConfiguration()
