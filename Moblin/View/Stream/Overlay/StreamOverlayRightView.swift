@@ -505,58 +505,6 @@ private struct CatPrinterStatusView: View {
     }
 }
 
-private struct CyclingPowerDeviceStatusView: View {
-    @EnvironmentObject var model: Model
-    // periphery:ignore
-    @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    private func cyclingPowerDeviceColor() -> Color {
-        if model.isAnyCyclingPowerDeviceConfigured() && !model.areAllCyclingPowerDevicesConnected() {
-            return .red
-        }
-        return .white
-    }
-
-    var body: some View {
-        if model.isShowingStatusCyclingPowerDevice() {
-            StreamOverlayIconAndTextView(
-                icon: "bicycle",
-                text: status.cyclingPowerDeviceStatus,
-                textPlacement: textPlacement,
-                color: cyclingPowerDeviceColor()
-            )
-        }
-    }
-}
-
-private struct HeartRateDeviceStatusView: View {
-    @EnvironmentObject var model: Model
-    // periphery:ignore
-    @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    private func heartRateDeviceColor() -> Color {
-        if model.isAnyHeartRateDeviceConfigured() && !model.areAllHeartRateDevicesConnected() {
-            return .red
-        }
-        return .white
-    }
-
-    var body: some View {
-        if model.isShowingStatusHeartRateDevice() {
-            StreamOverlayIconAndTextView(
-                icon: "heart",
-                text: status.workoutDeviceStatus,
-                textPlacement: textPlacement,
-                color: heartRateDeviceColor()
-            )
-        }
-    }
-}
-
 private struct WorkoutDeviceStatusView: View {
     @EnvironmentObject var model: Model
     // periphery:ignore
@@ -720,16 +668,6 @@ private struct StatusesView: View {
             textPlacement: textPlacement
         )
         CatPrinterStatusView(
-            show: model.database.show,
-            status: model.statusTopRight,
-            textPlacement: textPlacement
-        )
-        CyclingPowerDeviceStatusView(
-            show: model.database.show,
-            status: model.statusTopRight,
-            textPlacement: textPlacement
-        )
-        HeartRateDeviceStatusView(
             show: model.database.show,
             status: model.statusTopRight,
             textPlacement: textPlacement

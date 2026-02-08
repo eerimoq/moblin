@@ -143,16 +143,6 @@ struct SettingsView: View {
                         Label("Tesla", systemImage: "car.side")
                     }
                     NavigationLink {
-                        CyclingPowerDevicesSettingsView(cyclingPowerDevices: database.cyclingPowerDevices)
-                    } label: {
-                        Label("Cycling power devices", systemImage: "bicycle")
-                    }
-                    NavigationLink {
-                        HeartRateDevicesSettingsView(heartRateDevices: database.heartRateDevices)
-                    } label: {
-                        Label("Heart rate devices", systemImage: "heart")
-                    }
-                    NavigationLink {
                         WorkoutDevicesSettingsView(workoutDevices: database.workoutDevices)
                     } label: {
                         Label("Workout devices", systemImage: "figure.run")

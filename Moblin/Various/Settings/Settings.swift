@@ -152,8 +152,6 @@ class SettingsShow: Codable, ObservableObject {
     @Published var bondingRtts: Bool = false
     @Published var moblink: Bool = true
     @Published var catPrinter: Bool = true
-    @Published var cyclingPowerDevice: Bool = true
-    @Published var heartRateDevice: Bool = true
     @Published var workoutDevice: Bool = true
     @Published var systemMonitor: Bool = false
 
@@ -183,8 +181,6 @@ class SettingsShow: Codable, ObservableObject {
              bondingRtts,
              moblink,
              catPrinter,
-             cyclingPowerDevice,
-             heartRateDevice,
              workoutDevice,
              cpu
     }
@@ -214,8 +210,6 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.bondingRtts, bondingRtts)
         try container.encode(.moblink, moblink)
         try container.encode(.catPrinter, catPrinter)
-        try container.encode(.cyclingPowerDevice, cyclingPowerDevice)
-        try container.encode(.heartRateDevice, heartRateDevice)
         try container.encode(.workoutDevice, workoutDevice)
         try container.encode(.cpu, systemMonitor)
     }
@@ -245,8 +239,6 @@ class SettingsShow: Codable, ObservableObject {
         bondingRtts = container.decode(.bondingRtts, Bool.self, false)
         moblink = container.decode(.moblink, Bool.self, true)
         catPrinter = container.decode(.catPrinter, Bool.self, true)
-        cyclingPowerDevice = container.decode(.cyclingPowerDevice, Bool.self, true)
-        heartRateDevice = container.decode(.heartRateDevice, Bool.self, true)
         workoutDevice = container.decode(.workoutDevice, Bool.self, true)
         systemMonitor = container.decode(.cpu, Bool.self, false)
     }

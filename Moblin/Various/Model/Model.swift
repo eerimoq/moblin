@@ -222,7 +222,6 @@ class StatusTopRight: ObservableObject {
     @Published var djiDevicesStatus = noValue
     @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
-    @Published var cyclingPowerDeviceStatus = noValue
     @Published var workoutDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
@@ -232,8 +231,6 @@ class StatusTopRight: ObservableObject {
     @Published var gameControllersTotal = noValue
     @Published var djiDeviceStreamingState: DjiDeviceState?
     @Published var catPrinterState: CatPrinterState?
-    @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
-    @Published var heartRateDeviceState: HeartRateDeviceState?
     @Published var workoutDeviceState: WorkoutDeviceState?
     @Published var location = noValue
     @Published var isLowPowerMode = false
@@ -3074,14 +3071,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isShowingStatusCatPrinter() -> Bool {
         return database.show.catPrinter && isAnyCatPrinterConfigured()
-    }
-
-    func isShowingStatusCyclingPowerDevice() -> Bool {
-        return database.show.cyclingPowerDevice && isAnyCyclingPowerDeviceConfigured()
-    }
-
-    func isShowingStatusHeartRateDevice() -> Bool {
-        return database.show.heartRateDevice && isAnyHeartRateDeviceConfigured()
     }
 
     func isShowingStatusWorkoutDevice() -> Bool {
