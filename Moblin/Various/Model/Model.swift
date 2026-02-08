@@ -559,8 +559,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let autoSceneSwitcher = AutoSceneSwitcherProvider()
     var currentCatPrinterSettings: SettingsCatPrinter?
     var catPrinters: [UUID: CatPrinter] = [:]
-    var currentCyclingPowerDeviceSettings: SettingsCyclingPowerDevice?
-    var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
     var currentWorkoutDeviceSettings: SettingsWorkoutDevice?
     var workoutDevices: [UUID: WorkoutDevice] = [:]
     var cyclingPower = 0
@@ -572,8 +570,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let periodicTimer5s = SimpleTimer(queue: .main)
     private let periodicTimer10s = SimpleTimer(queue: .main)
     private let periodicTimerBatteryLevel = SimpleTimer(queue: .main)
-    var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
-    var heartRateDevices: [UUID: HeartRateDevice] = [:]
     var blackSharkCoolerDevices: [UUID: BlackSharkCoolerDevice] = [:]
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -1112,8 +1108,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         removeUnusedLogs()
         autoStartDjiDevices()
         autoStartCatPrinters()
-        autoStartCyclingPowerDevices()
-        autoStartHeartRateDevices()
         autoStartWorkoutDevices()
         autoStartBlackSharkCoolerDevices()
         startWeatherManager()
@@ -1416,8 +1410,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadMoblinkStreamer()
             updateOrientation()
             autoStartCatPrinters()
-            autoStartCyclingPowerDevices()
-            autoStartHeartRateDevices()
             autoStartWorkoutDevices()
             autoStartBlackSharkCoolerDevices()
             if showBackgroundStreamingDisabledToast {
@@ -1469,8 +1461,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopMoblinkRelay()
         stopMoblinkStreamer()
         stopCatPrinters()
-        stopCyclingPowerDevices()
-        stopHeartRateDevices()
         stopWorkoutDevices()
         stopRemoteControlAssistant()
         fixedHorizonEffect.stop()
