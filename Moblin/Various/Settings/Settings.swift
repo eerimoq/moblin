@@ -1767,7 +1767,7 @@ private func addMissingQuickButtonsPageThree(database: Database) {
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Workout"),
                                  type: .workout,
-                                 imageOn: "figure.run",
+                                 imageOn: "figure.walk.motion",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Skip current TTS"),

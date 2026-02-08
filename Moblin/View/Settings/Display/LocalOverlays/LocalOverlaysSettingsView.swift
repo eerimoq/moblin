@@ -121,7 +121,7 @@ struct LocalOverlaysSettingsView: View {
                 Label {
                     Toggle("Workout devices", isOn: $show.workoutDevice)
                 } icon: {
-                    Image(systemName: "figure.run")
+                    Image(systemName: "figure.walk.motion")
                 }
             }
             Section {

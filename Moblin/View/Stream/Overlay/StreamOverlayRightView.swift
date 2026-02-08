@@ -522,7 +522,7 @@ private struct WorkoutDeviceStatusView: View {
     var body: some View {
         if model.isShowingStatusWorkoutDevice() {
             StreamOverlayIconAndTextView(
-                icon: "figure.run",
+                icon: "figure.walk.motion",
                 text: status.workoutDeviceStatus,
                 textPlacement: textPlacement,
                 color: workoutDeviceColor()
