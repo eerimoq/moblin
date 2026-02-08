@@ -24,6 +24,10 @@ func makeChannelMap(
     return channelMap.map { NSNumber(value: $0) }
 }
 
+private let mixerOutputSampleRate: Double = 48000
+private let mixerOutputChannels: AVAudioChannelCount = 1
+private let mixerOutputSamplesPerBuffer: AVAudioFrameCount = 1024
+
 final class AudioUnit: NSObject {
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
     private var input: AVCaptureDeviceInput?
@@ -36,6 +40,13 @@ final class AudioUnit: NSObject {
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
     private var latestAudioStatusTime = 0.0
+    private let builtinInputId = UUID()
+    private var mixer: AudioMixer?
+    private var mixerInputFormats: [UUID: AVAudioFormat] = [:]
+    private var mixerProcessTimer = SimpleTimer(queue: processorPipelineQueue)
+    private var mixerOutputPresentationTimeStamp: CMTime = .zero
+    private var mixerStarted = false
+    private var mixerSourceIds: Set<UUID> = []
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -52,6 +63,9 @@ final class AudioUnit: NSObject {
 
     func stopRunning() {
         session.stopRunning()
+        processorPipelineQueue.async {
+            self.stopMixer()
+        }
     }
 
     func attach(params: AudioUnitAttachParams) throws {
@@ -79,6 +93,7 @@ final class AudioUnit: NSObject {
         encoder.stopRunning()
         processorPipelineQueue.async {
             self.inputSourceFormat = nil
+            self.stopMixer()
         }
     }
 
@@ -155,6 +170,7 @@ final class AudioUnit: NSObject {
 
     private func removeBufferedAudioInternal(cameraId: UUID) {
         bufferedAudios.removeValue(forKey: cameraId)?.stopOutput()
+        removeMixerSourceInternal(sourceId: cameraId)
     }
 
     private func appendBufferedAudioSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
@@ -167,6 +183,135 @@ final class AudioUnit: NSObject {
 
     private func setBufferedAudioTargetLatencyInternal(cameraId: UUID, latency: Double) {
         bufferedAudios[cameraId]?.setTargetLatency(latency: latency)
+    }
+
+    func addMixerSource(sourceId: UUID) {
+        processorPipelineQueue.async {
+            self.addMixerSourceInternal(sourceId: sourceId)
+        }
+    }
+
+    func removeMixerSource(sourceId: UUID) {
+        processorPipelineQueue.async {
+            self.removeMixerSourceInternal(sourceId: sourceId)
+        }
+    }
+
+    func addMixerBuiltinSource() {
+        processorPipelineQueue.async {
+            self.addMixerSourceInternal(sourceId: self.builtinInputId)
+        }
+    }
+
+    func removeMixerBuiltinSource() {
+        processorPipelineQueue.async {
+            self.removeMixerSourceInternal(sourceId: self.builtinInputId)
+        }
+    }
+
+    private func addMixerSourceInternal(sourceId: UUID) {
+        mixerSourceIds.insert(sourceId)
+        if mixerSourceIds.count > 1 {
+            ensureMixerStarted()
+        }
+    }
+
+    private func removeMixerSourceInternal(sourceId: UUID) {
+        mixerSourceIds.remove(sourceId)
+        mixer?.remove(inputId: sourceId)
+        mixerInputFormats.removeValue(forKey: sourceId)
+        if mixerSourceIds.count <= 1 {
+            stopMixer()
+        }
+    }
+
+    private func shouldUseMixer() -> Bool {
+        return mixerSourceIds.count > 1
+    }
+
+    private func ensureMixerStarted() {
+        guard !mixerStarted else {
+            return
+        }
+        mixerStarted = true
+        mixer = AudioMixer(
+            outputSampleRate: mixerOutputSampleRate,
+            outputChannels: mixerOutputChannels,
+            outputSamplesPerBuffer: mixerOutputSamplesPerBuffer
+        )
+        mixerInputFormats = [:]
+        mixerOutputPresentationTimeStamp = currentPresentationTimeStamp()
+        let interval = Double(mixerOutputSamplesPerBuffer) / mixerOutputSampleRate
+        mixerProcessTimer.startPeriodic(interval: interval) { [weak self] in
+            self?.processMixerOutput()
+        }
+        logger.info("audio-unit: Mixer started")
+    }
+
+    private func stopMixer() {
+        guard mixerStarted else {
+            return
+        }
+        mixerStarted = false
+        mixerProcessTimer.stop()
+        mixer = nil
+        mixerInputFormats = [:]
+        logger.info("audio-unit: Mixer stopped")
+    }
+
+    private func ensureMixerInput(inputId: UUID, sampleBuffer: CMSampleBuffer) {
+        guard let mixer else {
+            return
+        }
+        guard let formatDescription = sampleBuffer.formatDescription,
+              let asbd = formatDescription.audioStreamBasicDescription
+        else {
+            return
+        }
+        let format = AVAudioFormat(
+            standardFormatWithSampleRate: asbd.mSampleRate,
+            channels: AVAudioChannelCount(asbd.mChannelsPerFrame)
+        )!
+        if mixerInputFormats[inputId] == nil {
+            mixer.add(inputId: inputId, format: format)
+            mixerInputFormats[inputId] = format
+        }
+    }
+
+    private func appendToMixer(inputId: UUID, sampleBuffer: CMSampleBuffer) {
+        guard let mixer else {
+            return
+        }
+        ensureMixerInput(inputId: inputId, sampleBuffer: sampleBuffer)
+        try? sampleBuffer.withAudioBufferList { audioBufferList, _ in
+            guard let format = mixerInputFormats[inputId],
+                  let pcmBuffer = AVAudioPCMBuffer(
+                      pcmFormat: format,
+                      bufferListNoCopy: audioBufferList.unsafePointer
+                  )
+            else {
+                return
+            }
+            mixer.append(inputId: inputId, buffer: pcmBuffer)
+        }
+    }
+
+    private func processMixerOutput() {
+        guard let mixer, let processor else {
+            return
+        }
+        guard let outputBuffer = mixer.process() else {
+            return
+        }
+        let presentationTimeStamp = mixerOutputPresentationTimeStamp
+        mixerOutputPresentationTimeStamp = presentationTimeStamp + CMTime(
+            value: CMTimeValue(mixerOutputSamplesPerBuffer),
+            timescale: CMTimeScale(mixerOutputSampleRate)
+        )
+        guard let sampleBuffer = outputBuffer.makeSampleBuffer(presentationTimeStamp) else {
+            return
+        }
+        appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
     }
 
     private func appendNewSampleBuffer(_ processor: Processor,
@@ -241,38 +386,45 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         if let bufferedAudio = appendBufferedBuiltinAudio(sampleBuffer, presentationTimeStamp) {
             sampleBuffer = bufferedAudio.getSampleBuffer(presentationTimeStamp.seconds) ?? sampleBuffer
         }
-        guard selectedBufferedAudioId == nil else {
-            return
-        }
-        if shouldUpdateAudioLevel(sampleBuffer) {
-            var audioLevel: Float
-            if muted {
-                audioLevel = .nan
-            } else if let channel = connection.audioChannels.first {
-                audioLevel = channel.averagePowerLevel
-            } else {
-                audioLevel = 0.0
+        if shouldUseMixer(), mixerSourceIds.contains(builtinInputId) {
+            appendToMixer(inputId: builtinInputId, sampleBuffer: sampleBuffer)
+        } else if selectedBufferedAudioId == nil, !shouldUseMixer() {
+            if shouldUpdateAudioLevel(sampleBuffer) {
+                var audioLevel: Float
+                if muted {
+                    audioLevel = .nan
+                } else if let channel = connection.audioChannels.first {
+                    audioLevel = channel.averagePowerLevel
+                } else {
+                    audioLevel = 0.0
+                }
+                updateAudioLevel(sampleBuffer: sampleBuffer,
+                                 audioLevel: audioLevel,
+                                 numberOfAudioChannels: connection.audioChannels.count)
             }
-            updateAudioLevel(sampleBuffer: sampleBuffer,
-                             audioLevel: audioLevel,
-                             numberOfAudioChannels: connection.audioChannels.count)
+            appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
         }
-        appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
     }
 }
 
 extension AudioUnit: BufferedAudioSampleBufferDelegate {
     func didOutputBufferedSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        guard selectedBufferedAudioId == cameraId, let processor else {
+        guard let processor else {
             return
         }
-        if shouldUpdateAudioLevel(sampleBuffer) {
-            let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-            updateAudioLevel(sampleBuffer: sampleBuffer,
-                             audioLevel: .infinity,
-                             numberOfAudioChannels: numberOfAudioChannels)
+        if shouldUseMixer(), mixerSourceIds.contains(cameraId) {
+            appendToMixer(inputId: cameraId, sampleBuffer: sampleBuffer)
+        } else if selectedBufferedAudioId == cameraId, !shouldUseMixer() {
+            if shouldUpdateAudioLevel(sampleBuffer) {
+                let numberOfAudioChannels = Int(
+                    sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
+                )
+                updateAudioLevel(sampleBuffer: sampleBuffer,
+                                 audioLevel: .infinity,
+                                 numberOfAudioChannels: numberOfAudioChannels)
+            }
+            appendNewSampleBuffer(processor, sampleBuffer, sampleBuffer.presentationTimeStamp)
         }
-        appendNewSampleBuffer(processor, sampleBuffer, sampleBuffer.presentationTimeStamp)
     }
 }
 

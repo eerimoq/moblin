@@ -864,6 +864,22 @@ final class Media: NSObject {
         processor?.setBufferedAudioTargetLatency(cameraId: cameraId, latency)
     }
 
+    func addMixerSource(sourceId: UUID) {
+        processor?.addMixerSource(sourceId: sourceId)
+    }
+
+    func removeMixerSource(sourceId: UUID) {
+        processor?.removeMixerSource(sourceId: sourceId)
+    }
+
+    func addMixerBuiltinSource() {
+        processor?.addMixerBuiltinSource()
+    }
+
+    func removeMixerBuiltinSource() {
+        processor?.removeMixerBuiltinSource()
+    }
+
     func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
         processor?.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }
