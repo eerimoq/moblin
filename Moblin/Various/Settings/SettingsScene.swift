@@ -774,9 +774,9 @@ class SettingsWidgetCrop: Codable {
 }
 
 enum SettingsWidgetBrowserMode: String, Codable, CaseIterable {
-    case periodicAudioAndVideo = "periodicAudioAndVideo"
-    case audioAndVideoOnly = "audioAndVideoOnly"
-    case audioOnly = "audioOnly"
+    case periodicAudioAndVideo
+    case audioAndVideoOnly
+    case audioOnly
 
     func toString() -> String {
         switch self {
