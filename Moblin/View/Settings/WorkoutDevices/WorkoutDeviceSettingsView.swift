@@ -46,12 +46,6 @@ struct WorkoutDeviceSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $device.name, existingNames: workoutDevices.devices)
-                } footer: {
-                    Text("""
-                    Add {heartRate:\(device.name)} to a text widget to show heart rate on stream. \
-                    Add {cyclingPower:\(device.name)} to show cycling power. \
-                    Add {cyclingCadence:\(device.name)} to show cycling cadence.
-                    """)
                 }
                 Section {
                     NavigationLink {
