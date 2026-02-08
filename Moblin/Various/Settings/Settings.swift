@@ -154,6 +154,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var catPrinter: Bool = true
     @Published var cyclingPowerDevice: Bool = true
     @Published var heartRateDevice: Bool = true
+    @Published var workoutDevice: Bool = true
     @Published var systemMonitor: Bool = false
 
     init() {}
@@ -184,6 +185,7 @@ class SettingsShow: Codable, ObservableObject {
              catPrinter,
              cyclingPowerDevice,
              heartRateDevice,
+             workoutDevice,
              cpu
     }
 
@@ -214,6 +216,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.catPrinter, catPrinter)
         try container.encode(.cyclingPowerDevice, cyclingPowerDevice)
         try container.encode(.heartRateDevice, heartRateDevice)
+        try container.encode(.workoutDevice, workoutDevice)
         try container.encode(.cpu, systemMonitor)
     }
 
@@ -244,6 +247,7 @@ class SettingsShow: Codable, ObservableObject {
         catPrinter = container.decode(.catPrinter, Bool.self, true)
         cyclingPowerDevice = container.decode(.cyclingPowerDevice, Bool.self, true)
         heartRateDevice = container.decode(.heartRateDevice, Bool.self, true)
+        workoutDevice = container.decode(.workoutDevice, Bool.self, true)
         systemMonitor = container.decode(.cpu, Bool.self, false)
     }
 }

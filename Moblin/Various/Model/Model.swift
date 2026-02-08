@@ -1118,6 +1118,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         autoStartCatPrinters()
         autoStartCyclingPowerDevices()
         autoStartHeartRateDevices()
+        autoStartWorkoutDevices()
         autoStartBlackSharkCoolerDevices()
         startWeatherManager()
         startGeographyManager()
@@ -1421,6 +1422,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             autoStartCatPrinters()
             autoStartCyclingPowerDevices()
             autoStartHeartRateDevices()
+            autoStartWorkoutDevices()
             autoStartBlackSharkCoolerDevices()
             if showBackgroundStreamingDisabledToast {
                 makeStreamEndedToast(subTitle: String(
@@ -1473,6 +1475,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopCatPrinters()
         stopCyclingPowerDevices()
         stopHeartRateDevices()
+        stopWorkoutDevices()
         stopRemoteControlAssistant()
         fixedHorizonEffect.stop()
         cameraLevel.stop()
@@ -3080,6 +3083,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isShowingStatusHeartRateDevice() -> Bool {
         return database.show.heartRateDevice && isAnyHeartRateDeviceConfigured()
+    }
+
+    func isShowingStatusWorkoutDevice() -> Bool {
+        return database.show.workoutDevice && isAnyWorkoutDeviceConfigured()
     }
 
     func isShowingStatusFixedHorizon() -> Bool {

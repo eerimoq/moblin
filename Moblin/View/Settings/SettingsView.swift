@@ -153,6 +153,11 @@ struct SettingsView: View {
                         Label("Heart rate devices", systemImage: "heart")
                     }
                     NavigationLink {
+                        WorkoutDevicesSettingsView(workoutDevices: database.workoutDevices)
+                    } label: {
+                        Label("Workout devices", systemImage: "figure.run")
+                    }
+                    NavigationLink {
                         BlackSharkCoolerDevicesSettingsView(blackSharkCoolerDevices: database
                             .blackSharkCoolerDevices)
                     } label: {

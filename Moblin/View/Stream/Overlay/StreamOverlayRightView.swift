@@ -557,6 +557,32 @@ private struct HeartRateDeviceStatusView: View {
     }
 }
 
+private struct WorkoutDeviceStatusView: View {
+    @EnvironmentObject var model: Model
+    // periphery:ignore
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var status: StatusTopRight
+    let textPlacement: StreamOverlayIconAndTextPlacement
+
+    private func workoutDeviceColor() -> Color {
+        if model.isAnyWorkoutDeviceConfigured() && !model.areAllWorkoutDevicesConnected() {
+            return .red
+        }
+        return .white
+    }
+
+    var body: some View {
+        if model.isShowingStatusWorkoutDevice() {
+            StreamOverlayIconAndTextView(
+                icon: "figure.run",
+                text: status.workoutDeviceStatus,
+                textPlacement: textPlacement,
+                color: workoutDeviceColor()
+            )
+        }
+    }
+}
+
 private struct FixedHorizonStatusView: View {
     let model: Model
     // periphery:ignore
@@ -704,6 +730,11 @@ private struct StatusesView: View {
             textPlacement: textPlacement
         )
         HeartRateDeviceStatusView(
+            show: model.database.show,
+            status: model.statusTopRight,
+            textPlacement: textPlacement
+        )
+        WorkoutDeviceStatusView(
             show: model.database.show,
             status: model.statusTopRight,
             textPlacement: textPlacement
