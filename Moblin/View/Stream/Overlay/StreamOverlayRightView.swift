@@ -549,7 +549,7 @@ private struct HeartRateDeviceStatusView: View {
         if model.isShowingStatusHeartRateDevice() {
             StreamOverlayIconAndTextView(
                 icon: "heart",
-                text: status.heartRateDeviceStatus,
+                text: status.workoutDeviceStatus,
                 textPlacement: textPlacement,
                 color: heartRateDeviceColor()
             )

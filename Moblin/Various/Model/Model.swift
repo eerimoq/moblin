@@ -223,7 +223,6 @@ class StatusTopRight: ObservableObject {
     @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
     @Published var cyclingPowerDeviceStatus = noValue
-    @Published var heartRateDeviceStatus = noValue
     @Published var workoutDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
