@@ -86,14 +86,18 @@ private struct ChatStatusView: View {
                 .background(backgroundColor)
                 .cornerRadius(5)
             HStack(spacing: 2) {
-                ForEach(status.chatPlatformStatuses, id: \.platform) {
-                    ViewersLogoView(platform: $0.platform)
-                    if $0.connected {
-                        Text("Connected")
-                            .foregroundStyle(.white)
-                    } else {
-                        Text("Disconnected")
-                            .foregroundStyle(.red)
+                if status.chatPlatformStatuses.isEmpty {
+                    Text(status.statusChatText)
+                } else {
+                    ForEach(status.chatPlatformStatuses, id: \.platform) {
+                        ViewersLogoView(platform: $0.platform)
+                        if $0.connected {
+                            Text("Connected")
+                                .foregroundStyle(.white)
+                        } else {
+                            Text("Disconnected")
+                                .foregroundStyle(.red)
+                        }
                     }
                 }
             }
