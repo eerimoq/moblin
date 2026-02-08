@@ -181,7 +181,7 @@ private class AverageMeasurementCalculator {
         return values.reduce(0, +) / averageSampleCount
     }
 
-    func averageIngoreZeros() -> Int {
+    func averageIgnoreZeros() -> Int {
         let numberOfNonZeroValues = values.filter { $0 != 0 }.count
         guard numberOfNonZeroValues > 0 else {
             return 0
@@ -393,7 +393,7 @@ extension WorkoutDevice: CBPeripheralDelegate {
         delegate?.cyclingPowerStatus(
             self,
             power: averagePower.average(),
-            cadence: averageCadence.averageIngoreZeros()
+            cadence: averageCadence.averageIgnoreZeros()
         )
     }
 
