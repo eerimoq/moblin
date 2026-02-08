@@ -126,6 +126,11 @@ struct WidgetBrowserSettingsView: View {
             will only be shown when a video (.mp4/.mov) is playing, reducing overall \
             energy consumption.
             """)
+            Text("")
+            Text("""
+            When \"Audio only\" mode is selected, no video will be rendered at all. \
+            Only audio will play.
+            """)
         }
         Section {
             Toggle("Moblin access", isOn: $browser.moblinAccess)
