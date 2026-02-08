@@ -190,6 +190,56 @@ private class AverageMeasurementCalculator {
     }
 }
 
+private class CyclingPowerState {
+    private var previousRevolutions: UInt16?
+    private var previousRevolutionsTime: UInt16?
+    private var averagePower = AverageMeasurementCalculator()
+    private var averageCadence = AverageMeasurementCalculator()
+    private var latestAverageCadenceUpdateTime = ContinuousClock.now
+    
+    func reset() {
+        previousRevolutions = nil
+        previousRevolutionsTime = nil
+        averagePower = AverageMeasurementCalculator()
+        averageCadence = AverageMeasurementCalculator()
+        latestAverageCadenceUpdateTime = ContinuousClock.now
+    }
+    
+    func processMeasurement(_ measurement: CyclingPowerMeasurement) -> (power: Int, cadence: Int) {
+        var cadence = -1.0
+        if let revolutions = measurement.cumulativeCrankRevolutions,
+           let time = measurement.lastCrankEventTime
+        {
+            if let previousRevolutions, let previousRevolutionsTime {
+                var deltaRevolutions = Int(revolutions) - Int(previousRevolutions)
+                if deltaRevolutions < 0 {
+                    deltaRevolutions += 65536
+                }
+                var deltaTime = Int(time) - Int(previousRevolutionsTime)
+                if deltaTime < 0 {
+                    deltaTime += 65536
+                }
+                let deltaTimeSeconds = Double(deltaTime) / 1024
+                if deltaTimeSeconds > 0 {
+                    cadence = 60 * Double(deltaRevolutions) / deltaTimeSeconds
+                    cadence = min(cadence, 10000)
+                }
+            }
+            previousRevolutions = revolutions
+            previousRevolutionsTime = time
+        }
+        averagePower.update(value: Int(measurement.instantaneousPower))
+        let now = ContinuousClock.now
+        if cadence != -1.0 {
+            averageCadence.update(value: Int(cadence))
+            latestAverageCadenceUpdateTime = now
+        } else if latestAverageCadenceUpdateTime.duration(to: now) > .seconds(3) {
+            averageCadence.update(value: 0)
+        }
+        return (power: averagePower.average(), cadence: averageCadence.averageIgnoreZeros())
+    }
+}
+
 class WorkoutDevice: NSObject {
     private var state: WorkoutDeviceState = .disconnected
     private var centralManager: CBCentralManager?
@@ -200,11 +250,7 @@ class WorkoutDevice: NSObject {
     weak var delegate: (any WorkoutDeviceDelegate)?
     
     // Cycling power specific state
-    private var previousRevolutions: UInt16?
-    private var previousRevolutionsTime: UInt16?
-    private var averagePower = AverageMeasurementCalculator()
-    private var averageCadence = AverageMeasurementCalculator()
-    private var latestAverageCadenceUpdateTime = ContinuousClock.now
+    private var cyclingPowerState = CyclingPowerState()
 
     func start(deviceId: UUID?) {
         workoutDeviceDispatchQueue.async {
@@ -237,8 +283,7 @@ class WorkoutDevice: NSObject {
         peripheral = nil
         heartRateMeasurementCharacteristic = nil
         cyclingPowerMeasurementCharacteristic = nil
-        previousRevolutions = nil
-        previousRevolutionsTime = nil
+        cyclingPowerState.reset()
         setState(state: .disconnected)
     }
 
@@ -360,41 +405,8 @@ extension WorkoutDevice: CBPeripheralDelegate {
 
     private func handleCyclingPowerMeasurement(value: Data) throws {
         let measurement = try CyclingPowerMeasurement(value: value)
-        var cadence = -1.0
-        if let revolutions = measurement.cumulativeCrankRevolutions,
-           let time = measurement.lastCrankEventTime
-        {
-            if let previousRevolutions, let previousRevolutionsTime {
-                var deltaRevolutions = Int(revolutions) - Int(previousRevolutions)
-                if deltaRevolutions < 0 {
-                    deltaRevolutions += 65536
-                }
-                var deltaTime = Int(time) - Int(previousRevolutionsTime)
-                if deltaTime < 0 {
-                    deltaTime += 65536
-                }
-                let deltaTimeSeconds = Double(deltaTime) / 1024
-                if deltaTimeSeconds > 0 {
-                    cadence = 60 * Double(deltaRevolutions) / deltaTimeSeconds
-                    cadence = min(cadence, 10000)
-                }
-            }
-            previousRevolutions = revolutions
-            previousRevolutionsTime = time
-        }
-        averagePower.update(value: Int(measurement.instantaneousPower))
-        let now = ContinuousClock.now
-        if cadence != -1.0 {
-            averageCadence.update(value: Int(cadence))
-            latestAverageCadenceUpdateTime = now
-        } else if latestAverageCadenceUpdateTime.duration(to: now) > .seconds(3) {
-            averageCadence.update(value: 0)
-        }
-        delegate?.cyclingPowerStatus(
-            self,
-            power: averagePower.average(),
-            cadence: averageCadence.averageIgnoreZeros()
-        )
+        let result = cyclingPowerState.processMeasurement(measurement)
+        delegate?.cyclingPowerStatus(self, power: result.power, cadence: result.cadence)
     }
 
     private func handlePowerVector(value: Data) throws {
