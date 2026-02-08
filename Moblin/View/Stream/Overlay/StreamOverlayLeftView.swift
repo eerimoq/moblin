@@ -149,6 +149,16 @@ private struct StatusesView: View {
         }
     }
 
+    func selectedMicNames() -> String {
+        let names = model.database.mics.mics
+            .filter { mic.isSelected(mic: $0) }
+            .map(\.name)
+        if names.isEmpty {
+            return mic.current.name
+        }
+        return names.joined(separator: ", ")
+    }
+
     var body: some View {
         if model.isShowingStatusStream() {
             StreamStatusView(status: status, textPlacement: textPlacement)
@@ -163,7 +173,7 @@ private struct StatusesView: View {
         if model.isShowingStatusMic() {
             StreamOverlayIconAndTextView(
                 icon: "music.mic",
-                text: mic.current.name,
+                text: selectedMicNames(),
                 textPlacement: textPlacement
             )
         }

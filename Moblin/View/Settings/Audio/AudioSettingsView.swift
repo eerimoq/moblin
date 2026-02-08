@@ -5,6 +5,16 @@ private struct MicView: View {
     @ObservedObject var mics: SettingsMics
     @ObservedObject var mic: Mic
 
+    private var selectedMicNames: String {
+        let names = mics.mics
+            .filter { mic.isSelected(mic: $0) }
+            .map(\.name)
+        if names.isEmpty {
+            return mic.current.name
+        }
+        return names.joined(separator: ", ")
+    }
+
     var body: some View {
         NavigationLink {
             QuickButtonMicView(model: model, mics: mics, modelMic: mic)
@@ -13,7 +23,7 @@ private struct MicView: View {
                 HStack {
                     Text("Mic")
                     Spacer()
-                    GrayTextView(text: mic.current.name)
+                    GrayTextView(text: selectedMicNames)
                 }
             } icon: {
                 Image(systemName: "music.mic")
