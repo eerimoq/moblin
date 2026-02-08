@@ -192,20 +192,19 @@ class Connection {
   }
 }
 
+function appendStatusRow(body, name, value) {
+  let row = body.insertRow(-1);
+  row.className = "border-b border-zinc-800";
+  appendToRow(row, name, "py-1.5 pr-4 text-zinc-400 font-medium whitespace-nowrap");
+  appendToRow(row, value, "py-1.5 text-zinc-200");
+}
+
 function updateStatus(status) {
   let generalBody = getTableBodyNoHead("statusGeneral");
-  let row = generalBody.insertRow(-1);
-  appendToRow(row, "Battery level");
-  appendToRow(row, status.general.batteryLevel);
-  row = generalBody.insertRow(-1);
-  appendToRow(row, "Muted");
-  appendToRow(row, status.general.isMuted);
-  row = generalBody.insertRow(-1);
-  appendToRow(row, "Flame");
-  appendToRow(row, status.general.flame);
-  row = generalBody.insertRow(-1);
-  appendToRow(row, "WiFi");
-  appendToRow(row, status.general.wiFiSsid);
+  appendStatusRow(generalBody, "Battery level", status.general.batteryLevel);
+  appendStatusRow(generalBody, "Muted", status.general.isMuted);
+  appendStatusRow(generalBody, "Flame", status.general.flame);
+  appendStatusRow(generalBody, "WiFi", status.general.wiFiSsid);
   let topLeftBody = getTableBodyNoHead("statusTopLeft");
   appendStatuses(topLeftBody, status.topLeft);
   let topRightBody = getTableBodyNoHead("statusTopRight");
@@ -244,9 +243,7 @@ function appendStatuses(body, statuses) {
     if (!name) {
       continue;
     }
-    let row = body.insertRow(-1);
-    appendToRow(row, name);
-    appendToRow(row, statuses[key].message);
+    appendStatusRow(body, name, statuses[key].message);
   }
 }
 
