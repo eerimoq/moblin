@@ -442,6 +442,42 @@ extension Model {
         if status != statusTopLeft.statusChatText {
             statusTopLeft.statusChatText = status
         }
+        updateChatPlatformStatuses()
+    }
+
+    private func updateChatPlatformStatuses() {
+        var statuses: [ChatPlatformStatus] = []
+        if !isRemoteControlChatAndEvents(platform: nil) {
+            if isTwitchChatConfigured() {
+                statuses
+                    .append(ChatPlatformStatus(platform: .twitch, connected: isTwitchChatConnected()))
+            }
+            if isKickPusherConfigured() {
+                statuses
+                    .append(ChatPlatformStatus(platform: .kick, connected: isKickPusherConnected()))
+            }
+            if isYouTubeLiveChatConfigured() {
+                statuses
+                    .append(ChatPlatformStatus(platform: .youTube,
+                                               connected: isYouTubeLiveChatConnected()))
+            }
+            if isSoopChatConfigured() {
+                statuses
+                    .append(ChatPlatformStatus(platform: .soop, connected: isSoopChatConnected()))
+            }
+            if isOpenStreamingPlatformChatConfigured() {
+                statuses
+                    .append(ChatPlatformStatus(platform: .openStreamingPlatform,
+                                               connected: isOpenStreamingPlatformChatConnected()))
+            }
+            if isDLiveChatConfigured() {
+                statuses
+                    .append(ChatPlatformStatus(platform: .dlive, connected: isDLiveChatConnected()))
+            }
+        }
+        if statuses != statusTopLeft.chatPlatformStatuses {
+            statusTopLeft.chatPlatformStatuses = statuses
+        }
     }
 
     func printChatMessage(post: ChatPost) {

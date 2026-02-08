@@ -73,6 +73,40 @@ private struct ViewersView: View {
     }
 }
 
+private struct ChatStatusView: View {
+    @ObservedObject var status: StatusTopLeft
+
+    var body: some View {
+        HStack(spacing: 1) {
+            Image(systemName: "message")
+                .frame(width: 17, height: 17)
+                .padding([.leading, .trailing], 2)
+                .foregroundStyle(status.chatPlatformStatuses.allSatisfy(\.connected) ? .white : .red)
+                .background(backgroundColor)
+                .cornerRadius(5)
+            HStack(spacing: 2) {
+                ForEach(status.chatPlatformStatuses, id: \.platform) { chatStatus in
+                    ViewersLogoView(platform: chatStatus.platform)
+                    if chatStatus.connected {
+                        Text("Connected")
+                            .foregroundStyle(.white)
+                    } else {
+                        Text("Disconnected")
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+            .padding([.leading, .trailing], 2)
+            .background(backgroundColor)
+            .cornerRadius(5)
+        }
+        .font(smallFont)
+        .padding(20)
+        .contentShape(Rectangle())
+        .padding(-20)
+    }
+}
+
 private struct StreamStatusView: View {
     @ObservedObject var status: StatusTopLeft
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -187,12 +221,16 @@ private struct StatusesView: View {
             )
         }
         if model.isShowingStatusChat() {
-            StreamOverlayIconAndTextView(
-                icon: "message",
-                text: status.statusChatText,
-                textPlacement: textPlacement,
-                color: chatColor()
-            )
+            if textPlacement == .hide || status.chatPlatformStatuses.isEmpty {
+                StreamOverlayIconAndTextView(
+                    icon: "message",
+                    text: status.statusChatText,
+                    textPlacement: textPlacement,
+                    color: chatColor()
+                )
+            } else {
+                ChatStatusView(status: status)
+            }
         }
         if model.isShowingStatusViewers() {
             if textPlacement == .hide {
