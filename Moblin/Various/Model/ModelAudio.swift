@@ -198,10 +198,9 @@ extension Model {
             if mic.selectedMicIds.isEmpty {
                 mic.current = noMic
             } else if mic.current == toggledMic,
-                      let firstSelectedId = mic.selectedMicIds.first,
-                      let firstMic = getMicById(id: firstSelectedId)
+                      let nextMic = database.mics.mics.first(where: { mic.isSelected(mic: $0) })
             {
-                mic.current = firstMic
+                mic.current = nextMic
             }
         } else {
             mic.selectedMicIds.insert(toggledMic.id)
