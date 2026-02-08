@@ -153,7 +153,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var moblink: Bool = true
     @Published var catPrinter: Bool = true
     @Published var cyclingPowerDevice: Bool = true
-    @Published var heartRateDevice: Bool = true
+    @Published var workoutDevice: Bool = true
     @Published var systemMonitor: Bool = false
 
     init() {}
@@ -213,7 +213,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.moblink, moblink)
         try container.encode(.catPrinter, catPrinter)
         try container.encode(.cyclingPowerDevice, cyclingPowerDevice)
-        try container.encode(.heartRateDevice, heartRateDevice)
+        try container.encode(.heartRateDevice, workoutDevice)
         try container.encode(.cpu, systemMonitor)
     }
 
@@ -243,7 +243,7 @@ class SettingsShow: Codable, ObservableObject {
         moblink = container.decode(.moblink, Bool.self, true)
         catPrinter = container.decode(.catPrinter, Bool.self, true)
         cyclingPowerDevice = container.decode(.cyclingPowerDevice, Bool.self, true)
-        heartRateDevice = container.decode(.heartRateDevice, Bool.self, true)
+        workoutDevice = container.decode(.heartRateDevice, Bool.self, true)
         systemMonitor = container.decode(.cpu, Bool.self, false)
     }
 }
@@ -655,7 +655,7 @@ class SettingsCyclingPowerDevices: Codable, ObservableObject {
     }
 }
 
-class SettingsHeartRateDevice: Codable, Identifiable, ObservableObject, Named {
+class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My device")
     var id: UUID = .init()
     @Published var name: String = baseName
@@ -692,8 +692,8 @@ class SettingsHeartRateDevice: Codable, Identifiable, ObservableObject, Named {
     }
 }
 
-class SettingsHeartRateDevices: Codable, ObservableObject {
-    @Published var devices: [SettingsHeartRateDevice] = []
+class SettingsWorkoutDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsWorkoutDevice] = []
 
     enum CodingKeys: CodingKey {
         case devices
@@ -708,7 +708,7 @@ class SettingsHeartRateDevices: Codable, ObservableObject {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        devices = container.decode(.devices, [SettingsHeartRateDevice].self, [])
+        devices = container.decode(.devices, [SettingsWorkoutDevice].self, [])
     }
 }
 
@@ -1141,7 +1141,7 @@ class Database: Codable, ObservableObject {
     @Published var cameraControlsEnabled: Bool = false
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
-    var heartRateDevices: SettingsHeartRateDevices = .init()
+    var workoutDevices: SettingsWorkoutDevices = .init()
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
@@ -1318,7 +1318,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
-        try container.encode(.heartRateDevices, heartRateDevices)
+        try container.encode(.heartRateDevices, workoutDevices)
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
@@ -1419,7 +1419,7 @@ class Database: Codable, ObservableObject {
             SettingsCyclingPowerDevices.self,
             .init()
         )
-        heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
+        workoutDevices = container.decode(.heartRateDevices, SettingsWorkoutDevices.self, .init())
         blackSharkCoolerDevices = container.decode(
             .phoneCoolerDevices,
             SettingsBlackSharkCoolerDevices.self,

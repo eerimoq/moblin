@@ -822,7 +822,7 @@ private struct WorkoutVariablesView: View {
                         text: $value
                     )
                 }
-                ForEach(model.database.heartRateDevices.devices) { device in
+                ForEach(model.database.workoutDevices.devices) { device in
                     VariableView(
                         title: "{heartRate:\(device.name)}",
                         description: String(

@@ -1,75 +1,75 @@
 import Foundation
 
 extension Model {
-    func isHeartRateDeviceEnabled(device: SettingsHeartRateDevice) -> Bool {
+    func isWorkoutDeviceEnabled(device: SettingsWorkoutDevice) -> Bool {
         return device.enabled
     }
 
-    func enableHeartRateDevice(device: SettingsHeartRateDevice) {
-        if !heartRateDevices.keys.contains(device.id) {
-            let heartRateDevice = HeartRateDevice()
-            heartRateDevice.delegate = self
-            heartRateDevices[device.id] = heartRateDevice
+    func enableWorkoutDevice(device: SettingsWorkoutDevice) {
+        if !workoutDevices.keys.contains(device.id) {
+            let workoutDevice = WorkoutDevice()
+            workoutDevice.delegate = self
+            workoutDevices[device.id] = workoutDevice
         }
-        heartRateDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
+        workoutDevices[device.id]?.start(deviceId: device.bluetoothPeripheralId)
     }
 
-    func disableHeartRateDevice(device: SettingsHeartRateDevice) {
-        heartRateDevices[device.id]?.stop()
+    func disableWorkoutDevice(device: SettingsWorkoutDevice) {
+        workoutDevices[device.id]?.stop()
     }
 
-    private func getHeartRateDeviceSettings(device: HeartRateDevice) -> SettingsHeartRateDevice? {
-        return database.heartRateDevices.devices.first(where: { heartRateDevices[$0.id] === device })
+    private func getWorkoutDeviceSettings(device: WorkoutDevice) -> SettingsWorkoutDevice? {
+        return database.workoutDevices.devices.first(where: { workoutDevices[$0.id] === device })
     }
 
-    func setCurrentHeartRateDevice(device: SettingsHeartRateDevice) {
-        currentHeartRateDeviceSettings = device
-        statusTopRight.heartRateDeviceState = getHeartRateDeviceState(device: device)
+    func setCurrentWorkoutDevice(device: SettingsWorkoutDevice) {
+        currentWorkoutDeviceSettings = device
+        statusTopRight.workoutDeviceState = getWorkoutDeviceState(device: device)
     }
 
-    func getHeartRateDeviceState(device: SettingsHeartRateDevice) -> HeartRateDeviceState {
-        return heartRateDevices[device.id]?.getState() ?? .disconnected
+    func getWorkoutDeviceState(device: SettingsWorkoutDevice) -> WorkoutDeviceState {
+        return workoutDevices[device.id]?.getState() ?? .disconnected
     }
 
-    func autoStartHeartRateDevices() {
-        for device in database.heartRateDevices.devices where device.enabled {
-            enableHeartRateDevice(device: device)
+    func autoStartWorkoutDevices() {
+        for device in database.workoutDevices.devices where device.enabled {
+            enableWorkoutDevice(device: device)
         }
     }
 
-    func stopHeartRateDevices() {
-        for device in heartRateDevices.values {
+    func stopWorkoutDevices() {
+        for device in workoutDevices.values {
             device.stop()
         }
     }
 
-    func isAnyHeartRateDeviceConfigured() -> Bool {
-        return database.heartRateDevices.devices.contains(where: { $0.enabled })
+    func isAnyWorkoutDeviceConfigured() -> Bool {
+        return database.workoutDevices.devices.contains(where: { $0.enabled })
     }
 
-    func areAllHeartRateDevicesConnected() -> Bool {
-        return !heartRateDevices.values.contains(where: {
-            getHeartRateDeviceSettings(device: $0)?.enabled == true && $0.getState() != .connected
+    func areAllWorkoutDevicesConnected() -> Bool {
+        return !workoutDevices.values.contains(where: {
+            getWorkoutDeviceSettings(device: $0)?.enabled == true && $0.getState() != .connected
         })
     }
 }
 
-extension Model: HeartRateDeviceDelegate {
-    func heartRateDeviceState(_ device: HeartRateDevice, state: HeartRateDeviceState) {
+extension Model: WorkoutDeviceDelegate {
+    func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState) {
         DispatchQueue.main.async {
-            guard let device = self.getHeartRateDeviceSettings(device: device) else {
+            guard let device = self.getWorkoutDeviceSettings(device: device) else {
                 return
             }
             self.heartRates.removeValue(forKey: device.name.lowercased())
-            if device === self.currentHeartRateDeviceSettings {
-                self.statusTopRight.heartRateDeviceState = state
+            if device === self.currentWorkoutDeviceSettings {
+                self.statusTopRight.workoutDeviceState = state
             }
         }
     }
 
-    func heartRateStatus(_ device: HeartRateDevice, heartRate: Int) {
+    func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int) {
         DispatchQueue.main.async {
-            guard let device = self.getHeartRateDeviceSettings(device: device) else {
+            guard let device = self.getWorkoutDeviceSettings(device: device) else {
                 return
             }
             self.heartRates[device.name.lowercased()] = heartRate

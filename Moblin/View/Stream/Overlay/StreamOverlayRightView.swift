@@ -531,27 +531,27 @@ private struct CyclingPowerDeviceStatusView: View {
     }
 }
 
-private struct HeartRateDeviceStatusView: View {
+private struct WorkoutDeviceStatusView: View {
     @EnvironmentObject var model: Model
     // periphery:ignore
     @ObservedObject var show: SettingsShow
     @ObservedObject var status: StatusTopRight
     let textPlacement: StreamOverlayIconAndTextPlacement
 
-    private func heartRateDeviceColor() -> Color {
-        if model.isAnyHeartRateDeviceConfigured() && !model.areAllHeartRateDevicesConnected() {
+    private func workoutDeviceColor() -> Color {
+        if model.isAnyWorkoutDeviceConfigured() && !model.areAllWorkoutDevicesConnected() {
             return .red
         }
         return .white
     }
 
     var body: some View {
-        if model.isShowingStatusHeartRateDevice() {
+        if model.isShowingStatusWorkoutDevice() {
             StreamOverlayIconAndTextView(
-                icon: "heart",
-                text: status.heartRateDeviceStatus,
+                icon: "figure.walk.motion",
+                text: status.workoutDeviceStatus,
                 textPlacement: textPlacement,
-                color: heartRateDeviceColor()
+                color: workoutDeviceColor()
             )
         }
     }
@@ -703,7 +703,7 @@ private struct StatusesView: View {
             status: model.statusTopRight,
             textPlacement: textPlacement
         )
-        HeartRateDeviceStatusView(
+        WorkoutDeviceStatusView(
             show: model.database.show,
             status: model.statusTopRight,
             textPlacement: textPlacement

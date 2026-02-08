@@ -124,9 +124,9 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "bicycle")
                 }
                 Label {
-                    Toggle("Heart rate devices", isOn: $show.heartRateDevice)
+                    Toggle("Workout devices", isOn: $show.workoutDevice)
                 } icon: {
-                    Image(systemName: "heart")
+                    Image(systemName: "figure.walk.motion")
                 }
             }
             Section {

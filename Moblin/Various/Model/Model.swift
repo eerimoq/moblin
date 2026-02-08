@@ -229,7 +229,7 @@ class StatusTopRight: ObservableObject {
     @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
     @Published var cyclingPowerDeviceStatus = noValue
-    @Published var heartRateDeviceStatus = noValue
+    @Published var workoutDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
     @Published var blackSharkCoolerPhoneTemp: Int?
@@ -239,7 +239,7 @@ class StatusTopRight: ObservableObject {
     @Published var djiDeviceStreamingState: DjiDeviceState?
     @Published var catPrinterState: CatPrinterState?
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
-    @Published var heartRateDeviceState: HeartRateDeviceState?
+    @Published var workoutDeviceState: WorkoutDeviceState?
     @Published var location = noValue
     @Published var isLowPowerMode = false
 }
@@ -578,8 +578,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private let periodicTimer5s = SimpleTimer(queue: .main)
     private let periodicTimer10s = SimpleTimer(queue: .main)
     private let periodicTimerBatteryLevel = SimpleTimer(queue: .main)
-    var currentHeartRateDeviceSettings: SettingsHeartRateDevice?
-    var heartRateDevices: [UUID: HeartRateDevice] = [:]
+    var currentWorkoutDeviceSettings: SettingsWorkoutDevice?
+    var workoutDevices: [UUID: WorkoutDevice] = [:]
     var blackSharkCoolerDevices: [UUID: BlackSharkCoolerDevice] = [:]
     var cameraDevice: AVCaptureDevice?
     var cameraZoomLevelToXScale: Float = 1.0
@@ -1119,7 +1119,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         autoStartDjiDevices()
         autoStartCatPrinters()
         autoStartCyclingPowerDevices()
-        autoStartHeartRateDevices()
+        autoStartWorkoutDevices()
         autoStartBlackSharkCoolerDevices()
         startWeatherManager()
         startGeographyManager()
@@ -1422,7 +1422,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             updateOrientation()
             autoStartCatPrinters()
             autoStartCyclingPowerDevices()
-            autoStartHeartRateDevices()
+            autoStartWorkoutDevices()
             autoStartBlackSharkCoolerDevices()
             if showBackgroundStreamingDisabledToast {
                 makeStreamEndedToast(subTitle: String(
@@ -1474,7 +1474,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopMoblinkStreamer()
         stopCatPrinters()
         stopCyclingPowerDevices()
-        stopHeartRateDevices()
+        stopWorkoutDevices()
         stopRemoteControlAssistant()
         fixedHorizonEffect.stop()
         cameraLevel.stop()
@@ -3080,8 +3080,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.cyclingPowerDevice && isAnyCyclingPowerDeviceConfigured()
     }
 
-    func isShowingStatusHeartRateDevice() -> Bool {
-        return database.show.heartRateDevice && isAnyHeartRateDeviceConfigured()
+    func isShowingStatusWorkoutDevice() -> Bool {
+        return database.show.workoutDevice && isAnyWorkoutDeviceConfigured()
     }
 
     func isShowingStatusFixedHorizon() -> Bool {

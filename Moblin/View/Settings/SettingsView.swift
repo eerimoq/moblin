@@ -148,9 +148,9 @@ struct SettingsView: View {
                         Label("Cycling power devices", systemImage: "bicycle")
                     }
                     NavigationLink {
-                        HeartRateDevicesSettingsView(heartRateDevices: database.heartRateDevices)
+                        WorkoutDevicesSettingsView(workoutDevices: database.workoutDevices)
                     } label: {
-                        Label("Heart rate devices", systemImage: "heart")
+                        Label("Workout devices", systemImage: "figure.walk.motion")
                     }
                     NavigationLink {
                         BlackSharkCoolerDevicesSettingsView(blackSharkCoolerDevices: database
