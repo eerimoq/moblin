@@ -1181,6 +1181,8 @@ class Database: Codable, ObservableObject {
              forceSceneSwitchTransition,
              cameraControlsEnabled,
              externalDisplayContent,
+             cyclingPowerDevices,
+             heartRateDevices,
              workoutDevices,
              phoneCoolerDevices,
              remoteSceneId,
