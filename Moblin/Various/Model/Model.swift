@@ -224,6 +224,7 @@ class StatusTopRight: ObservableObject {
     @Published var catPrinterStatus = noValue
     @Published var cyclingPowerDeviceStatus = noValue
     @Published var heartRateDeviceStatus = noValue
+    @Published var workoutDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
     @Published var blackSharkCoolerPhoneTemp: Int?
@@ -234,6 +235,7 @@ class StatusTopRight: ObservableObject {
     @Published var catPrinterState: CatPrinterState?
     @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var heartRateDeviceState: HeartRateDeviceState?
+    @Published var workoutDeviceState: WorkoutDeviceState?
     @Published var location = noValue
     @Published var isLowPowerMode = false
 }
@@ -563,6 +565,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var catPrinters: [UUID: CatPrinter] = [:]
     var currentCyclingPowerDeviceSettings: SettingsCyclingPowerDevice?
     var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
+    var currentWorkoutDeviceSettings: SettingsWorkoutDevice?
+    var workoutDevices: [UUID: WorkoutDevice] = [:]
     var cyclingPower = 0
     var cyclingCadence = 0
     private let periodicTimer20ms = SimpleTimer(queue: .main)

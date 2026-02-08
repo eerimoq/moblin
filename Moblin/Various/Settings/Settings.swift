@@ -712,6 +712,63 @@ class SettingsHeartRateDevices: Codable, ObservableObject {
     }
 }
 
+class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My device")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var enabled: Bool = false
+    @Published var bluetoothPeripheralName: String?
+    @Published var bluetoothPeripheralId: UUID?
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             enabled,
+             bluetoothPeripheralName,
+             bluetoothPeripheralId
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.enabled, enabled)
+        try container.encode(.bluetoothPeripheralName, bluetoothPeripheralName)
+        try container.encode(.bluetoothPeripheralId, bluetoothPeripheralId)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        enabled = container.decode(.enabled, Bool.self, false)
+        bluetoothPeripheralName = try? container.decode(String.self, forKey: .bluetoothPeripheralName)
+        bluetoothPeripheralId = try? container.decode(UUID.self, forKey: .bluetoothPeripheralId)
+    }
+}
+
+class SettingsWorkoutDevices: Codable, ObservableObject {
+    @Published var devices: [SettingsWorkoutDevice] = []
+
+    enum CodingKeys: CodingKey {
+        case devices
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.devices, devices)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        devices = container.decode(.devices, [SettingsWorkoutDevice].self, [])
+    }
+}
+
 private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
 class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, Named {
@@ -1142,6 +1199,7 @@ class Database: Codable, ObservableObject {
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
+    var workoutDevices: SettingsWorkoutDevices = .init()
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
@@ -1245,6 +1303,7 @@ class Database: Codable, ObservableObject {
              externalDisplayContent,
              cyclingPowerDevices,
              heartRateDevices,
+             workoutDevices,
              phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
@@ -1319,6 +1378,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
+        try container.encode(.workoutDevices, workoutDevices)
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
@@ -1420,6 +1480,7 @@ class Database: Codable, ObservableObject {
             .init()
         )
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
+        workoutDevices = container.decode(.workoutDevices, SettingsWorkoutDevices.self, .init())
         blackSharkCoolerDevices = container.decode(
             .phoneCoolerDevices,
             SettingsBlackSharkCoolerDevices.self,
