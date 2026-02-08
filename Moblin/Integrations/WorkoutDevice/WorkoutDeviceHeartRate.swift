@@ -4,7 +4,7 @@ let workoutDeviceHeartRateServiceId = CBUUID(string: "180D")
 let workoutDeviceHeartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
 private let measurementHeartRateValueFormatIndex = 0
 
-struct WorkoutDeviceHeartRateMeasurement {
+private struct HeartRateMeasurement {
     var heartRate: UInt16 = 0
 
     init(value: Data) throws {
@@ -15,5 +15,26 @@ struct WorkoutDeviceHeartRateMeasurement {
         } else {
             heartRate = try UInt16(reader.readUInt8())
         }
+    }
+}
+
+class WorkoutDeviceHeartRate {
+    private var measurementCharacteristic: CBCharacteristic?
+
+    func reset() {
+        measurementCharacteristic = nil
+    }
+
+    func setMeasurementCharacteristic(_ characteristic: CBCharacteristic) {
+        measurementCharacteristic = characteristic
+    }
+
+    func isAnyCharacteristicDiscovered() -> Bool {
+        return measurementCharacteristic != nil
+    }
+
+    func handleMeasurement(value: Data) throws -> Int {
+        let measurement = try HeartRateMeasurement(value: value)
+        return Int(measurement.heartRate)
     }
 }

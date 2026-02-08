@@ -152,7 +152,6 @@ class SettingsShow: Codable, ObservableObject {
     @Published var bondingRtts: Bool = false
     @Published var moblink: Bool = true
     @Published var catPrinter: Bool = true
-    @Published var cyclingPowerDevice: Bool = true
     @Published var workoutDevice: Bool = true
     @Published var systemMonitor: Bool = false
 
@@ -182,7 +181,6 @@ class SettingsShow: Codable, ObservableObject {
              bondingRtts,
              moblink,
              catPrinter,
-             cyclingPowerDevice,
              heartRateDevice,
              cpu
     }
@@ -212,7 +210,6 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.bondingRtts, bondingRtts)
         try container.encode(.moblink, moblink)
         try container.encode(.catPrinter, catPrinter)
-        try container.encode(.cyclingPowerDevice, cyclingPowerDevice)
         try container.encode(.heartRateDevice, workoutDevice)
         try container.encode(.cpu, systemMonitor)
     }
@@ -242,7 +239,6 @@ class SettingsShow: Codable, ObservableObject {
         bondingRtts = container.decode(.bondingRtts, Bool.self, false)
         moblink = container.decode(.moblink, Bool.self, true)
         catPrinter = container.decode(.catPrinter, Bool.self, true)
-        cyclingPowerDevice = container.decode(.cyclingPowerDevice, Bool.self, true)
         workoutDevice = container.decode(.heartRateDevice, Bool.self, true)
         systemMonitor = container.decode(.cpu, Bool.self, false)
     }
@@ -1141,6 +1137,7 @@ class Database: Codable, ObservableObject {
     @Published var cameraControlsEnabled: Bool = false
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
+    var cyclingPowerDevicesMigrated: Bool = false
     var workoutDevices: SettingsWorkoutDevices = .init()
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
@@ -1244,6 +1241,7 @@ class Database: Codable, ObservableObject {
              cameraControlsEnabled,
              externalDisplayContent,
              cyclingPowerDevices,
+             cyclingPowerDevicesMigrated,
              heartRateDevices,
              phoneCoolerDevices,
              remoteSceneId,
@@ -1318,6 +1316,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.cameraControlsEnabled, cameraControlsEnabled)
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
+        try container.encode(.cyclingPowerDevicesMigrated, cyclingPowerDevicesMigrated)
         try container.encode(.heartRateDevices, workoutDevices)
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
@@ -1419,7 +1418,23 @@ class Database: Codable, ObservableObject {
             SettingsCyclingPowerDevices.self,
             .init()
         )
+        cyclingPowerDevicesMigrated = container.decode(.cyclingPowerDevicesMigrated, Bool.self, false)
         workoutDevices = container.decode(.heartRateDevices, SettingsWorkoutDevices.self, .init())
+        if !cyclingPowerDevicesMigrated {
+            for cyclingPowerDevice in cyclingPowerDevices.devices
+                where !workoutDevices.devices
+                .contains(where: { $0.bluetoothPeripheralId == cyclingPowerDevice.bluetoothPeripheralId })
+            {
+                let workoutDevice = SettingsWorkoutDevice()
+                workoutDevice.id = cyclingPowerDevice.id
+                workoutDevice.name = cyclingPowerDevice.name
+                workoutDevice.enabled = cyclingPowerDevice.enabled
+                workoutDevice.bluetoothPeripheralName = cyclingPowerDevice.bluetoothPeripheralName
+                workoutDevice.bluetoothPeripheralId = cyclingPowerDevice.bluetoothPeripheralId
+                workoutDevices.devices.append(workoutDevice)
+            }
+            cyclingPowerDevicesMigrated = true
+        }
         blackSharkCoolerDevices = container.decode(
             .phoneCoolerDevices,
             SettingsBlackSharkCoolerDevices.self,

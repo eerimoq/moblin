@@ -505,32 +505,6 @@ private struct CatPrinterStatusView: View {
     }
 }
 
-private struct CyclingPowerDeviceStatusView: View {
-    @EnvironmentObject var model: Model
-    // periphery:ignore
-    @ObservedObject var show: SettingsShow
-    @ObservedObject var status: StatusTopRight
-    let textPlacement: StreamOverlayIconAndTextPlacement
-
-    private func cyclingPowerDeviceColor() -> Color {
-        if model.isAnyCyclingPowerDeviceConfigured() && !model.areAllCyclingPowerDevicesConnected() {
-            return .red
-        }
-        return .white
-    }
-
-    var body: some View {
-        if model.isShowingStatusCyclingPowerDevice() {
-            StreamOverlayIconAndTextView(
-                icon: "bicycle",
-                text: status.cyclingPowerDeviceStatus,
-                textPlacement: textPlacement,
-                color: cyclingPowerDeviceColor()
-            )
-        }
-    }
-}
-
 private struct WorkoutDeviceStatusView: View {
     @EnvironmentObject var model: Model
     // periphery:ignore
@@ -694,11 +668,6 @@ private struct StatusesView: View {
             textPlacement: textPlacement
         )
         CatPrinterStatusView(
-            show: model.database.show,
-            status: model.statusTopRight,
-            textPlacement: textPlacement
-        )
-        CyclingPowerDeviceStatusView(
             show: model.database.show,
             status: model.statusTopRight,
             textPlacement: textPlacement

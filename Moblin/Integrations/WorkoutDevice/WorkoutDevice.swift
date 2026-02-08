@@ -2,11 +2,16 @@ import CoreBluetooth
 import Foundation
 
 private let dispatchQueue = DispatchQueue(label: "com.eerimoq.workout-device")
-let workoutDeviceScanner = BluetoothScanner(serviceIds: [workoutDeviceHeartRateServiceId])
+
+let workoutDeviceScanner = BluetoothScanner(serviceIds: [
+    workoutDeviceHeartRateServiceId,
+    workoutDeviceCyclingPowerServiceId,
+])
 
 protocol WorkoutDeviceDelegate: AnyObject {
     func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState)
     func workoutDeviceHeartRate(_ device: WorkoutDevice, heartRate: Int)
+    func workoutDeviceCyclingPower(_ device: WorkoutDevice, power: Int, cadence: Int)
 }
 
 enum WorkoutDeviceState {
@@ -20,7 +25,8 @@ class WorkoutDevice: NSObject {
     private var state: WorkoutDeviceState = .disconnected
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
-    private var measurementCharacteristic: CBCharacteristic?
+    private let heartRate = WorkoutDeviceHeartRate()
+    private let cyclingPower = WorkoutDeviceCyclingPower()
     private var deviceId: UUID?
     weak var delegate: (any WorkoutDeviceDelegate)?
 
@@ -53,7 +59,8 @@ class WorkoutDevice: NSObject {
     private func reset() {
         centralManager = nil
         peripheral = nil
-        measurementCharacteristic = nil
+        heartRate.reset()
+        cyclingPower.reset()
         setState(state: .disconnected)
     }
 
@@ -113,21 +120,38 @@ extension WorkoutDevice: CBCentralManagerDelegate {
     }
 
     private func isAnyCharacteristicDiscovered() -> Bool {
-        if measurementCharacteristic != nil {
+        if heartRate.isAnyCharacteristicDiscovered() {
+            return true
+        }
+        if cyclingPower.isAnyCharacteristicDiscovered() {
             return true
         }
         return false
     }
 
     private func handleHeartRateMeasurement(value: Data) throws {
-        let measurement = try WorkoutDeviceHeartRateMeasurement(value: value)
-        delegate?.workoutDeviceHeartRate(self, heartRate: Int(measurement.heartRate))
+        try delegate?.workoutDeviceHeartRate(self, heartRate: heartRate.handleMeasurement(value: value))
+    }
+
+    private func handleCyclingPowerMeasurement(value: Data) throws {
+        let (power, cadence) = try cyclingPower.handleMeasurement(value: value)
+        delegate?.workoutDeviceCyclingPower(self, power: power, cadence: cadence)
+    }
+
+    private func handleCyclingPowerVector(value: Data) throws {
+        try cyclingPower.handlePowerVector(value: value)
     }
 }
 
 extension WorkoutDevice: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
-        if let service = peripheral.services?.first(where: { $0.uuid == workoutDeviceHeartRateServiceId }) {
+        guard let services = peripheral.services else {
+            return
+        }
+        if let service = services.first(where: { $0.uuid == workoutDeviceHeartRateServiceId }) {
+            peripheral.discoverCharacteristics(nil, for: service)
+        }
+        if let service = services.first(where: { $0.uuid == workoutDeviceCyclingPowerServiceId }) {
             peripheral.discoverCharacteristics(nil, for: service)
         }
     }
@@ -140,7 +164,10 @@ extension WorkoutDevice: CBPeripheralDelegate {
         for characteristic in service.characteristics ?? [] {
             switch characteristic.uuid {
             case workoutDeviceHeartRateMeasurementCharacteristicId:
-                measurementCharacteristic = characteristic
+                heartRate.setMeasurementCharacteristic(characteristic)
+                peripheral?.setNotifyValue(true, for: characteristic)
+            case workoutDeviceCyclingPowerMeasurementCharacteristicId:
+                cyclingPower.setMeasurementCharacteristic(characteristic)
                 peripheral?.setNotifyValue(true, for: characteristic)
             default:
                 break
@@ -159,6 +186,10 @@ extension WorkoutDevice: CBPeripheralDelegate {
             switch characteristic.uuid {
             case workoutDeviceHeartRateMeasurementCharacteristicId:
                 try handleHeartRateMeasurement(value: value)
+            case workoutDeviceCyclingPowerMeasurementCharacteristicId:
+                try handleCyclingPowerMeasurement(value: value)
+            case workoutDeviceCyclingPowerVectorCharacteristicId:
+                try handleCyclingPowerVector(value: value)
             default:
                 break
             }

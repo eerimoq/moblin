@@ -228,7 +228,6 @@ class StatusTopRight: ObservableObject {
     @Published var djiDevicesStatus = noValue
     @Published var browserWidgetsStatus = noValue
     @Published var catPrinterStatus = noValue
-    @Published var cyclingPowerDeviceStatus = noValue
     @Published var workoutDeviceStatus = noValue
     @Published var fixedHorizonStatus = noValue
     @Published var adsRemainingTimerStatus = noValue
@@ -238,7 +237,6 @@ class StatusTopRight: ObservableObject {
     @Published var gameControllersTotal = noValue
     @Published var djiDeviceStreamingState: DjiDeviceState?
     @Published var catPrinterState: CatPrinterState?
-    @Published var cyclingPowerDeviceState: CyclingPowerDeviceState?
     @Published var workoutDeviceState: WorkoutDeviceState?
     @Published var location = noValue
     @Published var isLowPowerMode = false
@@ -567,8 +565,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let autoSceneSwitcher = AutoSceneSwitcherProvider()
     var currentCatPrinterSettings: SettingsCatPrinter?
     var catPrinters: [UUID: CatPrinter] = [:]
-    var currentCyclingPowerDeviceSettings: SettingsCyclingPowerDevice?
-    var cyclingPowerDevices: [UUID: CyclingPowerDevice] = [:]
     var cyclingPower = 0
     var cyclingCadence = 0
     private let periodicTimer20ms = SimpleTimer(queue: .main)
@@ -1118,7 +1114,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         removeUnusedLogs()
         autoStartDjiDevices()
         autoStartCatPrinters()
-        autoStartCyclingPowerDevices()
         autoStartWorkoutDevices()
         autoStartBlackSharkCoolerDevices()
         startWeatherManager()
@@ -1421,7 +1416,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadMoblinkStreamer()
             updateOrientation()
             autoStartCatPrinters()
-            autoStartCyclingPowerDevices()
             autoStartWorkoutDevices()
             autoStartBlackSharkCoolerDevices()
             if showBackgroundStreamingDisabledToast {
@@ -1473,7 +1467,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopMoblinkRelay()
         stopMoblinkStreamer()
         stopCatPrinters()
-        stopCyclingPowerDevices()
         stopWorkoutDevices()
         stopRemoteControlAssistant()
         fixedHorizonEffect.stop()
@@ -3074,10 +3067,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func isShowingStatusCatPrinter() -> Bool {
         return database.show.catPrinter && isAnyCatPrinterConfigured()
-    }
-
-    func isShowingStatusCyclingPowerDevice() -> Bool {
-        return database.show.cyclingPowerDevice && isAnyCyclingPowerDeviceConfigured()
     }
 
     func isShowingStatusWorkoutDevice() -> Bool {

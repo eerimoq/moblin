@@ -2,12 +2,14 @@ import SwiftUI
 
 struct IntegrationImageView: View {
     let imageName: String
+    var height: Double?
 
     var body: some View {
         Image(imageName)
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(height: 130.0)
+            .background(.white)
+            .frame(height: height ?? 130.0)
     }
 }
 

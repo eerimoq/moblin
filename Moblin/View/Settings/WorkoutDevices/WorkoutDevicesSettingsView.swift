@@ -7,13 +7,12 @@ struct WorkoutDevicesSettingsView: View {
     var body: some View {
         Form {
             Section {
-                HCenter {
-                    IntegrationImageView(imageName: "HeartRateDevice")
-                    Image("HeartRateDeviceCoros")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .background(.white)
-                        .frame(height: 102)
+                VStack {
+                    HCenter {
+                        IntegrationImageView(imageName: "HeartRateDevice", height: 80)
+                        IntegrationImageView(imageName: "HeartRateDeviceCoros", height: 80)
+                    }
+                    IntegrationImageView(imageName: "CyclingPowerDevice", height: 80)
                 }
             }
             Section {

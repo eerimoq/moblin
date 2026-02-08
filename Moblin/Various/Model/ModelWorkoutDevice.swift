@@ -75,4 +75,11 @@ extension Model: WorkoutDeviceDelegate {
             self.heartRates[device.name.lowercased()] = heartRate
         }
     }
+
+    func workoutDeviceCyclingPower(_: WorkoutDevice, power: Int, cadence: Int) {
+        DispatchQueue.main.async {
+            self.cyclingPower = power
+            self.cyclingCadence = cadence
+        }
+    }
 }

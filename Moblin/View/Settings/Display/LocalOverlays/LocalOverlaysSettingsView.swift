@@ -119,11 +119,6 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "pawprint")
                 }
                 Label {
-                    Toggle("Cycling power devices", isOn: $show.cyclingPowerDevice)
-                } icon: {
-                    Image(systemName: "bicycle")
-                }
-                Label {
                     Toggle("Workout devices", isOn: $show.workoutDevice)
                 } icon: {
                     Image(systemName: "figure.walk.motion")
