@@ -125,6 +125,9 @@ struct WidgetBrowserSettingsView: View {
             When \"Audio and video only\" mode is selected, images, text, GIFs etc. \
             will only be shown when a video (.mp4/.mov) is playing, reducing overall \
             energy consumption.
+
+            When \"Audio only\" mode is selected, no video will be rendered at all. \
+            Only audio will play.
             """)
         }
         Section {
