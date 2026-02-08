@@ -75,19 +75,20 @@ private struct ViewersView: View {
 
 private struct ChatStatusView: View {
     @ObservedObject var status: StatusTopLeft
+    let foregroundColor: Color
 
     var body: some View {
         HStack(spacing: 1) {
             Image(systemName: "message")
                 .frame(width: 17, height: 17)
                 .padding([.leading, .trailing], 2)
-                .foregroundStyle(status.chatPlatformStatuses.allSatisfy(\.connected) ? .white : .red)
+                .foregroundStyle(foregroundColor)
                 .background(backgroundColor)
                 .cornerRadius(5)
             HStack(spacing: 2) {
-                ForEach(status.chatPlatformStatuses, id: \.platform) { chatStatus in
-                    ViewersLogoView(platform: chatStatus.platform)
-                    if chatStatus.connected {
+                ForEach(status.chatPlatformStatuses, id: \.platform) {
+                    ViewersLogoView(platform: $0.platform)
+                    if $0.connected {
                         Text("Connected")
                             .foregroundStyle(.white)
                     } else {
@@ -221,7 +222,7 @@ private struct StatusesView: View {
             )
         }
         if model.isShowingStatusChat() {
-            if textPlacement == .hide || status.chatPlatformStatuses.isEmpty {
+            if textPlacement == .hide {
                 StreamOverlayIconAndTextView(
                     icon: "message",
                     text: status.statusChatText,
@@ -229,7 +230,7 @@ private struct StatusesView: View {
                     color: chatColor()
                 )
             } else {
-                ChatStatusView(status: status)
+                ChatStatusView(status: status, foregroundColor: chatColor())
             }
         }
         if model.isShowingStatusViewers() {
