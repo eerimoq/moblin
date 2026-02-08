@@ -88,13 +88,23 @@ struct WidgetBrowserSettingsView: View {
                                    keyboardType: .numbersAndPunctuation)
         }
         Section {
-            Picker("Mode", selection: $browser.mode) {
-                ForEach(SettingsWidgetBrowserMode.allCases, id: \.self) {
-                    Text($0.toString())
+            NavigationLink {
+                InlinePickerView(
+                    title: "Mode",
+                    onChange: { value in
+                        browser.mode = SettingsWidgetBrowserMode(rawValue: value) ?? .periodicAudioAndVideo
+                        model.resetSelectedScene(changeScene: false)
+                    },
+                    items:
+                    SettingsWidgetBrowserMode.allCases.map { .init(id: $0.rawValue, text: $0.toString()) },
+                    selectedId: browser.mode.rawValue
+                )
+            } label: {
+                HStack {
+                    Text("Mode")
+                    Spacer()
+                    Text(browser.mode.toString()).foregroundStyle(.gray)
                 }
-            }
-            .onChange(of: browser.mode) { _ in
-                model.resetSelectedScene(changeScene: false)
             }
             if browser.mode == .periodicAudioAndVideo {
                 HStack {
