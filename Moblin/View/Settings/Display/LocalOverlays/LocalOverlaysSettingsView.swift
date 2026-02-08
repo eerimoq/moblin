@@ -128,6 +128,11 @@ struct LocalOverlaysSettingsView: View {
                 } icon: {
                     Image(systemName: "heart")
                 }
+                Label {
+                    Toggle("Workout devices", isOn: $show.workoutDevice)
+                } icon: {
+                    Image(systemName: "figure.run")
+                }
             }
             Section {
                 Label {
