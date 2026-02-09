@@ -56,6 +56,13 @@ func isValidRistUrl(url: String) -> String? {
     return nil
 }
 
+func isValidWhipUrl(url: String) -> String? {
+    guard URL(string: url) != nil else {
+        return String(localized: "Malformed WHIP URL")
+    }
+    return nil
+}
+
 private func isValidIrlUrl(url: String) -> String? {
     guard URL(string: url) != nil else {
         return String(localized: "Malformed IRL URL")
@@ -105,6 +112,14 @@ func isValidUrl(url value: String,
         }
     case "rist":
         if let message = isValidRistUrl(url: value) {
+            return message
+        }
+    case "whip":
+        if let message = isValidWhipUrl(url: value) {
+            return message
+        }
+    case "whips":
+        if let message = isValidWhipUrl(url: value) {
             return message
         }
     case "irl":

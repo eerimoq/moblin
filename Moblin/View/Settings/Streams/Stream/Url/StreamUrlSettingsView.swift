@@ -108,6 +108,20 @@ private struct SrtHelpView: View {
     }
 }
 
+private struct WhipHelpView: View {
+    var body: some View {
+        Section {
+            VStack(alignment: .leading) {
+                Text("Template: whips://my_whip_server/whip/endpoint")
+                Text("Example: whips://whip.example.com/ingest/stream")
+                Text("Example: whip://whip.example.com/ingest/stream")
+            }
+        } header: {
+            Text("WHIP")
+        }
+    }
+}
+
 private struct UrlSettingsView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
@@ -115,6 +129,7 @@ private struct UrlSettingsView: View {
     @Binding var url: String
     let allowedSchemes: [String]?
     let showSrtHelp: Bool
+    let showWhipHelp: Bool
     @State var value: String
     @State var changed: Bool = false
     @State var submitted: Bool = false
@@ -173,6 +188,9 @@ private struct UrlSettingsView: View {
                             if showSrtHelp {
                                 SrtHelpView()
                             }
+                            if showWhipHelp {
+                                WhipHelpView()
+                            }
                         }
                         .navigationTitle("Help")
                         .toolbar {
@@ -199,6 +217,7 @@ struct StreamUrlSettingsView: View {
                         url: $stream.url,
                         allowedSchemes: nil,
                         showSrtHelp: true,
+                        showWhipHelp: true,
                         value: stream.url)
     }
 }
@@ -212,6 +231,7 @@ struct StreamMultiStreamingUrlView: View {
                         url: $destination.url,
                         allowedSchemes: ["rtmp", "rtmps"],
                         showSrtHelp: false,
+                        showWhipHelp: false,
                         value: destination.url)
     }
 }
