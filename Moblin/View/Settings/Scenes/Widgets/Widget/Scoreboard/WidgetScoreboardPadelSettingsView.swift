@@ -8,7 +8,7 @@ private struct PlayersPlayerView: View {
     var body: some View {
         NameEditView(name: $player.name, existingNames: database.scoreboardPlayers)
             .onChange(of: player.name) { _ in
-                model.sceneUpdated()
+                model.resetSelectedScene(changeScene: false, attachCamera: false)
                 model.sendScoreboardPlayersToWatch()
             }
     }
@@ -17,7 +17,6 @@ private struct PlayersPlayerView: View {
 private struct PlayersView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
-    let updated: () -> Void
 
     var body: some View {
         Section {
@@ -27,12 +26,12 @@ private struct PlayersView: View {
                 }
                 .onMove { froms, to in
                     database.scoreboardPlayers.move(fromOffsets: froms, toOffset: to)
-                    updated()
+                    model.resetSelectedScene(changeScene: false, attachCamera: false)
                     model.sendScoreboardPlayersToWatch()
                 }
                 .onDelete { offsets in
                     database.scoreboardPlayers.remove(atOffsets: offsets)
-                    updated()
+                    model.resetSelectedScene(changeScene: false, attachCamera: false)
                     model.sendScoreboardPlayersToWatch()
                 }
             }
@@ -71,40 +70,11 @@ private struct PlayerView: View {
     }
 }
 
-struct WidgetScoreboardPadelQuickButtonControlsView: View {
-    let model: Model
-    let widget: SettingsWidget
-
-    var body: some View {
-        VStack(spacing: 13) {
-            HStack(spacing: 13) {
-                Spacer()
-                ScoreboardUndoButtonView {
-                    model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .undo))
-                }
-                ScoreboardIncrementButtonView {
-                    model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .incrementHome))
-                }
-            }
-            HStack(spacing: 13) {
-                Spacer()
-                ScoreboardResetScoreButtonView {
-                    model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .reset))
-                }
-                ScoreboardIncrementButtonView {
-                    model.handleUpdatePadelScoreboard(action: .init(id: widget.id, action: .incrementAway))
-                }
-            }
-        }
-        .font(.title)
-    }
-}
-
 struct WidgetScoreboardPadelGeneralSettingsView: View {
+    let model: Model
     @ObservedObject var widget: SettingsWidget
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
     @ObservedObject var padel: SettingsWidgetPadelScoreboard
-    let updated: () -> Void
 
     var body: some View {
         HStack {
@@ -117,28 +87,27 @@ struct WidgetScoreboardPadelGeneralSettingsView: View {
                 }
             }
             .onChange(of: padel.type) { _ in
-                updated()
+                model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
         }
-        ScoreboardColorsView(scoreboard: scoreboard, updated: updated)
+        ScoreboardColorsView(model: model, widget: widget, scoreboard: scoreboard)
     }
 }
 
 struct WidgetScoreboardPadelSettingsView: View {
     let model: Model
     @ObservedObject var padel: SettingsWidgetPadelScoreboard
-    let updated: () -> Void
 
     var body: some View {
         Section {
             PlayerView(playerId: $padel.homePlayer1)
                 .onChange(of: padel.homePlayer1) { _ in
-                    updated()
+                    model.resetSelectedScene(changeScene: false, attachCamera: false)
                 }
             if padel.type == .doubles {
                 PlayerView(playerId: $padel.homePlayer2)
                     .onChange(of: padel.homePlayer2) { _ in
-                        updated()
+                        model.resetSelectedScene(changeScene: false, attachCamera: false)
                     }
             }
         } header: {
@@ -147,17 +116,17 @@ struct WidgetScoreboardPadelSettingsView: View {
         Section {
             PlayerView(playerId: $padel.awayPlayer1)
                 .onChange(of: padel.awayPlayer1) { _ in
-                    updated()
+                    model.resetSelectedScene(changeScene: false, attachCamera: false)
                 }
             if padel.type == .doubles {
                 PlayerView(playerId: $padel.awayPlayer2)
                     .onChange(of: padel.awayPlayer2) { _ in
-                        updated()
+                        model.resetSelectedScene(changeScene: false, attachCamera: false)
                     }
             }
         } header: {
             Text("Away")
         }
-        PlayersView(database: model.database, updated: updated)
+        PlayersView(database: model.database)
     }
 }

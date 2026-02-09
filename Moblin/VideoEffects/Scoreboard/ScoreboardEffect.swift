@@ -1,8 +1,5 @@
 import SwiftUI
 
-let scoreboardScoreFontSize = 37.0
-let scoreboardScoreBigFontSize = 45.0
-
 struct TeamScoreView: View {
     var score: Int
 

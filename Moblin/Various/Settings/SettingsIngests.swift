@@ -1,6 +1,7 @@
 import Foundation
 
 private let defaultRtmpLatency: Int32 = 2000
+private let defaultWhipLatency: Int32 = 200
 
 class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My stream")
@@ -77,6 +78,90 @@ class SettingsRtmpServer: Codable, ObservableObject {
 
     func clone() -> SettingsRtmpServer {
         let new = SettingsRtmpServer()
+        new.enabled = enabled
+        new.port = port
+        for stream in streams {
+            new.streams.append(stream.clone())
+        }
+        return new
+    }
+}
+
+class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var streamKey: String = ""
+    @Published var latency: Int32 = defaultWhipLatency
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             streamKey,
+             latency
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.streamKey, streamKey)
+        try container.encode(.latency, latency)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        streamKey = container.decode(.streamKey, String.self, "")
+        latency = container.decode(.latency, Int32.self, defaultWhipLatency)
+    }
+
+    func camera() -> String {
+        return "WHIP \(name)"
+    }
+
+    func clone() -> SettingsWhipServerStream {
+        let new = SettingsWhipServerStream()
+        new.id = id
+        new.name = name
+        new.streamKey = streamKey
+        new.latency = latency
+        return new
+    }
+}
+
+class SettingsWhipServer: Codable, ObservableObject {
+    @Published var enabled: Bool = false
+    @Published var port: UInt16 = 8080
+    @Published var streams: [SettingsWhipServerStream] = []
+
+    enum CodingKeys: CodingKey {
+        case enabled,
+             port,
+             streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.enabled, enabled)
+        try container.encode(.port, port)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = container.decode(.enabled, Bool.self, false)
+        port = container.decode(.port, UInt16.self, 8080)
+        streams = container.decode(.streams, [SettingsWhipServerStream].self, [])
+    }
+
+    func clone() -> SettingsWhipServer {
+        let new = SettingsWhipServer()
         new.enabled = enabled
         new.port = port
         for stream in streams {
@@ -305,5 +390,70 @@ class SettingsRtspClient: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         streams = container.decode(.streams, [SettingsRtspClientStream].self, [])
+    }
+}
+
+class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var url: String = ""
+    @Published var enabled: Bool = false
+    @Published var latency: Int32 = 200
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             url,
+             enabled,
+             latency
+    }
+
+    func latencySeconds() -> Double {
+        return Double(latency) / 1000
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+        try container.encode(.enabled, enabled)
+        try container.encode(.latency, latency)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        url = container.decode(.url, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        latency = container.decode(.latency, Int32.self, 2000)
+    }
+
+    func camera() -> String {
+        return whepCamera(name: name)
+    }
+}
+
+class SettingsWhepClient: Codable, ObservableObject {
+    @Published var streams: [SettingsWhepClientStream] = []
+
+    enum CodingKeys: CodingKey {
+        case streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streams = container.decode(.streams, [SettingsWhepClientStream].self, [])
     }
 }

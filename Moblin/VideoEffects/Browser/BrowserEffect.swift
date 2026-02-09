@@ -47,7 +47,7 @@ final class BrowserEffect: VideoEffect {
     let height: Double
     private let url: URL
     private(set) var isLoaded: Bool
-    private let mode: SettingsWidgetBrowserMode
+    private let audioAndVideoOnly: Bool
     private var baseFps: Double
     private var fps: Double
     private let snapshotTimer = SimpleTimer(queue: .main)
@@ -75,7 +75,7 @@ final class BrowserEffect: VideoEffect {
         baseFps = Double(widget.baseFps)
         fps = baseFps
         isLoaded = false
-        mode = widget.mode
+        audioAndVideoOnly = widget.audioAndVideoOnly
         width = Double(widget.width)
         height = Double(widget.height)
         snapshotConfiguration = WKSnapshotConfiguration()
@@ -107,7 +107,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     override func isEnabled() -> Bool {
-        return mode != .audioOnly && snapshot != nil
+        return snapshot != nil
     }
 
     func sendChatMessage(post: ChatPost) {
@@ -189,7 +189,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     private func startTakeSnapshots() {
-        guard !stopped, mode == .periodicAudioAndVideo else {
+        guard !stopped, !audioAndVideoOnly else {
             return
         }
         resumeTakeSnapshots()
@@ -239,14 +239,12 @@ final class BrowserEffect: VideoEffect {
 extension BrowserEffect: BrowserEffectServerDelegate {
     func browserEffectServerVideoPlaying() {
         fps = 30
-        if mode != .audioOnly {
-            resumeTakeSnapshots()
-        }
+        resumeTakeSnapshots()
     }
 
     func browserEffectServerVideoEnded() {
         fps = baseFps
-        guard mode != .periodicAudioAndVideo else {
+        guard audioAndVideoOnly else {
             return
         }
         suspendTakeSnapshots()

@@ -146,9 +146,11 @@ class Raid: ObservableObject {
 
 class Ingests: ObservableObject {
     var rtmp: RtmpServer?
+    var whip: WhipServer?
     var srtla: SrtlaServer?
     var rist: RistServer?
     var rtsp: [RtspClient] = []
+    var whep: [WhepClient] = []
     @Published var speedAndTotal = noValue
 }
 
@@ -192,16 +194,10 @@ struct StreamingPlatformStatus: Equatable {
     let status: PlatformStatus
 }
 
-struct ChatPlatformStatus: Equatable {
-    let platform: Platform
-    let connected: Bool
-}
-
 class StatusTopLeft: ObservableObject {
     @Published var numberOfViewersIconColor: Color = .white
     @Published var numberOfViewersCompact = noValue
     @Published var streamingPlatformStatuses: [StreamingPlatformStatus] = []
-    @Published var chatPlatformStatuses: [ChatPlatformStatus] = []
     @Published var statusEventsText = noValue
     @Published var statusChatText = noValue
     @Published var streamText = noValue
@@ -1062,9 +1058,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                                object: nil)
         updateOrientation()
         reloadRtmpServer()
+        reloadWhipServer()
         reloadSrtlaServer()
         reloadRistServer()
         reloadRtspClient()
+        reloadWhepClient()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -1408,6 +1406,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadSrtlaServer()
             reloadRistServer()
             reloadRtspClient()
+            reloadWhepClient()
             chatTextToSpeech.reset(running: true)
             startWeatherManager()
             startGeographyManager()

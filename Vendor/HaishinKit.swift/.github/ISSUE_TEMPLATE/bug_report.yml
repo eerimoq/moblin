@@ -1,0 +1,70 @@
+name: Bug Report
+description: |
+  Before posting, confirm whether the issue can be reproduced in the Example project as well.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        * Please review the [support guidelines](https://github.com/HaishinKit/.github/blob/main/SUPPORT.md) first. If the report lacks sufficient details, it will be closed.
+        * Development for version 1.x.x has ended. Issues are no longer accepted.
+  - type: textarea
+    id: observed-behavior
+    attributes:
+      label: Observed behavior
+      description: Explain what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: Explain what you expect.
+    validations:
+      required: true
+  - type: textarea
+    id: to-reproduce
+    attributes:
+      label: To Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: What version of our software are you running?
+    validations:
+      required: true
+  - type: textarea
+    id: smartphone-info
+    attributes:
+      label: Smartphone info.
+      description: please complete the following information
+      placeholder: |
+        - Device: [e.g. iPhone 15 Pro]
+        - OS: [e.g. iOS 18.1]
+  - type: textarea
+    id: addditional-context
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here. If you encounter issues while using HaishinKit for streaming or viewing, please provide the server name as well as the name of the software you are using for streaming or viewing.
+      placeholder: |
+        - Server: [e.g. nginx + rtmp module, YouTube]
+        - Ingest software: [e.g. OBS RTMP H264(main) AAC]
+        - Playback software: [e.g. iOS AVAudioPlayer(via HLS)]
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell

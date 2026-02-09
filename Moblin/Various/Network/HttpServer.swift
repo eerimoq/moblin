@@ -6,8 +6,7 @@ private struct HttpRequestParseResult {
     let path: String
     let version: String
     let headers: [(String, String)]
-    // periphery:ignore
-    let data: Data
+    let body: Data
 }
 
 private class HttpRequestParser: HttpParser {
@@ -28,17 +27,34 @@ private class HttpRequestParser: HttpParser {
             return (true, nil)
         }
         var headers: [(String, String)] = []
+        var contentLength: Int = 0
         while let (line, nextLineOffset) = getLine(data: data, offset: offset) {
-            let parts = line.lowercased().split(separator: " ")
-            if parts.count == 2 {
-                headers.append((String(parts[0]), String(parts[1])))
+            if let colonIndex = line.firstIndex(of: ":") {
+                let key = line[..<colonIndex].lowercased().trim()
+                let value = line[line.index(after: colonIndex)...].trim()
+                headers.append((key, value))
+                if key == "content-length", let length = Int(value) {
+                    contentLength = length
+                }
             }
             if line.isEmpty {
-                return (true, HttpRequestParseResult(method: String(method),
-                                                     path: String(path),
-                                                     version: String(version),
-                                                     headers: headers,
-                                                     data: Data()))
+                let bodyStart = nextLineOffset
+                let body = data.advanced(by: bodyStart)
+                if contentLength == 0 {
+                    return (true, HttpRequestParseResult(method: String(method),
+                                                         path: String(path),
+                                                         version: String(version),
+                                                         headers: headers,
+                                                         body: Data()))
+                }
+                if body.count >= contentLength {
+                    return (true, HttpRequestParseResult(method: String(method),
+                                                         path: String(path),
+                                                         version: String(version),
+                                                         headers: headers,
+                                                         body: body.prefix(contentLength)))
+                }
+                return (false, nil)
             }
             offset = nextLineOffset
         }
@@ -50,14 +66,15 @@ class HttpServerRequest {
     let method: String
     let path: String
     let version: String
-    // periphery:ignore
     let headers: [(String, String)]
+    let body: Data
 
-    fileprivate init(method: String, path: String, version: String, headers: [(String, String)]) {
+    fileprivate init(method: String, path: String, version: String, headers: [(String, String)], body: Data) {
         self.method = method
         self.path = path
         self.version = version
         self.headers = headers
+        self.body = body
     }
 
     fileprivate func getContentType() -> String {
@@ -78,18 +95,41 @@ class HttpServerRequest {
             return "text/html"
         }
     }
+
+    func header(_ name: String) -> String? {
+        let key = name.lowercased()
+        return headers.first(where: { $0.0 == key })?.1
+    }
 }
 
 enum HttpServerStatus {
     case ok
+    case created
+    case noContent
+    case badRequest
     case notFound
+    case methodNotAllowed
+    case unsupportedMediaType
+    case internalServerError
 
     func code() -> Int {
         switch self {
         case .ok:
             return 200
+        case .created:
+            return 201
+        case .noContent:
+            return 204
+        case .badRequest:
+            return 400
         case .notFound:
             return 404
+        case .methodNotAllowed:
+            return 405
+        case .unsupportedMediaType:
+            return 415
+        case .internalServerError:
+            return 500
         }
     }
 
@@ -97,8 +137,20 @@ enum HttpServerStatus {
         switch self {
         case .ok:
             return "OK"
+        case .created:
+            return "Created"
+        case .noContent:
+            return "No Content"
+        case .badRequest:
+            return "Bad Request"
         case .notFound:
             return "Not Found"
+        case .methodNotAllowed:
+            return "Method Not Allowed"
+        case .unsupportedMediaType:
+            return "Unsupported Media Type"
+        case .internalServerError:
+            return "Internal Server Error"
         }
     }
 }
@@ -110,12 +162,22 @@ class HttpServerResponse {
         self.connection = connection
     }
 
-    func send(data: Data, status: HttpServerStatus = .ok) {
-        connection?.sendAndClose(status: status, content: data)
+    func send(
+        data: Data,
+        status: HttpServerStatus = .ok,
+        contentType: String? = nil,
+        headers: [(String, String)] = []
+    ) {
+        connection?.sendAndClose(status: status, contentType: contentType, headers: headers, content: data)
     }
 
-    func send(text: String, status: HttpServerStatus = .ok) {
-        send(data: text.utf8Data, status: status)
+    func send(
+        text: String,
+        status: HttpServerStatus = .ok,
+        contentType: String? = nil,
+        headers: [(String, String)] = []
+    ) {
+        send(data: text.utf8Data, status: status, contentType: contentType, headers: headers)
     }
 }
 
@@ -156,22 +218,26 @@ private class HttpServerConnection {
         request = HttpServerRequest(method: result.method,
                                     path: result.path,
                                     version: result.version,
-                                    headers: result.headers)
+                                    headers: result.headers,
+                                    body: result.body)
         guard let route = server.findRoute(request: request!) else {
-            sendAndClose(status: .notFound, content: Data())
+            sendAndClose(status: .notFound, contentType: nil, headers: [], content: Data())
             return
         }
         route.handler(request!, HttpServerResponse(connection: self))
     }
 
-    func sendAndClose(status: HttpServerStatus, content: Data) {
+    func sendAndClose(status: HttpServerStatus, contentType: String?, headers: [(String, String)], content: Data) {
         guard let request else {
             return
         }
         var lines: [String] = []
         lines.append("\(request.version) \(status.code()) \(status.text())")
         if !content.isEmpty {
-            lines.append("Content-Type: \(request.getContentType())")
+            lines.append("Content-Type: \(contentType ?? request.getContentType())")
+        }
+        for header in headers {
+            lines.append("\(header.0): \(header.1)")
         }
         lines.append("Connection: close")
         lines.append("")
@@ -198,7 +264,7 @@ class HttpServerRoute {
 
 class HttpServer {
     private let queue: DispatchQueue
-    private let routes: [HttpServerRoute]
+    private var routes: [HttpServerRoute]
     private var listener: NWListener?
     private let retryTimer: SimpleTimer
     private var port: NWEndpoint.Port = .http
@@ -208,6 +274,12 @@ class HttpServer {
         self.queue = queue
         self.routes = routes
         retryTimer = SimpleTimer(queue: queue)
+    }
+
+    func setRoutes(_ routes: [HttpServerRoute]) {
+        queue.async {
+            self.routes = routes
+        }
     }
 
     func start(port: NWEndpoint.Port) {

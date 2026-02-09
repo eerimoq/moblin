@@ -76,7 +76,7 @@ class Connection {
   }
 
   setMuted(on) {
-    this.sendRequest({
+    this.send({
       setMute: {
         on: on,
       },
@@ -84,7 +84,7 @@ class Connection {
   }
 
   setDebugLogging(on) {
-    this.sendRequest({
+    this.send({
       setDebugLogging: {
         on: on,
       },

@@ -88,25 +88,11 @@ struct WidgetBrowserSettingsView: View {
                                    keyboardType: .numbersAndPunctuation)
         }
         Section {
-            NavigationLink {
-                InlinePickerView(
-                    title: "Mode",
-                    onChange: { value in
-                        browser.mode = SettingsWidgetBrowserMode(rawValue: value) ?? .periodicAudioAndVideo
-                        model.resetSelectedScene(changeScene: false)
-                    },
-                    items:
-                    SettingsWidgetBrowserMode.allCases.map { .init(id: $0.rawValue, text: $0.toString()) },
-                    selectedId: browser.mode.rawValue
-                )
-            } label: {
-                HStack {
-                    Text("Mode")
-                    Spacer()
-                    Text(browser.mode.toString()).foregroundStyle(.gray)
+            Toggle("Audio and video only", isOn: $browser.audioAndVideoOnly)
+                .onChange(of: browser.audioAndVideoOnly) { _ in
+                    model.resetSelectedScene(changeScene: false)
                 }
-            }
-            if browser.mode == .periodicAudioAndVideo {
+            if !browser.audioAndVideoOnly {
                 HStack {
                     Text("Base FPS")
                     SliderView(
@@ -121,18 +107,11 @@ struct WidgetBrowserSettingsView: View {
                 }
             }
         } footer: {
-            VStack(alignment: .leading) {
-                Text("""
-                When \"Audio and video only\" mode is selected, images, text, GIFs etc. \
-                will only be shown when a video (.mp4/.mov) is playing, reducing overall \
-                energy consumption.
-                """)
-                Text("")
-                Text("""
-                When \"Audio only\" mode is selected, no video will be rendered at all. \
-                Only audio will play.
-                """)
-            }
+            Text("""
+            When \"Audio and video only\" is enabled, images, text, GIFs etc. \
+            will only be shown when a video (.mp4/.mov) is playing, reducing overall \
+            energy consumption.
+            """)
         }
         Section {
             Toggle("Moblin access", isOn: $browser.moblinAccess)

@@ -151,6 +151,7 @@ enum SettingsStreamProtocol: String, Codable {
     case rtmp = "RTMP"
     case srt = "SRT"
     case rist = "RIST"
+    case whip = "WHIP"
 
     init(from decoder: Decoder) throws {
         self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
@@ -164,6 +165,7 @@ enum SettingsStreamDetailedProtocol {
     case srt
     case srtla
     case rist
+    case whip
 }
 
 class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
@@ -544,6 +546,20 @@ class SettingsStreamRist: Codable {
         let new = SettingsStreamRist()
         new.adaptiveBitrateEnabled = adaptiveBitrateEnabled
         new.bonding = bonding
+        return new
+    }
+}
+
+class SettingsStreamWhip: Codable {
+    var iceServers: [String] = []
+    var maxRetryCount: Int = 0
+    var insecureHttpAllowed: Bool = false
+
+    func clone() -> SettingsStreamWhip {
+        let new = SettingsStreamWhip()
+        new.iceServers = iceServers
+        new.maxRetryCount = maxRetryCount
+        new.insecureHttpAllowed = insecureHttpAllowed
         return new
     }
 }
@@ -1028,6 +1044,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp = .init()
     var rist: SettingsStreamRist = .init()
+    var whip: SettingsStreamWhip = .init()
     @Published var maxKeyFrameInterval: Int32 = 2
     @Published var audioCodec: SettingsStreamAudioCodec = .aac
     var audioBitrate: Int = 128_000
@@ -1113,6 +1130,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              srt,
              rtmp,
              rist,
+             whip,
              captureSessionPresetEnabled,
              captureSessionPreset,
              maxKeyFrameInterval,
@@ -1197,6 +1215,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.srt, srt)
         try container.encode(.rtmp, rtmp)
         try container.encode(.rist, rist)
+        try container.encode(.whip, whip)
         try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
         try container.encode(.audioCodec, audioCodec)
         try container.encode(.audioBitrate, audioBitrate)
@@ -1290,6 +1309,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         srt = container.decode(.srt, SettingsStreamSrt.self, .init())
         rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())
         rist = container.decode(.rist, SettingsStreamRist.self, .init())
+        whip = container.decode(.whip, SettingsStreamWhip.self, .init())
         maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
         audioCodec = container.decode(.audioCodec, SettingsStreamAudioCodec.self, .aac)
         audioBitrate = container.decode(.audioBitrate, Int.self, 128_000)
@@ -1374,6 +1394,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.srt = srt.clone()
         new.rtmp = rtmp.clone()
         new.rist = rist.clone()
+        new.whip = whip.clone()
         new.maxKeyFrameInterval = maxKeyFrameInterval
         new.audioCodec = audioCodec
         new.audioBitrate = audioBitrate
@@ -1404,12 +1425,20 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
             return .rtmp
         case "rtmps":
             return .rtmp
+        case "http":
+            return .whip
+        case "https":
+            return .whip
         case "srt":
             return .srt
         case "srtla":
             return .srt
         case "rist":
             return .rist
+        case "whip":
+            return .whip
+        case "whips":
+            return .whip
         default:
             return .rtmp
         }
@@ -1421,14 +1450,40 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
             return .rtmp
         case "rtmps":
             return .rtmps
+        case "http":
+            return .whip
+        case "https":
+            return .whip
         case "srt":
             return .srt
         case "srtla":
             return .srtla
         case "rist":
             return .rist
+        case "whip":
+            return .whip
+        case "whips":
+            return .whip
         default:
             return .rtmp
+        }
+    }
+
+    func resolvedWhipEndpointUrl() -> URL? {
+        guard getProtocol() == .whip else {
+            return nil
+        }
+        guard var components = URLComponents(string: url) else {
+            return nil
+        }
+        switch components.scheme {
+        case "whip", "whips":
+            components.scheme = "https"
+            return components.url
+        case "http", "https":
+            return components.url
+        default:
+            return nil
         }
     }
 

@@ -73,45 +73,6 @@ private struct ViewersView: View {
     }
 }
 
-private struct ChatStatusView: View {
-    @ObservedObject var status: StatusTopLeft
-    let foregroundColor: Color
-
-    var body: some View {
-        HStack(spacing: 1) {
-            Image(systemName: "message")
-                .frame(width: 17, height: 17)
-                .padding([.leading, .trailing], 2)
-                .foregroundStyle(foregroundColor)
-                .background(backgroundColor)
-                .cornerRadius(5)
-            HStack(spacing: 2) {
-                if status.chatPlatformStatuses.isEmpty {
-                    Text(status.statusChatText)
-                } else {
-                    ForEach(status.chatPlatformStatuses, id: \.platform) {
-                        ViewersLogoView(platform: $0.platform)
-                        if $0.connected {
-                            Text("Connected")
-                                .foregroundStyle(.white)
-                        } else {
-                            Text("Disconnected")
-                                .foregroundStyle(.red)
-                        }
-                    }
-                }
-            }
-            .padding([.leading, .trailing], 2)
-            .background(backgroundColor)
-            .cornerRadius(5)
-        }
-        .font(smallFont)
-        .padding(20)
-        .contentShape(Rectangle())
-        .padding(-20)
-    }
-}
-
 private struct StreamStatusView: View {
     @ObservedObject var status: StatusTopLeft
     let textPlacement: StreamOverlayIconAndTextPlacement
@@ -226,16 +187,12 @@ private struct StatusesView: View {
             )
         }
         if model.isShowingStatusChat() {
-            if textPlacement == .hide {
-                StreamOverlayIconAndTextView(
-                    icon: "message",
-                    text: status.statusChatText,
-                    textPlacement: textPlacement,
-                    color: chatColor()
-                )
-            } else {
-                ChatStatusView(status: status, foregroundColor: chatColor())
-            }
+            StreamOverlayIconAndTextView(
+                icon: "message",
+                text: status.statusChatText,
+                textPlacement: textPlacement,
+                color: chatColor()
+            )
         }
         if model.isShowingStatusViewers() {
             if textPlacement == .hide {

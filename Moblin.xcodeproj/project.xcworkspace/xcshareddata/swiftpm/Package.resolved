@@ -1,5 +1,5 @@
 {
-  "originHash" : "2ec89183ce973e73157e1f6178f92aabac79182102b81c7f9097c9d2d72f6022",
+  "originHash" : "cd2189c0bc4ce9b8808eccb14601cdb6dff0bacbf693a1ee023eef73c22b2903",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -53,6 +53,15 @@
       "state" : {
         "revision" : "56f1b5724138e4d9f60453b555edc80e43805503",
         "version" : "2.2.0"
+      }
+    },
+    {
+      "identity" : "logboard",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shogo4405/Logboard.git",
+      "state" : {
+        "revision" : "8f41c63afb903040b77049ee2efa8c257b8c0d50",
+        "version" : "2.6.0"
       }
     },
     {

@@ -560,6 +560,9 @@ extension Model {
         cameras += rtmpCameras().map {
             ($0.0.uuidString, $0.1)
         }
+        cameras += whipCameras().map {
+            ($0.0.uuidString, $0.1)
+        }
         cameras += srtlaCameras().map {
             ($0.0.uuidString, $0.1)
         }
@@ -567,6 +570,9 @@ extension Model {
             ($0.0.uuidString, $0.1)
         }
         cameras += rtspCameras().map {
+            ($0.0.uuidString, $0.1)
+        }
+        cameras += whepCameras().map {
             ($0.0.uuidString, $0.1)
         }
         cameras += playerCameras().map {
@@ -618,10 +624,14 @@ extension Model {
             return .srtla(id: id)
         } else if let id = getRtmpStream(idString: cameraId)?.id {
             return .rtmp(id: id)
+        } else if let id = getWhipStream(idString: cameraId)?.id {
+            return .whip(id: id)
         } else if let id = getRistStream(idString: cameraId)?.id {
             return .rist(id: id)
         } else if let id = getRtspStream(idString: cameraId)?.id {
             return .rtsp(id: id)
+        } else if let id = getWhepStream(idString: cameraId)?.id {
+            return .whep(id: id)
         } else if let id = getMediaPlayer(idString: cameraId)?.id {
             return .mediaPlayer(id: id)
         } else if isBackCamera(cameraId: cameraId) {
@@ -650,11 +660,15 @@ extension Model {
         switch settingsCameraId {
         case let .rtmp(id):
             return id.uuidString
+        case let .whip(id):
+            return id.uuidString
         case let .srtla(id):
             return id.uuidString
         case let .rist(id: id):
             return id.uuidString
         case let .rtsp(id: id):
+            return id.uuidString
+        case let .whep(id: id):
             return id.uuidString
         case let .mediaPlayer(id):
             return id.uuidString
@@ -700,12 +714,16 @@ extension Model {
         switch settingsCameraId {
         case let .rtmp(id):
             return getRtmpStream(id: id)?.camera() ?? unknownSad
+        case let .whip(id):
+            return getWhipStream(id: id)?.camera() ?? unknownSad
         case let .srtla(id):
             return getSrtlaStream(id: id)?.camera() ?? unknownSad
         case let .rist(id):
             return getRistStream(id: id)?.camera() ?? unknownSad
         case let .rtsp(id):
             return getRtspStream(id: id)?.camera() ?? unknownSad
+        case let .whep(id):
+            return getWhepStream(id: id)?.camera() ?? unknownSad
         case let .mediaPlayer(id):
             return getMediaPlayer(id: id)?.camera() ?? unknownSad
         case let .external(_, name):
@@ -809,11 +827,15 @@ extension Model {
         switch cameraId {
         case let .rtmp(id: id):
             return id
+        case let .whip(id: id):
+            return id
         case let .srtla(id: id):
             return id
         case let .rist(id: id):
             return id
         case let .rtsp(id: id):
+            return id
+        case let .whep(id: id):
             return id
         case let .mediaPlayer(id: id):
             return id

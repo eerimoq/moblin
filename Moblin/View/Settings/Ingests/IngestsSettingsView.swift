@@ -8,9 +8,11 @@ struct IngestsSettingsView: View {
         Form {
             Section {
                 RtmpServerSettingsView(rtmpServer: database.rtmpServer)
+                WhipServerSettingsView(whipServer: database.whipServer)
                 SrtlaServerSettingsView(srtlaServer: database.srtlaServer)
                 RistServerSettingsView(ristServer: database.ristServer)
                 RtspClientSettingsView(rtspClient: database.rtspClient)
+                WhepClientSettingsView(whepClient: database.whepClient)
                 if #available(iOS 26, *), false {
                     NavigationLink {
                         WiFiAwareSettingsView(model: model, wiFiAware: database.wiFiAware)

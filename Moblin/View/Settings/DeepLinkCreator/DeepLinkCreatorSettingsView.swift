@@ -80,7 +80,6 @@ struct DeepLinkCreatorSettingsView: View {
             settings.quickButtons!.buttons = settings.quickButtons!.buttons ?? .init()
             let newButton = MoblinSettingsButton(type: button.type)
             newButton.enabled = true
-            newButton.page = button.page
             settings.quickButtons!.buttons!.append(newButton)
         }
     }
@@ -153,10 +152,12 @@ struct DeepLinkCreatorSettingsView: View {
                         }
                     }
                     Section {
-                        if let image = generateQrCode(from: deepLink) {
-                            QrCodeImageView(image: image, height: qrCodeHeight(metrics))
-                        } else {
-                            Text("Failed to create QR-code.")
+                        HCenter {
+                            Image(uiImage: generateQrCode(from: deepLink)!)
+                                .resizable()
+                                .interpolation(.none)
+                                .scaledToFit()
+                                .frame(maxHeight: metrics.size.height)
                         }
                     }
                 } else {

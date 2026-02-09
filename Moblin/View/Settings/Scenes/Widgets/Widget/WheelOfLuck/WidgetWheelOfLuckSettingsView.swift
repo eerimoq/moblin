@@ -2,38 +2,6 @@ import SwiftUI
 
 let wheelOfLuckOptionWeights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 40, 60, 80, 100]
 
-private struct WheelOfLuckWidgetView: View {
-    let model: Model
-    @ObservedObject var widget: SettingsWidget
-    let effect: WheelOfLuckEffect
-    let indented: Bool
-
-    var body: some View {
-        HStack(spacing: 20) {
-            if indented {
-                Text("")
-                Text("").frame(width: iconWidth)
-            }
-            Spacer()
-            Button {
-                widget.wheelOfLuck.shuffle()
-                model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: widget.wheelOfLuck)
-
-            } label: {
-                Image(systemName: "shuffle")
-                    .font(.title)
-            }
-            Button {
-                effect.spin()
-            } label: {
-                Image(systemName: "play")
-                    .font(.title)
-            }
-        }
-        .buttonStyle(.borderless)
-    }
-}
-
 private struct OptionView: View {
     let model: Model
     let widget: SettingsWidget
@@ -73,17 +41,6 @@ private struct OptionView: View {
                 Spacer()
                 Text("\(calcPercent())%")
             }
-        }
-    }
-}
-
-struct WidgetWheelOfLuckQuickButtonControlsView: View {
-    let model: Model
-    @ObservedObject var widget: SettingsWidget
-
-    var body: some View {
-        if let effect = model.getWheelOfLuckEffect(id: widget.id) {
-            WheelOfLuckWidgetView(model: model, widget: widget, effect: effect, indented: true)
         }
     }
 }

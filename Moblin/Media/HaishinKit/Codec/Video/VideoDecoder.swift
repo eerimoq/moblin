@@ -11,6 +11,7 @@ class VideoDecoder {
     private var formatDescription: CMFormatDescription?
     weak var delegate: (any VideoDecoderDelegate)?
     private var invalidateSession = true
+    private var consecutiveBadFrames = 0
     private var session: VTDecompressionSession? {
         didSet {
             oldValue?.invalidate()
@@ -28,6 +29,15 @@ class VideoDecoder {
             self.invalidateSession = true
             self.formatDescription = formatDescription
         }
+    }
+
+    /// Synchronously sets the format description and marks the session for recreation.
+    /// Use when `decodeSampleBuffer` will be called on the same queue immediately after,
+    /// avoiding the race condition with the async `startRunning(formatDescription:)`.
+    func setFormatDescriptionSync(_ formatDescription: CMFormatDescription) {
+        self.formatDescription = formatDescription
+        self.invalidateSession = true
+        self.isRunning = true
     }
 
     func stopRunning() {
@@ -55,6 +65,15 @@ class VideoDecoder {
                 }
                 guard let imageBuffer, status == noErr else {
                     logger.info("video-decoder: Failed to decode frame status \(status)")
+                    // Recover from persistent bad-data errors (e.g., after app state change
+                    // disrupts the hardware decoder). Recreate session on next IDR.
+                    self.lockQueue.async {
+                        self.consecutiveBadFrames += 1
+                        if self.consecutiveBadFrames >= 3 {
+                            self.invalidateSession = true
+                            self.consecutiveBadFrames = 0
+                        }
+                    }
                     return
                 }
                 guard let formatDescription = CMVideoFormatDescription.create(imageBuffer: imageBuffer) else {
@@ -69,6 +88,7 @@ class VideoDecoder {
                     return
                 }
                 self.lockQueue.async {
+                    self.consecutiveBadFrames = 0
                     self.delegate?.videoDecoderOutputSampleBuffer(self, sampleBuffer)
                 }
             }

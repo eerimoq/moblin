@@ -23,6 +23,8 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRtmpDestinationDisconnected(_ destination: String)
     func mediaOnRistConnected()
     func mediaOnRistDisconnected()
+    func mediaOnWhipConnected()
+    func mediaOnWhipDisconnected(_ reason: String)
     func mediaOnAudioMuteChange()
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
@@ -53,6 +55,7 @@ final class Media: NSObject {
     private var srtStreamNew: SrtStreamMoblin?
     private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
+    private var whipStream: WhipStream?
     private var srtlaClient: SrtlaClient?
     private var processor: Processor?
     private var srtTotalByteCount: Int64 = 0
@@ -101,10 +104,12 @@ final class Media: NSObject {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
+        whipStopStream()
         rtmpStreams.removeAll()
         srtStreamNew = nil
         srtStreamOld = nil
         ristStream = nil
+        whipStream = nil
         processor = nil
     }
 
@@ -120,6 +125,7 @@ final class Media: NSObject {
         srtStopStream()
         rtmpStopStream()
         ristStopStream()
+        whipStopStream()
         let processor = Processor()
         switch proto {
         case .rtmp:
@@ -138,6 +144,7 @@ final class Media: NSObject {
             srtStreamNew = nil
             srtStreamOld = nil
             ristStream = nil
+            whipStream = nil
         case .srt:
             switch srtImplementation {
             case .moblin:
@@ -157,11 +164,19 @@ final class Media: NSObject {
             }
             rtmpStreams.removeAll()
             ristStream = nil
+            whipStream = nil
         case .rist:
             ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
             srtStreamNew = nil
             srtStreamOld = nil
             rtmpStreams.removeAll()
+            whipStream = nil
+        case .whip:
+            whipStream = WhipStream(processor: processor, delegate: self)
+            srtStreamNew = nil
+            srtStreamOld = nil
+            rtmpStreams.removeAll()
+            ristStream = nil
         }
         self.processor = processor
         processor.setDelegate(delegate: self)
@@ -605,6 +620,14 @@ final class Media: NSObject {
 
     func ristStopStream() {
         ristStream?.stop()
+    }
+
+    func whipStartStream(endpointUrl: URL, settings: SettingsStreamWhip, videoDimensions: CMVideoDimensions) {
+        whipStream?.start(endpointUrl: endpointUrl, settings: settings, videoDimensions: videoDimensions)
+    }
+
+    func whipStopStream() {
+        whipStream?.stop()
     }
 
     func setTorch(on: Bool) {
@@ -1126,6 +1149,16 @@ extension Media: RistStreamDelegate {
         DispatchQueue.main.async {
             self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }
+    }
+}
+
+extension Media: WhipStreamDelegate {
+    func whipStreamOnConnected() {
+        delegate?.mediaOnWhipConnected()
+    }
+
+    func whipStreamOnDisconnected(reason: String) {
+        delegate?.mediaOnWhipDisconnected(reason)
     }
 }
 

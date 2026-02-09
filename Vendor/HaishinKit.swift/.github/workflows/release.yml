@@ -1,0 +1,24 @@
+name: Release
+on:
+  push:
+    tags:
+      - '*.*.*'
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode version
+        run: sudo xcode-select -s '/Applications/Xcode_26.0.app'
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - name: bundle exec fastlane document
+        env:
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bundle install
+          bundle exec fastlane document version:${{ github.ref_name }}

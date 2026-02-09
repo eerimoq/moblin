@@ -5,31 +5,19 @@ private struct DeepLinkCreatorQuickButtonSettingsView: View {
     @ObservedObject var button: DeepLinkCreatorQuickButton
 
     var body: some View {
-        HStack {
-            DraggableItemPrefixView()
-            if let quickButton = model.getQuickButton(type: button.type) {
-                VStack {
-                    Toggle(isOn: $button.enabled) {
-                        IconAndTextView(
-                            image: quickButton.imageOff,
-                            text: quickButton.name,
-                            longDivider: true
-                        )
-                    }
-                    HStack {
-                        Spacer()
-                        if #available(iOS 17, *) {
-                            Picker("Page", selection: $button.page) {
-                                ForEach(1 ... controlBarPages, id: \.self) { page in
-                                    Text(String(page))
-                                }
-                            }
-                            .fixedSize()
-                        }
-                    }
+        Toggle(isOn: $button.enabled) {
+            HStack {
+                DraggableItemPrefixView()
+                if let quickButton = model.getQuickButton(type: button.type) {
+                    IconAndTextView(
+                        image: quickButton.imageOff,
+                        text: quickButton.name,
+                        longDivider: true
+                    )
+                } else {
+                    Text("Unknown")
                 }
-            } else {
-                Text("Unknown")
+                Spacer()
             }
         }
     }

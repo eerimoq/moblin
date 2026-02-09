@@ -50,6 +50,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var customRtmpUrl = ""
     @Published var customRtmpStreamKey = ""
     @Published var customRistUrl = ""
+    @Published var customWhipUrl = ""
 }
 
 enum StreamState {
@@ -81,6 +82,24 @@ extension Model {
                 )
             )
             return
+        }
+        if stream.getProtocol() == .whip {
+            if stream.codec != .h264avc || stream.audioCodec != .opus {
+                makeErrorToast(
+                    title: String(localized: "WHIP requires H.264 video and Opus audio."),
+                    subTitle: String(
+                        localized: "Update Settings → Streams → \(stream.name) → Video/Audio."
+                    )
+                )
+                return
+            }
+            if stream.resolvedWhipEndpointUrl() == nil {
+                makeErrorToast(
+                    title: String(localized: "Malformed WHIP URL"),
+                    subTitle: String(localized: "Please use a valid whip:// URL.")
+                )
+                return
+            }
         }
         if database.location.resetWhenGoingLive {
             resetLocationData()
@@ -189,6 +208,8 @@ extension Model {
             startNetStreamSrt()
         case .rist:
             startNetStreamRist()
+        case .whip:
+            startNetStreamWhip()
         }
         updateSpeed(now: .now)
         streamBecameBrokenTime = nil
@@ -234,12 +255,25 @@ extension Model {
         updateAdaptiveBitrateRistIfEnabled()
     }
 
+    private func startNetStreamWhip() {
+        guard let endpointUrl = stream.resolvedWhipEndpointUrl() else {
+            onDisconnected(reason: "WHIP endpoint URL invalid")
+            return
+        }
+        media.whipStartStream(
+            endpointUrl: endpointUrl,
+            settings: stream.whip,
+            videoDimensions: stream.dimensions()
+        )
+    }
+
     func stopNetStream() {
         moblink.streamer?.stopTunnels()
         reconnectTimer.stop()
         media.rtmpStopStream()
         media.srtStopStream()
         media.ristStopStream()
+        media.whipStopStream()
         streamStartTime = nil
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)
@@ -529,6 +563,14 @@ extension Model {
         DispatchQueue.main.async {
             self.onDisconnected(reason: "RIST disconnected")
         }
+    }
+
+    private func handleWhipConnected() {
+        onConnected()
+    }
+
+    private func handleWhipDisconnected(reason: String) {
+        onDisconnected(reason: reason)
     }
 
     private func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
@@ -876,6 +918,14 @@ extension Model: MediaDelegate {
 
     func mediaOnRistDisconnected() {
         handleRistDisconnected()
+    }
+
+    func mediaOnWhipConnected() {
+        handleWhipConnected()
+    }
+
+    func mediaOnWhipDisconnected(_ reason: String) {
+        handleWhipDisconnected(reason: reason)
     }
 
     func mediaOnAudioMuteChange() {

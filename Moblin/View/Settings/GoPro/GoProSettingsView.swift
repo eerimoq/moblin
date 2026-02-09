@@ -1,14 +1,10 @@
 import NetworkExtension
 import SwiftUI
 
-func qrCodeHeight(_ metrics: GeometryProxy) -> Double {
-    return metrics.size.width * 0.5
-}
-
 private struct GoProLaunchLiveStreamSettingsView: View {
     @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var launchLiveStream: SettingsGoProLaunchLiveStream
-    @State private var qrCode: UIImage?
+    @State var qrCode: UIImage?
 
     private func generate() {
         qrCode = GoPro.generateLaunchLiveStream(isHero12Or13: launchLiveStream.isHero12Or13,
@@ -39,7 +35,7 @@ private struct GoProLaunchLiveStreamSettingsView: View {
                 }
                 if let qrCode {
                     Section {
-                        QrCodeImageView(image: qrCode, height: qrCodeHeight(metrics))
+                        QrCodeImageView(image: qrCode, height: metrics.size.height)
                     }
                 }
             }
@@ -118,7 +114,7 @@ private struct GoProWifiCredentialsSettingsView: View {
                 }
                 if let qrCode {
                     Section {
-                        QrCodeImageView(image: qrCode, height: qrCodeHeight(metrics))
+                        QrCodeImageView(image: qrCode, height: metrics.size.height)
                     }
                 }
             }
@@ -274,7 +270,7 @@ private struct GoProRtmpUrlSettingsView: View {
                 }
                 if let qrCode {
                     Section {
-                        QrCodeImageView(image: qrCode, height: qrCodeHeight(metrics))
+                        QrCodeImageView(image: qrCode, height: metrics.size.height)
                     }
                 }
             }

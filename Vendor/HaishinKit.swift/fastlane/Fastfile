@@ -1,0 +1,66 @@
+desc 'Review PullRequest.'
+lane :review do
+
+  spm(
+    command: 'test',
+    package_path: 'HaishinKit'
+  )
+
+  spm(
+    command: 'test',
+    package_path: 'SRTHaishinKit'
+  )
+
+  begin
+    danger(
+      danger_id: 'danger',
+      dangerfile: 'Dangerfile',
+      verbose: true
+    )
+  rescue StandardError
+  end
+end
+
+desc 'Creates documents.'
+lane :document do |options|
+  if options[:version] == ''
+    UI.error('Version is a required argument!')
+    next
+  end
+
+  version = options[:version]
+
+  Dir.chdir('..') do
+    sh 'git clone git@github.com:HaishinKit/docs.haishinkit.com.git'
+
+    if Helper.is_ci?
+      sh "git config --global user.email 'action@github.com'"
+      sh "git config --global user.name 'GitHub Action'"
+    end
+
+    sh "rm -rf ./docs.haishinkit.com/swift/#{version}"
+    sh <<COMMAND
+ swift package --allow-writing-to-directory ./docs.haishinkit.com/ generate-documentation --hosting-base-path swift/#{version}\
+ --output-path ./docs.haishinkit.com/swift/#{version}\
+ --transform-for-static-hosting\
+ --enable-experimental-combined-documentation
+COMMAND
+
+    sh 'rm -rf ./docs.haishinkit.com/swift/latest'
+    sh <<COMMAND
+ swift package --allow-writing-to-directory ./docs.haishinkit.com/ generate-documentation --hosting-base-path swift/latest\
+ --output-path ./docs.haishinkit.com/swift/latest\
+ --transform-for-static-hosting\
+ --enable-experimental-combined-documentation
+COMMAND
+  end
+
+  Dir.chdir('../docs.haishinkit.com') do
+    sh 'git add .'
+    sh "git commit -m 'Add HaishinKit.swift #{version}'"
+    sh 'git push origin main'
+  end
+
+  sh 'rm -rf ../docs'
+  sh 'rm -rf ../docs.haishinkit.com'
+end

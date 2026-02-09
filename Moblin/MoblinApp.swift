@@ -1,5 +1,8 @@
 import SwiftUI
 
+import HaishinKit
+import RTCHaishinKit
+
 @main
 struct MoblinApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -9,6 +12,9 @@ struct MoblinApp: App {
     init() {
         MoblinApp.globalModel = Model()
         _model = StateObject(wrappedValue: MoblinApp.globalModel!)
+        Task {
+            await SessionBuilderFactory.shared.register(HTTPSessionFactory())
+        }
     }
 
     var body: some Scene {
@@ -113,7 +119,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 
     func application(_: UIApplication,
-                     supportedInterfaceOrientationsFor _: UIWindow?) -> UIInterfaceOrientationMask
+                     supportedInterfaceOrientationsFor _: UIWindow?)
+        -> UIInterfaceOrientationMask
     {
         return AppDelegate.orientationLock
     }

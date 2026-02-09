@@ -119,15 +119,12 @@ extension Model {
             youTubeApi?.listVideos(videoId: self.stream.youTubeVideoId) {
                 switch $0 {
                 case let .success(response):
-                    if let liveStreamingDetails = response.items.first?.liveStreamingDetails {
-                        if liveStreamingDetails.isLive() {
-                            let viewers = Int(liveStreamingDetails.concurrentViewers ?? "0") ?? 0
-                            self.youTubePlatformStatus = .live(viewerCount: viewers)
-                        } else {
-                            self.youTubePlatformStatus = .offline
-                        }
+                    if let item = response.items.first,
+                       let viewers = Int(item.liveStreamingDetails.concurrentViewers)
+                    {
+                        self.youTubePlatformStatus = .live(viewerCount: viewers)
                     } else {
-                        self.youTubePlatformStatus = .unknown
+                        self.youTubePlatformStatus = .offline
                     }
                 default:
                     self.youTubePlatformStatus = .unknown

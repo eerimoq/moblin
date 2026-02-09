@@ -34,6 +34,8 @@
 		03ECDF532B8E4E6000BD920E /* Moblin.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 03ECDF462B8E4E5E00BD920E /* Moblin.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03ECDF5D2B8E5F0B00BD920E /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 03ECDF5C2B8E5F0B00BD920E /* WrappingHStack */; };
 		03F465EC2C441D1400630708 /* CrcSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 03F465EB2C441D1400630708 /* CrcSwift */; };
+		08A1B2C3D4E5F67890123459 /* HaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 08A1B2C3D4E5F67890123457 /* HaishinKit */; };
+		08A1B2C3D4E5F6789012345A /* RTCHaishinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 08A1B2C3D4E5F67890123458 /* RTCHaishinKit */; };
 		882D0C162DF76F5B0035BFAF /* BlackSharkLib in Frameworks */ = {isa = PBXBuildFile; productRef = 882D0C152DF76F5B0035BFAF /* BlackSharkLib */; };
 /* End PBXBuildFile section */
 
@@ -230,6 +232,8 @@
 				03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */,
 				0377239C2DE35191007D040D /* VRMSceneKit in Frameworks */,
 				03BC116B2AE56C2200C38FC4 /* SDWebImageWebPCoder in Frameworks */,
+				08A1B2C3D4E5F67890123459 /* HaishinKit in Frameworks */,
+				08A1B2C3D4E5F6789012345A /* RTCHaishinKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +368,8 @@
 				035351932F1C271700428DAC /* AppAuthCore */,
 				035351952F1C27A500428DAC /* AppAuth */,
 				0360FD152F228EEB00FF8847 /* MetalPetal */,
+				08A1B2C3D4E5F67890123457 /* HaishinKit */,
+				08A1B2C3D4E5F67890123458 /* RTCHaishinKit */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -519,6 +525,7 @@
 				882D0C142DF76F5B0035BFAF /* XCRemoteSwiftPackageReference "BlackSharkLib" */,
 				035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 				0360FD142F228EEB00FF8847 /* XCRemoteSwiftPackageReference "MetalPetal" */,
+				08A1B2C3D4E5F67890123456 /* XCLocalSwiftPackageReference "Vendor/HaishinKit.swift" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -643,6 +650,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 442HHYCXW8;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -661,7 +669,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 30.2027.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Capture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -680,6 +688,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 442HHYCXW8;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -698,7 +707,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 30.2027.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Capture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -857,10 +866,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 442HHYCXW8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
@@ -889,7 +900,7 @@
 				MTLLINKER_FLAGS = "-fcikernel";
 				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -912,10 +923,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 442HHYCXW8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
@@ -944,7 +957,7 @@
 				MTLLINKER_FLAGS = "-fcikernel";
 				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -963,6 +976,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 442HHYCXW8;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -981,7 +995,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1000,6 +1014,7 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 442HHYCXW8;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1018,7 +1033,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1081,6 +1096,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin Watch/Preview Content\"";
+				DEVELOPMENT_TEAM = 442HHYCXW8;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1094,7 +1110,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = io.webmo.mocam;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1102,7 +1118,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Watch;
 				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1123,6 +1139,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin Watch/Preview Content\"";
+				DEVELOPMENT_TEAM = 442HHYCXW8;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1136,7 +1153,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = io.webmo.mocam;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1144,7 +1161,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Watch;
 				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1213,6 +1230,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		08A1B2C3D4E5F67890123456 /* XCLocalSwiftPackageReference "Vendor/HaishinKit.swift" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vendor/HaishinKit.swift;
+		};
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		0318D3682CF51D6900E12F3B /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
@@ -1458,6 +1482,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 03F465EA2C441D1400630708 /* XCRemoteSwiftPackageReference "CrcSwift" */;
 			productName = CrcSwift;
+		};
+		08A1B2C3D4E5F67890123457 /* HaishinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 08A1B2C3D4E5F67890123456 /* XCLocalSwiftPackageReference "Vendor/HaishinKit.swift" */;
+			productName = HaishinKit;
+		};
+		08A1B2C3D4E5F67890123458 /* RTCHaishinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 08A1B2C3D4E5F67890123456 /* XCLocalSwiftPackageReference "Vendor/HaishinKit.swift" */;
+			productName = RTCHaishinKit;
 		};
 		882D0C152DF76F5B0035BFAF /* BlackSharkLib */ = {
 			isa = XCSwiftPackageProductDependency;
