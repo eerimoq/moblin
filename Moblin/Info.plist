@@ -10,7 +10,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.eerimoq.Mobs</string>
+			<string>io.webmo.mocam</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>moblin</string>

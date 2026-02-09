@@ -669,7 +669,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 30.2027.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Capture;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Capture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -707,7 +707,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 30.2027.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Capture;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Capture;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -900,7 +900,7 @@
 				MTLLINKER_FLAGS = "-fcikernel";
 				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -957,7 +957,7 @@
 				MTLLINKER_FLAGS = "-fcikernel";
 				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -995,7 +995,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1033,7 +1033,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1110,7 +1110,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = io.webmo.mocam;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1118,7 +1118,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Watch;
 				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1153,7 +1153,7 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = io.webmo.mocam;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1161,7 +1161,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
+				PRODUCT_BUNDLE_IDENTIFIER = io.webmo.mocam.Watch;
 				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

@@ -194,10 +194,16 @@ struct StreamingPlatformStatus: Equatable {
     let status: PlatformStatus
 }
 
+struct ChatPlatformStatus: Equatable {
+    let platform: Platform
+    let connected: Bool
+}
+
 class StatusTopLeft: ObservableObject {
     @Published var numberOfViewersIconColor: Color = .white
     @Published var numberOfViewersCompact = noValue
     @Published var streamingPlatformStatuses: [StreamingPlatformStatus] = []
+    @Published var chatPlatformStatuses: [ChatPlatformStatus] = []
     @Published var statusEventsText = noValue
     @Published var statusChatText = noValue
     @Published var streamText = noValue
