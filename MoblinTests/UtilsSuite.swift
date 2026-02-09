@@ -59,4 +59,23 @@ struct UtilsSuite {
         let result = try #require(UUID(uuidString: "00010000-0000-0000-0000-FAFBFD204366"))
         #expect(original.add(data: extra) == result)
     }
+
+    @Test
+    func arrayWithCPointers() {
+        let data = ["1", "22", "333"]
+        data.withCPointers { array in
+            let first = array[0]!
+            #expect(first[0] == 0x31)
+            #expect(first[1] == 0x0)
+            let second = array[1]!
+            #expect(second[0] == 0x32)
+            #expect(second[1] == 0x32)
+            #expect(second[2] == 0x0)
+            let third = array[2]!
+            #expect(third[0] == 0x33)
+            #expect(third[1] == 0x33)
+            #expect(third[2] == 0x33)
+            #expect(third[3] == 0x0)
+        }
+    }
 }

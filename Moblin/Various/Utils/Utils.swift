@@ -361,3 +361,22 @@ func clockAsMinutesAndSeconds(clock: String) -> (Int, Int) {
         return (0, 0)
     }
 }
+
+extension Array where Element == String {
+    func withCPointers<T>(_ body: (UnsafeMutablePointer<UnsafePointer<CChar>?>) -> T) -> T {
+        let pointersArray = UnsafeMutablePointer<UnsafePointer<CChar>?>.allocate(capacity: count)
+        defer {
+            pointersArray.deallocate()
+        }
+        func addAt(index: Int) -> T {
+            if index == count {
+                return body(pointersArray)
+            }
+            return self[index].withCString { cstr in
+                pointersArray[index] = cstr
+                return addAt(index: index + 1)
+            }
+        }
+        return addAt(index: 0)
+    }
+}
