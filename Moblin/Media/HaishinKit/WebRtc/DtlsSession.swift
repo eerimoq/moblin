@@ -1,5 +1,6 @@
 import CryptoKit
 import Foundation
+import Network
 import Security
 
 private let dtlsQueue = DispatchQueue(label: "com.eerimoq.Moblin.webrtc.dtls")
@@ -12,59 +13,34 @@ enum DtlsState {
     case failed
 }
 
-enum DtlsRole {
-    case client
-    case server
-}
-
 protocol DtlsSessionDelegate: AnyObject {
     func dtlsSessionOnState(_ session: DtlsSession, state: DtlsState)
-    func dtlsSessionOnSend(_ session: DtlsSession, data: Data)
 }
 
 class DtlsSession {
-    private let privateKey: SecKey
-    private let certificateData: Data
+    private let identity: SecIdentity
+    private let certificate: SecCertificate
     let fingerprint: String
     private(set) var state: DtlsState = .new
-    private(set) var role: DtlsRole = .client
+    private var connection: NWConnection?
     private var srtpKeyingMaterial: Data?
     weak var delegate: DtlsSessionDelegate?
 
     init?() {
-        let keyParams: [String: Any] = [
-            kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
-            kSecAttrKeySizeInBits as String: 256,
-            kSecAttrIsPermanent as String: false,
-        ]
-        var error: Unmanaged<CFError>?
-        guard let key = SecKeyCreateRandomKey(keyParams as CFDictionary, &error) else {
+        let label = "com.eerimoq.Moblin.webrtc.dtls.\(UUID().uuidString)"
+        guard let (identity, certificate) = DtlsSession.createIdentity(label: label) else {
             return nil
         }
-        privateKey = key
-        guard let publicKey = SecKeyCopyPublicKey(key) else {
-            return nil
-        }
-        guard let pubKeyData = SecKeyCopyExternalRepresentation(publicKey, nil) as Data? else {
-            return nil
-        }
-        let certBytes = DtlsSession.buildSelfSignedCertificate(
-            privateKey: key,
-            publicKeyData: pubKeyData
-        )
-        certificateData = Data(certBytes)
-        fingerprint = DtlsSession.computeFingerprintFromData(certificateData)
+        defer { DtlsSession.cleanupKeychain(label: label) }
+        self.identity = identity
+        self.certificate = certificate
+        let certData = SecCertificateCopyData(certificate) as Data
+        fingerprint = DtlsSession.computeFingerprintFromData(certData)
     }
 
-    func setRole(_ role: DtlsRole) {
+    func start(host: String, port: UInt16) {
         dtlsQueue.async {
-            self.role = role
-        }
-    }
-
-    func start() {
-        dtlsQueue.async {
-            self.startInternal()
+            self.startInternal(host: host, port: port)
         }
     }
 
@@ -74,31 +50,127 @@ class DtlsSession {
         }
     }
 
-    func handleIncomingData(_ data: Data) {
-        dtlsQueue.async {
-            self.handleIncomingDataInternal(data)
-        }
-    }
-
     func getSrtpKeyingMaterial() -> Data? {
         return dtlsQueue.sync {
             srtpKeyingMaterial
         }
     }
 
-    private func startInternal() {
+    private func startInternal(host: String, port: UInt16) {
         state = .connecting
         delegate?.dtlsSessionOnState(self, state: .connecting)
+        let tlsOptions = NWProtocolTLS.Options()
+        guard let secIdentity = sec_identity_create(identity) else {
+            state = .failed
+            delegate?.dtlsSessionOnState(self, state: .failed)
+            return
+        }
+        sec_protocol_options_set_local_identity(
+            tlsOptions.securityProtocolOptions,
+            secIdentity
+        )
+        sec_protocol_options_set_min_tls_protocol_version(
+            tlsOptions.securityProtocolOptions,
+            .DTLSv12
+        )
+        sec_protocol_options_set_max_tls_protocol_version(
+            tlsOptions.securityProtocolOptions,
+            .DTLSv12
+        )
+        // Allow self-signed certificates from the remote peer
+        sec_protocol_options_set_verify_block(
+            tlsOptions.securityProtocolOptions,
+            { _, _, completion in
+                completion(true)
+            },
+            dtlsQueue
+        )
+        let params = NWParameters(dtls: tlsOptions, udp: .init())
+        let nwHost = NWEndpoint.Host(host)
+        guard let nwPort = NWEndpoint.Port(rawValue: port) else {
+            state = .failed
+            delegate?.dtlsSessionOnState(self, state: .failed)
+            return
+        }
+        connection = NWConnection(
+            host: nwHost,
+            port: nwPort,
+            using: params
+        )
+        connection?.stateUpdateHandler = { [weak self] newState in
+            dtlsQueue.async {
+                self?.handleStateUpdate(newState)
+            }
+        }
+        connection?.start(queue: dtlsQueue)
     }
 
     private func stopInternal() {
+        connection?.stateUpdateHandler = nil
+        connection?.cancel()
+        connection = nil
         state = .closed
         srtpKeyingMaterial = nil
         delegate?.dtlsSessionOnState(self, state: .closed)
     }
 
-    private func handleIncomingDataInternal(_: Data) {
-        // DTLS record processing will be implemented with full handshake support.
+    private func handleStateUpdate(_ newState: NWConnection.State) {
+        switch newState {
+        case .ready:
+            state = .connected
+            extractSrtpKeyingMaterial()
+            delegate?.dtlsSessionOnState(self, state: .connected)
+        case .failed:
+            state = .failed
+            connection?.cancel()
+            connection = nil
+            delegate?.dtlsSessionOnState(self, state: .failed)
+        case .cancelled:
+            state = .closed
+            connection = nil
+            delegate?.dtlsSessionOnState(self, state: .closed)
+        default:
+            break
+        }
+    }
+
+    private func extractSrtpKeyingMaterial() {
+        guard let metadata = connection?.metadata(definition: NWProtocolTLS.definition)
+            as? NWProtocolTLS.Metadata
+        else {
+            return
+        }
+        sec_protocol_metadata_access_handle(
+            metadata.securityProtocolMetadata
+        ) { handle in
+            // Extract 60 bytes of keying material for SRTP via RFC 5764:
+            // client_write_key (16) + server_write_key (16) +
+            // client_write_salt (14) + server_write_salt (14)
+            var exportedData = Data(count: 60)
+            let result = exportedData.withUnsafeMutableBytes { buffer in
+                guard let baseAddress = buffer.baseAddress else {
+                    return Int32(-1)
+                }
+                return "EXTRACTOR-dtls_srtp".withCString { label in
+                    SSLExportKeyingMaterial(
+                        handle,
+                        label,
+                        strlen(label),
+                        nil,
+                        0,
+                        baseAddress,
+                        60
+                    )
+                }
+            }
+            if result == 0 {
+                srtpKeyingMaterial = exportedData
+            }
+        }
+    }
+
+    func send(_ data: Data) {
+        connection?.send(content: data, completion: .contentProcessed { _ in })
     }
 
     static func computeFingerprintFromData(_ data: Data) -> String {
@@ -107,12 +179,90 @@ class DtlsSession {
         return "sha-256 \(hex)"
     }
 
+    private static func createIdentity(label: String) -> (SecIdentity, SecCertificate)? {
+        let keyParams: [String: Any] = [
+            kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
+            kSecAttrKeySizeInBits as String: 256,
+            kSecAttrIsPermanent as String: false,
+        ]
+        var error: Unmanaged<CFError>?
+        guard let privateKey = SecKeyCreateRandomKey(keyParams as CFDictionary, &error) else {
+            return nil
+        }
+        guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
+            return nil
+        }
+        guard let pubKeyData = SecKeyCopyExternalRepresentation(publicKey, nil) as Data? else {
+            return nil
+        }
+        let certBytes = buildSelfSignedCertificate(
+            privateKey: privateKey,
+            publicKeyData: pubKeyData
+        )
+        guard let certificate = SecCertificateCreateWithData(
+            nil,
+            Data(certBytes) as CFData
+        ) else {
+            return nil
+        }
+        // Store private key in keychain temporarily to create identity
+        let addKeyParams: [String: Any] = [
+            kSecClass as String: kSecClassKey,
+            kSecAttrKeyClass as String: kSecAttrKeyClassPrivate,
+            kSecValueRef as String: privateKey,
+            kSecAttrLabel as String: label,
+            kSecAttrIsPermanent as String: true,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+        ]
+        guard SecItemAdd(addKeyParams as CFDictionary, nil) == errSecSuccess else {
+            return nil
+        }
+        // Store certificate in keychain temporarily
+        let addCertParams: [String: Any] = [
+            kSecClass as String: kSecClassCertificate,
+            kSecValueRef as String: certificate,
+            kSecAttrLabel as String: label,
+        ]
+        guard SecItemAdd(addCertParams as CFDictionary, nil) == errSecSuccess else {
+            return nil
+        }
+        // Retrieve the identity (private key + certificate pair)
+        let identityQuery: [String: Any] = [
+            kSecClass as String: kSecClassIdentity,
+            kSecAttrLabel as String: label,
+            kSecReturnRef as String: true,
+        ]
+        var identityResult: CFTypeRef?
+        guard SecItemCopyMatching(
+            identityQuery as CFDictionary,
+            &identityResult
+        ) == errSecSuccess else {
+            return nil
+        }
+        guard let identity = identityResult as? SecIdentity else {
+            return nil
+        }
+        return (identity, certificate)
+    }
+
+    private static func cleanupKeychain(label: String) {
+        let deleteKeyParams: [String: Any] = [
+            kSecClass as String: kSecClassKey,
+            kSecAttrLabel as String: label,
+        ]
+        SecItemDelete(deleteKeyParams as CFDictionary)
+        let deleteCertParams: [String: Any] = [
+            kSecClass as String: kSecClassCertificate,
+            kSecAttrLabel as String: label,
+        ]
+        SecItemDelete(deleteCertParams as CFDictionary)
+    }
+
     private static func buildSelfSignedCertificate(
         privateKey: SecKey,
         publicKeyData: Data
     ) -> [UInt8] {
         let serialNumber: [UInt8] = [0x02, 0x01, 0x01]
-        // SHA256 with ECDSA OID: 1.2.840.10045.4.3.2
         let signatureAlgorithm: [UInt8] = [
             0x30, 0x0A,
             0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x04, 0x03, 0x02,
@@ -123,9 +273,7 @@ class DtlsSession {
         let notAfter: [UInt8] = [0x17, 0x0D] + Array("350101000000Z".utf8)
         let validity: [UInt8] = [0x30] + derLength(notBefore.count + notAfter.count) +
             notBefore + notAfter
-        // EC public key OID: 1.2.840.10045.2.1
         let ecOid: [UInt8] = [0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02, 0x01]
-        // P-256 curve OID: 1.2.840.10045.3.1.7
         let p256Oid: [UInt8] = [0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x03, 0x01, 0x07]
         let algId: [UInt8] = [0x30] + derLength(ecOid.count + p256Oid.count) + ecOid + p256Oid
         let pubKeyBytes = Array(publicKeyData)
@@ -137,7 +285,6 @@ class DtlsSession {
         let tbsContent = version + serialNumber + signatureAlgorithm + issuer + validity +
             subject + subjectPublicKeyInfo
         let tbsCertificate: [UInt8] = [0x30] + derLength(tbsContent.count) + tbsContent
-        // Sign TBS certificate with the private key using ECDSA-SHA256
         let signatureBytes = signData(Data(tbsCertificate), with: privateKey)
         let signatureValue: [UInt8] = [0x03] + derLength(signatureBytes.count + 1) +
             [0x00] + signatureBytes
@@ -184,3 +331,4 @@ private func derLength(_ length: Int) -> [UInt8] {
         return [0x82, UInt8(length >> 8), UInt8(length & 0xFF)]
     }
 }
+

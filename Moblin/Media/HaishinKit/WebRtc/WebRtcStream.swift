@@ -141,7 +141,9 @@ extension WebRtcStream: WhipSessionDelegate {
         }
         state = .connected
         dtlsSession?.delegate = self
-        dtlsSession?.start()
+        if let candidate = whipSession.remoteCandidates.first {
+            dtlsSession?.start(host: candidate.address, port: UInt16(candidate.port))
+        }
         processorControlQueue.async {
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
@@ -167,8 +169,7 @@ extension WebRtcStream: DtlsSessionDelegate {
             case .connected:
                 logger.info("webrtc: DTLS connected")
                 if let keyingMaterial = self.dtlsSession?.getSrtpKeyingMaterial() {
-                    let isClient = self.dtlsSession?.role == .client
-                    self.srtpSession.deriveKeys(keyingMaterial: keyingMaterial, isClient: isClient)
+                    self.srtpSession.deriveKeys(keyingMaterial: keyingMaterial, isClient: true)
                 }
             case .failed:
                 logger.info("webrtc: DTLS failed")
@@ -179,10 +180,6 @@ extension WebRtcStream: DtlsSessionDelegate {
                 break
             }
         }
-    }
-
-    func dtlsSessionOnSend(_: DtlsSession, data _: Data) {
-        // Send DTLS data over the ICE transport
     }
 }
 

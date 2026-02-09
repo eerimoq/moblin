@@ -17,6 +17,7 @@ class WhipSession {
     weak var delegate: WhipSessionDelegate?
     private(set) var remoteIceUfrag: String?
     private(set) var remoteIcePwd: String?
+    private(set) var remoteCandidates: [SdpCandidate] = []
 
     init() {
         iceAgent = IceAgent()
@@ -105,6 +106,7 @@ class WhipSession {
         remoteSdp = answer
         remoteIceUfrag = answer.iceUfrag ?? answer.media.first?.iceUfrag
         remoteIcePwd = answer.icePwd ?? answer.media.first?.icePwd
+        remoteCandidates = answer.media.flatMap(\.candidates)
         if remoteIceUfrag != nil, remoteIcePwd != nil {
             delegate?.whipSessionOnConnected(self)
         } else {
