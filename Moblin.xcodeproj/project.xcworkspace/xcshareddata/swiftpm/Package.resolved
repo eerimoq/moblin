@@ -1,5 +1,5 @@
 {
-  "originHash" : "2ec89183ce973e73157e1f6178f92aabac79182102b81c7f9097c9d2d72f6022",
+  "originHash" : "775415f4ac7797d1912b795770d6b02e7e522c44ed92d0c0e69873d7af1def1a",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -152,6 +152,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "071e0bc6a0f4f0ba2385c05332b0adb172d0f7ec"
+      }
+    },
+    {
+      "identity" : "webrtc",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eerimoq/Webrtc",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4da5d1591360d79bb7d2d069af26b5ab3e6f3e45"
       }
     },
     {
