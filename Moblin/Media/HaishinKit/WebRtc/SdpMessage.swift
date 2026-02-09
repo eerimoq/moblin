@@ -280,11 +280,13 @@ func sdpCreateOffer(
     videoPayloadType: UInt8,
     audioPayloadType: UInt8,
     iceUfrag: String,
-    icePwd: String
+    icePwd: String,
+    fingerprint: String
 ) -> SdpMessage {
     var sdp = SdpMessage()
     sdp.iceUfrag = iceUfrag
     sdp.icePwd = icePwd
+    sdp.fingerprint = fingerprint
     sdp.setup = "actpass"
     sdp.bundleGroup = "0 1"
     var audio = SdpMediaDescription(type: .audio)

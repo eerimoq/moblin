@@ -128,13 +128,15 @@ struct WebRtcSuite {
             videoPayloadType: 96,
             audioPayloadType: 111,
             iceUfrag: "testufrag",
-            icePwd: "testpwd"
+            icePwd: "testpwd",
+            fingerprint: "sha-256 AA:BB:CC"
         )
         #expect(sdp.media.count == 2)
         #expect(sdp.media[0].type == .audio)
         #expect(sdp.media[1].type == .video)
         #expect(sdp.iceUfrag == "testufrag")
         #expect(sdp.icePwd == "testpwd")
+        #expect(sdp.fingerprint == "sha-256 AA:BB:CC")
     }
 
     @Test
@@ -145,13 +147,15 @@ struct WebRtcSuite {
             videoPayloadType: 96,
             audioPayloadType: 111,
             iceUfrag: "ufrag123",
-            icePwd: "pwd456"
+            icePwd: "pwd456",
+            fingerprint: "sha-256 AA:BB:CC:DD"
         )
         let encoded = sdp.encode()
         let decoded = SdpMessage.decode(from: encoded)
         #expect(decoded.media.count == 2)
         #expect(decoded.iceUfrag == "ufrag123")
         #expect(decoded.icePwd == "pwd456")
+        #expect(decoded.fingerprint == "sha-256 AA:BB:CC:DD")
         #expect(decoded.media[0].type == .audio)
         #expect(decoded.media[1].type == .video)
         #expect(decoded.media[0].mid == "0")
@@ -195,11 +199,27 @@ struct WebRtcSuite {
             videoPayloadType: 96,
             audioPayloadType: 111,
             iceUfrag: "u",
-            icePwd: "p"
+            icePwd: "p",
+            fingerprint: "sha-256 AA:BB"
         )
         let encoded = sdp.encode()
         #expect(encoded.contains("a=sendonly"))
         #expect(encoded.contains("a=rtcp-mux"))
+    }
+
+    @Test
+    func sdpOfferContainsFingerprint() {
+        let sdp = sdpCreateOffer(
+            videoSsrc: 100,
+            audioSsrc: 200,
+            videoPayloadType: 96,
+            audioPayloadType: 111,
+            iceUfrag: "u",
+            icePwd: "p",
+            fingerprint: "sha-256 AA:BB:CC:DD:EE:FF"
+        )
+        let encoded = sdp.encode()
+        #expect(encoded.contains("a=fingerprint:sha-256 AA:BB:CC:DD:EE:FF"))
     }
 
     // MARK: - ICE Agent Tests

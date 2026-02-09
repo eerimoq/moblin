@@ -26,6 +26,7 @@ class WebRtcStream {
     weak var delegate: WebRtcStreamDelegate?
     private var url: String = ""
     private var totalByteCount: Int64 = 0
+    private let fingerprint: String
 
     private let videoPayloadType: UInt8 = 96
     private let audioPayloadType: UInt8 = 111
@@ -35,6 +36,7 @@ class WebRtcStream {
     init(processor: Processor, timecodesEnabled: Bool, delegate: WebRtcStreamDelegate) {
         self.processor = processor
         self.delegate = delegate
+        fingerprint = WebRtcStream.generateFingerprint()
         whipSession = WhipSession()
         iceAgent = IceAgent()
         videoSequencer = RtpSequencer(
@@ -48,6 +50,15 @@ class WebRtcStream {
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: false)
         writer.delegate = self
         whipSession.delegate = self
+    }
+
+    // Generates a placeholder DTLS certificate fingerprint for the SDP offer.
+    // This should be replaced with the actual certificate fingerprint once DTLS
+    // session support is implemented.
+    private static func generateFingerprint() -> String {
+        let bytes = (0 ..< 32).map { _ in UInt8.random(in: 0 ... 255) }
+        let hex = bytes.map { String(format: "%02X", $0) }.joined(separator: ":")
+        return "sha-256 \(hex)"
     }
 
     func start(url: String) {
@@ -84,7 +95,8 @@ class WebRtcStream {
             videoPayloadType: videoPayloadType,
             audioPayloadType: audioPayloadType,
             iceUfrag: whipSession.localIceUfrag,
-            icePwd: whipSession.localIcePwd
+            icePwd: whipSession.localIcePwd,
+            fingerprint: fingerprint
         )
         whipSession.start(url: url, offer: offer)
     }
