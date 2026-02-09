@@ -268,4 +268,57 @@ struct WebRtcSuite {
         stream.url = "whip://server.com/live"
         #expect(stream.protocolString() == "WebRTC")
     }
+
+    // MARK: - DTLS Tests
+
+    @Test
+    func dtlsFingerprintFormat() {
+        let fingerprint = DtlsSession.computeFingerprintFromData(Data(repeating: 0xAB, count: 100))
+        #expect(fingerprint.hasPrefix("sha-256 "))
+        let hexPart = String(fingerprint.dropFirst(8))
+        let components = hexPart.split(separator: ":")
+        #expect(components.count == 32)
+        for component in components {
+            #expect(component.count == 2)
+        }
+    }
+
+    @Test
+    func dtlsFingerprintDeterministic() {
+        let data = Data([0x01, 0x02, 0x03, 0x04, 0x05])
+        let fp1 = DtlsSession.computeFingerprintFromData(data)
+        let fp2 = DtlsSession.computeFingerprintFromData(data)
+        #expect(fp1 == fp2)
+    }
+
+    @Test
+    func dtlsFingerprintDifferentData() {
+        let data1 = Data([0x01, 0x02, 0x03])
+        let data2 = Data([0x04, 0x05, 0x06])
+        let fp1 = DtlsSession.computeFingerprintFromData(data1)
+        let fp2 = DtlsSession.computeFingerprintFromData(data2)
+        #expect(fp1 != fp2)
+    }
+
+    // MARK: - SRTP Tests
+
+    @Test
+    func srtpSessionNotReadyByDefault() {
+        let session = SrtpSession()
+        #expect(session.isReady == false)
+    }
+
+    @Test
+    func srtpProtectReturnsNilWhenNotReady() {
+        let session = SrtpSession()
+        let packet = Data(repeating: 0, count: 20)
+        #expect(session.protectRtp(packet) == nil)
+    }
+
+    @Test
+    func srtpProtectReturnsNilForShortPacket() {
+        let session = SrtpSession()
+        let packet = Data(repeating: 0, count: 5)
+        #expect(session.protectRtp(packet) == nil)
+    }
 }

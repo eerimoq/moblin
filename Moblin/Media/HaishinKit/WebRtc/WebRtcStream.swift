@@ -23,6 +23,8 @@ class WebRtcStream {
     private let audioSequencer: RtpSequencer
     private let writer: MpegTsWriter
     private let processor: Processor
+    private let dtlsSession: DtlsSession?
+    private let srtpSession: SrtpSession
     weak var delegate: WebRtcStreamDelegate?
     private var url: String = ""
     private var totalByteCount: Int64 = 0
@@ -36,7 +38,9 @@ class WebRtcStream {
     init(processor: Processor, timecodesEnabled: Bool, delegate: WebRtcStreamDelegate) {
         self.processor = processor
         self.delegate = delegate
-        fingerprint = WebRtcStream.generateFingerprint()
+        dtlsSession = DtlsSession()
+        srtpSession = SrtpSession()
+        fingerprint = dtlsSession?.fingerprint ?? WebRtcStream.generateFallbackFingerprint()
         whipSession = WhipSession()
         iceAgent = IceAgent()
         videoSequencer = RtpSequencer(
@@ -52,10 +56,8 @@ class WebRtcStream {
         whipSession.delegate = self
     }
 
-    // Generates a placeholder DTLS certificate fingerprint for the SDP offer.
-    // This should be replaced with the actual certificate fingerprint once DTLS
-    // session support is implemented.
-    private static func generateFingerprint() -> String {
+    // Fallback fingerprint when DTLS certificate generation fails.
+    private static func generateFallbackFingerprint() -> String {
         let bytes = (0 ..< 32).map { _ in UInt8.random(in: 0 ... 255) }
         let hex = bytes.map { String(format: "%02X", $0) }.joined(separator: ":")
         return "sha-256 \(hex)"
@@ -103,6 +105,7 @@ class WebRtcStream {
 
     private func stopInternal() {
         state = .disconnected
+        dtlsSession?.stop()
         whipSession.stop()
         processorControlQueue.async {
             self.writer.stopRunning()
@@ -137,6 +140,8 @@ extension WebRtcStream: WhipSessionDelegate {
             return
         }
         state = .connected
+        dtlsSession?.delegate = self
+        dtlsSession?.start()
         processorControlQueue.async {
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
@@ -146,11 +151,38 @@ extension WebRtcStream: WhipSessionDelegate {
 
     private func handleDisconnected() {
         state = .disconnected
+        dtlsSession?.stop()
         processorControlQueue.async {
             self.writer.stopRunning()
             self.processor.stopEncoding(self.writer)
         }
         delegate?.webRtcStreamOnDisconnected()
+    }
+}
+
+extension WebRtcStream: DtlsSessionDelegate {
+    func dtlsSessionOnState(_: DtlsSession, state: DtlsState) {
+        webRtcQueue.async {
+            switch state {
+            case .connected:
+                logger.info("webrtc: DTLS connected")
+                if let keyingMaterial = self.dtlsSession?.getSrtpKeyingMaterial() {
+                    let isClient = self.dtlsSession?.role == .client
+                    self.srtpSession.deriveKeys(keyingMaterial: keyingMaterial, isClient: isClient)
+                }
+            case .failed:
+                logger.info("webrtc: DTLS failed")
+                self.delegate?.webRtcStreamOnDisconnected()
+            case .closed:
+                logger.info("webrtc: DTLS closed")
+            default:
+                break
+            }
+        }
+    }
+
+    func dtlsSessionOnSend(_: DtlsSession, data _: Data) {
+        // Send DTLS data over the ICE transport
     }
 }
 
