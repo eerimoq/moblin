@@ -45,3 +45,7 @@ pack-exported-localizations:
 	    zip -qr $$f.zip $$f && \
 	    rm -rf $$f ; \
 	done
+
+generate-web-remote-control-css:
+	cd Moblin/RemoteControl/Web/ && \
+	tailwindcss -i css/app.input.css -o css/app.css

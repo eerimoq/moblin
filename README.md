@@ -363,6 +363,8 @@ Messages passed to `onmessage` are defined by `Message` in
 
 # Development environment setup
 
+## Build the project
+
 Roughly the steps to setup Moblin's developement environment.
 
 1. Install Xcode with iOS and MacOS simulators on your Mac.
@@ -401,3 +403,29 @@ Roughly the steps to setup Moblin's developement environment.
 13. Build and run by pressing `Command + R`.
 
 14. Done!
+
+## Styling, linting and more
+
+1. Install tools.
+
+    `brew install swiftlint swiftformat periphery codespell`
+
+2. Perform styling, linting and more.
+
+   `make style lint spell-check periphery`
+
+3. Done!
+
+## Modify Web remote control CSS files
+
+1. Install tool.
+
+    `brew install tailwindcss`
+
+2. Modify `Moblin/RemoteControl/Web/css/app.input.css`.
+
+3. Generate `Moblin/RemoteControl/Web/css/app.css`.
+
+   `make generate-web-remote-control-css`
+
+4. Done!

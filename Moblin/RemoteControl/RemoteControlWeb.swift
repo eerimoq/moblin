@@ -44,6 +44,7 @@ private let staticFiles: [StaticFile] = [
     StaticFile("/css/", "f3b9cc97-Ubuntu[wdth,wght]-latin", "woff2"),
     StaticFile("/css/", "c1b12cdf-Ubuntu-Italic[wdth,wght]-latin", "woff2"),
     StaticFile("/css/", "0bd4277a-UbuntuMono[wght]-latin", "woff2"),
+    StaticFile("/css/", "app", "css"),
     StaticFile("/css/", "remote", "css"),
     StaticFile("/css/", "scoreboard", "css"),
     StaticFile("/js/", "index", "mjs"),
