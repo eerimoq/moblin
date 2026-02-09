@@ -95,6 +95,14 @@ func isValidUrl(url value: String,
         if let message = isValidRtmpUrl(url: value, rtmpStreamKeyRequired: rtmpStreamKeyRequired) {
             return message
         }
+    case "http":
+        break
+    case "https":
+        break
+    case "whip":
+        break
+    case "whips":
+        break
     case "srt":
         if let message = isValidSrtUrl(url: value) {
             return message

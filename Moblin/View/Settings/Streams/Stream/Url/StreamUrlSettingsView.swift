@@ -108,6 +108,22 @@ private struct SrtHelpView: View {
     }
 }
 
+private struct WhipHelpView: View {
+    var body: some View {
+        Section {
+            VStack(alignment: .leading) {
+                Text("Template: https://my_domain/my_endpoint")
+                Text("Example:  https://example.com/live/whip")
+                Text("Example:  http://192.168.1.50:8080/live/whip")
+                Text("")
+                Text("WHIP uses HTTP/HTTPS endpoints. (whip:// is also accepted for compatibility.)")
+            }
+        } header: {
+            Text("WHIP")
+        }
+    }
+}
+
 private struct UrlSettingsView: View {
     @EnvironmentObject var model: Model
     @Environment(\.dismiss) var dismiss
@@ -172,6 +188,7 @@ private struct UrlSettingsView: View {
                             RtmpHelpView(stream: stream)
                             if showSrtHelp {
                                 SrtHelpView()
+                                WhipHelpView()
                             }
                         }
                         .navigationTitle("Help")

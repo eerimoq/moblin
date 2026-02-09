@@ -12,9 +12,11 @@ enum SettingsCameraId {
     case back(id: String)
     case front(id: String)
     case rtmp(id: UUID)
+    case whip(id: UUID)
     case srtla(id: UUID)
     case rist(id: UUID)
     case rtsp(id: UUID)
+    case whep(id: UUID)
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture
@@ -1107,6 +1109,7 @@ class Database: Codable, ObservableObject {
     var quickButtonsGeneral: SettingsQuickButtons = .init()
     @Published var quickButtons: [SettingsQuickButton] = []
     var rtmpServer: SettingsRtmpServer = .init()
+    var whipServer: SettingsWhipServer = .init()
     @Published var networkInterfaceNames: [SettingsNetworkInterfaceName] = []
     @Published var lowBitrateWarning: Bool = true
     @Published var vibrate: Bool = false
@@ -1158,6 +1161,7 @@ class Database: Codable, ObservableObject {
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
+    var whepClient: SettingsWhepClient = .init()
     var navigation: SettingsNavigation = .init()
     var wiFiAware: SettingsWiFiAware = .init()
     var face: SettingsFace = .init()
@@ -1211,6 +1215,7 @@ class Database: Codable, ObservableObject {
              quickButtons,
              globalButtons,
              rtmpServer,
+             whipServer,
              networkInterfaceNames,
              lowBitrateWarning,
              vibrate,
@@ -1261,6 +1266,7 @@ class Database: Codable, ObservableObject {
              ristServer,
              disconnectProtection,
              rtspClient,
+             whepClient,
              navigation,
              wiFiAware,
              face,
@@ -1285,6 +1291,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.quickButtons, quickButtonsGeneral)
         try container.encode(.globalButtons, quickButtons)
         try container.encode(.rtmpServer, rtmpServer)
+        try container.encode(.whipServer, whipServer)
         try container.encode(.networkInterfaceNames, networkInterfaceNames)
         try container.encode(.lowBitrateWarning, lowBitrateWarning)
         try container.encode(.vibrate, vibrate)
@@ -1335,6 +1342,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
+        try container.encode(.whepClient, whepClient)
         try container.encode(.navigation, navigation)
         try container.encode(.wiFiAware, wiFiAware)
         try container.encode(.face, face)
@@ -1365,6 +1373,7 @@ class Database: Codable, ObservableObject {
         quickButtonsGeneral = container.decode(.quickButtons, SettingsQuickButtons.self, .init())
         quickButtons = container.decode(.globalButtons, [SettingsQuickButton].self, [])
         rtmpServer = container.decode(.rtmpServer, SettingsRtmpServer.self, .init())
+        whipServer = container.decode(.whipServer, SettingsWhipServer.self, .init())
         networkInterfaceNames = container.decode(
             .networkInterfaceNames,
             [SettingsNetworkInterfaceName].self,
@@ -1444,6 +1453,7 @@ class Database: Codable, ObservableObject {
             .init()
         )
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
+        whepClient = container.decode(.whepClient, SettingsWhepClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
         face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved
@@ -1915,7 +1925,6 @@ private func addMissingDeepLinkQuickButtons(database: Database) {
         let buttonExists = quickButtons.buttons.contains(where: { quickButton.type == $0.type })
         if !buttonExists {
             button.type = quickButton.type
-            button.page = quickButton.page
             quickButtons.buttons.append(button)
         }
     }

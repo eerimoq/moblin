@@ -38,7 +38,7 @@ struct WidgetInScene: Identifiable {
 extension Model {
     func getTextEffects(id: UUID) -> [TextEffect] {
         var effects: [TextEffect] = []
-        if let effect = textEffects[id] {
+        if let effect = textEffects.first(where: { $0.key == id })?.value {
             effects.append(effect)
         }
         for slideshow in slideshowEffects.values {
@@ -52,39 +52,39 @@ extension Model {
     }
 
     func getVideoSourceEffect(id: UUID) -> VideoSourceEffect? {
-        return videoSourceEffects[id]
+        return videoSourceEffects.first(where: { $0.key == id })?.value
     }
 
     func getVTuberEffect(id: UUID) -> VTuberEffect? {
-        return vTuberEffects[id]
+        return vTuberEffects.first(where: { $0.key == id })?.value
     }
 
     func getPngTuberEffect(id: UUID) -> PngTuberEffect? {
-        return pngTuberEffects[id]
+        return pngTuberEffects.first(where: { $0.key == id })?.value
     }
 
     func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
-        return snapshotEffects[id]
+        return snapshotEffects.first(where: { $0.key == id })?.value
     }
 
     func getChatEffect(id: UUID) -> ChatEffect? {
-        return chatEffects[id]
+        return chatEffects.first(where: { $0.key == id })?.value
     }
 
     func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
-        return qrCodeEffects[id]
+        return qrCodeEffects.first(where: { $0.key == id })?.value
     }
 
     func getWheelOfLuckEffect(id: UUID) -> WheelOfLuckEffect? {
-        return wheelOfLuckEffects[id]
+        return wheelOfLuckEffects.first(where: { $0.key == id })?.value
     }
 
     func getBingoCardEffect(id: UUID) -> BingoCardEffect? {
-        return bingoCardEffects[id]
+        return bingoCardEffects.first(where: { $0.key == id })?.value
     }
 
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
-        return scoreboardEffects[id]
+        return scoreboardEffects.first(where: { $0.key == id })?.value
     }
 
     func getWidgetShapeEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> ShapeEffect? {
@@ -249,17 +249,28 @@ extension Model {
             streamOverlay.isFrontCameraSelected = true
         case .rtmp:
             attachBufferedCamera(cameraId: scene.videoSource.rtmpCameraId, scene: scene)
+        case .whip:
+            attachBufferedCamera(cameraId: scene.videoSource.whipCameraId, scene: scene)
         case .srtla:
             attachBufferedCamera(cameraId: scene.videoSource.srtlaCameraId, scene: scene)
         case .rist:
             attachBufferedCamera(cameraId: scene.videoSource.ristCameraId, scene: scene)
         case .rtsp:
             attachBufferedCamera(cameraId: scene.videoSource.rtspCameraId, scene: scene)
+        case .whep:
+            attachBufferedCamera(cameraId: scene.videoSource.whepCameraId, scene: scene)
         case .mediaPlayer:
             mediaPlayers[scene.videoSource.mediaPlayerCameraId]?.activate()
             attachBufferedCamera(cameraId: scene.videoSource.mediaPlayerCameraId, scene: scene)
         case .external:
-            attachExternalCamera(scene: scene)
+            // Backward-compat: WHIP/WHEP used to be stored as "external" camera IDs (uuidString).
+            if let id = UUID(uuidString: scene.videoSource.externalCameraId), getWhipStream(id: id) != nil {
+                attachBufferedCamera(cameraId: id, scene: scene)
+            } else if let id = UUID(uuidString: scene.videoSource.externalCameraId), getWhepStream(id: id) != nil {
+                attachBufferedCamera(cameraId: id, scene: scene)
+            } else {
+                attachExternalCamera(scene: scene)
+            }
         case .screenCapture:
             attachBufferedCamera(cameraId: screenCaptureCameraId, scene: scene)
         case .backTripleLowEnergy:
@@ -429,14 +440,24 @@ extension Model {
         switch scene.videoSource.cameraPosition {
         case .rtmp:
             return activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
+        case .whip:
+            return activeBufferedVideoIds.contains(scene.videoSource.whipCameraId)
         case .srtla:
             return activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
         case .rist:
             return activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
         case .rtsp:
             return activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
+        case .whep:
+            return activeBufferedVideoIds.contains(scene.videoSource.whepCameraId)
         case .external:
-            return isExternalCameraConnected(id: scene.videoSource.externalCameraId)
+            if let id = UUID(uuidString: scene.videoSource.externalCameraId), getWhipStream(id: id) != nil {
+                return activeBufferedVideoIds.contains(id)
+            } else if let id = UUID(uuidString: scene.videoSource.externalCameraId), getWhepStream(id: id) != nil {
+                return activeBufferedVideoIds.contains(id)
+            } else {
+                return isExternalCameraConnected(id: scene.videoSource.externalCameraId)
+            }
         default:
             return true
         }
@@ -604,15 +625,15 @@ extension Model {
     }
 
     private func getImageEffect(id: UUID) -> ImageEffect? {
-        return imageEffects[id]
+        return imageEffects.first(where: { $0.key == id })?.value
     }
 
     private func getBrowserEffect(id: UUID) -> BrowserEffect? {
-        return browserEffects[id]
+        return browserEffects.first(where: { $0.key == id })?.value
     }
 
     private func getMapEffect(id: UUID) -> MapEffect? {
-        return mapEffects[id]
+        return mapEffects.first(where: { $0.key == id })?.value
     }
 
     private func resetVideoEffects(widgets: [SettingsWidget]) {
@@ -1129,13 +1150,13 @@ extension Model {
         _ widget: SettingsWidget,
         _ effects: inout [VideoEffect]
     ) {
-        guard let effect = getScoreboardEffect(id: widget.id), !effects.contains(effect) else {
+        guard let effect = scoreboardEffects[widget.id], !effects.contains(effect) else {
             return
         }
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         DispatchQueue.main.async {
             effect.update(scoreboard: widget.scoreboard,
-                          config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
+                          config: self.getCurrentConfig(),
                           players: self.database.scoreboardPlayers)
         }
         if isWatchLocal() {

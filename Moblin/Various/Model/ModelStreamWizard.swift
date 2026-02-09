@@ -22,6 +22,7 @@ enum WizardCustomProtocol {
     case srt
     case rtmp
     case rist
+    case whip
 
     func toDefaultCodec() -> SettingsStreamCodec {
         switch self {
@@ -33,6 +34,8 @@ enum WizardCustomProtocol {
             return .h264avc
         case .rist:
             return .h265hevc
+        case .whip:
+            return .h264avc
         }
     }
 }
@@ -74,6 +77,8 @@ extension Model {
             return url.url?.absoluteString
         case .rist:
             return createStreamWizard.customRistUrl.trim()
+        case .whip:
+            return createStreamWizard.customWhipUrl.trim()
         }
         return nil
     }
@@ -168,6 +173,9 @@ extension Model {
         case .myServers:
             stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
         }
+        if createStreamWizard.customProtocol == .whip {
+            stream.audioCodec = .opus
+        }
         stream.audioBitrate = 128_000
         database.streams.append(stream)
         setCurrentStream(stream: stream)
@@ -201,6 +209,7 @@ extension Model {
         createStreamWizard.directIngest = ""
         createStreamWizard.directStreamKey = ""
         createStreamWizard.belaboxUrl = ""
+        createStreamWizard.customWhipUrl = ""
     }
 
     func handleSettingsUrlsInWizard(settings: MoblinSettingsUrl) {

@@ -498,6 +498,7 @@ private let cameraPositionRtmp = "(RTMP)"
 private let cameraPositionSrtla = "(SRT(LA))"
 private let cameraPositionRist = "(RIST)"
 private let cameraPositionRtsp = "(RTSP)"
+private let cameraPositionWhep = "(WHEP)"
 private let cameraPositionMediaPlayer = "(Media player)"
 
 func rtmpCamera(name: String) -> String {
@@ -530,6 +531,14 @@ func rtspCamera(name: String) -> String {
 
 func isRtspCameraOrMic(camera: String) -> Bool {
     return camera.hasSuffix(cameraPositionRtsp)
+}
+
+func whepCamera(name: String) -> String {
+    return "\(name) \(cameraPositionWhep)"
+}
+
+func isWhepCameraOrMic(camera: String) -> Bool {
+    return camera.hasSuffix(cameraPositionWhep)
 }
 
 func mediaPlayerCamera(name: String) -> String {

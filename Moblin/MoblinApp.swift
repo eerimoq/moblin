@@ -1,3 +1,5 @@
+import HaishinKit
+import RTCHaishinKit
 import SwiftUI
 
 @main
@@ -9,6 +11,9 @@ struct MoblinApp: App {
     init() {
         MoblinApp.globalModel = Model()
         _model = StateObject(wrappedValue: MoblinApp.globalModel!)
+        Task {
+            await SessionBuilderFactory.shared.register(HTTPSessionFactory())
+        }
     }
 
     var body: some Scene {
