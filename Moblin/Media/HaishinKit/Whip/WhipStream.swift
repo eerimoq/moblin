@@ -368,10 +368,10 @@ extension WhipStream: VideoEncoderDelegate {
         let startCode: [UInt8] = [0x00, 0x00, 0x00, 0x01]
         var offset = 0
         while offset + 4 <= totalLength {
-            let nalLength = Int(dataPointer[offset]) << 24 |
-                Int(dataPointer[offset + 1]) << 16 |
-                Int(dataPointer[offset + 2]) << 8 |
-                Int(dataPointer[offset + 3])
+            let nalLength = Int(UInt8(bitPattern: dataPointer[offset])) << 24 |
+                Int(UInt8(bitPattern: dataPointer[offset + 1])) << 16 |
+                Int(UInt8(bitPattern: dataPointer[offset + 2])) << 8 |
+                Int(UInt8(bitPattern: dataPointer[offset + 3]))
             offset += 4
             guard nalLength > 0, offset + nalLength <= totalLength else {
                 break
