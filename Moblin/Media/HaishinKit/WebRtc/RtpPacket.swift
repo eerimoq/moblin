@@ -74,6 +74,7 @@ class RtpSequencer {
 
     func makeHeader(marker: Bool) -> RtpHeader {
         return RtpHeader(
+            marker: marker,
             payloadType: payloadType,
             sequenceNumber: nextSequenceNumber(),
             timestamp: timestamp,

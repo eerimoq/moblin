@@ -150,8 +150,9 @@ struct SdpMessage {
                 }
                 currentMedia = parseMediaLine(value)
             case "a":
-                if currentMedia != nil {
-                    parseAttribute(value, media: &currentMedia!)
+                if var media = currentMedia {
+                    parseAttribute(value, media: &media)
+                    currentMedia = media
                 } else {
                     parseSessionAttribute(value, message: &message)
                 }
