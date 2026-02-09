@@ -9,7 +9,7 @@ struct Version {
 // swiftlint:disable line_length
 private let versions = [
     Version(version: "30.2027.0", date: "2026-02-09", changes: [
-        "•  Untested support for Xtra-branded DJI devices. 💡 Mario 🧑‍🏭 Spillmaker",
+        "• Untested support for Xtra-branded DJI devices. 💡 Mario 🧑‍🏭 Spillmaker",
         "• Toggle for vertically stacked zoom and scene buttons. 💡 Kumamonster",
         "• LUT widget effect. 💡 Dengoso",
         "• Shortcut to scenes from Scene widgets quick button page. 💡 mikeful",
