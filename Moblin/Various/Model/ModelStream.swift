@@ -189,6 +189,8 @@ extension Model {
             startNetStreamSrt()
         case .rist:
             startNetStreamRist()
+        case .webRtc:
+            startNetStreamWebRtc()
         }
         updateSpeed(now: .now)
         streamBecameBrokenTime = nil
@@ -234,12 +236,17 @@ extension Model {
         updateAdaptiveBitrateRistIfEnabled()
     }
 
+    private func startNetStreamWebRtc() {
+        media.webRtcStartStream(url: stream.url)
+    }
+
     func stopNetStream() {
         moblink.streamer?.stopTunnels()
         reconnectTimer.stop()
         media.rtmpStopStream()
         media.srtStopStream()
         media.ristStopStream()
+        media.webRtcStopStream()
         streamStartTime = nil
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)
@@ -528,6 +535,18 @@ extension Model {
     private func handleRistDisconnected() {
         DispatchQueue.main.async {
             self.onDisconnected(reason: "RIST disconnected")
+        }
+    }
+
+    private func handleWebRtcConnected() {
+        DispatchQueue.main.async {
+            self.onConnected()
+        }
+    }
+
+    private func handleWebRtcDisconnected() {
+        DispatchQueue.main.async {
+            self.onDisconnected(reason: "WebRTC disconnected")
         }
     }
 
@@ -876,6 +895,14 @@ extension Model: MediaDelegate {
 
     func mediaOnRistDisconnected() {
         handleRistDisconnected()
+    }
+
+    func mediaOnWebRtcConnected() {
+        handleWebRtcConnected()
+    }
+
+    func mediaOnWebRtcDisconnected() {
+        handleWebRtcDisconnected()
     }
 
     func mediaOnAudioMuteChange() {

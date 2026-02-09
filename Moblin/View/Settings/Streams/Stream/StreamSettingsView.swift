@@ -270,6 +270,8 @@ struct StreamSettingsView: View {
                         } label: {
                             Text("RIST")
                         }
+                    case .webRtc:
+                        EmptyView()
                     }
                 }
             } header: {

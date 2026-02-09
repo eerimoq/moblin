@@ -107,6 +107,8 @@ func isValidUrl(url value: String,
         if let message = isValidRistUrl(url: value) {
             return message
         }
+    case "whip":
+        break
     case "irl":
         if let message = isValidIrlUrl(url: value) {
             return message
