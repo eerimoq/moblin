@@ -161,6 +161,12 @@ class TextEffectFormatter {
                 formatCyclingPower(stats: stats)
             case .cyclingCadence:
                 formatCyclingCadence(stats: stats)
+            case let .runningPace(deviceName):
+                formatRunningPace(stats: stats, deviceName: deviceName)
+            case let .runningCadence(deviceName):
+                formatRunningCadence(stats: stats, deviceName: deviceName)
+            case let .runningDistance(deviceName):
+                formatRunningDistance(stats: stats, deviceName: deviceName)
             case .lapTimes:
                 formatLapTimes()
             case .browserTitle:
@@ -406,6 +412,28 @@ class TextEffectFormatter {
 
     private func formatCyclingCadence(stats: TextEffectStats) {
         appendTextPart(value: stats.cyclingCadence)
+    }
+    
+    private func formatRunningPace(stats: TextEffectStats, deviceName: String) {
+        if let speed = stats.runningMetrics[deviceName]?.speed {
+            appendTextPart(value: Moblin.formatPace(speed: speed))
+        } else {
+            appendTextPart(value: "-")
+        }
+    }
+     private func formatRunningCadence(stats: TextEffectStats, deviceName: String) {
+        if let cadence = stats.runningMetrics[deviceName]?.cadence {
+            appendTextPart(value: String(cadence))
+        } else {
+            appendTextPart(value: "-")
+        }
+    }
+     private func formatRunningDistance(stats: TextEffectStats, deviceName: String) {
+        if let distance = stats.runningMetrics[deviceName]?.distance {
+            appendTextPart(value: Moblin.format(distance: distance))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
     private func formatLapTimes() {

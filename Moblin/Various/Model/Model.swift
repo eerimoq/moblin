@@ -514,6 +514,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var serversSpeed: Int64 = 0
     var adsEndDate: Date?
     var heartRates: [String: Int?] = [:]
+    var runningMetrics: [String: WorkoutDeviceRunningMetrics] = [:]
     var workoutActiveEnergyBurned: Int?
     var workoutDistance: Int?
     var workoutPower: Int?

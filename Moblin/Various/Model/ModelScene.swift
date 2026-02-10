@@ -1398,6 +1398,7 @@ extension Model {
                 teslaMedia: textEffectTeslaMedia(),
                 cyclingPower: "\(cyclingPower) W",
                 cyclingCadence: "\(cyclingCadence)",
+                runningMetrics: runningMetrics,
                 browserTitle: getBrowserTitle(),
                 gForce: gForceManager?.getLatest()
             )

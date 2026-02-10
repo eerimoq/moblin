@@ -60,7 +60,9 @@ extension Model: WorkoutDeviceDelegate {
             guard let device = self.getWorkoutDeviceSettings(device: device) else {
                 return
             }
-            self.heartRates.removeValue(forKey: device.name.lowercased())
+            let deviceName = device.name.lowercased()
+            self.heartRates.removeValue(forKey: deviceName)
+            self.runningMetrics.removeValue(forKey: deviceName)
             if device === self.currentWorkoutDeviceSettings {
                 self.statusTopRight.workoutDeviceState = state
             }
@@ -80,6 +82,15 @@ extension Model: WorkoutDeviceDelegate {
         DispatchQueue.main.async {
             self.cyclingPower = power
             self.cyclingCadence = cadence
+        }
+    }
+    
+    func workoutDeviceRunningMetrics(_ device: WorkoutDevice, metrics: WorkoutDeviceRunningMetrics) {
+        DispatchQueue.main.async {
+            guard let device = self.getWorkoutDeviceSettings(device: device) else {
+                return
+            }
+            self.runningMetrics[device.name.lowercased()] = metrics
         }
     }
 }

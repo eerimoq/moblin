@@ -41,6 +41,9 @@ enum TextFormatPart: Equatable {
     case teslaMedia
     case cyclingPower
     case cyclingCadence
+    case runningPace(String)
+    case runningCadence(String)
+    case runningDistance(String)
     case lapTimes
     case browserTitle
     case gForce
@@ -87,6 +90,7 @@ class TextFormatLoader {
                     loadItem(part: .averageSpeed, offsetBy: 14)
                 } else if formatFromIndex.hasPrefix("{altitude}") {
                     loadItem(part: .altitude, offsetBy: 10)
+                } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if formatFromIndex.hasPrefix("{distance}") {
                     loadItem(part: .distance, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{slope}") {
@@ -119,6 +123,8 @@ class TextFormatLoader {
                     loadItem(part: .muted, offsetBy: 7)
                 } else if appendHeartRateIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendSubtitlesIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendPaceIfPresent(formatFromIndex: formatFromIndex) {
+                } else if appendCadenceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if isPhone(), formatFromIndex.hasPrefix("{activeenergyburned}") {
                     loadItem(part: .activeEnergyBurned, offsetBy: 20)
                 } else if isPhone(), formatFromIndex.hasPrefix("{power}") {
@@ -167,6 +173,45 @@ class TextFormatLoader {
         } else if let match = formatFromIndex.prefixMatch(of: /{heartrate:([^}]+)}/) {
             let deviceName = String(match.output.1)
             loadItem(part: .heartRate(deviceName), offsetBy: match.output.0.count)
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    private func appendPaceIfPresent(formatFromIndex: String) -> Bool {
+        if formatFromIndex.hasPrefix("{runningpace}") {
+            loadItem(part: .runningPace(""), offsetBy: 13)
+            return true
+        } else if let match = formatFromIndex.prefixMatch(of: /{runningpace:([^}]+)}/) {
+            let deviceName = String(match.output.1)
+            loadItem(part: .runningPace(deviceName), offsetBy: match.output.0.count)
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    private func appendCadenceIfPresent(formatFromIndex: String) -> Bool {
+        if formatFromIndex.hasPrefix("{runningcadence}") {
+            loadItem(part: .runningCadence(""), offsetBy: 16)
+            return true
+        } else if let match = formatFromIndex.prefixMatch(of: /{runningcadence:([^}]+)}/) {
+            let deviceName = String(match.output.1)
+            loadItem(part: .runningCadence(deviceName), offsetBy: match.output.0.count)
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    private func appendRunDistanceIfPresent(formatFromIndex: String) -> Bool {
+        if formatFromIndex.hasPrefix("{runningdistance}") {
+            loadItem(part: .runningDistance(""), offsetBy: 17)
+            return true
+        } else if let match = formatFromIndex.prefixMatch(of: /{runningdistance:([^}]+)}/) {
+            let deviceName = String(match.output.1)
+            loadItem(part: .runningDistance(deviceName), offsetBy: match.output.0.count)
             return true
         } else {
             return false

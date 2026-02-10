@@ -385,6 +385,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var teslaMedia: String
     var cyclingPower: String
     var cyclingCadence: String
+    var runningMetrics: [String: WorkoutDeviceRunningMetrics]
     var browserTitle: String
     var gForce: GForce?
 
@@ -420,6 +421,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         teslaMedia = stats.teslaMedia
         cyclingPower = stats.cyclingPower
         cyclingCadence = stats.cyclingCadence
+        runningMetrics = stats.runningMetrics
         browserTitle = stats.browserTitle
     }
 
@@ -456,6 +458,7 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                                teslaMedia: teslaMedia,
                                cyclingPower: cyclingPower,
                                cyclingCadence: cyclingCadence,
+                               runningMetrics: runningMetrics,
                                browserTitle: browserTitle,
                                gForce: gForce)
     }

@@ -830,6 +830,21 @@ private struct WorkoutVariablesView: View {
                         ),
                         text: $value
                     )
+                    VariableView(
+                        title: "{runningPace:\(device.name)}",
+                        description: String(localized: "Show running pace"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{runningCadence:\(device.name)}",
+                        description: String(localized: "Show running cadence"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{runningDistance:\(device.name)}",
+                        description: String(localized: "Show running distance"),
+                        text: $value
+                    )
                 }
                 VariableView(
                     title: "{cyclingPower}",
