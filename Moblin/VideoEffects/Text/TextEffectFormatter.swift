@@ -413,7 +413,7 @@ class TextEffectFormatter {
     private func formatCyclingCadence(stats: TextEffectStats) {
         appendTextPart(value: stats.cyclingCadence)
     }
-    
+
     private func formatRunningPace(stats: TextEffectStats, deviceName: String) {
         if let speed = stats.runningMetrics[deviceName]?.speed {
             appendTextPart(value: Moblin.formatPace(speed: speed))
@@ -421,14 +421,16 @@ class TextEffectFormatter {
             appendTextPart(value: "-")
         }
     }
-     private func formatRunningCadence(stats: TextEffectStats, deviceName: String) {
+
+    private func formatRunningCadence(stats: TextEffectStats, deviceName: String) {
         if let cadence = stats.runningMetrics[deviceName]?.cadence {
             appendTextPart(value: String(cadence))
         } else {
             appendTextPart(value: "-")
         }
     }
-     private func formatRunningDistance(stats: TextEffectStats, deviceName: String) {
+
+    private func formatRunningDistance(stats: TextEffectStats, deviceName: String) {
         if let distance = stats.runningMetrics[deviceName]?.distance {
             appendTextPart(value: Moblin.format(distance: distance))
         } else {

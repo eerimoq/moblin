@@ -84,7 +84,7 @@ extension Model: WorkoutDeviceDelegate {
             self.cyclingCadence = cadence
         }
     }
-    
+
     func workoutDeviceRunningMetrics(_ device: WorkoutDevice, metrics: WorkoutDeviceRunningMetrics) {
         DispatchQueue.main.async {
             guard let device = self.getWorkoutDeviceSettings(device: device) else {

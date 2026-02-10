@@ -178,7 +178,7 @@ class TextFormatLoader {
             return false
         }
     }
-    
+
     private func appendPaceIfPresent(formatFromIndex: String) -> Bool {
         if formatFromIndex.hasPrefix("{runningpace}") {
             loadItem(part: .runningPace(""), offsetBy: 13)
@@ -191,7 +191,7 @@ class TextFormatLoader {
             return false
         }
     }
-    
+
     private func appendCadenceIfPresent(formatFromIndex: String) -> Bool {
         if formatFromIndex.hasPrefix("{runningcadence}") {
             loadItem(part: .runningCadence(""), offsetBy: 16)
@@ -204,7 +204,7 @@ class TextFormatLoader {
             return false
         }
     }
-    
+
     private func appendRunDistanceIfPresent(formatFromIndex: String) -> Bool {
         if formatFromIndex.hasPrefix("{runningdistance}") {
             loadItem(part: .runningDistance(""), offsetBy: 17)

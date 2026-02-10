@@ -127,6 +127,7 @@ struct TextEffectSuite {
                                teslaMedia: "",
                                cyclingPower: "",
                                cyclingCadence: "",
+                               runningMetrics: [:],
                                browserTitle: "",
                                gForce: gForce)
     }

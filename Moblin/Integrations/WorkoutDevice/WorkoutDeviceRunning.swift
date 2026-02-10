@@ -38,22 +38,22 @@ class WorkoutDeviceRunning {
     private var lastRscUpdateTime: ContinuousClock.Instant?
     private var distanceMetersFallback = 0.0
     private var usingDeviceDistance = false
-    
+
     func reset() {
         measurementCharacteristic = nil
         lastRscUpdateTime = nil
         distanceMetersFallback = 0
         usingDeviceDistance = false
     }
-    
+
     func setMeasurementCharacteristic(_ characteristic: CBCharacteristic) {
         measurementCharacteristic = characteristic
     }
-    
+
     func isAnyCharacteristicDiscovered() -> Bool {
         return measurementCharacteristic != nil
     }
-    
+
     func handleMeasurement(value: Data) throws -> WorkoutDeviceRunningMetrics {
         let measurement = try RscMeasurement(value: value)
         var distanceMeters: Double?

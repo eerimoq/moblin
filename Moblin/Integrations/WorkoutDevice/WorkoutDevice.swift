@@ -6,7 +6,7 @@ private let dispatchQueue = DispatchQueue(label: "com.eerimoq.workout-device")
 let workoutDeviceScanner = BluetoothScanner(serviceIds: [
     workoutDeviceHeartRateServiceId,
     workoutDeviceCyclingPowerServiceId,
-    workoutDeviceRunningServiceId
+    workoutDeviceRunningServiceId,
 ])
 
 protocol WorkoutDeviceDelegate: AnyObject {
@@ -144,7 +144,7 @@ extension WorkoutDevice: CBCentralManagerDelegate {
     private func handleCyclingPowerVector(value: Data) throws {
         try cyclingPower.handlePowerVector(value: value)
     }
-    
+
     private func handleRunningMeasurement(value: Data) throws {
         let metrics = try running.handleMeasurement(value: value)
         delegate?.workoutDeviceRunningMetrics(self, metrics: metrics)
