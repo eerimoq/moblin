@@ -13,7 +13,10 @@ private struct StreamDescriptionView: View {
     let startTime: Date
 
     private func details() -> String {
-        var details = [stream.status.privacyStatus]
+        var details = [stream.status.visibility()?.toString() ?? String(localized: "Unknown")]
+        if stream.contentDetails.enableAutoStart {
+            details.append(String(localized: "Auto-start"))
+        }
         if stream.contentDetails.enableAutoStop {
             details.append(String(localized: "Auto-stop"))
         }

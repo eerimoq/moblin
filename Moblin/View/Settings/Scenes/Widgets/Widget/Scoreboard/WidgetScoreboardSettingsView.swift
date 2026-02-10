@@ -18,13 +18,8 @@ struct WidgetScoreboardQuickButtonControlsView: View {
 }
 
 struct ScoreboardColorsView: View {
-    let model: Model
-    let widget: SettingsWidget
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
-
-    private func updateEffect() {
-        model.updateScoreboardEffect(widget: widget)
-    }
+    let updated: () -> Void
 
     var body: some View {
         NavigationLink {
@@ -35,7 +30,7 @@ struct ScoreboardColorsView: View {
                             if let color = scoreboard.textColorColor.toRgb() {
                                 scoreboard.textColor = color
                             }
-                            updateEffect()
+                            updated()
                         }
                     ColorPicker("Primary background",
                                 selection: $scoreboard.primaryBackgroundColorColor,
@@ -44,7 +39,7 @@ struct ScoreboardColorsView: View {
                             if let color = scoreboard.primaryBackgroundColorColor.toRgb() {
                                 scoreboard.primaryBackgroundColor = color
                             }
-                            updateEffect()
+                            updated()
                         }
                     ColorPicker("Secondary background",
                                 selection: $scoreboard.secondaryBackgroundColorColor,
@@ -53,13 +48,13 @@ struct ScoreboardColorsView: View {
                             if let color = scoreboard.secondaryBackgroundColorColor.toRgb() {
                                 scoreboard.secondaryBackgroundColor = color
                             }
-                            updateEffect()
+                            updated()
                         }
                 }
                 Section {
                     TextButtonView("Reset") {
                         scoreboard.resetColors()
-                        updateEffect()
+                        updated()
                     }
                 }
             }
@@ -76,6 +71,24 @@ struct WidgetScoreboardSettingsView: View {
     @ObservedObject var scoreboard: SettingsWidgetScoreboard
     @ObservedObject var web: SettingsRemoteControlWeb
 
+    private func updated() {
+        switch scoreboard.sport {
+        case .generic:
+            model.sendUpdateGenericScoreboardToWatch(id: widget.id, generic: scoreboard.generic)
+        case .padel:
+            model.sendUpdatePadelScoreboardToWatch(id: widget.id, padel: scoreboard.padel)
+        default:
+            break
+        }
+        model.remoteControlScoreboardUpdate(scoreboard: scoreboard)
+        model.getScoreboardEffect(id: widget.id)?
+            .update(
+                scoreboard: scoreboard,
+                config: model.getModularScoreboardConfig(scoreboard: scoreboard),
+                players: model.database.scoreboardPlayers
+            )
+    }
+
     var body: some View {
         Section {
             Picker("Sport", selection: $scoreboard.sport) {
@@ -85,24 +98,22 @@ struct WidgetScoreboardSettingsView: View {
             }
             .onChange(of: scoreboard.sport) { _ in
                 scoreboard.modular.config = nil
-                model.remoteControlScoreboardUpdate()
-                model.resetSelectedScene(changeScene: false, attachCamera: false)
+                updated()
             }
             switch scoreboard.sport {
             case .padel:
-                WidgetScoreboardPadelGeneralSettingsView(model: model,
-                                                         widget: widget,
+                WidgetScoreboardPadelGeneralSettingsView(widget: widget,
                                                          scoreboard: scoreboard,
-                                                         padel: scoreboard.padel)
+                                                         padel: scoreboard.padel,
+                                                         updated: updated)
             case .generic:
-                WidgetScoreboardGenericGeneralSettingsView(model: model,
-                                                           widget: widget,
+                WidgetScoreboardGenericGeneralSettingsView(widget: widget,
                                                            scoreboard: scoreboard,
-                                                           generic: scoreboard.generic)
+                                                           generic: scoreboard.generic,
+                                                           updated: updated)
             default:
-                WidgetScoreboardModularGeneralSettingsView(model: model,
-                                                           widget: widget,
-                                                           modular: scoreboard.modular)
+                WidgetScoreboardModularGeneralSettingsView(modular: scoreboard.modular,
+                                                           updated: updated)
             }
         }
         Section {
@@ -126,16 +137,15 @@ struct WidgetScoreboardSettingsView: View {
         }
         switch scoreboard.sport {
         case .padel:
-            WidgetScoreboardPadelSettingsView(model: model, padel: scoreboard.padel)
+            WidgetScoreboardPadelSettingsView(model: model, padel: scoreboard.padel, updated: updated)
         case .generic:
-            WidgetScoreboardGenericSettingsView(model: model,
-                                                generic: scoreboard.generic,
-                                                clock: scoreboard.generic.clock)
+            WidgetScoreboardGenericSettingsView(generic: scoreboard.generic,
+                                                clock: scoreboard.generic.clock,
+                                                updated: updated)
         default:
-            WidgetScoreboardModularSettingsView(model: model,
-                                                widget: widget,
-                                                modular: scoreboard.modular,
-                                                clock: scoreboard.modular.clock)
+            WidgetScoreboardModularSettingsView(modular: scoreboard.modular,
+                                                clock: scoreboard.modular.clock,
+                                                updated: updated)
         }
     }
 }

@@ -38,7 +38,7 @@ struct WidgetInScene: Identifiable {
 extension Model {
     func getTextEffects(id: UUID) -> [TextEffect] {
         var effects: [TextEffect] = []
-        if let effect = textEffects.first(where: { $0.key == id })?.value {
+        if let effect = textEffects[id] {
             effects.append(effect)
         }
         for slideshow in slideshowEffects.values {
@@ -52,39 +52,39 @@ extension Model {
     }
 
     func getVideoSourceEffect(id: UUID) -> VideoSourceEffect? {
-        return videoSourceEffects.first(where: { $0.key == id })?.value
+        return videoSourceEffects[id]
     }
 
     func getVTuberEffect(id: UUID) -> VTuberEffect? {
-        return vTuberEffects.first(where: { $0.key == id })?.value
+        return vTuberEffects[id]
     }
 
     func getPngTuberEffect(id: UUID) -> PngTuberEffect? {
-        return pngTuberEffects.first(where: { $0.key == id })?.value
+        return pngTuberEffects[id]
     }
 
     func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
-        return snapshotEffects.first(where: { $0.key == id })?.value
+        return snapshotEffects[id]
     }
 
     func getChatEffect(id: UUID) -> ChatEffect? {
-        return chatEffects.first(where: { $0.key == id })?.value
+        return chatEffects[id]
     }
 
     func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
-        return qrCodeEffects.first(where: { $0.key == id })?.value
+        return qrCodeEffects[id]
     }
 
     func getWheelOfLuckEffect(id: UUID) -> WheelOfLuckEffect? {
-        return wheelOfLuckEffects.first(where: { $0.key == id })?.value
+        return wheelOfLuckEffects[id]
     }
 
     func getBingoCardEffect(id: UUID) -> BingoCardEffect? {
-        return bingoCardEffects.first(where: { $0.key == id })?.value
+        return bingoCardEffects[id]
     }
 
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
-        return scoreboardEffects.first(where: { $0.key == id })?.value
+        return scoreboardEffects[id]
     }
 
     func getWidgetShapeEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> ShapeEffect? {
@@ -604,15 +604,15 @@ extension Model {
     }
 
     private func getImageEffect(id: UUID) -> ImageEffect? {
-        return imageEffects.first(where: { $0.key == id })?.value
+        return imageEffects[id]
     }
 
     private func getBrowserEffect(id: UUID) -> BrowserEffect? {
-        return browserEffects.first(where: { $0.key == id })?.value
+        return browserEffects[id]
     }
 
     private func getMapEffect(id: UUID) -> MapEffect? {
-        return mapEffects.first(where: { $0.key == id })?.value
+        return mapEffects[id]
     }
 
     private func resetVideoEffects(widgets: [SettingsWidget]) {
@@ -1129,13 +1129,13 @@ extension Model {
         _ widget: SettingsWidget,
         _ effects: inout [VideoEffect]
     ) {
-        guard let effect = scoreboardEffects[widget.id], !effects.contains(effect) else {
+        guard let effect = getScoreboardEffect(id: widget.id), !effects.contains(effect) else {
             return
         }
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         DispatchQueue.main.async {
             effect.update(scoreboard: widget.scoreboard,
-                          config: self.getCurrentConfig(),
+                          config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
                           players: self.database.scoreboardPlayers)
         }
         if isWatchLocal() {

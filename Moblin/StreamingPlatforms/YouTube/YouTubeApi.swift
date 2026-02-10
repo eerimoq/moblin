@@ -16,9 +16,14 @@ struct YouTubeApiLiveBroadcastSnippet: Codable {
 
 struct YouTubeApiLiveBroadcastStatus: Codable {
     let privacyStatus: String
+
+    func visibility() -> YouTubeApiLiveBroadcaseVisibility? {
+        return YouTubeApiLiveBroadcaseVisibility(rawValue: privacyStatus)
+    }
 }
 
 struct YouTubeApiLiveBroadcastContentDetails: Codable {
+    let enableAutoStart: Bool
     let enableAutoStop: Bool
 }
 
@@ -69,7 +74,13 @@ enum YouTubeApiLiveBroadcaseVisibility: String, Codable, CaseIterable {
 }
 
 struct YouTubeApiListVideoStreamingDetails: Codable {
-    let concurrentViewers: String
+    let concurrentViewers: String?
+    let actualStartTime: String?
+    let actualEndTime: String?
+
+    func isLive() -> Bool {
+        return actualStartTime != nil && actualEndTime == nil
+    }
 }
 
 struct YouTubeApiListVideo: Codable {

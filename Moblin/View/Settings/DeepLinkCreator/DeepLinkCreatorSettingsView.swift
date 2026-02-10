@@ -153,12 +153,10 @@ struct DeepLinkCreatorSettingsView: View {
                         }
                     }
                     Section {
-                        HCenter {
-                            Image(uiImage: generateQrCode(from: deepLink)!)
-                                .resizable()
-                                .interpolation(.none)
-                                .scaledToFit()
-                                .frame(maxHeight: metrics.size.height)
+                        if let image = generateQrCode(from: deepLink) {
+                            QrCodeImageView(image: image, height: qrCodeHeight(metrics))
+                        } else {
+                            Text("Failed to create QR-code.")
                         }
                     }
                 } else {
