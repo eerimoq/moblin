@@ -1233,7 +1233,6 @@ class Database: Codable, ObservableObject {
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
-    var garminDevices: SettingsGarminDevices = .init()
     var garminUnits: SettingsGarminUnits = .init()
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
