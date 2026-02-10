@@ -43,6 +43,9 @@ struct ScoreboardEffectModularView: View {
         HStack(alignment: .top, spacing: 0) {
             let maxHistory = calculateMaxHistory()
             let histWidth = modular.fontSize() * 1.5
+            let secondaryBoxWidth = fontSize() * 1.55
+            let dynamicWidth = CGFloat(modular.width) - CGFloat(secondaryBoxWidth) + CGFloat(maxHistory) *
+                CGFloat(histWidth)
             VStack(spacing: 0) {
                 stackedHistoryTeam(
                     team: config.team1,
@@ -59,7 +62,8 @@ struct ScoreboardEffectModularView: View {
                     histWidth: histWidth
                 )
             }
-            .frame(width: CGFloat(modular.width) + CGFloat(maxHistory - 1) * histWidth)
+            .frame(width: dynamicWidth)
+            // .frame(width: CGFloat(modular.width) + CGFloat(maxHistory - 1) * histWidth)
             infoBox()
         }
     }
@@ -76,7 +80,7 @@ struct ScoreboardEffectModularView: View {
             let height = CGFloat(modular.rowHeight)
             HStack(spacing: 0) {
                 teamName(team: modularTeam)
-                    .padding(.leading, 6)
+                    .padding(.leading, 8)
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 possession(show: team.possession)
@@ -284,10 +288,13 @@ struct ScoreboardEffectModularView: View {
                 if let label, !label.isEmpty {
                     VStack(spacing: -2) {
                         Text(label)
-                            .font(.system(size: fontSize * 0.25, weight: .bold))
+                            .font(.system(size: fontSize * 0.25))
                             .offset(x: 0, y: fontSize * 0.04)
                         Text(value)
-                            .font(.system(size: fontSize * 0.75, weight: weight))
+                            .font(.system(
+                                size: fontSize * 0.75,
+                                weight: weight
+                            )) // the bold toggle doesn't seem to impact the team name
                     }
                 } else {
                     Text(value)
