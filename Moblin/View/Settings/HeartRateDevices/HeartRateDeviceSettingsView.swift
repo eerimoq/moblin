@@ -47,11 +47,13 @@ struct HeartRateDeviceSettingsView: View {
                 Section {
                     NameEditView(name: $device.name, existingNames: heartRateDevices.devices)
                 } footer: {
-                    Text("Add {heartRate:\(device.name)} to a text widget to show heart rate on stream.")
-                    Text("""
-                    For devices with running metrics, also use {pace:\(device.name)}, \
-                    {cadence:\(device.name)} and {runDistance:\(device.name)}.
-                    """)
+                    VStack(alignment: .leading) {
+                        Text("Add {heartRate:\(device.name)} to a text widget to show heart rate on stream.")
+                        Text("""
+                        For devices with running metrics, also use {pace:\(device.name)}, \
+                        {cadence:\(device.name)} and {runDistance:\(device.name)}.
+                        """)
+                    }
                 }
                 Section {
                     NavigationLink {

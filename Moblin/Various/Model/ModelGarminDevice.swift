@@ -1,19 +1,5 @@
 import Foundation
 
-private let metersPerMile = 1609.344
-
-extension SettingsGarminPaceUnit {
-    var suffix: String {
-        return rawValue
-    }
-}
-
-extension SettingsGarminDistanceUnit {
-    var suffix: String {
-        return rawValue
-    }
-}
-
 extension Model {
     func allDevicePaces() -> [String: String] {
         var result: [String: String] = [:]
@@ -24,18 +10,7 @@ extension Model {
                 result[name] = "-"
                 continue
             }
-            let secondsPerUnit: Double
-            switch database.garminUnits.paceUnit {
-            case .minutesPerKilometer:
-                secondsPerUnit = paceSecondsPerMeter * 1000.0
-            case .minutesPerMile:
-                secondsPerUnit = paceSecondsPerMeter * metersPerMile
-            }
-            let totalSeconds = max(0, Int(secondsPerUnit.rounded()))
-            let minutes = totalSeconds / 60
-            let seconds = totalSeconds % 60
-            let paceValue = String(format: "%d:%02d", minutes, seconds)
-            result[name] = "\(paceValue) \(database.garminUnits.paceUnit.suffix)"
+            result[name] = formatPace(speed: 1.0 / paceSecondsPerMeter)
         }
         return result
     }
@@ -59,15 +34,7 @@ extension Model {
                 result[name] = "-"
                 continue
             }
-            let value: Double
-            switch database.garminUnits.distanceUnit {
-            case .kilometers:
-                value = distanceMeters / 1000.0
-            case .miles:
-                value = distanceMeters / metersPerMile
-            }
-            let formatted = String(format: "%.2f", value)
-            result[name] = "\(formatted) \(database.garminUnits.distanceUnit.suffix)"
+            result[name] = format(distance: distanceMeters)
         }
         return result
     }

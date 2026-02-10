@@ -712,40 +712,6 @@ class SettingsHeartRateDevices: Codable, ObservableObject {
     }
 }
 
-enum SettingsGarminPaceUnit: String, Codable, CaseIterable {
-    case minutesPerKilometer = "min/km"
-    case minutesPerMile = "min/mi"
-}
-
-enum SettingsGarminDistanceUnit: String, Codable, CaseIterable {
-    case kilometers = "km"
-    case miles = "mi"
-}
-
-class SettingsGarminUnits: Codable, ObservableObject {
-    @Published var paceUnit: SettingsGarminPaceUnit = .minutesPerKilometer
-    @Published var distanceUnit: SettingsGarminDistanceUnit = .kilometers
-
-    enum CodingKeys: CodingKey {
-        case paceUnit,
-             distanceUnit
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.paceUnit, paceUnit)
-        try container.encode(.distanceUnit, distanceUnit)
-    }
-
-    init() {}
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        paceUnit = container.decode(.paceUnit, SettingsGarminPaceUnit.self, .minutesPerKilometer)
-        distanceUnit = container.decode(.distanceUnit, SettingsGarminDistanceUnit.self, .kilometers)
-    }
-}
-
 class SettingsGarminDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My Garmin")
     var id: UUID = .init()
@@ -1233,7 +1199,6 @@ class Database: Codable, ObservableObject {
     @Published var externalDisplayContent: SettingsExternalDisplayContent = .stream
     var cyclingPowerDevices: SettingsCyclingPowerDevices = .init()
     var heartRateDevices: SettingsHeartRateDevices = .init()
-    var garminUnits: SettingsGarminUnits = .init()
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
@@ -1338,7 +1303,6 @@ class Database: Codable, ObservableObject {
              cyclingPowerDevices,
              heartRateDevices,
              garminDevices,
-             garminUnits,
              phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
@@ -1413,8 +1377,6 @@ class Database: Codable, ObservableObject {
         try container.encode(.externalDisplayContent, externalDisplayContent)
         try container.encode(.cyclingPowerDevices, cyclingPowerDevices)
         try container.encode(.heartRateDevices, heartRateDevices)
-        try container.encode(.garminDevices, garminDevices)
-        try container.encode(.garminUnits, garminUnits)
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
@@ -1516,8 +1478,6 @@ class Database: Codable, ObservableObject {
             .init()
         )
         heartRateDevices = container.decode(.heartRateDevices, SettingsHeartRateDevices.self, .init())
-        garminDevices = container.decode(.garminDevices, SettingsGarminDevices.self, .init())
-        garminUnits = container.decode(.garminUnits, SettingsGarminUnits.self, .init())
         blackSharkCoolerDevices = container.decode(
             .phoneCoolerDevices,
             SettingsBlackSharkCoolerDevices.self,
