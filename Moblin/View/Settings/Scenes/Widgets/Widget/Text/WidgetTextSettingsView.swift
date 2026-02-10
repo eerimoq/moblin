@@ -11,7 +11,7 @@ private struct Suggestion: Identifiable {
 private let suggestionCountry = "{countryFlag} {country}"
 private let suggestionCity = "{countryFlag} {city}"
 private let suggestionMovement = "📏 {distance} 💨 {speed} 🏔️ {altitude}"
-private let suggestionHeartRate = "♥️ {heartRate:device_name}"
+private let suggestionHeartRate = "♥️ {heartRate}"
 private let suggestionSubtitles = "{subtitles}"
 private let suggestionMuted = "{muted}"
 private let suggestionTime = "🕑 {shortTime}"

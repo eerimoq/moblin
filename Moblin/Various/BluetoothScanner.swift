@@ -18,26 +18,12 @@ class BluetoothScanner: NSObject, ObservableObject {
         centralManager?.stopScan()
         centralManager = nil
     }
-
-    private func appendPeripheral(_ peripheral: CBPeripheral) {
-        guard !discoveredPeripherals.contains(where: { $0.identifier == peripheral.identifier }) else {
-            return
-        }
-        discoveredPeripherals.append(peripheral)
-    }
 }
 
 extension BluetoothScanner: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            if !serviceIds.isEmpty {
-                let connected = central.retrieveConnectedPeripherals(withServices: serviceIds)
-                for peripheral in connected {
-                    appendPeripheral(peripheral)
-                }
-            }
-            let scanServices: [CBUUID]? = serviceIds.isEmpty ? nil : serviceIds
-            central.scanForPeripherals(withServices: scanServices)
+            central.scanForPeripherals(withServices: serviceIds)
         }
     }
 
@@ -47,6 +33,9 @@ extension BluetoothScanner: CBCentralManagerDelegate {
         advertisementData _: [String: Any],
         rssi _: NSNumber
     ) {
-        appendPeripheral(peripheral)
+        guard !discoveredPeripherals.contains(where: { $0 == peripheral }) else {
+            return
+        }
+        discoveredPeripherals.append(peripheral)
     }
 }
