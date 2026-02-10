@@ -500,8 +500,8 @@ extension Model {
         remoteControlWeb?.log(entry: entry)
     }
 
-    func remoteControlScoreboardUpdate() {
-        let config = getCurrentConfig()
+    func remoteControlScoreboardUpdate(scoreboard: SettingsWidgetScoreboard) {
+        let config = getModularScoreboardConfig(scoreboard: scoreboard)
         remoteControlStreamer?.sendScoreboardUpdate(config: config)
         remoteControlWeb?.sendScoreboardUpdate(config: config)
     }
@@ -891,7 +891,8 @@ extension Model: RemoteControlAssistantDelegate {
 extension Model: RemoteControlWebDelegate {
     func remoteControlWebConnected() {
         remoteControlWeb?.stateChanged(state: createRemoteControlStateChanged())
-        remoteControlWeb?.sendScoreboardUpdate(config: getCurrentConfig())
+        let scoreboard = getEnabledScoreboardWidgetsInSelectedScene().first?.scoreboard
+        remoteControlWeb?.sendScoreboardUpdate(config: getModularScoreboardConfig(scoreboard: scoreboard))
     }
 
     func remoteControlWebGetStatus()

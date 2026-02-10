@@ -773,11 +773,28 @@ class SettingsWidgetCrop: Codable {
     }
 }
 
+enum SettingsWidgetBrowserMode: String, Codable, CaseIterable {
+    case periodicAudioAndVideo
+    case audioAndVideoOnly
+    case audioOnly
+
+    func toString() -> String {
+        switch self {
+        case .periodicAudioAndVideo:
+            return String(localized: "Periodic, audio and video")
+        case .audioAndVideoOnly:
+            return String(localized: "Audio and video only")
+        case .audioOnly:
+            return String(localized: "Audio only")
+        }
+    }
+}
+
 class SettingsWidgetBrowser: Codable, ObservableObject {
     @Published var url: String = ""
     @Published var width: Int = 500
     @Published var height: Int = 500
-    @Published var audioAndVideoOnly: Bool = false
+    @Published var mode: SettingsWidgetBrowserMode = .periodicAudioAndVideo
     @Published var baseFps: Float = 5.0
     @Published var styleSheet: String = ""
     @Published var moblinAccess: Bool = false
@@ -789,6 +806,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
              width,
              height,
              audioOnly,
+             mode,
              fps,
              styleSheet,
              moblinAccess
@@ -799,7 +817,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         try container.encode(.url, url)
         try container.encode(.width, width)
         try container.encode(.height, height)
-        try container.encode(.audioOnly, audioAndVideoOnly)
+        try container.encode(.mode, mode)
         try container.encode(.fps, baseFps)
         try container.encode(.styleSheet, styleSheet)
         try container.encode(.moblinAccess, moblinAccess)
@@ -810,7 +828,12 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         url = container.decode(.url, String.self, "")
         width = container.decode(.width, Int.self, 500)
         height = container.decode(.height, Int.self, 500)
-        audioAndVideoOnly = container.decode(.audioOnly, Bool.self, false)
+        if let decodedMode = try? container.decode(SettingsWidgetBrowserMode.self, forKey: .mode) {
+            mode = decodedMode
+        } else {
+            let audioOnly = container.decode(.audioOnly, Bool.self, false)
+            mode = audioOnly ? .audioAndVideoOnly : .periodicAudioAndVideo
+        }
         baseFps = container.decode(.fps, Float.self, 5.0)
         styleSheet = container.decode(.styleSheet, String.self, "")
         moblinAccess = container.decode(.moblinAccess, Bool.self, false)
