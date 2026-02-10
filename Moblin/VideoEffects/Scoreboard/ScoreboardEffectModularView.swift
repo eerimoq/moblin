@@ -24,9 +24,9 @@ struct ScoreboardEffectModularView: View {
     private func calculateMaxHistory() -> Int {
         var maxHistory = 0
         for indexPlusOne in 1 ... 5 {
-            let homeHas = getHistoricScore(team: config.team1, indexPlusOne: indexPlusOne) != nil
-            let awayHas = getHistoricScore(team: config.team2, indexPlusOne: indexPlusOne) != nil
-            if homeHas || awayHas {
+            let homeHas = getHistoricScore(team: config.team1, indexPlusOne: indexPlusOne) ?? ""
+            let awayHas = getHistoricScore(team: config.team2, indexPlusOne: indexPlusOne) ?? ""
+            if !homeHas.isEmpty || !awayHas.isEmpty {
                 maxHistory = indexPlusOne
             }
         }
@@ -59,7 +59,7 @@ struct ScoreboardEffectModularView: View {
                     histWidth: histWidth
                 )
             }
-            .frame(width: CGFloat(modular.width) + CGFloat(maxHistory) * histWidth)
+            .frame(width: CGFloat(modular.width) + CGFloat(maxHistory - 1) * histWidth)
             infoBox()
         }
     }
@@ -196,7 +196,7 @@ struct ScoreboardEffectModularView: View {
                     )
                 }
                 teamName(team: modularTeam)
-                    .padding(.leading, 3)
+                    .padding(.leading, 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 possession(show: team.possession)
                 if modular.layout == .stackedInline {
@@ -274,7 +274,7 @@ struct ScoreboardEffectModularView: View {
         fontSize: CGFloat,
         width: CGFloat,
         gray: Bool,
-        weight: Font.Weight = .bold
+        weight: Font.Weight = .heavy
     ) -> some View {
         if !value.isEmpty {
             ZStack {
@@ -309,7 +309,7 @@ struct ScoreboardEffectModularView: View {
 
     private func teamName(team: SettingsWidgetModularScoreboardTeam) -> some View {
         Text(team.name)
-            .font(.system(size: fontSize()))
+            .font(.system(size: fontSize(), weight: .bold))
             .bold(modular.isBold)
             .lineLimit(1)
             .minimumScaleFactor(0.1)
