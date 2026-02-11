@@ -1448,8 +1448,6 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
             return "SRTLA"
         } else if getProtocol() == .rtmp && isRtmps() {
             return "RTMPS"
-        } else if getProtocol() == .whip {
-            return "WHIP"
         } else {
             return getProtocol().rawValue
         }
