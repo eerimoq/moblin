@@ -64,6 +64,7 @@ class WorkoutDevice: NSObject {
         peripheral = nil
         heartRate.reset()
         cyclingPower.reset()
+        running.reset()
         setState(state: .disconnected)
     }
 
@@ -127,6 +128,9 @@ extension WorkoutDevice: CBCentralManagerDelegate {
             return true
         }
         if cyclingPower.isAnyCharacteristicDiscovered() {
+            return true
+        }
+        if running.isAnyCharacteristicDiscovered() {
             return true
         }
         return false
