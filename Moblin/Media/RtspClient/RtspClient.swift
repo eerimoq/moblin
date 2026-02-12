@@ -5,6 +5,7 @@ import Network
 private let rtspClientQueue = DispatchQueue(label: "com.eerimoq.moblin.rtsp")
 private let channelStart = "$".first!.asciiValue!
 private let rtspEndOfHeaders = Data([0xD, 0xA, 0xD, 0xA])
+let rtpH264PacketTypeFuA: UInt8 = 28
 
 protocol RtspClientDelegate: AnyObject {
     func rtspClientErrorToast(title: String)
@@ -419,7 +420,7 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
         switch type {
         case 1 ... 23:
             try processBufferTypeSingle(packet: packet, timestamp: timestamp)
-        case 28:
+        case rtpH264PacketTypeFuA:
             try processBufferTypeFuA(packet: packet, timestamp: timestamp)
         default:
             throw "Unsupported RTP packet type \(type)."

@@ -84,26 +84,22 @@ private struct RtpPacket {
     let payload: Data
 
     func data() -> Data {
-        var data = Data(capacity: 12 + payload.count)
-        data.append(0x80)
-        data.append((marker ? 0x80 : 0x00) | (payloadType & 0x7F))
-        data.append(contentsOf: [
-            UInt8((sequenceNumber >> 8) & 0xFF),
-            UInt8(sequenceNumber & 0xFF),
-        ])
-        data.append(contentsOf: [
-            UInt8((timestamp >> 24) & 0xFF),
-            UInt8((timestamp >> 16) & 0xFF),
-            UInt8((timestamp >> 8) & 0xFF),
-            UInt8(timestamp & 0xFF),
-        ])
-        data.append(contentsOf: [
-            UInt8((ssrc >> 24) & 0xFF),
-            UInt8((ssrc >> 16) & 0xFF),
-            UInt8((ssrc >> 8) & 0xFF),
-            UInt8(ssrc & 0xFF),
-        ])
-        data.append(payload)
+        var data = Data(count: 12 + payload.count)
+        payload.withUnsafeBytes { payload in
+            data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
+                let version: UInt8 = 2
+                let x: UInt8 = 0
+                let cc: UInt8 = 0
+                pointer[0] = (version << 6) | (x << 4) | cc
+                pointer[1] = (marker ? 0x80 : 0x00) | payloadType
+                pointer.writeUInt16(sequenceNumber, offset: 2)
+                pointer.writeUInt32(timestamp, offset: 4)
+                pointer.writeUInt32(ssrc, offset: 8)
+                pointer.baseAddress!
+                    .advanced(by: 12)
+                    .copyMemory(from: payload.baseAddress!, byteCount: payload.count)
+            }
+        }
         return data
     }
 }
@@ -129,7 +125,7 @@ private final class H264Packetizer {
         self.pps = pps
     }
 
-    func packetize(sampleBuffer: CMSampleBuffer, presentationTimeStamp: CMTime) -> [Data] {
+    func process(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) -> [Data] {
         var nalUnits = extractNalUnits(sampleBuffer: sampleBuffer)
         guard !nalUnits.isEmpty else {
             return []
@@ -142,55 +138,71 @@ private final class H264Packetizer {
                 nalUnits.insert(pps, at: min(1, nalUnits.count))
             }
         }
-        let packetTimestamp = convertTimestamp(presentationTimeStamp)
+        let timestamp = convertTimestamp(presentationTimeStamp)
         var packets: [Data] = []
         for (index, nalUnit) in nalUnits.enumerated() {
             let isLastNal = index == nalUnits.count - 1
             if nalUnit.count <= rtpMtu {
-                let packet = RtpPacket(
-                    marker: isLastNal,
-                    payloadType: payloadType,
-                    sequenceNumber: sequenceNumber,
-                    timestamp: packetTimestamp,
-                    ssrc: ssrc,
-                    payload: nalUnit
-                )
-                packets.append(packet.data())
-                sequenceNumber &+= 1
+                packetizeTypeSingle(isLastNal, timestamp, nalUnit, &packets)
             } else {
-                let nalHeader = nalUnit[0]
-                let fuIndicator = (nalHeader & 0xE0) | 28
-                let nalType = nalHeader & 0x1F
-                var offset = 1
-                var first = true
-                while offset < nalUnit.count {
-                    let chunkSize = min(rtpMtu - 2, nalUnit.count - offset)
-                    var fuHeader = nalType
-                    if first {
-                        fuHeader |= 0x80
-                    }
-                    let isFinalFragment = offset + chunkSize >= nalUnit.count
-                    if isFinalFragment {
-                        fuHeader |= 0x40
-                    }
-                    var payload = Data([fuIndicator, fuHeader])
-                    payload.append(contentsOf: nalUnit[offset ..< offset + chunkSize])
-                    let packet = RtpPacket(
-                        marker: isLastNal && isFinalFragment,
-                        payloadType: payloadType,
-                        sequenceNumber: sequenceNumber,
-                        timestamp: packetTimestamp,
-                        ssrc: ssrc,
-                        payload: payload
-                    )
-                    packets.append(packet.data())
-                    sequenceNumber &+= 1
-                    offset += chunkSize
-                    first = false
-                }
+                packetizeTypeFuA(isLastNal, timestamp, nalUnit, &packets)
             }
         }
         return packets
+    }
+
+    private func packetizeTypeSingle(_ isLastNal: Bool,
+                                     _ timestamp: UInt32,
+                                     _ nalUnit: Data,
+                                     _ packets: inout [Data])
+    {
+        let packet = RtpPacket(
+            marker: isLastNal,
+            payloadType: payloadType,
+            sequenceNumber: sequenceNumber,
+            timestamp: timestamp,
+            ssrc: ssrc,
+            payload: nalUnit
+        )
+        sequenceNumber &+= 1
+        packets.append(packet.data())
+    }
+
+    private func packetizeTypeFuA(_ isLastNal: Bool,
+                                  _ timestamp: UInt32,
+                                  _ nalUnit: Data,
+                                  _ packets: inout [Data])
+    {
+        let nalHeader = nalUnit[0]
+        let fuIndicator = (nalHeader & 0xE0) | rtpH264PacketTypeFuA
+        let nalType = nalHeader & 0x1F
+        var offset = 1
+        var first = true
+        while offset < nalUnit.count {
+            let chunkSize = min(rtpMtu - 2, nalUnit.count - offset)
+            var fuHeader = nalType
+            if first {
+                fuHeader |= 0x80
+            }
+            let isFinalFragment = offset + chunkSize >= nalUnit.count
+            if isFinalFragment {
+                fuHeader |= 0x40
+            }
+            var payload = Data([fuIndicator, fuHeader])
+            payload.append(contentsOf: nalUnit[offset ..< offset + chunkSize])
+            let packet = RtpPacket(
+                marker: isLastNal && isFinalFragment,
+                payloadType: payloadType,
+                sequenceNumber: sequenceNumber,
+                timestamp: timestamp,
+                ssrc: ssrc,
+                payload: payload
+            )
+            sequenceNumber &+= 1
+            packets.append(packet.data())
+            offset += chunkSize
+            first = false
+        }
     }
 
     private func extractNalUnits(sampleBuffer: CMSampleBuffer) -> [Data] {
@@ -220,7 +232,7 @@ private final class OpusPacketizer {
         self.ssrc = ssrc
     }
 
-    func packetize(buffer: AVAudioCompressedBuffer) -> [Data] {
+    func process(_ buffer: AVAudioCompressedBuffer) -> [Data] {
         guard buffer.byteLength > 0 else {
             return []
         }
@@ -253,7 +265,7 @@ private final class OpusRtpPacketizer {
         self.payloadType = payloadType
     }
 
-    func packetize(payload: Data, presentationTimeStamp: CMTime) -> Data {
+    func process(_ payload: Data, _ presentationTimeStamp: CMTime) -> Data {
         let packetTimestamp = convertTimestamp(presentationTimeStamp)
         let packet = RtpPacket(
             marker: false,
@@ -640,19 +652,13 @@ final class WhipStream {
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
                                                 _ presentationTimeStamp: CMTime)
     {
-        guard connected, let packets = audioPacketizer?.packetize(buffer: buffer) else {
+        guard connected, let audioPacketizer, let audioRtpPacketizer, let audioTrack else {
             return
         }
-        for packet in packets {
-            let outgoingPacket: Data
-            if let rtpPacketizer = audioRtpPacketizer {
-                outgoingPacket = rtpPacketizer.packetize(payload: packet,
-                                                         presentationTimeStamp: presentationTimeStamp)
-            } else {
-                continue
-            }
-            if audioTrack?.send(packet: outgoingPacket) == true {
-                totalByteCount += Int64(outgoingPacket.count)
+        for buffer in audioPacketizer.process(buffer) {
+            let packet = audioRtpPacketizer.process(buffer, presentationTimeStamp)
+            if audioTrack.send(packet: packet) {
+                totalByteCount += Int64(packet.count)
             }
         }
     }
@@ -665,15 +671,13 @@ final class WhipStream {
     }
 
     private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer,
-                                                      _ presentationTimeStamp: CMTime)
-    {
-        guard connected,
-              let packets = videoPacketizer?.packetize(sampleBuffer: sampleBuffer,
-                                                       presentationTimeStamp: presentationTimeStamp)
-        else {
+                                                      _ presentationTimeStamp: CMTime) {
+        guard connected, let videoPacketizer, let videoTrack else {
             return
         }
-        for packet in packets where videoTrack?.send(packet: packet) == true {
+        for packet in videoPacketizer.process(sampleBuffer, presentationTimeStamp)
+            where videoTrack.send(packet: packet)
+        {
             self.totalByteCount += Int64(packet.count)
         }
     }
