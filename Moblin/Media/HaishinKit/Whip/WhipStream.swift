@@ -54,6 +54,25 @@ private enum ConnectionState {
     }
 }
 
+private enum GatheringState {
+    case new
+    case inProgress
+    case complete
+
+    init?(cValue: rtcGatheringState) {
+        switch cValue {
+        case RTC_GATHERING_NEW:
+            self = .new
+        case RTC_GATHERING_INPROGRESS:
+            self = .inProgress
+        case RTC_GATHERING_COMPLETE:
+            self = .complete
+        default:
+            return nil
+        }
+    }
+}
+
 private func makeEndpointUrl(url: String) -> URL? {
     guard var components = URLComponents(string: url) else {
         return nil
@@ -361,6 +380,7 @@ private struct RtcTrackConfig {
 
 private protocol PeerConnectionDelegate: AnyObject {
     func peerConnectionOnConnectionStateChanged(state: ConnectionState)
+    func peerConnectionOnGatheringStateChanged(state: GatheringState)
 }
 
 private func toPeerConnection(pointer: UnsafeMutableRawPointer?) -> PeerConnection? {
@@ -387,6 +407,9 @@ private final class PeerConnection {
             rtcSetUserPointer(peerConnectionId, Unmanaged.passUnretained(self).toOpaque())
             try checkOk(rtcSetStateChangeCallback(peerConnectionId) { _, state, pointer in
                 toPeerConnection(pointer: pointer)?.handleStateChange(state: state)
+            })
+            try checkOk(rtcSetGatheringStateChangeCallback(peerConnectionId) { _, state, pointer in
+                toPeerConnection(pointer: pointer)?.handleGatheringStateChange(state: state)
             })
         } catch {
             rtcDeletePeerConnection(peerConnectionId)
@@ -448,6 +471,13 @@ private final class PeerConnection {
             return
         }
         delegate?.peerConnectionOnConnectionStateChanged(state: state)
+    }
+
+    private func handleGatheringStateChange(state: rtcGatheringState) {
+        guard let state = GatheringState(cValue: state) else {
+            return
+        }
+        delegate?.peerConnectionOnGatheringStateChanged(state: state)
     }
 }
 
@@ -528,8 +558,6 @@ final class WhipStream {
             )
             self.peerConnection = peerConnection
             try peerConnection.setLocalDescriptionOffer()
-            let offer = try peerConnection.createOffer()
-            sendOffer(endpointUrl: endpointUrl, offer: offer)
         } catch {
             stopInternal(reason: "WHIP start failed")
         }
@@ -569,6 +597,28 @@ final class WhipStream {
         case .disconnected, .failed, .closed:
             stopInternal(reason: "WHIP disconnected (\(state))")
         case .new, .connecting:
+            break
+        }
+    }
+
+    private func handleGatheringStateChanged(state: GatheringState) {
+        guard let peerConnection, let endpointUrl else {
+            return
+        }
+        logger.info("whip: Gathering state \(state)")
+        switch state {
+        case .complete:
+            guard !offerSent else {
+                return
+            }
+            do {
+                let offer = try peerConnection.createOffer()
+                sendOffer(endpointUrl: endpointUrl, offer: offer)
+                offerSent = true
+            } catch {
+                stopInternal(reason: "WHIP set offer failed")
+            }
+        case .new, .inProgress:
             break
         }
     }
@@ -704,6 +754,12 @@ extension WhipStream: PeerConnectionDelegate {
     fileprivate func peerConnectionOnConnectionStateChanged(state: ConnectionState) {
         whipQueue.async {
             self.handleConnectionStateChanged(state: state)
+        }
+    }
+
+    fileprivate func peerConnectionOnGatheringStateChanged(state: GatheringState) {
+        whipQueue.async {
+            self.handleGatheringStateChanged(state: state)
         }
     }
 }
