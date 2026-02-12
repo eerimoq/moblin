@@ -1,5 +1,4 @@
 import AVFoundation
-import Foundation
 import libdatachannel
 
 private let whipQueue = DispatchQueue(label: "com.eerimoq.Moblin.whip")
@@ -34,8 +33,8 @@ private enum ConnectionState {
     case failed
     case closed
 
-    init?(cValue: rtcState) {
-        switch cValue {
+    init?(value: rtcState) {
+        switch value {
         case RTC_NEW:
             self = .new
         case RTC_CONNECTING:
@@ -59,8 +58,8 @@ private enum GatheringState {
     case inProgress
     case complete
 
-    init?(cValue: rtcGatheringState) {
-        switch cValue {
+    init?(value: rtcGatheringState) {
+        switch value {
         case RTC_GATHERING_NEW:
             self = .new
         case RTC_GATHERING_INPROGRESS:
@@ -77,14 +76,7 @@ private func makeEndpointUrl(url: String) -> URL? {
     guard var components = URLComponents(string: url) else {
         return nil
     }
-    switch components.scheme {
-    case "whip":
-        components.scheme = "http"
-    case "whips":
-        components.scheme = "https"
-    default:
-        return nil
-    }
+    components.scheme = components.scheme?.replacing("whip", with: "http")
     return components.url
 }
 
@@ -129,14 +121,12 @@ private func convertTimestamp(_ presentationTimeStamp: Double, rate: Double) -> 
 
 private final class H264Packetizer {
     let ssrc: UInt32
-    private let payloadType: UInt8
     private var sequenceNumber: UInt16 = 0
     private var sps: Data?
     private var pps: Data?
 
-    init(ssrc: UInt32, payloadType: UInt8) {
+    init(ssrc: UInt32) {
         self.ssrc = ssrc
-        self.payloadType = payloadType
     }
 
     func setParameterSets(sps: Data?, pps: Data?) {
@@ -175,16 +165,7 @@ private final class H264Packetizer {
                                      _ nalUnit: Data,
                                      _ packets: inout [Data])
     {
-        let packet = RtpPacket(
-            marker: isLastNal,
-            payloadType: payloadType,
-            sequenceNumber: sequenceNumber,
-            timestamp: timestamp,
-            ssrc: ssrc,
-            payload: nalUnit
-        )
-        sequenceNumber &+= 1
-        packets.append(packet.data())
+        packets.append(makeRtpPacket(marker: isLastNal, timestamp: timestamp, payload: nalUnit))
     }
 
     private func packetizeTypeFuA(_ isLastNal: Bool,
@@ -192,15 +173,17 @@ private final class H264Packetizer {
                                   _ nalUnit: Data,
                                   _ packets: inout [Data])
     {
+        guard !nalUnit.isEmpty else {
+            return
+        }
         let nalHeader = nalUnit[0]
         let fuIndicator = (nalHeader & 0xE0) | rtpH264PacketTypeFuA
         let nalType = nalHeader & 0x1F
         var offset = 1
-        var first = true
         while offset < nalUnit.count {
             let chunkSize = min(rtpMtu - 2, nalUnit.count - offset)
             var fuHeader = nalType
-            if first {
+            if offset == 1 {
                 fuHeader |= 0x80
             }
             let isFinalFragment = offset + chunkSize >= nalUnit.count
@@ -209,19 +192,24 @@ private final class H264Packetizer {
             }
             var payload = Data([fuIndicator, fuHeader])
             payload.append(contentsOf: nalUnit[offset ..< offset + chunkSize])
-            let packet = RtpPacket(
-                marker: isLastNal && isFinalFragment,
-                payloadType: payloadType,
-                sequenceNumber: sequenceNumber,
-                timestamp: timestamp,
-                ssrc: ssrc,
-                payload: payload
-            )
-            sequenceNumber &+= 1
-            packets.append(packet.data())
+            packets.append(makeRtpPacket(marker: isLastNal && isFinalFragment,
+                                         timestamp: timestamp,
+                                         payload: payload))
             offset += chunkSize
-            first = false
         }
+    }
+
+    private func makeRtpPacket(marker: Bool, timestamp: UInt32, payload: Data) -> Data {
+        let packet = RtpPacket(
+            marker: marker,
+            payloadType: h264PayloadType,
+            sequenceNumber: sequenceNumber,
+            timestamp: timestamp,
+            ssrc: ssrc,
+            payload: payload
+        )
+        sequenceNumber &+= 1
+        return packet.data()
     }
 
     private func extractNalUnits(sampleBuffer: CMSampleBuffer) -> [Data] {
@@ -246,18 +234,20 @@ private final class H264Packetizer {
 
 private final class OpusPacketizer {
     let ssrc: UInt32
+    private var sequenceNumber: UInt16 = 0
 
     init(ssrc: UInt32) {
         self.ssrc = ssrc
     }
 
-    func process(_ buffer: AVAudioCompressedBuffer) -> [Data] {
+    func process(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: Double) -> [Data] {
         guard buffer.byteLength > 0 else {
             return []
         }
+        let timestamp = convertTimestamp(presentationTimeStamp, rate: 48000)
         let allData = Data(bytes: buffer.data, count: Int(buffer.byteLength))
         guard buffer.packetCount > 0, let descriptions = buffer.packetDescriptions else {
-            return [allData]
+            return [makeRtpPacket(timestamp, allData)]
         }
         var packets: [Data] = []
         packets.reserveCapacity(Int(buffer.packetCount))
@@ -268,29 +258,17 @@ private final class OpusPacketizer {
             guard size > 0, offset >= 0, offset + size <= allData.count else {
                 continue
             }
-            packets.append(allData.subdata(in: offset ..< offset + size))
+            packets.append(makeRtpPacket(timestamp, allData.subdata(in: offset ..< offset + size)))
         }
-        return packets.isEmpty ? [allData] : packets
-    }
-}
-
-private final class OpusRtpPacketizer {
-    private let ssrc: UInt32
-    private let payloadType: UInt8
-    private var sequenceNumber: UInt16 = 0
-
-    init(ssrc: UInt32, payloadType: UInt8) {
-        self.ssrc = ssrc
-        self.payloadType = payloadType
+        return packets.isEmpty ? [makeRtpPacket(timestamp, allData)] : packets
     }
 
-    func process(_ payload: Data, _ presentationTimeStamp: Double) -> Data {
-        let packetTimestamp = convertTimestamp(presentationTimeStamp, rate: 48000)
+    private func makeRtpPacket(_ timestamp: UInt32, _ payload: Data) -> Data {
         let packet = RtpPacket(
             marker: false,
-            payloadType: payloadType,
+            payloadType: opusPayloadType,
             sequenceNumber: sequenceNumber,
-            timestamp: packetTimestamp,
+            timestamp: timestamp,
             ssrc: ssrc,
             payload: payload
         )
@@ -344,9 +322,6 @@ private final class RtcTrack {
     }
 
     private func setState(state: TrackState) {
-        guard state != self.state else {
-            return
-        }
         self.state = state
     }
 }
@@ -451,10 +426,10 @@ private final class PeerConnection {
         try checkOk(rtcSetLocalDescription(peerConnectionId, "offer"))
     }
 
-    func createOffer() throws -> String {
-        let size = try checkOkReturnResult(rtcCreateOffer(peerConnectionId, nil, 0))
+    func getLocalDescription() throws -> String {
+        let size = try checkOkReturnResult(rtcGetLocalDescription(peerConnectionId, nil, 0))
         var buffer = [CChar](repeating: 0, count: Int(size))
-        try checkOk(rtcCreateOffer(peerConnectionId, &buffer, Int32(size)))
+        try checkOk(rtcGetLocalDescription(peerConnectionId, &buffer, Int32(size)))
         return String(cString: buffer)
     }
 
@@ -467,14 +442,14 @@ private final class PeerConnection {
     }
 
     private func handleStateChange(state: rtcState) {
-        guard let state = ConnectionState(cValue: state) else {
+        guard let state = ConnectionState(value: state) else {
             return
         }
         delegate?.peerConnectionOnConnectionStateChanged(state: state)
     }
 
     private func handleGatheringStateChange(state: rtcGatheringState) {
-        guard let state = GatheringState(cValue: state) else {
+        guard let state = GatheringState(value: state) else {
             return
         }
         delegate?.peerConnectionOnGatheringStateChanged(state: state)
@@ -492,13 +467,11 @@ final class WhipStream {
     private var peerConnection: PeerConnection?
     private var videoTrack: RtcTrack?
     private var audioTrack: RtcTrack?
-    private var videoPacketizer: H264Packetizer?
-    private var audioPacketizer: OpusPacketizer?
-    private var audioRtpPacketizer: OpusRtpPacketizer?
+    private var videoPacketizer = H264Packetizer(ssrc: 0)
+    private var audioPacketizer = OpusPacketizer(ssrc: 0)
     private var totalByteCount: Int64 = 0
     private var sessionUrl: URL?
     private var endpointUrl: URL?
-    private var encoding = false
     private var connected = false
     private var offerSent = false
     private var firstPresentationTimeStamp: Double = .nan
@@ -536,15 +509,8 @@ final class WhipStream {
         connected = false
         offerSent = false
         logger.info("whip: Start URL: \(endpointUrl.absoluteString)")
-        let audioPacketizer = OpusPacketizer(ssrc: makeSsrc())
-        let audioRtpPacketizer = OpusRtpPacketizer(
-            ssrc: audioPacketizer.ssrc,
-            payloadType: opusPayloadType
-        )
-        let videoPacketizer = H264Packetizer(ssrc: makeSsrc(), payloadType: h264PayloadType)
-        self.audioPacketizer = audioPacketizer
-        self.audioRtpPacketizer = audioRtpPacketizer
-        self.videoPacketizer = videoPacketizer
+        audioPacketizer = OpusPacketizer(ssrc: makeSsrc())
+        videoPacketizer = H264Packetizer(ssrc: makeSsrc())
         do {
             let peerConnection = try PeerConnection(delegate: self, iceServers: iceServers)
             let streamId = UUID().uuidString
@@ -574,9 +540,6 @@ final class WhipStream {
         peerConnection = nil
         videoTrack = nil
         audioTrack = nil
-        videoPacketizer = nil
-        audioPacketizer = nil
-        audioRtpPacketizer = nil
         connected = false
         offerSent = false
         if let reason {
@@ -585,7 +548,7 @@ final class WhipStream {
     }
 
     private func handleConnectionStateChanged(state: ConnectionState) {
-        logger.info("whip: Connection state \(state)")
+        logger.info("whip: Connection state: \(state)")
         switch state {
         case .connected:
             guard !connected else {
@@ -602,28 +565,26 @@ final class WhipStream {
     }
 
     private func handleGatheringStateChanged(state: GatheringState) {
-        guard let peerConnection, let endpointUrl else {
-            return
-        }
-        logger.info("whip: Gathering state \(state)")
+        logger.info("whip: ICE gathering state: \(state)")
         switch state {
         case .complete:
-            guard !offerSent else {
+            guard let peerConnection else {
                 return
             }
             do {
-                let offer = try peerConnection.createOffer()
-                sendOffer(endpointUrl: endpointUrl, offer: offer)
-                offerSent = true
+                try sendOffer(offer: peerConnection.getLocalDescription())
             } catch {
-                stopInternal(reason: "WHIP set offer failed")
+                stopInternal(reason: "WHIP failed to create offer")
             }
         case .new, .inProgress:
             break
         }
     }
 
-    private func sendOffer(endpointUrl: URL, offer: String) {
+    private func sendOffer(offer: String) {
+        guard !offerSent, let endpointUrl else {
+            return
+        }
         var request = URLRequest(url: endpointUrl)
         request.httpMethod = "POST"
         request.setContentType("application/sdp")
@@ -634,21 +595,20 @@ final class WhipStream {
             }
         }
         .resume()
+        offerSent = true
     }
 
     private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
-        if let error {
-            logger.info("whip: Offer request failed with error: \(error)")
-            stopInternal(reason: "WHIP offer failed")
+        if error != nil {
+            stopInternal(reason: "WHIP sending offer failed")
             return
         }
-        guard let response = response as? HTTPURLResponse else {
-            logger.info("whip: Offer response was not HTTP")
+        guard let response = response?.http else {
             stopInternal(reason: "WHIP bad server response")
             return
         }
-        guard response.http?.isSuccessful == true else {
-            stopInternal(reason: "WHIP server returned \(response.statusCode)")
+        guard response.isSuccessful == true else {
+            stopInternal(reason: "WHIP server returned status \(response.statusCode)")
             return
         }
         if let locationHeader = response.value(forHTTPHeaderField: "Location") {
@@ -661,7 +621,6 @@ final class WhipStream {
         do {
             try peerConnection?.setRemoteAnswer(answer)
         } catch {
-            logger.info("whip: Failed to set remote answer: \(error)")
             stopInternal(reason: "WHIP answer rejected")
         }
     }
@@ -673,20 +632,12 @@ final class WhipStream {
     }
 
     private func startEncoding() {
-        guard !encoding else {
-            return
-        }
-        encoding = true
         processorControlQueue.async {
             self.processor.startEncoding(self)
         }
     }
 
     private func stopEncoding() {
-        guard encoding else {
-            return
-        }
-        encoding = false
         processorControlQueue.async {
             self.processor.stopEncoding(self)
         }
@@ -714,17 +665,16 @@ final class WhipStream {
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
                                                 _ presentationTimeStamp: CMTime)
     {
-        guard connected, let audioPacketizer, let audioRtpPacketizer, let audioTrack else {
+        guard connected, let audioTrack else {
             return
         }
         guard let presentationTimeStamp = rebaseTimestamp(presentationTimeStamp) else {
             return
         }
-        for buffer in audioPacketizer.process(buffer) {
-            let packet = audioRtpPacketizer.process(buffer, presentationTimeStamp)
-            if audioTrack.send(packet: packet) {
-                totalByteCount += Int64(packet.count)
-            }
+        for packet in audioPacketizer.process(buffer, presentationTimeStamp)
+            where audioTrack.send(packet: packet)
+        {
+            totalByteCount += Int64(packet.count)
         }
     }
 
@@ -732,11 +682,11 @@ final class WhipStream {
         guard let config = MpegTsVideoConfigAvc(formatDescription: formatDescription) else {
             return
         }
-        videoPacketizer?.setParameterSets(sps: config.sequenceParameterSet, pps: config.pictureParameterSet)
+        videoPacketizer.setParameterSets(sps: config.sequenceParameterSet, pps: config.pictureParameterSet)
     }
 
     private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        guard connected, let videoPacketizer, let videoTrack else {
+        guard connected, let videoTrack else {
             return
         }
         guard let presentationTimeStamp = rebaseTimestamp(sampleBuffer.presentationTimeStamp) else {

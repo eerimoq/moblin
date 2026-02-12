@@ -1221,8 +1221,6 @@ extension Media: WhipStreamDelegate {
     }
 
     func whipStreamOnDisconnected(reason: String) {
-        DispatchQueue.main.async {
-            self.delegate?.mediaOnWhipDisconnected(reason)
-        }
+        delegate?.mediaOnWhipDisconnected(reason)
     }
 }
