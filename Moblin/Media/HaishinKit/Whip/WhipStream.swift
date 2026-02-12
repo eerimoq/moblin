@@ -104,8 +104,8 @@ private struct RtpPacket {
     }
 }
 
-private func convertTimestamp(_ presentationTimeStamp: CMTime) -> UInt32 {
-    return UInt32(UInt64(presentationTimeStamp.seconds * 90000) & 0xFFFF_FFFF)
+private func convertTimestamp(_ presentationTimeStamp: Double, rate: Double) -> UInt32 {
+    return UInt32(UInt64(presentationTimeStamp * rate) & 0xFFFF_FFFF)
 }
 
 private final class H264Packetizer {
@@ -125,7 +125,7 @@ private final class H264Packetizer {
         self.pps = pps
     }
 
-    func process(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) -> [Data] {
+    func process(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: Double) -> [Data] {
         var nalUnits = extractNalUnits(sampleBuffer: sampleBuffer)
         guard !nalUnits.isEmpty else {
             return []
@@ -138,7 +138,7 @@ private final class H264Packetizer {
                 nalUnits.insert(pps, at: min(1, nalUnits.count))
             }
         }
-        let timestamp = convertTimestamp(presentationTimeStamp)
+        let timestamp = convertTimestamp(presentationTimeStamp, rate: 90000)
         var packets: [Data] = []
         for (index, nalUnit) in nalUnits.enumerated() {
             let isLastNal = index == nalUnits.count - 1
@@ -265,8 +265,8 @@ private final class OpusRtpPacketizer {
         self.payloadType = payloadType
     }
 
-    func process(_ payload: Data, _ presentationTimeStamp: CMTime) -> Data {
-        let packetTimestamp = convertTimestamp(presentationTimeStamp)
+    func process(_ payload: Data, _ presentationTimeStamp: Double) -> Data {
+        let packetTimestamp = convertTimestamp(presentationTimeStamp, rate: 48000)
         let packet = RtpPacket(
             marker: false,
             payloadType: payloadType,
@@ -471,6 +471,7 @@ final class WhipStream {
     private var encoding = false
     private var connected = false
     private var offerSent = false
+    private var firstPresentationTimeStamp: Double = .nan
 
     init(processor: Processor, delegate: WhipStreamDelegate) {
         self.processor = processor
@@ -649,10 +650,24 @@ final class WhipStream {
         delegate?.whipStreamOnDisconnected(reason: reason)
     }
 
+    private func rebaseTimestamp(_ presentationTimeStamp: CMTime) -> Double? {
+        if firstPresentationTimeStamp.isNaN {
+            firstPresentationTimeStamp = presentationTimeStamp.seconds
+        }
+        let presentationTimeStamp = presentationTimeStamp.seconds - firstPresentationTimeStamp
+        guard presentationTimeStamp > 0 else {
+            return nil
+        }
+        return presentationTimeStamp
+    }
+
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
                                                 _ presentationTimeStamp: CMTime)
     {
         guard connected, let audioPacketizer, let audioRtpPacketizer, let audioTrack else {
+            return
+        }
+        guard let presentationTimeStamp = rebaseTimestamp(presentationTimeStamp) else {
             return
         }
         for buffer in audioPacketizer.process(buffer) {
@@ -670,9 +685,11 @@ final class WhipStream {
         videoPacketizer?.setParameterSets(sps: config.sequenceParameterSet, pps: config.pictureParameterSet)
     }
 
-    private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer,
-                                                      _ presentationTimeStamp: CMTime) {
+    private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         guard connected, let videoPacketizer, let videoTrack else {
+            return
+        }
+        guard let presentationTimeStamp = rebaseTimestamp(sampleBuffer.presentationTimeStamp) else {
             return
         }
         for packet in videoPacketizer.process(sampleBuffer, presentationTimeStamp)
@@ -710,10 +727,10 @@ extension WhipStream: VideoEncoderDelegate {
 
     func videoEncoderOutputSampleBuffer(_: VideoEncoder,
                                         _ sampleBuffer: CMSampleBuffer,
-                                        _ presentationTimeStamp: CMTime)
+                                        _: CMTime)
     {
         whipQueue.async {
-            self.handleVideoEncoderOutputSampleBuffer(sampleBuffer, presentationTimeStamp)
+            self.handleVideoEncoderOutputSampleBuffer(sampleBuffer)
         }
     }
 }
