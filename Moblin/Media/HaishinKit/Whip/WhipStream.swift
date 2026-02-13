@@ -396,6 +396,10 @@ private final class PeerConnection {
         rtcDeletePeerConnection(peerConnectionId)
     }
 
+    func close() {
+        _ = rtcClosePeerConnection(peerConnectionId)
+    }
+
     func addTrack(config: RtcTrackConfig, streamId: String) throws -> RtcTrack {
         return try config.mid.withCString { mid in
             try config.name.withCString { name in
@@ -437,8 +441,30 @@ private final class PeerConnection {
         try checkOk(rtcSetRemoteDescription(peerConnectionId, sdp, "answer"))
     }
 
-    func close() {
-        _ = rtcClosePeerConnection(peerConnectionId)
+    func getSelectedCandidatePair() -> (local: String, remote: String)? {
+        do {
+            var local = Data(count: 1024)
+            var remote = Data(count: 1024)
+            try local.withUnsafeMutableBytes { (localPointer: UnsafeMutableRawBufferPointer) in
+                try remote.withUnsafeMutableBytes { (remotePointer: UnsafeMutableRawBufferPointer) in
+                    try checkOk(rtcGetSelectedCandidatePair(peerConnectionId,
+                                                            localPointer.baseAddress,
+                                                            Int32(localPointer.count),
+                                                            remotePointer.baseAddress,
+                                                            Int32(remotePointer.count)))
+                }
+            }
+            guard let local = String(bytes: local, encoding: .utf8) else {
+                return nil
+            }
+            guard let remote = String(bytes: remote, encoding: .utf8) else {
+                return nil
+            }
+            return (local, remote)
+        } catch {
+            logger.info("whip: Failed to get selected candidate pair")
+            return nil
+        }
     }
 
     private func handleStateChange(state: rtcState) {
@@ -475,6 +501,7 @@ final class WhipStream {
     private var connected = false
     private var offerSent = false
     private var firstPresentationTimeStamp: Double = .nan
+    private let connectTimer = SimpleTimer(queue: whipQueue)
 
     init(processor: Processor, delegate: WhipStreamDelegate) {
         self.processor = processor
@@ -524,8 +551,11 @@ final class WhipStream {
             )
             self.peerConnection = peerConnection
             try peerConnection.setLocalDescriptionOffer()
+            connectTimer.startSingleShot(timeout: 10) { [weak self] in
+                self?.handleConnectTimeout()
+            }
         } catch {
-            stopInternal(reason: "WHIP start failed")
+            stopInternal(reason: "Start failed")
         }
     }
 
@@ -542,9 +572,14 @@ final class WhipStream {
         audioTrack = nil
         connected = false
         offerSent = false
+        connectTimer.stop()
         if let reason {
             notifyDisconnected(reason: reason)
         }
+    }
+
+    private func handleConnectTimeout() {
+        stopInternal(reason: "Connect timeout")
     }
 
     private func handleConnectionStateChanged(state: ConnectionState) {
@@ -554,11 +589,16 @@ final class WhipStream {
             guard !connected else {
                 return
             }
+            connectTimer.stop()
             connected = true
+            if let (local, remote) = peerConnection?.getSelectedCandidatePair() {
+                logger.info("whip: Local candidate: \(local)")
+                logger.info("whip: Remote candidate: \(remote)")
+            }
             startEncoding()
             notifyConnected()
         case .disconnected, .failed, .closed:
-            stopInternal(reason: "WHIP disconnected (\(state))")
+            stopInternal(reason: "Connection \(state)")
         case .new, .connecting:
             break
         }
@@ -574,7 +614,7 @@ final class WhipStream {
             do {
                 try sendOffer(offer: peerConnection.getLocalDescription())
             } catch {
-                stopInternal(reason: "WHIP failed to create offer")
+                stopInternal(reason: "Failed to create offer")
             }
         case .new, .inProgress:
             break
@@ -589,26 +629,23 @@ final class WhipStream {
         request.httpMethod = "POST"
         request.setContentType("application/sdp")
         request.httpBody = offer.utf8Data
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            whipQueue.async {
-                self?.handleOfferResponse(data: data, response: response, error: error)
-            }
+        httpRequest(request: request, queue: whipQueue) { [weak self] data, response, error in
+            self?.handleOfferResponse(data: data, response: response, error: error)
         }
-        .resume()
         offerSent = true
     }
 
     private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
-        if error != nil {
-            stopInternal(reason: "WHIP sending offer failed")
+        if let error {
+            stopInternal(reason: "Sending WHIP offer failed: \(error.localizedDescription)")
             return
         }
         guard let response = response?.http else {
-            stopInternal(reason: "WHIP bad server response")
+            stopInternal(reason: "Bad WHIP server response")
             return
         }
-        guard response.isSuccessful == true else {
-            stopInternal(reason: "WHIP server returned status \(response.statusCode)")
+        guard response.isSuccessful else {
+            stopInternal(reason: "WHIP server returned HTTP status \(response.statusCode)")
             return
         }
         if let locationHeader = response.value(forHTTPHeaderField: "Location") {
@@ -621,14 +658,14 @@ final class WhipStream {
         do {
             try peerConnection?.setRemoteAnswer(answer)
         } catch {
-            stopInternal(reason: "WHIP answer rejected")
+            stopInternal(reason: "Failed to set remote answer")
         }
     }
 
     private func sendDeleteRequest(url: URL) {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-        URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
+        httpRequest(request: request)
     }
 
     private func startEncoding() {

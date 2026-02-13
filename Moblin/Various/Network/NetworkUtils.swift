@@ -86,3 +86,15 @@ func makeMdnsHostname(deviceName: String) -> String {
         .replacing(/[^\w\d-]/, with: "")
     return "\(name).local"
 }
+
+func httpRequest(request: URLRequest,
+                 queue: DispatchQueue = .main,
+                 completion: ((Data?, URLResponse?, (any Error)?) -> Void)? = nil)
+{
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        queue.async {
+            completion?(data, response, error)
+        }
+    }
+    .resume()
+}

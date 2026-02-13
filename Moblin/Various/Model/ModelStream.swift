@@ -484,7 +484,7 @@ extension Model {
         guard streaming else {
             return
         }
-        logger.info("stream: Disconnected with reason \(reason)")
+        logger.info("stream: Disconnected with reason: \(reason)")
         let subTitle = String(localized: "Attempting again in 5 seconds.")
         if streamState == .connected {
             streamTotalBytes += UInt64(media.streamTotal())
