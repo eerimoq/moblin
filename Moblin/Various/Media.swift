@@ -520,10 +520,11 @@ final class Media: NSObject {
         let sentDelta = videoPacketStats.sent - whipPreviousSentVideoPackets
         whipPreviousFailedVideoPackets = videoPacketStats.failed
         whipPreviousSentVideoPackets = videoPacketStats.sent
-        let packetsInFlight = sentDelta > 0 ? Double(failedDelta * 100) / Double(sentDelta) : 0
+        let failedPacketPercentage = sentDelta > 0
+            ? Double(failedDelta * 100) / Double(sentDelta) : 0
         adaptiveBitrate?.update(stats: StreamStats(
             rttMs: 10,
-            packetsInFlight: packetsInFlight,
+            packetsInFlight: failedPacketPercentage,
             transportBitrate: 8 * whipTransportBitrate,
             latency: nil,
             mbpsSendRate: nil,
