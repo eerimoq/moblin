@@ -30,7 +30,7 @@ struct StreamWizardCustomSrtSettingsView: View {
                         updateUrlError()
                     }
             } header: {
-                Text("Url")
+                Text("URL")
             } footer: {
                 FormFieldError(error: urlError)
             }

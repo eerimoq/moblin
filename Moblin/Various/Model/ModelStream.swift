@@ -50,6 +50,7 @@ class CreateStreamWizard: ObservableObject {
     @Published var customRtmpUrl = ""
     @Published var customRtmpStreamKey = ""
     @Published var customRistUrl = ""
+    @Published var customWhipUrl = ""
 }
 
 enum StreamState {

@@ -135,8 +135,7 @@ private struct UrlsView: View {
                 Form {
                     if relay.enabled {
                         Section {
-                            UrlCopyView(url: "\(relay.baseUrl)/streamer/\(relay.bridgeId)",
-                                        image: "globe")
+                            UrlCopyView("\(relay.baseUrl)/streamer/\(relay.bridgeId)", image: "globe")
                         } header: {
                             Text("Relay")
                         }
@@ -373,7 +372,7 @@ private struct WebUrlsView: View {
                     TextField("My device name", text: $web.deviceName)
                     if !web.deviceName.isEmpty {
                         UrlCopyView(
-                            url: format(ip: makeMdnsHostname(deviceName: web.deviceName)),
+                            format(ip: makeMdnsHostname(deviceName: web.deviceName)),
                             image: "network"
                         )
                     }
@@ -403,17 +402,14 @@ struct RemoteControlWebDefaultUrlView: View {
 
     var body: some View {
         if !web.deviceName.isEmpty {
-            UrlCopyView(
-                url: format(ip: makeMdnsHostname(deviceName: web.deviceName)) + path,
-                image: "network"
-            )
+            UrlCopyView(format(ip: makeMdnsHostname(deviceName: web.deviceName)) + path, image: "network")
         } else if let status = status.ipStatuses
             .first(where: {
                 $0.ipType == .ipv4 && ($0.interfaceType == .wifi || $0.interfaceType == .wiredEthernet)
             })
         {
             UrlCopyView(
-                url: format(ip: status.ipType.formatAddress(status.ip)) + path,
+                format(ip: status.ipType.formatAddress(status.ip)) + path,
                 image: urlImage(interfaceType: status.interfaceType)
             )
         }

@@ -21,6 +21,8 @@ struct StreamAudioSettingsView: View {
                     model.reloadStreamIfEnabled(stream: stream)
                 }
                 .disabled(stream.enabled && model.isLive)
+            } footer: {
+                Text("WHIP generally only supports Opus.")
             }
             Section {
                 HStack {

@@ -22,6 +22,11 @@ struct StreamWizardCustomSettingsView: View {
                 } label: {
                     Text("RIST")
                 }
+                NavigationLink {
+                    StreamWizardCustomWhipSettingsView(model: model, createStreamWizard: createStreamWizard)
+                } label: {
+                    Text("WHIP")
+                }
             } header: {
                 Text("Protocol")
             }

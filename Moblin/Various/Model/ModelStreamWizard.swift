@@ -22,6 +22,7 @@ enum WizardCustomProtocol {
     case srt
     case rtmp
     case rist
+    case whip
 
     func toDefaultCodec() -> SettingsStreamCodec {
         switch self {
@@ -33,6 +34,23 @@ enum WizardCustomProtocol {
             return .h264avc
         case .rist:
             return .h265hevc
+        case .whip:
+            return .h264avc
+        }
+    }
+
+    func toDefaultAudioCodec() -> SettingsStreamAudioCodec {
+        switch self {
+        case .none:
+            return .aac
+        case .srt:
+            return .aac
+        case .rtmp:
+            return .aac
+        case .rist:
+            return .aac
+        case .whip:
+            return .opus
         }
     }
 }
@@ -74,6 +92,8 @@ extension Model {
             return url.url?.absoluteString
         case .rist:
             return createStreamWizard.customRistUrl.trim()
+        case .whip:
+            return createStreamWizard.customWhipUrl.trim()
         }
         return nil
     }
@@ -159,6 +179,7 @@ extension Model {
         switch createStreamWizard.networkSetup {
         case .none:
             stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
+            stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
         case .obs:
             stream.codec = .h265hevc
         case .belaboxCloudObs:
@@ -167,6 +188,7 @@ extension Model {
             stream.codec = .h264avc
         case .myServers:
             stream.codec = createStreamWizard.customProtocol.toDefaultCodec()
+            stream.audioCodec = createStreamWizard.customProtocol.toDefaultAudioCodec()
         }
         stream.audioBitrate = 128_000
         database.streams.append(stream)
