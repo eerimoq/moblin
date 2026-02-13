@@ -82,7 +82,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } footer: {
                     VStack(alignment: .leading) {
                         FormFieldError(error: ingestError)
-                        Text(                            "Copy from https://kick.com/dashboard/settings/stream (requires login)."                        )
+                        Text("Copy from https://kick.com/dashboard/settings/stream (requires login).")
                     }
                 }
                 Section {
@@ -95,7 +95,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } header: {
                     Text("Stream key")
                 } footer: {
-                    Text(                        "Copy from https://kick.com/dashboard/settings/stream (requires login)."                    )
+                    Text("Copy from https://kick.com/dashboard/settings/stream (requires login).")
                 }
             case .youTube:
                 Section {
