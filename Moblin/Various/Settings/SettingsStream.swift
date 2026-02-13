@@ -551,6 +551,37 @@ class SettingsStreamRist: Codable {
     }
 }
 
+struct SettingsHttpHeader: Codable {
+    var name: String = ""
+    var value: String = ""
+}
+
+class SettingsStreamWhip: Codable, ObservableObject {
+    @Published var headers: [SettingsHttpHeader] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case headers
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.headers, headers)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        headers = container.decode(.headers, [SettingsHttpHeader].self, [])
+    }
+
+    func clone() -> SettingsStreamWhip {
+        let new = SettingsStreamWhip()
+        new.headers = headers
+        return new
+    }
+}
+
 class SettingsStreamChat: Codable {
     var bttvEmotes: Bool = false
     var ffzEmotes: Bool = false
@@ -1031,6 +1062,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp = .init()
     var rist: SettingsStreamRist = .init()
+    var whip: SettingsStreamWhip = .init()
     @Published var maxKeyFrameInterval: Int32 = 2
     @Published var audioCodec: SettingsStreamAudioCodec = .aac
     var audioBitrate: Int = 128_000
@@ -1116,6 +1148,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              srt,
              rtmp,
              rist,
+             whip,
              captureSessionPresetEnabled,
              captureSessionPreset,
              maxKeyFrameInterval,
@@ -1200,6 +1233,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.srt, srt)
         try container.encode(.rtmp, rtmp)
         try container.encode(.rist, rist)
+        try container.encode(.whip, whip)
         try container.encode(.maxKeyFrameInterval, maxKeyFrameInterval)
         try container.encode(.audioCodec, audioCodec)
         try container.encode(.audioBitrate, audioBitrate)
@@ -1293,6 +1327,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         srt = container.decode(.srt, SettingsStreamSrt.self, .init())
         rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())
         rist = container.decode(.rist, SettingsStreamRist.self, .init())
+        whip = container.decode(.whip, SettingsStreamWhip.self, .init())
         maxKeyFrameInterval = container.decode(.maxKeyFrameInterval, Int32.self, 2)
         audioCodec = container.decode(.audioCodec, SettingsStreamAudioCodec.self, .aac)
         audioBitrate = container.decode(.audioBitrate, Int.self, 128_000)
@@ -1377,6 +1412,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.srt = srt.clone()
         new.rtmp = rtmp.clone()
         new.rist = rist.clone()
+        new.whip = whip.clone()
         new.maxKeyFrameInterval = maxKeyFrameInterval
         new.audioCodec = audioCodec
         new.audioBitrate = audioBitrate

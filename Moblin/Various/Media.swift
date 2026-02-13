@@ -627,9 +627,11 @@ final class Media: NSObject {
         ristStream?.stop()
     }
 
-    func whipStartStream(url: String) {
+    func whipStartStream(url: String, headers: [SettingsHttpHeader]) {
         adaptiveBitrate = nil
-        whipStream?.start(url: url, iceServers: ["stun:stun.l.google.com:19302"])
+        whipStream?.start(url: url,
+                          headers: headers,
+                          iceServers: ["stun:stun.l.google.com:19302"])
     }
 
     func whipStopStream() {

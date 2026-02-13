@@ -200,6 +200,38 @@ struct StreamSettingsView: View {
                 } label: {
                     TextItemLocalizedView(name: "URL", value: stream.url, sensitive: true)
                 }
+                if database.showAllSettings {
+                    switch stream.getProtocol() {
+                    case .srt:
+                        NavigationLink {
+                            StreamSrtSettingsView(stream: stream, srt: stream.srt)
+                        } label: {
+                            Text("SRT(LA)")
+                        }
+                    case .rtmp:
+                        NavigationLink {
+                            StreamRtmpSettingsView(stream: stream)
+                        } label: {
+                            Text("RTMP")
+                        }
+                        StreamMultiStreamingSettingsView(
+                            stream: stream,
+                            multiStreaming: stream.multiStreaming
+                        )
+                    case .rist:
+                        NavigationLink {
+                            StreamRistSettingsView(stream: stream)
+                        } label: {
+                            Text("RIST")
+                        }
+                    case .whip:
+                        NavigationLink {
+                            StreamWhipSettingsView(model: model, stream: stream, whip: stream.whip)
+                        } label: {
+                            Text("WHIP")
+                        }
+                    }
+                }
                 NavigationLink {
                     StreamVideoSettingsView(database: database, stream: stream)
                 } label: {
@@ -244,34 +276,6 @@ struct StreamSettingsView: View {
                             model.resetSelectedScene(changeScene: false)
                             model.updateOrientation()
                         }
-                    }
-                }
-                if database.showAllSettings {
-                    switch stream.getProtocol() {
-                    case .srt:
-                        NavigationLink {
-                            StreamSrtSettingsView(stream: stream, srt: stream.srt)
-                        } label: {
-                            Text("SRT(LA)")
-                        }
-                    case .rtmp:
-                        NavigationLink {
-                            StreamRtmpSettingsView(stream: stream)
-                        } label: {
-                            Text("RTMP")
-                        }
-                        StreamMultiStreamingSettingsView(
-                            stream: stream,
-                            multiStreaming: stream.multiStreaming
-                        )
-                    case .rist:
-                        NavigationLink {
-                            StreamRistSettingsView(stream: stream)
-                        } label: {
-                            Text("RIST")
-                        }
-                    case .whip:
-                        EmptyView()
                     }
                 }
             } header: {

@@ -498,6 +498,7 @@ final class WhipStream {
     private var totalByteCount: Int64 = 0
     private var sessionUrl: URL?
     private var endpointUrl: URL?
+    private var headers: [SettingsHttpHeader] = []
     private var connected = false
     private var offerSent = false
     private var firstPresentationTimeStamp: Double = .nan
@@ -508,9 +509,9 @@ final class WhipStream {
         self.delegate = delegate
     }
 
-    func start(url: String, iceServers: [String]) {
+    func start(url: String, headers: [SettingsHttpHeader], iceServers: [String]) {
         whipQueue.async {
-            self.startInternal(url: url, iceServers: iceServers)
+            self.startInternal(url: url, headers: headers, iceServers: iceServers)
         }
     }
 
@@ -526,12 +527,13 @@ final class WhipStream {
         }
     }
 
-    private func startInternal(url: String, iceServers: [String]) {
+    private func startInternal(url: String, headers: [SettingsHttpHeader], iceServers: [String]) {
         stopInternal()
         guard let endpointUrl = makeEndpointUrl(url: url) else {
             return
         }
         self.endpointUrl = endpointUrl
+        self.headers = headers
         totalByteCount = 0
         connected = false
         offerSent = false
@@ -629,6 +631,9 @@ final class WhipStream {
         var request = URLRequest(url: endpointUrl)
         request.httpMethod = "POST"
         request.setContentType("application/sdp")
+        for header in headers {
+            request.setValue(header.value, forHTTPHeaderField: header.name)
+        }
         request.httpBody = offer.utf8Data
         httpRequest(request: request, queue: whipQueue) { [weak self] data, response, error in
             self?.handleOfferResponse(data: data, response: response, error: error)
