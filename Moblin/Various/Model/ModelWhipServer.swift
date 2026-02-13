@@ -119,12 +119,14 @@ extension Model: WhipServerDelegate {
         handleWhipServerPublishStop(clientId: clientId, reason: reason)
     }
 
+    // periphery:ignore
     func whipServerOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
         if let stream = database.whipServer.streams.first {
             handleWhipServerFrame(cameraId: stream.id, sampleBuffer: sampleBuffer)
         }
     }
 
+    // periphery:ignore
     func whipServerOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
         if let stream = database.whipServer.streams.first {
             handleWhipServerAudioBuffer(cameraId: stream.id, sampleBuffer: sampleBuffer)

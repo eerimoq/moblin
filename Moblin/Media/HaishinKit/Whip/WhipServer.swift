@@ -1,3 +1,4 @@
+import CoreMedia
 import Foundation
 
 let whipServerDispatchQueue = DispatchQueue(label: "com.eerimoq.whip-server")
