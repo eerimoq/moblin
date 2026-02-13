@@ -496,6 +496,8 @@ final class WhipStream {
     private var videoPacketizer = H264Packetizer(ssrc: 0)
     private var audioPacketizer = OpusPacketizer(ssrc: 0)
     private var totalByteCount: Int64 = 0
+    private var sentVideoPackets: Int64 = 0
+    private var failedVideoPackets: Int64 = 0
     private var sessionUrl: URL?
     private var endpointUrl: URL?
     private var connected = false
@@ -523,6 +525,12 @@ final class WhipStream {
     func getTotalByteCount() -> Int64 {
         return whipQueue.sync {
             totalByteCount
+        }
+    }
+
+    func getVideoPacketStats() -> (sent: Int64, failed: Int64) {
+        return whipQueue.sync {
+            (sentVideoPackets, failedVideoPackets)
         }
     }
 
@@ -731,10 +739,13 @@ final class WhipStream {
         guard let presentationTimeStamp = rebaseTimestamp(sampleBuffer.presentationTimeStamp) else {
             return
         }
-        for packet in videoPacketizer.process(sampleBuffer, presentationTimeStamp)
-            where videoTrack.send(packet: packet)
-        {
-            self.totalByteCount += Int64(packet.count)
+        for packet in videoPacketizer.process(sampleBuffer, presentationTimeStamp) {
+            if videoTrack.send(packet: packet) {
+                self.totalByteCount += Int64(packet.count)
+                self.sentVideoPackets += 1
+            } else {
+                self.failedVideoPackets += 1
+            }
         }
     }
 }

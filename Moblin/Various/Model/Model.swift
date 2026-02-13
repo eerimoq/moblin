@@ -735,6 +735,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.setAdaptiveBitrateSettings(settings: settings)
     }
 
+    func updateAdaptiveBitrateWhipIfEnabled() {
+        var settings = adaptiveBitrateFastSettings
+        settings.rttDiffHighAllowedSpike = 500
+        media.setAdaptiveBitrateSettings(settings: settings)
+    }
+
     func toggleVerboseStatuses() {
         database.verboseStatuses.toggle()
     }

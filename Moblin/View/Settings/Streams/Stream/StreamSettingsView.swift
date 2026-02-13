@@ -271,7 +271,11 @@ struct StreamSettingsView: View {
                             Text("RIST")
                         }
                     case .whip:
-                        EmptyView()
+                        NavigationLink {
+                            StreamWhipSettingsView(stream: stream)
+                        } label: {
+                            Text("WHIP")
+                        }
                     }
                 }
             } header: {

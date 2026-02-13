@@ -61,6 +61,10 @@ final class Media: NSObject {
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtTransportBitrate: Int64 = 0
+    private var whipPreviousTotalByteCount: Int64 = 0
+    private var whipTransportBitrate: Int64 = 0
+    private var whipPreviousSentVideoPackets: Int64 = 0
+    private var whipPreviousFailedVideoPackets: Int64 = 0
     private var currentAudioLevel: Float = defaultAudioLevel
     private var numberOfAudioChannels: Int = 0
     private var audioSampleRate: Double = 0
@@ -313,6 +317,8 @@ final class Media: NSObject {
                 return updateAdaptiveBitrateRtmp(overlay: overlay, rtmpStream: rtmpStream)
             } else if let ristStream {
                 return updateAdaptiveBitrateRist(overlay: overlay, ristStream: ristStream)
+            } else if let whipStream {
+                return updateAdaptiveBitrateWhip(overlay: overlay, whipStream: whipStream)
             }
         }
         return nil
@@ -504,6 +510,44 @@ final class Media: NSObject {
         }
     }
 
+    private func updateAdaptiveBitrateWhip(overlay: Bool, whipStream: WhipStream) -> ([String], [String])? {
+        let totalByteCount = whipStream.getTotalByteCount()
+        let byteCount = max(totalByteCount - whipPreviousTotalByteCount, 0)
+        whipTransportBitrate = Int64(Double(whipTransportBitrate) * 0.7 + Double(byteCount) * 0.3)
+        whipPreviousTotalByteCount = totalByteCount
+        let videoPacketStats = whipStream.getVideoPacketStats()
+        let failedDelta = videoPacketStats.failed - whipPreviousFailedVideoPackets
+        let sentDelta = videoPacketStats.sent - whipPreviousSentVideoPackets
+        whipPreviousFailedVideoPackets = videoPacketStats.failed
+        whipPreviousSentVideoPackets = videoPacketStats.sent
+        let packetsInFlight = sentDelta > 0 ? Double(failedDelta * 100) / Double(sentDelta) : 0
+        adaptiveBitrate?.update(stats: StreamStats(
+            rttMs: 10,
+            packetsInFlight: packetsInFlight,
+            transportBitrate: 8 * whipTransportBitrate,
+            latency: nil,
+            mbpsSendRate: nil,
+            relaxed: false
+        ))
+        guard overlay else {
+            return nil
+        }
+        if let adaptiveBitrate {
+            return ([
+                """
+                \(adaptiveBitrate.getFastPif())   \
+                \(adaptiveBitrate.getSmoothPif())
+                """,
+                """
+                B: \(adaptiveBitrate.getCurrentBitrateInKbps()) /  \
+                \(adaptiveBitrate.getCurrentMaximumBitrateInKbps())
+                """,
+            ], adaptiveBitrate.getActionsTaken())
+        } else {
+            return ([], [])
+        }
+    }
+
     func updateSrtTransportBitrate() {
         srtTotalByteCount = srtlaClient?.getTotalByteCount() ?? 0
         let byteCount = max(srtTotalByteCount - srtPreviousTotalByteCount, 0)
@@ -519,7 +563,7 @@ final class Media: NSObject {
         } else if ristStream != nil {
             return Int64(ristStream?.getSpeed() ?? 0)
         } else if whipStream != nil {
-            return 0
+            return 8 * whipTransportBitrate
         } else {
             return 0
         }
@@ -627,13 +671,18 @@ final class Media: NSObject {
         ristStream?.stop()
     }
 
-    func whipStartStream(url: String) {
-        adaptiveBitrate = nil
+    func whipStartStream(url: String, targetBitrate: UInt32, adaptiveBitrateEnabled: Bool) {
+        if adaptiveBitrateEnabled {
+            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
+        } else {
+            adaptiveBitrate = nil
+        }
         whipStream?.start(url: url, iceServers: ["stun:stun.l.google.com:19302"])
     }
 
     func whipStopStream() {
         whipStream?.stop()
+        adaptiveBitrate = nil
     }
 
     func setTorch(on: Bool) {

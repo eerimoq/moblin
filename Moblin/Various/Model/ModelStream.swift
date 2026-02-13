@@ -236,7 +236,11 @@ extension Model {
     }
 
     private func startNetStreamWhip() {
-        media.whipStartStream(url: stream.url)
+        let whip = stream.whip
+        media.whipStartStream(url: stream.url,
+                              targetBitrate: getBitrate(),
+                              adaptiveBitrateEnabled: whip.adaptiveBitrateEnabled)
+        updateAdaptiveBitrateWhipIfEnabled()
     }
 
     func stopNetStream() {
