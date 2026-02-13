@@ -22,7 +22,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
         Form {
             Section {
                 TextField(
-                    "srtla://uk.srt.belabox.net:5000?streamid=jO4ijfFgrlpv4m2375msdoG3DDr2",
+                    String("srtla://uk.srt.belabox.net:5000?streamid=jO4ijfFgrlpv4m2375msdoG3DDr2"),
                     text: $createStreamWizard.belaboxUrl
                 )
                 .textInputAutocapitalization(.never)

@@ -21,7 +21,7 @@ struct StreamWizardCustomWhipSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("whip://120.35.234.2:2030/mystream/whip", text: $createStreamWizard.customWhipUrl)
+                TextField(String("whip://120.12.32.12:8889/mystream/whip"), text: $createStreamWizard.customWhipUrl)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: createStreamWizard.customWhipUrl) { _ in

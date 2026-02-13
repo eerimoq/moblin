@@ -30,7 +30,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             case .twitch:
                 Section {
                     TextField(
-                        "rtmp://arn03.contribute.live-video.net/app",
+                        String("rtmp://arn03.contribute.live-video.net/app"),
                         text: $createStreamWizard.directIngest
                     )
                     .textInputAutocapitalization(.never)
@@ -51,7 +51,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 }
                 Section {
                     TextField(
-                        "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv",
+                        String("live_48950233_okF4f455GRWEF443fFr23GRbt5rEv"),
                         text: $createStreamWizard.directStreamKey
                     )
                     .textInputAutocapitalization(.never)
@@ -69,7 +69,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             case .kick:
                 Section {
                     TextField(
-                        "rtmps://fa723fc1b171.global-contribute.live-video.net",
+                        String("rtmps://fa723fc1b171.global-contribute.live-video.net"),
                         text: $createStreamWizard.directIngest
                     )
                     .textInputAutocapitalization(.never)
@@ -82,14 +82,12 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } footer: {
                     VStack(alignment: .leading) {
                         FormFieldError(error: ingestError)
-                        Text(
-                            "Copy from https://kick.com/dashboard/settings/stream (requires login)."
-                        )
+                        Text(                            "Copy from https://kick.com/dashboard/settings/stream (requires login)."                        )
                     }
                 }
                 Section {
                     TextField(
-                        "sk_us-west-2_okfef49k34k_34g59gGDDHGHSREj754gYJYTJERH",
+                        String("sk_us-west-2_okfef49k34k_34g59gGDDHGHSREj754gYJYTJERH"),
                         text: $createStreamWizard.directStreamKey
                     )
                     .textInputAutocapitalization(.never)
@@ -97,14 +95,12 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 } header: {
                     Text("Stream key")
                 } footer: {
-                    Text(
-                        "Copy from https://kick.com/dashboard/settings/stream (requires login)."
-                    )
+                    Text(                        "Copy from https://kick.com/dashboard/settings/stream (requires login)."                    )
                 }
             case .youTube:
                 Section {
                     TextField(
-                        "rtmp://a.rtmp.youtube.com/live2",
+                        String("rtmp://a.rtmp.youtube.com/live2"),
                         text: $createStreamWizard.directIngest
                     )
                     .textInputAutocapitalization(.never)
@@ -122,7 +118,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 }
                 Section {
                     TextField(
-                        "4bkf-8d03-g6w3-ekjh-emdc",
+                        String("4bkf-8d03-g6w3-ekjh-emdc"),
                         text: $createStreamWizard.directStreamKey
                     )
                     .textInputAutocapitalization(.never)
@@ -135,7 +131,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
             case .soop:
                 Section {
                     TextField(
-                        "???",
+                        String("???"),
                         text: $createStreamWizard.directIngest
                     )
                     .textInputAutocapitalization(.never)
@@ -153,7 +149,7 @@ struct StreamWizardNetworkSetupDirectSettingsView: View {
                 }
                 Section {
                     TextField(
-                        "???",
+                        String("???"),
                         text: $createStreamWizard.directStreamKey
                     )
                     .textInputAutocapitalization(.never)

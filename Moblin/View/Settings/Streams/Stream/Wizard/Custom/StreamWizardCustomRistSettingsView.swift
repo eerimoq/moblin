@@ -21,7 +21,7 @@ struct StreamWizardCustomRistSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("rist://120.35.234.2:2030", text: $createStreamWizard.customRistUrl)
+                TextField(String("rist://120.35.234.2:2030"), text: $createStreamWizard.customRistUrl)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: createStreamWizard.customRistUrl) { _ in

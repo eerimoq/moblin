@@ -23,7 +23,7 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("srt://107.32.12.132:5000", text: $createStreamWizard.customSrtUrl)
+                TextField(String("srt://107.32.12.132:5000"), text: $createStreamWizard.customSrtUrl)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: createStreamWizard.customSrtUrl) { _ in
@@ -36,7 +36,7 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
             }
             Section {
                 TextField(
-                    "#!::r=stream/-NDZ1WPA4zjMBTJTyNwU,m=publish,...",
+                    String("#!::r=stream/-NDZ1WPA4zjMBTJTyNwU,m=publish,..."),
                     text: $createStreamWizard.customSrtStreamId
                 )
                 .textInputAutocapitalization(.never)

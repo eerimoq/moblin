@@ -29,7 +29,7 @@ struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
         Form {
             Section {
                 TextField(
-                    "rtmp://arn03.contribute.live-video.net/app/",
+                    String("rtmp://arn03.contribute.live-video.net/app/"),
                     text: $createStreamWizard.customRtmpUrl
                 )
                 .textInputAutocapitalization(.never)
@@ -44,7 +44,7 @@ struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
             }
             Section {
                 TextField(
-                    "live_48950233_okF4f455GRWEF443fFr23GRbt5rEv",
+                    String("live_48950233_okF4f455GRWEF443fFr23GRbt5rEv"),
                     text: $createStreamWizard.customRtmpStreamKey
                 )
                 .textInputAutocapitalization(.never)

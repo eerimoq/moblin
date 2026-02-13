@@ -25,7 +25,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("213.33.45.132", text: $createStreamWizard.obsAddress)
+                TextField(String("213.33.45.132"), text: $createStreamWizard.obsAddress)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
             } header: {
@@ -34,7 +34,7 @@ struct StreamWizardNetworkSetupObsSettingsView: View {
                 Text("Your public IP address if streaming over the internet.")
             }
             Section {
-                TextField("7654", text: $createStreamWizard.obsPort)
+                TextField(String("7654"), text: $createStreamWizard.obsPort)
                     .textInputAutocapitalization(.never)
                     .disableAutocorrection(true)
                     .onChange(of: createStreamWizard.obsPort) { _ in
