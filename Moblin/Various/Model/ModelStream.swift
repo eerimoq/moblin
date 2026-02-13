@@ -169,13 +169,11 @@ extension Model {
     }
 
     private func tryUploadGoLiveNotificationToDiscord(_ image: Data, _ url: URL) {
-        uploadImage(
-            url: url,
-            paramName: "snapshot",
-            fileName: "snapshot.jpg",
-            image: image,
-            message: stream.goLiveNotificationDiscordMessage
-        ) { _ in }
+        uploadImage(url: url,
+                    paramName: "snapshot",
+                    fileName: "snapshot.jpg",
+                    image: image,
+                    message: stream.goLiveNotificationDiscordMessage)
     }
 
     func startNetStream() {

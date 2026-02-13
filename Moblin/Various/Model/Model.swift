@@ -3212,8 +3212,6 @@ extension Model: UIDocumentPickerDelegate {
 
 extension Model: FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
-        DispatchQueue.main.async {
-            self.printAllCatPrinters(image: image)
-        }
+        printAllCatPrinters(image: image)
     }
 }

@@ -286,23 +286,20 @@ class YouTubeApi {
     }
 
     private func doRequest(_ request: URLRequest, _ onComplete: @escaping (OperationResult) -> Void) {
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil, let data, response?.http?.isSuccessful == true else {
-                    if let data, let data = String(bytes: data, encoding: .utf8) {
-                        logger.info("youtube-api: Error response body: \(data)")
-                    }
-                    if response?.http?.isUnauthorized == true {
-                        onComplete(.authError)
-                    } else {
-                        onComplete(.error)
-                    }
-                    return
+        httpRequest(request: request) { data, response, error in
+            guard error == nil, let data, response?.http?.isSuccessful == true else {
+                if let data, let data = String(bytes: data, encoding: .utf8) {
+                    logger.info("youtube-api: Error response body: \(data)")
                 }
-                onComplete(.success(data))
+                if response?.http?.isUnauthorized == true {
+                    onComplete(.authError)
+                } else {
+                    onComplete(.error)
+                }
+                return
             }
+            onComplete(.success(data))
         }
-        .resume()
     }
 
     private func createRequest(url: URL, method: String, json: Bool = false) -> URLRequest {

@@ -110,18 +110,16 @@ final class DLiveChat {
         logger.debug("dlive: chat: Start")
         stopInternal()
         getDLiveUserInfo(displayName: streamerUsername) { [weak self] userInfo in
-            DispatchQueue.main.async {
-                guard let self else {
-                    return
-                }
-                if let userInfo {
-                    self.streamerRoomId = userInfo.id.replacingOccurrences(of: userIdPrefix, with: "")
-                    self.webSocket = WebSocketClient(url: webSocketUrl, protocols: ["graphql-ws"])
-                    self.webSocket.delegate = self
-                    self.webSocket.start()
-                } else {
-                    self.handleError(title: "DLive user not found", subTitle: "Check the username")
-                }
+            guard let self else {
+                return
+            }
+            if let userInfo {
+                self.streamerRoomId = userInfo.id.replacingOccurrences(of: userIdPrefix, with: "")
+                self.webSocket = WebSocketClient(url: webSocketUrl, protocols: ["graphql-ws"])
+                self.webSocket.delegate = self
+                self.webSocket.start()
+            } else {
+                self.handleError(title: "DLive user not found", subTitle: "Check the username")
             }
         }
     }

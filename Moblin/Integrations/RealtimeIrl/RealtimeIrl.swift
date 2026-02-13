@@ -39,17 +39,13 @@ class RealtimeIrl {
         }
         """.utf8Data
         request.setContentType("application/json")
-        URLSession.shared.dataTask(with: request) { _, _, _ in
-        }
-        .resume()
+        httpRequest(request: request)
     }
 
     func stop() {
         updateCount = 0
         var request = URLRequest(url: stopUrl)
         request.httpMethod = "POST"
-        URLSession.shared.dataTask(with: request) { _, _, _ in
-        }
-        .resume()
+        httpRequest(request: request)
     }
 }

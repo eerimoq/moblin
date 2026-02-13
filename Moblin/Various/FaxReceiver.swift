@@ -10,7 +10,7 @@ class FaxReceiver {
     weak var delegate: (any FaxReceiverDelegate)?
 
     func add(url: URL) {
-        URLSession.shared.dataTask(with: URLRequest(url: url)) { data, response, _ in
+        httpRequest(request: URLRequest(url: url)) { data, response, _ in
             guard let data, response?.http?.isSuccessful == true else {
                 return
             }
@@ -19,6 +19,5 @@ class FaxReceiver {
             }
             self.delegate?.faxReceiverPrint(image: image)
         }
-        .resume()
     }
 }

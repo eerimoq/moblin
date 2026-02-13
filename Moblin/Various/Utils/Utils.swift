@@ -78,7 +78,7 @@ func uploadImage(
     fileName: String,
     image: Data,
     message: String?,
-    onCompleted: @escaping (Bool) -> Void
+    onCompleted: ((Bool) -> Void)? = nil
 ) {
     let boundary = UUID().uuidString
     var request = URLRequest(url: url)
@@ -98,7 +98,7 @@ func uploadImage(
     data.append(image)
     data.append("\r\n--\(boundary)--\r\n".utf8Data)
     httpCall(request: request, body: data) { data in
-        onCompleted(data != nil)
+        onCompleted?(data != nil)
     }
 }
 

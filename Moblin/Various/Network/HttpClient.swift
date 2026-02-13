@@ -227,12 +227,12 @@ private func httpCallUrlSession(request: URLRequest, body: Data?, completion: @e
             completion(data)
         }.resume()
     } else {
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        httpRequest(request: request) { data, response, error in
             guard error == nil, response?.http?.isSuccessful == true else {
                 completion(nil)
                 return
             }
             completion(data)
-        }.resume()
+        }
     }
 }

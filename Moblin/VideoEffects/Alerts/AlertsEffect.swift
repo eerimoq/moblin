@@ -267,21 +267,18 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
         if self.settings.aiEnabled, let aiBaseUrl, ai.isConfigured() {
             OpenAi(baseUrl: aiBaseUrl, apiKey: ai.apiKey)
                 .ask(message, model: ai.model, role: ai.personality) { answer in
-                    DispatchQueue.main.async {
-                        var message = message
-                        if let answer {
-                            message += ". " + answer
-                        } else {
-                            self.delegate?
-                                .alertsMakeErrorToast(title: String(localized: "Got no AI response"))
-                        }
-                        self.play(player: player,
-                                  username: username,
-                                  message: message,
-                                  messageImage: messageImage,
-                                  landmarkSettings: landmarkSettings,
-                                  settings: settings)
+                    var message = message
+                    if let answer {
+                        message += ". " + answer
+                    } else {
+                        self.delegate?.alertsMakeErrorToast(title: String(localized: "Got no AI response"))
                     }
+                    self.play(player: player,
+                              username: username,
+                              message: message,
+                              messageImage: messageImage,
+                              landmarkSettings: landmarkSettings,
+                              settings: settings)
                 }
         } else {
             play(player: player,

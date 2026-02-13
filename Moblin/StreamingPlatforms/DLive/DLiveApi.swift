@@ -43,7 +43,7 @@ func getDLiveUserInfo(displayName: String, completion: @escaping (DLiveUserInfo?
         return
     }
     request.httpBody = jsonData
-    URLSession.shared.dataTask(with: request) { data, _, error in
+    httpRequest(request: request) { data, _, error in
         guard error == nil, let data else {
             completion(nil)
             return
@@ -59,5 +59,5 @@ func getDLiveUserInfo(displayName: String, completion: @escaping (DLiveUserInfo?
             logger.debug("dlive: Failed to decode user info: \(error)")
             completion(nil)
         }
-    }.resume()
+    }
 }

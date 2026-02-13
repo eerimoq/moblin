@@ -463,7 +463,7 @@ extension Model: WCSessionDelegate {
             replyHandler(["data": Data()])
             return
         }
-        URLSession.shared.dataTask(with: URLRequest(url: url)) { data, response, _ in
+        httpRequest(request: URLRequest(url: url)) { data, response, _ in
             guard let response = response?.http else {
                 replyHandler(["data": Data()])
                 return
@@ -478,7 +478,6 @@ extension Model: WCSessionDelegate {
             }
             replyHandler(["data": self.makePng(uiImage)])
         }
-        .resume()
     }
 
     private func handleSetIsLive(_ data: Any) {

@@ -113,16 +113,13 @@ func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?
         return
     }
     let request = URLRequest(url: url)
-    URLSession.shared.dataTask(with: request) { data, response, error in
-        DispatchQueue.main.async {
-            guard error == nil, let data, response?.http?.isSuccessful == true else {
-                onComplete(nil)
-                return
-            }
-            onComplete(try? JSONDecoder().decode(KickChannel.self, from: data))
+    httpRequest(request: request) { data, response, error in
+        guard error == nil, let data, response?.http?.isSuccessful == true else {
+            onComplete(nil)
+            return
         }
+        onComplete(try? JSONDecoder().decode(KickChannel.self, from: data))
     }
-    .resume()
 }
 
 func fetchKickProfilePicture(username: String) async -> UIImage? {
@@ -378,23 +375,20 @@ class KickApi {
         var request = URLRequest(url: URL(string: "https://search.kick.com/\(subPath)")!)
         request.setValue("application/json, text/plain, */*", forHTTPHeaderField: "Accept")
         request.setValue("nXIMW0iEN6sMujFYjFuhdrSwVow3pDQu", forHTTPHeaderField: "X-Typesense-Api-Key")
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil,
-                      let data,
-                      response?.http?.isSuccessful == true,
-                      let searchResponse = try? JSONDecoder().decode(
-                          KickCategorySearchResponse.self,
-                          from: data
-                      )
-                else {
-                    onComplete(nil)
-                    return
-                }
-                onComplete(searchResponse.hits.map { $0.document })
+        httpRequest(request: request) { data, response, error in
+            guard error == nil,
+                  let data,
+                  response?.http?.isSuccessful == true,
+                  let searchResponse = try? JSONDecoder().decode(
+                      KickCategorySearchResponse.self,
+                      from: data
+                  )
+            else {
+                onComplete(nil)
+                return
             }
+            onComplete(searchResponse.hits.map { $0.document })
         }
-        .resume()
     }
 
     func searchLiveChannels(query: String, onComplete: @escaping ([KickLiveSearchChannel]?) -> Void) {
@@ -433,16 +427,13 @@ class KickApi {
         var request = URLRequest(url: userUrl)
         request.setAuthorization("Bearer \(accessToken)")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil, let data, response?.http?.isSuccessful == true else {
-                    onComplete(nil)
-                    return
-                }
-                onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
+        httpRequest(request: request) { data, response, error in
+            guard error == nil, let data, response?.http?.isSuccessful == true else {
+                onComplete(nil)
+                return
             }
+            onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
         }
-        .resume()
     }
 
     private func doV2Request(method: String,
@@ -476,22 +467,19 @@ class KickApi {
         if let body {
             request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         }
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
-                guard error == nil, let responseData = data, response?.http?.isSuccessful == true else {
-                    if let data, let data = String(bytes: data, encoding: .utf8) {
-                        logger.info("kick-api: Error response body: \(data)")
-                    }
-                    if response?.http?.isUnauthorized == true {
-                        onComplete(.authError)
-                    } else {
-                        onComplete(.error)
-                    }
-                    return
+        httpRequest(request: request) { data, response, error in
+            guard error == nil, let responseData = data, response?.http?.isSuccessful == true else {
+                if let data, let data = String(bytes: data, encoding: .utf8) {
+                    logger.info("kick-api: Error response body: \(data)")
                 }
-                onComplete(.success(responseData))
+                if response?.http?.isUnauthorized == true {
+                    onComplete(.authError)
+                } else {
+                    onComplete(.error)
+                }
+                return
             }
+            onComplete(.success(responseData))
         }
-        .resume()
     }
 }

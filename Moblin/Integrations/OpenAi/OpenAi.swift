@@ -40,7 +40,7 @@ class OpenAi {
             Message(role: "user", content: content),
         ]
         request.httpBody = try? JSONEncoder().encode(Request(model: model, messages: messages))
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        httpRequest(request: request) { data, response, error in
             guard error == nil, let data, response?.http?.isSuccessful == true else {
                 onComplete(nil)
                 return
@@ -48,6 +48,5 @@ class OpenAi {
             let answers = try? JSONDecoder().decode(Response.self, from: data)
             onComplete(answers?.choices.first?.message.content)
         }
-        .resume()
     }
 }
