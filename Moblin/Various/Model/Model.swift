@@ -149,6 +149,7 @@ class Ingests: ObservableObject {
     var srtla: SrtlaServer?
     var rist: RistServer?
     var rtsp: [RtspClient] = []
+    var whip: WhipServer?
     @Published var speedAndTotal = noValue
 }
 
@@ -1062,6 +1063,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadSrtlaServer()
         reloadRistServer()
         reloadRtspClient()
+        reloadWhipServer()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -1404,6 +1406,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadSrtlaServer()
             reloadRistServer()
             reloadRtspClient()
+            reloadWhipServer()
             chatTextToSpeech.reset(running: true)
             startWeatherManager()
             startGeographyManager()

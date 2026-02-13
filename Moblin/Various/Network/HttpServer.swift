@@ -5,7 +5,7 @@ private struct HttpRequestParseResult {
     let method: String
     let path: String
     let version: String
-    let headers: [(String, String)]
+    let headers: [SettingsHttpHeader]
     // periphery:ignore
     let data: Data
 }
@@ -27,18 +27,24 @@ private class HttpRequestParser: HttpParser {
         guard version.hasPrefix("HTTP/1.") else {
             return (true, nil)
         }
-        var headers: [(String, String)] = []
+        var headers: [SettingsHttpHeader] = []
         while let (line, nextLineOffset) = getLine(data: data, offset: offset) {
             let parts = line.lowercased().split(separator: " ")
             if parts.count == 2 {
-                headers.append((String(parts[0]), String(parts[1])))
+                headers.append(.init(name: String(parts[0]), value: String(parts[1])))
             }
             if line.isEmpty {
+                let contentLengthHeader = headers.first(where: { $0.name == "content-length:" })
+                let contentLength = Int(contentLengthHeader?.value ?? "0") ?? 0
+                let body = data.advanced(by: nextLineOffset)
+                guard body.count >= contentLength else {
+                    return (false, nil)
+                }
                 return (true, HttpRequestParseResult(method: String(method),
                                                      path: String(path),
                                                      version: String(version),
                                                      headers: headers,
-                                                     data: Data()))
+                                                     data: body.prefix(contentLength)))
             }
             offset = nextLineOffset
         }
@@ -51,13 +57,21 @@ class HttpServerRequest {
     let path: String
     let version: String
     // periphery:ignore
-    let headers: [(String, String)]
+    let headers: [SettingsHttpHeader]
+    let body: Data
 
-    fileprivate init(method: String, path: String, version: String, headers: [(String, String)]) {
+    fileprivate init(
+        method: String,
+        path: String,
+        version: String,
+        headers: [SettingsHttpHeader],
+        body: Data
+    ) {
         self.method = method
         self.path = path
         self.version = version
         self.headers = headers
+        self.body = body
     }
 
     fileprivate func getContentType() -> String {
@@ -82,14 +96,26 @@ class HttpServerRequest {
 
 enum HttpServerStatus {
     case ok
+    case created
+    case noContent
+    case badRequest
     case notFound
+    case methodNotAllowed
 
     func code() -> Int {
         switch self {
         case .ok:
             return 200
+        case .created:
+            return 201
+        case .noContent:
+            return 204
+        case .badRequest:
+            return 400
         case .notFound:
             return 404
+        case .methodNotAllowed:
+            return 405
         }
     }
 
@@ -97,8 +123,16 @@ enum HttpServerStatus {
         switch self {
         case .ok:
             return "OK"
+        case .created:
+            return "Created"
+        case .noContent:
+            return "No Content"
+        case .badRequest:
+            return "Bad Request"
         case .notFound:
             return "Not Found"
+        case .methodNotAllowed:
+            return "Method Not Allowed"
         }
     }
 }
@@ -110,12 +144,25 @@ class HttpServerResponse {
         self.connection = connection
     }
 
+    func send(status: HttpServerStatus = .ok) {
+        send(data: Data(), status: status)
+    }
+
     func send(data: Data, status: HttpServerStatus = .ok) {
         connection?.sendAndClose(status: status, content: data)
     }
 
     func send(text: String, status: HttpServerStatus = .ok) {
         send(data: text.utf8Data, status: status)
+    }
+
+    func send(data: Data, status: HttpServerStatus, contentType: String, headers: [SettingsHttpHeader] = []) {
+        connection?.sendAndClose(
+            status: status,
+            content: data,
+            contentType: contentType,
+            extraHeaders: headers
+        )
     }
 }
 
@@ -156,7 +203,8 @@ private class HttpServerConnection {
         request = HttpServerRequest(method: result.method,
                                     path: result.path,
                                     version: result.version,
-                                    headers: result.headers)
+                                    headers: result.headers,
+                                    body: result.data)
         guard let route = server.findRoute(request: request!) else {
             sendAndClose(status: .notFound, content: Data())
             return
@@ -164,14 +212,21 @@ private class HttpServerConnection {
         route.handler(request!, HttpServerResponse(connection: self))
     }
 
-    func sendAndClose(status: HttpServerStatus, content: Data) {
+    func sendAndClose(status: HttpServerStatus,
+                      content: Data,
+                      contentType: String? = nil,
+                      extraHeaders: [SettingsHttpHeader] = [])
+    {
         guard let request else {
             return
         }
         var lines: [String] = []
         lines.append("\(request.version) \(status.code()) \(status.text())")
         if !content.isEmpty {
-            lines.append("Content-Type: \(request.getContentType())")
+            lines.append("Content-Type: \(contentType ?? request.getContentType())")
+        }
+        for header in extraHeaders {
+            lines.append("\(header.name): \(header.value)")
         }
         lines.append("Connection: close")
         lines.append("")
@@ -188,11 +243,23 @@ private class HttpServerConnection {
 
 class HttpServerRoute {
     let path: String
+    let prefixMatch: Bool
     let handler: (HttpServerRequest, HttpServerResponse) -> Void
 
-    init(path: String, handler: @escaping (HttpServerRequest, HttpServerResponse) -> Void) {
+    init(path: String, prefixMatch: Bool = false,
+         handler: @escaping (HttpServerRequest, HttpServerResponse) -> Void)
+    {
         self.path = path
+        self.prefixMatch = prefixMatch
         self.handler = handler
+    }
+
+    func matches(path: String) -> Bool {
+        if prefixMatch {
+            return path.hasPrefix(self.path)
+        } else {
+            return path == self.path
+        }
     }
 }
 
@@ -266,6 +333,6 @@ class HttpServer {
     }
 
     fileprivate func findRoute(request: HttpServerRequest) -> HttpServerRoute? {
-        return routes.first(where: { $0.path == request.path })
+        return routes.first(where: { $0.matches(path: request.path) })
     }
 }

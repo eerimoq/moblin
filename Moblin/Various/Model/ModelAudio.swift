@@ -149,6 +149,7 @@ extension Model {
                 || mic.isSrtla()
                 || mic.isRist()
                 || mic.isRtsp()
+                || mic.isWhip()
                 || mic.isMediaPlayer(), !foundMics.contains(mic)
             {
                 continue
@@ -581,6 +582,8 @@ extension Model {
             selectMicSrtla(mic: mic)
         } else if isRistMic(mic: mic) {
             selectMicRist(mic: mic)
+        } else if isWhipMic(mic: mic) {
+            selectMicWhip(mic: mic)
         } else if isMediaPlayerMic(mic: mic) {
             selectMicMediaPlayer(mic: mic)
         } else {
@@ -615,6 +618,13 @@ extension Model {
         return getRistStream(id: id) != nil
     }
 
+    private func isWhipMic(mic: SettingsMicsMic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getWhipStream(id: id) != nil
+    }
+
     private func isMediaPlayerMic(mic: SettingsMicsMic) -> Bool {
         guard let id = UUID(uuidString: mic.inputUid) else {
             return false
@@ -632,6 +642,10 @@ extension Model {
 
     private func selectMicRist(mic: SettingsMicsMic) {
         attachBufferedAudio(cameraId: getRistStream(idString: mic.inputUid)?.id, micId: mic.id)
+    }
+
+    private func selectMicWhip(mic: SettingsMicsMic) {
+        attachBufferedAudio(cameraId: getWhipStream(idString: mic.inputUid)?.id, micId: mic.id)
     }
 
     private func selectMicMediaPlayer(mic: SettingsMicsMic) {

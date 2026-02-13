@@ -1,5 +1,6 @@
 import AVFoundation
 import libdatachannel
+import Webrtc
 
 private let whipQueue = DispatchQueue(label: "com.eerimoq.Moblin.whip")
 private let h264PayloadType: UInt8 = 96
@@ -17,62 +18,15 @@ private func makeSsrc() -> UInt32 {
     return ssrc
 }
 
-private func checkOkReturnResult(_ result: Int32) throws -> Int32 {
+func checkOkReturnResult(_ result: Int32) throws -> Int32 {
     guard result >= 0 else {
         throw "Error \(result)"
     }
     return result
 }
 
-private func checkOk(_ result: Int32) throws {
+func checkOk(_ result: Int32) throws {
     _ = try checkOkReturnResult(result)
-}
-
-private enum ConnectionState {
-    case new
-    case connecting
-    case connected
-    case disconnected
-    case failed
-    case closed
-
-    init?(value: rtcState) {
-        switch value {
-        case RTC_NEW:
-            self = .new
-        case RTC_CONNECTING:
-            self = .connecting
-        case RTC_CONNECTED:
-            self = .connected
-        case RTC_DISCONNECTED:
-            self = .disconnected
-        case RTC_FAILED:
-            self = .failed
-        case RTC_CLOSED:
-            self = .closed
-        default:
-            return nil
-        }
-    }
-}
-
-private enum GatheringState {
-    case new
-    case inProgress
-    case complete
-
-    init?(value: rtcGatheringState) {
-        switch value {
-        case RTC_GATHERING_NEW:
-            self = .new
-        case RTC_GATHERING_INPROGRESS:
-            self = .inProgress
-        case RTC_GATHERING_COMPLETE:
-            self = .complete
-        default:
-            return nil
-        }
-    }
 }
 
 private func makeEndpointUrl(url: String) -> URL? {
@@ -298,8 +252,8 @@ private struct RtcTrackConfig {
 }
 
 private protocol PeerConnectionDelegate: AnyObject {
-    func peerConnectionOnConnectionStateChanged(state: ConnectionState)
-    func peerConnectionOnGatheringStateChanged(state: GatheringState)
+    func peerConnectionOnConnectionStateChanged(state: WebrtcConnectionState)
+    func peerConnectionOnGatheringStateChanged(state: WebrtcGatheringState)
 }
 
 private func toPeerConnection(pointer: UnsafeMutableRawPointer?) -> PeerConnection? {
@@ -445,14 +399,14 @@ private final class PeerConnection {
     }
 
     private func handleStateChange(state: rtcState) {
-        guard let state = ConnectionState(value: state) else {
+        guard let state = WebrtcConnectionState(value: state) else {
             return
         }
         delegate?.peerConnectionOnConnectionStateChanged(state: state)
     }
 
     private func handleGatheringStateChange(state: rtcGatheringState) {
-        guard let state = GatheringState(value: state) else {
+        guard let state = WebrtcGatheringState(value: state) else {
             return
         }
         delegate?.peerConnectionOnGatheringStateChanged(state: state)
@@ -580,7 +534,7 @@ final class WhipStream {
         stopInternal(reason: "Connect timeout")
     }
 
-    private func handleConnectionStateChanged(state: ConnectionState) {
+    private func handleConnectionStateChanged(state: WebrtcConnectionState) {
         logger.info("whip: Connection state: \(state)")
         switch state {
         case .connected:
@@ -602,7 +556,7 @@ final class WhipStream {
         }
     }
 
-    private func handleGatheringStateChanged(state: GatheringState) {
+    private func handleGatheringStateChanged(state: WebrtcGatheringState) {
         logger.info("whip: ICE gathering state: \(state)")
         switch state {
         case .complete:
@@ -788,13 +742,13 @@ final class WhipStream {
 }
 
 extension WhipStream: PeerConnectionDelegate {
-    fileprivate func peerConnectionOnConnectionStateChanged(state: ConnectionState) {
+    fileprivate func peerConnectionOnConnectionStateChanged(state: WebrtcConnectionState) {
         whipQueue.async {
             self.handleConnectionStateChanged(state: state)
         }
     }
 
-    fileprivate func peerConnectionOnGatheringStateChanged(state: GatheringState) {
+    fileprivate func peerConnectionOnGatheringStateChanged(state: WebrtcGatheringState) {
         whipQueue.async {
             self.handleGatheringStateChanged(state: state)
         }

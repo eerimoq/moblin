@@ -569,6 +569,9 @@ extension Model {
         cameras += rtspCameras().map {
             ($0.0.uuidString, $0.1)
         }
+        cameras += whipCameras().map {
+            ($0.0.uuidString, $0.1)
+        }
         cameras += playerCameras().map {
             ($0.0.uuidString, $0.1)
         }
