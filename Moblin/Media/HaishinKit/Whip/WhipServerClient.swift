@@ -352,17 +352,29 @@ final class WhipServerClient {
         guard let sps, let pps else {
             return
         }
-        let parameterSets: [Data] = [sps, pps]
         var formatDescription: CMFormatDescription?
-        parameterSets.withUnsafeBufferPointers { pointers, sizes in
-            CMVideoFormatDescriptionCreateFromH264ParameterSets(
-                allocator: kCFAllocatorDefault,
-                parameterSetCount: pointers.count,
-                parameterSetPointers: pointers.baseAddress!,
-                parameterSetSizes: sizes.baseAddress!,
-                nalUnitHeaderLength: 4,
-                formatDescriptionOut: &formatDescription
-            )
+        sps.withUnsafeBytes { spsBuffer in
+            guard let spsBaseAddress = spsBuffer.baseAddress else {
+                return
+            }
+            pps.withUnsafeBytes { ppsBuffer in
+                guard let ppsBaseAddress = ppsBuffer.baseAddress else {
+                    return
+                }
+                let pointers = [
+                    spsBaseAddress.assumingMemoryBound(to: UInt8.self),
+                    ppsBaseAddress.assumingMemoryBound(to: UInt8.self),
+                ]
+                let sizes = [spsBuffer.count, ppsBuffer.count]
+                CMVideoFormatDescriptionCreateFromH264ParameterSets(
+                    allocator: kCFAllocatorDefault,
+                    parameterSetCount: pointers.count,
+                    parameterSetPointers: pointers,
+                    parameterSetSizes: sizes,
+                    nalUnitHeaderLength: 4,
+                    formatDescriptionOut: &formatDescription
+                )
+            }
         }
         if let formatDescription {
             self.videoFormatDescription = formatDescription
@@ -515,25 +527,5 @@ extension WhipServerClient: VideoDecoderDelegate {
 private func checkWhipServerOk(_ result: Int32) throws {
     guard result >= 0 else {
         throw "Error \(result)"
-    }
-}
-
-private extension Array where Element == Data {
-    func withUnsafeBufferPointers<R>(
-        _ body: (UnsafeBufferPointer<UnsafePointer<UInt8>>, UnsafeBufferPointer<Int>) -> R
-    ) -> R {
-        let pointers = UnsafeMutableBufferPointer<UnsafePointer<UInt8>>.allocate(capacity: count)
-        let sizes = UnsafeMutableBufferPointer<Int>.allocate(capacity: count)
-        defer {
-            pointers.deallocate()
-            sizes.deallocate()
-        }
-        for (index, data) in enumerated() {
-            data.withUnsafeBytes { rawBuffer in
-                pointers[index] = rawBuffer.bindMemory(to: UInt8.self).baseAddress!
-                sizes[index] = rawBuffer.count
-            }
-        }
-        return body(UnsafeBufferPointer(pointers), UnsafeBufferPointer(sizes))
     }
 }
