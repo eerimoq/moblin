@@ -5,6 +5,7 @@ private let xtraLtd = Data([0xAA, 0xF7])
 private let djiDeviceModelOsmoAction3 = Data([0x12, 0x00])
 private let djiDeviceModelOsmoAction4 = Data([0x14, 0x00])
 private let djiDeviceModelOsmoAction5Pro = Data([0x15, 0x00])
+private let djiDeviceModelOsmo360 = Data([0x17, 0x00])
 private let djiDeviceModelOsmoAction6 = Data([0x18, 0x00])
 private let djiDeviceModelOsmoPocket3 = Data([0x20, 0x00])
 
@@ -20,6 +21,8 @@ func djiModelFromManufacturerData(data: Data) -> SettingsDjiDeviceModel {
     case djiDeviceModelOsmoPocket3:
         return .osmoPocket3
     case djiDeviceModelOsmoAction5Pro:
+        return .osmoAction5Pro
+    case djiDeviceModelOsmo360
         return .osmoAction5Pro
     case djiDeviceModelOsmoAction6:
         return .osmoAction6
