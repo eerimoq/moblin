@@ -2,9 +2,9 @@ import AVFoundation
 import libdatachannel
 
 private let whipQueue = DispatchQueue(label: "com.eerimoq.Moblin.whip")
-private let h264PayloadType: UInt8 = 98
+private let h264PayloadType: UInt8 = 96
 private let opusPayloadType: UInt8 = 111
-private let rtpMtu = 1200
+private let nackMaxStoredPacketCount: UInt32 = 8192
 
 private func makeSsrc() -> UInt32 {
     var ssrc: UInt32 = 0
@@ -119,116 +119,41 @@ private func convertTimestamp(_ presentationTimeStamp: Double, rate: Double) -> 
     return UInt32(UInt64(presentationTimeStamp * rate) & 0xFFFF_FFFF)
 }
 
-private final class H264Packetizer {
-    let ssrc: UInt32
-    private var sequenceNumber: UInt16 = 0
+private final class H264NalUnits {
     private var sps: Data?
     private var pps: Data?
-
-    init(ssrc: UInt32) {
-        self.ssrc = ssrc
-    }
 
     func setParameterSets(sps: Data?, pps: Data?) {
         self.sps = sps
         self.pps = pps
     }
 
-    func process(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: Double) -> [Data] {
-        var nalUnits = extractNalUnits(sampleBuffer: sampleBuffer)
-        guard !nalUnits.isEmpty else {
-            return []
+    func process(_ sampleBuffer: CMSampleBuffer) -> Data? {
+        guard let (buffer, length) = sampleBuffer.dataBuffer?.getDataPointer() else {
+            return nil
+        }
+        let sampleData = Data(bytes: buffer, count: length)
+        guard !sampleData.isEmpty else {
+            return nil
         }
         if sampleBuffer.getIsSync() {
+            var data = Data()
             if let sps {
-                nalUnits.insert(sps, at: 0)
+                appendNalUnit(&data, sps)
             }
             if let pps {
-                nalUnits.insert(pps, at: min(1, nalUnits.count))
+                appendNalUnit(&data, pps)
             }
+            data.append(sampleData)
+            return data
         }
-        let timestamp = convertTimestamp(presentationTimeStamp, rate: 90000)
-        var packets: [Data] = []
-        for (index, nalUnit) in nalUnits.enumerated() {
-            let isLastNal = index == nalUnits.count - 1
-            if nalUnit.count <= rtpMtu {
-                packetizeTypeSingle(isLastNal, timestamp, nalUnit, &packets)
-            } else {
-                packetizeTypeFuA(isLastNal, timestamp, nalUnit, &packets)
-            }
-        }
-        return packets
+        return sampleData
     }
 
-    private func packetizeTypeSingle(_ isLastNal: Bool,
-                                     _ timestamp: UInt32,
-                                     _ nalUnit: Data,
-                                     _ packets: inout [Data])
-    {
-        packets.append(makeRtpPacket(marker: isLastNal, timestamp: timestamp, payload: nalUnit))
-    }
-
-    private func packetizeTypeFuA(_ isLastNal: Bool,
-                                  _ timestamp: UInt32,
-                                  _ nalUnit: Data,
-                                  _ packets: inout [Data])
-    {
-        guard !nalUnit.isEmpty else {
-            return
-        }
-        let nalHeader = nalUnit[0]
-        let fuIndicator = (nalHeader & 0xE0) | rtpH264PacketTypeFuA
-        let nalType = nalHeader & 0x1F
-        var offset = 1
-        while offset < nalUnit.count {
-            let chunkSize = min(rtpMtu - 2, nalUnit.count - offset)
-            var fuHeader = nalType
-            if offset == 1 {
-                fuHeader |= 0x80
-            }
-            let isFinalFragment = offset + chunkSize >= nalUnit.count
-            if isFinalFragment {
-                fuHeader |= 0x40
-            }
-            var payload = Data([fuIndicator, fuHeader])
-            payload.append(contentsOf: nalUnit[offset ..< offset + chunkSize])
-            packets.append(makeRtpPacket(marker: isLastNal && isFinalFragment,
-                                         timestamp: timestamp,
-                                         payload: payload))
-            offset += chunkSize
-        }
-    }
-
-    private func makeRtpPacket(marker: Bool, timestamp: UInt32, payload: Data) -> Data {
-        let packet = RtpPacket(
-            marker: marker,
-            payloadType: h264PayloadType,
-            sequenceNumber: sequenceNumber,
-            timestamp: timestamp,
-            ssrc: ssrc,
-            payload: payload
-        )
-        sequenceNumber &+= 1
-        return packet.data()
-    }
-
-    private func extractNalUnits(sampleBuffer: CMSampleBuffer) -> [Data] {
-        guard let (buffer, length) = sampleBuffer.dataBuffer?.getDataPointer() else {
-            return []
-        }
-        let data = Data(bytes: buffer, count: length)
-        var nalUnits: [Data] = []
-        var offset = 0
-        while offset + 4 <= data.count {
-            let nalLength = Int(data.getFourBytesBe(offset: offset))
-            offset += 4
-            guard nalLength > 0, offset + nalLength <= data.count else {
-                break
-            }
-            nalUnits.append(data.subdata(in: offset ..< offset + nalLength))
-            offset += nalLength
-        }
-        return nalUnits
+    private func appendNalUnit(_ data: inout Data, _ nalUnit: Data) {
+        var length = UInt32(nalUnit.count).bigEndian
+        data.append(Data(bytes: &length, count: 4))
+        data.append(nalUnit)
     }
 }
 
@@ -311,6 +236,12 @@ private final class RtcTrack {
         rtcDeleteTrack(trackId)
     }
 
+    func setTimestamp(presentationTimeStamp: Double) throws {
+        var timestamp: UInt32 = 0
+        try checkOk(rtcTransformSecondsToTimestamp(trackId, presentationTimeStamp, &timestamp))
+        try checkOk(rtcSetTrackRtpTimestamp(trackId, timestamp))
+    }
+
     func send(packet: Data) -> Bool {
         guard state == .open else {
             return false
@@ -350,6 +281,17 @@ private struct RtcTrackConfig {
                      ssrc: ssrc,
                      mid: "1",
                      profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f")
+    }
+
+    func isVideo() -> Bool {
+        switch codec {
+        case RTC_CODEC_H264:
+            return true
+        case RTC_CODEC_H265:
+            return true
+        default:
+            return false
+        }
     }
 }
 
@@ -418,6 +360,16 @@ private final class PeerConnection {
                                 profile: profile
                             )
                             let trackId = try checkOkReturnResult(rtcAddTrackEx(peerConnectionId, &trackInit))
+                            if config.isVideo() {
+                                var packetizerInit = rtcPacketizerInit()
+                                packetizerInit.ssrc = config.ssrc
+                                packetizerInit.cname = name
+                                packetizerInit.payloadType = UInt8(config.payloadType)
+                                packetizerInit.clockRate = 90000
+                                try checkOk(rtcSetH264Packetizer(trackId, &packetizerInit))
+                                try checkOk(rtcChainRtcpSrReporter(trackId))
+                                try checkOk(rtcChainRtcpNackResponder(trackId, nackMaxStoredPacketCount))
+                            }
                             return try RtcTrack(trackId: trackId)
                         }
                     }
@@ -493,7 +445,7 @@ final class WhipStream {
     private var peerConnection: PeerConnection?
     private var videoTrack: RtcTrack?
     private var audioTrack: RtcTrack?
-    private var videoPacketizer = H264Packetizer(ssrc: 0)
+    private var h264NalUnits = H264NalUnits()
     private var audioPacketizer = OpusPacketizer(ssrc: 0)
     private var totalByteCount: Int64 = 0
     private var sessionUrl: URL?
@@ -539,7 +491,7 @@ final class WhipStream {
         offerSent = false
         logger.info("whip: Start URL: \(endpointUrl.absoluteString)")
         audioPacketizer = OpusPacketizer(ssrc: makeSsrc())
-        videoPacketizer = H264Packetizer(ssrc: makeSsrc())
+        h264NalUnits = H264NalUnits()
         do {
             let peerConnection = try PeerConnection(delegate: self, iceServers: iceServers)
             let streamId = UUID().uuidString
@@ -548,7 +500,7 @@ final class WhipStream {
                 streamId: streamId
             )
             videoTrack = try peerConnection.addTrack(
-                config: .makeVideo(ssrc: videoPacketizer.ssrc),
+                config: .makeVideo(ssrc: makeSsrc()),
                 streamId: streamId
             )
             self.peerConnection = peerConnection
@@ -557,7 +509,7 @@ final class WhipStream {
                 self?.handleConnectTimeout()
             }
         } catch {
-            stopInternal(reason: "Start failed")
+            stopInternal(reason: "Start failed: \(error)")
         }
     }
 
@@ -726,7 +678,7 @@ final class WhipStream {
         guard let config = MpegTsVideoConfigAvc(formatDescription: formatDescription) else {
             return
         }
-        videoPacketizer.setParameterSets(sps: config.sequenceParameterSet, pps: config.pictureParameterSet)
+        h264NalUnits.setParameterSets(sps: config.sequenceParameterSet, pps: config.pictureParameterSet)
     }
 
     private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -736,10 +688,17 @@ final class WhipStream {
         guard let presentationTimeStamp = rebaseTimestamp(sampleBuffer.presentationTimeStamp) else {
             return
         }
-        for packet in videoPacketizer.process(sampleBuffer, presentationTimeStamp)
-            where videoTrack.send(packet: packet)
-        {
-            self.totalByteCount += Int64(packet.count)
+        do {
+            try videoTrack.setTimestamp(presentationTimeStamp: presentationTimeStamp)
+        } catch {
+            logger.info("whip: Failed to set timestamp")
+            return
+        }
+        guard let data = h264NalUnits.process(sampleBuffer) else {
+            return
+        }
+        if videoTrack.send(packet: data) {
+            totalByteCount += Int64(data.count)
         }
     }
 }
