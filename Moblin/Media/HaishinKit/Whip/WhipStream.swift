@@ -4,6 +4,8 @@ import libdatachannel
 private let whipQueue = DispatchQueue(label: "com.eerimoq.Moblin.whip")
 private let h264PayloadType: UInt8 = 98
 private let opusPayloadType: UInt8 = 111
+private let h264MaxFragmentSize: UInt16 = 1220
+private let nackMaxStoredPacketCount: UInt32 = 512
 
 private func makeSsrc() -> UInt32 {
     var ssrc: UInt32 = 0
@@ -244,7 +246,7 @@ private final class RtcTrack {
                 clockRate: 90000,
                 sequenceNumber: 0,
                 timestamp: 0,
-                maxFragmentSize: 1220,
+                maxFragmentSize: h264MaxFragmentSize,
                 nalSeparator: RTC_NAL_SEPARATOR_LENGTH,
                 obuPacketization: RTC_OBU_PACKETIZED_OBU,
                 playoutDelayId: 0,
@@ -260,7 +262,7 @@ private final class RtcTrack {
             )
             try checkOk(rtcSetH264Packetizer(trackId, &packetizerInit))
             try checkOk(rtcChainRtcpSrReporter(trackId))
-            try checkOk(rtcChainRtcpNackResponder(trackId, 512))
+            try checkOk(rtcChainRtcpNackResponder(trackId, nackMaxStoredPacketCount))
         }
     }
 
