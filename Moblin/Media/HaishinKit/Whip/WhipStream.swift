@@ -358,8 +358,10 @@ private final class PeerConnection {
                                 switch config.codec {
                                 case RTC_CODEC_H265:
                                     try checkOk(rtcSetH265Packetizer(trackId, &packetizerInit))
-                                default:
+                                case RTC_CODEC_H264:
                                     try checkOk(rtcSetH264Packetizer(trackId, &packetizerInit))
+                                default:
+                                    throw "Unsupported video codec \(config.codec)"
                                 }
                                 nackMaxStoredPacketCount = videoNackMaxStoredPacketCount
                             } else {
@@ -367,8 +369,10 @@ private final class PeerConnection {
                                 switch config.codec {
                                 case RTC_CODEC_AAC:
                                     try checkOk(rtcSetAACPacketizer(trackId, &packetizerInit))
-                                default:
+                                case RTC_CODEC_OPUS:
                                     try checkOk(rtcSetOpusPacketizer(trackId, &packetizerInit))
+                                default:
+                                    throw "Unsupported audio codec \(config.codec)"
                                 }
                                 nackMaxStoredPacketCount = audioNackMaxStoredPacketCount
                             }
