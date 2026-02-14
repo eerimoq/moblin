@@ -194,6 +194,11 @@ private final class RtcTrack {
             try checkOk(rtcSetErrorCallback(trackId) { _, _, pointer in
                 toRtcTrack(pointer: pointer)?.setState(state: .closed)
             })
+            if false {
+                try checkOk(rtcChainRembHandler(trackId) { _, bitrate, pointer in
+                    toRtcTrack(pointer: pointer)?.handleRemb(bitrate: bitrate)
+                })
+            }
         } catch {
             rtcDeleteTrack(trackId)
             throw error
@@ -218,6 +223,10 @@ private final class RtcTrack {
             rtcSendMessage(trackId, pointer.bindMemory(to: CChar.self).baseAddress, Int32(message.count))
         }
         return result >= 0
+    }
+
+    func handleRemb(bitrate: UInt32) {
+        logger.info("whip: \(trackId): Got estimated maximum bitrate: \(bitrate)")
     }
 
     private func setState(state: TrackState) {
