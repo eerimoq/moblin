@@ -324,7 +324,7 @@ extension DjiDevice: CBPeripheralDelegate {
                                              type: configureType,
                                              payload: payload.encode()))
             setState(state: .configuring)
-        case .osmoAction5Pro, .osmoAction6:
+        case .osmoAction5Pro, .osmoAction6, .osmo360:
             guard let imageStabilization else {
                 return
             }
@@ -335,8 +335,6 @@ extension DjiDevice: CBPeripheralDelegate {
                                              payload: payload.encode()))
             setState(state: .configuring)
         case .osmoPocket3:
-            sendStartStreaming()
-        case .osmo360:
             sendStartStreaming()
         case .unknown:
             sendStartStreaming()
