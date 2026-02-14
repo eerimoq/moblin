@@ -236,7 +236,10 @@ extension Model {
     }
 
     private func startNetStreamWhip() {
-        media.whipStartStream(url: stream.url, headers: stream.whip.headers)
+        media.whipStartStream(url: stream.url,
+                              headers: stream.whip.headers,
+                              videoCodec: stream.codec,
+                              audioCodec: stream.audioCodec)
     }
 
     func stopNetStream() {

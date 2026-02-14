@@ -22,7 +22,7 @@ struct StreamAudioSettingsView: View {
                 }
                 .disabled(stream.enabled && model.isLive)
             } footer: {
-                Text("WHIP generally only supports Opus.")
+                Text("RTMP generally only supports AAC.")
             }
             Section {
                 HStack {

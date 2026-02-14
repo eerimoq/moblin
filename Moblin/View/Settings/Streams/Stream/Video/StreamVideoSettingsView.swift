@@ -90,7 +90,7 @@ private struct CodecSettingsView: View {
         } footer: {
             Text("""
             H.265/HEVC generally requires less bandwidth for same image quality. RTMP \
-            and WHIP generally only supports H.264/AVC.
+            generally only supports H.264/AVC.
             """)
         }
     }
