@@ -3,7 +3,9 @@ import libdatachannel
 
 private let whipQueue = DispatchQueue(label: "com.eerimoq.Moblin.whip")
 private let h264PayloadType: UInt8 = 96
+private let h265PayloadType: UInt8 = 97
 private let opusPayloadType: UInt8 = 111
+private let aacPayloadType: UInt8 = 112
 private let videoNackMaxStoredPacketCount: UInt32 = 8192
 private let audioNackMaxStoredPacketCount: UInt32 = 512
 
@@ -125,6 +127,49 @@ private final class H264NalUnits {
     }
 }
 
+private final class H265NalUnits {
+    private var vps: Data?
+    private var sps: Data?
+    private var pps: Data?
+
+    func setParameterSets(vps: Data?, sps: Data?, pps: Data?) {
+        self.vps = vps
+        self.sps = sps
+        self.pps = pps
+    }
+
+    func process(_ sampleBuffer: CMSampleBuffer) -> Data? {
+        guard let (buffer, length) = sampleBuffer.dataBuffer?.getDataPointer() else {
+            return nil
+        }
+        let sampleData = Data(bytes: buffer, count: length)
+        guard !sampleData.isEmpty else {
+            return nil
+        }
+        if sampleBuffer.getIsSync() {
+            var data = Data()
+            if let vps {
+                appendNalUnit(&data, vps)
+            }
+            if let sps {
+                appendNalUnit(&data, sps)
+            }
+            if let pps {
+                appendNalUnit(&data, pps)
+            }
+            data.append(sampleData)
+            return data
+        }
+        return sampleData
+    }
+
+    private func appendNalUnit(_ data: inout Data, _ nalUnit: Data) {
+        var length = UInt32(nalUnit.count).bigEndian
+        data.append(Data(bytes: &length, count: 4))
+        data.append(nalUnit)
+    }
+}
+
 private func toRtcTrack(pointer: UnsafeMutableRawPointer?) -> RtcTrack? {
     guard let pointer else {
         return nil
@@ -188,22 +233,42 @@ private struct RtcTrackConfig {
     let mid: String
     let profile: String
 
-    static func makeAudio(ssrc: UInt32) -> Self {
-        return .init(name: "audio",
-                     codec: RTC_CODEC_OPUS,
-                     payloadType: Int32(opusPayloadType),
-                     ssrc: ssrc,
-                     mid: "0",
-                     profile: "")
+    static func makeAudio(ssrc: UInt32, audioCodec: SettingsStreamAudioCodec) -> Self {
+        switch audioCodec {
+        case .opus:
+            return .init(name: "audio",
+                         codec: RTC_CODEC_OPUS,
+                         payloadType: Int32(opusPayloadType),
+                         ssrc: ssrc,
+                         mid: "0",
+                         profile: "")
+        case .aac:
+            return .init(name: "audio",
+                         codec: RTC_CODEC_AAC,
+                         payloadType: Int32(aacPayloadType),
+                         ssrc: ssrc,
+                         mid: "0",
+                         profile: "")
+        }
     }
 
-    static func makeVideo(ssrc: UInt32) -> Self {
-        return .init(name: "video",
-                     codec: RTC_CODEC_H264,
-                     payloadType: Int32(h264PayloadType),
-                     ssrc: ssrc,
-                     mid: "1",
-                     profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f")
+    static func makeVideo(ssrc: UInt32, videoCodec: SettingsStreamCodec) -> Self {
+        switch videoCodec {
+        case .h264avc:
+            return .init(name: "video",
+                         codec: RTC_CODEC_H264,
+                         payloadType: Int32(h264PayloadType),
+                         ssrc: ssrc,
+                         mid: "1",
+                         profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f")
+        case .h265hevc:
+            return .init(name: "video",
+                         codec: RTC_CODEC_H265,
+                         payloadType: Int32(h265PayloadType),
+                         ssrc: ssrc,
+                         mid: "1",
+                         profile: "")
+        }
     }
 
     func isVideo() -> Bool {
@@ -290,11 +355,25 @@ private final class PeerConnection {
                             let nackMaxStoredPacketCount: UInt32
                             if config.isVideo() {
                                 packetizerInit.clockRate = 90000
-                                try checkOk(rtcSetH264Packetizer(trackId, &packetizerInit))
+                                switch config.codec {
+                                case RTC_CODEC_H264:
+                                    try checkOk(rtcSetH264Packetizer(trackId, &packetizerInit))
+                                case RTC_CODEC_H265:
+                                    try checkOk(rtcSetH265Packetizer(trackId, &packetizerInit))
+                                default:
+                                    throw "Unsupported video codec \(config.codec)"
+                                }
                                 nackMaxStoredPacketCount = videoNackMaxStoredPacketCount
                             } else {
                                 packetizerInit.clockRate = 48000
-                                try checkOk(rtcSetOpusPacketizer(trackId, &packetizerInit))
+                                switch config.codec {
+                                case RTC_CODEC_AAC:
+                                    try checkOk(rtcSetAACPacketizer(trackId, &packetizerInit))
+                                case RTC_CODEC_OPUS:
+                                    try checkOk(rtcSetOpusPacketizer(trackId, &packetizerInit))
+                                default:
+                                    throw "Unsupported audio codec \(config.codec)"
+                                }
                                 nackMaxStoredPacketCount = audioNackMaxStoredPacketCount
                             }
                             try checkOk(rtcChainRtcpSrReporter(trackId))
@@ -375,6 +454,8 @@ final class WhipStream {
     private var videoTrack: RtcTrack?
     private var audioTrack: RtcTrack?
     private var h264NalUnits = H264NalUnits()
+    private var h265NalUnits = H265NalUnits()
+    private var videoCodec: SettingsStreamCodec = .h264avc
     private var totalByteCount: Int64 = 0
     private var sessionUrl: URL?
     private var endpointUrl: URL?
@@ -389,9 +470,18 @@ final class WhipStream {
         self.delegate = delegate
     }
 
-    func start(url: String, headers: [SettingsHttpHeader], iceServers: [String]) {
+    func start(url: String,
+               headers: [SettingsHttpHeader],
+               iceServers: [String],
+               videoCodec: SettingsStreamCodec,
+               audioCodec: SettingsStreamAudioCodec)
+    {
         whipQueue.async {
-            self.startInternal(url: url, headers: headers, iceServers: iceServers)
+            self.startInternal(url: url,
+                               headers: headers,
+                               iceServers: iceServers,
+                               videoCodec: videoCodec,
+                               audioCodec: audioCodec)
         }
     }
 
@@ -407,27 +497,34 @@ final class WhipStream {
         }
     }
 
-    private func startInternal(url: String, headers: [SettingsHttpHeader], iceServers: [String]) {
+    private func startInternal(url: String,
+                               headers: [SettingsHttpHeader],
+                               iceServers: [String],
+                               videoCodec: SettingsStreamCodec,
+                               audioCodec: SettingsStreamAudioCodec)
+    {
         stopInternal()
         guard let endpointUrl = makeEndpointUrl(url: url) else {
             return
         }
         self.endpointUrl = endpointUrl
         self.headers = headers
+        self.videoCodec = videoCodec
         totalByteCount = 0
         connected = false
         offerSent = false
         logger.info("whip: Start URL: \(endpointUrl.absoluteString)")
         h264NalUnits = H264NalUnits()
+        h265NalUnits = H265NalUnits()
         do {
             let peerConnection = try PeerConnection(delegate: self, iceServers: iceServers)
             let streamId = UUID().uuidString
             audioTrack = try peerConnection.addTrack(
-                config: .makeAudio(ssrc: makeSsrc()),
+                config: .makeAudio(ssrc: makeSsrc(), audioCodec: audioCodec),
                 streamId: streamId
             )
             videoTrack = try peerConnection.addTrack(
-                config: .makeVideo(ssrc: makeSsrc()),
+                config: .makeVideo(ssrc: makeSsrc(), videoCodec: videoCodec),
                 streamId: streamId
             )
             self.peerConnection = peerConnection
@@ -625,10 +722,20 @@ final class WhipStream {
     }
 
     private func handleVideoEncoderOutputFormat(_ formatDescription: CMFormatDescription) {
-        guard let config = MpegTsVideoConfigAvc(formatDescription: formatDescription) else {
-            return
+        switch videoCodec {
+        case .h264avc:
+            guard let config = MpegTsVideoConfigAvc(formatDescription: formatDescription) else {
+                return
+            }
+            h264NalUnits.setParameterSets(sps: config.sequenceParameterSet, pps: config.pictureParameterSet)
+        case .h265hevc:
+            guard let config = MpegTsVideoConfigHevc(formatDescription: formatDescription) else {
+                return
+            }
+            h265NalUnits.setParameterSets(vps: config.videoParameterSet,
+                                          sps: config.sequenceParameterSet,
+                                          pps: config.pictureParameterSet)
         }
-        h264NalUnits.setParameterSets(sps: config.sequenceParameterSet, pps: config.pictureParameterSet)
     }
 
     private func handleVideoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -644,7 +751,14 @@ final class WhipStream {
             logger.info("whip: Failed to set timestamp")
             return
         }
-        guard let data = h264NalUnits.process(sampleBuffer) else {
+        let data: Data?
+        switch videoCodec {
+        case .h264avc:
+            data = h264NalUnits.process(sampleBuffer)
+        case .h265hevc:
+            data = h265NalUnits.process(sampleBuffer)
+        }
+        guard let data else {
             return
         }
         if videoTrack.send(packet: data) {
