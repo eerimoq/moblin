@@ -239,7 +239,8 @@ extension Model {
         media.whipStartStream(url: stream.url,
                               headers: stream.whip.headers,
                               videoCodec: stream.codec,
-                              audioCodec: stream.audioCodec)
+                              audioCodec: stream.audioCodec,
+                              videoBitrate: Double(stream.bitrate))
     }
 
     func stopNetStream() {

@@ -1,5 +1,5 @@
 {
-  "originHash" : "11ced83bb44734f5ca14e8e528b3636b03ed7e62bf0469485fda090e8672e709",
+  "originHash" : "bd1ee75e2e6506156e76fac012a809cf5edb61b8f276ba7953323bdcfd6ed6f3",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -160,7 +160,7 @@
       "location" : "https://github.com/eerimoq/Webrtc/",
       "state" : {
         "branch" : "main",
-        "revision" : "a21a57670bff943ed5184bc00139d27fe362e864"
+        "revision" : "be4fb227192086dbc140f70ce1fbfd6e5eb47643"
       }
     },
     {

@@ -232,42 +232,47 @@ private struct RtcTrackConfig {
     let ssrc: UInt32
     let mid: String
     let profile: String
+    let bitrate: Double
 
-    static func makeAudio(ssrc: UInt32, audioCodec: SettingsStreamAudioCodec) -> Self {
-        switch audioCodec {
+    static func makeAudio(ssrc: UInt32, codec: SettingsStreamAudioCodec) -> Self {
+        switch codec {
         case .opus:
             return .init(name: "audio",
                          codec: RTC_CODEC_OPUS,
                          payloadType: Int32(opusPayloadType),
                          ssrc: ssrc,
                          mid: "0",
-                         profile: "")
+                         profile: "",
+                         bitrate: 0)
         case .aac:
             return .init(name: "audio",
                          codec: RTC_CODEC_AAC,
                          payloadType: Int32(aacPayloadType),
                          ssrc: ssrc,
                          mid: "0",
-                         profile: "")
+                         profile: "",
+                         bitrate: 0)
         }
     }
 
-    static func makeVideo(ssrc: UInt32, videoCodec: SettingsStreamCodec) -> Self {
-        switch videoCodec {
+    static func makeVideo(ssrc: UInt32, codec: SettingsStreamCodec, bitrate: Double) -> Self {
+        switch codec {
         case .h264avc:
             return .init(name: "video",
                          codec: RTC_CODEC_H264,
                          payloadType: Int32(h264PayloadType),
                          ssrc: ssrc,
                          mid: "1",
-                         profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f")
+                         profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f",
+                         bitrate: bitrate)
         case .h265hevc:
             return .init(name: "video",
                          codec: RTC_CODEC_H265,
                          payloadType: Int32(h265PayloadType),
                          ssrc: ssrc,
                          mid: "1",
-                         profile: "")
+                         profile: "",
+                         bitrate: bitrate)
         }
     }
 
@@ -362,6 +367,9 @@ private final class PeerConnection {
                                     try checkOk(rtcSetH265Packetizer(trackId, &packetizerInit))
                                 default:
                                     throw "Unsupported video codec \(config.codec)"
+                                }
+                                if false {
+                                    try checkOk(rtcChainPacingHandler(trackId, 1.2 * config.bitrate, 5))
                                 }
                                 nackMaxStoredPacketCount = videoNackMaxStoredPacketCount
                             } else {
@@ -474,14 +482,16 @@ final class WhipStream {
                headers: [SettingsHttpHeader],
                iceServers: [String],
                videoCodec: SettingsStreamCodec,
-               audioCodec: SettingsStreamAudioCodec)
+               audioCodec: SettingsStreamAudioCodec,
+               videoBitrate: Double)
     {
         whipQueue.async {
             self.startInternal(url: url,
                                headers: headers,
                                iceServers: iceServers,
                                videoCodec: videoCodec,
-                               audioCodec: audioCodec)
+                               audioCodec: audioCodec,
+                               videoBitrate: videoBitrate)
         }
     }
 
@@ -501,7 +511,8 @@ final class WhipStream {
                                headers: [SettingsHttpHeader],
                                iceServers: [String],
                                videoCodec: SettingsStreamCodec,
-                               audioCodec: SettingsStreamAudioCodec)
+                               audioCodec: SettingsStreamAudioCodec,
+                               videoBitrate: Double)
     {
         stopInternal()
         guard let endpointUrl = makeEndpointUrl(url: url) else {
@@ -520,11 +531,11 @@ final class WhipStream {
             let peerConnection = try PeerConnection(delegate: self, iceServers: iceServers)
             let streamId = UUID().uuidString
             audioTrack = try peerConnection.addTrack(
-                config: .makeAudio(ssrc: makeSsrc(), audioCodec: audioCodec),
+                config: .makeAudio(ssrc: makeSsrc(), codec: audioCodec),
                 streamId: streamId
             )
             videoTrack = try peerConnection.addTrack(
-                config: .makeVideo(ssrc: makeSsrc(), videoCodec: videoCodec),
+                config: .makeVideo(ssrc: makeSsrc(), codec: videoCodec, bitrate: videoBitrate),
                 streamId: streamId
             )
             self.peerConnection = peerConnection
