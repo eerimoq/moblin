@@ -86,39 +86,6 @@ private enum TrackState {
     case closed
 }
 
-private struct RtpPacket {
-    let marker: Bool
-    let payloadType: UInt8
-    let sequenceNumber: UInt16
-    let timestamp: UInt32
-    let ssrc: UInt32
-    let payload: Data
-
-    func data() -> Data {
-        var data = Data(count: 12 + payload.count)
-        payload.withUnsafeBytes { payload in
-            data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
-                let version: UInt8 = 2
-                let x: UInt8 = 0
-                let cc: UInt8 = 0
-                pointer[0] = (version << 6) | (x << 4) | cc
-                pointer[1] = (marker ? 0x80 : 0x00) | payloadType
-                pointer.writeUInt16(sequenceNumber, offset: 2)
-                pointer.writeUInt32(timestamp, offset: 4)
-                pointer.writeUInt32(ssrc, offset: 8)
-                pointer.baseAddress!
-                    .advanced(by: 12)
-                    .copyMemory(from: payload.baseAddress!, byteCount: payload.count)
-            }
-        }
-        return data
-    }
-}
-
-private func convertTimestamp(_ presentationTimeStamp: Double, rate: Double) -> UInt32 {
-    return UInt32(UInt64(presentationTimeStamp * rate) & 0xFFFF_FFFF)
-}
-
 private final class H264NalUnits {
     private var sps: Data?
     private var pps: Data?
@@ -154,51 +121,6 @@ private final class H264NalUnits {
         var length = UInt32(nalUnit.count).bigEndian
         data.append(Data(bytes: &length, count: 4))
         data.append(nalUnit)
-    }
-}
-
-private final class OpusPacketizer {
-    let ssrc: UInt32
-    private var sequenceNumber: UInt16 = 0
-
-    init(ssrc: UInt32) {
-        self.ssrc = ssrc
-    }
-
-    func process(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: Double) -> [Data] {
-        guard buffer.byteLength > 0 else {
-            return []
-        }
-        let timestamp = convertTimestamp(presentationTimeStamp, rate: 48000)
-        let allData = Data(bytes: buffer.data, count: Int(buffer.byteLength))
-        guard buffer.packetCount > 0, let descriptions = buffer.packetDescriptions else {
-            return [makeRtpPacket(timestamp, allData)]
-        }
-        var packets: [Data] = []
-        packets.reserveCapacity(Int(buffer.packetCount))
-        for index in 0 ..< Int(buffer.packetCount) {
-            let description = descriptions[index]
-            let offset = Int(description.mStartOffset)
-            let size = Int(description.mDataByteSize)
-            guard size > 0, offset >= 0, offset + size <= allData.count else {
-                continue
-            }
-            packets.append(makeRtpPacket(timestamp, allData.subdata(in: offset ..< offset + size)))
-        }
-        return packets.isEmpty ? [makeRtpPacket(timestamp, allData)] : packets
-    }
-
-    private func makeRtpPacket(_ timestamp: UInt32, _ payload: Data) -> Data {
-        let packet = RtpPacket(
-            marker: false,
-            payloadType: opusPayloadType,
-            sequenceNumber: sequenceNumber,
-            timestamp: timestamp,
-            ssrc: ssrc,
-            payload: payload
-        )
-        sequenceNumber &+= 1
-        return packet.data()
     }
 }
 
@@ -360,16 +282,19 @@ private final class PeerConnection {
                                 profile: profile
                             )
                             let trackId = try checkOkReturnResult(rtcAddTrackEx(peerConnectionId, &trackInit))
+                            var packetizerInit = rtcPacketizerInit()
+                            packetizerInit.ssrc = config.ssrc
+                            packetizerInit.cname = name
+                            packetizerInit.payloadType = UInt8(config.payloadType)
                             if config.isVideo() {
-                                var packetizerInit = rtcPacketizerInit()
-                                packetizerInit.ssrc = config.ssrc
-                                packetizerInit.cname = name
-                                packetizerInit.payloadType = UInt8(config.payloadType)
                                 packetizerInit.clockRate = 90000
                                 try checkOk(rtcSetH264Packetizer(trackId, &packetizerInit))
-                                try checkOk(rtcChainRtcpSrReporter(trackId))
-                                try checkOk(rtcChainRtcpNackResponder(trackId, nackMaxStoredPacketCount))
+                            } else {
+                                packetizerInit.clockRate = 48000
+                                try checkOk(rtcSetOpusPacketizer(trackId, &packetizerInit))
                             }
+                            try checkOk(rtcChainRtcpSrReporter(trackId))
+                            try checkOk(rtcChainRtcpNackResponder(trackId, nackMaxStoredPacketCount))
                             return try RtcTrack(trackId: trackId)
                         }
                     }
@@ -446,7 +371,6 @@ final class WhipStream {
     private var videoTrack: RtcTrack?
     private var audioTrack: RtcTrack?
     private var h264NalUnits = H264NalUnits()
-    private var audioPacketizer = OpusPacketizer(ssrc: 0)
     private var totalByteCount: Int64 = 0
     private var sessionUrl: URL?
     private var endpointUrl: URL?
@@ -490,13 +414,12 @@ final class WhipStream {
         connected = false
         offerSent = false
         logger.info("whip: Start URL: \(endpointUrl.absoluteString)")
-        audioPacketizer = OpusPacketizer(ssrc: makeSsrc())
         h264NalUnits = H264NalUnits()
         do {
             let peerConnection = try PeerConnection(delegate: self, iceServers: iceServers)
             let streamId = UUID().uuidString
             audioTrack = try peerConnection.addTrack(
-                config: .makeAudio(ssrc: audioPacketizer.ssrc),
+                config: .makeAudio(ssrc: makeSsrc()),
                 streamId: streamId
             )
             videoTrack = try peerConnection.addTrack(
@@ -667,10 +590,33 @@ final class WhipStream {
         guard let presentationTimeStamp = rebaseTimestamp(presentationTimeStamp) else {
             return
         }
-        for packet in audioPacketizer.process(buffer, presentationTimeStamp)
-            where audioTrack.send(packet: packet)
-        {
-            totalByteCount += Int64(packet.count)
+        guard buffer.byteLength > 0 else {
+            return
+        }
+        do {
+            try audioTrack.setTimestamp(presentationTimeStamp: presentationTimeStamp)
+        } catch {
+            logger.info("whip: Failed to set audio timestamp")
+            return
+        }
+        let allData = Data(bytes: buffer.data, count: Int(buffer.byteLength))
+        guard buffer.packetCount > 0, let descriptions = buffer.packetDescriptions else {
+            if audioTrack.send(packet: allData) {
+                totalByteCount += Int64(allData.count)
+            }
+            return
+        }
+        for index in 0 ..< Int(buffer.packetCount) {
+            let description = descriptions[index]
+            let offset = Int(description.mStartOffset)
+            let size = Int(description.mDataByteSize)
+            guard size > 0, offset >= 0, offset + size <= allData.count else {
+                continue
+            }
+            let packet = allData.subdata(in: offset ..< offset + size)
+            if audioTrack.send(packet: packet) {
+                totalByteCount += Int64(packet.count)
+            }
         }
     }
 
