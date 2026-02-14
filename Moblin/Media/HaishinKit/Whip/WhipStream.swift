@@ -210,12 +210,12 @@ private final class RtcTrack {
         try checkOk(rtcSetTrackRtpTimestamp(trackId, timestamp))
     }
 
-    func send(packet: Data) -> Bool {
+    func send(message: Data) -> Bool {
         guard state == .open else {
             return false
         }
-        let result = packet.withUnsafeBytes { pointer in
-            rtcSendMessage(trackId, pointer.bindMemory(to: CChar.self).baseAddress, Int32(packet.count))
+        let result = message.withUnsafeBytes { pointer in
+            rtcSendMessage(trackId, pointer.bindMemory(to: CChar.self).baseAddress, Int32(message.count))
         }
         return result >= 0
     }

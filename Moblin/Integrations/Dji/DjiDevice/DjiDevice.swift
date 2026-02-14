@@ -324,7 +324,7 @@ extension DjiDevice: CBPeripheralDelegate {
                                              type: configureType,
                                              payload: payload.encode()))
             setState(state: .configuring)
-        case .osmoAction5Pro, .osmoAction6:
+        case .osmoAction5Pro, .osmoAction6, .osmo360:
             guard let imageStabilization else {
                 return
             }
@@ -357,7 +357,7 @@ extension DjiDevice: CBPeripheralDelegate {
             resolution: resolution,
             fps: fps,
             bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF),
-            oa5: model == .osmoAction5Pro || model == .osmoAction6
+            oa5: model == .osmoAction5Pro || model == .osmoAction6 || model == .osmo360
         )
         writeMessage(message: DjiMessage(target: startStreamingTarget,
                                          id: startStreamingTransactionId,
@@ -367,7 +367,7 @@ extension DjiDevice: CBPeripheralDelegate {
         // This is an exact copy of the stop-streaming command, but the last data-bit in
         // the payload is set to 1 instead of 2.
         // It may probably work fine sending it on all devices, but limiting it to OA5P for now.
-        if model == .osmoAction5Pro || model == .osmoAction6 {
+        if model == .osmoAction5Pro || model == .osmoAction6 || model == .osmo360 {
             let confirmStartStreamPayload = DjiConfirmStartStreamingMessagePayload()
             writeMessage(message: DjiMessage(target: stopStreamingTarget,
                                              id: stopStreamingTransactionId,

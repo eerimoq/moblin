@@ -23,7 +23,7 @@ func djiModelFromManufacturerData(data: Data) -> SettingsDjiDeviceModel {
     case djiDeviceModelOsmoAction5Pro:
         return .osmoAction5Pro
     case djiDeviceModelOsmo360:
-        return .osmoAction5Pro
+        return .osmo360
     case djiDeviceModelOsmoAction6:
         return .osmoAction6
     default:
