@@ -51,6 +51,44 @@ enum SettingsDjiDeviceModel: String, Codable {
     case osmoPocket3
     case osmo360
     case unknown
+
+    func hasImageStabilizatin() -> Bool {
+        switch self {
+        case .osmoAction3:
+            return false
+        case .osmoAction4:
+            return true
+        case .osmoAction5Pro:
+            return true
+        case .osmoAction6:
+            return true
+        case .osmoPocket3:
+            return false
+        case .osmo360:
+            return true
+        case .unknown:
+            return false
+        }
+    }
+
+    func hasNewProtocol() -> Bool {
+        switch self {
+        case .osmoAction3:
+            return false
+        case .osmoAction4:
+            return false
+        case .osmoAction5Pro:
+            return true
+        case .osmoAction6:
+            return true
+        case .osmoPocket3:
+            return false
+        case .osmo360:
+            return true
+        case .unknown:
+            return false
+        }
+    }
 }
 
 var djiDeviceBitrates: [UInt32] = [
