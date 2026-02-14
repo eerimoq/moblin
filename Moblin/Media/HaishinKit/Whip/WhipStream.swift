@@ -702,7 +702,7 @@ final class WhipStream {
         }
         let allData = Data(bytes: buffer.data, count: Int(buffer.byteLength))
         guard buffer.packetCount > 0, let descriptions = buffer.packetDescriptions else {
-            if audioTrack.send(packet: allData) {
+            if audioTrack.send(message: allData) {
                 totalByteCount += Int64(allData.count)
             }
             return
@@ -715,7 +715,7 @@ final class WhipStream {
                 continue
             }
             let packet = allData.subdata(in: offset ..< offset + size)
-            if audioTrack.send(packet: packet) {
+            if audioTrack.send(message: packet) {
                 totalByteCount += Int64(packet.count)
             }
         }
@@ -761,7 +761,7 @@ final class WhipStream {
         guard let data else {
             return
         }
-        if videoTrack.send(packet: data) {
+        if videoTrack.send(message: data) {
             totalByteCount += Int64(data.count)
         }
     }

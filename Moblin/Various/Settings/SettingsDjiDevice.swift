@@ -44,6 +44,7 @@ enum SettingsDjiDeviceResolution: String, CaseIterable, Codable {
 }
 
 enum SettingsDjiDeviceModel: String, Codable {
+    case osmoAction2
     case osmoAction3
     case osmoAction4
     case osmoAction5Pro
@@ -54,6 +55,8 @@ enum SettingsDjiDeviceModel: String, Codable {
 
     func hasImageStabilizatin() -> Bool {
         switch self {
+        case .osmoAction2:
+            return false
         case .osmoAction3:
             return false
         case .osmoAction4:
@@ -73,6 +76,8 @@ enum SettingsDjiDeviceModel: String, Codable {
 
     func hasNewProtocol() -> Bool {
         switch self {
+        case .osmoAction2:
+            return false
         case .osmoAction3:
             return false
         case .osmoAction4:

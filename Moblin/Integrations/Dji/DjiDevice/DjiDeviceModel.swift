@@ -2,6 +2,7 @@ import Foundation
 
 private let djiTechnologyCoLtd = Data([0xAA, 0x08])
 private let xtraLtd = Data([0xAA, 0xF7])
+private let djiDeviceModelOsmoAction2 = Data([0x10, 0x00])
 private let djiDeviceModelOsmoAction3 = Data([0x12, 0x00])
 private let djiDeviceModelOsmoAction4 = Data([0x14, 0x00])
 private let djiDeviceModelOsmoAction5Pro = Data([0x15, 0x00])
@@ -14,6 +15,8 @@ func djiModelFromManufacturerData(data: Data) -> SettingsDjiDeviceModel {
         return .unknown
     }
     switch data[2 ... 3] {
+    case djiDeviceModelOsmoAction2:
+        return .osmoAction2
     case djiDeviceModelOsmoAction3:
         return .osmoAction3
     case djiDeviceModelOsmoAction4:
