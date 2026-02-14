@@ -194,7 +194,7 @@ struct StreamSettingsView: View {
             Section {
                 NameEditView(name: $stream.name, existingNames: database.streams)
             }
-            Section {
+            Section("Destination") {
                 NavigationLink {
                     StreamUrlSettingsView(stream: stream)
                 } label: {
@@ -232,6 +232,8 @@ struct StreamSettingsView: View {
                         }
                     }
                 }
+            }
+            Section("Media") {
                 NavigationLink {
                     StreamVideoSettingsView(database: database, stream: stream)
                 } label: {
@@ -278,13 +280,9 @@ struct StreamSettingsView: View {
                         }
                     }
                 }
-            } header: {
-                Text("Media")
             }
-            Section {
+            Section("Streaming platforms") {
                 StreamPlatformsSettingsView(model: model, stream: stream)
-            } header: {
-                Text("Streaming platforms")
             }
             if !isMac() {
                 BackgroundStreamingToggleView(enabled: $stream.backgroundStreaming)
