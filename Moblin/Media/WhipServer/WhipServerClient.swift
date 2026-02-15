@@ -250,6 +250,9 @@ final class WhipServerClient {
     }
 
     private func splitNalUnits(data: Data) -> [Data] {
+        guard data.count >= 4 else {
+            return []
+        }
         var nalUnits: [Data] = []
         var searchStart = data.startIndex
         var currentNalStart: Data.Index?
