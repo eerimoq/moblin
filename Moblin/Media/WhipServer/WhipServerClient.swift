@@ -28,8 +28,6 @@ final class WhipServerClient {
     private var basePresentationTimeStamp: Double = -1
     private var firstVideoPresentationTimeStamp: Double = -1
     private var firstAudioPresentationTimeStamp: Double = -1
-    private var sps: Data?
-    private var pps: Data?
     private var opusAudioConverter: AVAudioConverter?
     private var opusCompressedBuffer: AVAudioCompressedBuffer?
     private var pcmAudioFormat: AVAudioFormat?
@@ -189,38 +187,19 @@ final class WhipServerClient {
     }
 
     private func handleVideoMessageInternal(data: Data, timestampSeconds: Double) {
-        let nalUnits = splitNalUnits(data: data)
-        for nalUnit in nalUnits {
-            guard !nalUnit.isEmpty else {
-                continue
-            }
-            let nalType = nalUnit[nalUnit.startIndex] & 0x1F
-            if nalType == 7 {
-                sps = Data(nalUnit)
-            } else if nalType == 8 {
-                pps = Data(nalUnit)
-                updateFormatDescription()
-            }
+        var frameData = data
+        let nalUnits = getNalUnits(data: frameData)
+        let units = readH264NalUnits(data: frameData, nalUnits: nalUnits, filter: [.sps, .pps, .idr])
+        let formatDescription = units.makeFormatDescription()
+        if let formatDescription, videoFormatDescription != formatDescription {
+            videoFormatDescription = formatDescription
+            videoDecoder?.stopRunning()
+            videoDecoder = nil
         }
         guard let videoFormatDescription else {
             return
         }
-        var avccData = Data()
-        for nalUnit in nalUnits {
-            guard !nalUnit.isEmpty else {
-                continue
-            }
-            let nalType = nalUnit[nalUnit.startIndex] & 0x1F
-            guard nalType == 1 || nalType == 5 else {
-                continue
-            }
-            var length = UInt32(nalUnit.count).bigEndian
-            avccData.append(Data(bytes: &length, count: 4))
-            avccData.append(nalUnit)
-        }
-        guard !avccData.isEmpty else {
-            return
-        }
+        removeNalUnitStartCodes(&frameData, nalUnits)
         var presentationTimeStamp = timestampSeconds
         if firstVideoPresentationTimeStamp == -1 {
             firstVideoPresentationTimeStamp = presentationTimeStamp
@@ -232,7 +211,7 @@ final class WhipServerClient {
             presentationTimeStamp: CMTime(seconds: presentationTimeStamp),
             decodeTimeStamp: .invalid
         )
-        let blockBuffer = avccData.makeBlockBuffer()
+        let blockBuffer = frameData.makeBlockBuffer()
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
         guard CMSampleBufferCreate(
@@ -257,69 +236,6 @@ final class WhipServerClient {
             videoDecoder?.startRunning(formatDescription: videoFormatDescription)
         }
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
-    }
-
-    private func splitNalUnits(data: Data) -> [Data] {
-        guard data.count >= 4 else {
-            return []
-        }
-        var nalUnits: [Data] = []
-        var searchStart = data.startIndex
-        var currentNalStart: Data.Index?
-        while searchStart <= data.endIndex - 4 {
-            if data[searchStart] == 0x00,
-               data[searchStart + 1] == 0x00,
-               data[searchStart + 2] == 0x00,
-               data[searchStart + 3] == 0x01
-            {
-                if let nalStart = currentNalStart {
-                    nalUnits.append(Data(data[nalStart ..< searchStart]))
-                }
-                currentNalStart = searchStart + 4
-                searchStart += 4
-            } else {
-                searchStart += 1
-            }
-        }
-        if let nalStart = currentNalStart, nalStart < data.endIndex {
-            nalUnits.append(Data(data[nalStart ..< data.endIndex]))
-        }
-        return nalUnits
-    }
-
-    private func updateFormatDescription() {
-        guard let sps, let pps else {
-            return
-        }
-        var formatDescription: CMFormatDescription?
-        sps.withUnsafeBytes { spsBuffer in
-            guard let spsBaseAddress = spsBuffer.baseAddress else {
-                return
-            }
-            pps.withUnsafeBytes { ppsBuffer in
-                guard let ppsBaseAddress = ppsBuffer.baseAddress else {
-                    return
-                }
-                let pointers = [
-                    spsBaseAddress.assumingMemoryBound(to: UInt8.self),
-                    ppsBaseAddress.assumingMemoryBound(to: UInt8.self),
-                ]
-                let sizes = [spsBuffer.count, ppsBuffer.count]
-                CMVideoFormatDescriptionCreateFromH264ParameterSets(
-                    allocator: kCFAllocatorDefault,
-                    parameterSetCount: pointers.count,
-                    parameterSetPointers: pointers,
-                    parameterSetSizes: sizes,
-                    nalUnitHeaderLength: 4,
-                    formatDescriptionOut: &formatDescription
-                )
-            }
-        }
-        if let formatDescription {
-            videoFormatDescription = formatDescription
-            videoDecoder?.stopRunning()
-            videoDecoder = nil
-        }
     }
 
     // MARK: - Audio
