@@ -25,6 +25,9 @@ final class WhipServerClient {
     private var answerCompletion: ((String?) -> Void)?
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?
+    private var basePresentationTimeStamp: Double = -1
+    private var firstVideoPresentationTimeStamp: Double = -1
+    private var firstAudioPresentationTimeStamp: Double = -1
     private var sps: Data?
     private var pps: Data?
     private var opusAudioConverter: AVAudioConverter?
@@ -154,36 +157,38 @@ final class WhipServerClient {
         if isVideo {
             rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
             rtcChainRtcpReceivingSession(trackId)
-            rtcSetMessageCallback(trackId) { _, message, size, pointer in
-                guard let message, size > 0, let pointer else {
+            rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
+                guard let data, size > 0, let info, let pointer else {
                     return
                 }
-                let data = Data(bytes: message, count: Int(size))
+                let frameData = Data(bytes: data, count: Int(size))
+                let timestampSeconds = info.pointee.timestampSeconds
                 let client = Unmanaged<WhipServerClient>.fromOpaque(pointer).takeUnretainedValue()
-                client.handleVideoMessage(data: data)
+                client.handleVideoMessage(data: frameData, timestampSeconds: timestampSeconds)
             }
         } else if isAudio {
             setupOpusDecoder()
             rtcSetOpusDepacketizer(trackId)
             rtcChainRtcpReceivingSession(trackId)
-            rtcSetMessageCallback(trackId) { _, message, size, pointer in
-                guard let message, size > 0, let pointer else {
+            rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
+                guard let data, size > 0, let info, let pointer else {
                     return
                 }
-                let data = Data(bytes: message, count: Int(size))
+                let frameData = Data(bytes: data, count: Int(size))
+                let timestampSeconds = info.pointee.timestampSeconds
                 let client = Unmanaged<WhipServerClient>.fromOpaque(pointer).takeUnretainedValue()
-                client.handleAudioMessage(data: data)
+                client.handleAudioMessage(data: frameData, timestampSeconds: timestampSeconds)
             }
         }
     }
 
-    private func handleVideoMessage(data: Data) {
+    private func handleVideoMessage(data: Data, timestampSeconds: Double) {
         whipServerDispatchQueue.async {
-            self.handleVideoMessageInternal(data: data)
+            self.handleVideoMessageInternal(data: data, timestampSeconds: timestampSeconds)
         }
     }
 
-    private func handleVideoMessageInternal(data: Data) {
+    private func handleVideoMessageInternal(data: Data, timestampSeconds: Double) {
         let nalUnits = splitNalUnits(data: data)
         for nalUnit in nalUnits {
             guard !nalUnit.isEmpty else {
@@ -216,7 +221,12 @@ final class WhipServerClient {
         guard !avccData.isEmpty else {
             return
         }
-        let presentationTimeStamp = currentPresentationTimeStamp().seconds
+        var presentationTimeStamp = timestampSeconds
+        if firstVideoPresentationTimeStamp == -1 {
+            firstVideoPresentationTimeStamp = presentationTimeStamp
+        }
+        presentationTimeStamp = getBasePresentationTimeStamp()
+            + (presentationTimeStamp - firstVideoPresentationTimeStamp)
         var timing = CMSampleTimingInfo(
             duration: .invalid,
             presentationTimeStamp: CMTime(seconds: presentationTimeStamp),
@@ -352,13 +362,13 @@ final class WhipServerClient {
         }
     }
 
-    private func handleAudioMessage(data: Data) {
+    private func handleAudioMessage(data: Data, timestampSeconds: Double) {
         whipServerDispatchQueue.async {
-            self.handleAudioMessageInternal(data: data)
+            self.handleAudioMessageInternal(data: data, timestampSeconds: timestampSeconds)
         }
     }
 
-    private func handleAudioMessageInternal(data: Data) {
+    private func handleAudioMessageInternal(data: Data, timestampSeconds: Double) {
         guard !data.isEmpty else {
             return
         }
@@ -395,12 +405,24 @@ final class WhipServerClient {
             logger.info("whip-server-client: Opus decode error: \(error)")
             return
         }
-        let presentationTimeStamp = currentPresentationTimeStamp().seconds
+        var presentationTimeStamp = timestampSeconds
+        if firstAudioPresentationTimeStamp == -1 {
+            firstAudioPresentationTimeStamp = presentationTimeStamp
+        }
+        presentationTimeStamp = getBasePresentationTimeStamp()
+            + (presentationTimeStamp - firstAudioPresentationTimeStamp)
         let pts = CMTime(seconds: presentationTimeStamp)
         guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(pts) else {
             return
         }
         delegate?.whipServerClientOnAudioBuffer(clientId: clientId, sampleBuffer)
+    }
+
+    private func getBasePresentationTimeStamp() -> Double {
+        if basePresentationTimeStamp == -1 {
+            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
+        }
+        return basePresentationTimeStamp
     }
 
     func getLocalDescription() throws -> String {
