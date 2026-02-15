@@ -313,7 +313,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var streamKey: String = ""
-    @Published var latency: Int32 = 100
+    @Published var latency: Int32 = 250
 
     enum CodingKeys: CodingKey {
         case id,
@@ -337,7 +337,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
         streamKey = container.decode(.streamKey, String.self, "")
-        latency = container.decode(.latency, Int32.self, 100)
+        latency = container.decode(.latency, Int32.self, 250)
     }
 
     func camera() -> String {

@@ -86,7 +86,7 @@ struct WhipServerStreamSettingsView: View {
                         value: String(stream.latency),
                         onChange: changeLatency,
                         onSubmit: submitLatency,
-                        footers: [String(localized: "100 or more milliseconds. 100 ms by default.")],
+                        footers: [String(localized: "250 or more milliseconds. 250 ms by default.")],
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0) ms" }
                     )
@@ -110,7 +110,7 @@ struct WhipServerStreamSettingsView: View {
             .navigationTitle("Stream")
         } label: {
             HStack {
-                if model.isWhipStreamConnected(streamKey: stream.streamKey) {
+                if model.isWhipStreamConnected(streamId: stream.id) {
                     Image(systemName: "cable.connector")
                 } else {
                     Image(systemName: "cable.connector.slash")

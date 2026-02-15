@@ -26,14 +26,26 @@ extension Model {
         }
     }
 
-    func isWhipStreamConnected(streamKey _: String) -> Bool {
-        return false
+    func isWhipStreamConnected(streamId: UUID) -> Bool {
+        return ingests.whip?.isStreamConnected(streamId: streamId) ?? false
     }
 
     func stopAllWhipStreams() {
         for stream in database.whipServer.streams {
             stopWhipServerStream(stream: stream, showToast: false)
         }
+    }
+
+    private func stopWhipServerStream(
+        stream: SettingsWhipServerStream,
+        showToast: Bool,
+        reason: String? = nil
+    ) {
+        if showToast {
+            makeToast(title: String(localized: "\(stream.camera()) disconnected"), subTitle: reason)
+        }
+        media.removeBufferedVideo(cameraId: stream.id)
+        media.removeBufferedAudio(cameraId: stream.id)
     }
 
     func handleWhipServerPublishStart(streamId: UUID) {
@@ -58,24 +70,20 @@ extension Model {
         }
     }
 
-    private func stopWhipServerStream(
-        stream: SettingsWhipServerStream,
-        showToast: Bool,
-        reason: String? = nil
-    ) {
-        if showToast {
-            makeToast(title: String(localized: "\(stream.camera()) disconnected"), subTitle: reason)
-        }
-        media.removeBufferedVideo(cameraId: stream.id)
-        media.removeBufferedAudio(cameraId: stream.id)
-    }
-
     func handleWhipServerFrame(streamId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
 
     func handleWhipServerAudioBuffer(streamId: UUID, sampleBuffer: CMSampleBuffer) {
         media.appendBufferedAudioSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
+    }
+
+    func handleWhipServerSetTargetLatencies(streamId: UUID,
+                                            _ videoTargetLatency: Double,
+                                            _ audioTargetLatency: Double)
+    {
+        media.setBufferedVideoTargetLatency(cameraId: streamId, latency: videoTargetLatency)
+        media.setBufferedAudioTargetLatency(cameraId: streamId, latency: audioTargetLatency)
     }
 
     func stopWhipServer() {
@@ -109,5 +117,13 @@ extension Model: WhipServerDelegate {
 
     func whipServerOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
         handleWhipServerAudioBuffer(streamId: streamId, sampleBuffer: sampleBuffer)
+    }
+
+    func whipServerSetTargetLatencies(
+        streamId: UUID,
+        _ videoTargetLatency: Double,
+        _ audioTargetLatency: Double
+    ) {
+        handleWhipServerSetTargetLatencies(streamId: streamId, videoTargetLatency, audioTargetLatency)
     }
 }

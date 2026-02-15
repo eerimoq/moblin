@@ -8,6 +8,11 @@ protocol WhipServerClientDelegate: AnyObject {
     func whipServerClientOnDisconnected(streamId: UUID, reason: String)
     func whipServerClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
     func whipServerClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func whipServerClientSetTargetLatencies(
+        streamId: UUID,
+        _ videoTargetLatency: Double,
+        _ audioTargetLatency: Double
+    )
 }
 
 private func toClient(pointer: UnsafeMutableRawPointer?) -> WhipServerClient? {
@@ -32,9 +37,11 @@ final class WhipServerClient {
     private var opusCompressedBuffer: AVAudioCompressedBuffer?
     private var pcmAudioFormat: AVAudioFormat?
     private var pcmAudioBuffer: AVAudioPCMBuffer?
+    private var targetLatenciesSynchronizer: TargetLatenciesSynchronizer
 
-    init(streamId: UUID, delegate: WhipServerClientDelegate) {
+    init(streamId: UUID, latency: Double, delegate: WhipServerClientDelegate) {
         self.streamId = streamId
+        targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: latency)
         self.delegate = delegate
     }
 
@@ -241,6 +248,8 @@ final class WhipServerClient {
             videoDecoder?.delegate = self
             videoDecoder?.startRunning(formatDescription: videoFormatDescription)
         }
+        targetLatenciesSynchronizer.setLatestVideoPresentationTimeStamp(presentationTimeStamp)
+        updateTargetLatencies()
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
@@ -297,6 +306,8 @@ final class WhipServerClient {
         guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(pts) else {
             return
         }
+        targetLatenciesSynchronizer.setLatestAudioPresentationTimeStamp(presentationTimeStamp)
+        updateTargetLatencies()
         delegate?.whipServerClientOnAudioBuffer(streamId: streamId, sampleBuffer)
     }
 
@@ -359,6 +370,17 @@ final class WhipServerClient {
             throw "Failed to get local description"
         }
         return String(cString: buffer)
+    }
+
+    private func updateTargetLatencies() {
+        guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
+            return
+        }
+        delegate?.whipServerClientSetTargetLatencies(
+            streamId: streamId,
+            videoTargetLatency,
+            audioTargetLatency
+        )
     }
 }
 
