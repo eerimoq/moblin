@@ -98,7 +98,9 @@ class RemoteControlWeb {
         }
         routes.append(HttpServerRoute(path: "/", handler: handleRoot))
         routes.append(HttpServerRoute(path: "/js/config.mjs", handler: handleConfigMjs))
-        server = HttpServer(queue: .main, routes: routes)
+        server = HttpServer(queue: .main,
+                            routes: routes,
+                            service: .init(name: "moblin", type: "_http._tcp"))
         server?.start(port: .init(integer: Int(port)))
     }
 

@@ -269,11 +269,13 @@ class HttpServer {
     private var listener: NWListener?
     private let retryTimer: SimpleTimer
     private var port: NWEndpoint.Port = .http
+    private let service: NWListener.Service?
     private var started: Bool = false
 
-    init(queue: DispatchQueue, routes: [HttpServerRoute]) {
+    init(queue: DispatchQueue, routes: [HttpServerRoute], service: NWListener.Service? = nil) {
         self.queue = queue
         self.routes = routes
+        self.service = service
         retryTimer = SimpleTimer(queue: queue)
     }
 
@@ -306,7 +308,7 @@ class HttpServer {
 
     private func setupListener() {
         listener = try? NWListener(using: .tcp, on: port)
-        listener?.service = NWListener.Service(name: "moblin", type: "_http._tcp")
+        listener?.service = service
         listener?.stateUpdateHandler = handleStateUpdate
         listener?.newConnectionHandler = handleNewConnection
         listener?.start(queue: queue)
