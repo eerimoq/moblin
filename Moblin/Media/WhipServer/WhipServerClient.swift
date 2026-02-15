@@ -25,11 +25,6 @@ final class WhipServerClient {
     private var answerCompletion: ((String?) -> Void)?
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?
-    private var basePresentationTimeStamp: Double = -1
-    private var firstVideoPresentationTimeStamp: Double = -1
-    private var firstAudioPresentationTimeStamp: Double = -1
-    private var h264NalData = Data()
-    private var h264NalTimestamp: Int64 = 0
     private var sps: Data?
     private var pps: Data?
     private var opusAudioConverter: AVAudioConverter?
@@ -154,10 +149,11 @@ final class WhipServerClient {
         let isVideo = description.lowercased().contains("h264")
         let isAudio = description.lowercased().contains("opus")
         logger.info("whip-server-client: Track video=\(isVideo) audio=\(isAudio)")
-        rtcChainRtcpReceivingSession(trackId)
         let clientPointer = Unmanaged.passUnretained(self).toOpaque()
         rtcSetUserPointer(trackId, clientPointer)
         if isVideo {
+            rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            rtcChainRtcpReceivingSession(trackId)
             rtcSetMessageCallback(trackId) { _, message, size, pointer in
                 guard let message, size > 0, let pointer else {
                     return
@@ -168,6 +164,8 @@ final class WhipServerClient {
             }
         } else if isAudio {
             setupOpusDecoder()
+            rtcSetOpusDepacketizer(trackId)
+            rtcChainRtcpReceivingSession(trackId)
             rtcSetMessageCallback(trackId) { _, message, size, pointer in
                 guard let message, size > 0, let pointer else {
                     return
@@ -186,85 +184,45 @@ final class WhipServerClient {
     }
 
     private func handleVideoMessageInternal(data: Data) {
-        guard data.count >= 12 else {
+        let nalUnits = splitNalUnits(data: data)
+        for nalUnit in nalUnits {
+            guard !nalUnit.isEmpty else {
+                continue
+            }
+            let nalType = nalUnit[nalUnit.startIndex] & 0x1F
+            if nalType == 7 {
+                sps = Data(nalUnit)
+            } else if nalType == 8 {
+                pps = Data(nalUnit)
+                updateFormatDescription()
+            }
+        }
+        guard let videoFormatDescription else {
             return
         }
-        let timestamp = Int64(data.getFourBytesBe(offset: 4))
-        let nalType = data[12] & 0x1F
-        switch nalType {
-        case 1 ... 23:
-            processH264SingleNal(data: data, timestamp: timestamp)
-        case rtpH264PacketTypeFuA:
-            processH264FuA(data: data, timestamp: timestamp)
-        default:
-            break
+        var avccData = Data()
+        for nalUnit in nalUnits {
+            guard !nalUnit.isEmpty else {
+                continue
+            }
+            let nalType = nalUnit[nalUnit.startIndex] & 0x1F
+            guard nalType == 1 || nalType == 5 else {
+                continue
+            }
+            var length = UInt32(nalUnit.count).bigEndian
+            avccData.append(Data(bytes: &length, count: 4))
+            avccData.append(nalUnit)
         }
-    }
-
-    private func processH264SingleNal(data: Data, timestamp: Int64) {
-        tryDecodeH264Frame()
-        let nalData = data.suffix(from: 12)
-        let type = nalData[nalData.startIndex] & 0x1F
-        if type == 7 {
-            sps = Data(nalData)
-        } else if type == 8 {
-            pps = Data(nalData)
-            updateFormatDescription()
-        }
-        startNewH264Frame(timestamp: timestamp, first: Data(nalData))
-    }
-
-    private func processH264FuA(data: Data, timestamp: Int64) {
-        guard data.count >= 14 else {
+        guard !avccData.isEmpty else {
             return
         }
-        let fuIndicator = data[12]
-        let fuHeader = data[13]
-        let startBit = fuHeader >> 7
-        let nalType = fuHeader & 0x1F
-        let nal = fuIndicator & 0xE0 | nalType
-        if startBit == 1 {
-            tryDecodeH264Frame()
-            startNewH264Frame(timestamp: timestamp, first: Data([nal]), second: Data(data[14...]))
-        } else {
-            h264NalData += data[14...]
-        }
-    }
-
-    private func startNewH264Frame(timestamp: Int64, first: Data, second: Data? = nil) {
-        h264NalTimestamp = timestamp
-        h264NalData.removeAll(keepingCapacity: true)
-        h264NalData += Data([0, 0, 0, 0])
-        h264NalData += first
-        if let second {
-            h264NalData += second
-        }
-    }
-
-    private func tryDecodeH264Frame() {
-        guard h264NalData.count > 4, let videoFormatDescription else {
-            return
-        }
-        let nalType = h264NalData[4] & 0x1F
-        guard nalType == 1 || nalType == 5 else {
-            return
-        }
-        let count = UInt32(h264NalData.count - 4)
-        h264NalData.withUnsafeMutableBytes { pointer in
-            pointer.storeBytes(of: count.bigEndian, as: UInt32.self)
-        }
-        var presentationTimeStamp = Double(h264NalTimestamp) / 90000
-        if firstVideoPresentationTimeStamp == -1 {
-            firstVideoPresentationTimeStamp = presentationTimeStamp
-        }
-        presentationTimeStamp = getBasePresentationTimeStamp()
-            + (presentationTimeStamp - firstVideoPresentationTimeStamp)
+        let presentationTimeStamp = currentPresentationTimeStamp().seconds
         var timing = CMSampleTimingInfo(
             duration: .invalid,
             presentationTimeStamp: CMTime(seconds: presentationTimeStamp),
             decodeTimeStamp: .invalid
         )
-        let blockBuffer = h264NalData.makeBlockBuffer()
+        let blockBuffer = avccData.makeBlockBuffer()
         var sampleBuffer: CMSampleBuffer?
         var sampleSize = blockBuffer?.dataLength ?? 0
         guard CMSampleBufferCreate(
@@ -289,6 +247,31 @@ final class WhipServerClient {
             videoDecoder?.startRunning(formatDescription: videoFormatDescription)
         }
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
+    }
+
+    private func splitNalUnits(data: Data) -> [Data] {
+        var nalUnits: [Data] = []
+        var searchStart = data.startIndex
+        var currentNalStart: Data.Index?
+        while searchStart <= data.endIndex - 4 {
+            if data[searchStart] == 0x00,
+               data[searchStart + 1] == 0x00,
+               data[searchStart + 2] == 0x00,
+               data[searchStart + 3] == 0x01
+            {
+                if let nalStart = currentNalStart {
+                    nalUnits.append(Data(data[nalStart ..< searchStart]))
+                }
+                currentNalStart = searchStart + 4
+                searchStart += 4
+            } else {
+                searchStart += 1
+            }
+        }
+        if let nalStart = currentNalStart, nalStart < data.endIndex {
+            nalUnits.append(Data(data[nalStart ..< data.endIndex]))
+        }
+        return nalUnits
     }
 
     private func updateFormatDescription() {
@@ -373,7 +356,7 @@ final class WhipServerClient {
     }
 
     private func handleAudioMessageInternal(data: Data) {
-        guard data.count > 12 else {
+        guard !data.isEmpty else {
             return
         }
         guard let opusCompressedBuffer,
@@ -383,13 +366,11 @@ final class WhipServerClient {
         else {
             return
         }
-        let timestamp = Int64(data.getFourBytesBe(offset: 4))
-        let opusData = data[12...]
-        let length = opusData.count
-        guard length > 0, length <= opusCompressedBuffer.maximumPacketSize else {
+        let length = data.count
+        guard length <= opusCompressedBuffer.maximumPacketSize else {
             return
         }
-        opusData.withUnsafeBytes { buffer in
+        data.withUnsafeBytes { buffer in
             guard let baseAddress = buffer.baseAddress else {
                 return
             }
@@ -411,24 +392,12 @@ final class WhipServerClient {
             logger.info("whip-server-client: Opus decode error: \(error)")
             return
         }
-        var presentationTimeStamp = Double(timestamp) / 48000
-        if firstAudioPresentationTimeStamp == -1 {
-            firstAudioPresentationTimeStamp = presentationTimeStamp
-        }
-        presentationTimeStamp = getBasePresentationTimeStamp()
-            + (presentationTimeStamp - firstAudioPresentationTimeStamp)
+        let presentationTimeStamp = currentPresentationTimeStamp().seconds
         let pts = CMTime(seconds: presentationTimeStamp)
         guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(pts) else {
             return
         }
         delegate?.whipServerClientOnAudioBuffer(clientId: clientId, sampleBuffer)
-    }
-
-    private func getBasePresentationTimeStamp() -> Double {
-        if basePresentationTimeStamp == -1 {
-            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
-        }
-        return basePresentationTimeStamp
     }
 
     func getLocalDescription() throws -> String {
