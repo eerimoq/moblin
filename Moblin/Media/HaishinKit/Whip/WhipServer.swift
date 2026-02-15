@@ -46,7 +46,7 @@ class WhipServer {
 
     private func startInternal() {
         let routes = [
-            HttpServerRoute(path: "/whip") { [weak self] request, response in
+            HttpServerRoute(path: "/whip/") { [weak self] request, response in
                 whipServerDispatchQueue.async {
                     self?.handleWhipEndpoint(request: request, response: response)
                 }
