@@ -15,6 +15,7 @@ enum SettingsCameraId {
     case srtla(id: UUID)
     case rist(id: UUID)
     case rtsp(id: UUID)
+    case whip(id: UUID)
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture

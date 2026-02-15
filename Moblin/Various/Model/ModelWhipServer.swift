@@ -20,10 +20,14 @@ extension Model {
         }
     }
 
-    func getWhipStream(clientId: UUID) -> SettingsWhipServerStream? {
-        return database.whipServer.streams.first { _ in
-            ingests.whip?.isClientConnected(clientId: clientId) ?? false
+    func getWhipStream(streamKey: String) -> SettingsWhipServerStream? {
+        return database.whipServer.streams.first { stream in
+            stream.streamKey == streamKey
         }
+    }
+
+    func isWhipStreamConnected(streamKey _: String) -> Bool {
+        return false
     }
 
     func stopAllWhipStreams() {
@@ -32,49 +36,26 @@ extension Model {
         }
     }
 
-    func handleWhipServerPublishStart(clientId: UUID) {
+    func handleWhipServerPublishStart(streamId: UUID) {
         DispatchQueue.main.async {
-            // guard let stream = self.getWhipStream(clientId: clientId) else {
-            //     if let firstStream = self.database.whipServer.streams.first {
-            //         let camera = firstStream.camera()
-            //         self.makeToast(title: String(localized: "\(camera) connected"))
-            //         let latency = Double(firstStream.latency) / 1000.0
-            //         self.media.addBufferedVideo(
-            //             cameraId: firstStream.id,
-            //             name: camera,
-            //             latency: latency
-            //         )
-            //         self.media.addBufferedAudio(
-            //             cameraId: firstStream.id,
-            //             name: camera,
-            //             latency: latency
-            //         )
-            //     }
-            //     return
-            // }
-            // let camera = stream.camera()
-            let camera = "test"
+            guard let stream = self.getWhipStream(id: streamId) else {
+                return
+            }
+            let camera = stream.camera()
             self.makeToast(title: String(localized: "\(camera) connected"))
-            let latency = 0.05 // Double(stream.latency) / 1000.0
-            self.media.addBufferedVideo(cameraId: screenCaptureCameraId, name: camera, latency: latency)
-            self.media.addBufferedAudio(cameraId: screenCaptureCameraId, name: camera, latency: latency)
+            let latency = Double(stream.latency) / 1000.0
+            self.media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
+            self.media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
         }
     }
 
-    func handleWhipServerPublishStop(clientId: UUID, reason: String? = nil) {
-        // DispatchQueue.main.async {
-        //     guard let stream = self.getWhipStream(clientId: clientId) else {
-        //         if let firstStream = self.database.whipServer.streams.first {
-        //             self.stopWhipServerStream(
-        //                 stream: firstStream,
-        //                 showToast: true,
-        //                 reason: reason
-        //             )
-        //         }
-        //         return
-        //     }
-        //     self.stopWhipServerStream(stream: stream, showToast: true, reason: reason)
-        // }
+    func handleWhipServerPublishStop(streamId: UUID, reason: String? = nil) {
+        DispatchQueue.main.async {
+            guard let stream = self.getWhipStream(id: streamId) else {
+                return
+            }
+            self.stopWhipServerStream(stream: stream, showToast: true, reason: reason)
+        }
     }
 
     private func stopWhipServerStream(
@@ -89,12 +70,12 @@ extension Model {
         media.removeBufferedAudio(cameraId: stream.id)
     }
 
-    func handleWhipServerFrame(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    func handleWhipServerFrame(streamId: UUID, sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedVideoSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
 
-    func handleWhipServerAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedAudioSampleBuffer(cameraId: cameraId, sampleBuffer: sampleBuffer)
+    func handleWhipServerAudioBuffer(streamId: UUID, sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedAudioSampleBuffer(cameraId: streamId, sampleBuffer: sampleBuffer)
     }
 
     func stopWhipServer() {
@@ -114,20 +95,19 @@ extension Model {
 }
 
 extension Model: WhipServerDelegate {
-    func whipServerOnPublishStart(clientId: UUID) {
-        handleWhipServerPublishStart(clientId: clientId)
+    func whipServerOnPublishStart(streamId: UUID) {
+        handleWhipServerPublishStart(streamId: streamId)
     }
 
-    func whipServerOnPublishStop(clientId: UUID, reason: String) {
-        handleWhipServerPublishStop(clientId: clientId, reason: reason)
+    func whipServerOnPublishStop(streamId: UUID, reason: String) {
+        handleWhipServerPublishStop(streamId: streamId, reason: reason)
     }
 
-    func whipServerOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        logger.info("whip video id \(clientId)")
-        handleWhipServerFrame(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
+    func whipServerOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        handleWhipServerFrame(streamId: streamId, sampleBuffer: sampleBuffer)
     }
 
-    func whipServerOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        logger.info("whip audio id \(clientId)")
+    func whipServerOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        handleWhipServerAudioBuffer(streamId: streamId, sampleBuffer: sampleBuffer)
     }
 }

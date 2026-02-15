@@ -4,13 +4,13 @@ import libdatachannel
 import Webrtc
 
 protocol WhipServerClientDelegate: AnyObject {
-    func whipServerClientOnConnected(clientId: UUID)
-    func whipServerClientOnDisconnected(clientId: UUID, reason: String)
-    func whipServerClientOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func whipServerClientOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func whipServerClientOnConnected(streamId: UUID)
+    func whipServerClientOnDisconnected(streamId: UUID, reason: String)
+    func whipServerClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func whipServerClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
 }
 
-private func toWhipServerClient(pointer: UnsafeMutableRawPointer?) -> WhipServerClient? {
+private func toClient(pointer: UnsafeMutableRawPointer?) -> WhipServerClient? {
     guard let pointer else {
         return nil
     }
@@ -18,7 +18,7 @@ private func toWhipServerClient(pointer: UnsafeMutableRawPointer?) -> WhipServer
 }
 
 final class WhipServerClient {
-    let clientId = UUID()
+    let streamId: UUID
     private var peerConnectionId: Int32 = -1
     weak var delegate: WhipServerClientDelegate?
     private var connected = false
@@ -33,7 +33,8 @@ final class WhipServerClient {
     private var pcmAudioFormat: AVAudioFormat?
     private var pcmAudioBuffer: AVAudioPCMBuffer?
 
-    init(delegate: WhipServerClientDelegate) {
+    init(streamId: UUID, delegate: WhipServerClientDelegate) {
+        self.streamId = streamId
         self.delegate = delegate
     }
 
@@ -44,19 +45,6 @@ final class WhipServerClient {
     }
 
     func handleOffer(sdpOffer: String, completion: @escaping (String?) -> Void) {
-        whipServerDispatchQueue.async {
-            self.answerCompletion = completion
-            self.handleOfferInternal(sdpOffer: sdpOffer)
-        }
-    }
-
-    func stop() {
-        whipServerDispatchQueue.async {
-            self.stopInternal()
-        }
-    }
-
-    private func handleOfferInternal(sdpOffer: String) {
         do {
             var config = rtcConfiguration()
             let iceServers: [String] = []
@@ -70,20 +58,63 @@ final class WhipServerClient {
             }
             rtcSetUserPointer(peerConnectionId, Unmanaged.passUnretained(self).toOpaque())
             try checkOk(rtcSetStateChangeCallback(peerConnectionId) { _, state, pointer in
-                toWhipServerClient(pointer: pointer)?.handleStateChange(state: state)
+                toClient(pointer: pointer)?.handleStateChange(state: state)
             })
             try checkOk(rtcSetGatheringStateChangeCallback(peerConnectionId) { _, state, pointer in
-                toWhipServerClient(pointer: pointer)?.handleGatheringStateChange(state: state)
+                toClient(pointer: pointer)?.handleGatheringStateChange(state: state)
             })
             try checkOk(rtcSetTrackCallback(peerConnectionId) { _, trackId, pointer in
-                toWhipServerClient(pointer: pointer)?.handleTrack(trackId: trackId)
+                toClient(pointer: pointer)?.handleTrack(trackId: trackId)
             })
             try checkOk(rtcSetRemoteDescription(peerConnectionId, sdpOffer, "offer"))
+            answerCompletion = completion
         } catch {
-            logger.info("whip-server-client: Failed to handle offer: \(error)")
-            answerCompletion?(nil)
-            answerCompletion = nil
-            stopInternal(reason: "Failed to handle offer")
+            completion(nil)
+            stopInternal(reason: "Failed to handle offer \(error)")
+        }
+    }
+
+    func stop() {
+        stopInternal()
+    }
+
+    private func stopInternal(reason: String? = nil) {
+        videoDecoder?.stopRunning()
+        videoDecoder = nil
+        opusAudioConverter = nil
+        opusCompressedBuffer = nil
+        pcmAudioBuffer = nil
+        if peerConnectionId >= 0 {
+            rtcClosePeerConnection(peerConnectionId)
+        }
+        connected = false
+        if let reason {
+            delegate?.whipServerClientOnDisconnected(streamId: streamId, reason: reason)
+        }
+    }
+
+    private func handleStateChange(state: rtcState) {
+        whipServerDispatchQueue.async {
+            self.handleStateChangeInternal(state: state)
+        }
+    }
+
+    private func handleStateChangeInternal(state: rtcState) {
+        guard let state = WebrtcConnectionState(value: state) else {
+            return
+        }
+        logger.info("whip-server-client: Connection state: \(state)")
+        switch state {
+        case .connected:
+            guard !connected else {
+                return
+            }
+            connected = true
+            delegate?.whipServerClientOnConnected(streamId: streamId)
+        case .disconnected, .failed, .closed:
+            stopInternal(reason: "Connection \(state)")
+        case .new, .connecting:
+            break
         }
     }
 
@@ -108,31 +139,6 @@ final class WhipServerClient {
             }
             answerCompletion = nil
         case .new, .inProgress:
-            break
-        }
-    }
-
-    private func handleStateChange(state: rtcState) {
-        whipServerDispatchQueue.async {
-            self.handleStateChangeInternal(state: state)
-        }
-    }
-
-    private func handleStateChangeInternal(state: rtcState) {
-        guard let state = WebrtcConnectionState(value: state) else {
-            return
-        }
-        logger.info("whip-server-client: Connection state: \(state)")
-        switch state {
-        case .connected:
-            guard !connected else {
-                return
-            }
-            connected = true
-            delegate?.whipServerClientOnConnected(clientId: clientId)
-        case .disconnected, .failed, .closed:
-            stopInternal(reason: "Connection \(state)")
-        case .new, .connecting:
             break
         }
     }
@@ -238,46 +244,6 @@ final class WhipServerClient {
         videoDecoder?.decodeSampleBuffer(sampleBuffer)
     }
 
-    // MARK: - Audio
-
-    private func setupOpusDecoder() {
-        var audioStreamBasicDescription = AudioStreamBasicDescription(
-            mSampleRate: 48000,
-            mFormatID: kAudioFormatOpus,
-            mFormatFlags: 0,
-            mBytesPerPacket: 0,
-            mFramesPerPacket: 960,
-            mBytesPerFrame: 0,
-            mChannelsPerFrame: 2,
-            mBitsPerChannel: 0,
-            mReserved: 0
-        )
-        guard let opusFormat = AVAudioFormat(streamDescription: &audioStreamBasicDescription) else {
-            logger.info("whip-server-client: Failed to create Opus audio format")
-            return
-        }
-        opusCompressedBuffer = AVAudioCompressedBuffer(
-            format: opusFormat,
-            packetCapacity: 1,
-            maximumPacketSize: 4096
-        )
-        pcmAudioFormat = AVAudioFormat(
-            commonFormat: .pcmFormatInt16,
-            sampleRate: 48000,
-            channels: 2,
-            interleaved: true
-        )
-        guard let pcmAudioFormat else {
-            logger.info("whip-server-client: Failed to create PCM audio format")
-            return
-        }
-        pcmAudioBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 960)
-        opusAudioConverter = AVAudioConverter(from: opusFormat, to: pcmAudioFormat)
-        if opusAudioConverter == nil {
-            logger.info("whip-server-client: Failed to create Opus audio converter")
-        }
-    }
-
     private func handleAudioMessage(data: Data, timestampSeconds: Double) {
         whipServerDispatchQueue.async {
             self.handleAudioMessageInternal(data: data, timestampSeconds: timestampSeconds)
@@ -331,7 +297,45 @@ final class WhipServerClient {
         guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(pts) else {
             return
         }
-        delegate?.whipServerClientOnAudioBuffer(clientId: clientId, sampleBuffer)
+        delegate?.whipServerClientOnAudioBuffer(streamId: streamId, sampleBuffer)
+    }
+
+    private func setupOpusDecoder() {
+        var audioStreamBasicDescription = AudioStreamBasicDescription(
+            mSampleRate: 48000,
+            mFormatID: kAudioFormatOpus,
+            mFormatFlags: 0,
+            mBytesPerPacket: 0,
+            mFramesPerPacket: 960,
+            mBytesPerFrame: 0,
+            mChannelsPerFrame: 2,
+            mBitsPerChannel: 0,
+            mReserved: 0
+        )
+        guard let opusFormat = AVAudioFormat(streamDescription: &audioStreamBasicDescription) else {
+            logger.info("whip-server-client: Failed to create Opus audio format")
+            return
+        }
+        opusCompressedBuffer = AVAudioCompressedBuffer(
+            format: opusFormat,
+            packetCapacity: 1,
+            maximumPacketSize: 4096
+        )
+        pcmAudioFormat = AVAudioFormat(
+            commonFormat: .pcmFormatInt16,
+            sampleRate: 48000,
+            channels: 2,
+            interleaved: true
+        )
+        guard let pcmAudioFormat else {
+            logger.info("whip-server-client: Failed to create PCM audio format")
+            return
+        }
+        pcmAudioBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat, frameCapacity: 960)
+        opusAudioConverter = AVAudioConverter(from: opusFormat, to: pcmAudioFormat)
+        if opusAudioConverter == nil {
+            logger.info("whip-server-client: Failed to create Opus audio converter")
+        }
     }
 
     private func getBasePresentationTimeStamp() -> Double {
@@ -341,7 +345,7 @@ final class WhipServerClient {
         return basePresentationTimeStamp
     }
 
-    func getLocalDescription() throws -> String {
+    private func getLocalDescription() throws -> String {
         guard peerConnectionId >= 0 else {
             throw "No peer connection"
         }
@@ -356,25 +360,10 @@ final class WhipServerClient {
         }
         return String(cString: buffer)
     }
-
-    private func stopInternal(reason: String? = nil) {
-        videoDecoder?.stopRunning()
-        videoDecoder = nil
-        opusAudioConverter = nil
-        opusCompressedBuffer = nil
-        pcmAudioBuffer = nil
-        if peerConnectionId >= 0 {
-            rtcClosePeerConnection(peerConnectionId)
-        }
-        connected = false
-        if let reason {
-            delegate?.whipServerClientOnDisconnected(clientId: clientId, reason: reason)
-        }
-    }
 }
 
 extension WhipServerClient: VideoDecoderDelegate {
     func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whipServerClientOnVideoBuffer(clientId: clientId, sampleBuffer)
+        delegate?.whipServerClientOnVideoBuffer(streamId: streamId, sampleBuffer)
     }
 }

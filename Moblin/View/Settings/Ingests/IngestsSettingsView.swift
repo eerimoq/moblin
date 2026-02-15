@@ -11,6 +11,7 @@ struct IngestsSettingsView: View {
                 SrtlaServerSettingsView(srtlaServer: database.srtlaServer)
                 RistServerSettingsView(ristServer: database.ristServer)
                 RtspClientSettingsView(rtspClient: database.rtspClient)
+                WhipServerSettingsView(whipServer: database.whipServer)
                 if #available(iOS 26, *), false {
                     NavigationLink {
                         WiFiAwareSettingsView(model: model, wiFiAware: database.wiFiAware)

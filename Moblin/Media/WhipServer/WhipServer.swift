@@ -4,10 +4,10 @@ import Foundation
 let whipServerDispatchQueue = DispatchQueue(label: "com.eerimoq.whip-server")
 
 protocol WhipServerDelegate: AnyObject {
-    func whipServerOnPublishStart(clientId: UUID)
-    func whipServerOnPublishStop(clientId: UUID, reason: String)
-    func whipServerOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func whipServerOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func whipServerOnPublishStart(streamId: UUID)
+    func whipServerOnPublishStop(streamId: UUID, reason: String)
+    func whipServerOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func whipServerOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer)
 }
 
 class WhipServer {
@@ -32,13 +32,6 @@ class WhipServer {
         }
     }
 
-    func isClientConnected(clientId: UUID) -> Bool {
-        return whipServerDispatchQueue.sync {
-            clients[clientId] != nil
-        }
-    }
-
-    // periphery:ignore
     func getNumberOfClients() -> Int {
         return whipServerDispatchQueue.sync {
             clients.count
@@ -52,7 +45,7 @@ class WhipServer {
         ]
         server = HttpServer(queue: whipServerDispatchQueue, routes: routes)
         server?.start(port: .init(integer: Int(settings.port)))
-        logger.info("whip-server: Started on port \(settings.port)")
+        logger.info("whip-server: Listening on port \(settings.port)")
     }
 
     private func stopInternal() {
@@ -70,24 +63,27 @@ class WhipServer {
             response.send(status: .methodNotAllowed)
             return
         }
-        guard let sdpOffer = String(data: request.body, encoding: .utf8) else {
+        guard let streamKey = request.path.split(separator: "/").last,
+              let stream = settings.streams.first(where: { $0.streamKey == streamKey }),
+              let sdpOffer = String(data: request.body, encoding: .utf8)
+        else {
             response.send(status: .badRequest)
             return
         }
-        let client = WhipServerClient(delegate: self)
-        let clientId = client.clientId
-        clients[clientId] = client
+        let client = WhipServerClient(streamId: stream.id, delegate: self)
+        let streamId = client.streamId
+        clients[streamId] = client
         client.handleOffer(sdpOffer: sdpOffer) { [weak self] sdpAnswer in
             guard let sdpAnswer else {
                 response.send(status: .notFound)
-                self?.clients.removeValue(forKey: clientId)
+                self?.clients.removeValue(forKey: streamId)
                 return
             }
             response.send(
                 data: sdpAnswer.utf8Data,
                 status: .created,
                 contentType: "application/sdp",
-                headers: [.init(name: "Location", value: "/whip/session/\(clientId.uuidString)")]
+                headers: [.init(name: "Location", value: "/whip/session/\(streamId.uuidString)")]
             )
         }
     }
@@ -97,34 +93,35 @@ class WhipServer {
             response.send(status: .methodNotAllowed)
             return
         }
-        let pathComponents = request.path.split(separator: "/")
-        guard let clientId = UUID(uuidString: String(pathComponents.last ?? "")) else {
+        guard let lastComponent = request.path.split(separator: "/").last,
+              let streamId = UUID(uuidString: String(lastComponent))
+        else {
             response.send(status: .badRequest)
             return
         }
-        if let client = clients.removeValue(forKey: clientId) {
+        if let client = clients.removeValue(forKey: streamId) {
             client.stop()
-            delegate?.whipServerOnPublishStop(clientId: clientId, reason: "Client disconnect")
+            delegate?.whipServerOnPublishStop(streamId: streamId, reason: "Client disconnect")
         }
         response.send(status: .ok)
     }
 }
 
 extension WhipServer: WhipServerClientDelegate {
-    func whipServerClientOnConnected(clientId: UUID) {
-        delegate?.whipServerOnPublishStart(clientId: clientId)
+    func whipServerClientOnConnected(streamId: UUID) {
+        delegate?.whipServerOnPublishStart(streamId: streamId)
     }
 
-    func whipServerClientOnDisconnected(clientId: UUID, reason: String) {
-        clients.removeValue(forKey: clientId)
-        delegate?.whipServerOnPublishStop(clientId: clientId, reason: reason)
+    func whipServerClientOnDisconnected(streamId: UUID, reason: String) {
+        clients.removeValue(forKey: streamId)
+        delegate?.whipServerOnPublishStop(streamId: streamId, reason: reason)
     }
 
-    func whipServerClientOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whipServerOnVideoBuffer(clientId: clientId, sampleBuffer)
+    func whipServerClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        delegate?.whipServerOnVideoBuffer(streamId: streamId, sampleBuffer)
     }
 
-    func whipServerClientOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whipServerOnAudioBuffer(clientId: clientId, sampleBuffer)
+    func whipServerClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        delegate?.whipServerOnAudioBuffer(streamId: streamId, sampleBuffer)
     }
 }

@@ -2439,6 +2439,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateSrtlaIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRistIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRtspIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateWhipIngestsSpeed(&anyServerEnabled, &numberOfClients)
         let message: String
         if anyServerEnabled {
             if numberOfClients > 0 {
@@ -2523,6 +2524,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             numberOfClients += 1
             anyServerEnabled = true
         }
+    }
+
+    private func updateWhipIngestsSpeed(_ anyServerEnabled: inout Bool, _ numberOfClients: inout Int) {
+        guard let whipServer = ingests.whip else {
+            return
+        }
+        let numberOfRistClients = whipServer.getNumberOfClients()
+        numberOfClients += numberOfRistClients
+        anyServerEnabled = true
     }
 
     func checkPhotoLibraryAuthorization() {
