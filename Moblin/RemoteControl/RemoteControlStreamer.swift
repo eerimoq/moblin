@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Network
 
 protocol RemoteControlStreamerDelegate: AnyObject {
@@ -49,6 +50,7 @@ class RemoteControlStreamer {
     private var encryption: RemoteControlEncryption
     private let keepAliveTimer = SimpleTimer(queue: .main)
     private var gotPong = true
+    @AppStorage("remoteControlStreamerId") var id = ""
 
     init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
@@ -56,6 +58,9 @@ class RemoteControlStreamer {
         self.delegate = delegate
         encryption = RemoteControlEncryption(password: password)
         webSocket = .init(url: clientUrl)
+        if id.isEmpty {
+            id = UUID().uuidString
+        }
     }
 
     func start() {
@@ -181,7 +186,7 @@ class RemoteControlStreamer {
             salt: authentication.salt,
             password: password
         )
-        send(message: .identify(authentication: hash))
+        send(message: .identify(streamerId: id, authentication: hash))
     }
 
     private func handleIdentified(result: RemoteControlResult) -> Bool {

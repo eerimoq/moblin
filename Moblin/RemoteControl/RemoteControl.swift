@@ -752,7 +752,7 @@ enum RemoteControlMessageToStreamer: Codable {
 }
 
 enum RemoteControlMessageToAssistant: Codable {
-    case identify(authentication: String)
+    case identify(streamerId: String?, authentication: String)
     case response(id: Int, result: RemoteControlResult, data: RemoteControlResponse?)
     case event(data: RemoteControlEvent)
     case preview(preview: Data)
