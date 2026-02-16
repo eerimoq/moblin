@@ -1,6 +1,6 @@
 import Foundation
-import SwiftUI
 import Network
+import SwiftUI
 
 protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerConnected()
