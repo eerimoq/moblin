@@ -24,6 +24,7 @@ private func toClient(pointer: UnsafeMutableRawPointer?) -> WhipServerClient? {
 
 final class WhipServerClient {
     let streamId: UUID
+    private let latency: Double
     private var peerConnectionId: Int32 = -1
     weak var delegate: WhipServerClientDelegate?
     private var connected = false
@@ -41,6 +42,7 @@ final class WhipServerClient {
 
     init(streamId: UUID, latency: Double, delegate: WhipServerClientDelegate) {
         self.streamId = streamId
+        self.latency = latency
         targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: latency)
         self.delegate = delegate
     }
@@ -351,7 +353,7 @@ final class WhipServerClient {
 
     private func getBasePresentationTimeStamp() -> Double {
         if basePresentationTimeStamp == -1 {
-            basePresentationTimeStamp = currentPresentationTimeStamp().seconds
+            basePresentationTimeStamp = currentPresentationTimeStamp().seconds + latency
         }
         return basePresentationTimeStamp
     }
