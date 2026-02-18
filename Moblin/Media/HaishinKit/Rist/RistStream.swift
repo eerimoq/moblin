@@ -239,6 +239,8 @@ class RistStream {
             self.processor.stopEncoding(self.writer)
         }
         peers.removeAll()
+        context?.delegate = nil
+        context?.stop()
         context = nil
     }
 
