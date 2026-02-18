@@ -208,6 +208,31 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .stopStatus, onSuccess: {})
     }
 
+    func whipPerform(url: String,
+                     method: String,
+                     headers: [SettingsHttpHeader],
+                     body: Data,
+                     completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+    {
+        performRequest(data: .whip(url: url, method: method, headers: headers, body: body)) {
+            switch $0 {
+            case let .whip(status: status, headers: headers, body: body):
+                let response = HTTPURLResponse(url: URL(string: url)!,
+                                               statusCode: status,
+                                               httpVersion: nil,
+                                               headerFields: Dictionary(uniqueKeysWithValues: headers.map { (
+                                                   $0.name,
+                                                   $0.value
+                                               ) }))
+                completion?(body, response, nil)
+            default:
+                completion?(nil, nil, "")
+            }
+        } onError: { _ in
+            completion?(nil, nil, "")
+        }
+    }
+
     private func tryNextTwitchEventSubNotification() {
         guard !twitchEventSubNotiticationWaitForResponse else {
             return
@@ -459,6 +484,8 @@ class RemoteControlAssistant: NSObject {
             logger.info("remote-control-assistant: Already identified")
         case .unknownRequest:
             logger.info("remote-control-assistant: Unknown request")
+        case .error:
+            request.onError("")
         }
     }
 

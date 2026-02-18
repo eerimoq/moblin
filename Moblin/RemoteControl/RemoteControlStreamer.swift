@@ -38,6 +38,11 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerToggleScoreboardClock()
     func remoteControlStreamerSetScoreboardDuration(minutes: Int)
     func remoteControlStreamerSetScoreboardClock(time: String)
+    func remoteControlStreamerWhip(url: String,
+                                   method: String,
+                                   headers: [SettingsHttpHeader],
+                                   body: Data,
+                                   onCompleted: @escaping (Int, [SettingsHttpHeader], Data) -> Void)
 }
 
 class RemoteControlStreamer {
@@ -314,6 +319,15 @@ class RemoteControlStreamer {
         case let .setScoreboardClock(time):
             delegate.remoteControlStreamerSetScoreboardClock(time: time)
             sendEmptyOkResponse(id: id)
+        case let .whip(url: url, method: method, headers: headers, body: body):
+            delegate
+                .remoteControlStreamerWhip(url: url, method: method, headers: headers,
+                                           body: body)
+                { status, headers, body in
+                    self.send(message: .response(id: id,
+                                                 result: .ok,
+                                                 data: .whip(status: status, headers: headers, body: body)))
+                }
         }
     }
 

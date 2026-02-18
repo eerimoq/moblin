@@ -42,6 +42,7 @@ enum RemoteControlRequest: Codable {
     case toggleScoreboardClock
     case setScoreboardDuration(minutes: Int)
     case setScoreboardClock(time: String)
+    case whip(url: String, method: String, headers: [SettingsHttpHeader], body: Data)
 }
 
 enum RemoteControlResponse: Codable {
@@ -52,6 +53,7 @@ enum RemoteControlResponse: Codable {
     )
     case getSettings(data: RemoteControlSettings)
     case getScoreboardSports(names: [String])
+    case whip(status: Int, headers: [SettingsHttpHeader], body: Data)
 }
 
 enum RemoteControlEvent: Codable {
@@ -727,6 +729,7 @@ enum RemoteControlResult: Codable {
     case unknownRequest
     case notIdentified
     case alreadyIdentified
+    case error
 }
 
 enum RemoteControlMessageToStreamer: Codable {

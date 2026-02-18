@@ -25,6 +25,9 @@ protocol MediaDelegate: AnyObject {
     func mediaOnRistDisconnected()
     func mediaOnWhipConnected()
     func mediaOnWhipDisconnected(_ reason: String)
+    func mediaOnWhipPerform(request: URLRequest,
+                            queue: DispatchQueue,
+                            completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
     func mediaOnAudioMuteChange()
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
@@ -1232,5 +1235,16 @@ extension Media: WhipStreamDelegate {
 
     func whipStreamOnDisconnected(reason: String) {
         delegate?.mediaOnWhipDisconnected(reason)
+    }
+
+    func whipStreamPerform(request: URLRequest,
+                           queue: DispatchQueue,
+                           completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+    {
+        if true {
+            httpRequest(request: request, queue: queue, completion: completion)
+        } else {
+            delegate?.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
+        }
     }
 }

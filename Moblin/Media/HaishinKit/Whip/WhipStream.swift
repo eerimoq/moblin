@@ -412,6 +412,9 @@ private final class PeerConnection {
 protocol WhipStreamDelegate: AnyObject {
     func whipStreamOnConnected()
     func whipStreamOnDisconnected(reason: String)
+    func whipStreamPerform(request: URLRequest,
+                           queue: DispatchQueue,
+                           completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
 }
 
 final class WhipStream {
@@ -581,7 +584,7 @@ final class WhipStream {
             request.setValue(header.value, forHTTPHeaderField: header.name)
         }
         request.httpBody = offer.utf8Data
-        httpRequest(request: request, queue: whipQueue) { [weak self] data, response, error in
+        delegate?.whipStreamPerform(request: request, queue: whipQueue) { [weak self] data, response, error in
             self?.handleOfferResponse(data: data, response: response, error: error)
         }
         offerSent = true
@@ -618,7 +621,7 @@ final class WhipStream {
     private func sendDeleteRequest(url: URL) {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
-        httpRequest(request: request)
+        delegate?.whipStreamPerform(request: request, queue: whipQueue, completion: nil)
     }
 
     private func startEncoding() {

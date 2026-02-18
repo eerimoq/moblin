@@ -38,10 +38,12 @@ final class WhipServerClient {
     private var pcmAudioFormat: AVAudioFormat?
     private var pcmAudioBuffer: AVAudioPCMBuffer?
     private var targetLatenciesSynchronizer: TargetLatenciesSynchronizer
+    private let iceServers: [String]
 
-    init(streamId: UUID, latency: Double, delegate: WhipServerClientDelegate) {
+    init(streamId: UUID, latency: Double, iceServers: [String], delegate: WhipServerClientDelegate) {
         self.streamId = streamId
         self.latency = latency
+        self.iceServers = iceServers
         targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: latency)
         self.delegate = delegate
     }
@@ -49,7 +51,6 @@ final class WhipServerClient {
     func handleOffer(sdpOffer: String, completion: @escaping (String?) -> Void) {
         do {
             var config = rtcConfiguration()
-            let iceServers: [String] = []
             peerConnectionId = iceServers.withCPointers {
                 config.iceServers = $0
                 config.iceServersCount = Int32(iceServers.count)

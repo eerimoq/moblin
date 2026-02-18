@@ -993,6 +993,25 @@ extension Model: MediaDelegate {
     func mediaError(error: Error) {
         makeErrorToastMain(title: error.localizedDescription, subTitle: tryGetToastSubTitle(error: error))
     }
+
+    func mediaOnWhipPerform(request: URLRequest,
+                            queue _: DispatchQueue,
+                            completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+    {
+        DispatchQueue.main.async {
+            guard let remoteControlAssistant = self.remoteControlAssistant else {
+                completion?(nil, nil, "")
+                return
+            }
+            remoteControlAssistant.whipPerform(url: request.url!.absoluteString,
+                                               method: request.httpMethod!,
+                                               headers: request.allHTTPHeaderFields?.map { name, value in
+                                                   SettingsHttpHeader(name: name, value: value)
+                                               } ?? [],
+                                               body: request.httpBody ?? Data(),
+                                               completion: completion)
+        }
+    }
 }
 
 private func videoCaptureError() -> String {

@@ -790,6 +790,40 @@ extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerSetScoreboardClock(time: String) {
         handleScoreboardSetClockManual(time: time)
     }
+
+    func remoteControlStreamerWhip(url: String,
+                                   method: String,
+                                   headers _: [SettingsHttpHeader],
+                                   body: Data,
+                                   onCompleted: @escaping (Int, [SettingsHttpHeader], Data) -> Void)
+    {
+        guard let whipServer = ingests.whip else {
+            onCompleted(500, [], Data())
+            return
+        }
+        switch method {
+        case "POST":
+            guard let sdpOffer = String(bytes: body, encoding: .utf8),
+                  let streamKey = url.split(separator: "/").last
+            else {
+                onCompleted(400, [], Data())
+                return
+            }
+            whipServer.startClient(streamKey: String(streamKey), sdpOffer: sdpOffer) { sdpAnswer in
+                DispatchQueue.main.async {
+                    if let sdpAnswer {
+                        onCompleted(200, [], sdpAnswer.utf8Data)
+                    } else {
+                        onCompleted(400, [], Data())
+                    }
+                }
+            }
+        case "DELETE":
+            onCompleted(200, [], Data())
+        default:
+            onCompleted(400, [], Data())
+        }
+    }
 }
 
 extension Model: RemoteControlAssistantDelegate {

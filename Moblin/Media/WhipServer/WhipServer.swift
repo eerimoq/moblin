@@ -49,6 +49,12 @@ class WhipServer {
         }
     }
 
+    func startClient(streamKey: String, sdpOffer: String, onCompleted: @escaping (String?) -> Void) {
+        whipServerDispatchQueue.async {
+            self.startClientInternal(streamKey: streamKey, sdpOffer: sdpOffer, onCompleted: onCompleted)
+        }
+    }
+
     private func startInternal() {
         let routes = [
             HttpServerRoute(path: "/whip/stream/", prefixMatch: true, handler: handleWhipStream),
@@ -69,6 +75,31 @@ class WhipServer {
         logger.info("whip-server: Stopped")
     }
 
+    private func startClientInternal(
+        streamKey: String,
+        sdpOffer: String,
+        onCompleted: @escaping (String?) -> Void
+    ) {
+        guard let stream = settings.streams.first(where: { $0.streamKey == streamKey }) else {
+            onCompleted(nil)
+            return
+        }
+        let client = WhipServerClient(streamId: stream.id,
+                                      latency: Double(stream.latency) / 1000,
+                                      iceServers: ["stun:stun.l.google.com:19302"],
+                                      delegate: self)
+        let streamId = client.streamId
+        clients[streamId] = client
+        client.handleOffer(sdpOffer: sdpOffer) { [weak self] sdpAnswer in
+            guard let sdpAnswer else {
+                onCompleted(nil)
+                self?.clients.removeValue(forKey: streamId)
+                return
+            }
+            onCompleted(sdpAnswer)
+        }
+    }
+
     private func handleWhipStream(request: HttpServerRequest, response: HttpServerResponse) {
         guard request.method == "POST" else {
             response.send(status: .methodNotAllowed)
@@ -83,6 +114,7 @@ class WhipServer {
         }
         let client = WhipServerClient(streamId: stream.id,
                                       latency: stream.latencySeconds(),
+                                      iceServers: ["stun:stun.l.google.com:19302"],
                                       delegate: self)
         let streamId = client.streamId
         clients[streamId] = client
