@@ -138,7 +138,7 @@ private final class RtcTrack {
     init(trackId: Int32) throws {
         self.trackId = trackId
         do {
-            rtcSetUserPointer(trackId, Unmanaged.passUnretained(self).toOpaque())
+            rtcSetUserPointer(trackId, Unmanaged.passRetained(self).toOpaque())
             try checkOk(rtcSetOpenCallback(trackId) { _, pointer in
                 toRtcTrack(pointer: pointer)?.setState(state: .open)
             })
@@ -277,7 +277,7 @@ private final class PeerConnection {
         }
         try checkOk(peerConnectionId)
         do {
-            rtcSetUserPointer(peerConnectionId, Unmanaged.passUnretained(self).toOpaque())
+            rtcSetUserPointer(peerConnectionId, Unmanaged.passRetained(self).toOpaque())
             try checkOk(rtcSetStateChangeCallback(peerConnectionId) { _, state, pointer in
                 toPeerConnection(pointer: pointer)?.handleStateChange(state: state)
             })
@@ -290,12 +290,8 @@ private final class PeerConnection {
         }
     }
 
-    deinit {
-        rtcDeletePeerConnection(peerConnectionId)
-    }
-
     func close() {
-        _ = rtcClosePeerConnection(peerConnectionId)
+        rtcDeletePeerConnection(peerConnectionId)
     }
 
     func addTrack(config: RtcTrackConfig, streamId: String) throws -> RtcTrack {

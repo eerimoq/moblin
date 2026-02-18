@@ -47,12 +47,6 @@ final class WhipServerClient {
         self.delegate = delegate
     }
 
-    deinit {
-        if peerConnectionId >= 0 {
-            rtcDeletePeerConnection(peerConnectionId)
-        }
-    }
-
     func handleOffer(sdpOffer: String, completion: @escaping (String?) -> Void) {
         do {
             var config = rtcConfiguration()
@@ -65,7 +59,7 @@ final class WhipServerClient {
             guard peerConnectionId >= 0 else {
                 throw "Failed to create peer connection"
             }
-            rtcSetUserPointer(peerConnectionId, Unmanaged.passUnretained(self).toOpaque())
+            rtcSetUserPointer(peerConnectionId, Unmanaged.passRetained(self).toOpaque())
             try checkOk(rtcSetStateChangeCallback(peerConnectionId) { _, state, pointer in
                 toClient(pointer: pointer)?.handleStateChange(state: state)
             })
@@ -93,9 +87,8 @@ final class WhipServerClient {
         opusAudioConverter = nil
         opusCompressedBuffer = nil
         pcmAudioBuffer = nil
-        if peerConnectionId >= 0 {
-            rtcClosePeerConnection(peerConnectionId)
-        }
+        rtcDeletePeerConnection(peerConnectionId)
+        peerConnectionId = -1
         connected = false
         if let reason {
             delegate?.whipServerClientOnDisconnected(streamId: streamId, reason: reason)
@@ -165,7 +158,7 @@ final class WhipServerClient {
         let isVideo = description.lowercased().contains("h264")
         let isAudio = description.lowercased().contains("opus")
         logger.info("whip-server-client: Track video=\(isVideo) audio=\(isAudio)")
-        let clientPointer = Unmanaged.passUnretained(self).toOpaque()
+        let clientPointer = Unmanaged.passRetained(self).toOpaque()
         rtcSetUserPointer(trackId, clientPointer)
         if isVideo {
             rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
@@ -176,8 +169,8 @@ final class WhipServerClient {
                 }
                 let frameData = Data(bytes: data, count: Int(size))
                 let timestampSeconds = info.pointee.timestampSeconds
-                let client = Unmanaged<WhipServerClient>.fromOpaque(pointer).takeUnretainedValue()
-                client.handleVideoMessage(data: frameData, timestampSeconds: timestampSeconds)
+                toClient(pointer: pointer)?.handleVideoMessage(data: frameData,
+                                                               timestampSeconds: timestampSeconds)
             }
         } else if isAudio {
             setupOpusDecoder()
@@ -189,8 +182,8 @@ final class WhipServerClient {
                 }
                 let frameData = Data(bytes: data, count: Int(size))
                 let timestampSeconds = info.pointee.timestampSeconds
-                let client = Unmanaged<WhipServerClient>.fromOpaque(pointer).takeUnretainedValue()
-                client.handleAudioMessage(data: frameData, timestampSeconds: timestampSeconds)
+                toClient(pointer: pointer)?.handleAudioMessage(data: frameData,
+                                                               timestampSeconds: timestampSeconds)
             }
         }
     }
