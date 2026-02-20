@@ -1,5 +1,5 @@
 {
-  "originHash" : "bd1ee75e2e6506156e76fac012a809cf5edb61b8f276ba7953323bdcfd6ed6f3",
+  "originHash" : "d5cd2909edbd148a1b9907bcaf8ad51db723da15e8c265370febbcd2b52eb83b",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -35,6 +35,15 @@
       "state" : {
         "branch" : "master",
         "revision" : "a4ba023bf64187eb73cf799120f9bba600c43a51"
+      }
+    },
+    {
+      "identity" : "datachannel",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eerimoq/DataChannel",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0084cbdd5adbe5f66967560f693b936f272516b7"
       }
     },
     {
@@ -152,15 +161,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "071e0bc6a0f4f0ba2385c05332b0adb172d0f7ec"
-      }
-    },
-    {
-      "identity" : "webrtc",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eerimoq/Webrtc/",
-      "state" : {
-        "branch" : "main",
-        "revision" : "552015aa72c617c3959ccfc20ff423d78b03e695"
       }
     },
     {

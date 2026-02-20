@@ -1,6 +1,6 @@
 import AVFoundation
+import DataChannel
 import libdatachannel
-import Webrtc
 
 private let whipQueue = DispatchQueue(label: "com.eerimoq.Moblin.whip")
 private let h264PayloadType: UInt8 = 96
@@ -252,8 +252,8 @@ private struct RtcTrackConfig {
 }
 
 private protocol PeerConnectionDelegate: AnyObject {
-    func peerConnectionOnConnectionStateChanged(state: WebrtcConnectionState)
-    func peerConnectionOnGatheringStateChanged(state: WebrtcGatheringState)
+    func peerConnectionOnConnectionStateChanged(state: DataChannelConnectionState)
+    func peerConnectionOnGatheringStateChanged(state: DataChannelGatheringState)
 }
 
 private func toPeerConnection(pointer: UnsafeMutableRawPointer?) -> PeerConnection? {
@@ -395,14 +395,14 @@ private final class PeerConnection {
     }
 
     private func handleStateChange(state: rtcState) {
-        guard let state = WebrtcConnectionState(value: state) else {
+        guard let state = DataChannelConnectionState(value: state) else {
             return
         }
         delegate?.peerConnectionOnConnectionStateChanged(state: state)
     }
 
     private func handleGatheringStateChange(state: rtcGatheringState) {
-        guard let state = WebrtcGatheringState(value: state) else {
+        guard let state = DataChannelGatheringState(value: state) else {
             return
         }
         delegate?.peerConnectionOnGatheringStateChanged(state: state)
@@ -530,7 +530,7 @@ final class WhipStream {
         stopInternal(reason: "Connect timeout")
     }
 
-    private func handleConnectionStateChanged(state: WebrtcConnectionState) {
+    private func handleConnectionStateChanged(state: DataChannelConnectionState) {
         logger.info("whip: Connection state: \(state)")
         switch state {
         case .connected:
@@ -552,7 +552,7 @@ final class WhipStream {
         }
     }
 
-    private func handleGatheringStateChanged(state: WebrtcGatheringState) {
+    private func handleGatheringStateChanged(state: DataChannelGatheringState) {
         logger.info("whip: ICE gathering state: \(state)")
         switch state {
         case .complete:
@@ -738,13 +738,13 @@ final class WhipStream {
 }
 
 extension WhipStream: PeerConnectionDelegate {
-    fileprivate func peerConnectionOnConnectionStateChanged(state: WebrtcConnectionState) {
+    fileprivate func peerConnectionOnConnectionStateChanged(state: DataChannelConnectionState) {
         whipQueue.async {
             self.handleConnectionStateChanged(state: state)
         }
     }
 
-    fileprivate func peerConnectionOnGatheringStateChanged(state: WebrtcGatheringState) {
+    fileprivate func peerConnectionOnGatheringStateChanged(state: DataChannelGatheringState) {
         whipQueue.async {
             self.handleGatheringStateChanged(state: state)
         }

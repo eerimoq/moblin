@@ -1,7 +1,7 @@
 import AVFoundation
 import CoreMedia
+import DataChannel
 import libdatachannel
-import Webrtc
 
 protocol WhipServerClientDelegate: AnyObject {
     func whipServerClientOnConnected(streamId: UUID)
@@ -102,7 +102,7 @@ final class WhipServerClient {
     }
 
     private func handleStateChangeInternal(state: rtcState) {
-        guard let state = WebrtcConnectionState(value: state) else {
+        guard let state = DataChannelConnectionState(value: state) else {
             return
         }
         logger.info("whip-server-client: Connection state: \(state)")
@@ -127,7 +127,7 @@ final class WhipServerClient {
     }
 
     private func handleGatheringStateChangeInternal(state: rtcGatheringState) {
-        guard let state = WebrtcGatheringState(value: state) else {
+        guard let state = DataChannelGatheringState(value: state) else {
             return
         }
         logger.info("whip-server-client: ICE gathering state: \(state)")
