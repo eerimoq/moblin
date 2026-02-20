@@ -96,8 +96,13 @@ struct KickStreamInfo {
 
 private let userUrl = URL(string: "https://kick.com/api/v1/user")!
 
+private func makeSlug(channelName: String) -> String {
+    return channelName.replacingOccurrences(of: "_", with: "-")
+}
+
 func getKickChannelInfo(channelName: String) async throws -> KickChannel {
-    guard let url = URL(string: "https://kick.com/api/v1/channels/\(channelName)") else {
+    let slug = makeSlug(channelName: channelName)
+    guard let url = URL(string: "https://kick.com/api/v1/channels/\(slug)") else {
         throw "Invalid URL"
     }
     let (data, response) = try await httpGet(from: url)
@@ -108,7 +113,8 @@ func getKickChannelInfo(channelName: String) async throws -> KickChannel {
 }
 
 func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?) -> Void) {
-    guard let url = URL(string: "https://kick.com/api/v1/channels/\(channelName)") else {
+    let slug = makeSlug(channelName: channelName)
+    guard let url = URL(string: "https://kick.com/api/v1/channels/\(slug)") else {
         onComplete(nil)
         return
     }
