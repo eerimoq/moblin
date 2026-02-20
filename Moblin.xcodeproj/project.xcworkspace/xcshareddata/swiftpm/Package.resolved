@@ -1,5 +1,5 @@
 {
-  "originHash" : "0b215fdbc576d1b163345863248c6a1d036fe4572c62d6f8ff0312694301c2d0",
+  "originHash" : "11e63338ae181d27bdab48f1015bf094de7b2b089f8286903464d2b79657123d",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -88,7 +88,7 @@
       "location" : "https://github.com/eerimoq/Rist",
       "state" : {
         "branch" : "main",
-        "revision" : "f06fe61a21bbe9a952098734b85b9c87d43d93d1"
+        "revision" : "b56bff772ef5c5dd0a4879b86dd6ecdd82f2f665"
       }
     },
     {
