@@ -1432,7 +1432,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 showBackgroundStreamingDisabledToast = false
             }
             reloadCameraLevel()
-            updateKickChannelInfoIfNeeded()
         }
     }
 

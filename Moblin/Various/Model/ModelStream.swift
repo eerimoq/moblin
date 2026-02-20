@@ -311,6 +311,7 @@ extension Model {
         reloadLocation()
         reloadRtmpStreams()
         updateStatusStreamText()
+        updateKickChannelInfoIfNeeded()
     }
 
     func reloadStreamIfEnabled(stream: SettingsStream) {
