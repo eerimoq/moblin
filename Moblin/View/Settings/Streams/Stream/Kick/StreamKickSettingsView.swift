@@ -201,21 +201,46 @@ struct StreamKickSettingsView: View {
     @State private var title: String?
     @State private var category: String?
 
+    private func handleChannelInfo(_ channelInfo: KickChannel) {
+        fetchingChannelInfo = false
+        fetchChannelInfoFailed = false
+        stream.kickChannelName = channelInfo.slug
+        stream.kickChannelId = String(channelInfo.chatroom.id)
+        stream.kickSlug = channelInfo.slug
+        stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
+        loadStreamInfo()
+        reloadConnectionsIfEnabled()
+    }
+
     private func fetchChannelInfo() {
         fetchingChannelInfo = true
         fetchChannelInfoFailed = false
-        getKickChannelInfo(channelName: stream.kickChannelName) { channelInfo in
-            fetchingChannelInfo = false
+        let channelName = stream.kickChannelName
+        getKickChannelInfo(channelName: channelName) { channelInfo in
             if let channelInfo {
-                fetchChannelInfoFailed = false
-                stream.kickChannelId = String(channelInfo.chatroom.id)
-                stream.kickSlug = channelInfo.slug
-                stream.kickChatroomChannelId = String(channelInfo.chatroom.channel_id)
-                loadStreamInfo()
+                handleChannelInfo(channelInfo)
             } else {
-                fetchChannelInfoFailed = true
+                let altName: String
+                if channelName.contains("_") {
+                    altName = channelName.replacingOccurrences(of: "_", with: "-")
+                } else if channelName.contains("-") {
+                    altName = channelName.replacingOccurrences(of: "-", with: "_")
+                } else {
+                    fetchingChannelInfo = false
+                    fetchChannelInfoFailed = true
+                    reloadConnectionsIfEnabled()
+                    return
+                }
+                getKickChannelInfo(channelName: altName) { retryChannelInfo in
+                    if let retryChannelInfo {
+                        handleChannelInfo(retryChannelInfo)
+                    } else {
+                        fetchingChannelInfo = false
+                        fetchChannelInfoFailed = true
+                        reloadConnectionsIfEnabled()
+                    }
+                }
             }
-            reloadConnectionsIfEnabled()
         }
     }
 
