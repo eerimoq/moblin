@@ -82,7 +82,7 @@ class WhipServer {
             return
         }
         let client = WhipServerClient(streamId: stream.id,
-                                      latency: Double(stream.latency) / 1000,
+                                      latency: stream.latencySeconds(),
                                       delegate: self)
         let streamId = client.streamId
         clients[streamId] = client

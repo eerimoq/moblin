@@ -38,6 +38,10 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         return rtmpCamera(name: name)
     }
 
+    func latencySeconds() -> Double {
+        return Double(latency) / 1000
+    }
+
     func clone() -> SettingsRtmpServerStream {
         let new = SettingsRtmpServerStream()
         new.id = id
@@ -178,12 +182,14 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     var id: UUID = .init()
     @Published var name: String = baseName
     @Published var virtualDestinationPort: UInt16 = 1
+    @Published var latency: Int32 = 2000
     var connected: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
              name,
-             virtualDestinationPort
+             virtualDestinationPort,
+             latency
     }
 
     func encode(to encoder: Encoder) throws {
@@ -191,6 +197,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.virtualDestinationPort, virtualDestinationPort)
+        try container.encode(.latency, latency)
     }
 
     init() {}
@@ -200,6 +207,19 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
         virtualDestinationPort = container.decode(.virtualDestinationPort, UInt16.self, 1)
+        latency = container.decode(.latency, Int32.self, 2000)
+    }
+
+    func latencySeconds() -> Double {
+        return Double(latency) / 1000
+    }
+
+    func clone() -> SettingsRistServerStream {
+        let new = SettingsRistServerStream()
+        new.name = name
+        new.virtualDestinationPort = virtualDestinationPort
+        new.latency = latency
+        return new
     }
 
     func camera() -> String {
@@ -342,6 +362,10 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
 
     func camera() -> String {
         return whipCamera(name: name)
+    }
+
+    func latencySeconds() -> Double {
+        return Double(latency) / 1000
     }
 
     func clone() -> SettingsWhipServerStream {

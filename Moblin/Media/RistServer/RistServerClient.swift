@@ -1,17 +1,16 @@
 import AVFoundation
 import Rist
 
-let ristServerClientLatency = 2.0
-
 class RistServerClient {
     weak var server: RistServer?
-    private var reader = MpegTsReader(decoderQueue: ristServerQueue,
-                                      timecodesEnabled: false,
-                                      targetLatency: ristServerClientLatency)
+    private let reader: MpegTsReader
     private let virtualDestinationPort: UInt16
 
-    init?(virtualDestinationPort: UInt16) {
+    init?(virtualDestinationPort: UInt16, latency: Double) {
         self.virtualDestinationPort = virtualDestinationPort
+        reader = MpegTsReader(decoderQueue: ristServerQueue,
+                              timecodesEnabled: false,
+                              targetLatency: latency)
         reader.delegate = self
     }
 

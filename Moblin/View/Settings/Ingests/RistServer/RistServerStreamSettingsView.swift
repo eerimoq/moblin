@@ -36,6 +36,26 @@ struct RistServerStreamSettingsView: View {
         model.reloadRistServer()
     }
 
+    private func changeLatency(value: String) -> String? {
+        guard let latency = Int32(value) else {
+            return String(localized: "Not a number")
+        }
+        guard latency >= 5 else {
+            return String(localized: "Too small")
+        }
+        guard latency <= 10000 else {
+            return String(localized: "Too big")
+        }
+        return nil
+    }
+
+    private func submitLatency(value: String) {
+        guard let latency = Int32(value) else {
+            return
+        }
+        stream.latency = latency
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -56,6 +76,20 @@ struct RistServerStreamSettingsView: View {
                     .disabled(ristServer.enabled)
                 } footer: {
                     Text("The virtual destination port for this stream.")
+                }
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Latency"),
+                        value: String(stream.latency),
+                        onChange: changeLatency,
+                        onSubmit: submitLatency,
+                        footers: [String(localized: "5 or more milliseconds. 2000 ms by default.")],
+                        keyboardType: .numbersAndPunctuation,
+                        valueFormat: { "\($0) ms" }
+                    )
+                    .disabled(ristServer.enabled)
+                } footer: {
+                    Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
                     UrlsView(status: status,

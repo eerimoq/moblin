@@ -26,13 +26,13 @@ class RistServer {
     private var context: RistReceiverContext?
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
     weak var delegate: (any RistServerDelegate)?
-    private let virtualDestinationPorts: [UInt16]
+    private let streams: [SettingsRistServerStream]
     var totalBytesReceived: UInt64 = 0
     private var prevTotalBytesReceived: UInt64 = 0
 
-    init?(port: UInt16, virtualDestinationPorts: [UInt16]) {
+    init?(port: UInt16, streams: [SettingsRistServerStream]) {
         self.port = port
-        self.virtualDestinationPorts = virtualDestinationPorts
+        self.streams = streams
     }
 
     func start() {
@@ -80,11 +80,13 @@ class RistServer {
 
     private func peerConnected(_ virtualDestinationPort: UInt16) {
         logger.info("rist-server: Connected virtual destination port \(virtualDestinationPort)")
-        guard virtualDestinationPorts.contains(virtualDestinationPort) else {
+        guard let stream = streams.first(where: { $0.virtualDestinationPort == virtualDestinationPort })
+        else {
             logger.info("rist-server: Ignoring unknown virtual destination port \(virtualDestinationPort)")
             return
         }
-        let client = RistServerClient(virtualDestinationPort: virtualDestinationPort)
+        let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
+                                      latency: stream.latencySeconds())
         client?.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
         delegate?.ristServerOnConnected(port: virtualDestinationPort)

@@ -10,9 +10,8 @@ extension Model {
     func reloadRistServer() {
         stopRistServer()
         if database.ristServer.enabled {
-            let virtualDestinationPorts = database.ristServer.streams.map { $0.virtualDestinationPort }
             ingests.rist = RistServer(port: database.ristServer.port,
-                                      virtualDestinationPorts: virtualDestinationPorts)
+                                      streams: database.ristServer.streams.map { $0.clone() })
             ingests.rist?.delegate = self
             ingests.rist?.start()
         }
@@ -96,8 +95,9 @@ extension Model: RistServerDelegate {
         }
         let camera = stream.camera()
         makeToast(title: String(localized: "\(camera) connected"))
-        media.addBufferedVideo(cameraId: stream.id, name: camera, latency: ristServerClientLatency)
-        media.addBufferedAudio(cameraId: stream.id, name: camera, latency: ristServerClientLatency)
+        let latency = stream.latencySeconds()
+        media.addBufferedVideo(cameraId: stream.id, name: camera, latency: latency)
+        media.addBufferedAudio(cameraId: stream.id, name: camera, latency: latency)
     }
 
     private func ristServerOnDisconnectedInternal(virtualDestinationPort: UInt16, reason _: String) {
