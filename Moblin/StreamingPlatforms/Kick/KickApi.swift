@@ -101,7 +101,26 @@ private func makeSlug(channelName: String) -> String {
 }
 
 func getKickChannelInfo(channelName: String) async throws -> KickChannel {
-    let slug = makeSlug(channelName: channelName)
+    do {
+        return try await getKickChannelInfoInner(slug: channelName)
+    } catch {
+        return try await getKickChannelInfoInner(slug: makeSlug(channelName: channelName))
+    }
+}
+
+func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?) -> Void) {
+    getKickChannelInfoInner(slug: channelName) {
+        if let info = $0 {
+            onComplete(info)
+        } else {
+            getKickChannelInfoInner(slug: makeSlug(channelName: channelName)) {
+                onComplete($0)
+            }
+        }
+    }
+}
+
+private func getKickChannelInfoInner(slug: String) async throws -> KickChannel {
     guard let url = URL(string: "https://kick.com/api/v1/channels/\(slug)") else {
         throw "Invalid URL"
     }
@@ -112,8 +131,7 @@ func getKickChannelInfo(channelName: String) async throws -> KickChannel {
     return try JSONDecoder().decode(KickChannel.self, from: data)
 }
 
-func getKickChannelInfo(channelName: String, onComplete: @escaping (KickChannel?) -> Void) {
-    let slug = makeSlug(channelName: channelName)
+private func getKickChannelInfoInner(slug: String, onComplete: @escaping (KickChannel?) -> Void) {
     guard let url = URL(string: "https://kick.com/api/v1/channels/\(slug)") else {
         onComplete(nil)
         return
