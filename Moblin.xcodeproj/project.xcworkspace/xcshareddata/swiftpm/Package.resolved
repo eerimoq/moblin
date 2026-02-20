@@ -1,5 +1,5 @@
 {
-  "originHash" : "004f6bb78c0b5a704cc8f94328ed4858739403d92564ce0ffa54eb36836d8fa5",
+  "originHash" : "0b215fdbc576d1b163345863248c6a1d036fe4572c62d6f8ff0312694301c2d0",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -116,6 +116,15 @@
       "state" : {
         "revision" : "12d83edbcc795fb7b5c0c3cb74d739108d3357d2",
         "version" : "0.15.0"
+      }
+    },
+    {
+      "identity" : "srtswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eerimoq/SrtSwift",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c284acbbe36026ca18685272461b22e61738c4da"
       }
     },
     {

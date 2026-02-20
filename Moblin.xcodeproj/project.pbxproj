@@ -14,6 +14,7 @@
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
 		032815D52AC855A5001F8A85 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = 032815D42AC855A5001F8A85 /* LicenseList */; };
 		033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 033BEAC32C0FCC0B005F4E06 /* NWWebSocket */; };
+		034B375B2F48A11500336470 /* Srt in Frameworks */ = {isa = PBXBuildFile; productRef = 034B375A2F48A11500336470 /* Srt */; };
 		035351942F1C271700428DAC /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 035351932F1C271700428DAC /* AppAuthCore */; };
 		035351962F1C27A500428DAC /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 035351952F1C27A500428DAC /* AppAuth */; };
 		0360FD162F228EEB00FF8847 /* MetalPetal in Frameworks */ = {isa = PBXBuildFile; productRef = 0360FD152F228EEB00FF8847 /* MetalPetal */; };
@@ -223,6 +224,7 @@
 				032815D52AC855A5001F8A85 /* LicenseList in Frameworks */,
 				03AE56142BEA74D500FE8427 /* Rist in Frameworks */,
 				035351962F1C27A500428DAC /* AppAuth in Frameworks */,
+				034B375B2F48A11500336470 /* Srt in Frameworks */,
 				03F465EC2C441D1400630708 /* CrcSwift in Frameworks */,
 				0377239A2DE35191007D040D /* VRMKit in Frameworks */,
 				03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */,
@@ -369,6 +371,7 @@
 				035351952F1C27A500428DAC /* AppAuth */,
 				0360FD152F228EEB00FF8847 /* MetalPetal */,
 				03D6B81F2F489C19009480D1 /* DataChannel */,
+				034B375A2F48A11500336470 /* Srt */,
 			);
 			productName = Mobs;
 			productReference = 035E9E332A9A02D6009D4F5A /* Moblin.app */;
@@ -525,6 +528,7 @@
 				035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */,
 				0360FD142F228EEB00FF8847 /* XCRemoteSwiftPackageReference "MetalPetal" */,
 				03D6B81E2F489C19009480D1 /* XCRemoteSwiftPackageReference "DataChannel" */,
+				034B37592F48A11500336470 /* XCRemoteSwiftPackageReference "SrtSwift" */,
 			);
 			productRefGroup = 035E9E342A9A02D6009D4F5A /* Products */;
 			projectDirPath = "";
@@ -1253,6 +1257,14 @@
 				kind = branch;
 			};
 		};
+		034B37592F48A11500336470 /* XCRemoteSwiftPackageReference "SrtSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/eerimoq/SrtSwift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		035351922F1C271700428DAC /* XCRemoteSwiftPackageReference "AppAuth-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/openid/AppAuth-iOS.git";
@@ -1392,6 +1404,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 033BEAC22C0FCC0B005F4E06 /* XCRemoteSwiftPackageReference "NWWebSocket" */;
 			productName = NWWebSocket;
+		};
+		034B375A2F48A11500336470 /* Srt */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 034B37592F48A11500336470 /* XCRemoteSwiftPackageReference "SrtSwift" */;
+			productName = Srt;
 		};
 		035351932F1C271700428DAC /* AppAuthCore */ = {
 			isa = XCSwiftPackageProductDependency;
