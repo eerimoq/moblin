@@ -48,7 +48,7 @@ struct WhipServerStreamSettingsView: View {
         guard let latency = Int32(value) else {
             return String(localized: "Not a number")
         }
-        guard latency >= 100 else {
+        guard latency >= 5 else {
             return String(localized: "Too small")
         }
         guard latency <= 10000 else {
@@ -86,7 +86,7 @@ struct WhipServerStreamSettingsView: View {
                         value: String(stream.latency),
                         onChange: changeLatency,
                         onSubmit: submitLatency,
-                        footers: [String(localized: "100 or more milliseconds. 100 ms by default.")],
+                        footers: [String(localized: "5 or more milliseconds. 100 ms by default.")],
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0) ms" }
                     )

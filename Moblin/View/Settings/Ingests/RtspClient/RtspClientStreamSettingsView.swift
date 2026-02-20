@@ -33,7 +33,7 @@ struct RtspClientStreamSettingsView: View {
                             guard let latency = Int32($0) else {
                                 return String(localized: "Not a number")
                             }
-                            guard latency >= 250 else {
+                            guard latency >= 5 else {
                                 return String(localized: "Too small")
                             }
                             guard latency <= 10000 else {
@@ -48,7 +48,7 @@ struct RtspClientStreamSettingsView: View {
                             stream.latency = latency
                             model.reloadRtspClient()
                         },
-                        footers: [String(localized: "250 or more milliseconds. 2000 ms by default.")],
+                        footers: [String(localized: "5 or more milliseconds. 2000 ms by default.")],
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0) ms" }
                     )
