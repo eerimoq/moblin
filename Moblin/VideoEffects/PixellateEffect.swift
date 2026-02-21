@@ -1,6 +1,4 @@
-import AVFoundation
-import UIKit
-import Vision
+import CoreImage
 
 func pixellateCalcScale(size: CGSize, strength: Float) -> Float {
     let maximum = Float(size.maximum())

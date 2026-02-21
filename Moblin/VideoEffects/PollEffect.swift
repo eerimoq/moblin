@@ -1,8 +1,5 @@
-import AVFoundation
 import Combine
 import SwiftUI
-import UIKit
-import Vision
 
 private class PollState: ObservableObject {
     let size: CGSize

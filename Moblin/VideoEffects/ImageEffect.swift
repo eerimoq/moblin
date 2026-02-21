@@ -1,6 +1,4 @@
-import AVFoundation
-import UIKit
-import Vision
+import CoreImage
 
 final class ImageEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()

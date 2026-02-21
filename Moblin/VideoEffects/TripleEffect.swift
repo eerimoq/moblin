@@ -1,6 +1,4 @@
-import AVFoundation
 import CoreImage
-import Vision
 
 final class TripleEffect: VideoEffect {
     private let centerFilter = CIFilter.sourceOverCompositing()

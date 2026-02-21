@@ -1,6 +1,4 @@
-import AVFoundation
-import UIKit
-import Vision
+import CoreImage
 
 struct SlideshowEffectSlide {
     let widgetId: UUID

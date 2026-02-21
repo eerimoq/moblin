@@ -1,6 +1,4 @@
-import AVFoundation
-import UIKit
-import Vision
+import CoreImage
 
 final class SepiaEffect: VideoEffect {
     private let filter = CIFilter.sepiaTone()

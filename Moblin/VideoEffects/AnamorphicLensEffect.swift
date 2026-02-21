@@ -1,4 +1,4 @@
-import UIKit
+import CoreImage
 
 final class AnamorphicLensEffect: VideoEffect {
     private var settings: SettingsVideoEffectAnamorphicLens

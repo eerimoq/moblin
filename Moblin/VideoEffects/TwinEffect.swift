@@ -1,6 +1,4 @@
-import AVFoundation
 import CoreImage
-import Vision
 
 final class TwinEffect: VideoEffect {
     private let filter = CIFilter.sourceOverCompositing()

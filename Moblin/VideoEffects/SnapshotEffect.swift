@@ -1,7 +1,5 @@
-import AVFoundation
 import Collections
-import UIKit
-import Vision
+import CoreImage
 
 final class SnapshotEffect: VideoEffect {
     private var snapshots: Deque<CIImage> = []

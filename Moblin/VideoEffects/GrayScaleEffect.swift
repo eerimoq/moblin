@@ -1,6 +1,4 @@
-import AVFoundation
-import UIKit
-import Vision
+import CoreImage
 
 final class GrayScaleEffect: VideoEffect {
     private let filter = CIFilter.colorMonochrome()

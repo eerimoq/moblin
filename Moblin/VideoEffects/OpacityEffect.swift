@@ -1,6 +1,4 @@
-import AVFoundation
-import UIKit
-import Vision
+import CoreImage
 
 final class OpacityEffect: VideoEffect {
     private var opacity: Double = 1.0

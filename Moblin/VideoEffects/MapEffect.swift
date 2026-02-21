@@ -1,8 +1,6 @@
-import AVFoundation
 import Collections
+import CoreImage
 import MapKit
-import UIKit
-import Vision
 
 final class MapEffect: VideoEffect {
     private var mapSnapshot: CIImage?

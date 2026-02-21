@@ -1,6 +1,4 @@
-import AVFoundation
 import CoreImage
-import Vision
 
 struct ShapeEffectSettings {
     var cornerRadius: Float = 0

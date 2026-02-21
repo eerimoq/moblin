@@ -1,5 +1,4 @@
 import CoreImage
-import Foundation
 import Vision
 
 func toPixels(_ percentage: Double, _ total: Double) -> Double {

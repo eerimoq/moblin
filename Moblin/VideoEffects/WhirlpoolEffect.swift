@@ -1,4 +1,4 @@
-import UIKit
+import CoreImage
 
 final class WhirlpoolEffect: VideoEffect {
     private var angle: Float

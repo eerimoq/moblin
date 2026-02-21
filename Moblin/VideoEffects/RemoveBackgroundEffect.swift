@@ -1,6 +1,4 @@
-import AVFoundation
 import CoreImage
-import Vision
 
 private func makeFilter(fromHue: CGFloat, toHue: CGFloat) -> CIColorCubeWithColorSpace {
     let size = 64

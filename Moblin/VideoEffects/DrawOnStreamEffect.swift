@@ -1,7 +1,5 @@
-import AVFoundation
+import CoreImage
 import SwiftUI
-import UIKit
-import Vision
 
 func drawOnStreamCreatePath(points: [CGPoint]) -> Path {
     var path = Path()

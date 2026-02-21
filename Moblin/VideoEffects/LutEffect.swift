@@ -1,7 +1,6 @@
-import AVFoundation
+import CoreImage
 import SwiftCube
 import UIKit
-import Vision
 
 private func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
     let dimensionFloat = Float(dimension)

@@ -1,7 +1,5 @@
-import AVFoundation
+import CoreImage
 import CoreMotion
-import UIKit
-import Vision
 
 private func minimalBoundingRectWithAspect(width: CGFloat, height: CGFloat, angle: CGFloat) -> CGSize {
     let cosAngle = cos(angle)

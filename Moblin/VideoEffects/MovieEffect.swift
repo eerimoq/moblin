@@ -1,6 +1,4 @@
-import AVFoundation
-import UIKit
-import Vision
+import CoreImage
 
 final class MovieEffect: VideoEffect {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
