@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 030786992AEC23FB0061FDE2 /* StoreKit.framework */; };
 		0312E4302C00F24E00C6F878 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0312E42F2C00F24E00C6F878 /* ReplayKit.framework */; };
 		0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 0318D3692CF51D6900E12F3B /* SwiftProtobuf */; };
@@ -108,7 +107,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		030786992AEC23FB0061FDE2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Moblin Screen Recording.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0312E42F2C00F24E00C6F878 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		035E9E332A9A02D6009D4F5A /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -237,7 +235,6 @@
 			files = (
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
 				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
-				0307869A2AEC23FB0061FDE2 /* StoreKit.framework in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
 				03D6B8202F489C19009480D1 /* DataChannel in Frameworks */,
 				0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */,
@@ -292,7 +289,6 @@
 		035D372A2AB103E600045B92 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				030786992AEC23FB0061FDE2 /* StoreKit.framework */,
 				0376F6F82B9511030056B3D2 /* WidgetKit.framework */,
 				0376F6FA2B9511030056B3D2 /* SwiftUI.framework */,
 				0312E42F2C00F24E00C6F878 /* ReplayKit.framework */,
@@ -678,7 +674,6 @@
 			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
 			baseConfigurationReferenceRelativePath = MoblinScreenRecording.xcconfig;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -715,7 +710,6 @@
 			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
 			baseConfigurationReferenceRelativePath = MoblinScreenRecording.xcconfig;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -889,7 +883,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = Moblin/Moblin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -945,7 +938,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = Moblin/Moblin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -1113,7 +1105,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Moblin Watch/MoblinWatch.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin Watch/Preview Content\"";
@@ -1154,7 +1145,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Moblin Watch/MoblinWatch.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Moblin Watch/Preview Content\"";

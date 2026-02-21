@@ -1,2 +1,8 @@
+// You Team ID, found at https://developer.apple.com/account.
 DEVELOPMENT_TEAM = L82N7LD4N5
+
+// Something unique. Typically replace 'eerimoq' with your name.
 BASE_PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs
+
+// 'free' or 'all'. 'all' probably requires paying for Apple development account.
+CAPABILITIES = free
