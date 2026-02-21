@@ -21,8 +21,13 @@ class AudioProvider: ObservableObject {
 
 class Mic: ObservableObject {
     @Published var current: SettingsMicsMic = noMic
+    @Published var selectedMicIds: Set<String> = []
     var requested: SettingsMicsMic?
     var isSwitchTimerRunning: Bool = false
+
+    func isSelected(mic: SettingsMicsMic) -> Bool {
+        return selectedMicIds.contains(mic.id)
+    }
 }
 
 extension Model {
@@ -181,6 +186,76 @@ extension Model {
         if let mic = getAvailableMicById(id: id) {
             selectMic(mic: mic)
             defaultMic = mic
+        }
+    }
+
+    func manualToggleMicById(id: String) {
+        guard let toggledMic = getAvailableMicById(id: id) else {
+            return
+        }
+        if mic.isSelected(mic: toggledMic) {
+            mic.selectedMicIds.remove(toggledMic.id)
+            removeMicFromMixer(mic: toggledMic)
+            if mic.selectedMicIds.isEmpty {
+                mic.current = noMic
+            } else if mic.current == toggledMic,
+                      let nextMic = database.mics.mics.first(where: { mic.isSelected(mic: $0) })
+            {
+                mic.current = nextMic
+            }
+        } else {
+            mic.selectedMicIds.insert(toggledMic.id)
+            addMicToMixer(mic: toggledMic)
+            mic.current = toggledMic
+        }
+    }
+
+    private func addMicToMixer(mic: SettingsMicsMic) {
+        if mic.isAudioSession() {
+            selectMicDefault(mic: mic)
+            media.addMixerBuiltinSource()
+        } else if isRtmpMic(mic: mic) {
+            if let cameraId = getRtmpStream(idString: mic.inputUid)?.id {
+                media.attachBufferedAudio(cameraId: cameraId)
+                media.addMixerSource(sourceId: cameraId)
+            }
+        } else if isSrtlaMic(mic: mic) {
+            if let cameraId = getSrtlaStream(idString: mic.inputUid)?.id {
+                media.attachBufferedAudio(cameraId: cameraId)
+                media.addMixerSource(sourceId: cameraId)
+            }
+        } else if isRistMic(mic: mic) {
+            if let cameraId = getRistStream(idString: mic.inputUid)?.id {
+                media.attachBufferedAudio(cameraId: cameraId)
+                media.addMixerSource(sourceId: cameraId)
+            }
+        } else if isMediaPlayerMic(mic: mic) {
+            if let cameraId = getMediaPlayer(idString: mic.inputUid)?.id {
+                media.attachBufferedAudio(cameraId: cameraId)
+                media.addMixerSource(sourceId: cameraId)
+            }
+        }
+    }
+
+    private func removeMicFromMixer(mic: SettingsMicsMic) {
+        if mic.isAudioSession() {
+            media.removeMixerBuiltinSource()
+        } else if isRtmpMic(mic: mic) {
+            if let cameraId = getRtmpStream(idString: mic.inputUid)?.id {
+                media.removeMixerSource(sourceId: cameraId)
+            }
+        } else if isSrtlaMic(mic: mic) {
+            if let cameraId = getSrtlaStream(idString: mic.inputUid)?.id {
+                media.removeMixerSource(sourceId: cameraId)
+            }
+        } else if isRistMic(mic: mic) {
+            if let cameraId = getRistStream(idString: mic.inputUid)?.id {
+                media.removeMixerSource(sourceId: cameraId)
+            }
+        } else if isMediaPlayerMic(mic: mic) {
+            if let cameraId = getMediaPlayer(idString: mic.inputUid)?.id {
+                media.removeMixerSource(sourceId: cameraId)
+            }
         }
     }
 
@@ -602,6 +677,7 @@ extension Model {
             selectMicDefault(mic: mic)
         }
         self.mic.current = mic
+        self.mic.selectedMicIds = [mic.id]
         self.mic.isSwitchTimerRunning = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.mic.isSwitchTimerRunning = false
