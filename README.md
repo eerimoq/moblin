@@ -395,20 +395,14 @@ Roughly the steps to setup Moblin's developement environment.
 
 7. Press `Command + B` to build Moblin.
 
-8. Typically the build will fail, and you'll likely have to remove
-   problematic capabilities by clicking their trash cans on the
-   "Signing & Capabilities" tab in the Moblin target settings.
+8. Enable developer mode in your iPhone/iPad.
 
-9. Build again. Hopefully successfully.
+9. Select you iPhone/iPad as `Run Destination` in Xcode (at the top in
+   the middle).
 
-10. Enable developer mode in your iPhone/iPad.
+10. Build and run by pressing `Command + R`.
 
-11. Select you iPhone/iPad as `Run Destination` in Xcode (at the top
-    in the middle).
-
-12. Build and run by pressing `Command + R`.
-
-13. Done!
+11. Done!
 
 ## Styling, linting and more
 
