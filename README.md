@@ -22,11 +22,11 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
 ## Main app
 
-- Stream using RTMP, RTMPS, SRT, SRTLA or RIST to any platform that supports
-  them.
+- Stream using RTMP, RTMPS, SRT, SRTLA, RIST or WHIP to any platform
+  that supports them.
 - H.264/AVC and H.265/HEVC video codecs.
 - Up to 4K resolution and 60 FPS. Use 120 FPS at your own risk.
-- SRTLA.
+- SRTLA and RIST.
   - Can use one cellular, one WiFi and multiple Ethernet connections
     simultaneously. Often called bonding.
   - Upload statistics per active connection.
