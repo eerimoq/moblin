@@ -61,6 +61,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case glasses = "Glasses"
     case sparkle = "Sparkle"
     case beauty = "Beauty filter"
+    case cameraMan = "Camera man"
 
     init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)

@@ -130,6 +130,10 @@ extension Model {
             if !pressed {
                 toggleFilterQuickButton(type: .twin)
             }
+        case .cameraMan:
+            if !pressed {
+                toggleFilterQuickButton(type: .cameraMan)
+            }
         case .fourThree:
             if !pressed {
                 toggleFilterQuickButton(type: .fourThree)
