@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 71;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -120,6 +120,27 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		030AC5B02F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Base.xcconfig,
+			);
+			target = 035E9E322A9A02D6009D4F5A /* Moblin */;
+		};
+		030AC5B12F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Base.xcconfig,
+			);
+			target = 03ECDF452B8E4E5E00BD920E /* MoblinWatch */;
+		};
+		030AC5B22F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Base.xcconfig,
+			);
+			target = 0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */;
+		};
 		037D9E9F2E38AC1600C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -192,6 +213,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		030AC5AF2F4988A000496F6F /* Config */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (030AC5B02F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 030AC5B12F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 030AC5B22F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Config; sourceTree = "<group>"; };
 		037D9C902E38AC1600C0AF9A /* Moblin */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9E9F2E38AC1600C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Moblin; sourceTree = "<group>"; };
 		037D9EAC2E38AC1B00C0AF9A /* Common */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9ECB2E38AC1B00C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 03CBFBF12F0063CF0001864A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 037D9ECC2E38AC1B00C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Common; sourceTree = "<group>"; };
 		037D9EE42E38AC2000C0AF9A /* Moblin Watch */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9EF52E38AC2000C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 037D9EF62E38AC2000C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Watch"; sourceTree = "<group>"; };
@@ -281,6 +303,7 @@
 		035E9E2A2A9A02D6009D4F5A = {
 			isa = PBXGroup;
 			children = (
+				030AC5AF2F4988A000496F6F /* Config */,
 				037D9EAC2E38AC1B00C0AF9A /* Common */,
 				037D9C902E38AC1600C0AF9A /* Moblin */,
 				037D9EE42E38AC2000C0AF9A /* Moblin Watch */,
@@ -320,6 +343,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				030AC5AF2F4988A000496F6F /* Config */,
 				037D9EAC2E38AC1B00C0AF9A /* Common */,
 				037D9F0C2E38AC2600C0AF9A /* Moblin Screen Recording */,
 			);
@@ -346,6 +370,7 @@
 				0312E4362C00F24E00C6F878 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				030AC5AF2F4988A000496F6F /* Config */,
 				037D9C902E38AC1600C0AF9A /* Moblin */,
 				037D9EAC2E38AC1B00C0AF9A /* Common */,
 			);
@@ -435,6 +460,7 @@
 				0376F7032B9511040056B3D2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				030AC5AF2F4988A000496F6F /* Config */,
 				037D9EAC2E38AC1B00C0AF9A /* Common */,
 				037D9EE42E38AC2000C0AF9A /* Moblin Watch */,
 			);
@@ -649,6 +675,8 @@
 /* Begin XCBuildConfiguration section */
 		0312E4392C00F24E00C6F878 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinScreenRecording.xcconfig;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
@@ -670,8 +698,6 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 30.2028.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -686,6 +712,8 @@
 		};
 		0312E43A2C00F24E00C6F878 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinScreenRecording.xcconfig;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "Moblin Screen Recording/Moblin Screen Recording.entitlements";
 				CODE_SIGN_STYLE = Automatic;
@@ -707,8 +735,6 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 30.2028.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.eerimoq.Mobs.Moblin-Capture";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -858,6 +884,8 @@
 		};
 		035E9E422A9A02D7009D4F5A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = Moblin.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -871,6 +899,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
@@ -895,11 +924,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 30.2028.0;
 				MTLLINKER_FLAGS = "-fcikernel";
 				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -913,6 +940,8 @@
 		};
 		035E9E432A9A02D7009D4F5A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = Moblin.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -926,6 +955,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Moblin/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Moblin;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Moblin communicates with DJI cameras using Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Moblin live streams video from the camera.";
@@ -950,11 +980,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 30.2028.0;
 				MTLLINKER_FLAGS = "-fcikernel";
 				MTL_COMPILER_FLAGS = "-fcikernel";
 				MTL_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -968,6 +996,8 @@
 		};
 		0376F7062B9511040056B3D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinWidget.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
@@ -990,8 +1020,6 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1005,6 +1033,8 @@
 		};
 		0376F7072B9511040056B3D2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinWidget.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
@@ -1027,8 +1057,6 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1084,6 +1112,8 @@
 		};
 		03ECDF552B8E4E6000BD920E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinWatch.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1104,15 +1134,12 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
 				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1126,6 +1153,8 @@
 		};
 		03ECDF562B8E4E6000BD920E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinWatch.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1146,15 +1175,12 @@
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = Yes;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = Yes;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch;
 				PRODUCT_NAME = Moblin;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
