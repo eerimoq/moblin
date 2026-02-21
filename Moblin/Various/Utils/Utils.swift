@@ -380,3 +380,18 @@ extension Array where Element == String {
         return addAt(index: 0)
     }
 }
+
+struct TimeStampRebaser {
+    private var firstPresentationTimeStamp: Double = .nan
+
+    mutating func rebase(_ presentationTimeStamp: Double) -> Double? {
+        if firstPresentationTimeStamp.isNaN {
+            firstPresentationTimeStamp = presentationTimeStamp
+        }
+        let presentationTimeStamp = presentationTimeStamp - firstPresentationTimeStamp
+        guard presentationTimeStamp > 0 else {
+            return nil
+        }
+        return presentationTimeStamp
+    }
+}

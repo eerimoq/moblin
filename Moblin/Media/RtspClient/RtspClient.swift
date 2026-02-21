@@ -330,7 +330,7 @@ private class RtpVideoProcessor: RtpProcessor {
     private var timestamp: Int64 = 0
     var data = Data()
     private var basePresentationTimeStamp: Double = -1
-    private var firstPresentationTimeStamp: Double = -1
+    private var timeStampRebaser = TimeStampRebaser()
     private var decoder: VideoDecoder
     private var formatDescription: CMFormatDescription?
     private weak var client: RtspClient?
@@ -364,11 +364,11 @@ private class RtpVideoProcessor: RtpProcessor {
             pointer.writeUInt32(count, offset: 0)
         }
         var presenationTimeStamp = Double(timestamp) / 90000
-        if firstPresentationTimeStamp == -1 {
-            firstPresentationTimeStamp = presenationTimeStamp
+        guard let rebasedPresentationTimeStamp = timeStampRebaser.rebase(presenationTimeStamp) else {
+            return
         }
         presenationTimeStamp = getBasePresentationTimeStamp()
-            + (presenationTimeStamp - firstPresentationTimeStamp)
+            + rebasedPresentationTimeStamp
             + client.latency
         var timing = CMSampleTimingInfo(
             duration: .invalid,

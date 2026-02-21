@@ -32,8 +32,8 @@ final class WhipServerClient {
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?
     private var basePresentationTimeStamp: Double = -1
-    private var firstVideoPresentationTimeStamp: Double = -1
-    private var firstAudioPresentationTimeStamp: Double = -1
+    private var videoTimeStampRebaser = TimeStampRebaser()
+    private var audioTimeStampRebaser = TimeStampRebaser()
     private var opusAudioConverter: AVAudioConverter?
     private var opusCompressedBuffer: AVAudioCompressedBuffer?
     private var pcmAudioFormat: AVAudioFormat?
@@ -208,12 +208,10 @@ final class WhipServerClient {
             return
         }
         removeNalUnitStartCodes(&frameData, nalUnits)
-        var presentationTimeStamp = timestampSeconds
-        if firstVideoPresentationTimeStamp == -1 {
-            firstVideoPresentationTimeStamp = presentationTimeStamp
+        guard let rebasedTimeStamp = videoTimeStampRebaser.rebase(timestampSeconds) else {
+            return
         }
-        presentationTimeStamp = getBasePresentationTimeStamp()
-            + (presentationTimeStamp - firstVideoPresentationTimeStamp)
+        let presentationTimeStamp = getBasePresentationTimeStamp() + rebasedTimeStamp
         var timing = CMSampleTimingInfo(
             duration: .invalid,
             presentationTimeStamp: CMTime(seconds: presentationTimeStamp),
@@ -291,12 +289,10 @@ final class WhipServerClient {
             logger.info("whip-server-client: Opus decode error: \(error)")
             return
         }
-        var presentationTimeStamp = timestampSeconds
-        if firstAudioPresentationTimeStamp == -1 {
-            firstAudioPresentationTimeStamp = presentationTimeStamp
+        guard let rebasedTimeStamp = audioTimeStampRebaser.rebase(timestampSeconds) else {
+            return
         }
-        presentationTimeStamp = getBasePresentationTimeStamp()
-            + (presentationTimeStamp - firstAudioPresentationTimeStamp)
+        let presentationTimeStamp = getBasePresentationTimeStamp() + rebasedTimeStamp
         let pts = CMTime(seconds: presentationTimeStamp)
         guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(pts) else {
             return

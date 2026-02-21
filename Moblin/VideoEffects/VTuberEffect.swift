@@ -8,7 +8,7 @@ final class VTuberEffect: VideoEffect {
     private var scene: VRMScene?
     private var mirror: Bool = false
     private let renderer = SCNRenderer(device: nil)
-    private var firstPresentationTimeStamp: Double?
+    private var timeStampRebaser = TimeStampRebaser()
     private var previousPresentationTimeStamp = 0.0
     private var neckYAngle = 0.0
     private var neckZAngle = 0.0
@@ -73,13 +73,9 @@ final class VTuberEffect: VideoEffect {
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let presentationTimeStamp = info.presentationTimeStamp.seconds
-        if firstPresentationTimeStamp == nil {
-            firstPresentationTimeStamp = presentationTimeStamp
-        }
-        guard let node = scene?.vrmNode, let firstPresentationTimeStamp else {
+        guard let time = timeStampRebaser.rebase(presentationTimeStamp), let node = scene?.vrmNode else {
             return image
         }
-        let time = presentationTimeStamp - firstPresentationTimeStamp
         let timeDelta = presentationTimeStamp - previousPresentationTimeStamp
         previousPresentationTimeStamp = presentationTimeStamp
         updateModelPose(node: node, image: image, info: info, time: time, timeDelta: timeDelta)

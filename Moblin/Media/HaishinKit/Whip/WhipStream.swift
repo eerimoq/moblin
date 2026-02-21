@@ -429,7 +429,7 @@ final class WhipStream {
     private var headers: [SettingsHttpHeader] = []
     private var connected = false
     private var offerSent = false
-    private var firstPresentationTimeStamp: Double = .nan
+    private var timeStampRebaser = TimeStampRebaser()
     private let connectTimer = SimpleTimer(queue: whipQueue)
 
     init(processor: Processor, delegate: WhipStreamDelegate) {
@@ -642,14 +642,7 @@ final class WhipStream {
     }
 
     private func rebaseTimestamp(_ presentationTimeStamp: CMTime) -> Double? {
-        if firstPresentationTimeStamp.isNaN {
-            firstPresentationTimeStamp = presentationTimeStamp.seconds
-        }
-        let presentationTimeStamp = presentationTimeStamp.seconds - firstPresentationTimeStamp
-        guard presentationTimeStamp > 0 else {
-            return nil
-        }
-        return presentationTimeStamp
+        return timeStampRebaser.rebase(presentationTimeStamp.seconds)
     }
 
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
