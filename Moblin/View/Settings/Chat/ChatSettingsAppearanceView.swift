@@ -124,13 +124,7 @@ struct ChatSettingsAppearanceView: View {
                         model.reloadChatMessages()
                     }
                     if model.database.showAllSettings {
-                        Toggle(isOn: Binding(get: {
-                            chat.meInUsernameColor
-                        }, set: { value in
-                            chat.meInUsernameColor = value
-                        })) {
-                            Text("Me in name color")
-                        }
+                        Toggle("Me in name color", isOn: $chat.meInUsernameColor)
                     }
                 } header: {
                     Text("Colors")

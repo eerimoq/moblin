@@ -555,7 +555,7 @@ class SettingsChat: Codable, ObservableObject {
     @Published var width: Double = 1.0
     @Published var maximumAge: Int = 30
     @Published var maximumAgeEnabled: Bool = false
-    var meInUsernameColor: Bool = true
+    @Published var meInUsernameColor: Bool = true
     @Published var enabled: Bool = true
     @Published var filters: [SettingsChatFilter] = []
     var textToSpeechEnabled: Bool = false
