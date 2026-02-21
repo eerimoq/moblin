@@ -640,6 +640,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var tripleEffect = TripleEffect()
     var twinEffect = TwinEffect()
     var pixellateEffect = PixellateEffect(strength: 0.0)
+    var cameraManEffect = CameraManEffect()
     var pollEffect: PollEffect?
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?

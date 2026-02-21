@@ -1755,6 +1755,12 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  imageOn: "squareshape.split.2x2",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Camera man"),
+                                 type: .cameraMan,
+                                 imageOn: "video.fill",
+                                 imageOff: "video",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Beauty"),
                                  type: .beauty,
                                  imageOn: "wand.and.stars",

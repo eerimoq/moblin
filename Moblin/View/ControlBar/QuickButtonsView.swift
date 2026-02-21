@@ -202,6 +202,10 @@ struct QuickButtonsInnerView: View {
         model.toggleFilterQuickButton(type: .triple)
     }
 
+    private func cameraManAction() {
+        model.toggleFilterQuickButton(type: .cameraMan)
+    }
+
     private func twinAction() {
         model.toggleFilterQuickButton(type: .twin)
     }
@@ -549,6 +553,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             twinAction()
+                        }
+                    case .cameraMan:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            cameraManAction()
                         }
                     case .pixellate:
                         QuickButtonImage(model: model,

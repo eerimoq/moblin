@@ -488,6 +488,7 @@ extension Model {
         tripleEffect = TripleEffect()
         twinEffect = TwinEffect()
         pixellateEffect = PixellateEffect(strength: database.pixellateStrength)
+        cameraManEffect = CameraManEffect()
         pollEffect = nil
         whirlpoolEffect = WhirlpoolEffect(angle: database.whirlpoolAngle)
         pinchEffect = PinchEffect(scale: database.pinchScale)
@@ -560,6 +561,9 @@ extension Model {
         }
         if isFaceEnabled() {
             effects.append(faceEffect)
+        }
+        if isQuickButtonOn(type: .cameraMan) {
+            effects.append(cameraManEffect)
         }
         if isQuickButtonOn(type: .whirlpool) {
             effects.append(whirlpoolEffect)
