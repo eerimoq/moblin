@@ -122,6 +122,12 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Base.xcconfig,
+				Moblin.xcconfig,
+				MoblinScreenRecording.xcconfig,
+				MoblinTests.xcconfig,
+				MoblinWatch.xcconfig,
+				MoblinWidget.xcconfig,
+				User.xcconfig,
 			);
 			target = 035E9E322A9A02D6009D4F5A /* Moblin */;
 		};
@@ -129,6 +135,12 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Base.xcconfig,
+				Moblin.xcconfig,
+				MoblinScreenRecording.xcconfig,
+				MoblinTests.xcconfig,
+				MoblinWatch.xcconfig,
+				MoblinWidget.xcconfig,
+				User.xcconfig,
 			);
 			target = 03ECDF452B8E4E5E00BD920E /* MoblinWatch */;
 		};
@@ -136,6 +148,12 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Base.xcconfig,
+				Moblin.xcconfig,
+				MoblinScreenRecording.xcconfig,
+				MoblinTests.xcconfig,
+				MoblinWatch.xcconfig,
+				MoblinWidget.xcconfig,
+				User.xcconfig,
 			);
 			target = 0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */;
 		};
@@ -477,7 +495,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					0312E42D2C00F24E00C6F878 = {
 						CreatedOnToolsVersion = 15.4;
