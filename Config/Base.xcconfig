@@ -1,5 +1,6 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-BASE_PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs
+#include "User.xcconfig"
+
 MARKETING_VERSION = 30.2028.0

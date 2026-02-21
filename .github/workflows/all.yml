@@ -9,6 +9,9 @@ jobs:
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
+      - name: Create user config
+        run: |
+          cp User.template.xcconfig Config/User.xcconfig
       - name: Source code styling
         run: |
           brew install swiftformat oxfmt
