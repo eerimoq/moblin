@@ -1,0 +1,6 @@
+#include "Shared.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs.Watch
+INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.eerimoq.Mobs
+WATCHOS_DEPLOYMENT_TARGET = 10.2
+MARKETING_VERSION = 0.1.0

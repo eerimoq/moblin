@@ -1,0 +1,5 @@
+// Shared build configuration for all targets.
+// Change DEVELOPMENT_TEAM to your Apple Developer Team ID.
+DEVELOPMENT_TEAM = L82N7LD4N5
+
+SWIFT_VERSION = 5.0

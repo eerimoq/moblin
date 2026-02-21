@@ -1,0 +1,6 @@
+#include "Shared.xcconfig"
+
+// Change PRODUCT_BUNDLE_IDENTIFIER to a unique identifier for your build.
+PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs
+IPHONEOS_DEPLOYMENT_TARGET = 16.4
+MARKETING_VERSION = 30.2028.0
