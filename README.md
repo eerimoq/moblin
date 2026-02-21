@@ -395,22 +395,20 @@ Roughly the steps to setup Moblin's developement environment.
 
 7. Press `Command + B` to build Moblin.
 
-8. Click on the code signing error and add your account in the Issue
-   navigator. No Apple developer account is needed.
+8. Typically the build will fail, and you'll likely have to remove
+   problematic capabilities by clicking their trash cans on the
+   "Signing & Capabilities" tab in the Moblin target settings.
 
-9. Remove `In-App Purchase` and `Access Wi-Fi Information` by clicking
-   their trash cans.
+9. Build again. Hopefully successfully.
 
-10. Build again. Hopefully successfully.
+10. Enable developer mode in your iPhone/iPad.
 
-11. Enable developer mode in your iPhone/iPad.
-
-12. Select you iPhone/iPad as `Run Destination` in Xcode (at the top
+11. Select you iPhone/iPad as `Run Destination` in Xcode (at the top
     in the middle).
 
-13. Build and run by pressing `Command + R`.
+12. Build and run by pressing `Command + R`.
 
-14. Done!
+13. Done!
 
 ## Styling, linting and more
 
