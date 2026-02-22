@@ -34,7 +34,9 @@ extension CIImage {
     func move(_ layout: SettingsWidgetLayout, _ streamSize: CGSize) -> CIImage {
         let x: Double
         let y: Double
-        if layout.alignment.isLeft() {
+        if layout.alignment.isCenter() {
+            x = (streamSize.width - extent.width) / 2 - extent.minX
+        } else if layout.alignment.isLeft() {
             x = toPixels(layout.x, streamSize.width) - extent.minX
         } else {
             // No idea why the extra pixel is needed to get to the right.

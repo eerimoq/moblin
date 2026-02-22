@@ -10,17 +10,19 @@ struct WidgetLayoutView: View {
         if widget.hasPosition() || widget.hasSize() || widget.hasAlignment() {
             Section {
                 if widget.hasPosition() {
-                    PositionEditView(
-                        number: $layout.x,
-                        value: $layout.xString,
-                        onSubmit: {
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput,
-                        incrementImageName: "arrow.forward.circle",
-                        decrementImageName: "arrow.backward.circle",
-                        mirror: layout.alignment == .topRight || layout.alignment == .bottomRight
-                    )
+                    if !layout.alignment.isCenter() {
+                        PositionEditView(
+                            number: $layout.x,
+                            value: $layout.xString,
+                            onSubmit: {
+                                model.sceneUpdated()
+                            },
+                            numericInput: $numericInput,
+                            incrementImageName: "arrow.forward.circle",
+                            decrementImageName: "arrow.backward.circle",
+                            mirror: layout.alignment == .topRight || layout.alignment == .bottomRight
+                        )
+                    }
                     PositionEditView(
                         number: $layout.y,
                         value: $layout.yString,
@@ -31,6 +33,7 @@ struct WidgetLayoutView: View {
                         incrementImageName: "arrow.down.circle",
                         decrementImageName: "arrow.up.circle",
                         mirror: layout.alignment == .bottomLeft || layout.alignment == .bottomRight
+                            || layout.alignment == .bottomCenter
                     )
                 }
                 if widget.hasSize() {

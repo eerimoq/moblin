@@ -468,15 +468,21 @@ enum SettingsVerticalAlignment: String, Codable, CaseIterable {
 enum SettingsAlignment: String, Codable, CaseIterable {
     case topLeft = "TopLeft"
     case topRight = "TopRight"
+    case topCenter = "TopCenter"
     case bottomLeft = "BottomLeft"
     case bottomRight = "BottomRight"
+    case bottomCenter = "BottomCenter"
 
     func isLeft() -> Bool {
         return self == .topLeft || self == .bottomLeft
     }
 
+    func isCenter() -> Bool {
+        return self == .topCenter || self == .bottomCenter
+    }
+
     func isTop() -> Bool {
-        return self == .topLeft || self == .topRight
+        return self == .topLeft || self == .topRight || self == .topCenter
     }
 
     func toString() -> String {
@@ -485,10 +491,14 @@ enum SettingsAlignment: String, Codable, CaseIterable {
             return String(localized: "Top left")
         case .topRight:
             return String(localized: "Top right")
+        case .topCenter:
+            return String(localized: "Top center")
         case .bottomLeft:
             return String(localized: "Bottom left")
         case .bottomRight:
             return String(localized: "Bottom right")
+        case .bottomCenter:
+            return String(localized: "Bottom center")
         }
     }
 }
