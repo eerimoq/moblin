@@ -1,6 +1,4 @@
-import AVFoundation
 import SwiftUI
-import UIKit
 import Vision
 import WebKit
 

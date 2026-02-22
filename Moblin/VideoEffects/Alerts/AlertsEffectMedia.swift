@@ -1,6 +1,5 @@
 import AVFoundation
 import Collections
-import CoreImage
 import SDWebImage
 
 enum AlertsEffectMediaItem {

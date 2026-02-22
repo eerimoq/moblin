@@ -1,4 +1,3 @@
-import AVFoundation
 import Collections
 import CoreImage
 import Vision
