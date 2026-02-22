@@ -64,10 +64,22 @@ struct SceneWidgetSettingsView: View {
 
     var body: some View {
         Form {
-            WidgetLayoutView(model: model,
-                             layout: $sceneWidget.layout,
-                             widget: widget,
-                             numericInput: $database.sceneNumericInput)
+            if widget.canExpand() {
+                Section {
+                    Toggle("Position and size", isOn: $sceneWidget.layoutOverride)
+                        .onChange(of: sceneWidget.layoutOverride) { _ in
+                            model.sceneUpdated()
+                        }
+                } header: {
+                    Text("Override")
+                }
+            }
+            if sceneWidget.layoutOverride {
+                WidgetLayoutView(model: model,
+                                 layout: $sceneWidget.layout,
+                                 widget: widget,
+                                 numericInput: $database.sceneNumericInput)
+            }
             ShortcutSectionView {
                 WidgetShortcutView(model: model, database: model.database, widget: widget)
                 if widget.type == .scene,
@@ -76,7 +88,7 @@ struct SceneWidgetSettingsView: View {
                     SceneShortcutView(database: model.database, scene: scene)
                 }
             }
-            if widget.canExpand() {
+            if widget.canExpand() && sceneWidget.layoutOverride {
                 Section {
                     Toggle("Numeric input", isOn: $database.sceneNumericInput)
                 }

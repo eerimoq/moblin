@@ -140,6 +140,7 @@ struct RemoteControlRemoteSceneSettingsSceneWidget: Codable {
         widget.layout.x = x
         widget.layout.y = y
         widget.layout.size = size
+        widget.layoutOverride = true
         return widget
     }
 }

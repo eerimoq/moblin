@@ -83,6 +83,15 @@ struct WidgetSettingsView: View {
             Section {
                 NameEditView(name: $widget.name, existingNames: database.widgets)
             }
+            WidgetLayoutView(model: model,
+                             layout: $widget.layout,
+                             widget: widget,
+                             numericInput: $database.sceneNumericInput)
+            if widget.canExpand() {
+                Section {
+                    Toggle("Numeric input", isOn: $database.sceneNumericInput)
+                }
+            }
             switch widget.type {
             case .image:
                 WidgetImageSettingsView(model: model, widget: widget)

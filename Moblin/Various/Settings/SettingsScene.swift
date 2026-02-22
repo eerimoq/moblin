@@ -2011,6 +2011,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     var bingoCard: SettingsWidgetBingoCard = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
+    @Published var layout: SettingsWidgetLayout = .init()
 
     init(name: String) {
         self.name = name
@@ -2041,7 +2042,11 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
              wheelOfLuck,
              bingoCard,
              enabled,
-             effects
+             effects,
+             layoutX,
+             layoutY,
+             layoutSize,
+             layoutAlignment
     }
 
     func encode(to encoder: Encoder) throws {
@@ -2067,6 +2072,10 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.bingoCard, bingoCard)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
+        try container.encode(.layoutX, layout.x)
+        try container.encode(.layoutY, layout.y)
+        try container.encode(.layoutSize, layout.size)
+        try container.encode(.layoutAlignment, layout.alignment)
     }
 
     required init(from decoder: Decoder) throws {
@@ -2092,6 +2101,13 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         bingoCard = container.decode(.bingoCard, SettingsWidgetBingoCard.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
+        layout.x = container.decode(.layoutX, Double.self, 0.0)
+        layout.updateXString()
+        layout.y = container.decode(.layoutY, Double.self, 0.0)
+        layout.updateYString()
+        layout.size = container.decode(.layoutSize, Double.self, 100.0)
+        layout.updateSizeString()
+        layout.alignment = container.decode(.layoutAlignment, SettingsAlignment.self, .topLeft)
         migrateFromOlderVersions()
     }
 
@@ -2195,6 +2211,43 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     func canExpand() -> Bool {
         return hasPosition() || hasSize()
     }
+
+    func setDefaultLayout() {
+        switch type {
+        case .image, .slideshow:
+            layout.size = 30
+        case .map, .qrCode:
+            layout.size = 23
+        case .videoSource, .vTuber, .pngTuber:
+            layout.size = 28
+            layout.alignment = .bottomRight
+        case .snapshot:
+            layout.size = 40
+            layout.alignment = .topRight
+        case .chat:
+            layout.alignment = .bottomLeft
+        case .alerts:
+            layout.x = 20
+            layout.y = 5
+        case .scoreboard:
+            layout.x = 0.78
+            layout.y = 1.388
+        case .wheelOfLuck:
+            layout.alignment = .topRight
+            layout.x = 1.3
+            layout.y = 31
+        case .bingoCard:
+            layout.alignment = .topRight
+            layout.x = 1.3
+            layout.y = 33
+            layout.size = 33
+        default:
+            break
+        }
+        layout.updateXString()
+        layout.updateYString()
+        layout.updateSizeString()
+    }
 }
 
 struct SettingsWidgetLayout {
@@ -2231,6 +2284,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     var id: UUID = .init()
     @Published var widgetId: UUID
     @Published var layout: SettingsWidgetLayout = .init()
+    @Published var layoutOverride: Bool = false
     // To be removed.
     @Published var width2: Double = 100.0
     // To be removed.
@@ -2251,6 +2305,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              height,
              size,
              alignment,
+             layoutOverride,
              migrated,
              migrated2
     }
@@ -2265,6 +2320,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.height, height2)
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
+        try container.encode(.layoutOverride, layoutOverride)
         try container.encode(.migrated, migrated)
         try container.encode(.migrated2, migrated2)
     }
@@ -2286,6 +2342,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         }
         layout.updateSizeString()
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
+        layoutOverride = container.decode(.layoutOverride, Bool.self, true)
         migrated = container.decode(.migrated, Bool.self, false)
         migrated2 = container.decode(.migrated2, Bool.self, false)
     }
@@ -2293,9 +2350,18 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     func clone() -> SettingsSceneWidget {
         let new = SettingsSceneWidget(widgetId: widgetId)
         new.layout = layout
+        new.layoutOverride = layoutOverride
         new.migrated = migrated
         new.migrated2 = migrated2
         return new
+    }
+
+    func effectiveLayout(widget: SettingsWidget) -> SettingsWidgetLayout {
+        if layoutOverride {
+            return layout
+        } else {
+            return widget.layout
+        }
     }
 }
 

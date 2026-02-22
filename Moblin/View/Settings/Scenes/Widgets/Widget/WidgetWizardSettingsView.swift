@@ -54,6 +54,7 @@ private struct SelectScenesView: View {
         let widget = createWidgetWizard.widget
         widget.type = createWidgetWizard.type
         widget.name = name
+        widget.setDefaultLayout()
         database.widgets.append(widget)
         model.fixAlertMedias()
         model.resetSelectedScene(changeScene: false, attachCamera: false)

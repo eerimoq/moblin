@@ -944,43 +944,56 @@ extension Model {
             guard widget.enabled else {
                 continue
             }
+            let resolvedSceneWidget = resolveSceneWidgetLayout(sceneWidget, widget)
             switch widget.type {
             case .image:
-                addSceneImageEffects(sceneWidget, widget, &effects)
+                addSceneImageEffects(resolvedSceneWidget, widget, &effects)
             case .text:
-                addSceneTextEffects(sceneWidget, widget, &effects, &needsSpeechToText)
+                addSceneTextEffects(resolvedSceneWidget, widget, &effects, &needsSpeechToText)
             case .browser:
-                addSceneBrowserEffects(sceneWidget, widget, scene, &effects)
+                addSceneBrowserEffects(resolvedSceneWidget, widget, scene, &effects)
             case .crop:
                 addSceneCropEffects(widget, scene, &effects)
             case .map:
-                addSceneMapEffects(sceneWidget, widget, &effects)
+                addSceneMapEffects(resolvedSceneWidget, widget, &effects)
             case .scene:
                 addSceneSceneEffects(widget, &effects, &addedScenes, &needsSpeechToText)
             case .slideshow:
-                addSceneSlideshowEffects(sceneWidget, widget, &effects)
+                addSceneSlideshowEffects(resolvedSceneWidget, widget, &effects)
             case .qrCode:
-                addSceneQrCodeEffects(sceneWidget, widget, &effects)
+                addSceneQrCodeEffects(resolvedSceneWidget, widget, &effects)
             case .alerts:
-                addSceneAlertsEffects(sceneWidget, widget, &effects, &needsSpeechToText)
+                addSceneAlertsEffects(resolvedSceneWidget, widget, &effects, &needsSpeechToText)
             case .videoSource:
-                addSceneVideoSourceEffects(sceneWidget, widget, &effects)
+                addSceneVideoSourceEffects(resolvedSceneWidget, widget, &effects)
             case .scoreboard:
-                addSceneScoreboardEffects(sceneWidget, widget, &effects)
+                addSceneScoreboardEffects(resolvedSceneWidget, widget, &effects)
             case .vTuber:
-                addSceneVTuberEffects(sceneWidget, widget, &effects)
+                addSceneVTuberEffects(resolvedSceneWidget, widget, &effects)
             case .pngTuber:
-                addScenePngTuberEffects(sceneWidget, widget, &effects)
+                addScenePngTuberEffects(resolvedSceneWidget, widget, &effects)
             case .snapshot:
-                addSceneSnapshotEffects(sceneWidget, widget, &effects)
+                addSceneSnapshotEffects(resolvedSceneWidget, widget, &effects)
             case .chat:
-                addSceneChatEffects(sceneWidget, widget, &effects)
+                addSceneChatEffects(resolvedSceneWidget, widget, &effects)
             case .wheelOfLuck:
-                addSceneWheelOfLuckEffects(sceneWidget, widget, &effects)
+                addSceneWheelOfLuckEffects(resolvedSceneWidget, widget, &effects)
             case .bingoCard:
-                addSceneBingoCardEffects(sceneWidget, widget, &effects)
+                addSceneBingoCardEffects(resolvedSceneWidget, widget, &effects)
             }
         }
+    }
+
+    private func resolveSceneWidgetLayout(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget
+    ) -> SettingsSceneWidget {
+        if sceneWidget.layoutOverride {
+            return sceneWidget
+        }
+        let resolved = sceneWidget.clone()
+        resolved.layout = widget.layout
+        return resolved
     }
 
     private func addSceneImageEffects(_ sceneWidget: SettingsSceneWidget,
@@ -1035,8 +1048,12 @@ extension Model {
             return
         }
         let sceneWidget: SettingsSceneWidget?
-        if findWidget(id: widget.crop.sourceWidgetId)?.enabled == true {
-            sceneWidget = findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId)
+        if let sourceWidget = findWidget(id: widget.crop.sourceWidgetId), sourceWidget.enabled {
+            if let sw = findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId) {
+                sceneWidget = resolveSceneWidgetLayout(sw, sourceWidget)
+            } else {
+                sceneWidget = nil
+            }
         } else {
             sceneWidget = nil
         }
