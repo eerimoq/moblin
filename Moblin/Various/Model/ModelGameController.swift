@@ -132,7 +132,7 @@ extension Model {
             }
         case .cameraMan:
             if !pressed {
-                toggleFilterQuickButton(type: .cameraMan)
+                toggleCameraManQuickButton()
             }
         case .fourThree:
             if !pressed {

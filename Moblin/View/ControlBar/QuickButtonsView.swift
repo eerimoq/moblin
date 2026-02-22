@@ -203,7 +203,7 @@ struct QuickButtonsInnerView: View {
     }
 
     private func cameraManAction() {
-        model.toggleFilterQuickButton(type: .cameraMan)
+        model.toggleCameraManQuickButton()
     }
 
     private func twinAction() {
@@ -555,12 +555,20 @@ struct QuickButtonsInnerView: View {
                             twinAction()
                         }
                     case .cameraMan:
-                        QuickButtonImage(model: model,
-                                         quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
-                                         buttonSize: size)
-                        {
-                            cameraManAction()
+                        ZStack {
+                            QuickButtonImage(model: model,
+                                             quickButtonsSettings: quickButtonsSettings,
+                                             state: state,
+                                             buttonSize: size)
+                            {
+                                cameraManAction()
+                            }
+                            Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                                .font(.system(size: 10))
+                                .foregroundStyle(.white)
+                                .stroke(color: state.button.backgroundColor.color())
+                                .offset(CGSize(width: -5, height: 2))
+                                .frame(width: size, height: size)
                         }
                     case .pixellate:
                         QuickButtonImage(model: model,

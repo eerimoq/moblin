@@ -2071,6 +2071,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         toggleFilterQuickButton(type: .pixellate)
     }
 
+    func toggleCameraManQuickButton() {
+        cameraManEffect = CameraManEffect()
+        toggleFilterQuickButton(type: .cameraMan)
+    }
+
     func togglePollQuickButton() {
         togglePoll()
         toggleFilterQuickButton(type: .poll)
