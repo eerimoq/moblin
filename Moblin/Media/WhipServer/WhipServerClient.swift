@@ -32,8 +32,7 @@ final class WhipServerClient {
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?
     private var basePresentationTimeStamp: Double = -1
-    private var videoTimeStampRebaser = TimeStampRebaser()
-    private var audioTimeStampRebaser = TimeStampRebaser()
+    private var timeStampRebaser = TimeStampRebaser()
     private var opusAudioConverter: AVAudioConverter?
     private var opusCompressedBuffer: AVAudioCompressedBuffer?
     private var pcmAudioFormat: AVAudioFormat?
@@ -208,7 +207,7 @@ final class WhipServerClient {
             return
         }
         removeNalUnitStartCodes(&frameData, nalUnits)
-        guard let rebasedTimeStamp = videoTimeStampRebaser.rebase(timestampSeconds) else {
+        guard let rebasedTimeStamp = timeStampRebaser.rebase(timestampSeconds) else {
             return
         }
         let presentationTimeStamp = getBasePresentationTimeStamp() + rebasedTimeStamp
@@ -289,7 +288,7 @@ final class WhipServerClient {
             logger.info("whip-server-client: Opus decode error: \(error)")
             return
         }
-        guard let rebasedTimeStamp = audioTimeStampRebaser.rebase(timestampSeconds) else {
+        guard let rebasedTimeStamp = timeStampRebaser.rebase(timestampSeconds) else {
             return
         }
         let presentationTimeStamp = getBasePresentationTimeStamp() + rebasedTimeStamp
