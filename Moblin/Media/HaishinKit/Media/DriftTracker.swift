@@ -96,7 +96,12 @@ class DriftTracker {
     }
 
     private func lowWaterMark() -> Double {
-        return max(targetFillLevel - 0.2, 0.1)
+        if targetFillLevel >= 0.1 {
+            return max(targetFillLevel - 0.2, targetFillLevel / 2)
+        } else {
+            // Should do something better. The queue is likely close to empty.
+            return 0
+        }
     }
 
     private func highWaterMark() -> Double {
