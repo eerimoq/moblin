@@ -13,7 +13,7 @@ class DriftTracker {
     private var targetFillLevel: Double
     private var estimatedFillLevel: Double
     private var latestEstimatedFillLevelPresentationTimeStamp = 0.0
-    private var latestAdjustDriftPresentationTimeStamp = 0.0
+    private var latestAdjustDriftPresentationTimeStamp = -1.0
     private var drift = 0.0
     private var adjustDriftDirection: AdjustDriftDirection = .none
 
@@ -65,7 +65,10 @@ class DriftTracker {
             adjustDriftDirection = .down
         }
         // Don't adjust too often to allow the moving average above to adjust.
-        guard outputPresentationTimeStamp > latestAdjustDriftPresentationTimeStamp + 10.0 else {
+        if latestAdjustDriftPresentationTimeStamp == -1 {
+            latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
+        }
+        guard outputPresentationTimeStamp > latestAdjustDriftPresentationTimeStamp + 20.0 else {
             return nil
         }
         latestAdjustDriftPresentationTimeStamp = outputPresentationTimeStamp
