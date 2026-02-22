@@ -988,11 +988,8 @@ extension Model {
         _ sceneWidget: SettingsSceneWidget,
         _ widget: SettingsWidget
     ) -> SettingsSceneWidget {
-        if sceneWidget.layoutOverride {
-            return sceneWidget
-        }
         let resolved = sceneWidget.clone()
-        resolved.layout = widget.layout
+        resolved.layout = sceneWidget.effectiveLayout(widget: widget)
         return resolved
     }
 
