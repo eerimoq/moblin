@@ -24,9 +24,9 @@ struct ScoreboardEffectModularView: View {
     private func calculateMaxHistory() -> Int {
         var maxHistory = 0
         for indexPlusOne in 1 ... 5 {
-            let homeHas = getHistoricScore(team: config.team1, indexPlusOne: indexPlusOne) != nil
-            let awayHas = getHistoricScore(team: config.team2, indexPlusOne: indexPlusOne) != nil
-            if homeHas || awayHas {
+            let homeHas = getHistoricScore(team: config.team1, indexPlusOne: indexPlusOne) ?? ""
+            let awayHas = getHistoricScore(team: config.team2, indexPlusOne: indexPlusOne) ?? ""
+            if !homeHas.isEmpty || !awayHas.isEmpty {
                 maxHistory = indexPlusOne
             }
         }
@@ -76,7 +76,7 @@ struct ScoreboardEffectModularView: View {
             let height = CGFloat(modular.rowHeight)
             HStack(spacing: 0) {
                 teamName(team: modularTeam)
-                    .padding(.leading, 6)
+                    .padding(.leading, 8)
                     .padding(.trailing, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 possession(show: team.possession)
@@ -88,8 +88,8 @@ struct ScoreboardEffectModularView: View {
                         let otherValueInt = Int(otherValue) ?? -1
                         let weight: Font.Weight =
                             (indexPlusOne < currentPeriod && valueInt > otherValueInt && valueInt >= 0)
-                                ? .bold
-                                : .medium
+                                ? (modular.isBold ? .black : .bold)
+                                : (modular.isBold ? .bold : .regular)
                         if !value.isEmpty {
                             stat(
                                 value: value,
@@ -104,7 +104,7 @@ struct ScoreboardEffectModularView: View {
                                 fontSize: fontSize() * 0.9,
                                 width: histWidth,
                                 gray: true,
-                                weight: .medium
+                                weight: modular.isBold ? .bold : .regular
                             )
                         } else {
                             Color.clear.frame(width: histWidth)
@@ -153,21 +153,22 @@ struct ScoreboardEffectModularView: View {
                         let periodFull = config.periodFull()
                         if !periodFull.isEmpty {
                             Text(periodFull)
-                                .font(.system(size: fontSize() * 0.6, weight: .bold))
+                                .font(.system(size: fontSize() * 0.6))
                                 .minimumScaleFactor(0.1)
                         }
                         Text(config.global.timer)
-                            .font(.system(size: fontSize() * 0.9, weight: .bold))
+                            .font(.system(size: fontSize() * 0.9))
                             .monospacedDigit()
                             .minimumScaleFactor(0.1)
                     }
                     .frame(width: fontSize() * 3.5, height: teamRowFullHeight)
                 } else {
                     Text("-")
-                        .font(.system(size: fontSize(), weight: .bold))
+                        .font(.system(size: fontSize()))
                         .frame(height: teamRowFullHeight)
                 }
             }
+            .bold(modular.isBold)
             .background(.black)
             .foregroundStyle(.white)
             sideBySideTeam(
@@ -196,7 +197,7 @@ struct ScoreboardEffectModularView: View {
                     )
                 }
                 teamName(team: modularTeam)
-                    .padding(.leading, 3)
+                    .padding(.leading, 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 possession(show: team.possession)
                 if modular.layout == .stackedInline {
@@ -274,9 +275,10 @@ struct ScoreboardEffectModularView: View {
         fontSize: CGFloat,
         width: CGFloat,
         gray: Bool,
-        weight: Font.Weight = .bold
+        weight: Font.Weight? = nil
     ) -> some View {
         if !value.isEmpty {
+            let weight = weight ?? (modular.isBold ? .black : .bold)
             ZStack {
                 if gray {
                     Color.black.opacity(0.25)
@@ -284,7 +286,8 @@ struct ScoreboardEffectModularView: View {
                 if let label, !label.isEmpty {
                     VStack(spacing: -2) {
                         Text(label)
-                            .font(.system(size: fontSize * 0.25, weight: .bold))
+                            .font(.system(size: fontSize * 0.25))
+                            .bold(modular.isBold)
                             .offset(x: 0, y: fontSize * 0.04)
                         Text(value)
                             .font(.system(size: fontSize * 0.75, weight: weight))
@@ -355,7 +358,8 @@ struct ScoreboardEffectModularView: View {
                             Text(value)
                                 .monospacedDigit()
                         }
-                        .font(.system(size: fontSize(), weight: .bold))
+                        .font(.system(size: fontSize()))
+                        .bold(modular.isBold)
                         .minimumScaleFactor(0.3)
                     }
                     if !alignRight {
@@ -371,26 +375,28 @@ struct ScoreboardEffectModularView: View {
 
     @ViewBuilder
     private func infoBox() -> some View {
-        let stats = config.infoBoxStats()
-        if modular.showGlobalStatsBlock && !stats.isEmpty {
-            let rowHeight = CGFloat(modular.rowHeight)
-            let fullHeight = rowHeight + (modular.showMoreStats ? rowHeight * 0.6 : 0)
-            let height = fullHeight * 2
-            VStack(spacing: 0) {
-                ForEach(0 ..< stats.count, id: \.self) { index in
-                    HCenter {
-                        Text(stats[index])
-                            .font(.system(size: modular.fontSize()))
-                            .bold(modular.isBold)
-                            .monospacedDigit()
-                            .minimumScaleFactor(0.1)
-                            .lineLimit(1)
+        if modular.showGlobalStatsBlock {
+            let stats = config.infoBoxStats()
+            if !stats.isEmpty {
+                let rowHeight = CGFloat(modular.rowHeight)
+                let fullHeight = rowHeight + (modular.showMoreStats ? rowHeight * 0.6 : 0)
+                let height = fullHeight * 2
+                VStack(spacing: 0) {
+                    ForEach(0 ..< stats.count, id: \.self) { index in
+                        HCenter {
+                            Text(stats[index])
+                                .font(.system(size: modular.fontSize()))
+                                .bold(modular.isBold)
+                                .monospacedDigit()
+                                .minimumScaleFactor(0.1)
+                                .lineLimit(1)
+                        }
                     }
                 }
+                .frame(height: height)
+                .background(.black)
+                .foregroundStyle(.white)
             }
-            .frame(height: height)
-            .background(.black)
-            .foregroundStyle(.white)
         }
     }
 
