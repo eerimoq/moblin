@@ -556,28 +556,47 @@ struct SettingsHttpHeader: Codable {
     var value: String = ""
 }
 
+enum SettingsStreamWhipHttpTransport: Codable, CaseIterable {
+    case standard
+    case remoteControl
+
+    func toString() -> String {
+        switch self {
+        case .standard:
+            return String(localized: "Standard")
+        case .remoteControl:
+            return String(localized: "Remote control")
+        }
+    }
+}
+
 class SettingsStreamWhip: Codable, ObservableObject {
     @Published var headers: [SettingsHttpHeader] = []
+    @Published var httpTransport: SettingsStreamWhipHttpTransport = .standard
 
     init() {}
 
     enum CodingKeys: CodingKey {
-        case headers
+        case headers,
+             httpTransport
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.headers, headers)
+        try container.encode(.httpTransport, httpTransport)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         headers = container.decode(.headers, [SettingsHttpHeader].self, [])
+        httpTransport = container.decode(.httpTransport, SettingsStreamWhipHttpTransport.self, .standard)
     }
 
     func clone() -> SettingsStreamWhip {
         let new = SettingsStreamWhip()
         new.headers = headers
+        new.httpTransport = httpTransport
         return new
     }
 }

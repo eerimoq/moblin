@@ -995,21 +995,29 @@ extension Model: MediaDelegate {
     }
 
     func mediaOnWhipPerform(request: URLRequest,
-                            queue _: DispatchQueue,
+                            queue: DispatchQueue,
                             completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         DispatchQueue.main.async {
-            guard let remoteControlAssistant = self.remoteControlAssistant else {
-                completion?(nil, nil, "")
-                return
+            switch self.stream.whip.httpTransport {
+            case .standard:
+                httpRequest(request: request, queue: queue, completion: completion)
+            case .remoteControl:
+                guard let remoteControlAssistant = self.remoteControlAssistant,
+                      let url = request.url,
+                      let httpMethod = request.httpMethod
+                else {
+                    completion?(nil, nil, "")
+                    return
+                }
+                remoteControlAssistant.whipPerform(url: url.absoluteString,
+                                                   method: httpMethod,
+                                                   headers: request.allHTTPHeaderFields?.map { name, value in
+                                                       SettingsHttpHeader(name: name, value: value)
+                                                   } ?? [],
+                                                   body: request.httpBody ?? Data(),
+                                                   completion: completion)
             }
-            remoteControlAssistant.whipPerform(url: request.url!.absoluteString,
-                                               method: request.httpMethod!,
-                                               headers: request.allHTTPHeaderFields?.map { name, value in
-                                                   SettingsHttpHeader(name: name, value: value)
-                                               } ?? [],
-                                               body: request.httpBody ?? Data(),
-                                               completion: completion)
         }
     }
 }

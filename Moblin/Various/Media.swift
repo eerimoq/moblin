@@ -1241,10 +1241,6 @@ extension Media: WhipStreamDelegate {
                            queue: DispatchQueue,
                            completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
     {
-        if true {
-            httpRequest(request: request, queue: queue, completion: completion)
-        } else {
-            delegate?.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
-        }
+        delegate?.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
     }
 }

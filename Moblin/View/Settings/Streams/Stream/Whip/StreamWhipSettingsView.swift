@@ -34,6 +34,30 @@ struct StreamWhipSettingsView: View {
                                        sensitive: true)
                     .disabled(stream.enabled && model.isLive)
             }
+            Section {
+                Picker(selection: $whip.httpTransport) {
+                    ForEach(SettingsStreamWhipHttpTransport.allCases, id: \.self) {
+                        Text($0.toString())
+                    }
+                } label: {
+                    Text("HTTP transport")
+                }
+                .disabled(stream.enabled && model.isLive)
+                .onChange(of: whip.httpTransport) { _ in
+                    model.reloadStreamIfEnabled(stream: stream)
+                }
+            } footer: {
+                VStack(alignment: .leading) {
+                    Text("Select \(SettingsStreamWhipHttpTransport.standard.toString()) to use standard WHIP.")
+                    Text("")
+                    Text("""
+                         Select \(SettingsStreamWhipHttpTransport.remoteControl.toString()) to exchange \
+                         connection establishment information via the remote control. Configure this device \
+                         as remote control assistant, and the device you are streaming to as remote control \
+                         streamer.
+                         """)
+                }
+            }
         }
         .navigationTitle("WHIP")
     }
