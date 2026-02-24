@@ -71,3 +71,21 @@ struct RemoteControlWebShortcutView: View {
         }
     }
 }
+
+struct RemoteControlAssistantShortcutView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                RemoteControlStreamersView(
+                    model: model,
+                    remoteControlSettings: model.database.remoteControl
+                )
+            }
+            .navigationTitle("Remote control assistant")
+        } label: {
+            Label("Remote control assistant", systemImage: "appletvremote.gen1")
+        }
+    }
+}

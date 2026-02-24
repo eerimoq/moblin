@@ -48,14 +48,22 @@ struct StreamWhipSettingsView: View {
                 }
             } footer: {
                 VStack(alignment: .leading) {
-                    Text("Select \(SettingsStreamWhipHttpTransport.standard.toString()) to use standard WHIP.")
+                    Text("""
+                    Select \(SettingsStreamWhipHttpTransport.standard.toString()) to use \
+                    standard WHIP.
+                    """)
                     Text("")
                     Text("""
-                         Select \(SettingsStreamWhipHttpTransport.remoteControl.toString()) to exchange \
-                         connection establishment information via the remote control. Configure this device \
-                         as remote control assistant, and the device you are streaming to as remote control \
-                         streamer.
-                         """)
+                    Select \(SettingsStreamWhipHttpTransport.remoteControl.toString()) to exchange \
+                    connection establishment information via the remote control. Configure this device \
+                    as remote control assistant, and the device you are streaming to as remote control \
+                    streamer.
+                    """)
+                }
+            }
+            if whip.httpTransport == .remoteControl {
+                ShortcutSectionView {
+                    RemoteControlAssistantShortcutView(model: model)
                 }
             }
         }

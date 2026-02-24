@@ -84,16 +84,10 @@ class WhipServer {
             onCompleted(nil)
             return
         }
-        let client = WhipServerClient(streamId: stream.id,
-                                      latency: Double(stream.latency) / 1000,
-                                      iceServers: ["stun:stun.l.google.com:19302"],
-                                      delegate: self)
-        let streamId = client.streamId
-        clients[streamId] = client
-        client.handleOffer(sdpOffer: sdpOffer) { [weak self] sdpAnswer in
+        setupClient(stream: stream, sdpOffer: sdpOffer) { [weak self] sdpAnswer in
             guard let sdpAnswer else {
                 onCompleted(nil)
-                self?.clients.removeValue(forKey: streamId)
+                self?.clients.removeValue(forKey: stream.id)
                 return
             }
             onCompleted(sdpAnswer)
@@ -112,25 +106,32 @@ class WhipServer {
             response.send(status: .badRequest)
             return
         }
-        let client = WhipServerClient(streamId: stream.id,
-                                      latency: stream.latencySeconds(),
-                                      iceServers: ["stun:stun.l.google.com:19302"],
-                                      delegate: self)
-        let streamId = client.streamId
-        clients[streamId] = client
-        client.handleOffer(sdpOffer: sdpOffer) { [weak self] sdpAnswer in
+        setupClient(stream: stream, sdpOffer: sdpOffer) { [weak self] sdpAnswer in
             guard let sdpAnswer else {
                 response.send(status: .notFound)
-                self?.clients.removeValue(forKey: streamId)
+                self?.clients.removeValue(forKey: stream.id)
                 return
             }
             response.send(
                 data: sdpAnswer.utf8Data,
                 status: .created,
                 contentType: "application/sdp",
-                headers: [.init(name: "Location", value: "/whip/session/\(streamId.uuidString)")]
+                headers: [.init(name: "Location", value: "/whip/session/\(stream.id.uuidString)")]
             )
         }
+    }
+
+    private func setupClient(stream: SettingsWhipServerStream,
+                             sdpOffer: String,
+                             completion: @escaping (String?) -> Void)
+    {
+        let client = WhipServerClient(streamId: stream.id,
+                                      latency: stream.latencySeconds(),
+                                      iceServers: ["stun:stun.l.google.com:19302"],
+                                      delegate: self)
+        let streamId = client.streamId
+        clients[streamId] = client
+        client.handleOffer(sdpOffer: sdpOffer, completion: completion)
     }
 
     private func handleWhipSession(request: HttpServerRequest, response: HttpServerResponse) {
