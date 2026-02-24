@@ -347,16 +347,20 @@ class WatchModel: NSObject, ObservableObject {
         handleStopWorkout()
         let configuration = HKWorkoutConfiguration()
         var activityType: HKWorkoutActivityType
+        let addStepCount: Bool
         switch message.type {
         case .walking:
             activityType = .walking
             preview.workoutType = "Walking"
+            addStepCount = true
         case .running:
             activityType = .running
             preview.workoutType = "Running"
+            addStepCount = true
         case .cycling:
             activityType = .cycling
             preview.workoutType = "Cycling"
+            addStepCount = false
         }
         configuration.activityType = activityType
         configuration.locationType = .outdoor
@@ -368,10 +372,17 @@ class WatchModel: NSObject, ObservableObject {
         guard let workoutBuilder else {
             return
         }
-        workoutBuilder.dataSource = HKLiveWorkoutDataSource(
+        let dataSource = HKLiveWorkoutDataSource(
             healthStore: healthStore,
             workoutConfiguration: configuration
         )
+        if addStepCount {
+            dataSource.enableCollection(
+                for: HKQuantityType.quantityType(forIdentifier: .stepCount)!,
+                predicate: nil
+            )
+        }
+        workoutBuilder.dataSource = dataSource
         workoutSession.delegate = self
         workoutSession.startActivity(with: .now)
         workoutBuilder.delegate = self
