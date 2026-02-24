@@ -27,11 +27,7 @@ private enum BlinkTalkState: Int {
 }
 
 private class PngTuberImage: Decodable {
-    // var animSpeed: Int
-    // var clipped: Bool
     let costumeLayers: [Int]
-    // var drag: Int
-    // var frames: Int
     // periphery:ignore
     let identification: Int
     // var ignoreBounce: Bool
@@ -40,22 +36,10 @@ private class PngTuberImage: Decodable {
     let offset: PngCoordinate
     // periphery:ignore
     let parentId: Int?
-    // var path: String
-    // periphery:ignore
     let pos: PngCoordinate
-    // var rLimitMax: Int
-    // var rLimitMin: Int
-    // var rotDrag: Int
     let showBlink: BlinkTalkState?
     let showTalk: BlinkTalkState?
-    // var stretchAmount: Float
-    // var toggle: String
-    // var type: PNGType
-    // var xAmp: Int
-    // var xFrq: Float
-    // var yAmp: Int
-    // var yFrq: Float
-    let zindex: Int
+    let zIndex: Int
 
     enum CodingKeys: CodingKey {
         case costumeLayers,
@@ -89,7 +73,7 @@ private class PngTuberImage: Decodable {
         pos = try container.decode(PngCoordinate.self, forKey: .pos)
         showBlink = try BlinkTalkState(rawValue: container.decode(Int.self, forKey: .showBlink))
         showTalk = try BlinkTalkState(rawValue: container.decode(Int.self, forKey: .showTalk))
-        zindex = try container.decode(Int.self, forKey: .zindex)
+        zIndex = try container.decode(Int.self, forKey: .zindex)
     }
 }
 
@@ -167,17 +151,25 @@ final class PngTuberEffect: VideoEffect {
     private func shouldShowImage(image: PngTuberImage) -> Bool {
         switch image.showBlink {
         case .closed:
-            return !isLeftEyeOpen
+            if isLeftEyeOpen {
+                return false
+            }
         case .open:
-            return isLeftEyeOpen
+            if !isLeftEyeOpen {
+                return false
+            }
         default:
             break
         }
         switch image.showTalk {
         case .closed:
-            return !isMouthOpen
+            if isMouthOpen {
+                return false
+            }
         case .open:
-            return isMouthOpen
+            if !isMouthOpen {
+                return false
+            }
         default:
             break
         }
@@ -198,7 +190,7 @@ final class PngTuberEffect: VideoEffect {
             return
         }
         currentCostumeImages.removeAll()
-        for image in model.images.sorted(by: { $0.zindex < $1.zindex }) {
+        for image in model.images.sorted(by: { $0.zIndex < $1.zIndex }) {
             guard image.costumeLayers[number - 1] == 1 else {
                 continue
             }
