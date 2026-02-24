@@ -41,9 +41,7 @@ private struct YouTubeView: View {
 
     var body: some View {
         Section {
-            if debug.youTubeAuth {
-                StreamYouTubeScheduleStreamView(model: model, stream: stream)
-            }
+            StreamYouTubeScheduleStreamView(model: model, stream: stream)
         } header: {
             YouTubeLogoAndNameView(handle: stream.youTubeHandle)
         }

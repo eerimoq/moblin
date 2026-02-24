@@ -44,7 +44,6 @@ class SettingsDebug: Codable, ObservableObject {
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = builtinAudioAndVideoDelayDefault
     var builtinAudioAndVideoDelay70msMigrated: Bool = false
-    @Published var youTubeAuth: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -80,8 +79,7 @@ class SettingsDebug: Codable, ObservableObject {
              builtinAudioAndVideoDelay,
              overrideSceneMic,
              autoLowPowerMode,
-             builtinAudioAndVideoDelay70msMigrated,
-             youTubeAuth
+             builtinAudioAndVideoDelay70msMigrated
     }
 
     func encode(to encoder: Encoder) throws {
@@ -113,7 +111,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
         try container.encode(.builtinAudioAndVideoDelay70msMigrated, builtinAudioAndVideoDelay70msMigrated)
-        try container.encode(.youTubeAuth, youTubeAuth)
     }
 
     init() {}
@@ -159,6 +156,5 @@ class SettingsDebug: Codable, ObservableObject {
             builtinAudioAndVideoDelay = Self.builtinAudioAndVideoDelayDefault
         }
         builtinAudioAndVideoDelay70msMigrated = true
-        youTubeAuth = container.decode(.youTubeAuth, Bool.self, false)
     }
 }

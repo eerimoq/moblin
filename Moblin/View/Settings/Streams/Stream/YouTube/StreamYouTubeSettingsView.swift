@@ -382,23 +382,21 @@ struct StreamYouTubeSettingsView: View {
 
     var body: some View {
         Form {
-            if debug.youTubeAuth {
-                Section {
-                    if stream.youTubeAuthState == nil {
-                        TextButtonView("Login") {
-                            model.youTubeSignIn(stream: stream)
-                        }
-                    } else {
-                        TextButtonView("Logout") {
-                            model.youTubeSignOut(stream: stream)
-                        }
+            Section {
+                if stream.youTubeAuthState == nil {
+                    TextButtonView("Login") {
+                        model.youTubeSignIn(stream: stream)
+                    }
+                } else {
+                    TextButtonView("Logout") {
+                        model.youTubeSignOut(stream: stream)
                     }
                 }
-                Section {
-                    StreamYouTubeScheduleStreamView(model: model, stream: stream)
-                } footer: {
-                    Text("Schedule a stream before going live.")
-                }
+            }
+            Section {
+                StreamYouTubeScheduleStreamView(model: model, stream: stream)
+            } footer: {
+                Text("Schedule a stream before going live.")
             }
             Section {
                 TextEditNavigationView(
