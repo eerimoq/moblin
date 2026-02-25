@@ -472,13 +472,20 @@ enum SettingsAlignment: String, Codable, CaseIterable {
     case bottomRight = "BottomRight"
     case topCenter = "TopCenter"
     case bottomCenter = "BottomCenter"
+    case leftCenter = "LeftCenter"
+    case rightCenter = "RightCenter"
+    case center = "Center"
 
     func isLeft() -> Bool {
-        return self == .topLeft || self == .bottomLeft
+        return self == .topLeft || self == .bottomLeft || self == .leftCenter
     }
 
-    func isCenter() -> Bool {
-        return self == .topCenter || self == .bottomCenter
+    func isHorizontalCenter() -> Bool {
+        return self == .topCenter || self == .bottomCenter || self == .center
+    }
+
+    func isVerticalCenter() -> Bool {
+        return self == .leftCenter || self == .rightCenter || self == .center
     }
 
     func isTop() -> Bool {
@@ -486,7 +493,7 @@ enum SettingsAlignment: String, Codable, CaseIterable {
     }
 
     func mirrorPositionHorizontally() -> Bool {
-        return self == .topRight || self == .bottomRight
+        return self == .topRight || self == .bottomRight || self == .rightCenter
     }
 
     func mirrorPositionVertically() -> Bool {
@@ -507,6 +514,12 @@ enum SettingsAlignment: String, Codable, CaseIterable {
             return String(localized: "Top center")
         case .bottomCenter:
             return String(localized: "Bottom center")
+        case .leftCenter:
+            return String(localized: "Left center")
+        case .rightCenter:
+            return String(localized: "Right center")
+        case .center:
+            return String(localized: "Center")
         }
     }
 }
