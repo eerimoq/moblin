@@ -48,6 +48,25 @@ struct WidgetPngTuberPickerView: View {
     }
 }
 
+struct WidgetSensitivityView: View {
+    @Binding var sensitivity: SettingsSensitivity
+
+    var body: some View {
+        Section {
+            HStack {
+                Text("Mouth")
+                Slider(value: $sensitivity.mouth, in: 0.05 ... 3)
+            }
+            HStack {
+                Text("Eyes")
+                Slider(value: $sensitivity.eyes, in: 0.05 ... 5)
+            }
+        } header: {
+            Text("Sensitivity")
+        }
+    }
+}
+
 struct WidgetPngTuberSettingsView: View {
     let model: Model
     let widget: SettingsWidget
@@ -59,7 +78,8 @@ struct WidgetPngTuberSettingsView: View {
     }
 
     private func setEffectSettings() {
-        model.getPngTuberEffect(id: widget.id)?.setSettings(mirror: pngTuber.mirror)
+        model.getPngTuberEffect(id: widget.id)?.setSettings(mirror: pngTuber.mirror,
+                                                            sensitivity: pngTuber.sensitivity)
     }
 
     var body: some View {
@@ -84,6 +104,10 @@ struct WidgetPngTuberSettingsView: View {
         WidgetPngTuberPickerView(model: model, pngTuber: pngTuber) {
             model.resetSelectedScene(changeScene: false)
         }
+        WidgetSensitivityView(sensitivity: $pngTuber.sensitivity)
+            .onChange(of: pngTuber.sensitivity) { _ in
+                setEffectSettings()
+            }
         Section {
             Toggle(isOn: $pngTuber.mirror) {
                 Text("Mirror")

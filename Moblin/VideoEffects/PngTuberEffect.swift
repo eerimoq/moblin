@@ -93,6 +93,7 @@ final class PngTuberEffect: VideoEffect {
     private var isMouthOpen = false
     private var isLeftEyeOpen = true
     private var currentCostumeImages: [PngTuberImage] = []
+    private var sensitivity = SettingsSensitivity()
 
     init(model: URL, costume: Int) {
         do {
@@ -119,9 +120,10 @@ final class PngTuberEffect: VideoEffect {
         }
     }
 
-    func setSettings(mirror: Bool) {
+    func setSettings(mirror: Bool, sensitivity: SettingsSensitivity) {
         processorPipelineQueue.async {
             self.mirror = mirror
+            self.sensitivity = sensitivity
         }
     }
 
@@ -180,8 +182,12 @@ final class PngTuberEffect: VideoEffect {
         if let detection = info.faceDetections(videoSourceId)?.first,
            let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size)
         {
-            isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle) > 0.15
-            isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1) > 0.1
+            isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle,
+                                                sensitivity: sensitivity.mouth) > 0.15
+            isLeftEyeOpen = -(detection.isLeftEyeOpen(
+                rotationAngle: rotationAngle,
+                sensitivity: sensitivity.eyes
+            ) - 1) > 0.1
         }
     }
 

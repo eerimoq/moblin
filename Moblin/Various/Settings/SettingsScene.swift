@@ -1520,6 +1520,11 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
     }
 }
 
+struct SettingsSensitivity: Codable, Equatable {
+    var mouth: Double = 1
+    var eyes: Double = 1
+}
+
 class SettingsWidgetVTuber: Codable, ObservableObject {
     var id: UUID = .init()
     @Published var videoSource: SettingsVideoSource = .init()
@@ -1527,6 +1532,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     @Published var cameraFieldOfView: Double = 18
     @Published var modelName: String = ""
     @Published var mirror: Bool = false
+    @Published var sensitivity: SettingsSensitivity = .init()
 
     enum CodingKeys: CodingKey {
         case id,
@@ -1544,7 +1550,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
              cameraPositionY,
              cameraFieldOfView,
              modelName,
-             mirror
+             mirror,
+             sensitivity
     }
 
     init() {}
@@ -1567,6 +1574,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.cameraFieldOfView, cameraFieldOfView)
         try container.encode(.modelName, modelName)
         try container.encode(.mirror, mirror)
+        try container.encode(.sensitivity, sensitivity)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1587,6 +1595,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         cameraFieldOfView = container.decode(.cameraFieldOfView, Double.self, 18)
         modelName = container.decode(.modelName, String.self, "")
         mirror = container.decode(.mirror, Bool.self, false)
+        sensitivity = container.decode(.sensitivity, SettingsSensitivity.self, .init())
     }
 
     func toCameraId() -> SettingsCameraId {
@@ -1603,6 +1612,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     @Published var videoSource: SettingsVideoSource = .init()
     @Published var modelName: String = ""
     @Published var mirror: Bool = false
+    @Published var sensitivity: SettingsSensitivity = .init()
 
     enum CodingKeys: CodingKey {
         case id,
@@ -1618,7 +1628,8 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
              externalCameraId,
              externalCameraName,
              modelName,
-             mirror
+             mirror,
+             sensitivity
     }
 
     init() {}
@@ -1638,6 +1649,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         try container.encode(.externalCameraName, videoSource.externalCameraName)
         try container.encode(.modelName, modelName)
         try container.encode(.mirror, mirror)
+        try container.encode(.sensitivity, sensitivity)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1656,6 +1668,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
         modelName = container.decode(.modelName, String.self, "")
         mirror = container.decode(.mirror, Bool.self, false)
+        sensitivity = container.decode(.sensitivity, SettingsSensitivity.self, .init())
     }
 
     func toCameraId() -> SettingsCameraId {

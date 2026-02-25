@@ -57,28 +57,30 @@ extension VNFaceObservation {
         }
     }
 
-    func isMouthOpen(rotationAngle: Double) -> Double {
+    func isMouthOpen(rotationAngle: Double, sensitivity: Double) -> Double {
         if let points = landmarks?.innerLips?.normalizedPoints {
             let points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
             if let boundingBox = calcBoundingBox(points: points) {
-                return min(boundingBox.height * 6, 1)
+                return min(boundingBox.height * sensitivity * 6, 1)
             }
         }
         return 0.0
     }
 
-    func isLeftEyeOpen(rotationAngle: Double) -> Double {
-        return isEyeOpen(eye: landmarks?.leftEye, rotationAngle: rotationAngle)
+    func isLeftEyeOpen(rotationAngle: Double, sensitivity: Double) -> Double {
+        return isEyeOpen(eye: landmarks?.leftEye, rotationAngle: rotationAngle, sensitivity: sensitivity)
     }
 
     //     1   2
     // 0           3
     //     5   4
-    private func isEyeOpen(eye: VNFaceLandmarkRegion2D?, rotationAngle: Double) -> Double {
+    private func isEyeOpen(eye: VNFaceLandmarkRegion2D?, rotationAngle: Double,
+                           sensitivity: Double) -> Double
+    {
         if let points = eye?.normalizedPoints, points.count == 6 {
             let points = rotateFace(allPoints: points, rotationAngle: -rotationAngle)
             let height = points[1].y - points[5].y
-            return height > 0.015 ? 1.0 : 0.0
+            return height * sensitivity > 0.015 ? 1.0 : 0.0
         }
         return 1.0
     }

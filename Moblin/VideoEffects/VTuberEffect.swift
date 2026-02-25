@@ -18,6 +18,7 @@ final class VTuberEffect: VideoEffect {
     private var sceneWidget: SettingsSceneWidget?
     private var renderedImagePresentationTimeStamp = 0.0
     private var renderedImage: CIImage?
+    private var sensitivity = SettingsSensitivity()
 
     init(vrm: URL, cameraFieldOfView: Double, cameraPositionY: Double) {
         super.init()
@@ -57,11 +58,16 @@ final class VTuberEffect: VideoEffect {
         }
     }
 
-    func setSettings(cameraFieldOfView: Double, cameraPositionY: Double, mirror: Bool) {
+    func setSettings(cameraFieldOfView: Double,
+                     cameraPositionY: Double,
+                     mirror: Bool,
+                     sensitivity: SettingsSensitivity)
+    {
         processorPipelineQueue.async {
             self.cameraNode?.camera?.fieldOfView = cameraFieldOfView
             self.cameraNode?.position = SCNVector3(0, cameraPositionY, -1.8)
             self.mirror = mirror
+            self.sensitivity = sensitivity
         }
     }
 
@@ -100,9 +106,15 @@ final class VTuberEffect: VideoEffect {
            let rotationAngle = detection.calcFaceAngle(imageSize: image.extent.size),
            let sideAngle = detection.calcFaceAngleSide()
         {
-            let isMouthOpen = detection.isMouthOpen(rotationAngle: rotationAngle)
+            let isMouthOpen = detection.isMouthOpen(
+                rotationAngle: rotationAngle,
+                sensitivity: sensitivity.mouth
+            )
             node.setBlendShape(value: isMouthOpen, for: .preset(.a))
-            let isLeftEyeOpen = -(detection.isLeftEyeOpen(rotationAngle: rotationAngle) - 1)
+            let isLeftEyeOpen = -(detection.isLeftEyeOpen(
+                rotationAngle: rotationAngle,
+                sensitivity: sensitivity.eyes
+            ) - 1)
             node.setBlendShape(value: isLeftEyeOpen, for: .preset(.blink))
             latestNeckYAngle = sideAngle * 0.8
             latestNeckZAngle = rotationAngle * 0.8

@@ -1172,7 +1172,8 @@ extension Model {
         effect.setSettings(
             cameraFieldOfView: widget.vTuber.cameraFieldOfView,
             cameraPositionY: widget.vTuber.cameraPositionY,
-            mirror: widget.vTuber.mirror
+            mirror: widget.vTuber.mirror,
+            sensitivity: widget.vTuber.sensitivity
         )
         effects.append(effect)
     }
@@ -1189,7 +1190,7 @@ extension Model {
             effect.setVideoSourceId(videoSourceId: videoSourceId)
         }
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
-        effect.setSettings(mirror: widget.pngTuber.mirror)
+        effect.setSettings(mirror: widget.pngTuber.mirror, sensitivity: widget.pngTuber.sensitivity)
         effects.append(effect)
     }
 

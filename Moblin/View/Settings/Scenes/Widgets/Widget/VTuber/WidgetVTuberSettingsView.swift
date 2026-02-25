@@ -61,7 +61,8 @@ struct WidgetVTuberSettingsView: View {
             .setSettings(
                 cameraFieldOfView: vTuber.cameraFieldOfView,
                 cameraPositionY: vTuber.cameraPositionY,
-                mirror: vTuber.mirror
+                mirror: vTuber.mirror,
+                sensitivity: vTuber.sensitivity
             )
     }
 
@@ -121,5 +122,9 @@ struct WidgetVTuberSettingsView: View {
         } header: {
             Text("Camera")
         }
+        WidgetSensitivityView(sensitivity: $vTuber.sensitivity)
+            .onChange(of: vTuber.sensitivity) { _ in
+                setEffectSettings()
+            }
     }
 }
