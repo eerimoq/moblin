@@ -23,17 +23,19 @@ struct WidgetLayoutView: View {
                             mirror: layout.alignment.mirrorPositionHorizontally()
                         )
                     }
-                    PositionEditView(
-                        number: $layout.y,
-                        value: $layout.yString,
-                        onSubmit: {
-                            model.sceneUpdated()
-                        },
-                        numericInput: $numericInput,
-                        incrementImageName: "arrow.down.circle",
-                        decrementImageName: "arrow.up.circle",
-                        mirror: layout.alignment.mirrorPositionVertically()
-                    )
+                    if !layout.alignment.isVerticalCenter() {
+                        PositionEditView(
+                            number: $layout.y,
+                            value: $layout.yString,
+                            onSubmit: {
+                                model.sceneUpdated()
+                            },
+                            numericInput: $numericInput,
+                            incrementImageName: "arrow.down.circle",
+                            decrementImageName: "arrow.up.circle",
+                            mirror: layout.alignment.mirrorPositionVertically()
+                        )
+                    }
                 }
                 if widget.hasSize() {
                     SizeEditView(
