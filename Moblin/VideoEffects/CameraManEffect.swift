@@ -1,10 +1,11 @@
 import CoreImage
 
 final class CameraManEffect: VideoEffect {
+    static let movementDuration: Double = 3
+    static let stillDuration: Double = 1
+
     private var startTime: Double?
     private let minScale: Double = 0.92
-    private let movementDuration: Double = 3
-    private let stillDuration: Double = 1
 
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         let width = image.extent.width
@@ -22,11 +23,11 @@ final class CameraManEffect: VideoEffect {
             .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
     }
 
-    func cropRect(width: CGFloat, height: CGFloat, elapsed: Double) -> CGRect {
-        let segmentDuration = movementDuration + stillDuration
+    internal func cropRect(width: CGFloat, height: CGFloat, elapsed: Double) -> CGRect {
+        let segmentDuration = Self.movementDuration + Self.stillDuration
         let segment = floor(elapsed / segmentDuration)
         let segmentElapsed = elapsed.truncatingRemainder(dividingBy: segmentDuration)
-        let progress = min(segmentElapsed / movementDuration, 1)
+        let progress = min(segmentElapsed / Self.movementDuration, 1)
         let easedProgress = smoothStep(progress)
         let fromX = position(segment, offset: 0)
         let fromY = position(segment, offset: 1)
