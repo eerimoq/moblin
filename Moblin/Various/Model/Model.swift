@@ -2113,11 +2113,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setCameraManQuickButton(on: Bool) {
         cameraManEffect = CameraManEffect()
+        cameraManEffect.setSettings(moveVertically: database.debug.cameraManMoveVertically,
+                                    speed: database.debug.cameraManSpeed)
         setFilterQuickButton(type: .cameraMan, on: on)
     }
 
     func toggleCameraManQuickButton() {
         cameraManEffect = CameraManEffect()
+        cameraManEffect.setSettings(moveVertically: database.debug.cameraManMoveVertically,
+                                    speed: database.debug.cameraManSpeed)
         toggleFilterQuickButton(type: .cameraMan)
     }
 

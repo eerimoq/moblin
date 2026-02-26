@@ -44,6 +44,8 @@ class SettingsDebug: Codable, ObservableObject {
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = builtinAudioAndVideoDelayDefault
     var builtinAudioAndVideoDelay70msMigrated: Bool = false
+    @Published var cameraManMoveVertically: Bool = false
+    @Published var cameraManSpeed: Double = 1.0
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -79,7 +81,9 @@ class SettingsDebug: Codable, ObservableObject {
              builtinAudioAndVideoDelay,
              overrideSceneMic,
              autoLowPowerMode,
-             builtinAudioAndVideoDelay70msMigrated
+             builtinAudioAndVideoDelay70msMigrated,
+             cameraManMoveVertically,
+             cameraManSpeed
     }
 
     func encode(to encoder: Encoder) throws {
@@ -111,6 +115,8 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
         try container.encode(.builtinAudioAndVideoDelay70msMigrated, builtinAudioAndVideoDelay70msMigrated)
+        try container.encode(.cameraManMoveVertically, cameraManMoveVertically)
+        try container.encode(.cameraManSpeed, cameraManSpeed)
     }
 
     init() {}
@@ -156,5 +162,7 @@ class SettingsDebug: Codable, ObservableObject {
             builtinAudioAndVideoDelay = Self.builtinAudioAndVideoDelayDefault
         }
         builtinAudioAndVideoDelay70msMigrated = true
+        cameraManMoveVertically = container.decode(.cameraManMoveVertically, Bool.self, false)
+        cameraManSpeed = container.decode(.cameraManSpeed, Double.self, 1.0)
     }
 }

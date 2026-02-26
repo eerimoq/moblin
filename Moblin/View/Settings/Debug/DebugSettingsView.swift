@@ -112,6 +112,22 @@ struct DebugSettingsView: View {
             } header: {
                 Text("Experimental")
             }
+            Section {
+                Toggle("Vertical movement", isOn: $debug.cameraManMoveVertically)
+                    .onChange(of: debug.cameraManMoveVertically) { _ in
+                        model.cameraManEffect.setSettings(moveVertically: debug.cameraManMoveVertically,
+                                                          speed: debug.cameraManSpeed)
+                    }
+                HStack {
+                    Text("Speed")
+                    Slider(value: $debug.cameraManSpeed, in: 0.2 ... 8) { _ in
+                        model.cameraManEffect.setSettings(moveVertically: debug.cameraManMoveVertically,
+                                                          speed: debug.cameraManSpeed)
+                    }
+                }
+            } header: {
+                Text("Camera man")
+            }
         }
         .navigationTitle("Debug")
     }
