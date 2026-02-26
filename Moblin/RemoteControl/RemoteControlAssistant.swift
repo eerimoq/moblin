@@ -233,6 +233,10 @@ class RemoteControlAssistant: NSObject {
         }
     }
 
+    func setFilter(filter: RemoteControlFilter, on: Bool) {
+        performRequestNoResponseData(data: .setFilter(filter: filter, on: on), onSuccess: {})
+    }
+
     private func tryNextTwitchEventSubNotification() {
         guard !twitchEventSubNotiticationWaitForResponse else {
             return

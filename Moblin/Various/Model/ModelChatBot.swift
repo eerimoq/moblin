@@ -607,35 +607,29 @@ extension Model {
             guard let filter = command.popFirst(), let state = command.popFirst() else {
                 return
             }
-            let type: SettingsQuickButtonType
+            let on = state == "on"
             switch filter {
             case "movie":
-                type = .movie
+                self.setFilterQuickButton(type: .movie, on: on)
             case "grayscale":
-                type = .grayScale
+                self.setFilterQuickButton(type: .grayScale, on: on)
             case "sepia":
-                type = .sepia
+                self.setFilterQuickButton(type: .sepia, on: on)
             case "triple":
-                type = .triple
+                self.setFilterQuickButton(type: .triple, on: on)
             case "twin":
-                type = .twin
+                self.setFilterQuickButton(type: .twin, on: on)
             case "pixellate":
-                type = .pixellate
-                self.streamOverlay.showingPixellate = state == "on"
+                self.setPixellateQuickButton(on: on)
             case "4:3":
-                type = .fourThree
+                self.setFilterQuickButton(type: .fourThree, on: on)
             case "whirlpool":
-                type = .whirlpool
-                self.streamOverlay.showingWhirlpool = state == "on"
+                self.setWhirlpoolQuickButton(on: on)
             case "pinch":
-                type = .pinch
-                self.streamOverlay.showingPinch = state == "on"
+                self.setPinchQuickButton(on: on)
             default:
-                return
+                break
             }
-            self.setQuickButtonState(type: type, isOn: state == "on")
-            self.sceneUpdated(updateRemoteScene: false)
-            self.updateQuickButtonStates()
         }
     }
 

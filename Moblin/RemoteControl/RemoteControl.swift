@@ -43,6 +43,7 @@ enum RemoteControlRequest: Codable {
     case setScoreboardDuration(minutes: Int)
     case setScoreboardClock(time: String)
     case whip(url: String, method: String, headers: [SettingsHttpHeader], body: Data)
+    case setFilter(filter: RemoteControlFilter, on: Bool)
 }
 
 enum RemoteControlResponse: Codable {
@@ -81,6 +82,131 @@ struct RemoteControlChatMessage: Codable {
     var isSubscriber: Bool
     var isOwner: Bool
     var bits: String?
+}
+
+enum RemoteControlFilter: Codable, CaseIterable {
+    case pixellate
+    case movie
+    case grayScale
+    case sepia
+    case triple
+    case twin
+    case fourThree
+    case pinch
+    case whirlpool
+    case poll
+    case blurFaces
+    case privacy
+    case beauty
+    case moblinInMouth
+    case cameraMan
+
+    init(type: SettingsQuickButtonType) {
+        switch type {
+        case .pixellate:
+            self = .pixellate
+        case .movie:
+            self = .movie
+        case .grayScale:
+            self = .grayScale
+        case .sepia:
+            self = .sepia
+        case .triple:
+            self = .triple
+        case .twin:
+            self = .twin
+        case .fourThree:
+            self = .fourThree
+        case .pinch:
+            self = .pinch
+        case .whirlpool:
+            self = .whirlpool
+        case .poll:
+            self = .poll
+        case .blurFaces:
+            self = .blurFaces
+        case .privacy:
+            self = .privacy
+        case .beauty:
+            self = .beauty
+        case .moblinInMouth:
+            self = .moblinInMouth
+        case .cameraMan:
+            self = .cameraMan
+        default:
+            self = .pixellate
+        }
+    }
+
+    func toSettings() -> SettingsQuickButtonType {
+        switch self {
+        case .pixellate:
+            return .pixellate
+        case .movie:
+            return .movie
+        case .grayScale:
+            return .grayScale
+        case .sepia:
+            return .sepia
+        case .triple:
+            return .triple
+        case .twin:
+            return .twin
+        case .fourThree:
+            return .fourThree
+        case .pinch:
+            return .pinch
+        case .whirlpool:
+            return .whirlpool
+        case .poll:
+            return .poll
+        case .blurFaces:
+            return .blurFaces
+        case .privacy:
+            return .privacy
+        case .beauty:
+            return .beauty
+        case .moblinInMouth:
+            return .moblinInMouth
+        case .cameraMan:
+            return .cameraMan
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .pixellate:
+            return String(localized: "Pixellate")
+        case .movie:
+            return String(localized: "Movie")
+        case .grayScale:
+            return String(localized: "Gray scale")
+        case .sepia:
+            return String(localized: "Sepia")
+        case .triple:
+            return String(localized: "Triple")
+        case .twin:
+            return String(localized: "Twin")
+        case .fourThree:
+            return String(localized: "4:3")
+        case .pinch:
+            return String(localized: "Pinch")
+        case .whirlpool:
+            return String(localized: "Whirlpool")
+        case .poll:
+            return String(localized: "Poll")
+        case .blurFaces:
+            return String(localized: "Blur faces")
+        case .privacy:
+            return String(localized: "Privacy")
+        case .beauty:
+            return String(localized: "Beauty")
+        case .moblinInMouth:
+            return String(localized: "Moblin in mouth")
+        case .cameraMan:
+            return String(localized: "Camera man")
+        }
+    }
 }
 
 struct RemoteControlRemoteSceneSettings: Codable {
@@ -629,6 +755,7 @@ struct RemoteControlAssistantStreamerState: Codable {
     var torchOn: Bool?
     // periphery:ignore
     var batteryCharging: Bool?
+    var filters: [RemoteControlFilter: Bool]?
 }
 
 struct RemoteControlScoreboardControl: Codable {

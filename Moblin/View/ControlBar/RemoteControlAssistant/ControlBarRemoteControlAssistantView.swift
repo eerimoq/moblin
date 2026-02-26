@@ -545,6 +545,58 @@ private struct SrtConnectionPrioritiesView: View {
     }
 }
 
+private struct FilterToggleView: View {
+    let model: Model
+    let filter: RemoteControlFilter
+    @Binding var value: Bool
+
+    var body: some View {
+        Toggle(filter.toString(), isOn: $value)
+            .onChange(of: value) { _ in
+                guard value != model.remoteControlAssistantStreamerState.filters?[filter] else {
+                    return
+                }
+                model.remoteControlAssistantSetFilter(filter: filter, on: value)
+            }
+    }
+}
+
+private struct FiltersView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    FilterToggleView(model: model, filter: .pixellate, value: $remoteControl.pixellate)
+                    FilterToggleView(model: model, filter: .movie, value: $remoteControl.movie)
+                    FilterToggleView(model: model, filter: .grayScale, value: $remoteControl.grayScale)
+                    FilterToggleView(model: model, filter: .sepia, value: $remoteControl.sepia)
+                    FilterToggleView(model: model, filter: .triple, value: $remoteControl.triple)
+                    FilterToggleView(model: model, filter: .twin, value: $remoteControl.twin)
+                    FilterToggleView(model: model, filter: .fourThree, value: $remoteControl.fourThree)
+                    FilterToggleView(model: model, filter: .pinch, value: $remoteControl.pinch)
+                    FilterToggleView(model: model, filter: .whirlpool, value: $remoteControl.whirlpool)
+                    FilterToggleView(model: model, filter: .poll, value: $remoteControl.poll)
+                    FilterToggleView(model: model, filter: .blurFaces, value: $remoteControl.blurFaces)
+                    FilterToggleView(model: model, filter: .privacy, value: $remoteControl.privacy)
+                    FilterToggleView(model: model, filter: .beauty, value: $remoteControl.beauty)
+                    FilterToggleView(
+                        model: model,
+                        filter: .moblinInMouth,
+                        value: $remoteControl.moblinInMouth
+                    )
+                    FilterToggleView(model: model, filter: .cameraMan, value: $remoteControl.cameraMan)
+                }
+            }
+            .navigationTitle("Filters")
+        } label: {
+            Text("Filters")
+        }
+    }
+}
+
 private struct DebugLoggingView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -583,6 +635,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 MicView(model: model, remoteControl: remoteControl)
                 BitrateView(model: model, remoteControl: remoteControl)
                 SrtConnectionPrioritiesView(model: model, remoteControl: remoteControl)
+                FiltersView(model: model, remoteControl: remoteControl)
                 DebugLoggingView(model: model, remoteControl: remoteControl)
             } else {
                 HCenter {

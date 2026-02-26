@@ -43,6 +43,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
                                    headers: [SettingsHttpHeader],
                                    body: Data,
                                    onCompleted: @escaping (Int, [SettingsHttpHeader], Data) -> Void)
+    func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool)
 }
 
 class RemoteControlStreamer {
@@ -328,6 +329,9 @@ class RemoteControlStreamer {
                                                  result: .ok,
                                                  data: .whip(status: status, headers: headers, body: body)))
                 }
+        case let .setFilter(filter: filter, on: on):
+            delegate.remoteControlStreamerSetFilter(filter: filter, on: on)
+            sendEmptyOkResponse(id: id)
         }
     }
 

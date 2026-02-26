@@ -1895,14 +1895,18 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return nil
     }
 
-    func togglePoll() {
-        pollEnabled = !pollEnabled
+    func setPoll(on: Bool) {
+        pollEnabled = on
         pollVotes = [0, 0, 0]
         if pollEnabled {
             pollEffect = PollEffect(canvasSize: media.getCanvasSize())
         } else {
             pollEffect = nil
         }
+    }
+
+    func togglePoll() {
+        setPoll(on: !pollEnabled)
     }
 
     func handlePollVote(vote: String?) {
@@ -2024,7 +2028,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for button in database.quickButtons where button.type == type {
             button.isOn = isOn
         }
-        getQuickButtonState(type: type)?.isOn = isOn
+        if let state = getQuickButtonState(type: type) {
+            state.isOn = isOn
+            remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(filters: [
+                RemoteControlFilter(type: type): state.isOn,
+            ]))
+        }
     }
 
     func getQuickButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
@@ -2038,11 +2047,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         quickButtons.selectedButtonType = type
     }
 
+    func setFilterQuickButton(type: SettingsQuickButtonType, on: Bool) {
+        setQuickButtonState(type: type, isOn: on)
+        sceneUpdated(updateRemoteScene: false)
+        updateQuickButtonStates()
+    }
+
     func toggleQuickButton(type: SettingsQuickButtonType) {
         for button in database.quickButtons where button.type == type {
             button.isOn.toggle()
         }
-        getQuickButtonState(type: type)?.isOn.toggle()
+        if let state = getQuickButtonState(type: type) {
+            state.isOn.toggle()
+            remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(filters: [
+                RemoteControlFilter(type: type): state.isOn,
+            ]))
+        }
     }
 
     func toggleFilterQuickButton(type: SettingsQuickButtonType) {
@@ -2051,9 +2071,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateQuickButtonStates()
     }
 
+    func setWhirlpoolQuickButton(on: Bool) {
+        streamOverlay.showingWhirlpool = on
+        setFilterQuickButton(type: .whirlpool, on: on)
+    }
+
     func toggleWhirlpoolQuickButton() {
         streamOverlay.showingWhirlpool.toggle()
         toggleFilterQuickButton(type: .whirlpool)
+    }
+
+    func setBeautyQuickButton(on: Bool) {
+        streamOverlay.showingBeauty = on
+        updateBeautyButtonState()
     }
 
     func toggleBeautyQuickButton() {
@@ -2061,9 +2091,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateBeautyButtonState()
     }
 
+    func setPinchQuickButton(on: Bool) {
+        streamOverlay.showingPinch = on
+        setFilterQuickButton(type: .pinch, on: on)
+    }
+
     func togglePinchQuickButton() {
         streamOverlay.showingPinch.toggle()
         toggleFilterQuickButton(type: .pinch)
+    }
+
+    func setPixellateQuickButton(on: Bool) {
+        streamOverlay.showingPixellate = on
+        setFilterQuickButton(type: .pixellate, on: on)
     }
 
     func togglePixellateQuickButton() {
@@ -2071,9 +2111,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         toggleFilterQuickButton(type: .pixellate)
     }
 
+    func setCameraManQuickButton(on: Bool) {
+        cameraManEffect = CameraManEffect()
+        setFilterQuickButton(type: .cameraMan, on: on)
+    }
+
     func toggleCameraManQuickButton() {
         cameraManEffect = CameraManEffect()
         toggleFilterQuickButton(type: .cameraMan)
+    }
+
+    func setPollQuickButton(on: Bool) {
+        setPoll(on: on)
+        setFilterQuickButton(type: .poll, on: on)
     }
 
     func togglePollQuickButton() {
@@ -3108,6 +3158,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return database.show.systemMonitor
     }
 
+    func setBlurFaces(on: Bool) {
+        database.face.blurFaces = on
+        toggleFilterQuickButton(type: .blurFaces)
+        updateFaceFilterSettings()
+    }
+
     func toggleBlurFaces() {
         database.face.blurFaces.toggle()
         toggleFilterQuickButton(type: .blurFaces)
@@ -3120,9 +3176,21 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateFaceFilterSettings()
     }
 
+    func setPrivacy(on: Bool) {
+        database.face.blurBackground = on
+        toggleFilterQuickButton(type: .privacy)
+        updateFaceFilterSettings()
+    }
+
     func togglePrivacy() {
         database.face.blurBackground.toggle()
         toggleFilterQuickButton(type: .privacy)
+        updateFaceFilterSettings()
+    }
+
+    func setMoblinInMouth(on: Bool) {
+        database.face.showMoblin = on
+        toggleFilterQuickButton(type: .moblinInMouth)
         updateFaceFilterSettings()
     }
 

@@ -22,6 +22,21 @@ class RemoteControl: ObservableObject {
     @Published var presentingPreview = true
     @Published var presentingPreviewFullScreen = false
     @Published var presentingStreamers = false
+    @Published var pixellate: Bool = false
+    @Published var movie: Bool = false
+    @Published var grayScale: Bool = false
+    @Published var sepia: Bool = false
+    @Published var triple: Bool = false
+    @Published var twin: Bool = false
+    @Published var fourThree: Bool = false
+    @Published var pinch: Bool = false
+    @Published var whirlpool: Bool = false
+    @Published var poll: Bool = false
+    @Published var blurFaces: Bool = false
+    @Published var privacy: Bool = false
+    @Published var beauty: Bool = false
+    @Published var moblinInMouth: Bool = false
+    @Published var cameraMan: Bool = false
 }
 
 enum RemoteControlAssistantPreviewUser {
@@ -271,6 +286,10 @@ extension Model {
         ) {}
     }
 
+    func remoteControlAssistantSetFilter(filter: RemoteControlFilter, on: Bool) {
+        remoteControlAssistant?.setFilter(filter: filter, on: on)
+    }
+
     func remoteControlAssistantStartPreview(user: RemoteControlAssistantPreviewUser) {
         remoteControlAssistantPreviewUsers.insert(user)
         remoteControlAssistant?.startPreview()
@@ -487,6 +506,10 @@ extension Model {
         state.muted = isMuteOn
         state.torchOn = streamOverlay.isTorchOn
         state.batteryCharging = isBatteryCharging()
+        state.filters = [:]
+        for filter in RemoteControlFilter.allCases {
+            state.filters?[filter] = getQuickButtonState(type: filter.toSettings())?.isOn ?? false
+        }
         return state
     }
 
@@ -824,11 +847,47 @@ extension Model: RemoteControlStreamerDelegate {
             onCompleted(400, [], Data())
         }
     }
+
+    func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool) {
+        switch filter {
+        case .pixellate:
+            setPixellateQuickButton(on: on)
+        case .movie:
+            setFilterQuickButton(type: .movie, on: on)
+        case .grayScale:
+            setFilterQuickButton(type: .grayScale, on: on)
+        case .sepia:
+            setFilterQuickButton(type: .sepia, on: on)
+        case .triple:
+            setFilterQuickButton(type: .triple, on: on)
+        case .twin:
+            setFilterQuickButton(type: .twin, on: on)
+        case .fourThree:
+            setFilterQuickButton(type: .fourThree, on: on)
+        case .pinch:
+            setPinchQuickButton(on: on)
+        case .whirlpool:
+            setWhirlpoolQuickButton(on: on)
+        case .poll:
+            setPollQuickButton(on: on)
+        case .blurFaces:
+            setBlurFaces(on: on)
+        case .privacy:
+            setPrivacy(on: on)
+        case .beauty:
+            setBeautyQuickButton(on: on)
+        case .moblinInMouth:
+            setMoblinInMouth(on: on)
+        case .cameraMan:
+            setCameraManQuickButton(on: on)
+        }
+    }
 }
 
 extension Model: RemoteControlAssistantDelegate {
     func remoteControlAssistantConnected() {
         makeToast(title: String(localized: "Remote control streamer connected"))
+        remoteControlAssistantStreamerState.filters = [:]
         updateRemoteControlStatus()
         updateRemoteControlAssistantStatus()
         remoteControlAssistantSetRemoteSceneSettings()
@@ -891,6 +950,43 @@ extension Model: RemoteControlAssistantDelegate {
         if let muted = state.muted {
             remoteControlAssistantStreamerState.muted = muted
             remoteControl.muted = muted
+        }
+        if let filters = state.filters {
+            for (filter, on) in filters {
+                remoteControlAssistantStreamerState.filters?[filter] = on
+                switch filter {
+                case .pixellate:
+                    remoteControl.pixellate = on
+                case .movie:
+                    remoteControl.movie = on
+                case .grayScale:
+                    remoteControl.grayScale = on
+                case .sepia:
+                    remoteControl.sepia = on
+                case .triple:
+                    remoteControl.triple = on
+                case .twin:
+                    remoteControl.twin = on
+                case .fourThree:
+                    remoteControl.fourThree = on
+                case .pinch:
+                    remoteControl.pinch = on
+                case .whirlpool:
+                    remoteControl.whirlpool = on
+                case .poll:
+                    remoteControl.poll = on
+                case .blurFaces:
+                    remoteControl.blurFaces = on
+                case .privacy:
+                    remoteControl.privacy = on
+                case .beauty:
+                    remoteControl.beauty = on
+                case .moblinInMouth:
+                    remoteControl.moblinInMouth = on
+                case .cameraMan:
+                    remoteControl.cameraMan = on
+                }
+            }
         }
         if isWatchRemoteControl() {
             sendRemoteControlAssistantStatusToWatch()
