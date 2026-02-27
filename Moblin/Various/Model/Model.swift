@@ -1372,6 +1372,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         case .full:
             disableScreenPreview()
         case let .service(keepChatRunning, keepBatteryLevelRunning):
+            storeSettings()
+            replaysStorage.store()
             disableScreenPreview()
             stopPeriodicTimers(keepChatRunning: keepChatRunning,
                                keepBatteryLevelRunning: keepBatteryLevelRunning)
