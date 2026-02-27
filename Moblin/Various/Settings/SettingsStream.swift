@@ -1077,6 +1077,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var h264Profile: SettingsStreamH264Profile = .main
     @Published var bFrames: Bool = false
     @Published var adaptiveEncoderResolution: Bool = false
+    @Published var adaptiveEncoderResolutionThreashold: Double = 1
     var adaptiveBitrate: Bool = true
     var srt: SettingsStreamSrt = .init()
     var rtmp: SettingsStreamRtmp = .init()
@@ -1163,6 +1164,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              h264Profile,
              bFrames,
              adaptiveEncoderResolution,
+             adaptiveEncoderResolutionThreashold,
              adaptiveBitrate,
              srt,
              rtmp,
@@ -1248,6 +1250,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.h264Profile, h264Profile)
         try container.encode(.bFrames, bFrames)
         try container.encode(.adaptiveEncoderResolution, adaptiveEncoderResolution)
+        try container.encode(.adaptiveEncoderResolutionThreashold, adaptiveEncoderResolutionThreashold)
         try container.encode(.adaptiveBitrate, adaptiveBitrate)
         try container.encode(.srt, srt)
         try container.encode(.rtmp, rtmp)
@@ -1342,6 +1345,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         h264Profile = container.decode(.h264Profile, SettingsStreamH264Profile.self, .main)
         bFrames = container.decode(.bFrames, Bool.self, false)
         adaptiveEncoderResolution = container.decode(.adaptiveEncoderResolution, Bool.self, false)
+        adaptiveEncoderResolutionThreashold = container.decode(.adaptiveEncoderResolutionThreashold,
+                                                               Double.self,
+                                                               1)
         adaptiveBitrate = container.decode(.adaptiveBitrate, Bool.self, true)
         srt = container.decode(.srt, SettingsStreamSrt.self, .init())
         rtmp = container.decode(.rtmp, SettingsStreamRtmp.self, .init())

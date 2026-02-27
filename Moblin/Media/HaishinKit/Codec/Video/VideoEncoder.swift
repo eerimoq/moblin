@@ -155,15 +155,15 @@ class VideoEncoder {
     }
 
     private func getVideoSize(settings: VideoEncoderSettings) -> CMVideoDimensions? {
-        if settings.bitrate < 100_000 {
+        if settings.bitrate < settings.adaptiveResolution160Threshold {
             return settings.videoSize.convertTo(dimension: 160)
-        } else if settings.bitrate < 250_000 {
+        } else if settings.bitrate < settings.adaptiveResolution360Threshold {
             return settings.videoSize.convertTo(dimension: 360)
-        } else if settings.bitrate < 500_000 {
+        } else if settings.bitrate < settings.adaptiveResolution480Threshold {
             return settings.videoSize.convertTo(dimension: 480)
-        } else if settings.bitrate < 750_000 {
+        } else if settings.bitrate < settings.adaptiveResolution720Threshold {
             return settings.videoSize.convertTo(dimension: 720)
-        } else if settings.bitrate < 1_500_000 {
+        } else if settings.bitrate < settings.adaptiveResolution1080Threshold {
             return settings.videoSize.convertTo(dimension: 1080)
         } else {
             return settings.videoSize

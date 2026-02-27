@@ -426,7 +426,8 @@ extension Model {
     }
 
     private func setStreamAdaptiveResolution() {
-        media.setStreamAdaptiveResolution(value: stream.adaptiveEncoderResolution)
+        media.setStreamAdaptiveResolution(value: stream.adaptiveEncoderResolution,
+                                          thresholdsFactor: stream.adaptiveEncoderResolutionThreashold)
     }
 
     private func setStreamKeyFrameInterval() {

@@ -45,6 +45,11 @@ struct VideoEncoderSettings {
     }
 
     var adaptiveResolution = false
+    var adaptiveResolution160Threshold: UInt32 = 0
+    var adaptiveResolution360Threshold: UInt32 = 0
+    var adaptiveResolution480Threshold: UInt32 = 0
+    var adaptiveResolution720Threshold: UInt32 = 0
+    var adaptiveResolution1080Threshold: UInt32 = 0
 
     private(set) var format: Format = .h264
 
@@ -54,6 +59,15 @@ struct VideoEncoderSettings {
         bitrate = 640 * 1000
         maxKeyFrameIntervalDuration = 2
         allowFrameReordering = false
+        updateAdtaptiveResolutionThresholds(factor: 1)
+    }
+
+    mutating func updateAdtaptiveResolutionThresholds(factor: Double) {
+        adaptiveResolution160Threshold = UInt32(100_000 * factor)
+        adaptiveResolution360Threshold = UInt32(250_000 * factor)
+        adaptiveResolution480Threshold = UInt32(500_000 * factor)
+        adaptiveResolution720Threshold = UInt32(750_000 * factor)
+        adaptiveResolution1080Threshold = UInt32(1_500_000 * factor)
     }
 
     func shouldInvalidateSession(_ other: VideoEncoderSettings) -> Bool {

@@ -779,8 +779,9 @@ final class Media: NSObject {
         commitVideoEncoderSettings()
     }
 
-    func setStreamAdaptiveResolution(value: Bool) {
+    func setStreamAdaptiveResolution(value: Bool, thresholdsFactor: Double) {
         videoEncoderSettings.adaptiveResolution = value
+        videoEncoderSettings.updateAdtaptiveResolutionThresholds(factor: thresholdsFactor)
         commitVideoEncoderSettings()
     }
 

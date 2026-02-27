@@ -180,22 +180,70 @@ private struct BFramesSettingsView: View {
     }
 }
 
+private struct AdaptiveResolutionThresholdSettingsView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
+
+    private func encoderSettings() -> VideoEncoderSettings {
+        var settings = VideoEncoderSettings()
+        settings.updateAdtaptiveResolutionThresholds(factor: stream.adaptiveEncoderResolutionThreashold)
+        return settings
+    }
+
+    private func formatBitrate(_ value: UInt32) -> String {
+        return formatBytesPerSecond(speed: Int64(value))
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                Slider(value: $stream.adaptiveEncoderResolutionThreashold,
+                       in: 1 ... 3,
+                       step: 0.1)
+                { begin in
+                    guard !begin else {
+                        return
+                    }
+                    model.reloadStreamIfEnabled(stream: stream)
+                }
+                .disabled(stream.enabled && model.isLive)
+            } header: {
+                Text("Thresholds")
+            } footer: {
+                VStack(alignment: .leading) {
+                    let settings = encoderSettings()
+                    Text(String("< \(formatBitrate(settings.adaptiveResolution160Threshold)) → 160p"))
+                    Text(String("< \(formatBitrate(settings.adaptiveResolution360Threshold)) → 360p"))
+                    Text(String("< \(formatBitrate(settings.adaptiveResolution480Threshold)) → 480p"))
+                    Text(String("< \(formatBitrate(settings.adaptiveResolution720Threshold)) → 720p"))
+                    Text(String("< \(formatBitrate(settings.adaptiveResolution1080Threshold)) → 1080p"))
+                }
+            }
+        }
+        .navigationTitle("Adaptive resolution")
+    }
+}
+
 private struct AdaptiveResolutionSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Section {
-            Toggle("Adaptive resolution", isOn: $stream.adaptiveEncoderResolution)
-                .onChange(of: stream.adaptiveEncoderResolution) { _ in
-                    model.reloadStreamIfEnabled(stream: stream)
-                }
-                .disabled(stream.enabled && model.isLive)
+            NavigationLink {
+                AdaptiveResolutionThresholdSettingsView(model: model, stream: stream)
+            } label: {
+                Toggle("Adaptive resolution", isOn: $stream.adaptiveEncoderResolution)
+                    .onChange(of: stream.adaptiveEncoderResolution) { _ in
+                        model.reloadStreamIfEnabled(stream: stream)
+                    }
+                    .disabled(stream.enabled && model.isLive)
+            }
         } footer: {
             VStack(alignment: .leading) {
                 Text("""
                 Automatically lower resolution when the available bandwidth is \
-                low. Generally gives better image quality at low (<750 Kbps) bitrates.
+                low. Generally gives better image quality at low (< 750 Kbps) bitrates.
                 """)
                 Text("")
                 Text("""

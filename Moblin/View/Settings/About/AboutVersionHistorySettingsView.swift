@@ -28,7 +28,7 @@ private let versions = [
         "• Chinese Taiwan translation updated. ✍️ ИƎØ_ΙΙØZ",
         "• Scoreboards for more sports. 🧑‍🏭 Scyc",
         "  • Control the new scoreboards using a web browser.",
-        "    • Enable the web server in Settings -> Remote control -> Web.",
+        "    • Enable the web server in Settings → Remote control → Web.",
         "  • Hockey for example.",
         "• Widget opacity effect. 💡 Deadllee",
         "• Make image widget update when changing image.",
