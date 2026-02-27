@@ -1526,8 +1526,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return .off
         }
-        if database.catPrinters.backgroundPrinting || database.moblink.relay.enabled {
-            return .service(keepChatRunning: database.catPrinters.backgroundPrinting,
+        if database.chat.background || database.moblink.relay.enabled {
+            return .service(keepChatRunning: database.chat.background,
                             keepBatteryLevelRunning: database.moblink.relay.enabled)
         }
         return .off
