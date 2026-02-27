@@ -7,7 +7,7 @@ private let srtHandshakeVersion5: UInt32 = 5
 private let srtDestinationSocket: UInt32 = 0
 private let srtMaximumTransmissionUnitSize: UInt32 = 1500
 private let srtMaximumFlowWindowSizeInPackets: UInt32 = 8192
-private let srtSocketId: UInt32 = 716_306_300
+private let srtSocketId: UInt32 = .random(in: 1 ... UInt32.max)
 private let srtIpUdpHeaderSize: UInt64 = 28
 
 private class SrtClock {
