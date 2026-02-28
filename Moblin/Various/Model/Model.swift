@@ -1687,8 +1687,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         periodicTimer20ms.stop()
         if !keepChatRunning {
             periodicTimer200ms.stop()
+            periodicTimer1s.stop()
         }
-        //periodicTimer1s.stop()
         periodicTimer3s.stop()
         periodicTimer5s.stop()
         periodicTimer10s.stop()
