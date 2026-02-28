@@ -56,6 +56,7 @@ private struct ChatSettingsGeneralView: View {
                 .onChange(of: chat.showDeletedMessages) { _ in
                     model.reloadChatMessages()
                 }
+            Toggle("Keep updating in background mode", isOn: $chat.backgroundChat)
         }
     }
 }
@@ -72,9 +73,6 @@ struct ChatSettingsView: View {
                     .onChange(of: chat.enabled) { _ in
                         model.reloadChats()
                     }
-                Toggle("Background", isOn: $chat.background)
-            } footer: {
-                Text("Background keeps chat running when the app is in background mode.")
             }
             Section {
                 ChatSettingsAppearanceView(chat: chat)
