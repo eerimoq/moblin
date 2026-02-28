@@ -9,6 +9,11 @@ final class CameraManEffect: VideoEffect {
     private var moveVertically: Bool = false
     private var speed: Double = 1
 
+    init(moveVertically: Bool, speed: Double) {
+        self.moveVertically = moveVertically
+        self.speed = speed
+    }
+
     func setSettings(moveVertically: Bool, speed: Double) {
         processorPipelineQueue.async {
             self.moveVertically = moveVertically

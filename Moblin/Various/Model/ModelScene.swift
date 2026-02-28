@@ -488,7 +488,8 @@ extension Model {
         tripleEffect = TripleEffect()
         twinEffect = TwinEffect()
         pixellateEffect = PixellateEffect(strength: database.pixellateStrength)
-        cameraManEffect = CameraManEffect()
+        cameraManEffect = CameraManEffect(moveVertically: database.debug.cameraManMoveVertically,
+                                          speed: database.debug.cameraManSpeed)
         pollEffect = nil
         whirlpoolEffect = WhirlpoolEffect(angle: database.whirlpoolAngle)
         pinchEffect = PinchEffect(scale: database.pinchScale)

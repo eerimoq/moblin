@@ -640,7 +640,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var tripleEffect = TripleEffect()
     var twinEffect = TwinEffect()
     var pixellateEffect = PixellateEffect(strength: 0.0)
-    var cameraManEffect = CameraManEffect()
+    var cameraManEffect = CameraManEffect(moveVertically: false, speed: 1)
     var pollEffect: PollEffect?
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?
@@ -2036,7 +2036,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setQuickButton(type: SettingsQuickButtonType, isOn: Bool) {
-        database.quickButtons.first(where: {$0.type == type})?.isOn = isOn
+        database.quickButtons.first(where: { $0.type == type })?.isOn = isOn
         if let state = getQuickButtonState(type: type) {
             state.isOn = isOn
             remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(filters: [
@@ -2046,7 +2046,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleQuickButton(type: SettingsQuickButtonType) {
-        database.quickButtons.first(where: {$0.type == type})?.isOn.toggle()
+        database.quickButtons.first(where: { $0.type == type })?.isOn.toggle()
         if let state = getQuickButtonState(type: type) {
             state.isOn.toggle()
             remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(filters: [
@@ -2091,7 +2091,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func togglePinchQuickButton() {
-       setPinchQuickButton(on: !streamOverlay.showingPinch)
+        setPinchQuickButton(on: !streamOverlay.showingPinch)
     }
 
     func setPixellateQuickButton(on: Bool) {
@@ -2104,16 +2104,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setCameraManQuickButton(on: Bool) {
-        cameraManEffect = CameraManEffect()
-        cameraManEffect.setSettings(moveVertically: database.debug.cameraManMoveVertically,
-                                    speed: database.debug.cameraManSpeed)
+        cameraManEffect = CameraManEffect(moveVertically: database.debug.cameraManMoveVertically,
+                                          speed: database.debug.cameraManSpeed)
         setFilterQuickButton(type: .cameraMan, on: on)
     }
 
     func toggleCameraManQuickButton() {
-        cameraManEffect = CameraManEffect()
-        cameraManEffect.setSettings(moveVertically: database.debug.cameraManMoveVertically,
-                                    speed: database.debug.cameraManSpeed)
+        cameraManEffect = CameraManEffect(moveVertically: database.debug.cameraManMoveVertically,
+                                          speed: database.debug.cameraManSpeed)
         toggleFilterQuickButton(type: .cameraMan)
     }
 
