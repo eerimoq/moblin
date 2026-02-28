@@ -489,7 +489,7 @@ extension Model {
         for lut in allLuts() where lut.enabled {
             isOn = true
         }
-        setQuickButtonState(type: .luts, isOn: isOn)
+        setQuickButton(type: .luts, isOn: isOn)
         updateQuickButtonStates()
     }
 

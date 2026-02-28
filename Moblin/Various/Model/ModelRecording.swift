@@ -104,7 +104,7 @@ extension Model {
 
     func setIsRecording(value: Bool) {
         isRecording = value
-        setQuickButtonState(type: .record, isOn: value)
+        setQuickButton(type: .record, isOn: value)
         updateQuickButtonStates()
         if isWatchLocal() {
             sendIsRecordingToWatch(isRecording: isRecording)

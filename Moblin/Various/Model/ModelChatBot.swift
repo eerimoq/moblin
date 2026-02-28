@@ -307,7 +307,7 @@ extension Model {
                 subTitle: String(localized: "Muting audio")
             )
             self.setMuted(value: true)
-            self.setQuickButtonState(type: .mute, isOn: true)
+            self.setQuickButton(type: .mute, isOn: true)
             self.updateQuickButtonStates()
         }
     }
@@ -325,7 +325,7 @@ extension Model {
                 subTitle: String(localized: "Unmuting audio")
             )
             self.setMuted(value: false)
-            self.setQuickButtonState(type: .mute, isOn: false)
+            self.setQuickButton(type: .mute, isOn: false)
             self.updateQuickButtonStates()
         }
     }
