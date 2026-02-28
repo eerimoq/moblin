@@ -640,7 +640,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var tripleEffect = TripleEffect()
     var twinEffect = TwinEffect()
     var pixellateEffect = PixellateEffect(strength: 0.0)
-    var cameraManEffect = CameraManEffect(moveVertically: false, speed: 1)
+    var cameraManEffect = CameraManEffect(moveVertically: false, speed: 1, alwaysMove: false)
     var pollEffect: PollEffect?
     var fixedHorizonEffect = FixedHorizonEffect()
     var glassesEffect: AlertsEffect?
@@ -2105,13 +2105,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setCameraManQuickButton(on: Bool) {
         cameraManEffect = CameraManEffect(moveVertically: database.debug.cameraManMoveVertically,
-                                          speed: database.debug.cameraManSpeed)
+                                          speed: database.debug.cameraManSpeed,
+                                          alwaysMove: database.debug.cameraManAlwaysMove)
         setFilterQuickButton(type: .cameraMan, on: on)
     }
 
     func toggleCameraManQuickButton() {
         cameraManEffect = CameraManEffect(moveVertically: database.debug.cameraManMoveVertically,
-                                          speed: database.debug.cameraManSpeed)
+                                          speed: database.debug.cameraManSpeed,
+                                          alwaysMove: database.debug.cameraManAlwaysMove)
         toggleFilterQuickButton(type: .cameraMan)
     }
 

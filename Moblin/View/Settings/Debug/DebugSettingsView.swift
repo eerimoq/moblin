@@ -116,13 +116,21 @@ struct DebugSettingsView: View {
                 Toggle("Vertical movement", isOn: $debug.cameraManMoveVertically)
                     .onChange(of: debug.cameraManMoveVertically) { _ in
                         model.cameraManEffect.setSettings(moveVertically: debug.cameraManMoveVertically,
-                                                          speed: debug.cameraManSpeed)
+                                                          speed: debug.cameraManSpeed,
+                                                          alwaysMove: debug.cameraManAlwaysMove)
+                    }
+                Toggle("Always move", isOn: $debug.cameraManAlwaysMove)
+                    .onChange(of: debug.cameraManAlwaysMove) { _ in
+                        model.cameraManEffect.setSettings(moveVertically: debug.cameraManMoveVertically,
+                                                          speed: debug.cameraManSpeed,
+                                                          alwaysMove: debug.cameraManAlwaysMove)
                     }
                 HStack {
                     Text("Speed")
-                    Slider(value: $debug.cameraManSpeed, in: 0.2 ... 8) { _ in
+                    Slider(value: $debug.cameraManSpeed, in: 0.2 ... 4) { _ in
                         model.cameraManEffect.setSettings(moveVertically: debug.cameraManMoveVertically,
-                                                          speed: debug.cameraManSpeed)
+                                                          speed: debug.cameraManSpeed,
+                                                          alwaysMove: debug.cameraManAlwaysMove)
                     }
                 }
             } header: {

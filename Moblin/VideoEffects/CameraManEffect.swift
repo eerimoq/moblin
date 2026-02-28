@@ -6,18 +6,24 @@ final class CameraManEffect: VideoEffect {
     private let xSpeed: Double = 0.27
     private let ySpeed: Double = 0.36
     private let zoomSpeed: Double = 0.33
-    private var moveVertically: Bool = false
-    private var speed: Double = 1
+    private var moveVertically: Bool
+    private var speed: Double
+    private var alwaysMove: Bool
+    private var previousIsRising: Bool = false
+    private var previousScale: Double = 0
+    private var isStill: Bool = true
 
-    init(moveVertically: Bool, speed: Double) {
+    init(moveVertically: Bool, speed: Double, alwaysMove: Bool) {
         self.moveVertically = moveVertically
         self.speed = speed
+        self.alwaysMove = alwaysMove
     }
 
-    func setSettings(moveVertically: Bool, speed: Double) {
+    func setSettings(moveVertically: Bool, speed: Double, alwaysMove: Bool) {
         processorPipelineQueue.async {
             self.moveVertically = moveVertically
             self.speed = speed
+            self.alwaysMove = alwaysMove
         }
     }
 
@@ -30,6 +36,15 @@ final class CameraManEffect: VideoEffect {
         }
         let elapsed = now - startTime!
         let scale = minScale + (1 - minScale) * (0.5 + 0.5 * cos(elapsed * zoomSpeed * speed))
+        let isRising = scale - previousScale > 0
+        if previousIsRising && !isRising {
+            isStill.toggle()
+        }
+        previousScale = scale
+        previousIsRising = isRising
+        if isStill, !alwaysMove {
+            return image
+        }
         let cropWidth = width * scale
         let cropHeight = height * scale
         let maxOffsetX = width - cropWidth
