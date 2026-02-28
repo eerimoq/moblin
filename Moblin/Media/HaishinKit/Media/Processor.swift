@@ -1,5 +1,5 @@
 import AVFoundation
-import UIKit
+import SwiftUI
 
 protocol ProcessorDelegate: AnyObject {
     func stream(audioLevel: Float, numberOfAudioChannels: Int, sampleRate: Double)

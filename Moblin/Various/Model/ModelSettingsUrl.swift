@@ -1,4 +1,4 @@
-import UIKit
+import SwiftUI
 
 extension Model {
     private func handleSettingsUrlsDefaultStreams(settings: MoblinSettingsUrl) {

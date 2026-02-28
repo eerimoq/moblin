@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 private func serialize(_ value: Any) -> Data {
     return (try? JSONSerialization.data(withJSONObject: value))!

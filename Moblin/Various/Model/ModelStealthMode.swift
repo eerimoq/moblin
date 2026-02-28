@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 private let stealthModeImagePath = URL.documentsDirectory.appending(component: "stealthModeImage.img")
 

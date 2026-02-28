@@ -1,6 +1,6 @@
 import CoreImage
 import SwiftUI
-import UIKit
+import SwiftUI
 
 private let eventTimestampFormatter: DateFormatter = {
     let formatter = DateFormatter()

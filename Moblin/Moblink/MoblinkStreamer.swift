@@ -3,7 +3,6 @@ import CryptoKit
 import Foundation
 import Network
 import SwiftUI
-import UIKit
 
 protocol MoblinkStreamerDelegate: AnyObject {
     func moblinkStreamerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)

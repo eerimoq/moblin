@@ -1,4 +1,4 @@
-import UIKit
+import SwiftUI
 
 struct ObsSceneInput: Identifiable {
     var id: UUID = .init()

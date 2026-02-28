@@ -1,5 +1,5 @@
 import SceneKit
-import UIKit
+import SwiftUI
 import Vision
 import VRMSceneKit
 

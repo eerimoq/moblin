@@ -1,6 +1,6 @@
 import CoreImage
 import SwiftCube
-import UIKit
+import SwiftUI
 
 private func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
     let dimensionFloat = Float(dimension)

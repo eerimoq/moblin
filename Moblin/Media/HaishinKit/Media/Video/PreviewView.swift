@@ -1,6 +1,6 @@
 import AVFoundation
 import Foundation
-import UIKit
+import SwiftUI
 
 class PreviewView: UIView {
     private static let defaultBackgroundColor: UIColor = .black

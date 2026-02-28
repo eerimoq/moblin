@@ -1,4 +1,4 @@
-import UIKit
+import SwiftUI
 import WatchConnectivity
 
 extension Model {

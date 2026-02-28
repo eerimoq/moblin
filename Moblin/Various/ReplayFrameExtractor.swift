@@ -1,7 +1,7 @@
 import AVFoundation
 import Collections
 import CoreImage
-import UIKit
+import SwiftUI
 
 private let replayQueue = DispatchQueue(label: "com.eerimoq.replay", qos: .background)
 

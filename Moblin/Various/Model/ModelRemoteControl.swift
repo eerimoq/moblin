@@ -1,6 +1,6 @@
 import CoreLocation
 import Foundation
-import UIKit
+import SwiftUI
 
 class RemoteControl: ObservableObject {
     @Published var general: RemoteControlStatusGeneral?

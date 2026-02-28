@@ -1,5 +1,5 @@
 import AVFAudio
-import UIKit
+import SwiftUI
 
 class AudioLevel: ObservableObject {
     @Published var level: Float = defaultAudioLevel

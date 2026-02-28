@@ -1,5 +1,5 @@
 import Foundation
-import UIKit
+import SwiftUI
 
 struct BadgeImage: Codable {
     let src: String

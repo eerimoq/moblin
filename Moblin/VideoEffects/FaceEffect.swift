@@ -1,5 +1,5 @@
 import AVFoundation
-import UIKit
+import SwiftUI
 import Vision
 
 struct FaceEffectSettings {
