@@ -1,3 +1,4 @@
+import AVFoundation
 import ReplayKit
 
 extension Model {
@@ -9,44 +10,64 @@ extension Model {
         return cameraId == noneCamera
     }
 
-    private func handleSampleBufferSenderConnected() {
+    private func handleScreenCaptureStarted(latency: Double) {
         makeToast(title: String(localized: "Screen capture started"))
         media.addBufferedVideo(
             cameraId: screenCaptureCameraId,
             name: "Screen capture",
-            latency: screenRecordingLatency
+            latency: latency
         )
     }
 
-    private func handleSampleBufferSenderDisconnected() {
+    private func handleScreenCaptureStopped() {
         makeToast(title: String(localized: "Screen capture stopped"))
         media.removeBufferedVideo(cameraId: screenCaptureCameraId)
     }
 
-    private func handleSampleBufferSenderBuffer(_ type: RPSampleBufferType, _ sampleBuffer: CMSampleBuffer) {
-        switch type {
-        case .video:
-            media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
-        default:
-            break
-        }
+    private func handleScreenCaptureSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
     }
 }
 
+#if targetEnvironment(macCatalyst)
+extension Model: MacScreenCaptureDelegate {
+    func macScreenCaptureDidStart() {
+        DispatchQueue.main.async {
+            self.handleScreenCaptureStarted(latency: 0.0)
+        }
+    }
+
+    func macScreenCaptureDidStop() {
+        DispatchQueue.main.async {
+            self.handleScreenCaptureStopped()
+        }
+    }
+
+    func macScreenCaptureDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        handleScreenCaptureSampleBuffer(sampleBuffer)
+    }
+}
+#else
 extension Model: SampleBufferReceiverDelegate {
     func senderConnected() {
         DispatchQueue.main.async {
-            self.handleSampleBufferSenderConnected()
+            self.handleScreenCaptureStarted(latency: screenRecordingLatency)
         }
     }
 
     func senderDisconnected() {
         DispatchQueue.main.async {
-            self.handleSampleBufferSenderDisconnected()
+            self.handleScreenCaptureStopped()
         }
     }
 
     func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer) {
-        handleSampleBufferSenderBuffer(type, sampleBuffer)
+        switch type {
+        case .video:
+            handleScreenCaptureSampleBuffer(sampleBuffer)
+        default:
+            break
+        }
     }
 }
+#endif

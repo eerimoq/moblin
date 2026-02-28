@@ -609,6 +609,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var replayBuffer = ReplayBuffer()
     let replay = ReplayProvider()
     private let sampleBufferReceiver = SampleBufferReceiver()
+    #if targetEnvironment(macCatalyst)
+    private let macScreenCapture = MacScreenCapture()
+    #endif
     let faxReceiver = FaxReceiver()
     var twitchStreamUpdateTime = ContinuousClock.now
     var externalDisplayPreview = false
@@ -1300,8 +1303,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func setupSampleBufferReceiver() {
+        #if targetEnvironment(macCatalyst)
+        macScreenCapture.delegate = self
+        macScreenCapture.start()
+        #else
         sampleBufferReceiver.delegate = self
         sampleBufferReceiver.start(appGroup: moblinAppGroup)
+        #endif
     }
 
     func updateFaceFilterSettings() {
