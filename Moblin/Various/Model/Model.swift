@@ -2036,9 +2036,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setQuickButton(type: SettingsQuickButtonType, isOn: Bool) {
-        for button in database.quickButtons where button.type == type {
-            button.isOn = isOn
-        }
+        database.quickButtons.first(where: {$0.type == type})?.isOn = isOn
         if let state = getQuickButtonState(type: type) {
             state.isOn = isOn
             remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(filters: [
@@ -2048,9 +2046,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleQuickButton(type: SettingsQuickButtonType) {
-        for button in database.quickButtons where button.type == type {
-            button.isOn.toggle()
-        }
+        database.quickButtons.first(where: {$0.type == type})?.isOn.toggle()
         if let state = getQuickButtonState(type: type) {
             state.isOn.toggle()
             remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(filters: [
@@ -2077,8 +2073,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleWhirlpoolQuickButton() {
-        streamOverlay.showingWhirlpool.toggle()
-        toggleFilterQuickButton(type: .whirlpool)
+        setWhirlpoolQuickButton(on: !streamOverlay.showingWhirlpool)
     }
 
     func setBeautyQuickButton(on: Bool) {
@@ -2087,8 +2082,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleBeautyQuickButton() {
-        streamOverlay.showingBeauty.toggle()
-        updateBeautyButtonState()
+        setBeautyQuickButton(on: !streamOverlay.showingBeauty)
     }
 
     func setPinchQuickButton(on: Bool) {
@@ -2097,8 +2091,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func togglePinchQuickButton() {
-        streamOverlay.showingPinch.toggle()
-        toggleFilterQuickButton(type: .pinch)
+       setPinchQuickButton(on: !streamOverlay.showingPinch)
     }
 
     func setPixellateQuickButton(on: Bool) {
@@ -2107,8 +2100,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func togglePixellateQuickButton() {
-        streamOverlay.showingPixellate.toggle()
-        toggleFilterQuickButton(type: .pixellate)
+        setPixellateQuickButton(on: !streamOverlay.showingPixellate)
     }
 
     func setCameraManQuickButton(on: Bool) {
