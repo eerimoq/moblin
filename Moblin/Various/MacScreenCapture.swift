@@ -42,6 +42,7 @@ class MacScreenCapture: NSObject {
                 return
             }
             let config = SCStreamConfiguration()
+            // Use 2x resolution for Retina display scaling
             config.width = display.width * 2
             config.height = display.height * 2
             config.minimumFrameInterval = CMTime(value: 1, timescale: 30)

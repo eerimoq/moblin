@@ -33,6 +33,7 @@ extension Model {
 extension Model: MacScreenCaptureDelegate {
     func macScreenCaptureDidStart() {
         DispatchQueue.main.async {
+            // No latency needed since ScreenCaptureKit delivers frames in-process
             self.handleScreenCaptureStarted(latency: 0.0)
         }
     }
