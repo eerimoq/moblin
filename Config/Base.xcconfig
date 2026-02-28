@@ -1,6 +1,3 @@
-// Configuration settings file format documentation can be found at:
-// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
-
 #include "User.xcconfig"
 
 MARKETING_VERSION = 31.0.0
