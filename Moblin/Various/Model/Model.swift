@@ -15,7 +15,6 @@ import SwiftUI
 import TrueTime
 import WatchConnectivity
 import WebKit
-import WiFiAware
 
 private enum BackgroundRunLevel {
     // Streaming and recording
@@ -1151,7 +1150,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateKickChannelInfoIfNeeded()
         reloadSpeechToText()
         if #available(iOS 26, *), false {
+            #if !targetEnvironment(macCatalyst)
             wiFiAwareUpdated()
+            #endif
         }
     }
 
@@ -2657,9 +2658,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateCameraPreviewRotation() {
-        if #available(iOS 26, *),
-           isLandscapeStreamAndPortraitUi(), cameraDevice?.dynamicAspectRatio == .ratio9x16
-        {
+        if useLandscapeStreamAndPortraitUi(cameraDevice, isLandscapeStreamAndPortraitUi()) {
             cameraPreviewLayer?.connection?.videoOrientation = .portrait
         } else if stream.portrait {
             cameraPreviewLayer?.connection?.videoOrientation = .portrait

@@ -13,11 +13,13 @@ struct IngestsSettingsView: View {
                 RtspClientSettingsView(rtspClient: database.rtspClient)
                 WhipServerSettingsView(whipServer: database.whipServer)
                 if #available(iOS 26, *), false {
+                    #if !targetEnvironment(macCatalyst)
                     NavigationLink {
                         WiFiAwareSettingsView(model: model, wiFiAware: database.wiFiAware)
                     } label: {
                         Text(String("WiFi Aware"))
                     }
+                    #endif
                 }
             }
         }

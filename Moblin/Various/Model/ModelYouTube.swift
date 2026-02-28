@@ -23,9 +23,15 @@ extension Model {
                                                   redirectURL: youTubeRedirectUri,
                                                   responseType: OIDResponseTypeCode,
                                                   additionalParameters: nil)
+            #if targetEnvironment(macCatalyst)
+            guard let userAgent = OIDExternalUserAgentCatalyst(presenting: rootViewController) else {
+                return
+            }
+            #else
             guard let userAgent = OIDExternalUserAgentIOS(presenting: rootViewController) else {
                 return
             }
+            #endif
             self.youTube.session = OIDAuthState.authState(
                 byPresenting: request,
                 externalUserAgent: userAgent

@@ -55,9 +55,18 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
             return
         }
         model.handleSettingsUrls(urls: connectionOptions.urlContexts)
-        if session.role == .windowExternalDisplayNonInteractive, let windowScene = scene as? UIWindowScene {
+        guard let windowScene = (scene as? UIWindowScene) else {
+            return
+        }
+        if session.role == .windowExternalDisplayNonInteractive {
             model.externalMonitorConnected(windowScene: windowScene)
         }
+        #if targetEnvironment(macCatalyst)
+        if let titlebar = windowScene.titlebar {
+            titlebar.titleVisibility = .hidden
+            titlebar.toolbar = nil
+        }
+        #endif
     }
 
     func sceneDidDisconnect(_: UIScene) {
