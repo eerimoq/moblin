@@ -164,6 +164,22 @@ final class Processor {
         audio.setBufferedAudioTargetLatency(cameraId: cameraId, latency: latency)
     }
 
+    func addMixerSource(sourceId: UUID) {
+        audio.addMixerSource(sourceId: sourceId)
+    }
+
+    func removeMixerSource(sourceId: UUID) {
+        audio.removeMixerSource(sourceId: sourceId)
+    }
+
+    func addMixerBuiltinSource() {
+        audio.addMixerBuiltinSource()
+    }
+
+    func removeMixerBuiltinSource() {
+        audio.removeMixerBuiltinSource()
+    }
+
     func registerVideoEffect(_ effect: VideoEffect) {
         video.registerEffect(effect)
     }
