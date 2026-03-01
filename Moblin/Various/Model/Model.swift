@@ -1007,6 +1007,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         externalDisplayStreamPreviewView.videoGravity = .resizeAspect
         updateDigitalClock(now: Date())
         twitchChat = TwitchChat(delegate: self)
+        setupSampleBufferReceiver()
         reloadStream()
         resetSelectedScene()
         setupAudio()
@@ -1112,7 +1113,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setTextToSpeechStreamerMentions()
         updateOrientationLock()
         updateFaceFilterSettings()
-        setupSampleBufferReceiver()
         initMediaPlayers()
         removeUnusedLogs()
         autoStartDjiDevices()
@@ -1304,7 +1304,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(macCatalyst 18.2, *) {
             MacScreenCapture.shared.delegate = self
         }
-        reloadMacScreenCapture()
         #else
         sampleBufferReceiver.delegate = self
         sampleBufferReceiver.start(appGroup: moblinAppGroup)
