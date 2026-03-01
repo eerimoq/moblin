@@ -8,11 +8,6 @@ struct AboutSettingsView: View {
             Section {
                 TextItemLocalizedView(name: "Version", value: appVersion())
                 NavigationLink {
-                    AboutLicensesSettingsView()
-                } label: {
-                    Text("Licenses")
-                }
-                NavigationLink {
                     AboutAttributionsSettingsView()
                 } label: {
                     Text("Attributions")

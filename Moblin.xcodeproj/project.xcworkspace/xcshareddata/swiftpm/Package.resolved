@@ -1,5 +1,5 @@
 {
-  "originHash" : "0b215fdbc576d1b163345863248c6a1d036fe4572c62d6f8ff0312694301c2d0",
+  "originHash" : "75c04dc272d23930ef4db707876baa41c267fbbc75ffeb482851868e6e5d71d4",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -43,7 +43,7 @@
       "location" : "https://github.com/eerimoq/DataChannel",
       "state" : {
         "branch" : "main",
-        "revision" : "de27d974a8ef607e75993534f76596f564e18e00"
+        "revision" : "a439c3fb34f3da3fd945525e9ccda4527b420aba"
       }
     },
     {
@@ -53,15 +53,6 @@
       "state" : {
         "revision" : "0d60654eeefd5d7d2bef3835804892c40225e8b2",
         "version" : "1.5.0"
-      }
-    },
-    {
-      "identity" : "licenselist",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/cybozu/LicenseList.git",
-      "state" : {
-        "revision" : "56f1b5724138e4d9f60453b555edc80e43805503",
-        "version" : "2.2.0"
       }
     },
     {
@@ -88,7 +79,7 @@
       "location" : "https://github.com/eerimoq/Rist",
       "state" : {
         "branch" : "main",
-        "revision" : "4e7f714cd0ccfb685c93757eddac4370f7f1e53a"
+        "revision" : "45fbbf22279744d210bce1894e9c23601401c465"
       }
     },
     {
@@ -124,7 +115,7 @@
       "location" : "https://github.com/eerimoq/SrtSwift",
       "state" : {
         "branch" : "main",
-        "revision" : "8f50326023eda2f95a052c9e122cfb92f7aba2b8"
+        "revision" : "7152305fd14439dcb5e7e13a4e4009f90c3b6968"
       }
     },
     {
