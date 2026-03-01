@@ -1,5 +1,4 @@
 #if !targetEnvironment(macCatalyst)
-
 import DeviceDiscoveryUI
 import Network
 import SwiftUI
@@ -122,5 +121,4 @@ extension WAPairedDevice {
         return "\(deviceName) (\(vendorName))"
     }
 }
-
 #endif

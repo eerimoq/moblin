@@ -872,7 +872,8 @@ final class Media: NSObject {
         ignoreFramesAfterAttachSeconds: Double,
         fillFrame: Bool,
         isLandscapeStreamAndPortraitUi: Bool,
-        forceSceneTransition: Bool
+        forceSceneTransition: Bool,
+        macScreenCapture: Bool
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
@@ -884,7 +885,8 @@ final class Media: NSObject {
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
                                            fillFrame: fillFrame,
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
-                                           forceSceneTransition: forceSceneTransition)
+                                           forceSceneTransition: forceSceneTransition,
+                                           macScreenCapture: macScreenCapture)
         processor?.attachCamera(params: params)
     }
 
@@ -921,10 +923,6 @@ final class Media: NSObject {
 
     func appendBufferedVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         processor?.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
-    }
-
-    func appendBufferedVideoSampleBufferInternal(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        processor?.appendBufferedVideoSampleBufferInternal(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {

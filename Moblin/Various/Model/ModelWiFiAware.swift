@@ -1,5 +1,4 @@
 #if !targetEnvironment(macCatalyst)
-
 import WiFiAware
 
 @available(iOS 26, *)
@@ -39,5 +38,4 @@ extension Model {
         wiFiAwareReceiverTask = nil
     }
 }
-
 #endif

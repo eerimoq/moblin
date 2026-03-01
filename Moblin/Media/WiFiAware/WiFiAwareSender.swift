@@ -1,5 +1,4 @@
 #if !targetEnvironment(macCatalyst)
-
 import Foundation
 import Network
 import WiFiAware
@@ -76,5 +75,4 @@ actor WiFiAwareSender {
         logger.info("wifi-aware-sender: Stop")
     }
 }
-
 #endif

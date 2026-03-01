@@ -1,5 +1,4 @@
 #if targetEnvironment(macCatalyst)
-
 import AVFoundation
 import ScreenCaptureKit
 
@@ -17,17 +16,17 @@ class MacScreenCapture: NSObject {
 
     func start() {
         Task {
-            await startCapture()
+            await startInternal()
         }
     }
 
     func stop() {
         Task {
-            await stopCapture()
+            await stopInternal()
         }
     }
 
-    private func startCapture() async {
+    private func startInternal() async {
         do {
             let filter = try await makeContentFilter()
             let config = SCStreamConfiguration()
@@ -43,7 +42,7 @@ class MacScreenCapture: NSObject {
         }
     }
 
-    private func stopCapture() async {
+    private func stopInternal() async {
         do {
             try await stream?.stopCapture()
         } catch {
@@ -95,5 +94,4 @@ extension MacScreenCapture: SCStreamDelegate {
         delegate?.macScreenCaptureDidStop()
     }
 }
-
 #endif

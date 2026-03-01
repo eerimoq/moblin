@@ -312,7 +312,6 @@ extension Model {
         reloadRtmpStreams()
         updateStatusStreamText()
         updateKickChannelInfoIfNeeded()
-        reloadMacScreenCapture()
     }
 
     func reloadStreamIfEnabled(stream: SettingsStream) {

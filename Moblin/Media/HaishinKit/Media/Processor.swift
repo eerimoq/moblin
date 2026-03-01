@@ -144,10 +144,6 @@ final class Processor {
         video.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
     }
 
-    func appendBufferedVideoSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        video.appendBufferedVideoSampleBufferInternal(cameraId: cameraId, sampleBuffer)
-    }
-
     func setBufferedVideoTargetLatency(cameraId: UUID, _ latency: Double) {
         video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
     }
