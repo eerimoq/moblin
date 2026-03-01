@@ -67,7 +67,7 @@ enum SceneSwitchTransition {
 }
 
 struct CaptureDevice {
-    let device: AVCaptureDevice?
+    let device: AVCaptureDevice
     let id: UUID
     let isVideoMirrored: Bool
 }
@@ -177,7 +177,7 @@ final class VideoUnit: NSObject {
     private var sceneVideoSourceId = UUID()
     private var selectedBufferedVideoCameraId: UUID?
     fileprivate var bufferedVideos: [UUID: BufferedVideo] = [:]
-    fileprivate var bufferedVideoBuiltins: [AVCaptureDevice?: BufferedVideo] = [:]
+    fileprivate var bufferedVideoBuiltins: [AVCaptureDevice: BufferedVideo] = [:]
     private var blackImageBuffer: CVPixelBuffer?
     private var blackFormatDescription: CMVideoFormatDescription?
     private var blackPixelBufferPool: CVPixelBufferPool?
@@ -512,7 +512,7 @@ final class VideoUnit: NSObject {
             for device in params.devices.devices {
                 let bufferedVideo = BufferedVideo(
                     cameraId: device.id,
-                    name: device.device?.localizedName ?? "builtin",
+                    name: device.device.localizedName,
                     update: false,
                     latency: params.builtinDelay,
                     processor: self.processor
@@ -1804,10 +1804,7 @@ final class VideoUnit: NSObject {
     }
 
     private func attachDevice(_ device: CaptureDevice, _ session: AVCaptureSession) throws {
-        guard let captureDevice = device.device else {
-            return
-        }
-        let input = try AVCaptureDeviceInput(device: captureDevice)
+        let input = try AVCaptureDeviceInput(device: device.device)
         let output = AVCaptureVideoDataOutput()
         output.videoSettings = [
             kCVPixelBufferPixelFormatTypeKey as String: pixelFormatType,

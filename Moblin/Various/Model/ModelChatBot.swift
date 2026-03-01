@@ -435,9 +435,9 @@ extension Model {
                 return
             }
             for device in self.getBuiltinCameraDevices(scene: scene, sceneDevice: self.cameraDevice).devices
-                where device.device?.availableReactionTypes.contains(reaction) == true
+                where device.device.availableReactionTypes.contains(reaction)
             {
-                device.device?.performEffect(for: reaction)
+                device.device.performEffect(for: reaction)
             }
         }
     }
