@@ -90,6 +90,10 @@ private struct SceneWidgetView: View {
     }
 }
 
+let startScreenCatptureHelp = String(localized: """
+Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.
+""")
+
 private struct VideoSourceView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
@@ -141,12 +145,7 @@ private struct VideoSourceView: View {
                     Image(systemName: "camera")
                 }
             }
-            .alert(
-                """
-                Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.
-                """,
-                isPresented: $presentingScreenCaptureAlert
-            ) {
+            .alert(startScreenCatptureHelp, isPresented: $presentingScreenCaptureAlert) {
                 Button("Got it") {
                     presentingScreenCaptureAlert = false
                 }

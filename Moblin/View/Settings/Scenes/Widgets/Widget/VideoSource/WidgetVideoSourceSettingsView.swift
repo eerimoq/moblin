@@ -176,10 +176,7 @@ struct WidgetVideoSourceSettingsView: View {
                     GrayTextView(text: model.getCameraPositionName(videoSourceWidget: videoSource))
                 }
             }
-            .alert(
-                "Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.",
-                isPresented: $presentingScreenCaptureAlert
-            ) {
+            .alert(startScreenCatptureHelp, isPresented: $presentingScreenCaptureAlert) {
                 Button("Got it") {
                     presentingScreenCaptureAlert = false
                 }
