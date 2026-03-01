@@ -1300,11 +1300,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func setupSampleBufferReceiver() {
-        #if targetEnvironment(macCatalyst)
-        if #available(macCatalyst 18.2, *) {
-            MacScreenCapture.shared.delegate = self
-        }
-        #else
+        #if !targetEnvironment(macCatalyst)
         sampleBufferReceiver.delegate = self
         sampleBufferReceiver.start(appGroup: moblinAppGroup)
         #endif
@@ -2652,7 +2648,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            ignoreFramesAfterAttachSeconds: 0.0,
                                            fillFrame: false,
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
-                                           forceSceneTransition: false)
+                                           forceSceneTransition: false,
+                                           macScreenCapture: false)
         media.attachCamera(params: params)
     }
 
@@ -2821,7 +2818,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSeconds(),
             fillFrame: getFillFrame(scene: scene),
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
-            forceSceneTransition: database.forceSceneSwitchTransition
+            forceSceneTransition: database.forceSceneSwitchTransition,
+            macScreenCapture: sceneNeedsMacScreenCapture(scene: scene)
         )
         media.attachCamera(
             params: params,
@@ -2876,7 +2874,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             ignoreFramesAfterAttachSeconds: getIgnoreFramesAfterAttachSecondsReplaceCamera(),
             fillFrame: getFillFrame(scene: scene),
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
-            forceSceneTransition: database.forceSceneSwitchTransition
+            forceSceneTransition: database.forceSceneSwitchTransition,
+            macScreenCapture: sceneNeedsMacScreenCapture(scene: scene)
         )
         media.usePendingAfterAttachEffects()
     }

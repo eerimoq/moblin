@@ -872,7 +872,8 @@ final class Media: NSObject {
         ignoreFramesAfterAttachSeconds: Double,
         fillFrame: Bool,
         isLandscapeStreamAndPortraitUi: Bool,
-        forceSceneTransition: Bool
+        forceSceneTransition: Bool,
+        macScreenCapture: Bool
     ) {
         let params = VideoUnitAttachParams(devices: devices,
                                            builtinDelay: builtinDelay,
@@ -884,7 +885,8 @@ final class Media: NSObject {
                                            ignoreFramesAfterAttachSeconds: ignoreFramesAfterAttachSeconds,
                                            fillFrame: fillFrame,
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
-                                           forceSceneTransition: forceSceneTransition)
+                                           forceSceneTransition: forceSceneTransition,
+                                           macScreenCapture: macScreenCapture)
         processor?.attachCamera(params: params)
     }
 

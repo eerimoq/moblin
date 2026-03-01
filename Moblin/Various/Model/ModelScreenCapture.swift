@@ -10,22 +10,57 @@ extension Model {
         return cameraId == noneCamera
     }
 
-    func reloadMacScreenCapture() {
-        #if targetEnvironment(macCatalyst)
-        if #available(macCatalyst 18.2, *) {
-            MacScreenCapture.shared.stop()
-            guard database.debug.macScreenCapture else {
-                return
-            }
-            MacScreenCapture.shared.start()
+    func sceneNeedsMacScreenCapture(scene: SettingsScene) -> Bool {
+        if scene.videoSource.cameraPosition == .screenCapture {
+            return true
         }
-        #endif
+        var addedSceneIds: Set<UUID> = []
+        return sceneWidgetsNeedMacScreenCapture(scene: scene, addedSceneIds: &addedSceneIds)
+    }
+
+    private func sceneWidgetsNeedMacScreenCapture(scene: SettingsScene,
+                                                  addedSceneIds: inout Set<UUID>) -> Bool
+    {
+        for sceneWidget in scene.widgets {
+            guard let widget = findWidget(id: sceneWidget.widgetId) else {
+                continue
+            }
+            guard widget.enabled else {
+                continue
+            }
+            switch widget.type {
+            case .videoSource:
+                if widget.videoSource.videoSource.cameraPosition == .screenCapture {
+                    return true
+                }
+            case .vTuber:
+                if widget.vTuber.videoSource.cameraPosition == .screenCapture {
+                    return true
+                }
+            case .pngTuber:
+                if widget.pngTuber.videoSource.cameraPosition == .screenCapture {
+                    return true
+                }
+            case .scene:
+                if !addedSceneIds.contains(widget.scene.sceneId) {
+                    addedSceneIds.insert(widget.scene.sceneId)
+                    if let nestedScene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
+                        if sceneWidgetsNeedMacScreenCapture(scene: nestedScene,
+                                                           addedSceneIds: &addedSceneIds)
+                        {
+                            return true
+                        }
+                    }
+                }
+            default:
+                break
+            }
+        }
+        return false
     }
 
     private func handleScreenCaptureStarted(latency: Double) {
-        #if !targetEnvironment(macCatalyst)
         makeToast(title: String(localized: "Screen capture started"))
-        #endif
         media.addBufferedVideo(
             cameraId: screenCaptureCameraId,
             name: "Screen capture",
@@ -34,45 +69,16 @@ extension Model {
     }
 
     private func handleScreenCaptureStopped() {
-        #if !targetEnvironment(macCatalyst)
         makeToast(title: String(localized: "Screen capture stopped"))
-        #endif
         media.removeBufferedVideo(cameraId: screenCaptureCameraId)
     }
 
     private func handleScreenCaptureSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
     }
-
-    private func handleScreenCaptureSampleBufferInternal(_ sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedVideoSampleBufferInternal(
-            cameraId: screenCaptureCameraId,
-            sampleBuffer: sampleBuffer
-        )
-    }
 }
 
-#if targetEnvironment(macCatalyst)
-
-extension Model: MacScreenCaptureDelegate {
-    func macScreenCaptureDidStart(latency: Double) {
-        DispatchQueue.main.async {
-            self.handleScreenCaptureStarted(latency: latency)
-        }
-    }
-
-    func macScreenCaptureDidStop() {
-        DispatchQueue.main.async {
-            self.handleScreenCaptureStopped()
-        }
-    }
-
-    func macScreenCaptureDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        handleScreenCaptureSampleBufferInternal(sampleBuffer)
-    }
-}
-
-#else
+#if !targetEnvironment(macCatalyst)
 
 extension Model: SampleBufferReceiverDelegate {
     func senderConnected() {
