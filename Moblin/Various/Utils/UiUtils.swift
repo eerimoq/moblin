@@ -47,7 +47,7 @@ func isPad() -> Bool {
 }
 
 func isMac() -> Bool {
-    return ProcessInfo().isiOSAppOnMac
+    return ProcessInfo().isMacCatalystApp
 }
 
 extension ImageRenderer {

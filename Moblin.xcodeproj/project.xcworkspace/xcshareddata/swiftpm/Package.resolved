@@ -1,5 +1,5 @@
 {
-  "originHash" : "11e63338ae181d27bdab48f1015bf094de7b2b089f8286903464d2b79657123d",
+  "originHash" : "0b215fdbc576d1b163345863248c6a1d036fe4572c62d6f8ff0312694301c2d0",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -43,7 +43,7 @@
       "location" : "https://github.com/eerimoq/DataChannel",
       "state" : {
         "branch" : "main",
-        "revision" : "0084cbdd5adbe5f66967560f693b936f272516b7"
+        "revision" : "de27d974a8ef607e75993534f76596f564e18e00"
       }
     },
     {
@@ -88,7 +88,7 @@
       "location" : "https://github.com/eerimoq/Rist",
       "state" : {
         "branch" : "main",
-        "revision" : "b56bff772ef5c5dd0a4879b86dd6ecdd82f2f665"
+        "revision" : "4e7f714cd0ccfb685c93757eddac4370f7f1e53a"
       }
     },
     {
@@ -124,7 +124,7 @@
       "location" : "https://github.com/eerimoq/SrtSwift",
       "state" : {
         "branch" : "main",
-        "revision" : "c284acbbe36026ca18685272461b22e61738c4da"
+        "revision" : "8f50326023eda2f95a052c9e122cfb92f7aba2b8"
       }
     },
     {

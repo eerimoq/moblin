@@ -47,6 +47,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraManMoveVertically: Bool = false
     @Published var cameraManSpeed: Double = 1.0
     @Published var cameraManAlwaysMove: Bool = false
+    @Published var macScreenCapture: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -85,7 +86,8 @@ class SettingsDebug: Codable, ObservableObject {
              builtinAudioAndVideoDelay70msMigrated,
              cameraManMoveVertically,
              cameraManSpeed,
-             cameraManAlwaysMove
+             cameraManAlwaysMove,
+             macScreenCapture
     }
 
     func encode(to encoder: Encoder) throws {
@@ -120,6 +122,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.cameraManMoveVertically, cameraManMoveVertically)
         try container.encode(.cameraManSpeed, cameraManSpeed)
         try container.encode(.cameraManAlwaysMove, cameraManAlwaysMove)
+        try container.encode(.macScreenCapture, macScreenCapture)
     }
 
     init() {}
@@ -168,5 +171,6 @@ class SettingsDebug: Codable, ObservableObject {
         cameraManMoveVertically = container.decode(.cameraManMoveVertically, Bool.self, false)
         cameraManSpeed = container.decode(.cameraManSpeed, Double.self, 1.0)
         cameraManAlwaysMove = container.decode(.cameraManAlwaysMove, Bool.self, false)
+        macScreenCapture = container.decode(.macScreenCapture, Bool.self, false)
     }
 }

@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreAudio
 
 final class AudioEncoderRingBuffer {
     private var latestPresentationTimeStamp: CMTime = .invalid

@@ -60,11 +60,15 @@ extension Model {
                 if bluetoothOutputOnly {
                     bluetoothOption = .allowBluetoothA2DP
                 } else {
+                    #if targetEnvironment(macCatalyst)
+                    bluetoothOption = .allowBluetoothHFP
+                    #else
                     if #available(iOS 26, *) {
                         bluetoothOption = [.allowBluetoothHFP, .bluetoothHighQualityRecording]
                     } else {
                         bluetoothOption = .allowBluetoothHFP
                     }
+                    #endif
                 }
                 try session.setCategory(
                     .playAndRecord,

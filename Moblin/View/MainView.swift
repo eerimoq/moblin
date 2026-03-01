@@ -541,8 +541,6 @@ struct MainView: View {
             } else {
                 return [.top]
             }
-        } else if isMac() {
-            return [.top]
         } else {
             return []
         }

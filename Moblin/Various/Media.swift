@@ -183,7 +183,11 @@ final class Media: NSObject {
         }
         self.processor = processor
         processor.setDelegate(delegate: self)
+        #if targetEnvironment(macCatalyst)
+        processor.setVideoOrientation(value: .landscapeLeft)
+        #else
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
+        #endif
         attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
     }
 
@@ -917,6 +921,10 @@ final class Media: NSObject {
 
     func appendBufferedVideoSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         processor?.appendBufferedVideoSampleBuffer(cameraId: cameraId, sampleBuffer)
+    }
+
+    func appendBufferedVideoSampleBufferInternal(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        processor?.appendBufferedVideoSampleBufferInternal(cameraId: cameraId, sampleBuffer)
     }
 
     func setBufferedVideoTargetLatency(cameraId: UUID, latency: Double) {

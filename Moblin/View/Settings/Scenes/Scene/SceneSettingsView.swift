@@ -103,9 +103,11 @@ private struct VideoSourceView: View {
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
+        #if !targetEnvironment(macCatalyst)
         if model.isScreenCaptureCamera(cameraId: cameraId) {
             presentingScreenCaptureAlert = true
         }
+        #endif
     }
 
     var body: some View {

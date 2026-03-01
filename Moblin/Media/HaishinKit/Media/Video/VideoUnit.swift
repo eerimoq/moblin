@@ -93,9 +93,7 @@ private func setOrientation(
 ) {
     if #available(iOS 17.0, *), device?.deviceType == .external {
         connection.videoOrientation = .landscapeRight
-    } else if #available(iOS 26, *), isLandscapeStreamAndPortraitUi,
-              device?.dynamicAspectRatio == .ratio9x16
-    {
+    } else if useLandscapeStreamAndPortraitUi(device, isLandscapeStreamAndPortraitUi) {
         connection.videoOrientation = .portrait
     } else {
         connection.videoOrientation = orientation
@@ -148,9 +146,11 @@ private struct CaptureSessionDevice {
 
 private func makeCaptureSession() -> AVCaptureSession {
     let session = AVCaptureMultiCamSession()
+    #if !targetEnvironment(macCatalyst)
     if session.isMultitaskingCameraAccessSupported {
         session.isMultitaskingCameraAccessEnabled = true
     }
+    #endif
     return session
 }
 
@@ -1150,7 +1150,7 @@ final class VideoUnit: NSObject {
         lowFpsImageLatest = 0.0
     }
 
-    private func appendBufferedVideoSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    func appendBufferedVideoSampleBufferInternal(cameraId: UUID, _ sampleBuffer: CMSampleBuffer) {
         guard let bufferedVideo = bufferedVideos[cameraId] else {
             return
         }
@@ -1703,7 +1703,11 @@ final class VideoUnit: NSObject {
         }
         formats = formats.filter { $0.formatDescription.dimensions.width == width }
         if #available(iOS 26, *), isLandscapeStreamAndPortraitUi {
+            #if targetEnvironment(macCatalyst)
+            let formatsWithRatio9x16: [AVCaptureDevice.Format] = []
+            #else
             let formatsWithRatio9x16 = formats.filter { $0.supportedDynamicAspectRatios.contains(.ratio9x16) }
+            #endif
             if !formatsWithRatio9x16.isEmpty {
                 formats = formatsWithRatio9x16
                 useLandscapeInPortrait = true
@@ -1793,9 +1797,11 @@ final class VideoUnit: NSObject {
                 processor?.delegate?.streamSelectedFps(auto: false)
             }
             if #available(iOS 26, *), useLandscapeInPortrait {
+                #if !targetEnvironment(macCatalyst)
                 if format.supportedDynamicAspectRatios.contains(.ratio9x16) {
                     device.setDynamicAspectRatio(.ratio9x16)
                 }
+                #endif
             }
             device.unlockForConfiguration()
         } catch {

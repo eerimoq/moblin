@@ -109,6 +109,12 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
+                #if targetEnvironment(macCatalyst)
+                Toggle("Mac screen capture", isOn: $debug.macScreenCapture)
+                    .onChange(of: debug.macScreenCapture) { _ in
+                        model.reloadMacScreenCapture()
+                    }
+                #endif
             } header: {
                 Text("Experimental")
             }
