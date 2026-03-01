@@ -253,6 +253,7 @@ struct QuickButtonsButtonSettingsView: View {
                     .onChange(of: button.enabled) { _ in
                         model.updateQuickButtonStates()
                     }
+                    .disabled(model.getQuickButtonState(type: button.type)?.isOn == true && button.enabled)
             }
             ShortcutSectionView {
                 NavigationLink {
