@@ -39,6 +39,7 @@ extension Model {
             live: true,
             filter: nil,
             platform: nil,
+            sourceChannelLogin: nil,
             state: ChatPostState()
         )
     }
@@ -318,7 +319,8 @@ extension Model {
         isOwner: Bool,
         bits: String?,
         highlight: ChatHighlight?,
-        live: Bool
+        live: Bool,
+        sourceChannelLogin: String? = nil
     ) {
         let filter = evaluateFilters(user: user, segments: segments)
         if database.chat.botEnabled, live, filter?.chatBot != false,
@@ -357,6 +359,7 @@ extension Model {
             live: live,
             filter: filter,
             platform: platform,
+            sourceChannelLogin: sourceChannelLogin,
             state: ChatPostState()
         )
         chatPostId += 1

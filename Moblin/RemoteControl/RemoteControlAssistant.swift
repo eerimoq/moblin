@@ -660,7 +660,8 @@ extension RemoteControlAssistant: TwitchChatDelegate {
         isSubscriber: Bool,
         isModerator: Bool,
         bits: String?,
-        highlight _: ChatHighlight?
+        highlight _: ChatHighlight?,
+        sourceChannelLogin _: String?
     ) {
         let timestamp = digitalClockFormatter.string(from: Date())
         let message = RemoteControlChatMessage(id: getNextChatMessageId(),

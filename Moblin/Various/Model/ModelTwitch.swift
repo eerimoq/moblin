@@ -768,7 +768,8 @@ extension Model: TwitchChatDelegate {
         isSubscriber: Bool,
         isModerator: Bool,
         bits: String?,
-        highlight: ChatHighlight?
+        highlight: ChatHighlight?,
+        sourceChannelLogin: String?
     ) {
         appendChatMessage(platform: .twitch,
                           messageId: messageId,
@@ -786,7 +787,8 @@ extension Model: TwitchChatDelegate {
                           isOwner: false,
                           bits: bits,
                           highlight: highlight,
-                          live: true)
+                          live: true,
+                          sourceChannelLogin: sourceChannelLogin)
     }
 
     func twitchChatDeleteMessage(messageId: String) {

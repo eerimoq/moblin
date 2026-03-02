@@ -136,6 +136,12 @@ private struct LineView: View {
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold(settings.boldUsername)
+            if let sourceChannel = post.sourceChannelLogin, settings.showSharedChatSourceChannel {
+                Text("[\(sourceChannel)]")
+                    .foregroundStyle(.yellow.opacity(0.85))
+                    .font(.system(size: CGFloat(settings.fontSize) * 0.75))
+                    .lineLimit(1)
+            }
             if post.isRedemption() {
                 Text(" ")
             } else {

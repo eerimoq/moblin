@@ -83,6 +83,7 @@ private struct ChatMessage {
     let bits: String?
     let replySender: String?
     let replyText: String?
+    let sourceChannelLogin: String?
 
     init?(_ message: TwitchChatMessage) {
         guard message.parameters.count == 2,
@@ -124,6 +125,14 @@ private struct ChatMessage {
         bits = message.bits
         replySender = message.replySender
         replyText = message.replyText
+        if let sourceRoomId = message.sourceRoomId,
+           let roomId = message.roomId,
+           sourceRoomId != roomId
+        {
+            sourceChannelLogin = message.sourceRoomLogin
+        } else {
+            sourceChannelLogin = nil
+        }
     }
 
     func isAction() -> Bool {
@@ -288,6 +297,18 @@ struct TwitchChatMessage {
     var replyText: String? {
         tags["reply-parent-msg-body"]
     }
+
+    var sourceRoomId: String? {
+        tags["source-room-id"]
+    }
+
+    var sourceRoomLogin: String? {
+        tags["source-room-login"]
+    }
+
+    var roomId: String? {
+        tags["room-id"]
+    }
 }
 
 private class Badges {
@@ -438,7 +459,8 @@ protocol TwitchChatDelegate: AnyObject {
         isSubscriber: Bool,
         isModerator: Bool,
         bits: String?,
-        highlight: ChatHighlight?
+        highlight: ChatHighlight?,
+        sourceChannelLogin: String?
     )
     func twitchChatDeleteMessage(messageId: String)
     func twitchChatDeleteUser(userId: String)
@@ -557,7 +579,8 @@ final class TwitchChat {
             isSubscriber: message.subscriber,
             isModerator: message.moderator,
             bits: message.bits,
-            highlight: createHighlight(message: message)
+            highlight: createHighlight(message: message),
+            sourceChannelLogin: message.sourceChannelLogin
         )
     }
 
