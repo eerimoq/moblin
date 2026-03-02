@@ -29,7 +29,11 @@ struct SettingsView: View {
                     Label("Scenes", systemImage: "photo.on.rectangle")
                 }
                 NavigationLink {
-                    ChatSettingsView(chat: database.chat, stream: model.stream)
+                    ChatSettingsView(
+                        chat: database.chat,
+                        stream: model.stream,
+                        catPrinters: database.catPrinters
+                    )
                 } label: {
                     Label("Chat", systemImage: "message")
                 }
