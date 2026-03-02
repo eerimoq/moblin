@@ -6,9 +6,9 @@ private struct SceneEditModeWidgetView: View {
     let widget: SettingsWidget
     let viewSize: CGSize
     let streamSize: CGSize
-    @State private var dragStartX: Double = 0
-    @State private var dragStartY: Double = 0
-    @State private var resizeStartSize: Double = 0
+    @State private var dragStartX: Double?
+    @State private var dragStartY: Double?
+    @State private var resizeStartSize: Double?
 
     private func widgetRect() -> CGRect {
         let layout = sceneWidget.layout
@@ -70,12 +70,12 @@ private struct SceneEditModeWidgetView: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            if value.translation == .zero {
+                            if resizeStartSize == nil {
                                 resizeStartSize = sceneWidget.layout.size
                             }
                             let delta = value.translation.width
                             let startDisplayWidth = toPixels(
-                                resizeStartSize,
+                                resizeStartSize!,
                                 Double(streamSize.width)
                             ) / Double(streamSize.width) * viewSize.width
                             let newSizePct = (startDisplayWidth + delta) /
@@ -84,6 +84,7 @@ private struct SceneEditModeWidgetView: View {
                             sceneWidget.layout.updateSizeString()
                         }
                         .onEnded { _ in
+                            resizeStartSize = nil
                             model.sceneUpdated()
                         }
                 )
@@ -92,8 +93,10 @@ private struct SceneEditModeWidgetView: View {
         .gesture(
             DragGesture()
                 .onChanged { value in
-                    if value.translation == .zero {
+                    if dragStartX == nil {
                         dragStartX = sceneWidget.layout.x
+                    }
+                    if dragStartY == nil {
                         dragStartY = sceneWidget.layout.y
                     }
                     let layout = sceneWidget.layout
@@ -102,9 +105,9 @@ private struct SceneEditModeWidgetView: View {
                         let deltaPct = value.translation.width / viewSize.width * 100
                         let newX: Double
                         if layout.alignment.isLeft() {
-                            newX = dragStartX + deltaPct
+                            newX = dragStartX! + deltaPct
                         } else {
-                            newX = dragStartX - deltaPct
+                            newX = dragStartX! - deltaPct
                         }
                         sceneWidget.layout.x = clampPosition(newX)
                         sceneWidget.layout.updateXString()
@@ -114,15 +117,17 @@ private struct SceneEditModeWidgetView: View {
                         let deltaPct = value.translation.height / viewSize.height * 100
                         let newY: Double
                         if layout.alignment.isTop() {
-                            newY = dragStartY + deltaPct
+                            newY = dragStartY! + deltaPct
                         } else {
-                            newY = dragStartY - deltaPct
+                            newY = dragStartY! - deltaPct
                         }
                         sceneWidget.layout.y = clampPosition(newY)
                         sceneWidget.layout.updateYString()
                     }
                 }
                 .onEnded { _ in
+                    dragStartX = nil
+                    dragStartY = nil
                     model.sceneUpdated()
                 }
         )
@@ -146,7 +151,7 @@ private struct SceneEditModeCanvasView: View {
                         width: Double(streamDimensions.width),
                         height: Double(streamDimensions.height)
                     )
-                    let widgets = model.widgetsInCurrentScene(onlyEnabled: false)
+                    let widgets = model.widgetsInCurrentScene(onlyEnabled: true)
                     ZStack {
                         Color.clear
                         ForEach(widgets) { widgetInScene in
