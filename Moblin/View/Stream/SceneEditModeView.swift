@@ -50,10 +50,20 @@ private struct SceneEditModeWidgetView: View {
     var body: some View {
         let rect = widgetRect()
         ZStack(alignment: .bottomTrailing) {
-            Rectangle()
-                .stroke(Color.red, lineWidth: 2)
-                .frame(width: rect.width, height: rect.height)
-                .contentShape(Rectangle())
+            ZStack(alignment: .top) {
+                Rectangle()
+                    .stroke(Color.red, lineWidth: 2)
+                    .frame(width: rect.width, height: rect.height)
+                    .contentShape(Rectangle())
+                Text(widget.name)
+                    .font(.system(size: 10))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(Color.red.opacity(0.7))
+                    .cornerRadius(3)
+                    .padding(.top, 4)
+            }
             Rectangle()
                 .fill(Color.red.opacity(0.6))
                 .frame(width: 20, height: 20)
@@ -63,7 +73,7 @@ private struct SceneEditModeWidgetView: View {
                             if value.translation == .zero {
                                 resizeStartSize = sceneWidget.layout.size
                             }
-                            let delta = max(value.translation.width, value.translation.height)
+                            let delta = value.translation.width
                             let startDisplayWidth = toPixels(
                                 resizeStartSize,
                                 Double(streamSize.width)
