@@ -22,6 +22,21 @@ private func toClient(pointer: UnsafeMutableRawPointer?) -> WhipServerClient? {
     return Unmanaged<WhipServerClient>.fromOpaque(pointer).takeUnretainedValue()
 }
 
+private enum VideoCodec {
+    case h264
+    case h265
+
+    init?(trackDescription: String) {
+        if trackDescription.contains("h264") {
+            self = .h264
+        } else if trackDescription.contains("h265") {
+            self = .h265
+        } else {
+            return nil
+        }
+    }
+}
+
 final class WhipServerClient {
     let streamId: UUID
     private let latency: Double
@@ -39,6 +54,7 @@ final class WhipServerClient {
     private var pcmAudioBuffer: AVAudioPCMBuffer?
     private var targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let iceServers: [String]
+    private var videoCodec: VideoCodec = .h264
 
     init(streamId: UUID, latency: Double, iceServers: [String], delegate: WhipServerClientDelegate) {
         self.streamId = streamId
@@ -155,13 +171,17 @@ final class WhipServerClient {
         var descBuffer = [CChar](repeating: 0, count: 4096)
         let descSize = rtcGetTrackDescription(trackId, &descBuffer, Int32(descBuffer.count))
         let description = descSize > 0 ? String(cString: descBuffer) : ""
-        let isVideo = description.lowercased().contains("h264")
-        let isAudio = description.lowercased().contains("opus")
-        logger.info("whip-server-client: Track video=\(isVideo) audio=\(isAudio)")
+        let descriptionLower = description.lowercased()
         let clientPointer = Unmanaged.passRetained(self).toOpaque()
         rtcSetUserPointer(trackId, clientPointer)
-        if isVideo {
-            rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+        if let videoCodec = VideoCodec(trackDescription: descriptionLower) {
+            self.videoCodec = videoCodec
+            switch videoCodec {
+            case .h264:
+                rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            case .h265:
+                rtcSetH265Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            }
             rtcChainRtcpReceivingSession(trackId)
             rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
                 guard let data, size > 0, let info, let pointer else {
@@ -172,7 +192,7 @@ final class WhipServerClient {
                 toClient(pointer: pointer)?.handleVideoMessage(data: frameData,
                                                                timestampSeconds: timestampSeconds)
             }
-        } else if isAudio {
+        } else if descriptionLower.contains("opus") {
             setupOpusDecoder()
             rtcSetOpusDepacketizer(trackId)
             rtcChainRtcpReceivingSession(trackId)
@@ -197,8 +217,19 @@ final class WhipServerClient {
     private func handleVideoMessageInternal(data: Data, timestampSeconds: Double) {
         var frameData = data
         let nalUnits = getNalUnits(data: frameData)
-        let units = readH264NalUnits(data: frameData, nalUnits: nalUnits, filter: [.sps, .pps, .idr])
-        let formatDescription = units.makeFormatDescription()
+        let formatDescription: CMFormatDescription?
+        switch videoCodec {
+        case .h264:
+            let units = readH264NalUnits(data: frameData,
+                                         nalUnits: nalUnits,
+                                         filter: [.sps, .pps, .idr])
+            formatDescription = units.makeFormatDescription()
+        case .h265:
+            let units = readH265NalUnits(data: frameData,
+                                         nalUnits: nalUnits,
+                                         filter: [.sps, .pps, .vps])
+            formatDescription = units.makeFormatDescription()
+        }
         if let formatDescription, videoFormatDescription != formatDescription {
             videoFormatDescription = formatDescription
             videoDecoder?.stopRunning()
