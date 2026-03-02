@@ -39,6 +39,7 @@ final class WhipServerClient {
     private var pcmAudioBuffer: AVAudioPCMBuffer?
     private var targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let iceServers: [String]
+    private var videoCodecIsH265 = false
 
     init(streamId: UUID, latency: Double, iceServers: [String], delegate: WhipServerClientDelegate) {
         self.streamId = streamId
@@ -155,13 +156,22 @@ final class WhipServerClient {
         var descBuffer = [CChar](repeating: 0, count: 4096)
         let descSize = rtcGetTrackDescription(trackId, &descBuffer, Int32(descBuffer.count))
         let description = descSize > 0 ? String(cString: descBuffer) : ""
-        let isVideo = description.lowercased().contains("h264")
-        let isAudio = description.lowercased().contains("opus")
+        let descriptionLower = description.lowercased()
+        let isH264 = descriptionLower.contains("h264")
+        let isH265 = descriptionLower.contains("h265")
+        let isVideo = isH264 || isH265
+        let isAudio = descriptionLower.contains("opus")
         logger.info("whip-server-client: Track video=\(isVideo) audio=\(isAudio)")
         let clientPointer = Unmanaged.passRetained(self).toOpaque()
         rtcSetUserPointer(trackId, clientPointer)
         if isVideo {
-            rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            if isH265 {
+                videoCodecIsH265 = true
+                rtcSetH265Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            } else {
+                videoCodecIsH265 = false
+                rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            }
             rtcChainRtcpReceivingSession(trackId)
             rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
                 guard let data, size > 0, let info, let pointer else {
@@ -197,8 +207,16 @@ final class WhipServerClient {
     private func handleVideoMessageInternal(data: Data, timestampSeconds: Double) {
         var frameData = data
         let nalUnits = getNalUnits(data: frameData)
-        let units = readH264NalUnits(data: frameData, nalUnits: nalUnits, filter: [.sps, .pps, .idr])
-        let formatDescription = units.makeFormatDescription()
+        let formatDescription: CMFormatDescription?
+        if videoCodecIsH265 {
+            let units = readH265NalUnits(data: frameData, nalUnits: nalUnits,
+                                         filter: [.vps, .sps, .pps])
+            formatDescription = units.makeFormatDescription()
+        } else {
+            let units = readH264NalUnits(data: frameData, nalUnits: nalUnits,
+                                         filter: [.sps, .pps, .idr])
+            formatDescription = units.makeFormatDescription()
+        }
         if let formatDescription, videoFormatDescription != formatDescription {
             videoFormatDescription = formatDescription
             videoDecoder?.stopRunning()
