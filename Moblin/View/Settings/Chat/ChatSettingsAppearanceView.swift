@@ -60,6 +60,10 @@ struct ChatSettingsAppearanceView: View {
                             .onChange(of: chat.animatedEmotes) { _ in
                                 model.reloadChatMessages()
                             }
+                        Toggle("Shared chat icons", isOn: $chat.sharedChatIcons)
+                            .onChange(of: chat.sharedChatIcons) { _ in
+                                model.reloadChatMessages()
+                            }
                     }
                 } footer: {
                     if model.database.showAllSettings {

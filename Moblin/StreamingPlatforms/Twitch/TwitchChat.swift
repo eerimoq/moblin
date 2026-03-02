@@ -83,6 +83,7 @@ private struct ChatMessage {
     let bits: String?
     let replySender: String?
     let replyText: String?
+    let sourceChannelId: String?
 
     init?(_ message: TwitchChatMessage) {
         guard message.parameters.count == 2,
@@ -124,6 +125,7 @@ private struct ChatMessage {
         bits = message.bits
         replySender = message.replySender
         replyText = message.replyText
+        sourceChannelId = message.sourceRoomId
     }
 
     func isAction() -> Bool {
@@ -288,6 +290,10 @@ struct TwitchChatMessage {
     var replyText: String? {
         tags["reply-parent-msg-body"]
     }
+
+    var sourceRoomId: String? {
+        tags["source-room-id"]
+    }
 }
 
 private class Badges {
@@ -438,7 +444,8 @@ protocol TwitchChatDelegate: AnyObject {
         isSubscriber: Bool,
         isModerator: Bool,
         bits: String?,
-        highlight: ChatHighlight?
+        highlight: ChatHighlight?,
+        sourceChannelIcon: URL?
     )
     func twitchChatDeleteMessage(messageId: String)
     func twitchChatDeleteUser(userId: String)
@@ -451,6 +458,8 @@ final class TwitchChat {
     private var cheermotes: Cheermotes
     private var channelName: String
     private weak var delegate: (any TwitchChatDelegate)?
+    private var sourceChannelIcons: [String: URL] = [:]
+    private var accessToken: String = ""
 
     init(delegate: TwitchChatDelegate) {
         self.delegate = delegate
@@ -468,6 +477,7 @@ final class TwitchChat {
         accessToken: String
     ) {
         self.channelName = channelName
+        self.accessToken = accessToken
         logger.debug("twitch: chat: Start")
         stopInternal()
         emotes.start(
@@ -545,20 +555,49 @@ final class TwitchChat {
             emotesManager: emotes,
             bits: message.bits
         )
-        delegate?.twitchChatAppendMessage(
-            messageId: message.id,
-            displayName: message.displayName,
-            user: message.user,
-            userId: message.userId,
-            userColor: RgbColor.fromHex(string: message.senderColor ?? ""),
-            userBadges: badgeUrls,
-            segments: segments,
-            isAction: isAction,
-            isSubscriber: message.subscriber,
-            isModerator: message.moderator,
-            bits: message.bits,
-            highlight: createHighlight(message: message)
-        )
+        let highlight = createHighlight(message: message)
+        let appendMessage: (URL?) -> Void = { [weak self] iconUrl in
+            self?.delegate?.twitchChatAppendMessage(
+                messageId: message.id,
+                displayName: message.displayName,
+                user: message.user,
+                userId: message.userId,
+                userColor: RgbColor.fromHex(string: message.senderColor ?? ""),
+                userBadges: badgeUrls,
+                segments: segments,
+                isAction: isAction,
+                isSubscriber: message.subscriber,
+                isModerator: message.moderator,
+                bits: message.bits,
+                highlight: highlight,
+                sourceChannelIcon: iconUrl
+            )
+        }
+        if let sourceChannelId = message.sourceChannelId {
+            resolveSourceChannelIcon(channelId: sourceChannelId) { iconUrl in
+                appendMessage(iconUrl)
+            }
+        } else {
+            appendMessage(nil)
+        }
+    }
+
+    private func resolveSourceChannelIcon(channelId: String, completion: @escaping (URL?) -> Void) {
+        if let cached = sourceChannelIcons[channelId] {
+            completion(cached)
+            return
+        }
+        TwitchApi(accessToken).getUserById(id: channelId) { user in
+            let url = user?.profile_image_url
+            DispatchQueue.main.async {
+                if let url, let url = URL(string: url) {
+                    self.sourceChannelIcons[channelId] = url
+                    completion(url)
+                } else {
+                    completion(nil)
+                }
+            }
+        }
     }
 
     private func handleClearMessage(message: TwitchChatMessage) {

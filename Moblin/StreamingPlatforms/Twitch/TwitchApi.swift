@@ -8,6 +8,7 @@ private func serialize(_ value: Any) -> Data {
 struct TwitchApiUser: Decodable {
     let id: String
     let login: String
+    let profile_image_url: String
 }
 
 struct TwitchApiUsers: Decodable {
@@ -218,6 +219,18 @@ class TwitchApi {
 
     func getUserByLogin(login: String, onComplete: @escaping (TwitchApiUser?) -> Void) {
         doGet(subPath: makeUrl("users", [("login", login)])) {
+            switch $0 {
+            case let .success(data):
+                let users = try? JSONDecoder().decode(TwitchApiUsers.self, from: data)
+                onComplete(users?.data.first)
+            default:
+                onComplete(nil)
+            }
+        }
+    }
+
+    func getUserById(id: String, onComplete: @escaping (TwitchApiUser?) -> Void) {
+        doGet(subPath: makeUrl("users", [("id", id)])) {
             switch $0 {
             case let .success(data):
                 let users = try? JSONDecoder().decode(TwitchApiUsers.self, from: data)
