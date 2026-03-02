@@ -155,7 +155,8 @@ private struct SceneEditModeCanvasView: View {
                     ZStack {
                         Color.clear
                         ForEach(widgets) { widgetInScene in
-                            if widgetInScene.widget.hasPosition() ||
+                            if widgetInScene.widget.type != .scene,
+                               widgetInScene.widget.hasPosition() ||
                                 widgetInScene.widget.hasSize()
                             {
                                 SceneEditModeWidgetView(
