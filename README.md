@@ -22,8 +22,8 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 
 ## Main app
 
-- Stream using RTMP, RTMPS, SRT, SRTLA, RIST or WHIP to any platform
-  that supports them.
+- Stream using RTMP, RTMPS, SRT, SRTLA, RIST or WHIP (WebRTC) to any
+  platform that supports them.
 - H.264/AVC and H.265/HEVC video codecs.
 - Up to 4K resolution and 60 FPS. Use 120 FPS at your own risk.
 - SRTLA and RIST.
@@ -103,8 +103,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - Back camera lens selection.
 - Record to disk (MP4-file).
   - Configurable bitrate, video codec and key frame interval.
-- RTMP server/ingest as video source.
-- SRT(LA) server/ingest as video source.
+- RTMP, SRT(LA), RIST, RTSP and WHIP (WebRTC) ingests.
 - Localization. Supports many languages, for example English, French,
   German, Spanish, Polish, Chinese (Simplified) and Swedish.
 - Tap screen for manual focus.
