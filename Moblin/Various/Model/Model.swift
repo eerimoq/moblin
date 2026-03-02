@@ -438,6 +438,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var showBackgroundStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
     var streaming = false
+    var backgrounded = false
     var streamStartTime: ContinuousClock.Instant?
     var isRecorderRecording = false
     var workoutType: WatchProtocolWorkoutType?
@@ -1367,6 +1368,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @objc func handleDidEnterBackgroundNotification() {
+        backgrounded = true
         guard !isMac() else {
             return
         }
@@ -1435,6 +1437,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadCameraLevel()
         }
+        backgrounded = false
     }
 
     @objc func handleWillTerminate() {
@@ -1604,44 +1607,47 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handle1sTimer() {
         let now = Date()
         let monotonicNow = ContinuousClock.now
-        updateStreamUptime(now: monotonicNow)
-        updateRecordingLength(now: now)
+
         updateDigitalClock(now: now)
-        media.updateSrtTransportBitrate()
-        updateSpeed(now: monotonicNow)
-        updateIngestsSpeed()
-        updateBondingStatistics()
-        removeOldChatMessages(now: monotonicNow)
-        updateLocation()
-        updateObsSourceScreenshot()
-        updateObsAudioVolume()
-        updateBrowserWidgetStatus()
-        logStatus()
-        updateDebugOverlay()
-        updateDistance()
-        updateSlope()
-        updateAverageSpeed(now: monotonicNow)
-        updateTextEffects(now: now, timestamp: monotonicNow)
-        updateMapEffects()
-        updateScoreboardEffects()
-        updatePoll()
-        updateObsSceneSwitcher(now: monotonicNow)
-        weatherManager.setLocation(location: latestKnownLocation)
-        geographyManager.setLocation(location: latestKnownLocation)
-        updateBitrateStatus()
-        updateAdsRemainingTimer(now: now)
-        if database.show.systemMonitor {
-            resourceUsage.update(now: monotonicNow)
-            systemMonitor.cpu = resourceUsage.getCpuUsage()
-            systemMonitor.ram = resourceUsage.getMemoryUsage()
+        if !backgrounded {
+            updateStreamUptime(now: monotonicNow)
+            updateRecordingLength(now: now)
+            media.updateSrtTransportBitrate()
+            updateSpeed(now: monotonicNow)
+            updateIngestsSpeed()
+            updateBondingStatistics()
+            removeOldChatMessages(now: monotonicNow)
+            updateLocation()
+            updateObsSourceScreenshot()
+            updateObsAudioVolume()
+            updateBrowserWidgetStatus()
+            logStatus()
+            updateDebugOverlay()
+            updateDistance()
+            updateSlope()
+            updateAverageSpeed(now: monotonicNow)
+            updateTextEffects(now: now, timestamp: monotonicNow)
+            updateMapEffects()
+            updateScoreboardEffects()
+            updatePoll()
+            updateObsSceneSwitcher(now: monotonicNow)
+            weatherManager.setLocation(location: latestKnownLocation)
+            geographyManager.setLocation(location: latestKnownLocation)
+            updateBitrateStatus()
+            updateAdsRemainingTimer(now: now)
+            if database.show.systemMonitor {
+                resourceUsage.update(now: monotonicNow)
+                systemMonitor.cpu = resourceUsage.getCpuUsage()
+                systemMonitor.ram = resourceUsage.getMemoryUsage()
+            }
+            updateMoblinkStatus()
+            updateStatusEventsText()
+            updateStatusChatText()
+            updateAutoSceneSwitcher(now: monotonicNow)
+            sendPeriodicRemoteControlStreamerStatus()
+            speechToTextProcess()
+            updateTwitchRaid()
         }
-        updateMoblinkStatus()
-        updateStatusEventsText()
-        updateStatusChatText()
-        updateAutoSceneSwitcher(now: monotonicNow)
-        sendPeriodicRemoteControlStreamerStatus()
-        speechToTextProcess()
-        updateTwitchRaid()
     }
 
     private func handle3sTimer() {
@@ -1684,8 +1690,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         periodicTimer20ms.stop()
         if !keepChatRunning {
             periodicTimer200ms.stop()
+            periodicTimer1s.stop()
         }
-        periodicTimer1s.stop()
         periodicTimer3s.stop()
         periodicTimer5s.stop()
         periodicTimer10s.stop()
