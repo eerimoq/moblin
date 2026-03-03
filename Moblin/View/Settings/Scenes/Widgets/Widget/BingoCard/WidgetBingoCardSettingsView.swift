@@ -44,9 +44,9 @@ struct WidgetBingoCardQuickButtonControlsView: View {
 
     var body: some View {
         let squaresCountSide = bingoCard.size()
-        VStack(spacing: 13) {
+        VStack(spacing: 5) {
             ForEach(0 ..< squaresCountSide, id: \.self) { row in
-                HStack(spacing: 13) {
+                HStack(spacing: 3) {
                     Spacer()
                     ForEach(0 ..< squaresCountSide, id: \.self) { column in
                         let index = row * squaresCountSide + column
