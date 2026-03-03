@@ -2,6 +2,7 @@ import Charts
 import CoreImage
 import SwiftUI
 
+private let wheelSize = 400.0
 private let optionColors: [Color] = [.blue, .red, .yellow, .green, .pink, .cyan]
 
 struct WheelOfLuckEffectOption: Identifiable {
@@ -34,7 +35,7 @@ private struct WheelView: View {
                     .font(.system(size: font))
                     .offset(x: offset)
                     .rotationEffect(option.textAngle)
-                    .frame(width: 150)
+                    .frame(width: 150 * (size / wheelSize))
             }
         }
         .frame(width: size, height: size)
@@ -86,7 +87,7 @@ final class WheelOfLuckEffect: VideoEffect {
                                                    text: inputOption.text,
                                                    textAngle: .degrees(textAngle)))
         }
-        let size = 400.0 * (canvasSize.width / 1920)
+        let size = wheelSize * (canvasSize.width / 1920)
         render(size: size, options: options)
     }
 
