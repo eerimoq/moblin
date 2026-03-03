@@ -59,6 +59,10 @@ struct WidgetChatSettingsView: View {
                     .onChange(of: chat.platform) { _ in
                         setEffectSettings()
                     }
+                Toggle("Show Shared Chat channel icons", isOn: $chat.showSharedChatSourceChannel)
+                    .onChange(of: chat.showSharedChatSourceChannel) { _ in
+                        setEffectSettings()
+                    }
             }
         }
         Section {
