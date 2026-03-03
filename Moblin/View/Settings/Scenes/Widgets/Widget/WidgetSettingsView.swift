@@ -16,8 +16,54 @@ private struct AlignmentOptionView: View {
     }
 }
 
+private struct SceneSettings: Codable {
+    let x: Double
+    let y: Double
+    let size: Double
+    let alignment: SettingsAlignment
+}
+
+private struct SaveLoadLayoutView: View {
+    @EnvironmentObject private var model: Model
+    @Binding var layout: SettingsWidgetLayout
+    @ObservedObject var widget: SettingsWidget
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Spacer()
+            Button {
+                model.layout = layout
+            } label: {
+                HCenter {
+                    Text("Save layout")
+                }
+            }
+            .buttonStyle(.bordered)
+            Spacer()
+            Button {
+                layout = model.layout ?? layout
+                model.sceneUpdated()
+            } label: {
+                HStack {
+                    Text("")
+                    Spacer(minLength: 0)
+                    Text("Load layout")
+                    Spacer(minLength: 0)
+                    Text("")
+                }
+            }
+            .buttonStyle(.bordered)
+            .disabled(model.layout == nil)
+            Spacer()
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.5)
+    }
+}
+
 struct WidgetLayoutView: View {
     let model: Model
+    @ObservedObject var database: Database
     @Binding var layout: SettingsWidgetLayout
     @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
@@ -39,8 +85,11 @@ struct WidgetLayoutView: View {
             Section {
                 if widget.hasAlignment() {
                     HStack {
-                        Text("Alignment")
-                        Spacer(minLength: 0)
+                        HStack {
+                            SaveLoadLayoutView(layout: $layout, widget: widget)
+                            Spacer()
+                        }
+                        Divider()
                         VStack(spacing: 5) {
                             HStack(spacing: 3) {
                                 AlignmentOptionView(layout: $layout, alignment: .topLeft)
@@ -103,8 +152,15 @@ struct WidgetLayoutView: View {
                         numericInput: $numericInput
                     )
                 }
+                Toggle("Numeric input", isOn: $database.sceneNumericInput)
             } header: {
                 Text("Layout")
+            } footer: {
+                Text("""
+                Use save/load layout to position a widget in the same place in multiple \
+                scenes. Alternatively, use a Scene widget to easily show the same widgets \
+                in multiple scenes.
+                """)
             }
         }
     }

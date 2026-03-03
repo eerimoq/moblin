@@ -499,29 +499,6 @@ enum SettingsAlignment: String, Codable, CaseIterable {
     func mirrorPositionVertically() -> Bool {
         return self == .bottomLeft || self == .bottomRight || self == .bottomCenter
     }
-
-    func toString() -> String {
-        switch self {
-        case .topLeft:
-            return String(localized: "Top left")
-        case .topRight:
-            return String(localized: "Top right")
-        case .bottomLeft:
-            return String(localized: "Bottom left")
-        case .bottomRight:
-            return String(localized: "Bottom right")
-        case .topCenter:
-            return String(localized: "Top center")
-        case .bottomCenter:
-            return String(localized: "Bottom center")
-        case .leftCenter:
-            return String(localized: "Left center")
-        case .rightCenter:
-            return String(localized: "Right center")
-        case .center:
-            return String(localized: "Center")
-        }
-    }
 }
 
 class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
