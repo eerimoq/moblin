@@ -8,6 +8,7 @@ struct PositionEditView: View {
     let incrementImageName: String
     let decrementImageName: String
     let mirror: Bool
+    let increment: Double
 
     func submit(value: String) -> String {
         if var value = Float(value) {
@@ -29,7 +30,7 @@ struct PositionEditView: View {
             incrementImageName: incrementImageName,
             decrementImageName: decrementImageName,
             mirror: mirror,
-            increment: 0.125
+            increment: increment
         )
     }
 }

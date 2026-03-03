@@ -1,3 +1,4 @@
+import CoreMedia
 import SwiftUI
 
 private struct AlignmentOptionView: View {
@@ -20,6 +21,18 @@ struct WidgetLayoutView: View {
     @Binding var layout: SettingsWidgetLayout
     @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
+
+    private func dimensions() -> CMVideoDimensions {
+        return model.stream.resolution.dimensions(portrait: model.stream.portrait)
+    }
+
+    private func horizontalIncrement() -> Double {
+        return 100 / Double(dimensions().width)
+    }
+
+    private func verticalIncrement() -> Double {
+        return 100 / Double(dimensions().height)
+    }
 
     var body: some View {
         if widget.hasPosition() || widget.hasSize() || widget.hasAlignment() {
@@ -61,7 +74,8 @@ struct WidgetLayoutView: View {
                             numericInput: $numericInput,
                             incrementImageName: "arrow.forward.circle",
                             decrementImageName: "arrow.backward.circle",
-                            mirror: layout.alignment.mirrorPositionHorizontally()
+                            mirror: layout.alignment.mirrorPositionHorizontally(),
+                            increment: horizontalIncrement()
                         )
                     }
                     if !layout.alignment.isVerticalCenter() {
@@ -74,7 +88,8 @@ struct WidgetLayoutView: View {
                             numericInput: $numericInput,
                             incrementImageName: "arrow.down.circle",
                             decrementImageName: "arrow.up.circle",
-                            mirror: layout.alignment.mirrorPositionVertically()
+                            mirror: layout.alignment.mirrorPositionVertically(),
+                            increment: verticalIncrement()
                         )
                     }
                 }
