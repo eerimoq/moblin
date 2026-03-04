@@ -439,7 +439,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var showBackgroundStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
     var streaming = false
-    var backgrounded = false
+    var inBackground = false
     var streamStartTime: ContinuousClock.Instant?
     var isRecorderRecording = false
     var workoutType: WatchProtocolWorkoutType?
@@ -1372,7 +1372,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        backgrounded = true
+        inBackground = true
         switch backgroundRunLevel() {
         case .full:
             disableScreenPreview()
@@ -1391,6 +1391,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
+        inBackground = false
         switch backgroundRunLevel() {
         case .full:
             maybeEnableScreenPreview()
@@ -1438,7 +1439,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
             reloadCameraLevel()
         }
-        backgrounded = false
     }
 
     @objc func handleWillTerminate() {
@@ -1533,9 +1533,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return .off
         }
         let keepChatRunning = database.chat.background || database.catPrinters.backgroundPrinting
-        if keepChatRunning || database.moblink.relay
-            .enabled
-        {
+        if keepChatRunning || database.moblink.relay.enabled {
             return .service(
                 keepChatRunning: keepChatRunning,
                 keepBatteryLevelRunning: database.moblink.relay.enabled
@@ -1614,45 +1612,46 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let now = Date()
         let monotonicNow = ContinuousClock.now
         updateDigitalClock(now: now)
-        if !backgrounded {
-            updateStreamUptime(now: monotonicNow)
-            updateRecordingLength(now: now)
-            media.updateSrtTransportBitrate()
-            updateSpeed(now: monotonicNow)
-            updateIngestsSpeed()
-            updateBondingStatistics()
-            removeOldChatMessages(now: monotonicNow)
-            updateLocation()
-            updateObsSourceScreenshot()
-            updateObsAudioVolume()
-            updateBrowserWidgetStatus()
-            logStatus()
-            updateDebugOverlay()
-            updateDistance()
-            updateSlope()
-            updateAverageSpeed(now: monotonicNow)
-            updateTextEffects(now: now, timestamp: monotonicNow)
-            updateMapEffects()
-            updateScoreboardEffects()
-            updatePoll()
-            updateObsSceneSwitcher(now: monotonicNow)
-            weatherManager.setLocation(location: latestKnownLocation)
-            geographyManager.setLocation(location: latestKnownLocation)
-            updateBitrateStatus()
-            updateAdsRemainingTimer(now: now)
-            if database.show.systemMonitor {
-                resourceUsage.update(now: monotonicNow)
-                systemMonitor.cpu = resourceUsage.getCpuUsage()
-                systemMonitor.ram = resourceUsage.getMemoryUsage()
-            }
-            updateMoblinkStatus()
-            updateStatusEventsText()
-            updateStatusChatText()
-            updateAutoSceneSwitcher(now: monotonicNow)
-            sendPeriodicRemoteControlStreamerStatus()
-            speechToTextProcess()
-            updateTwitchRaid()
+        removeOldChatMessages(now: monotonicNow)
+        guard !inBackground else {
+            return
         }
+        updateStreamUptime(now: monotonicNow)
+        updateRecordingLength(now: now)
+        media.updateSrtTransportBitrate()
+        updateSpeed(now: monotonicNow)
+        updateIngestsSpeed()
+        updateBondingStatistics()
+        updateLocation()
+        updateObsSourceScreenshot()
+        updateObsAudioVolume()
+        updateBrowserWidgetStatus()
+        logStatus()
+        updateDebugOverlay()
+        updateDistance()
+        updateSlope()
+        updateAverageSpeed(now: monotonicNow)
+        updateTextEffects(now: now, timestamp: monotonicNow)
+        updateMapEffects()
+        updateScoreboardEffects()
+        updatePoll()
+        updateObsSceneSwitcher(now: monotonicNow)
+        weatherManager.setLocation(location: latestKnownLocation)
+        geographyManager.setLocation(location: latestKnownLocation)
+        updateBitrateStatus()
+        updateAdsRemainingTimer(now: now)
+        if database.show.systemMonitor {
+            resourceUsage.update(now: monotonicNow)
+            systemMonitor.cpu = resourceUsage.getCpuUsage()
+            systemMonitor.ram = resourceUsage.getMemoryUsage()
+        }
+        updateMoblinkStatus()
+        updateStatusEventsText()
+        updateStatusChatText()
+        updateAutoSceneSwitcher(now: monotonicNow)
+        sendPeriodicRemoteControlStreamerStatus()
+        speechToTextProcess()
+        updateTwitchRaid()
     }
 
     private func handle3sTimer() {
