@@ -31,7 +31,6 @@ protocol MediaDelegate: AnyObject {
     func mediaOnAudioMuteChange()
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
-    func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String)
     func mediaOnAttachCameraError()
     func mediaOnCaptureSessionError(_ message: String)
     func mediaOnBufferedVideoReady(cameraId: UUID)
@@ -1030,10 +1029,6 @@ extension Media: ProcessorDelegate {
 
     func streamVideo(lowFpsImage: Data?, frameNumber: UInt64) {
         delegate?.mediaOnLowFpsImage(lowFpsImage, frameNumber)
-    }
-
-    func streamVideo(findVideoFormatError: String, activeFormat: String) {
-        delegate?.mediaOnFindVideoFormatError(findVideoFormatError, activeFormat)
     }
 
     func streamVideoAttachCameraError() {

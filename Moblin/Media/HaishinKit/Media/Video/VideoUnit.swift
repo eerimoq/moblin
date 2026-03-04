@@ -1780,7 +1780,6 @@ final class VideoUnit: NSObject {
         """
         logger.info(error)
         logger.info(activeFormat)
-        processor?.delegate?.streamVideo(findVideoFormatError: error, activeFormat: activeFormat)
         for format in device.formats {
             logger.info("Available video format: \(format)")
         }

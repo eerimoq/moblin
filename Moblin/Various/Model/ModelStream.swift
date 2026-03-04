@@ -669,10 +669,6 @@ extension Model {
         }
     }
 
-    private func handleFindVideoFormatError(findVideoFormatError: String, activeFormat: String) {
-        makeErrorToastMain(title: findVideoFormatError, subTitle: activeFormat)
-    }
-
     private func handleAttachCameraError() {
         makeErrorToastMain(
             title: String(localized: "Camera capture setup error"),
@@ -920,10 +916,6 @@ extension Model: MediaDelegate {
 
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64) {
         handleLowFpsImage(image: lowFpsImage, frameNumber: frameNumber)
-    }
-
-    func mediaOnFindVideoFormatError(_ findVideoFormatError: String, _ activeFormat: String) {
-        handleFindVideoFormatError(findVideoFormatError: findVideoFormatError, activeFormat: activeFormat)
     }
 
     func mediaOnAttachCameraError() {
