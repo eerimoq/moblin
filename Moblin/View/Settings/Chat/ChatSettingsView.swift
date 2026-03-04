@@ -3,6 +3,7 @@ import SwiftUI
 private struct ChatSettingsGeneralView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chat: SettingsChat
+    @ObservedObject var catPrinters: SettingsCatPrinters
 
     func submitMaximumAge(value: String) {
         guard let maximumAge = Int(value) else {
@@ -56,6 +57,7 @@ private struct ChatSettingsGeneralView: View {
                 .onChange(of: chat.showDeletedMessages) { _ in
                     model.reloadChatMessages()
                 }
+            Toggle("Background chat", isOn: $catPrinters.backgroundPrinting)
         }
     }
 }
@@ -64,6 +66,7 @@ struct ChatSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chat: SettingsChat
     @ObservedObject var stream: SettingsStream
+    @ObservedObject var catPrinters: SettingsCatPrinters
 
     var body: some View {
         Form {
@@ -76,7 +79,7 @@ struct ChatSettingsView: View {
             Section {
                 ChatSettingsAppearanceView(chat: chat)
                 ChatSettingsLayoutView(chat: chat)
-                ChatSettingsGeneralView(chat: chat)
+                ChatSettingsGeneralView(chat: chat, catPrinters: catPrinters)
             }
             if stream !== fallbackStream {
                 ShortcutSectionView {
