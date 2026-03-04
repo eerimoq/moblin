@@ -16,13 +16,6 @@ private struct AlignmentOptionView: View {
     }
 }
 
-private struct SceneSettings: Codable {
-    let x: Double
-    let y: Double
-    let size: Double
-    let alignment: SettingsAlignment
-}
-
 private struct SaveLoadLayoutView: View {
     @EnvironmentObject private var model: Model
     @Binding var layout: SettingsWidgetLayout

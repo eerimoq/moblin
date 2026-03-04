@@ -523,16 +523,6 @@ class SettingsVoice: Codable {
     var ttsMonster: SettingsVoiceTtsMonster = .init()
 }
 
-enum SettingsChatButtonMode: String, Codable, CaseIterable {
-    case predefinedMessages
-    case moderation
-
-    init(from decoder: Decoder) throws {
-        self = try SettingsChatButtonMode(rawValue: decoder.singleValueContainer()
-            .decode(RawValue.self)) ?? .predefinedMessages
-    }
-}
-
 class SettingsChat: Codable, ObservableObject {
     @Published var fontSize: Float = 19.0
     var usernameColor: RgbColor = .init(red: 255, green: 163, blue: 0)

@@ -2194,10 +2194,6 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
             .bingoCard,
         ].contains(type)
     }
-
-    func canExpand() -> Bool {
-        return hasPosition() || hasSize()
-    }
 }
 
 struct SettingsWidgetLayout {
