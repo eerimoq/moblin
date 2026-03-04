@@ -1472,6 +1472,17 @@ class Database: Codable, ObservableObject {
 }
 
 private func addDefaultScenes(database: Database) {
+    #if targetEnvironment(macCatalyst)
+    var scene = SettingsScene(name: String(localized: "Screen"))
+    scene.videoSource.cameraPosition = .screenCapture
+    database.scenes.append(scene)
+    if !bestFrontCameraId.isEmpty {
+        scene = SettingsScene(name: String(localized: "Front"))
+        scene.videoSource.cameraPosition = .front
+        scene.videoSource.frontCameraId = bestFrontCameraId
+        database.scenes.append(scene)
+    }
+    #else
     var scene = SettingsScene(name: String(localized: "Back"))
     scene.videoSource.cameraPosition = defaultBackCameraPosition
     scene.videoSource.backCameraId = bestBackCameraId
@@ -1480,6 +1491,7 @@ private func addDefaultScenes(database: Database) {
     scene.videoSource.cameraPosition = .front
     scene.videoSource.frontCameraId = bestFrontCameraId
     database.scenes.append(scene)
+    #endif
 }
 
 private func addDefaultZoomPresets(database: Database) {
@@ -1997,9 +2009,11 @@ private func addScenesToGameController(database: Database) {
     var button = database.gameControllers[0].buttons[0]
     button.function = .scene
     button.sceneId = database.scenes[0].id
-    button = database.gameControllers[0].buttons[1]
-    button.function = .scene
-    button.sceneId = database.scenes[1].id
+    if database.scenes.count > 1 {
+        button = database.gameControllers[0].buttons[1]
+        button.function = .scene
+        button.sceneId = database.scenes[1].id
+    }
 }
 
 func getDefaultMic() -> SettingsMic {
