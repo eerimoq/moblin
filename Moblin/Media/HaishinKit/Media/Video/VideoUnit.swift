@@ -95,6 +95,7 @@ private func setOrientation(
     connection: AVCaptureConnection,
     orientation: AVCaptureVideoOrientation
 ) {
+    #if !targetEnvironment(macCatalyst)
     if #available(iOS 17.0, *), device?.deviceType == .external {
         connection.videoOrientation = .landscapeRight
     } else if useLandscapeStreamAndPortraitUi(device, isLandscapeStreamAndPortraitUi) {
@@ -102,6 +103,7 @@ private func setOrientation(
     } else {
         connection.videoOrientation = orientation
     }
+    #endif
 }
 
 struct TextDetection {
@@ -476,7 +478,6 @@ final class VideoUnit: NSObject {
             try attachDefault(params: params)
         }
         currentAttachParams = params
-        updateMacScreenCapture(enabled: params.macScreenCapture)
     }
 
     private func attachQuickSwitch(params: VideoUnitAttachParams) {
@@ -502,6 +503,7 @@ final class VideoUnit: NSObject {
     }
 
     private func attachDefault(params: VideoUnitAttachParams) throws {
+        updateMacScreenCapture(enabled: params.macScreenCapture)
         for device in captureSessionDevices {
             device.output.setSampleBufferDelegate(nil, queue: processorPipelineQueue)
         }

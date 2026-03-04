@@ -183,11 +183,7 @@ final class Media: NSObject {
         }
         self.processor = processor
         processor.setDelegate(delegate: self)
-        #if targetEnvironment(macCatalyst)
-        processor.setVideoOrientation(value: .landscapeLeft)
-        #else
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
-        #endif
         attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
     }
 
