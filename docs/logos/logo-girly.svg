@@ -68,17 +68,11 @@
        cy="125.47973"
        rx="11.302401"
        ry="12.686368" />
-    <!-- Cute smile -->
     <path
-       style="fill:#cc1466;fill-opacity:1;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-dasharray:none"
-       d="M 108.0,150.0 C 112.0,157.0 120.0,160.0 128.0,158.0 C 134.0,156.5 138.0,152.0 139.0,148.0 C 136.0,153.0 129.0,156.0 122.0,155.5 C 115.0,155.0 110.0,152.5 108.0,150.0 Z"
+       style="fill:#cc1466;fill-opacity:1;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="m 135.29273,148.41464 c -4.41659,1.4602 -9.07107,1.57648 -16.05635,2.47412 -10.80109,1.38798 -13.75474,1.62222 -15.70254,3.85011 -2.5424,2.90799 -4.305824,6.768 -2.52151,9.20747 1.55524,2.12628 3.65572,3.33748 7.22763,3.33748 3.57191,0 9.72606,-1.99618 14.67851,-1.90143 5.58164,0.10679 11.22154,-2.61686 15.61774,-3.71591 4.63695,-3.18801 3.41254,-4.47987 3.63809,-7.42886 -1.13681,-4.02316 -2.2876,-6.70648 -6.88157,-5.82298 z"
        id="path1369"
-       sodipodi:nodetypes="ccccc" />
-    <!-- Smile line -->
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-       d="M 107.0,149.5 C 111.0,157.5 120.5,161.0 129.0,158.5 C 135.0,156.8 139.0,152.5 140.0,147.5"
-       id="smile-line" />
+       sodipodi:nodetypes="csssssccc" />
     <ellipse
        style="fill:#000000;fill-opacity:1;stroke:#1e1a1a;stroke-width:0.0927953;stroke-linejoin:bevel;stroke-miterlimit:3.4"
        id="path2097"
