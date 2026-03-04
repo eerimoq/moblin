@@ -56,9 +56,8 @@ struct SrtSenderSuite {
         let timestamp = UInt32(packet.substring(begin: 16, end: 24), radix: 16)!
         #expect(packet.substring(begin: 24, end: 48) == "000000000000000400000002")
         let sequenceNumber = UInt32(packet.substring(begin: 48, end: 56), radix: 16)!
-        #expect(packet
-            .substring(begin: 56, end: 128) ==
-            "000005dc00002000000000012ab1f77c000000000100007f000000000000000000000000")
+        #expect(packet.substring(begin: 56, end: 80) == "000005dc0000200000000001")
+        #expect(packet.substring(begin: 88, end: 128) == "000000000100007f000000000000000000000000")
         return (timestamp, sequenceNumber)
     }
 

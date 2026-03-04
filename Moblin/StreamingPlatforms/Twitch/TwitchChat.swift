@@ -65,85 +65,6 @@ private enum TwitchEmote {
     }
 }
 
-private struct ChatMessage {
-    let id: String?
-    let emotes: [ChatMessageEmote]
-    let badges: [String]
-    let displayName: String
-    let user: String
-    let userId: String?
-    let senderColor: String?
-    let text: String
-    let announcement: Bool
-    let firstMessage: Bool
-    let subscriber: Bool
-    let moderator: Bool
-    // periphery:ignore
-    let turbo: Bool
-    let bits: String?
-    let replySender: String?
-    let replyText: String?
-    let sourceChannelId: String?
-
-    init?(_ message: TwitchChatMessage) {
-        guard message.parameters.count == 2,
-              let text = message.parameters.last,
-              let displayName = message.displayName,
-              let user = message.user
-        else {
-            return nil
-        }
-        var announcement = false
-        var firstMessage = false
-        var subscriber = false
-        var moderator = false
-        var turbo = false
-        switch message.command {
-        case .privateMessage:
-            firstMessage = message.first_message == "1"
-            subscriber = message.subscriber == "1"
-            moderator = message.moderator == "1"
-            turbo = message.turbo == "1"
-        case .userNotice:
-            announcement = message.messageId == "announcement"
-        default:
-            return nil
-        }
-        id = message.id
-        emotes = message.emotes
-        badges = message.badges
-        self.text = text
-        self.displayName = displayName
-        self.user = user
-        userId = message.userId
-        senderColor = message.color
-        self.announcement = announcement
-        self.firstMessage = firstMessage
-        self.subscriber = subscriber
-        self.moderator = moderator
-        self.turbo = turbo
-        bits = message.bits
-        replySender = message.replySender
-        replyText = message.replyText
-        sourceChannelId = message.sourceRoomId
-    }
-
-    func isAction() -> Bool {
-        return text.starts(with: "\u{01}ACTION")
-    }
-}
-
-private func parseTags(from string: String) -> [String: String] {
-    let tagsString = string[string.index(after: string.startIndex)...]
-    var tags: [String: String] = [:]
-    for tag in tagsString.split(separator: ";") {
-        if let (name, value) = tagNameAndValue(from: tag) {
-            tags[name] = value
-        }
-    }
-    return tags
-}
-
 private func tagNameAndValue(from specifier: Substring) -> (String, String)? {
     let parts = specifier.split(separator: "=")
     guard parts.count == 2, let name = parts.first, let value = parts.last else {
@@ -190,24 +111,79 @@ private func parseParameters(from parts: [String]) -> [String] {
 }
 
 struct TwitchChatMessage {
-    let tags: [String: String]
-    let sourceString: String?
     let command: TwitchChatCommand
     let parameters: [String]
+    var displayName: String?
+    var user: String?
+    var userId: String?
+    var color: String?
+    var emotes: [ChatMessageEmote] = []
+    var badges: [String] = []
+    var messageId: String?
+    var id: String?
+    var firstMessage: Bool = false
+    var subscriber: Bool = false
+    var moderator: Bool = false
+    var bits: String?
+    var replySender: String?
+    var replyText: String?
+    var targetMessageId: String?
+    var targetUserId: String?
+    var sourceRoomId: String?
 
     init(string: String) throws {
         var parts = string.components(separatedBy: .whitespaces)
         if let tagsPart = parts.first, tagsPart.hasPrefix("@") {
-            tags = parseTags(from: tagsPart)
+            let tagsString = tagsPart[tagsPart.index(after: tagsPart.startIndex)...]
+            for tag in tagsString.split(separator: ";") {
+                guard let (name, value) = tagNameAndValue(from: tag) else {
+                    continue
+                }
+                switch name {
+                case "display-name":
+                    displayName = value
+                case "user-id":
+                    userId = value
+                case "color":
+                    color = value
+                case "emotes":
+                    emotes = TwitchEmote.emotes(from: value)
+                case "badges":
+                    badges = value.split(separator: ",").map { String($0) }
+                case "msg-id":
+                    messageId = value
+                case "id":
+                    id = value
+                case "first-msg":
+                    firstMessage = value == "1"
+                case "subscriber":
+                    subscriber = value == "1"
+                case "mod":
+                    moderator = value == "1"
+                case "bits":
+                    bits = value
+                case "reply-parent-display-name":
+                    replySender = value
+                case "reply-parent-msg-body":
+                    replyText = value
+                case "target-msg-id":
+                    targetMessageId = value
+                case "target-user-id":
+                    targetUserId = value
+                case "source-room-id":
+                    sourceRoomId = value
+                default:
+                    break
+                }
+            }
             parts.removeFirst()
-        } else {
-            tags = [:]
         }
         if let sourcePart = parts.first, sourcePart.hasPrefix(":") {
-            sourceString = String(sourcePart.removingPrefix(":"))
+            let source = String(sourcePart.removingPrefix(":"))
+            if let senderEndIndex = source.firstIndex(of: "!") {
+                user = String(source.prefix(upTo: senderEndIndex))
+            }
             parts.removeFirst()
-        } else {
-            sourceString = nil
         }
         guard let commandPart = parts.first else {
             throw MessageError.missingCommand(string)
@@ -219,80 +195,6 @@ struct TwitchChatMessage {
         self.command = command
         parts.removeFirst()
         parameters = parseParameters(from: parts)
-    }
-
-    var displayName: String? {
-        return tags["display-name"]
-    }
-
-    var user: String? {
-        if let source = sourceString, let senderEndIndex = source.firstIndex(of: "!") {
-            return String(source.prefix(upTo: senderEndIndex))
-        } else {
-            return nil
-        }
-    }
-
-    var userId: String? {
-        tags["user-id"]
-    }
-
-    var color: String? {
-        tags["color"]
-    }
-
-    var emotes: [ChatMessageEmote] {
-        guard let emoteString = tags["emotes"] else {
-            return []
-        }
-        return TwitchEmote.emotes(from: emoteString)
-    }
-
-    var badges: [String] {
-        guard let badges = tags["badges"] else {
-            return []
-        }
-        return badges.split(separator: ",").map { String($0) }
-    }
-
-    var messageId: String? {
-        tags["msg-id"]
-    }
-
-    var id: String? {
-        tags["id"]
-    }
-
-    var first_message: String? {
-        tags["first-msg"]
-    }
-
-    var subscriber: String? {
-        tags["subscriber"]
-    }
-
-    var moderator: String? {
-        tags["mod"]
-    }
-
-    var turbo: String? {
-        tags["turbo"]
-    }
-
-    var bits: String? {
-        tags["bits"]
-    }
-
-    var replySender: String? {
-        tags["reply-parent-display-name"]
-    }
-
-    var replyText: String? {
-        tags["reply-parent-msg-body"]
-    }
-
-    var sourceRoomId: String? {
-        tags["source-room-id"]
     }
 }
 
@@ -458,7 +360,7 @@ final class TwitchChat {
     private var cheermotes: Cheermotes
     private var channelName: String
     private weak var delegate: (any TwitchChatDelegate)?
-    private var sourceChannelIcons: [String: URL] = [:]
+    private var sourceRoomIcons: [String: URL?] = [:]
     private var accessToken: String = ""
 
     init(delegate: TwitchChatDelegate) {
@@ -533,7 +435,46 @@ final class TwitchChat {
     }
 
     private func handleChatMessage(message: TwitchChatMessage) {
-        guard let message = ChatMessage(message) else {
+        if let sourceRoomId = message.sourceRoomId, !accessToken.isEmpty {
+            if let sourceRoomIcon = sourceRoomIcons[sourceRoomId] {
+                processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
+            } else {
+                TwitchApi(accessToken).getUserById(id: sourceRoomId) { user in
+                    let sourceRoomIcon: URL?
+                    if let user {
+                        sourceRoomIcon = URL(string: user.profile_image_url)
+                    } else {
+                        sourceRoomIcon = nil
+                    }
+                    self.sourceRoomIcons[sourceRoomId] = sourceRoomIcon
+                    self.processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
+                }
+            }
+        } else {
+            processChatMessage(message: message, sourceChannelIcon: nil)
+        }
+    }
+
+    private func processChatMessage(message: TwitchChatMessage, sourceChannelIcon: URL?) {
+        guard message.parameters.count == 2,
+              var text = message.parameters.last,
+              let displayName = message.displayName,
+              let user = message.user
+        else {
+            return
+        }
+        var announcement = false
+        var firstMessage = false
+        var subscriber = false
+        var moderator = false
+        switch message.command {
+        case .privateMessage:
+            firstMessage = message.firstMessage
+            subscriber = message.subscriber
+            moderator = message.moderator
+        case .userNotice:
+            announcement = message.messageId == "announcement"
+        default:
             return
         }
         var badgeUrls: [URL] = []
@@ -542,12 +483,9 @@ final class TwitchChat {
                 badgeUrls.append(badgeUrl)
             }
         }
-        let text: String
-        let isAction = message.isAction()
+        let isAction = text.starts(with: "\u{01}ACTION")
         if isAction {
-            text = String(message.text.dropFirst(7))
-        } else {
-            text = message.text
+            text = String(text.dropFirst(7))
         }
         let segments = createSegments(
             text: text,
@@ -555,60 +493,36 @@ final class TwitchChat {
             emotesManager: emotes,
             bits: message.bits
         )
-        let highlight = createHighlight(message: message)
-        let appendMessage: (URL?) -> Void = { [weak self] iconUrl in
-            self?.delegate?.twitchChatAppendMessage(
-                messageId: message.id,
-                displayName: message.displayName,
-                user: message.user,
-                userId: message.userId,
-                userColor: RgbColor.fromHex(string: message.senderColor ?? ""),
-                userBadges: badgeUrls,
-                segments: segments,
-                isAction: isAction,
-                isSubscriber: message.subscriber,
-                isModerator: message.moderator,
-                bits: message.bits,
-                highlight: highlight,
-                sourceChannelIcon: iconUrl
-            )
-        }
-        if let sourceChannelId = message.sourceChannelId {
-            resolveSourceChannelIcon(channelId: sourceChannelId) { iconUrl in
-                appendMessage(iconUrl)
-            }
-        } else {
-            appendMessage(nil)
-        }
-    }
-
-    private func resolveSourceChannelIcon(channelId: String, completion: @escaping (URL?) -> Void) {
-        if let cached = sourceChannelIcons[channelId] {
-            completion(cached)
-            return
-        }
-        TwitchApi(accessToken).getUserById(id: channelId) { user in
-            let url = user?.profile_image_url
-            DispatchQueue.main.async {
-                if let url, let url = URL(string: url) {
-                    self.sourceChannelIcons[channelId] = url
-                    completion(url)
-                } else {
-                    completion(nil)
-                }
-            }
-        }
+        let highlight = createHighlight(announcement: announcement,
+                                        firstMessage: firstMessage,
+                                        replySender: message.replySender,
+                                        replyText: message.replyText)
+        delegate?.twitchChatAppendMessage(
+            messageId: message.id,
+            displayName: displayName,
+            user: user,
+            userId: message.userId,
+            userColor: RgbColor.fromHex(string: message.color ?? ""),
+            userBadges: badgeUrls,
+            segments: segments,
+            isAction: isAction,
+            isSubscriber: subscriber,
+            isModerator: moderator,
+            bits: message.bits,
+            highlight: highlight,
+            sourceChannelIcon: sourceChannelIcon
+        )
     }
 
     private func handleClearMessage(message: TwitchChatMessage) {
-        guard let targetMessageId = message.tags["target-msg-id"] else {
+        guard let targetMessageId = message.targetMessageId else {
             return
         }
         delegate?.twitchChatDeleteMessage(messageId: targetMessageId)
     }
 
     private func handleClearChat(message: TwitchChatMessage) {
-        guard let targetUserId = message.tags["target-user-id"] else {
+        guard let targetUserId = message.targetUserId else {
             return
         }
         delegate?.twitchChatDeleteUser(userId: targetUserId)
@@ -618,12 +532,16 @@ final class TwitchChat {
         webSocket.send(string: "PONG \(message.parameters.joined(separator: " "))")
     }
 
-    private func createHighlight(message: ChatMessage) -> ChatHighlight? {
-        if message.announcement {
+    private func createHighlight(announcement: Bool,
+                                 firstMessage: Bool,
+                                 replySender: String?,
+                                 replyText: String?) -> ChatHighlight?
+    {
+        if announcement {
             return ChatHighlight.makeAnnouncement()
-        } else if message.firstMessage {
+        } else if firstMessage {
             return ChatHighlight.makeFirstMessage()
-        } else if let sender = message.replySender, let text = message.replyText {
+        } else if let sender = replySender, let text = replyText {
             return ChatHighlight.makeReply(
                 user: sender,
                 segments: createSegmentsNoTwitchEmotes(text: text, bits: nil)

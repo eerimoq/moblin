@@ -34,21 +34,23 @@ struct TwitchChatSuite {
         #eerimoq \
         :hi all
         """)
-        #expect(message.tags == ["badge-info": "subscriber/13",
-                                 "subscriber": "1",
-                                 "room-id": "63482386",
-                                 "client-nonce": "11b2e915221ab4bcfb44714bda0fb575",
-                                 "user-id": "63482386",
-                                 "id": "52db2f3d-cc5a-46ea-ba0b-bd910579c248",
-                                 "first-msg": "0",
-                                 "badges": "broadcaster/1,subscriber/0,turbo/1",
-                                 "turbo": "1",
-                                 "mod": "0",
-                                 "tmi-sent-ts": "1760946171865",
-                                 "display-name": "eerimoq",
-                                 "returning-chatter": "0"])
-        #expect(message.sourceString == "eerimoq!eerimoq@eerimoq.tmi.twitch.tv")
         #expect(message.command == .privateMessage)
         #expect(message.parameters == ["#eerimoq", "hi all"])
+        #expect(message.displayName == "eerimoq")
+        #expect(message.user == "eerimoq")
+        #expect(message.userId == "63482386")
+        #expect(message.color == nil)
+        #expect(message.emotes.isEmpty)
+        #expect(message.badges == ["broadcaster/1", "subscriber/0", "turbo/1"])
+        #expect(message.messageId == nil)
+        #expect(message.id == "52db2f3d-cc5a-46ea-ba0b-bd910579c248")
+        #expect(!message.firstMessage)
+        #expect(message.subscriber)
+        #expect(!message.moderator)
+        #expect(message.bits == nil)
+        #expect(message.replySender == nil)
+        #expect(message.replyText == nil)
+        #expect(message.targetMessageId == nil)
+        #expect(message.targetUserId == nil)
     }
 }
