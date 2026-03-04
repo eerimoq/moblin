@@ -103,11 +103,14 @@ private struct LineView: View {
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold()
-            if let sourceChannel = post.sourceChannelLogin, chat.showSharedChatSourceChannel {
-                Text("[\(sourceChannel)]")
-                    .foregroundStyle(.yellow.opacity(0.85))
-                    .font(.system(size: CGFloat(chat.fontSize) * 0.75))
-                    .lineLimit(1)
+            if let iconUrl = post.sourceChannelIconUrl, chat.showSharedChatSourceChannel {
+                CacheAsyncImage(url: iconUrl) { image in
+                    image.resizable().aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    EmptyView()
+                }
+                .padding(2)
+                .frame(height: CGFloat(chat.fontSize * 1.4))
             }
             if post.isRedemption() {
                 Text(" ")
