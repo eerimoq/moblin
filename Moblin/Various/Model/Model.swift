@@ -1368,10 +1368,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @objc func handleDidEnterBackgroundNotification() {
-        backgrounded = true
         guard !isMac() else {
             return
         }
+        backgrounded = true
         switch backgroundRunLevel() {
         case .full:
             disableScreenPreview()
@@ -1531,11 +1531,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isLive || isRecording {
             return .off
         }
-        if database.chat.background || database.catPrinters.backgroundPrinting || database.moblink.relay
+        let keepChatRunning = database.chat.background || database.catPrinters.backgroundPrinting
+        if keepChatRunning || database.moblink.relay
             .enabled
         {
             return .service(
-                keepChatRunning: database.chat.background || database.catPrinters.backgroundPrinting,
+                keepChatRunning: keepChatRunning,
                 keepBatteryLevelRunning: database.moblink.relay.enabled
             )
         }
@@ -1611,7 +1612,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handle1sTimer() {
         let now = Date()
         let monotonicNow = ContinuousClock.now
-
         updateDigitalClock(now: now)
         if !backgrounded {
             updateStreamUptime(now: monotonicNow)
