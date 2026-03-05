@@ -57,10 +57,6 @@ private struct ChatSettingsGeneralView: View {
                     model.reloadChatMessages()
                 }
             Toggle("Background chat", isOn: $chat.background)
-            Toggle("Show Shared Chat channel icons", isOn: $chat.showSharedChatSourceChannel)
-                .onChange(of: chat.showSharedChatSourceChannel) { _ in
-                    model.reloadChatMessages()
-                }
         }
     }
 }

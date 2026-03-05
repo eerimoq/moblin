@@ -83,6 +83,7 @@ private struct ChatMessage {
     let bits: String?
     let replySender: String?
     let replyText: String?
+    let sourceChannelId: String?
 
     init?(_ message: TwitchChatMessage) {
         guard message.parameters.count == 2,
@@ -124,6 +125,11 @@ private struct ChatMessage {
         bits = message.bits
         replySender = message.replySender
         replyText = message.replyText
+        if let sourceRoomId = message.sourceRoomId {
+            sourceChannelId = sourceRoomId
+        } else {
+            sourceChannelId = nil
+        }
     }
 
     func isAction() -> Bool {
@@ -535,9 +541,6 @@ final class TwitchChat {
     }
 
     private func handleChatMessage(message: TwitchChatMessage) {
-        let sourceRoomId = message.sourceRoomId
-        let roomId = message.roomId
-        let isSharedChat = sourceRoomId != nil && roomId != nil && sourceRoomId != roomId
         guard let chatMessage = ChatMessage(message) else {
             return
         }
@@ -578,8 +581,8 @@ final class TwitchChat {
                 sourceChannelIconUrl: iconUrl
             )
         }
-        if isSharedChat, let sourceRoomId {
-            resolveSourceChannelIcon(channelId: sourceRoomId) { iconUrl in
+        if let sourceChannelId = chatMessage.sourceChannelId {
+            resolveSourceChannelIcon(channelId: sourceChannelId) { iconUrl in
                 appendMessage(iconUrl)
             }
         } else {
