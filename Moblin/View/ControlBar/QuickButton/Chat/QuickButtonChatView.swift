@@ -75,7 +75,7 @@ private struct LineView: View {
             if chat.timestampColorEnabled {
                 GrayTextView(text: "\(post.timestamp) ")
             }
-            if chat.platform, platform, let image = post.platform?.imageName() {
+            if platform, let image = post.platform?.imageName() {
                 Image(image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)

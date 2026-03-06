@@ -1697,7 +1697,6 @@ class SettingsWidgetChat: Codable, ObservableObject {
     @Published var boldUsername: Bool = true
     @Published var boldMessage: Bool = true
     @Published var badges: Bool = true
-    @Published var platform: Bool = true
     let nicknames: SettingsChatNicknames = .init()
     @Published var displayStyle: SettingsChatDisplayStyle = .internationalNameAndUsername
     @Published var sharedChatIcons: Bool = false
@@ -1714,7 +1713,6 @@ class SettingsWidgetChat: Codable, ObservableObject {
              boldUsername,
              boldMessage,
              badges,
-             platform,
              displayStyle,
              sharedChatIcons
     }
@@ -1734,7 +1732,6 @@ class SettingsWidgetChat: Codable, ObservableObject {
         try container.encode(.boldUsername, boldUsername)
         try container.encode(.boldMessage, boldMessage)
         try container.encode(.badges, badges)
-        try container.encode(.platform, platform)
         try container.encode(.displayStyle, displayStyle)
         try container.encode(.sharedChatIcons, sharedChatIcons)
     }
@@ -1756,7 +1753,6 @@ class SettingsWidgetChat: Codable, ObservableObject {
         boldUsername = container.decode(.boldUsername, Bool.self, true)
         boldMessage = container.decode(.boldMessage, Bool.self, true)
         badges = container.decode(.badges, Bool.self, true)
-        platform = container.decode(.platform, Bool.self, true)
         displayStyle = container.decode(.displayStyle, SettingsChatDisplayStyle.self, .internationalName)
         sharedChatIcons = container.decode(.sharedChatIcons, Bool.self, false)
     }
@@ -1776,7 +1772,6 @@ class SettingsWidgetChat: Codable, ObservableObject {
         boldUsername = other.boldUsername
         boldMessage = other.boldMessage
         badges = other.badges
-        platform = other.platform
         displayStyle = other.displayStyle
         sharedChatIcons = other.sharedChatIcons
     }

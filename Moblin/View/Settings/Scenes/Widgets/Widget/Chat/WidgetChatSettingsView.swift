@@ -55,10 +55,6 @@ struct WidgetChatSettingsView: View {
                     .onChange(of: chat.badges) { _ in
                         setEffectSettings()
                     }
-                Toggle("Streaming platform", isOn: $chat.platform)
-                    .onChange(of: chat.platform) { _ in
-                        setEffectSettings()
-                    }
                 Toggle("Shared chat icons", isOn: $chat.sharedChatIcons)
                     .onChange(of: chat.sharedChatIcons) { _ in
                         setEffectSettings()

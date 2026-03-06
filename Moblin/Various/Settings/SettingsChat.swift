@@ -571,7 +571,6 @@ class SettingsChat: Codable, ObservableObject {
     @Published var bottomPoints: Double = 80
     @Published var newMessagesAtTop: Bool = false
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
-    @Published var platform: Bool = true
     @Published var showDeletedMessages: Bool = false
     @Published var aliases: [SettingsChatBotAlias] = []
     @Published var predefinedMessages: [SettingsChatPredefinedMessage] = []
@@ -624,7 +623,6 @@ class SettingsChat: Codable, ObservableObject {
              bottomPoints,
              newMessagesAtTop,
              textToSpeechPauseBetweenMessages,
-             platform,
              showDeletedMessages,
              aliases,
              predefinedMessages,
@@ -680,7 +678,6 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.bottomPoints, bottomPoints)
         try container.encode(.newMessagesAtTop, newMessagesAtTop)
         try container.encode(.textToSpeechPauseBetweenMessages, textToSpeechPauseBetweenMessages)
-        try container.encode(.platform, platform)
         try container.encode(.showDeletedMessages, showDeletedMessages)
         try container.encode(.aliases, aliases)
         try container.encode(.predefinedMessages, predefinedMessages)
@@ -772,7 +769,6 @@ class SettingsChat: Codable, ObservableObject {
             Double.self,
             1.0
         )
-        platform = container.decode(.platform, Bool.self, true)
         showDeletedMessages = container.decode(.showDeletedMessages, Bool.self, false)
         aliases = container.decode(.aliases, [SettingsChatBotAlias].self, [])
         predefinedMessages = container.decode(.predefinedMessages, [SettingsChatPredefinedMessage].self, [])

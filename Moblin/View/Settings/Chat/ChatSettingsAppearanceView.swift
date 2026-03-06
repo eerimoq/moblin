@@ -52,10 +52,6 @@ struct ChatSettingsAppearanceView: View {
                             .onChange(of: chat.badges) { _ in
                                 model.reloadChatMessages()
                             }
-                        Toggle("Streaming platform", isOn: $chat.platform)
-                            .onChange(of: chat.platform) { _ in
-                                model.reloadChatMessages()
-                            }
                         Toggle("Animated emotes", isOn: $chat.animatedEmotes)
                             .onChange(of: chat.animatedEmotes) { _ in
                                 model.reloadChatMessages()

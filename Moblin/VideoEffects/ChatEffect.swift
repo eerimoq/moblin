@@ -111,7 +111,7 @@ private struct LineView: View {
             verticalSpacing: 0,
             fitContentWidth: true
         ) {
-            if settings.platform, platform, let image = post.platform?.imageName() {
+            if platform, let image = post.platform?.imageName() {
                 Image(image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)

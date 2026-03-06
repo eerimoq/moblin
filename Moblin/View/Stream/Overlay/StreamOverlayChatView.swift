@@ -139,7 +139,7 @@ private struct LineView: View {
                 Text("\(post.timestamp) ")
                     .foregroundStyle(chat.timestampColorColor)
             }
-            if chat.platform, platform, let image = post.platform?.imageName() {
+            if platform, let image = post.platform?.imageName() {
                 Image(image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
