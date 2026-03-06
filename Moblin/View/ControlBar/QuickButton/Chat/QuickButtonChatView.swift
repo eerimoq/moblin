@@ -4,8 +4,8 @@ import SwiftUI
 import WrappingHStack
 
 private struct HighlightMessageView: View {
-    @ObservedObject var postState: ChatPostState
-    @ObservedObject var chat: SettingsChat
+    let postState: ChatPostState
+    let chat: SettingsChat
     let highlight: ChatHighlight
 
     private func imageOpacity() -> Double {
@@ -54,9 +54,9 @@ private struct HighlightMessageView: View {
 }
 
 private struct LineView: View {
-    @ObservedObject var postState: ChatPostState
+    let postState: ChatPostState
     let post: ChatPost
-    @ObservedObject var chat: SettingsChat
+    let chat: SettingsChat
     let platform: Bool
     @Binding var selectedPost: ChatPost?
 
@@ -154,8 +154,8 @@ private struct LineView: View {
 }
 
 private struct PostView: View {
-    @ObservedObject var chatSettings: SettingsChat
-    @ObservedObject var chat: ChatProvider
+    let chatSettings: SettingsChat
+    let moreThanOneStreamingPlatform: Bool
     @Binding var selectedPost: ChatPost?
     let post: ChatPost
     @ObservedObject var state: ChatPostState
@@ -178,7 +178,7 @@ private struct PostView: View {
                             LineView(postState: post.state,
                                      post: post,
                                      chat: chatSettings,
-                                     platform: chat.moreThanOneStreamingPlatform,
+                                     platform: moreThanOneStreamingPlatform,
                                      selectedPost: $selectedPost)
                         }
                     }
@@ -188,7 +188,7 @@ private struct PostView: View {
                     LineView(postState: post.state,
                              post: post,
                              chat: chatSettings,
-                             platform: chat.moreThanOneStreamingPlatform,
+                             platform: moreThanOneStreamingPlatform,
                              selectedPost: $selectedPost)
                         .padding([.leading], 3)
                         .rotationEffect(Angle(degrees: rotation))
@@ -228,7 +228,7 @@ private struct MessagesView: View {
                         .frame(height: 1)
                     ForEach(chat.posts) { post in
                         PostView(chatSettings: chatSettings,
-                                 chat: chat,
+                                 moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
                                  selectedPost: $selectedPost,
                                  post: post,
                                  state: post.state,
