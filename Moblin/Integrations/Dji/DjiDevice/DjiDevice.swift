@@ -473,11 +473,13 @@ extension DjiDevice: CBPeripheralDelegate {
             return
         }
         let reader = ByteReader(data: message.payload)
-        guard let cameraDeviceId = try? reader.readUInt32Le() else {
+        // Skip device_id (4 bytes)
+        do {
+            try reader.skipBytes(4)
+        } catch {
             sendPairRequest()
             return
         }
-        _ = cameraDeviceId
         do {
             // Skip mac_addr_len(1) + mac_addr(16) + fw_version(4) + conidx(1) = 22
             try reader.skipBytes(22)
@@ -521,6 +523,7 @@ extension DjiDevice: CBPeripheralDelegate {
     }
 
     private func sendRSdkConnectionRequest() {
+        // Random verification code as per DJI R SDK protocol (matches reference demo)
         let verifyData = UInt16.random(in: 0 ..< 10000)
         let payload = DjiRSdkConnectionRequestPayload(
             deviceId: rsdkDeviceId,
