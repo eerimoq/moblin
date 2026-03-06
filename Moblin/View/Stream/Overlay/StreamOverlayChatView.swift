@@ -155,6 +155,7 @@ private struct LineView: View {
                 }
                 .padding(2)
                 .frame(height: frameHeightBadges())
+                .opacity(imageOpacity())
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in

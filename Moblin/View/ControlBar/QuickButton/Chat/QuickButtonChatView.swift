@@ -91,6 +91,7 @@ private struct LineView: View {
                 }
                 .padding(2)
                 .frame(height: CGFloat(chat.fontSize * 1.4))
+                .opacity(imageOpacity())
             }
             if chat.badges {
                 ForEach(post.userBadges, id: \.self) { url in
