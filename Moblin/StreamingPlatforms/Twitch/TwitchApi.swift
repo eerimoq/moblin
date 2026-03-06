@@ -8,7 +8,7 @@ private func serialize(_ value: Any) -> Data {
 struct TwitchApiUser: Decodable {
     let id: String
     let login: String
-    let profile_image_url: String?
+    let profile_image_url: String
 }
 
 struct TwitchApiUsers: Decodable {

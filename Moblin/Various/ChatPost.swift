@@ -183,7 +183,7 @@ struct ChatPost: Identifiable, Equatable {
     let live: Bool
     let filter: SettingsChatFilter?
     let platform: Platform?
-    let sourceChannelIconUrl: URL?
+    let sourceChannelIcon: URL?
     let state: ChatPostState
 
     func text() -> String {

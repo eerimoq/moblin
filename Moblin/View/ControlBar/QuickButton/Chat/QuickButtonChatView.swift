@@ -83,7 +83,7 @@ private struct LineView: View {
                     .frame(height: CGFloat(chat.fontSize * 1.4))
                     .opacity(imageOpacity())
             }
-            if let iconUrl = post.sourceChannelIconUrl, chat.showSharedChatSourceChannel {
+            if chat.showSharedChatSourceChannel, let iconUrl = post.sourceChannelIcon {
                 CacheAsyncImage(url: iconUrl) { image in
                     image.resizable().aspectRatio(contentMode: .fit)
                 } placeholder: {

@@ -127,8 +127,6 @@ private struct ChatMessage {
         replyText = message.replyText
         if let sourceRoomId = message.sourceRoomId {
             sourceChannelId = sourceRoomId
-        } else {
-            sourceChannelId = nil
         }
     }
 
@@ -298,10 +296,6 @@ struct TwitchChatMessage {
     var sourceRoomId: String? {
         tags["source-room-id"]
     }
-
-    var roomId: String? {
-        tags["room-id"]
-    }
 }
 
 private class Badges {
@@ -453,7 +447,7 @@ protocol TwitchChatDelegate: AnyObject {
         isModerator: Bool,
         bits: String?,
         highlight: ChatHighlight?,
-        sourceChannelIconUrl: URL?
+        sourceChannelIcon: URL?
     )
     func twitchChatDeleteMessage(messageId: String)
     func twitchChatDeleteUser(userId: String)
@@ -466,7 +460,7 @@ final class TwitchChat {
     private var cheermotes: Cheermotes
     private var channelName: String
     private weak var delegate: (any TwitchChatDelegate)?
-    private var sourceChannelIconCache: [String: URL] = [:]
+    private var sourceChannelIcons: [String: URL] = [:]
     private var accessToken: String = ""
 
     init(delegate: TwitchChatDelegate) {
@@ -541,47 +535,47 @@ final class TwitchChat {
     }
 
     private func handleChatMessage(message: TwitchChatMessage) {
-        guard let chatMessage = ChatMessage(message) else {
+        guard let message = ChatMessage(message) else {
             return
         }
         var badgeUrls: [URL] = []
-        for badge in chatMessage.badges {
+        for badge in message.badges {
             if let badgeUrl = badges.getUrl(badgeId: badge) {
                 badgeUrls.append(badgeUrl)
             }
         }
         let text: String
-        let isAction = chatMessage.isAction()
+        let isAction = message.isAction()
         if isAction {
-            text = String(chatMessage.text.dropFirst(7))
+            text = String(message.text.dropFirst(7))
         } else {
-            text = chatMessage.text
+            text = message.text
         }
         let segments = createSegments(
             text: text,
-            emotes: chatMessage.emotes,
+            emotes: message.emotes,
             emotesManager: emotes,
-            bits: chatMessage.bits
+            bits: message.bits
         )
-        let highlight = createHighlight(message: chatMessage)
+        let highlight = createHighlight(message: message)
         let appendMessage: (URL?) -> Void = { [weak self] iconUrl in
             self?.delegate?.twitchChatAppendMessage(
-                messageId: chatMessage.id,
-                displayName: chatMessage.displayName,
-                user: chatMessage.user,
-                userId: chatMessage.userId,
-                userColor: RgbColor.fromHex(string: chatMessage.senderColor ?? ""),
+                messageId: message.id,
+                displayName: message.displayName,
+                user: message.user,
+                userId: message.userId,
+                userColor: RgbColor.fromHex(string: message.senderColor ?? ""),
                 userBadges: badgeUrls,
                 segments: segments,
                 isAction: isAction,
-                isSubscriber: chatMessage.subscriber,
-                isModerator: chatMessage.moderator,
-                bits: chatMessage.bits,
+                isSubscriber: message.subscriber,
+                isModerator: message.moderator,
+                bits: message.bits,
                 highlight: highlight,
-                sourceChannelIconUrl: iconUrl
+                sourceChannelIcon: iconUrl
             )
         }
-        if let sourceChannelId = chatMessage.sourceChannelId {
+        if let sourceChannelId = message.sourceChannelId {
             resolveSourceChannelIcon(channelId: sourceChannelId) { iconUrl in
                 appendMessage(iconUrl)
             }
@@ -591,14 +585,14 @@ final class TwitchChat {
     }
 
     private func resolveSourceChannelIcon(channelId: String, completion: @escaping (URL?) -> Void) {
-        if let cached = sourceChannelIconCache[channelId] {
+        if let cached = sourceChannelIcons[channelId] {
             completion(cached)
             return
         }
         TwitchApi(accessToken).getUserById(id: channelId) { [weak self] user in
             let url = user?.profile_image_url.flatMap { URL(string: $0) }
             DispatchQueue.main.async {
-                if let url { self?.sourceChannelIconCache[channelId] = url }
+                if let url { self?.sourceChannelIcons[channelId] = url }
                 completion(url)
             }
         }
