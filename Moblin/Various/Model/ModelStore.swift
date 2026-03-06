@@ -4,12 +4,6 @@ let plainIcon = Icon(name: "Plain", id: "AppIcon", price: "")
 
 private let globalMyIcons = [
     plainIcon,
-    Icon(name: "Halloween", id: "AppIconHalloween", price: "$"),
-    Icon(
-        name: "Halloween pumpkin",
-        id: "AppIconHalloweenPumpkin",
-        price: ""
-    ),
     Icon(name: "San Diego", id: "AppIconSanDiego", price: "$"),
 ]
 
@@ -160,7 +154,6 @@ extension Model {
 
     func updateIconImageFromDatabase() {
         if !isInMyIcons(id: database.iconImage) {
-            logger.info("Database icon image \(database.iconImage) is not mine")
             database.iconImage = plainIcon.id
         }
         store.iconImage = database.iconImage
