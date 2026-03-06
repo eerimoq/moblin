@@ -28,9 +28,9 @@ private struct HighlightMessageView: View {
 }
 
 private struct LineView: View {
-    @ObservedObject var postState: ChatPostState
+    let postState: ChatPostState
     let post: ChatPost
-    @ObservedObject var chat: SettingsChat
+    let chat: SettingsChat
     let platform: Bool
 
     private func usernameColor() -> Color {
@@ -120,8 +120,8 @@ private struct LineView: View {
 }
 
 private struct PostView: View {
-    @ObservedObject var chatSettings: SettingsChat
-    @ObservedObject var chat: ChatProvider
+    let chatSettings: SettingsChat
+    let moreThanOneStreamingPlatform: Bool
     let post: ChatPost
     @ObservedObject var state: ChatPostState
     let rotation: Double
@@ -141,7 +141,7 @@ private struct PostView: View {
                             LineView(postState: post.state,
                                      post: post,
                                      chat: chatSettings,
-                                     platform: chat.moreThanOneStreamingPlatform)
+                                     platform: moreThanOneStreamingPlatform)
                         }
                     }
                     .rotationEffect(Angle(degrees: rotation))
@@ -150,7 +150,7 @@ private struct PostView: View {
                     LineView(postState: post.state,
                              post: post,
                              chat: chatSettings,
-                             platform: chat.moreThanOneStreamingPlatform)
+                             platform: moreThanOneStreamingPlatform)
                         .padding([.leading], 3)
                         .rotationEffect(Angle(degrees: rotation))
                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
@@ -180,7 +180,7 @@ private struct MessagesView: View {
                     LazyVStack(alignment: .leading, spacing: 1) {
                         ForEach(chat.posts) { post in
                             PostView(chatSettings: chatSettings,
-                                     chat: chat,
+                                     moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
                                      post: post,
                                      state: post.state,
                                      rotation: rotation,
