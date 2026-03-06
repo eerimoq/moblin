@@ -94,6 +94,15 @@ enum SettingsDjiDeviceModel: String, Codable {
             return false
         }
     }
+
+    func supportsDjiRSdk() -> Bool {
+        switch self {
+        case .osmoAction4, .osmoAction5Pro, .osmoAction6, .osmo360:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 var djiDeviceBitrates: [UInt32] = [

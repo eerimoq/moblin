@@ -32,6 +32,8 @@ enum DjiDeviceState {
     case idle
     case discovering
     case connecting
+    case rsdkConnecting
+    case rsdkWaitingForCamera
     case checkingIfPaired
     case pairing
     case cleaningUp
@@ -66,6 +68,9 @@ class DjiDevice: NSObject {
     private let stopStreamingTimer = SimpleTimer(queue: .main)
     private var model: SettingsDjiDeviceModel = .unknown
     private var batteryPercentage: Int?
+    private var rsdkSeq: UInt16 = 0
+    private var rsdkDeviceId: UInt32 = 0x1234_5678
+    private var rsdkMacAddr = Data([0x38, 0x34, 0x56, 0x78, 0x9A, 0xBC])
 
     func startLiveStream(
         wifiSsid: String,
@@ -116,6 +121,7 @@ class DjiDevice: NSObject {
         cameraPeripheral = nil
         fff5Characteristic = nil
         batteryPercentage = nil
+        rsdkSeq = 0
         setState(state: .idle)
     }
 
@@ -223,6 +229,18 @@ extension DjiDevice: CBPeripheralDelegate {
 
     func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
         guard let value = characteristic.value else {
+            return
+        }
+        guard !value.isEmpty else {
+            return
+        }
+        if value[0] == 0xAA {
+            guard let message = try? DjiRSdkMessage(data: value) else {
+                logger.info("dji-device: Discarding corrupt R-SDK message \(value.hexString())")
+                return
+            }
+            // logger.debug("dji-device: Got \(message.format())")
+            processRSdkMessage(message: message)
             return
         }
         guard let message = try? DjiMessage(data: value) else {
@@ -404,7 +422,156 @@ extension DjiDevice: CBPeripheralDelegate {
         reset()
     }
 
+    private func nextRsdkSeq() -> UInt16 {
+        rsdkSeq += 1
+        return rsdkSeq
+    }
+
+    private func processRSdkMessage(message: DjiRSdkMessage) {
+        switch state {
+        case .rsdkConnecting:
+            processRSdkConnecting(message: message)
+        case .rsdkWaitingForCamera:
+            processRSdkWaitingForCamera(message: message)
+        default:
+            break
+        }
+    }
+
+    private func processRSdkConnecting(message: DjiRSdkMessage) {
+        guard message.cmdSet == 0x00, message.cmdId == 0x19 else {
+            return
+        }
+        if message.isResponse {
+            if message.payload.count >= 5 {
+                let retCode = message.payload[4]
+                if retCode != 0 {
+                    logger.warning("dji-device: R-SDK connection response error: \(retCode)")
+                    sendPairRequest()
+                    return
+                }
+            }
+            setState(state: .rsdkWaitingForCamera)
+        } else {
+            handleRSdkCameraConnectionCommand(message: message)
+        }
+    }
+
+    private func processRSdkWaitingForCamera(message: DjiRSdkMessage) {
+        guard message.cmdSet == 0x00, message.cmdId == 0x19 else {
+            return
+        }
+        if !message.isResponse {
+            handleRSdkCameraConnectionCommand(message: message)
+        }
+    }
+
+    private func handleRSdkCameraConnectionCommand(message: DjiRSdkMessage) {
+        guard message.payload.count >= 29 else {
+            logger.warning("dji-device: R-SDK camera connection command too short")
+            sendPairRequest()
+            return
+        }
+        let reader = ByteReader(data: message.payload)
+        guard let cameraDeviceId = try? reader.readUInt32Le() else {
+            sendPairRequest()
+            return
+        }
+        _ = cameraDeviceId
+        do {
+            // Skip mac_addr_len(1) + mac_addr(16) + fw_version(4) + conidx(1) = 22
+            try reader.skipBytes(22)
+        } catch {
+            sendPairRequest()
+            return
+        }
+        guard let verifyMode = try? reader.readUInt8() else {
+            sendPairRequest()
+            return
+        }
+        guard verifyMode == 2 else {
+            logger.info("dji-device: R-SDK unexpected verify_mode: \(verifyMode)")
+            return
+        }
+        guard let verifyData = try? reader.readUInt16Le() else {
+            sendPairRequest()
+            return
+        }
+        if verifyData == 0 {
+            logger.info("dji-device: R-SDK connection approved by camera")
+            let responsePayload = DjiRSdkConnectionResponsePayload(
+                deviceId: rsdkDeviceId,
+                retCode: 0,
+                cameraNumber: 0
+            )
+            let response = DjiRSdkMessage(
+                cmdType: 0x20,
+                seq: message.seq,
+                cmdSet: 0x00,
+                cmdId: 0x19,
+                payload: responsePayload.encode()
+            )
+            writeRSdkMessage(message: response)
+            sendRSdkCameraStatusSubscription()
+            sendPairRequest()
+        } else {
+            logger.warning("dji-device: R-SDK connection rejected by camera")
+            sendPairRequest()
+        }
+    }
+
+    private func sendRSdkConnectionRequest() {
+        let verifyData = UInt16.random(in: 0 ..< 10000)
+        let payload = DjiRSdkConnectionRequestPayload(
+            deviceId: rsdkDeviceId,
+            macAddr: rsdkMacAddr,
+            verifyMode: 0,
+            verifyData: verifyData
+        )
+        let message = DjiRSdkMessage(
+            cmdType: 0x02,
+            seq: nextRsdkSeq(),
+            cmdSet: 0x00,
+            cmdId: 0x19,
+            payload: payload.encode()
+        )
+        writeRSdkMessage(message: message)
+        setState(state: .rsdkConnecting)
+    }
+
+    private func sendRSdkCameraStatusSubscription() {
+        let payload = DjiRSdkCameraStatusSubscriptionPayload(
+            pushMode: 3,
+            pushFreq: 20
+        )
+        let message = DjiRSdkMessage(
+            cmdType: 0x00,
+            seq: nextRsdkSeq(),
+            cmdSet: 0x1D,
+            cmdId: 0x05,
+            payload: payload.encode()
+        )
+        writeRSdkMessage(message: message)
+    }
+
+    private func sendPairRequest() {
+        let payload = DjiPairMessagePayload(pairPinCode: pairPinCode)
+        let request = DjiMessage(
+            target: pairTarget,
+            id: pairTransactionId,
+            type: pairType,
+            payload: payload.encode()
+        )
+        writeMessage(message: request)
+        setState(state: .checkingIfPaired)
+    }
+
     private func writeMessage(message: DjiMessage) {
+        logger.debug("dji-device: Send \(message.format())")
+        writeValue(value: message.encode())
+    }
+
+    private func writeRSdkMessage(message: DjiRSdkMessage) {
         logger.debug("dji-device: Send \(message.format())")
         writeValue(value: message.encode())
     }
@@ -427,15 +594,11 @@ extension DjiDevice: CBPeripheralDelegate {
         guard characteristic.uuid == fff4Id else {
             return
         }
-        let payload = DjiPairMessagePayload(pairPinCode: pairPinCode)
-        let request = DjiMessage(
-            target: pairTarget,
-            id: pairTransactionId,
-            type: pairType,
-            payload: payload.encode()
-        )
-        writeMessage(message: request)
-        setState(state: .checkingIfPaired)
+        if model.supportsDjiRSdk() {
+            sendRSdkConnectionRequest()
+        } else {
+            sendPairRequest()
+        }
     }
 
     func peripheralIsReady(toSendWriteWithoutResponse _: CBPeripheral) {}

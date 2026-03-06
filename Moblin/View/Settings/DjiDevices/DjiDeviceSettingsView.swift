@@ -10,7 +10,7 @@ func formatDjiDeviceState(state: DjiDeviceState?) -> String {
         return String(localized: "Not started")
     } else if state == .discovering {
         return String(localized: "Discovering")
-    } else if state == .connecting {
+    } else if state == .connecting || state == .rsdkConnecting || state == .rsdkWaitingForCamera {
         return String(localized: "Connecting")
     } else if state == .checkingIfPaired || state == .pairing {
         return String(localized: "Pairing")

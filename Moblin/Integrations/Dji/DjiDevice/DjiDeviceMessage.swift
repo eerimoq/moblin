@@ -161,3 +161,73 @@ class DjiConfigureMessagePayload {
         return writer.data
     }
 }
+
+class DjiRSdkConnectionRequestPayload {
+    var deviceId: UInt32
+    var macAddr: Data
+    var verifyMode: UInt8
+    var verifyData: UInt16
+
+    init(deviceId: UInt32, macAddr: Data, verifyMode: UInt8, verifyData: UInt16) {
+        self.deviceId = deviceId
+        self.macAddr = macAddr
+        self.verifyMode = verifyMode
+        self.verifyData = verifyData
+    }
+
+    func encode() -> Data {
+        let writer = ByteWriter()
+        writer.writeUInt32Le(deviceId)
+        writer.writeUInt8(UInt8(macAddr.count))
+        var paddedMac = macAddr
+        while paddedMac.count < 16 {
+            paddedMac.append(0)
+        }
+        writer.writeBytes(paddedMac.prefix(16))
+        writer.writeUInt32Le(0)
+        writer.writeUInt8(0)
+        writer.writeUInt8(verifyMode)
+        writer.writeUInt16Le(verifyData)
+        writer.writeBytes(Data([0, 0, 0, 0]))
+        return writer.data
+    }
+}
+
+class DjiRSdkConnectionResponsePayload {
+    var deviceId: UInt32
+    var retCode: UInt8
+    var cameraNumber: UInt8
+
+    init(deviceId: UInt32, retCode: UInt8, cameraNumber: UInt8) {
+        self.deviceId = deviceId
+        self.retCode = retCode
+        self.cameraNumber = cameraNumber
+    }
+
+    func encode() -> Data {
+        let writer = ByteWriter()
+        writer.writeUInt32Le(deviceId)
+        writer.writeUInt8(retCode)
+        writer.writeUInt8(cameraNumber)
+        writer.writeBytes(Data([0, 0, 0]))
+        return writer.data
+    }
+}
+
+class DjiRSdkCameraStatusSubscriptionPayload {
+    var pushMode: UInt8
+    var pushFreq: UInt8
+
+    init(pushMode: UInt8, pushFreq: UInt8) {
+        self.pushMode = pushMode
+        self.pushFreq = pushFreq
+    }
+
+    func encode() -> Data {
+        let writer = ByteWriter()
+        writer.writeUInt8(pushMode)
+        writer.writeUInt8(pushFreq)
+        writer.writeBytes(Data([0, 0, 0, 0]))
+        return writer.data
+    }
+}
