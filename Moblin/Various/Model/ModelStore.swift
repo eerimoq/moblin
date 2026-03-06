@@ -96,7 +96,7 @@ extension Model {
     }
 
     private func updateIcons(myProductIds: [String]) {
-        var myIcons = globalMyIcons
+        var myIcons: [Icon] = []
         store.hasBoughtSomething = false
         var iconsInStore: [Icon] = []
         for productId in iconsProductIds {
@@ -119,7 +119,7 @@ extension Model {
                 ))
             }
         }
-        store.myIcons = myIcons
+        store.myIcons = myIcons + globalMyIcons
         store.iconsInStore = iconsInStore
     }
 
