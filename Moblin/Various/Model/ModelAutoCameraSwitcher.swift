@@ -3,6 +3,9 @@ import Foundation
 class AutoCameraSwitcherProvider: ObservableObject {
     fileprivate let director = AutoCameraDirector()
     fileprivate var configuredSwitcherId: UUID?
+    // Per-microphone audio levels can be fed from external sources.
+    // When multiple audio inputs are available, set levels here.
+    var micLevels: [String: Float] = [:]
     @Published var currentSwitcherId: UUID?
 }
 
@@ -23,6 +26,10 @@ extension Model {
         }
     }
 
+    func updateAutoCameraSwitcherMicLevel(micId: String, levelDb: Float) {
+        autoCameraSwitcher.micLevels[micId] = levelDb
+    }
+
     func updateAutoCameraSwitcher(now: ContinuousClock.Instant) {
         guard let switcherId = autoCameraSwitcher.currentSwitcherId else {
             return
@@ -40,6 +47,9 @@ extension Model {
             autoCameraSwitcher.configuredSwitcherId = switcherId
         }
         let micLevels = collectMicLevels(switcher: switcher)
+        guard !micLevels.isEmpty else {
+            return
+        }
         if let sceneId = autoCameraSwitcher.director.update(micLevels: micLevels, now: now) {
             if enabledScenes.contains(where: { $0.id == sceneId }) {
                 selectScene(id: sceneId)
@@ -51,9 +61,8 @@ extension Model {
         var levels: [String: Float] = [:]
         for speaker in switcher.speakers {
             for micId in speaker.microphoneIds {
-                let level = audio.level.level
-                if !level.isNaN, level != .infinity {
-                    levels[micId] = level
+                if let externalLevel = autoCameraSwitcher.micLevels[micId] {
+                    levels[micId] = externalLevel
                 }
             }
         }
