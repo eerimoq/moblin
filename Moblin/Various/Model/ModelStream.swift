@@ -305,7 +305,7 @@ extension Model {
             0: database.audio.outputToInputChannelsMap.channel1,
             1: database.audio.outputToInputChannelsMap.channel2,
         ])
-        setAudioGain(gain: database.audio.gain)
+        setAudioGain(gainDb: database.audio.gainDb)
         startRecorderIfNeeded()
         reloadConnections()
         resetChat()
@@ -810,8 +810,8 @@ extension Model {
         media.setAudioChannelsMap(channelsMap: channelsMap)
     }
 
-    func setAudioGain(gain: Float) {
-        media.setAudioGain(gain: gain)
+    func setAudioGain(gainDb: Float) {
+        media.setAudioGain(gain: pow(10, gainDb / 20.0))
     }
 
     func isShowingStatusStream() -> Bool {

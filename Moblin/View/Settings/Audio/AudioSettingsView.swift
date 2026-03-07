@@ -74,23 +74,18 @@ struct AudioSettingsView: View {
             Section {
                 HStack {
                     Image(systemName: "speaker.wave.1.fill")
-                    Slider(
-                        value: $audio.gain,
-                        in: 0.0 ... 3.0,
-                        step: 0.1,
-                        onEditingChanged: { begin in
-                            guard !begin else {
-                                return
-                            }
-                            model.setAudioGain(gain: audio.gain)
+                    Slider(value: $audio.gainDb, in: 0.0 ... 12.0, step: 0.1)
+                        .onChange(of: audio.gainDb) { _ in
+                            model.setAudioGain(gainDb: audio.gainDb)
                         }
-                    )
                     Image(systemName: "speaker.wave.3.fill")
-                    Text(formatOneDecimal(audio.gain))
-                        .frame(width: 35)
+                    Text("\(formatOneDecimal(audio.gainDb)) dB")
+                        .frame(width: 65)
                 }
             } header: {
                 Text("Gain")
+            } footer: {
+                Text("0.0 dB by deafult, leaving the input level unchanged.")
             }
             Section {
                 Toggle("Bluetooth output only", isOn: $debug.bluetoothOutputOnly)
