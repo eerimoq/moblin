@@ -41,29 +41,27 @@ struct KickChatterInfoBadge: Codable {
 
 struct KickChatterInfo: Codable {
     let profile_pic: String?
-    let is_staff: Bool?
-    let is_channel_owner: Bool?
-    let is_moderator: Bool?
-    let badges: [KickChatterInfoBadge]?
+    let is_staff: Bool
+    let is_channel_owner: Bool
+    let is_moderator: Bool
+    let badges: [KickChatterInfoBadge]
     let following_since: String?
-    let subscribed_for: Int?
-}
+    let subscribed_for: Int
 
-extension KickChatterInfo {
-    func toChatterInfo(accountCreated: String? = nil, bio: String? = nil,
-                       followers: Int? = nil) -> ChatterInfo
+    func toChatterInfo(accountCreated: String?, bio: String?,
+                       followers: Int?) -> ChatterInfo
     {
-        let role: String?
-        if is_channel_owner == true {
-            role = "Owner"
-        } else if is_staff == true {
-            role = "Staff"
-        } else if is_moderator == true {
-            role = "Moderator"
+        let role: ChatterRole
+        if is_channel_owner {
+            role = .owner
+        } else if is_staff {
+            role = .staff
+        } else if is_moderator {
+            role = .moderator
         } else {
-            role = "Viewer"
+            role = .viewer
         }
-        let giftedSubs = badges?.first(where: { $0.type == "sub_gifter" })?.count
+        let giftedSubs = badges.first(where: { $0.type == "sub_gifter" })?.count
         return ChatterInfo(
             profilePic: profile_pic,
             bio: bio,
@@ -71,7 +69,6 @@ extension KickChatterInfo {
             role: role,
             followingSince: following_since,
             subscribedMonths: subscribed_for,
-            subscribedTier: nil,
             giftedSubs: giftedSubs,
             followers: followers
         )

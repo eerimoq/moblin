@@ -880,10 +880,12 @@ private struct ActionButtonView: View {
             VStack {
                 Image(systemName: image)
                     .foregroundStyle(foreground)
-                    .font(.title)
+                    .font(.title2)
                 Text(text)
                     .foregroundStyle(.white)
+                    .font(.caption)
             }
+            .frame(maxWidth: .infinity)
         }
     }
 }
@@ -1031,21 +1033,14 @@ private struct ActionButtonsView: View {
                         .frame(height: 100)
                         .padding([.top, .bottom], 5)
                         HStack {
-                            Spacer()
                             banButton(selectedPost: selectedPost)
-                            Spacer()
                             timeoutButton(selectedPost: selectedPost)
-                            Spacer()
                             deleteButton(selectedPost: selectedPost)
-                            Spacer()
                             copyButton(selectedPost: selectedPost)
-                            Spacer()
                             nicknameButton(selectedPost: selectedPost)
                             if selectedPost.platform == .kick {
-                                Spacer()
                                 infoButton()
                             }
-                            Spacer()
                         }
                         .padding([.bottom], 5)
                     }

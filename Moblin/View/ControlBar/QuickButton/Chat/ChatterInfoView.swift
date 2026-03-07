@@ -1,13 +1,32 @@
 import SwiftUI
 
+enum ChatterRole {
+    case owner
+    case staff
+    case moderator
+    case viewer
+
+    func localized() -> String {
+        switch self {
+        case .owner:
+            return String(localized: "Owner")
+        case .staff:
+            return String(localized: "Staff")
+        case .moderator:
+            return String(localized: "Moderator")
+        case .viewer:
+            return String(localized: "Viewer")
+        }
+    }
+}
+
 struct ChatterInfo {
     var profilePic: String?
     var bio: String?
     var accountCreated: String?
-    var role: String?
+    var role: ChatterRole
     var followingSince: String?
-    var subscribedMonths: Int?
-    var subscribedTier: String?
+    var subscribedMonths: Int
     var giftedSubs: Int?
     var followers: Int?
 }
@@ -32,7 +51,7 @@ private func formatDate(_ dateString: String) -> String? {
 }
 
 private struct InfoRowView: View {
-    let label: String
+    let label: LocalizedStringKey
     let value: String
 
     var body: some View {
@@ -178,23 +197,21 @@ struct ChatterInfoView: View {
     private func infoRows(info: ChatterInfo) -> some View {
         VStack(spacing: 4) {
             if let accountCreated = info.accountCreated, let formatted = formatDate(accountCreated) {
-                InfoRowView(label: "Account Created", value: formatted)
+                InfoRowView(label: "Account created", value: formatted)
             }
-            if let role = info.role {
-                InfoRowView(label: "Role", value: role)
-            }
+            InfoRowView(label: "Role", value: info.role.localized())
             if let followingSince = info.followingSince, let formatted = formatDate(followingSince) {
                 InfoRowView(label: "Followed", value: formatted)
             } else {
                 InfoRowView(label: "Followed", value: String(localized: "No"))
             }
-            if let months = info.subscribedMonths, months > 0 {
-                InfoRowView(label: "Subscribed", value: "\(months) months")
+            if info.subscribedMonths > 0 {
+                InfoRowView(label: "Subscribed", value: "\(info.subscribedMonths) months")
             } else {
                 InfoRowView(label: "Subscribed", value: String(localized: "No"))
             }
             if let giftedSubs = info.giftedSubs {
-                InfoRowView(label: "Gifted Subs", value: "\(giftedSubs)")
+                InfoRowView(label: "Gifted subs", value: "\(giftedSubs)")
             }
             if let followers = info.followers {
                 InfoRowView(label: "Followers", value: "\(followers)")
