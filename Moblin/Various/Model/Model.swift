@@ -368,6 +368,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var presentingModeration = false
     @Published var presentingPredefinedMessages: Bool = false
     @Published var showDrawOnStream = false
+    @Published var showSceneEditMode = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
     @Published var showNavigation = false
@@ -3283,6 +3284,14 @@ extension Model {
 
     func drawOnStreamUpdateButtonState() {
         setQuickButton(type: .draw, isOn: showDrawOnStream || !drawOnStream.lines.isEmpty)
+        updateQuickButtonStates()
+    }
+}
+
+extension Model {
+    func toggleSceneEditMode() {
+        showSceneEditMode.toggle()
+        setQuickButton(type: .sceneEdit, isOn: showSceneEditMode)
         updateQuickButtonStates()
     }
 }
