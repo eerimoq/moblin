@@ -139,6 +139,12 @@ private func createDurationFormatter() -> DateComponentsFormatter {
 
 let durationFormatter = createDurationFormatter()
 
+func formatDate(_ dateString: String) -> String? {
+    return try? Date.ISO8601FormatStyle()
+        .parse(dateString)
+        .formatted(date: .abbreviated, time: .omitted)
+}
+
 extension Duration {
     func format() -> String {
         return durationFormatter.string(from: Double(components.seconds))!

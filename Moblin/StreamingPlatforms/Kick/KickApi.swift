@@ -17,10 +17,12 @@ struct KickLivestream: Codable {
 struct KickChatroom: Codable {
     let id: Int
     let channel_id: Int
+    let created_at: String
 }
 
 struct KickChannelUser: Codable {
     let profile_pic: String?
+    let bio: String?
 }
 
 struct KickChannel: Codable {
@@ -29,6 +31,48 @@ struct KickChannel: Codable {
     let livestream: KickLivestream?
     let subscriber_badges: [SubscriberBadge]?
     let user: KickChannelUser?
+    let followersCount: Int?
+}
+
+struct KickChatterInfoBadge: Codable {
+    let type: String
+    let count: Int?
+}
+
+struct KickChatterInfo: Codable {
+    let profile_pic: String?
+    let is_staff: Bool
+    let is_channel_owner: Bool
+    let is_moderator: Bool
+    let badges: [KickChatterInfoBadge]
+    let following_since: String?
+    let subscribed_for: Int
+
+    func toChatterInfo(accountCreated: String?, bio: String?,
+                       followers: Int?) -> ChatterInfo
+    {
+        let role: ChatterRole
+        if is_channel_owner {
+            role = .owner
+        } else if is_staff {
+            role = .staff
+        } else if is_moderator {
+            role = .moderator
+        } else {
+            role = .viewer
+        }
+        let giftedSubs = badges.first(where: { $0.type == "sub_gifter" })?.count
+        return ChatterInfo(
+            profilePicture: profile_pic,
+            bio: bio,
+            accountCreated: accountCreated,
+            role: role,
+            followingSince: following_since,
+            subscribedMonths: subscribed_for,
+            giftedSubs: giftedSubs,
+            followers: followers
+        )
+    }
 }
 
 struct KickUser: Codable {
@@ -457,6 +501,17 @@ class KickApi {
                 return
             }
             onComplete(try? JSONDecoder().decode(KickUser.self, from: data))
+        }
+    }
+
+    func getChatterInfo(user: String, onComplete: @escaping (KickChatterInfo?) -> Void) {
+        doV2Request(method: "GET", subPath: "channels/\(slug)/users/\(user)") {
+            switch $0 {
+            case let .success(data):
+                onComplete(try? JSONDecoder().decode(KickChatterInfo.self, from: data))
+            default:
+                onComplete(nil)
+            }
         }
     }
 

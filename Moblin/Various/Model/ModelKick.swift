@@ -271,6 +271,25 @@ extension Model {
         }
     }
 
+    func getKickChatterInfo(user: String, onComplete: @escaping (ChatterInfo?) -> Void) {
+        createKickApi(stream: stream).getChatterInfo(user: user) { chatterInfo in
+            guard let chatterInfo else {
+                onComplete(nil)
+                return
+            }
+            getKickChannelInfo(channelName: user) { channelInfo in
+                let accountCreated = channelInfo?.chatroom.created_at
+                let bio = channelInfo?.user?.bio
+                let followers = channelInfo?.followersCount
+                onComplete(chatterInfo.toChatterInfo(
+                    accountCreated: accountCreated,
+                    bio: bio,
+                    followers: followers
+                ))
+            }
+        }
+    }
+
     func createKickApi(stream: SettingsStream) -> KickApi {
         return KickApi(channelId: stream.kickChannelId ?? "",
                        slug: stream.kickSlug ?? "",

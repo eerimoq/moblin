@@ -347,7 +347,7 @@ private struct RaidView: View {
             VStack {
                 if raid.state != .idle {
                     HStack {
-                        RaidChannelImageView(image: raid.channelImage)
+                        ChannelImageView(image: raid.channelImage)
                         Text(raid.message)
                         Spacer()
                         Button {
@@ -880,7 +880,7 @@ private struct AlertsControlView: View {
 private struct ActionButtonView: View {
     var image: String
     var text: LocalizedStringKey
-    var foreground: Color = .blue
+    var foreground: Color?
     var action: () -> Void
 
     var body: some View {
@@ -888,11 +888,18 @@ private struct ActionButtonView: View {
             action()
         } label: {
             VStack {
-                Image(systemName: image)
-                    .foregroundStyle(foreground)
-                    .font(.title)
+                if let foreground {
+                    Image(systemName: image)
+                        .foregroundStyle(foreground)
+                        .font(.title2)
+                } else {
+                    Image(systemName: image)
+                        .font(.title2)
+                }
                 Text(text)
                     .foregroundStyle(.white)
+                    .font(.caption)
+                    .lineLimit(1)
             }
         }
     }
@@ -906,8 +913,10 @@ private struct ActionButtonsView: View {
     @State private var presentingDeleteConfirm = false
     @State private var presentingNicknameDialog = false
     @State private var nicknameText = ""
+    @State private var showingChatterInfo = false
 
     private func dismiss() {
+        showingChatterInfo = false
         selectedPost = nil
     }
 
@@ -987,6 +996,12 @@ private struct ActionButtonsView: View {
         }
     }
 
+    private func infoButton() -> some View {
+        ActionButtonView(image: "info.circle", text: "Info") {
+            showingChatterInfo = true
+        }
+    }
+
     private func saveNickname(selectedPost: ChatPost) {
         guard let user = selectedPost.user else {
             return
@@ -1007,42 +1022,51 @@ private struct ActionButtonsView: View {
 
     var body: some View {
         if let selectedPost {
-            VStack {
-                Spacer()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        self.selectedPost = nil
+            if showingChatterInfo {
+                ChatterInfoView(model: model, post: selectedPost, presenting: $showingChatterInfo)
+                    .border(.gray)
+                    .padding([.horizontal], 5)
+            } else {
+                VStack {
+                    Spacer()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            self.selectedPost = nil
+                        }
+                    VStack(alignment: .leading) {
+                        ScrollView {
+                            LineView(postState: selectedPost.state,
+                                     post: selectedPost,
+                                     chat: model.database.chat,
+                                     platform: model.chat.moreThanOneStreamingPlatform,
+                                     selectedPost: $selectedPost)
+                                .foregroundStyle(.white)
+                        }
+                        .frame(height: 100)
+                        .padding([.vertical], 5)
+                        HStack {
+                            Spacer(minLength: 0)
+                            banButton(selectedPost: selectedPost)
+                            Spacer(minLength: 0)
+                            timeoutButton(selectedPost: selectedPost)
+                            Spacer(minLength: 0)
+                            deleteButton(selectedPost: selectedPost)
+                            Spacer(minLength: 0)
+                            copyButton(selectedPost: selectedPost)
+                            Spacer(minLength: 0)
+                            nicknameButton(selectedPost: selectedPost)
+                            Spacer(minLength: 0)
+                            infoButton()
+                                .disabled(selectedPost.platform != .kick)
+                            Spacer(minLength: 0)
+                        }
+                        .padding([.bottom], 5)
                     }
-                VStack(alignment: .leading) {
-                    ScrollView {
-                        LineView(postState: selectedPost.state,
-                                 post: selectedPost,
-                                 chat: model.database.chat,
-                                 platform: model.chat.moreThanOneStreamingPlatform,
-                                 selectedPost: $selectedPost)
-                            .foregroundStyle(.white)
-                    }
-                    .frame(height: 100)
-                    .padding([.top, .bottom], 5)
-                    HStack {
-                        Spacer()
-                        banButton(selectedPost: selectedPost)
-                        Spacer()
-                        timeoutButton(selectedPost: selectedPost)
-                        Spacer()
-                        deleteButton(selectedPost: selectedPost)
-                        Spacer()
-                        copyButton(selectedPost: selectedPost)
-                        Spacer()
-                        nicknameButton(selectedPost: selectedPost)
-                        Spacer()
-                    }
-                    .padding([.bottom], 5)
+                    .border(.gray)
+                    .padding([.horizontal], 5)
+                    .background(.black)
                 }
-                .border(.gray)
-                .padding([.leading, .trailing], 5)
-                .background(.black)
             }
         }
     }

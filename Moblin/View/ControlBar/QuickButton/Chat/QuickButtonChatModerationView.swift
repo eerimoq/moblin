@@ -444,7 +444,7 @@ private struct CreatePredictionView: View {
     }
 }
 
-struct RaidChannelImageView: View {
+struct ChannelImageView: View {
     let image: String?
 
     var body: some View {
@@ -483,7 +483,7 @@ private struct RaidChannelView: View {
 
     var body: some View {
         HStack {
-            RaidChannelImageView(image: image)
+            ChannelImageView(image: image)
             VStack(alignment: .leading) {
                 Text(channel)
                 if isLive {
