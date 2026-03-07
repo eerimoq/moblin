@@ -75,14 +75,12 @@ struct ChatterInfoView: View {
         switch post.platform {
         case .kick:
             model.getKickChatterInfo(user: user) { info in
-                DispatchQueue.main.async {
-                    if let info {
-                        chatterInfo = info
-                    } else {
-                        errorMessage = String(localized: "Failed to load chatter info")
-                    }
-                    loading = false
+                if let info {
+                    chatterInfo = info
+                } else {
+                    errorMessage = String(localized: "Failed to load chatter info")
                 }
+                loading = false
             }
         default:
             errorMessage = String(localized: "Failed to load chatter info")
@@ -148,8 +146,9 @@ struct ChatterInfoView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                 } placeholder: {
-                    Circle()
-                        .fill(.gray.opacity(0.3))
+                    Image("AppIconNoBackground")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
                 }
                 .frame(width: 50, height: 50)
                 .clipShape(Circle())
