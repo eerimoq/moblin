@@ -272,8 +272,7 @@ extension Model {
     }
 
     func getKickChatterInfo(user: String, onComplete: @escaping (ChatterInfo?) -> Void) {
-        let api = createKickApi(stream: stream)
-        api.getChatterInfo(user: user) { chatterInfo in
+        createKickApi(stream: stream).getChatterInfo(user: user) { chatterInfo in
             guard let chatterInfo else {
                 onComplete(nil)
                 return
