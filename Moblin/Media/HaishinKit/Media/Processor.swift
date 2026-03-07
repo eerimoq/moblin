@@ -92,6 +92,12 @@ final class Processor {
         }
     }
 
+    func setAudioGain(gain: Float) {
+        processorControlQueue.async {
+            self.audio.gain = gain
+        }
+    }
+
     func setAudioEncoderSettings(settings: AudioEncoderSettings) {
         audio.encoder.setSettings(settings: settings)
     }

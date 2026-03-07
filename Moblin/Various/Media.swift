@@ -656,6 +656,10 @@ final class Media: NSObject {
         processor?.setHasAudio(value: !on)
     }
 
+    func setAudioGain(gain: Float) {
+        processor?.setAudioGain(gain: gain)
+    }
+
     func registerEffect(_ effect: VideoEffect) {
         processor?.registerVideoEffect(effect)
     }
