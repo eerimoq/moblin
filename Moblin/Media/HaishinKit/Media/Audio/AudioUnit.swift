@@ -177,12 +177,68 @@ final class AudioUnit: NSObject {
         guard let sampleBuffer = sampleBuffer.muted(muted)?.withGain(gain) else {
             return
         }
+        if shouldUpdateAudioLevel(sampleBuffer) {
+            let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
+            let audioLevel: Float = muted ? .nan : calculateAudioLevel(sampleBuffer)
+            updateAudioLevel(sampleBuffer: sampleBuffer,
+                             audioLevel: audioLevel,
+                             numberOfAudioChannels: numberOfAudioChannels)
+        }
         if speechToTextEnabled {
             processor.delegate?.streamAudio(sampleBuffer: sampleBuffer)
         }
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
+    }
+
+    private func calculateAudioLevel(_ sampleBuffer: CMSampleBuffer) -> Float {
+        guard let dataBuffer = sampleBuffer.dataBuffer else {
+            return .infinity
+        }
+        guard let audioStreamBasicDescription = sampleBuffer.formatDescription?.audioStreamBasicDescription
+        else {
+            return .infinity
+        }
+        var length = 0
+        var dataPointer: UnsafeMutablePointer<Int8>?
+        let status = CMBlockBufferGetDataPointer(
+            dataBuffer,
+            atOffset: 0,
+            lengthAtOffsetOut: nil,
+            totalLengthOut: &length,
+            dataPointerOut: &dataPointer
+        )
+        guard status == noErr, let dataPointer else {
+            return .infinity
+        }
+        let isFloat = audioStreamBasicDescription.mFormatFlags & kAudioFormatFlagIsFloat != 0
+        var sumOfSquares: Float = 0.0
+        var count = 0
+        if isFloat, audioStreamBasicDescription.mBitsPerChannel == 32 {
+            count = length / MemoryLayout<Float>.size
+            dataPointer.withMemoryRebound(to: Float.self, capacity: count) { samples in
+                for index in 0 ..< count {
+                    sumOfSquares += samples[index] * samples[index]
+                }
+            }
+        } else if audioStreamBasicDescription.mBitsPerChannel == 16 {
+            count = length / MemoryLayout<Int16>.size
+            dataPointer.withMemoryRebound(to: Int16.self, capacity: count) { samples in
+                for index in 0 ..< count {
+                    let normalized = Float(samples[index]) / Float(Int16.max)
+                    sumOfSquares += normalized * normalized
+                }
+            }
+        }
+        guard count > 0 else {
+            return .infinity
+        }
+        let rms = sqrt(sumOfSquares / Float(count))
+        guard rms > 0 else {
+            return -160.0
+        }
+        return 20.0 * log10(rms)
     }
 
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
@@ -231,7 +287,7 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(
         _: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection
+        from _: AVCaptureConnection
     ) {
         guard let processor else {
             return
@@ -245,19 +301,6 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         guard selectedBufferedAudioId == nil else {
             return
         }
-        if shouldUpdateAudioLevel(sampleBuffer) {
-            var audioLevel: Float
-            if muted {
-                audioLevel = .nan
-            } else if let channel = connection.audioChannels.first {
-                audioLevel = channel.averagePowerLevel
-            } else {
-                audioLevel = 0.0
-            }
-            updateAudioLevel(sampleBuffer: sampleBuffer,
-                             audioLevel: audioLevel,
-                             numberOfAudioChannels: connection.audioChannels.count)
-        }
         appendNewSampleBuffer(processor, sampleBuffer, presentationTimeStamp)
     }
 }
@@ -266,12 +309,6 @@ extension AudioUnit: BufferedAudioSampleBufferDelegate {
     func didOutputBufferedSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
         guard selectedBufferedAudioId == cameraId, let processor else {
             return
-        }
-        if shouldUpdateAudioLevel(sampleBuffer) {
-            let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-            updateAudioLevel(sampleBuffer: sampleBuffer,
-                             audioLevel: .infinity,
-                             numberOfAudioChannels: numberOfAudioChannels)
         }
         appendNewSampleBuffer(processor, sampleBuffer, sampleBuffer.presentationTimeStamp)
     }
