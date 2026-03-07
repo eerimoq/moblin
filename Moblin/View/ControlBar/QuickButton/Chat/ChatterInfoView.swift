@@ -37,7 +37,7 @@ private struct InfoRowView: View {
 
     var body: some View {
         HStack {
-            Text(LocalizedStringKey(label))
+            Text(label)
                 .foregroundStyle(.gray)
             Spacer()
             Text(value)
