@@ -174,15 +174,20 @@ final class AudioUnit: NSObject {
                                        _ sampleBuffer: CMSampleBuffer,
                                        _ presentationTimeStamp: CMTime)
     {
-        guard let sampleBuffer = sampleBuffer.muted(muted)?.withGain(gain) else {
+        guard let mutedSampleBuffer = sampleBuffer.muted(muted) else {
             return
         }
-        if shouldUpdateAudioLevel(sampleBuffer) {
-            let numberOfAudioChannels = Int(sampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0)
-            let audioLevel: Float = muted ? .nan : calculateAudioLevel(sampleBuffer)
-            updateAudioLevel(sampleBuffer: sampleBuffer,
+        if shouldUpdateAudioLevel(mutedSampleBuffer) {
+            let numberOfAudioChannels = Int(
+                mutedSampleBuffer.formatDescription?.numberOfAudioChannels() ?? 0
+            )
+            let audioLevel: Float = muted ? .nan : calculateAudioLevel(mutedSampleBuffer)
+            updateAudioLevel(sampleBuffer: mutedSampleBuffer,
                              audioLevel: audioLevel,
                              numberOfAudioChannels: numberOfAudioChannels)
+        }
+        guard let sampleBuffer = mutedSampleBuffer.withGain(gain) else {
+            return
         }
         if speechToTextEnabled {
             processor.delegate?.streamAudio(sampleBuffer: sampleBuffer)
