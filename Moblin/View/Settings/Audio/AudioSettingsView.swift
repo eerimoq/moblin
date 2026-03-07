@@ -85,7 +85,7 @@ struct AudioSettingsView: View {
             } header: {
                 Text("Gain")
             } footer: {
-                Text("0.0 dB by deafult, leaving the input level unchanged.")
+                Text("0.0 dB by default, leaving the input level unchanged.")
             }
             Section {
                 Toggle("Bluetooth output only", isOn: $debug.bluetoothOutputOnly)
