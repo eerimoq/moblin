@@ -103,11 +103,12 @@ extension CMSampleBuffer {
                 }
             }
         } else if asbd.mBitsPerChannel == 16 {
+            let gainFixed = Int32(gain * 256)
             let count = length / MemoryLayout<Int16>.size
             dataPointer.withMemoryRebound(to: Int16.self, capacity: count) { int16Pointer in
                 for i in 0 ..< count {
-                    let sample = Float(int16Pointer[i]) * gain
-                    int16Pointer[i] = Int16(clamping: Int(sample))
+                    let sample = (Int32(int16Pointer[i]) * gainFixed) >> 8
+                    int16Pointer[i] = Int16(clamping: sample)
                 }
             }
         }
