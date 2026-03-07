@@ -94,7 +94,6 @@ struct ChatterInfoView: View {
                 Text("Chatter Info")
                     .bold()
                 Spacer()
-                // Balance the back button
                 HStack(spacing: 4) {
                     Image(systemName: "chevron.left")
                     Text("Back")
