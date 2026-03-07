@@ -896,8 +896,10 @@ private struct ActionButtonsView: View {
     @State private var presentingDeleteConfirm = false
     @State private var presentingNicknameDialog = false
     @State private var nicknameText = ""
+    @State private var showingChatterInfo = false
 
     private func dismiss() {
+        showingChatterInfo = false
         selectedPost = nil
     }
 
@@ -977,6 +979,12 @@ private struct ActionButtonsView: View {
         }
     }
 
+    private func infoButton() -> some View {
+        ActionButtonView(image: "info.circle", text: "Info") {
+            showingChatterInfo = true
+        }
+    }
+
     private func saveNickname(selectedPost: ChatPost) {
         guard let user = selectedPost.user else {
             return
@@ -997,42 +1005,54 @@ private struct ActionButtonsView: View {
 
     var body: some View {
         if let selectedPost {
-            VStack {
-                Spacer()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        self.selectedPost = nil
+            if showingChatterInfo {
+                ChatterInfoView(
+                    model: model,
+                    post: selectedPost,
+                    showingChatterInfo: $showingChatterInfo
+                )
+            } else {
+                VStack {
+                    Spacer()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            self.selectedPost = nil
+                        }
+                    VStack(alignment: .leading) {
+                        ScrollView {
+                            LineView(postState: selectedPost.state,
+                                     post: selectedPost,
+                                     chat: model.database.chat,
+                                     platform: model.chat.moreThanOneStreamingPlatform,
+                                     selectedPost: $selectedPost)
+                                .foregroundStyle(.white)
+                        }
+                        .frame(height: 100)
+                        .padding([.top, .bottom], 5)
+                        HStack {
+                            Spacer()
+                            banButton(selectedPost: selectedPost)
+                            Spacer()
+                            timeoutButton(selectedPost: selectedPost)
+                            Spacer()
+                            deleteButton(selectedPost: selectedPost)
+                            Spacer()
+                            copyButton(selectedPost: selectedPost)
+                            Spacer()
+                            nicknameButton(selectedPost: selectedPost)
+                            if selectedPost.platform == .kick {
+                                Spacer()
+                                infoButton()
+                            }
+                            Spacer()
+                        }
+                        .padding([.bottom], 5)
                     }
-                VStack(alignment: .leading) {
-                    ScrollView {
-                        LineView(postState: selectedPost.state,
-                                 post: selectedPost,
-                                 chat: model.database.chat,
-                                 platform: model.chat.moreThanOneStreamingPlatform,
-                                 selectedPost: $selectedPost)
-                            .foregroundStyle(.white)
-                    }
-                    .frame(height: 100)
-                    .padding([.top, .bottom], 5)
-                    HStack {
-                        Spacer()
-                        banButton(selectedPost: selectedPost)
-                        Spacer()
-                        timeoutButton(selectedPost: selectedPost)
-                        Spacer()
-                        deleteButton(selectedPost: selectedPost)
-                        Spacer()
-                        copyButton(selectedPost: selectedPost)
-                        Spacer()
-                        nicknameButton(selectedPost: selectedPost)
-                        Spacer()
-                    }
-                    .padding([.bottom], 5)
+                    .border(.gray)
+                    .padding([.leading, .trailing], 5)
+                    .background(.black)
                 }
-                .border(.gray)
-                .padding([.leading, .trailing], 5)
-                .background(.black)
             }
         }
     }
