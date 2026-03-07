@@ -138,14 +138,14 @@ extension CMSampleBuffer {
         var sumOfSquares: Float = 0.0
         var count = 0
         if isFloat, audioStreamBasicDescription.mBitsPerChannel == 32 {
-            count = length / MemoryLayout<Float>.size
+            count = min(length / MemoryLayout<Float>.size, 256)
             dataPointer.withMemoryRebound(to: Float.self, capacity: count) { samples in
                 for index in 0 ..< count {
                     sumOfSquares += samples[index] * samples[index]
                 }
             }
         } else if audioStreamBasicDescription.mBitsPerChannel == 16 {
-            count = length / MemoryLayout<Int16>.size
+            count = min(length / MemoryLayout<Int16>.size, 256)
             dataPointer.withMemoryRebound(to: Int16.self, capacity: count) { samples in
                 for index in 0 ..< count {
                     let normalized = Float(samples[index]) / Float(Int16.max)
