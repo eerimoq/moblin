@@ -31,18 +31,10 @@ struct ChatterInfo {
     var followers: Int?
 }
 
-private func parseDate(_ dateString: String) -> Date? {
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    if let date = formatter.date(from: dateString) {
-        return date
-    }
-    formatter.formatOptions = [.withInternetDateTime]
-    return formatter.date(from: dateString)
-}
-
 private func formatDate(_ dateString: String) -> String? {
-    guard let date = parseDate(dateString) else {
+    let parser = ISO8601DateFormatter()
+    parser.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    guard let date = parser.date(from: dateString) else {
         return nil
     }
     let formatter = DateFormatter()
