@@ -146,37 +146,33 @@ struct ChatterInfoView: View {
     }
 
     var body: some View {
-        ScrollView {
-            ZStack {
-                if loading {
-                    VStack {
-                        Spacer()
+        VStack(spacing: 0) {
+            Color.clear.frame(height: 1)
+            ScrollView {
+                ZStack {
+                    if loading {
                         HCenter {
                             ProgressView()
                         }
-                        Spacer()
-                    }
-                } else if let errorMessage {
-                    VStack {
-                        Spacer()
+                    } else if let errorMessage {
                         HCenter {
                             Text(errorMessage)
                                 .foregroundStyle(.gray)
                         }
-                        Spacer()
+                    } else if let info = chatterInfo {
+                        VStack {
+                            profileHeader(info: info)
+                            infoRows(info: info)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.top, 8)
                     }
-                } else if let info = chatterInfo {
-                    VStack(spacing: 12) {
-                        profileHeader(info: info)
-                        infoRows(info: info)
+                    CloseButtonTopRightView {
+                        presenting = false
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.top, 8)
-                }
-                CloseButtonTopRightView {
-                    presenting = false
                 }
             }
+            Color.clear.frame(height: 1)
         }
         .foregroundStyle(.white)
         .background(.black)
