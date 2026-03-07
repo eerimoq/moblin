@@ -29,6 +29,7 @@ final class AudioUnit: NSObject {
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
+    var gain: Float = 1.0
     weak var processor: Processor?
     private var selectedBufferedAudioId: UUID?
     private var bufferedAudios: [UUID: BufferedAudio] = [:]
@@ -173,7 +174,7 @@ final class AudioUnit: NSObject {
                                        _ sampleBuffer: CMSampleBuffer,
                                        _ presentationTimeStamp: CMTime)
     {
-        guard let sampleBuffer = sampleBuffer.muted(muted) else {
+        guard let sampleBuffer = sampleBuffer.muted(muted)?.withGain(gain) else {
             return
         }
         if speechToTextEnabled {

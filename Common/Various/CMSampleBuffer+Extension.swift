@@ -72,6 +72,48 @@ extension CMSampleBuffer {
         return self
     }
 
+    func withGain(_ gain: Float) -> CMSampleBuffer? {
+        guard gain != 1.0 else {
+            return self
+        }
+        guard let dataBuffer else {
+            return nil
+        }
+        guard let asbd = formatDescription?.audioStreamBasicDescription else {
+            return nil
+        }
+        var length = 0
+        var dataPointer: UnsafeMutablePointer<Int8>?
+        let status = CMBlockBufferGetDataPointer(
+            dataBuffer,
+            atOffset: 0,
+            lengthAtOffsetOut: nil,
+            totalLengthOut: &length,
+            dataPointerOut: &dataPointer
+        )
+        guard status == noErr, let dataPointer else {
+            return nil
+        }
+        let isFloat = asbd.mFormatFlags & kAudioFormatFlagIsFloat != 0
+        if isFloat, asbd.mBitsPerChannel == 32 {
+            let count = length / MemoryLayout<Float>.size
+            dataPointer.withMemoryRebound(to: Float.self, capacity: count) { floatPointer in
+                for i in 0 ..< count {
+                    floatPointer[i] *= gain
+                }
+            }
+        } else if asbd.mBitsPerChannel == 16 {
+            let count = length / MemoryLayout<Int16>.size
+            dataPointer.withMemoryRebound(to: Int16.self, capacity: count) { int16Pointer in
+                for i in 0 ..< count {
+                    let sample = Float(int16Pointer[i]) * gain
+                    int16Pointer[i] = Int16(clamping: Int(sample))
+                }
+            }
+        }
+        return self
+    }
+
     private func getAttachmentValue(for key: CFString) -> Bool? {
         guard
             let attachments = CMSampleBufferGetSampleAttachmentsArray(

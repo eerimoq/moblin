@@ -72,6 +72,27 @@ struct AudioSettingsView: View {
                 MicView(model: model, mics: database.mics, mic: model.mic)
             }
             Section {
+                HStack {
+                    Image(systemName: "speaker.wave.1.fill")
+                    Slider(
+                        value: $audio.gain,
+                        in: 0.0 ... 3.0,
+                        step: 0.1,
+                        onEditingChanged: { begin in
+                            guard !begin else {
+                                return
+                            }
+                            model.setAudioGain(gain: audio.gain)
+                        }
+                    )
+                    Image(systemName: "speaker.wave.3.fill")
+                    Text(formatOneDecimal(audio.gain))
+                        .frame(width: 35)
+                }
+            } header: {
+                Text("Gain")
+            }
+            Section {
                 Toggle("Bluetooth output only", isOn: $debug.bluetoothOutputOnly)
                     .onChange(of: debug.bluetoothOutputOnly) { _ in
                         model.reloadAudioSession()
