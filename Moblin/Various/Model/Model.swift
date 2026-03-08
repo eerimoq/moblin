@@ -655,7 +655,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let weatherManager = WeatherManager()
     let geographyManager = GeographyManager()
     var onDocumentPickerUrl: ((URL) -> Void)?
-    private var healthStore = HKHealthStore()
+    var healthStore = HKHealthStore()
     private let resourceUsage = ResourceUsage()
     var speechToTextLatestPosition: Int?
     var speechToTextLatestText: String?
@@ -1472,7 +1472,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         obsWebSocket?.stop()
         media.stopAllNetStreams()
         stopSpeechToText()
-        stopWorkout(showToast: false)
+        stopWorkout()
         stopTeslaVehicle()
         stopNtpClient()
         stopMoblinkRelay()
@@ -2007,36 +2007,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func startWorkout(type: WatchProtocolWorkoutType) {
-        guard WCSession.default.isWatchAppInstalled else {
-            makeToast(title: String(localized: "Install Moblin on your Apple Watch"))
-            return
-        }
-        setIsWorkout(type: type)
-        authorizeHealthKit {
-            DispatchQueue.main.async {
-                if self.isWatchLocal() {
-                    self.sendWorkoutToWatch()
-                }
-            }
-        }
-        makeToast(
-            title: String(localized: "Starting workout"),
-            subTitle: String(localized: "Open Moblin in your Apple Watch to start it")
-        )
-    }
-
-    func stopWorkout(showToast: Bool = true) {
-        setIsWorkout(type: nil)
-        if isWatchLocal() {
-            sendWorkoutToWatch()
-        }
-        if showToast {
-            makeToast(title: String(localized: "Ending workout"),
-                      subTitle: String(localized: "Open Moblin in your Apple Watch to end it"))
-        }
-    }
-
     func getQuickButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
         return database.quickButtons.first(where: { $0.type == type })
     }
@@ -2434,26 +2404,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             )
         } else {
             makeToast(title: String(localized: "Screen unlocked"))
-        }
-    }
-
-    private func authorizeHealthKit(completion: @escaping () -> Void) {
-        let typesToShare: Set = [
-            HKQuantityType.workoutType(),
-        ]
-        var types: Set<HKSampleType> = [
-            .quantityType(forIdentifier: .heartRate)!,
-            .quantityType(forIdentifier: .distanceCycling)!,
-            .quantityType(forIdentifier: .distanceWalkingRunning)!,
-            .quantityType(forIdentifier: .stepCount)!,
-            .quantityType(forIdentifier: .activeEnergyBurned)!,
-            .quantityType(forIdentifier: .runningPower)!,
-        ]
-        if #available(iOS 17.0, *) {
-            types.insert(.quantityType(forIdentifier: .cyclingPower)!)
-        }
-        healthStore.requestAuthorization(toShare: typesToShare, read: types) { _, _ in
-            completion()
         }
     }
 
@@ -3233,6 +3183,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             self.setQuickButton(type: type, isOn: false)
             self.updateQuickButtonStates()
+        }
+    }
+
+    func handleWorkout(stats: WatchProtocolWorkoutStats) {
+        if let heartRate = stats.heartRate {
+            heartRates[""] = heartRate
+        }
+        if let activeEnergyBurned = stats.activeEnergyBurned {
+            workoutActiveEnergyBurned = activeEnergyBurned
+        }
+        if let distance = stats.distance {
+            workoutDistance = distance
+        }
+        if let stepCount = stats.stepCount {
+            workoutStepCount = stepCount
+        }
+        if let power = stats.power {
+            workoutPower = power
         }
     }
 }

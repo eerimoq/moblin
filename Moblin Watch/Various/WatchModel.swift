@@ -7,6 +7,16 @@ import WatchConnectivity
 // Remote control assistant polls status every 5 seconds.
 private let previewTimeout = Duration.seconds(6)
 
+private let healthKitTypes: Set<HKSampleType> = [
+    .quantityType(forIdentifier: .heartRate)!,
+    .quantityType(forIdentifier: .distanceCycling)!,
+    .quantityType(forIdentifier: .distanceWalkingRunning)!,
+    .quantityType(forIdentifier: .stepCount)!,
+    .quantityType(forIdentifier: .activeEnergyBurned)!,
+    .quantityType(forIdentifier: .runningPower)!,
+    .quantityType(forIdentifier: .cyclingPower)!,
+]
+
 struct WatchChatPostSegment: Identifiable {
     let id = UUID()
     let text: String?
@@ -339,16 +349,27 @@ class WatchModel: NSObject, ObservableObject {
         preview.sceneIdPicker = sceneId
     }
 
-    private func handleStartWorkout(_ data: Any) throws {
-        guard let data = data as? Data else {
-            return
+    func startWorkout(type: WatchProtocolWorkoutType) {
+        stopWorkout()
+        authorizeHealthKit {
+            DispatchQueue.main.async {
+                self.startWorkoutAuthorized(type: type)
+                self.control.workoutActive = true
+            }
         }
-        let message = try JSONDecoder().decode(WatchProtocolStartWorkout.self, from: data)
-        handleStopWorkout()
+    }
+
+    func stopWorkout() {
+        workoutBuilder?.finishWorkout { _, _ in }
+        workoutSession?.end()
+        control.workoutActive = false
+    }
+
+    private func startWorkoutAuthorized(type: WatchProtocolWorkoutType) {
         let configuration = HKWorkoutConfiguration()
         var activityType: HKWorkoutActivityType
         let addStepCount: Bool
-        switch message.type {
+        switch type {
         case .walking:
             activityType = .walking
             preview.workoutType = "Walking"
@@ -389,9 +410,13 @@ class WatchModel: NSObject, ObservableObject {
         workoutBuilder.beginCollection(withStart: .now) { _, _ in }
     }
 
-    private func handleStopWorkout() {
-        workoutBuilder?.finishWorkout { _, _ in }
-        workoutSession?.end()
+    private func authorizeHealthKit(completion: @escaping () -> Void) {
+        let typesToShare: Set = [
+            HKQuantityType.workoutType(),
+        ]
+        healthStore.requestAuthorization(toShare: typesToShare, read: healthKitTypes) { _, _ in
+            completion()
+        }
     }
 
     private func handleViewerCount(_ data: Any) {
@@ -538,10 +563,6 @@ extension WatchModel: WCSessionDelegate {
                     try self.handleScenes(data)
                 case .scene:
                     try self.handleScene(data)
-                case .startWorkout:
-                    try self.handleStartWorkout(data)
-                case .stopWorkout:
-                    self.handleStopWorkout()
                 case .viewerCount:
                     self.handleViewerCount(data)
                 case .padelScoreboard:

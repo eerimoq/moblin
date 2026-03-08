@@ -17,8 +17,6 @@ enum WatchMessageToWatch: String {
     case zoomPreset
     case scenes
     case scene
-    case startWorkout
-    case stopWorkout
     case viewerCount
     case padelScoreboard
     case genericScoreboard

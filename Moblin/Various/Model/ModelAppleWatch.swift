@@ -36,7 +36,6 @@ extension Model {
             sendZoomPresetToWatch()
             sendScenesToWatchLocal()
             sendSceneToWatch(id: sceneSelector.selectedSceneId)
-            sendWorkoutToWatch()
             resetWorkoutStats()
             trySendNextChatPostToWatch()
             sendAudioLevelToWatch(audioLevel: audio.level.level)
@@ -93,35 +92,6 @@ extension Model {
             return
         }
         sendMessageToWatch(type: .thermalState, data: thermalState.rawValue)
-    }
-
-    private func sendStartWorkoutToWatch(type: WatchProtocolWorkoutType) {
-        guard isWatchReachable() else {
-            return
-        }
-        var data: Data
-        do {
-            let message = WatchProtocolStartWorkout(type: type)
-            data = try JSONEncoder().encode(message)
-        } catch {
-            return
-        }
-        sendMessageToWatch(type: .startWorkout, data: data)
-    }
-
-    private func sendStopWorkoutToWatch() {
-        guard isWatchReachable() else {
-            return
-        }
-        sendMessageToWatch(type: .stopWorkout, data: true)
-    }
-
-    func sendWorkoutToWatch() {
-        if let workoutType {
-            sendStartWorkoutToWatch(type: workoutType)
-        } else {
-            sendStopWorkoutToWatch()
-        }
     }
 
     func sendViewerCountWatch() {
@@ -418,9 +388,6 @@ extension Model: WCSessionDelegate {
         case .activated:
             DispatchQueue.main.async {
                 self.setLowFpsImage()
-                if self.isWatchLocal() {
-                    self.sendWorkoutToWatch()
-                }
             }
         default:
             break
@@ -587,21 +554,7 @@ extension Model: WCSessionDelegate {
         }
         DispatchQueue.main.async {
             if self.isWatchLocal() {
-                if let heartRate = stats.heartRate {
-                    self.heartRates[""] = heartRate
-                }
-                if let activeEnergyBurned = stats.activeEnergyBurned {
-                    self.workoutActiveEnergyBurned = activeEnergyBurned
-                }
-                if let distance = stats.distance {
-                    self.workoutDistance = distance
-                }
-                if let stepCount = stats.stepCount {
-                    self.workoutStepCount = stepCount
-                }
-                if let power = stats.power {
-                    self.workoutPower = power
-                }
+                self.handleWorkout(stats: stats)
             }
         }
     }

@@ -119,10 +119,44 @@ private struct ControlCreateStreamMarkersView: View {
     }
 }
 
+private struct ControlWorkoutView: View {
+    @ObservedObject var model: WatchModel
+    @ObservedObject var control: Control
+    @State private var presentingTypePicker = false
+
+    var body: some View {
+        if control.workoutActive {
+            Button {
+                model.stopWorkout()
+            } label: {
+                Text("Stop workout")
+            }
+        } else {
+            Button {
+                presentingTypePicker = true
+            } label: {
+                Text("Start workout")
+            }
+            .confirmationDialog("", isPresented: $presentingTypePicker) {
+                Button("Start walking workout") {
+                    model.startWorkout(type: .walking)
+                }
+                Button("Start running workout") {
+                    model.startWorkout(type: .running)
+                }
+                Button("Start cycling workout") {
+                    model.startWorkout(type: .cycling)
+                }
+            }
+        }
+    }
+}
+
 class Control: ObservableObject {
     @Published var isLive = false
     @Published var isRecording = false
     @Published var isMuted = false
+    @Published var workoutActive = false
 }
 
 struct ControlView: View {
@@ -140,6 +174,7 @@ struct ControlView: View {
                     ControlSkipCurrentTtsView()
                     ControlCreateStreamMarkersView()
                 }
+                ControlWorkoutView(model: model, control: model.control)
                 Spacer()
             }
             .padding()
