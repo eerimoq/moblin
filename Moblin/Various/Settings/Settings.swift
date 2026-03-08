@@ -1759,7 +1759,7 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Moblin in mouth"),
                                  type: .moblinInMouth,
-                                 imageOn: "",
+                                 imageOn: "mouth",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Pixellate"),

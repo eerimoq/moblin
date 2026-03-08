@@ -8,6 +8,7 @@ private struct QuickButtonImage: View {
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     let state: ButtonState
     let buttonSize: CGFloat
+    var hideImage: Bool = false
     let onTapGesture: () -> Void
 
     private func getImage(state: ButtonState) -> String {
@@ -18,7 +19,15 @@ private struct QuickButtonImage: View {
         }
     }
 
-    private var backgroundColor: Color {
+    private func foregroundColor() -> Color {
+        if hideImage {
+            return .clear
+        } else {
+            return .white
+        }
+    }
+
+    private func backgroundColor() -> Color {
         state.button.backgroundColor.color()
     }
 
@@ -34,8 +43,8 @@ private struct QuickButtonImage: View {
         let image = Image(systemName: getImage(state: state))
             .font(iconSize())
             .frame(width: buttonSize, height: buttonSize)
-            .foregroundStyle(.white)
-            .background(backgroundColor)
+            .foregroundStyle(foregroundColor())
+            .background(backgroundColor())
             .clipShape(Circle())
         ZStack {
             if state.isOn {
@@ -878,7 +887,8 @@ struct QuickButtonsInnerView: View {
                             QuickButtonImage(model: model,
                                              quickButtonsSettings: quickButtonsSettings,
                                              state: state,
-                                             buttonSize: size)
+                                             buttonSize: size,
+                                             hideImage: true)
                             {
                                 moblinInMouthAction()
                             }
