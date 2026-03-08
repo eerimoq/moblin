@@ -73,8 +73,23 @@ struct AudioSettingsView: View {
             }
             Section {
                 HStack {
+                    Image(systemName: "speaker.fill")
+                    Slider(value: $mic.inputGain, in: 0.0 ... 1.0, step: 0.1)
+                    Image(systemName: "speaker.wave.3.fill")
+                }
+                .disabled(mic.current.isAudioSession() && !mic.inputGainSettable)
+                .onChange(of: mic.inputGain) { _ in
+                    model.setInputGainIfSupported(inputGain: mic.inputGain)
+                }
+            } header: {
+                Text("Input gain")
+            } footer: {
+                Text("Typically only supported by external mics.")
+            }
+            Section {
+                HStack {
                     Image(systemName: "speaker.wave.1.fill")
-                    Slider(value: $audio.gainDb, in: 0.0 ... 12.0, step: 0.1)
+                    Slider(value: $audio.gainDb, in: 0.0 ... 12.0, step: 1.0)
                         .onChange(of: audio.gainDb) { _ in
                             model.setAudioGain(gainDb: audio.gainDb)
                         }
@@ -83,7 +98,7 @@ struct AudioSettingsView: View {
                         .frame(width: 65)
                 }
             } header: {
-                Text("Gain")
+                Text("Output gain")
             } footer: {
                 Text("0.0 dB by default, leaving the input level unchanged.")
             }

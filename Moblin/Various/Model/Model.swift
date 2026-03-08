@@ -448,6 +448,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var subscriptions = Set<AnyCancellable>()
     var streamUptime = StreamUptimeProvider()
     let audio = AudioProvider()
+    var inputGainObservation: NSKeyValueObservation?
     var settings = Settings()
     var twitchChat: TwitchChat?
     var twitchEventSub: TwitchEventSub?
@@ -990,6 +991,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateCameraLists()
         updateBatteryLevel()
         setPixelFormat()
+        setupInputGainObserver()
         setupAudioSession()
         if let cameraDevice = preferredCamera(position: .back) {
             (cameraZoomXMinimum, cameraZoomXMaximum) = cameraDevice

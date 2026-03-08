@@ -21,11 +21,20 @@ class AudioProvider: ObservableObject {
 
 class Mic: ObservableObject {
     @Published var current: SettingsMicsMic = noMic
+    @Published var inputGain: Float = 1.0
+    @Published var inputGainSettable: Bool = false
+    let inputGainTimer = SimpleTimer(queue: processorControlQueue)
     var requested: SettingsMicsMic?
     var isSwitchTimerRunning: Bool = false
 }
 
 extension Model {
+    func setupInputGainObserver() {
+        inputGainObservation = AVAudioSession.sharedInstance().observe(\.inputGain) { session, _ in
+            self.mic.inputGain = session.inputGain
+        }
+    }
+
     func setupAudio() {
         updateMicsList()
         if database.mics.defaultMic.isEmpty {
@@ -49,6 +58,16 @@ extension Model {
         teardownAudioSession()
         setupAudioSession()
         media.attachDefaultAudioDevice(builtinDelay: database.debug.builtinAudioAndVideoDelay)
+    }
+
+    func setInputGainIfSupported(inputGain: Float) {
+        mic.inputGainTimer.startSingleShot(timeout: 0.5) {
+            let session = AVAudioSession.sharedInstance()
+            guard session.isInputGainSettable, inputGain != session.inputGain else {
+                return
+            }
+            try? session.setInputGain(inputGain)
+        }
     }
 
     func setupAudioSession() {
@@ -257,6 +276,9 @@ extension Model {
             return
         }
         switchMicIfNeededAfterRouteChange()
+        let session = AVAudioSession.sharedInstance()
+        mic.inputGainSettable = session.isInputGainSettable
+        mic.inputGain = session.inputGain
     }
 
     @objc func handleAvailableInputsChangeNotification(notification _: NSNotification) {
