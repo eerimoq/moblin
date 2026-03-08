@@ -76,6 +76,46 @@ extension CMSampleBuffer {
         guard gain != 1.0 else {
             return self
         }
+        return foreachAudioSample { samples, count in
+            for index in 0 ..< count {
+                samples[index] *= gain
+            }
+        } int16: { samples, count in
+            let gain = Int32(gain * 256)
+            for index in 0 ..< count {
+                samples[index] = Int16(clamping: (Int32(samples[index]) * gain) >> 8)
+            }
+        }
+    }
+
+    func audioLevel() -> Float {
+        var sumOfSquares: Float = 0.0
+        var samplesCount = 0
+        let sampleBuffer = foreachAudioSample { samples, count in
+            samplesCount = min(count, 256)
+            for index in 0 ..< samplesCount {
+                sumOfSquares += samples[index] * samples[index]
+            }
+        } int16: { samples, count in
+            samplesCount = min(count, 256)
+            for index in 0 ..< samplesCount {
+                let normalized = Float(samples[index]) / Float(Int16.max)
+                sumOfSquares += normalized * normalized
+            }
+        }
+        guard sampleBuffer != nil, samplesCount > 0 else {
+            return .infinity
+        }
+        let rms = sqrt(sumOfSquares / Float(samplesCount))
+        guard rms > 0 else {
+            return defaultAudioLevel
+        }
+        return 20.0 * log10(rms)
+    }
+
+    private func foreachAudioSample(float32: (UnsafeMutablePointer<Float32>, Int) -> Void,
+                                    int16: (UnsafeMutablePointer<Int16>, Int) -> Void) -> CMSampleBuffer?
+    {
         guard let dataBuffer else {
             return nil
         }
@@ -98,69 +138,15 @@ extension CMSampleBuffer {
         if isFloat, audioStreamBasicDescription.mBitsPerChannel == 32 {
             let count = length / MemoryLayout<Float>.size
             dataPointer.withMemoryRebound(to: Float.self, capacity: count) { samples in
-                for i in 0 ..< count {
-                    samples[i] *= gain
-                }
+                float32(samples, count)
             }
         } else if audioStreamBasicDescription.mBitsPerChannel == 16 {
-            let gain = Int32(gain * 256)
             let count = length / MemoryLayout<Int16>.size
             dataPointer.withMemoryRebound(to: Int16.self, capacity: count) { samples in
-                for i in 0 ..< count {
-                    samples[i] = Int16(clamping: (Int32(samples[i]) * gain) >> 8)
-                }
+                int16(samples, count)
             }
         }
         return self
-    }
-
-    func audioLevel() -> Float {
-        guard let dataBuffer = dataBuffer else {
-            return .infinity
-        }
-        guard let audioStreamBasicDescription = formatDescription?.audioStreamBasicDescription
-        else {
-            return .infinity
-        }
-        var length = 0
-        var dataPointer: UnsafeMutablePointer<Int8>?
-        let status = CMBlockBufferGetDataPointer(
-            dataBuffer,
-            atOffset: 0,
-            lengthAtOffsetOut: nil,
-            totalLengthOut: &length,
-            dataPointerOut: &dataPointer
-        )
-        guard status == noErr, let dataPointer else {
-            return .infinity
-        }
-        let isFloat = audioStreamBasicDescription.mFormatFlags & kAudioFormatFlagIsFloat != 0
-        var sumOfSquares: Float = 0.0
-        var count = 0
-        if isFloat, audioStreamBasicDescription.mBitsPerChannel == 32 {
-            count = min(length / MemoryLayout<Float>.size, 256)
-            dataPointer.withMemoryRebound(to: Float.self, capacity: count) { samples in
-                for index in 0 ..< count {
-                    sumOfSquares += samples[index] * samples[index]
-                }
-            }
-        } else if audioStreamBasicDescription.mBitsPerChannel == 16 {
-            count = min(length / MemoryLayout<Int16>.size, 256)
-            dataPointer.withMemoryRebound(to: Int16.self, capacity: count) { samples in
-                for index in 0 ..< count {
-                    let normalized = Float(samples[index]) / Float(Int16.max)
-                    sumOfSquares += normalized * normalized
-                }
-            }
-        }
-        guard count > 0 else {
-            return .infinity
-        }
-        let rms = sqrt(sumOfSquares / Float(count))
-        guard rms > 0 else {
-            return -160.0
-        }
-        return 20.0 * log10(rms)
     }
 
     private func getAttachmentValue(for key: CFString) -> Bool? {
