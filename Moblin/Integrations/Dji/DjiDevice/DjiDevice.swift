@@ -372,6 +372,13 @@ extension DjiDevice: CBPeripheralDelegate {
                                              id: startStreamingPrepareTransactionId,
                                              type: startStreamingPrepareType,
                                              payload: preparePayload.encode()))
+            if let wifiSsid, let wifiPassword {
+                let wifiPayload = DjiSetupWifiMessagePayload(wifiSsid: wifiSsid, wifiPassword: wifiPassword)
+                writeMessage(message: DjiMessage(target: setupWifiTarget,
+                                                 id: setupWifiTransactionId,
+                                                 type: setupWifiType,
+                                                 payload: wifiPayload.encode()))
+            }
             payload = DjiStartStreamingJsonMessagePayload(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
@@ -395,7 +402,7 @@ extension DjiDevice: CBPeripheralDelegate {
         // This is an exact copy of the stop-streaming command, but the last data-bit in
         // the payload is set to 1 instead of 2.
         // It may probably work fine sending it on all devices, but limiting it to OA5P for now.
-        if model.hasNewProtocol() {
+        if model.hasNewProtocol(), model != .osmoAction6 {
             let confirmStartStreamPayload = DjiConfirmStartStreamingMessagePayload()
             writeMessage(message: DjiMessage(target: stopStreamingTarget,
                                              id: stopStreamingTransactionId,
@@ -408,6 +415,11 @@ extension DjiDevice: CBPeripheralDelegate {
                                              id: configureTransactionId,
                                              type: configureType,
                                              payload: payload.encode()))
+            let confirmStartStreamPayload = DjiConfirmStartStreamingMessagePayload()
+            writeMessage(message: DjiMessage(target: stopStreamingTarget,
+                                             id: stopStreamingTransactionId,
+                                             type: stopStreamingType,
+                                             payload: confirmStartStreamPayload.encode()))
         }
         setState(state: .startingStream)
     }
