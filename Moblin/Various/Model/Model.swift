@@ -378,6 +378,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var cameraControlEnabled = false
     @Published var stream: SettingsStream = fallbackStream
     @Published var layout: SettingsWidgetLayout?
+    @Published var workoutType: WatchProtocolWorkoutType?
 
     var streamState = StreamState.disconnected {
         didSet {
@@ -442,7 +443,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var inBackground = false
     var streamStartTime: ContinuousClock.Instant?
     var isRecorderRecording = false
-    var workoutType: WatchProtocolWorkoutType?
     var currentRecording: Recording?
     let recording = RecordingProvider()
     private var subscriptions = Set<AnyCancellable>()

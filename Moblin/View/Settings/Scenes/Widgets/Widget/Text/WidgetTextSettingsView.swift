@@ -12,6 +12,7 @@ private let suggestionCountry = "{countryFlag} {country}"
 private let suggestionCity = "{countryFlag} {city}"
 private let suggestionMovement = "📏 {distance} 💨 {speed} 🏔️ {altitude}"
 private let suggestionHeartRate = "♥️ {heartRate}"
+private let suggestionStepCount = "🚶{stepCount}"
 private let suggestionSubtitles = "{subtitles}"
 private let suggestionMuted = "{muted}"
 private let suggestionTime = "🕑 {shortTime}"
@@ -23,7 +24,6 @@ private let suggestionWeather = "{conditions} {temperature}"
 private let suggestionTravel =
     "\(suggestionWeather)\n\(suggestionTime)\n\(suggestionCity)\n\(suggestionMovement)"
 private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
-private let suggestionWorkoutTest = "{activeEnergyBurned} {power} {stepCount} {workoutDistance}"
 private let suggestionTesla = "🚗 Tesla\n⚙️ {teslaDrive}\n🔋 {teslaBatteryLevel}\n🔈 {teslaMedia}"
 private let suggestionRacing = "🏎️ Racing 🏎️\n{lapTimes}"
 
@@ -44,14 +44,14 @@ private func createSuggestions() -> [Suggestion] {
     ]
     if isPhone() {
         suggestions += [
-            Suggestion(id: 10, name: "Heart rate", text: suggestionHeartRate),
+            Suggestion(id: 10, name: "Apple workout heart rate", text: suggestionHeartRate),
         ]
     }
     suggestions += [
-        Suggestion(id: 11, name: "Subtitles", text: suggestionSubtitles),
-        Suggestion(id: 12, name: "Muted", text: suggestionMuted),
-        Suggestion(id: 13, name: "Debug", text: suggestionDebug),
-        Suggestion(id: 14, name: "Workout test", text: suggestionWorkoutTest),
+        Suggestion(id: 11, name: "Apple workout step count", text: suggestionStepCount),
+        Suggestion(id: 12, name: "Subtitles", text: suggestionSubtitles),
+        Suggestion(id: 13, name: "Muted", text: suggestionMuted),
+        Suggestion(id: 14, name: "Debug", text: suggestionDebug),
         Suggestion(id: 15, name: "Tesla", text: suggestionTesla),
         Suggestion(id: 16, name: "Racing", text: suggestionRacing),
     ]
@@ -706,36 +706,47 @@ private struct TimeVariablesView: View {
 }
 
 private struct LocationVariablesView: View {
+    @ObservedObject var location: SettingsLocation
     @Binding var value: String
 
     var body: some View {
         NavigationLink {
             Form {
-                VariableView(title: "{country}", description: String(localized: "Show country"), text: $value)
-                VariableView(
-                    title: "{countryFlag}",
-                    description: String(localized: "Show country flag"),
-                    text: $value
-                )
-                VariableView(title: "{state}", description: String(localized: "Show state"), text: $value)
-                VariableView(title: "{city}", description: String(localized: "Show city"), text: $value)
-                VariableView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
-                VariableView(
-                    title: "{averageSpeed}",
-                    description: String(localized: "Show average speed"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{altitude}",
-                    description: String(localized: "Show altitude"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{distance}",
-                    description: String(localized: "Show distance"),
-                    text: $value
-                )
-                VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
+                Section {
+                    VariableView(
+                        title: "{country}",
+                        description: String(localized: "Show country"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{countryFlag}",
+                        description: String(localized: "Show country flag"),
+                        text: $value
+                    )
+                    VariableView(title: "{state}", description: String(localized: "Show state"), text: $value)
+                    VariableView(title: "{city}", description: String(localized: "Show city"), text: $value)
+                    VariableView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
+                    VariableView(
+                        title: "{averageSpeed}",
+                        description: String(localized: "Show average speed"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{altitude}",
+                        description: String(localized: "Show altitude"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{distance}",
+                        description: String(localized: "Show distance"),
+                        text: $value
+                    )
+                    VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
+                } footer: {
+                    if !location.enabled {
+                        Text("⚠️ Enable Settings → Location to update location variables.")
+                    }
+                }
             }
             .navigationTitle("Location")
         } label: {
@@ -745,6 +756,7 @@ private struct LocationVariablesView: View {
 }
 
 private struct WeatherVariablesView: View {
+    @ObservedObject var location: SettingsLocation
     @Binding var value: String
 
     var body: some View {
@@ -772,11 +784,17 @@ private struct WeatherVariablesView: View {
                         text: $value
                     )
                 } footer: {
-                    let image = Image(systemName: "apple.logo")
-                    Text("""
-                    Weather data is provided by \(image) Weather. \
-                    [Legal information](https://weatherkit.apple.com/legal-attribution.html).
-                    """)
+                    VStack(alignment: .leading) {
+                        let image = Image(systemName: "apple.logo")
+                        Text("""
+                        Weather data is provided by \(image) Weather. \
+                        [Legal information](https://weatherkit.apple.com/legal-attribution.html).
+                        """)
+                        if !location.enabled {
+                            Text("")
+                            Text("⚠️ Enable Settings → Location to update weather variables.")
+                        }
+                    }
                 }
             }
             .navigationTitle("Weather")
@@ -815,47 +833,68 @@ private struct WorkoutVariablesView: View {
     var body: some View {
         NavigationLink {
             Form {
-                if isPhone() {
+                Section {
+                    if isPhone() {
+                        VariableView(
+                            title: "{heartRate}",
+                            description: String(localized: "Show heart rate."),
+                            text: $value
+                        )
+                    }
                     VariableView(
-                        title: "{heartRate}",
-                        description: String(localized: "Show Apple Watch heart rate"),
+                        title: "{stepCount}",
+                        description: String(localized: "Show step count."),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{workoutDistance}",
+                        description: String(localized: "Show distance."),
+                        text: $value
+                    )
+                } header: {
+                    Text("Apple workout")
+                } footer: {
+                    Text("""
+                    ⚠️ Start a workout using the Workout quick button or the Start workout \
+                    button on your Apple Watch to update Apple workout variables.
+                    """)
+                }
+                Section("Other devices") {
+                    ForEach(model.database.workoutDevices.devices) { device in
+                        VariableView(
+                            title: "{heartRate:\(device.name)}",
+                            description: String(
+                                localized: "Show heart rate for heart rate device called \"\(device.name)\""
+                            ),
+                            text: $value
+                        )
+                        VariableView(
+                            title: "{runningPace:\(device.name)}",
+                            description: String(localized: "Show running pace"),
+                            text: $value
+                        )
+                        VariableView(
+                            title: "{runningCadence:\(device.name)}",
+                            description: String(localized: "Show running cadence"),
+                            text: $value
+                        )
+                        VariableView(
+                            title: "{runningDistance:\(device.name)}",
+                            description: String(localized: "Show running distance"),
+                            text: $value
+                        )
+                    }
+                    VariableView(
+                        title: "{cyclingPower}",
+                        description: String(localized: "Show cycling power"),
+                        text: $value
+                    )
+                    VariableView(
+                        title: "{cyclingCadence}",
+                        description: String(localized: "Show cycling cadence"),
                         text: $value
                     )
                 }
-                ForEach(model.database.workoutDevices.devices) { device in
-                    VariableView(
-                        title: "{heartRate:\(device.name)}",
-                        description: String(
-                            localized: "Show heart rate for heart rate device called \"\(device.name)\""
-                        ),
-                        text: $value
-                    )
-                    VariableView(
-                        title: "{runningPace:\(device.name)}",
-                        description: String(localized: "Show running pace"),
-                        text: $value
-                    )
-                    VariableView(
-                        title: "{runningCadence:\(device.name)}",
-                        description: String(localized: "Show running cadence"),
-                        text: $value
-                    )
-                    VariableView(
-                        title: "{runningDistance:\(device.name)}",
-                        description: String(localized: "Show running distance"),
-                        text: $value
-                    )
-                }
-                VariableView(
-                    title: "{cyclingPower}",
-                    description: String(localized: "Show cycling power"),
-                    text: $value
-                )
-                VariableView(
-                    title: "{cyclingCadence}",
-                    description: String(localized: "Show cycling cadence"),
-                    text: $value
-                )
             }
             .navigationTitle("Workout")
         } label: {
@@ -948,8 +987,8 @@ private struct TextSelectionView: View {
             Section {
                 GeneralVariablesView(value: $value)
                 TimeVariablesView(value: $value)
-                LocationVariablesView(value: $value)
-                WeatherVariablesView(value: $value)
+                LocationVariablesView(location: model.database.location, value: $value)
+                WeatherVariablesView(location: model.database.location, value: $value)
                 LanguageVariablesView(value: $value)
                 WorkoutVariablesView(model: model, value: $value)
                 TeslaVariablesView(value: $value)
@@ -979,6 +1018,34 @@ struct TextWidgetTextView: View {
                 .focused($editingText)
         } footer: {
             MultiLineTextFieldDoneButtonView(editingText: $editingText)
+        }
+    }
+}
+
+private struct WarningsView: View {
+    let model: Model
+    @ObservedObject var location: SettingsLocation
+    @Binding var value: String
+
+    var body: some View {
+        let textFormat = loadTextFormat(format: value)
+        Section {
+            if textFormat.isWorkoutVariable(), model.workoutType == nil {
+                Text("""
+                ⚠️ Start a workout using the Workout quick button or the Start workout \
+                button on your Apple Watch to update Apple workout variables.
+                """)
+            }
+        }
+        Section {
+            if textFormat.isLocationVariable(), !location.enabled {
+                Text("⚠️ Enable Settings → Location to update location variables.")
+            }
+        }
+        Section {
+            if textFormat.isWeatherVariable(), !location.enabled {
+                Text("⚠️ Enable Settings → Location to update weather variables.")
+            }
         }
     }
 }
@@ -1122,6 +1189,9 @@ struct WidgetTextSettingsView: View {
                 TextItemLocalizedView(name: "Text", value: widget.text.formatString)
             }
         }
+        WarningsView(model: model,
+                     location: model.database.location,
+                     value: $text.formatString)
         let textEffects = model.getTextEffects(id: widget.id)
         if !textEffects.isEmpty {
             if !text.timers.isEmpty {

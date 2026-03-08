@@ -281,4 +281,55 @@ extension [TextFormatPart] {
         }
         return checkboxTexts[index]
     }
+
+    func isWorkoutVariable() -> Bool {
+        if contains(.heartRate("")) {
+            return true
+        } else if contains(.activeEnergyBurned) {
+            return true
+        } else if contains(.power) {
+            return true
+        } else if contains(.stepCount) {
+            return true
+        } else if contains(.workoutDistance) {
+            return true
+        }
+        return false
+    }
+
+    func isWeatherVariable() -> Bool {
+        if contains(.conditions) {
+            return true
+        } else if contains(.temperature) {
+            return true
+        } else if contains(.feelsLikeTemperature) {
+            return true
+        } else if contains(.wind) {
+            return true
+        }
+        return false
+    }
+
+    func isLocationVariable() -> Bool {
+        if contains(.speed) {
+            return true
+        } else if contains(.averageSpeed) {
+            return true
+        } else if contains(.altitude) {
+            return true
+        } else if contains(.distance) {
+            return true
+        } else if contains(.slope) {
+            return true
+        } else if contains(.country) {
+            return true
+        } else if contains(.countryFlag) {
+            return true
+        } else if contains(.state) {
+            return true
+        } else if contains(.city) {
+            return true
+        }
+        return false
+    }
 }
