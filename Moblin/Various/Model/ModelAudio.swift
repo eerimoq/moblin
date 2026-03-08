@@ -43,6 +43,11 @@ extension Model {
         } else {
             selectMic(mic: defaultMic)
         }
+        let audioSession = AVAudioSession.sharedInstance()
+        logger.info("audio: Input gain is \(audioSession.inputGain)")
+        inputGainObservation = audioSession.observe(\.inputGain) { session, _ in
+            logger.info("audio: Input gain changed to \(session.inputGain)")
+        }
     }
 
     func reloadAudioSession() {
