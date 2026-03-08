@@ -324,7 +324,17 @@ extension DjiDevice: CBPeripheralDelegate {
                                              type: configureType,
                                              payload: payload.encode()))
             setState(state: .configuring)
-        case .osmoAction5Pro, .osmoAction6, .osmo360:
+        case .osmoAction6:
+            guard imageStabilization != nil else {
+                return
+            }
+            let payload = DjiEnableStabilizationMessagePayload()
+            writeMessage(message: DjiMessage(target: configureTarget,
+                                             id: configureTransactionId,
+                                             type: configureType,
+                                             payload: payload.encode()))
+            sendStartStreaming()
+        case .osmoAction5Pro, .osmo360:
             guard let imageStabilization else {
                 return
             }
@@ -352,17 +362,28 @@ extension DjiDevice: CBPeripheralDelegate {
         guard let rtmpUrl, let resolution else {
             return
         }
-        let payload = DjiStartStreamingMessagePayload(
-            rtmpUrl: rtmpUrl,
-            resolution: resolution,
-            fps: fps,
-            bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF),
-            oa5: model.hasNewProtocol()
-        )
+        let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
+        let payload: Data
+        if model == .osmoAction6 {
+            payload = DjiStartStreamingJsonMessagePayload(
+                rtmpUrl: rtmpUrl,
+                resolution: resolution,
+                fps: fps,
+                bitrateKbps: bitrateKbps
+            ).encode()
+        } else {
+            payload = DjiStartStreamingMessagePayload(
+                rtmpUrl: rtmpUrl,
+                resolution: resolution,
+                fps: fps,
+                bitrateKbps: bitrateKbps,
+                oa5: model.hasNewProtocol()
+            ).encode()
+        }
         writeMessage(message: DjiMessage(target: startStreamingTarget,
                                          id: startStreamingTransactionId,
                                          type: startStreamingType,
-                                         payload: payload.encode()))
+                                         payload: payload))
         // Patch for OA5P: Send the confirmation payload to actually start the stream.
         // This is an exact copy of the stop-streaming command, but the last data-bit in
         // the payload is set to 1 instead of 2.
@@ -373,6 +394,13 @@ extension DjiDevice: CBPeripheralDelegate {
                                              id: stopStreamingTransactionId,
                                              type: stopStreamingType,
                                              payload: confirmStartStreamPayload.encode()))
+        }
+        if model == .osmoAction6, let imageStabilization {
+            let payload = DjiConfigureMessagePayload(imageStabilization: imageStabilization, oa5: false)
+            writeMessage(message: DjiMessage(target: configureTarget,
+                                             id: configureTransactionId,
+                                             type: configureType,
+                                             payload: payload.encode()))
         }
         setState(state: .startingStream)
     }

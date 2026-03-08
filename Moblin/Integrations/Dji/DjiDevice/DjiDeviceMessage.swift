@@ -30,6 +30,14 @@ class DjiPreparingToLivestreamMessagePayload {
     }
 }
 
+class DjiEnableStabilizationMessagePayload {
+    static let payload = Data([0x00, 0x01, 0x08, 0x00])
+
+    func encode() -> Data {
+        return DjiEnableStabilizationMessagePayload.payload
+    }
+}
+
 class DjiSetupWifiMessagePayload {
     var wifiSsid: String
     var wifiPassword: String
@@ -102,6 +110,64 @@ class DjiStartStreamingMessagePayload {
         writer.writeBytes(DjiStartStreamingMessagePayload.payload4)
         writer.writeBytes(djiPackUrl(url: rtmpUrl))
         return writer.data
+    }
+}
+
+class DjiStartStreamingJsonMessagePayload {
+    var rtmpUrl: String
+    var resolution: SettingsDjiDeviceResolution
+    var bitrateKbps: UInt16
+    var fps: Int
+
+    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16) {
+        self.rtmpUrl = rtmpUrl
+        self.resolution = resolution
+        self.fps = fps
+        self.bitrateKbps = bitrateKbps
+    }
+
+    func encode() -> Data {
+        var resolutionByte: UInt8
+        switch resolution {
+        case .r480p:
+            resolutionByte = 0x47
+        case .r720p:
+            resolutionByte = 0x04
+        case .r1080p:
+            resolutionByte = 0x0A
+        }
+        var fpsByte: UInt8
+        switch fps {
+        case 25:
+            fpsByte = 2
+        case 30:
+            fpsByte = 3
+        default:
+            fpsByte = 0
+        }
+
+        let escapedUrl = rtmpUrl
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "/", with: "\\/")
+        let json = """
+        {"rtmpAddress":"\(escapedUrl)","watermark":1,"codec":"AVC","EnhanceRTMP":false,"supportStopLive":false}
+        """
+        let jsonData = json.utf8Data
+
+        let body = Data([
+            resolutionByte,
+            UInt8(truncatingIfNeeded: bitrateKbps & 0x00FF),
+            UInt8(truncatingIfNeeded: (bitrateKbps >> 8) & 0x00FF),
+            fpsByte,
+            0x01, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00,
+        ])
+        let length = UInt16(body.count + jsonData.count)
+        let header = Data([
+            0x01,
+            UInt8(truncatingIfNeeded: length & 0x00FF),
+            UInt8(truncatingIfNeeded: (length >> 8) & 0x00FF),
+        ])
+        return header + body + jsonData
     }
 }
 
