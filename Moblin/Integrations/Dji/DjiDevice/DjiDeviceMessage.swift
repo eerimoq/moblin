@@ -150,7 +150,9 @@ class DjiStartStreamingJsonMessagePayload {
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "/", with: "\\/")
         let json = """
-        {"rtmpAddress":"\(escapedUrl)","watermark":1,"codec":"AVC","EnhanceRTMP":false,"supportStopLive":false}
+        {"rtmpAddress":"\(
+            escapedUrl
+        )","watermark":1,"codec":"AVC","EnhanceRTMP":false,"supportStopLive":false}
         """
         let jsonData = json.utf8Data
 
