@@ -6,6 +6,7 @@ private let pairTransactionId: UInt16 = 0x8092
 private let stopStreamingTransactionId: UInt16 = 0xEAC8
 private let preparingToLivestreamTransactionId: UInt16 = 0x8C12
 private let setupWifiTransactionId: UInt16 = 0x8C19
+private let startStreamingPrepareTransactionId: UInt16 = 0x8C2B
 private let startStreamingTransactionId: UInt16 = 0x8C2C
 private let configureTransactionId: UInt16 = 0x8C2D
 
@@ -21,6 +22,7 @@ private let stopStreamingType: UInt32 = 0x8E0240
 private let preparingToLivestreamType: UInt32 = 0xE10240
 private let setupWifiType: UInt32 = 0x470740
 private let configureType: UInt32 = 0x8E0240
+private let startStreamingPrepareType: UInt32 = 0x790840
 private let startStreamingType: UInt32 = 0x780840
 
 private let fff4Id = CBUUID(string: "FFF4")
@@ -365,6 +367,11 @@ extension DjiDevice: CBPeripheralDelegate {
         let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
         let payload: Data
         if model == .osmoAction6 {
+            let preparePayload = DjiPrepareStartStreamingMessagePayload()
+            writeMessage(message: DjiMessage(target: startStreamingTarget,
+                                             id: startStreamingPrepareTransactionId,
+                                             type: startStreamingPrepareType,
+                                             payload: preparePayload.encode()))
             payload = DjiStartStreamingJsonMessagePayload(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
