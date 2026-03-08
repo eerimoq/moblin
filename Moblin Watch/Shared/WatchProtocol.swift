@@ -1,4 +1,5 @@
 import Foundation
+import HealthKit
 import SwiftUI
 
 enum WatchMessageToWatch: String {
@@ -143,6 +144,36 @@ struct WatchProtocolWorkoutStats: Codable {
     var distance: Int?
     var stepCount: Int?
     var power: Int?
+
+    init(statistics: HKStatistics) {
+        switch statistics.quantityType {
+        case HKQuantityType.quantityType(forIdentifier: .heartRate):
+            if let heartRate = statistics.mostRecentQuantity()?
+                .doubleValue(for: .count().unitDivided(by: HKUnit.minute()))
+            {
+                self.heartRate = Int(heartRate)
+            }
+        case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
+            if let activeEnergyBurned = statistics.sumQuantity()?.doubleValue(for: .kilocalorie()) {
+                self.activeEnergyBurned = Int(activeEnergyBurned)
+            }
+        case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning),
+             HKQuantityType.quantityType(forIdentifier: .distanceCycling):
+            if let distance = statistics.sumQuantity()?.doubleValue(for: .meter()) {
+                self.distance = Int(distance)
+            }
+        case HKQuantityType.quantityType(forIdentifier: .stepCount):
+            if let stepCount = statistics.sumQuantity()?.doubleValue(for: .count()) {
+                self.stepCount = Int(stepCount)
+            }
+        case HKQuantityType.quantityType(forIdentifier: .runningPower):
+            if let power = statistics.mostRecentQuantity()?.doubleValue(for: .watt()) {
+                self.power = Int(power)
+            }
+        default:
+            break
+        }
+    }
 }
 
 struct WatchProtocolPadelScoreboardScore: Codable {

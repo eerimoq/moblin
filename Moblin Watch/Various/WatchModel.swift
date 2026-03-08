@@ -611,35 +611,7 @@ extension WatchModel: HKLiveWorkoutBuilderDelegate {
                 continue
             }
             DispatchQueue.main.async {
-                var stats = WatchProtocolWorkoutStats()
-                switch statistics.quantityType {
-                case HKQuantityType.quantityType(forIdentifier: .heartRate):
-                    if let heartRate = statistics.mostRecentQuantity()?
-                        .doubleValue(for: .count().unitDivided(by: HKUnit.minute()))
-                    {
-                        stats.heartRate = Int(heartRate)
-                    }
-                case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
-                    if let activeEnergyBurned = statistics.sumQuantity()?.doubleValue(for: .kilocalorie()) {
-                        stats.activeEnergyBurned = Int(activeEnergyBurned)
-                    }
-                case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning),
-                     HKQuantityType.quantityType(forIdentifier: .distanceCycling):
-                    if let distance = statistics.sumQuantity()?.doubleValue(for: .meter()) {
-                        stats.distance = Int(distance)
-                    }
-                case HKQuantityType.quantityType(forIdentifier: .stepCount):
-                    if let stepCount = statistics.sumQuantity()?.doubleValue(for: .count()) {
-                        stats.stepCount = Int(stepCount)
-                    }
-                case HKQuantityType.quantityType(forIdentifier: .runningPower):
-                    if let power = statistics.mostRecentQuantity()?.doubleValue(for: .watt()) {
-                        stats.power = Int(power)
-                    }
-                default:
-                    break
-                }
-                self.updateWorkoutStats(stats: stats)
+                self.updateWorkoutStats(stats: WatchProtocolWorkoutStats(statistics: statistics))
             }
         }
     }
