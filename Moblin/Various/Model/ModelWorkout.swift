@@ -27,6 +27,7 @@ class Workout: NSObject {
     func start(model: Model, type: WatchProtocolWorkoutType) {
         self.model = model
         stop()
+        #if !targetEnvironment(macCatalyst)
         let configuration = HKWorkoutConfiguration()
         var activityType: HKWorkoutActivityType
         let addStepCount: Bool
@@ -66,6 +67,7 @@ class Workout: NSObject {
         workoutSession.startActivity(with: .now)
         workoutBuilder.delegate = self
         workoutBuilder.beginCollection(withStart: .now) { _, _ in }
+        #endif
     }
 
     func stop() {
