@@ -89,7 +89,7 @@ struct AudioSettingsView: View {
             Section {
                 HStack {
                     Image(systemName: "speaker.wave.1.fill")
-                    Slider(value: $audio.gainDb, in: 0.0 ... 12.0, step: 1.0)
+                    Slider(value: $audio.gainDb, in: 0.0 ... 24.0, step: 1.0)
                         .onChange(of: audio.gainDb) { _ in
                             model.setAudioGain(gainDb: audio.gainDb)
                         }
