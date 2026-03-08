@@ -744,7 +744,7 @@ private struct LocationVariablesView: View {
                     VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
                 } footer: {
                     if !location.enabled {
-                        Text("⚠️ Enable Settings → Location to update location variables.")
+                        LocationMessageView()
                     }
                 }
             }
@@ -792,7 +792,7 @@ private struct WeatherVariablesView: View {
                         """)
                         if !location.enabled {
                             Text("")
-                            Text("⚠️ Enable Settings → Location to update weather variables.")
+                            WeatherMessageView()
                         }
                     }
                 }
@@ -826,6 +826,28 @@ private struct LanguageVariablesView: View {
     }
 }
 
+private struct WorkoutMessageView: View {
+    var body: some View {
+        let image = Image(systemName: "figure.run")
+        Text("""
+        ⚠️ Start a workout using the \(image)Workout quick button or the Start workout \
+        button on your Apple Watch to update Apple workout variables.
+        """)
+    }
+}
+
+private struct LocationMessageView: View {
+    var body: some View {
+        Text("⚠️ Enable Settings → Location to update location variables.")
+    }
+}
+
+private struct WeatherMessageView: View {
+    var body: some View {
+        Text("⚠️ Enable Settings → Location to update weather variables.")
+    }
+}
+
 private struct WorkoutVariablesView: View {
     let model: Model
     @Binding var value: String
@@ -854,10 +876,7 @@ private struct WorkoutVariablesView: View {
                 } header: {
                     Text("Apple workout")
                 } footer: {
-                    Text("""
-                    ⚠️ Start a workout using the Workout quick button or the Start workout \
-                    button on your Apple Watch to update Apple workout variables.
-                    """)
+                    WorkoutMessageView()
                 }
                 Section("Other devices") {
                     ForEach(model.database.workoutDevices.devices) { device in
@@ -1031,20 +1050,17 @@ private struct WarningsView: View {
         let textFormat = loadTextFormat(format: value)
         Section {
             if textFormat.isWorkoutVariable(), model.workoutType == nil {
-                Text("""
-                ⚠️ Start a workout using the Workout quick button or the Start workout \
-                button on your Apple Watch to update Apple workout variables.
-                """)
+                WorkoutMessageView()
             }
         }
         Section {
             if textFormat.isLocationVariable(), !location.enabled {
-                Text("⚠️ Enable Settings → Location to update location variables.")
+                LocationMessageView()
             }
         }
         Section {
             if textFormat.isWeatherVariable(), !location.enabled {
-                Text("⚠️ Enable Settings → Location to update weather variables.")
+                WeatherMessageView()
             }
         }
     }
