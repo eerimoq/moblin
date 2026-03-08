@@ -1220,13 +1220,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadNtpClient() {
         stopNtpClient()
         if isTimecodesEnabled() {
-            logger.info("Starting NTP client for pool \(stream.ntpPoolAddress)")
+            logger.debug("Starting NTP client for pool \(stream.ntpPoolAddress)")
             TrueTimeClient.sharedInstance.start(pool: [stream.ntpPoolAddress])
         }
     }
 
     func stopNtpClient() {
-        logger.info("Stopping NTP client")
+        logger.debug("Stopping NTP client")
         TrueTimeClient.sharedInstance.pause()
     }
 
