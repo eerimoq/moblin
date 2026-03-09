@@ -2,7 +2,7 @@ import Foundation
 
 /// Atomic<T> class
 /// - seealso: https://www.objc.io/blog/2018/12/18/atomic-variables/
-struct Atomic<A> {
+struct Atomic<A>: @unchecked Sendable {
     private let queue = DispatchQueue(label: "com.haishinkit.HaishinKit.Atomic")
     private var _value: A
 

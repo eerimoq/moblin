@@ -9,7 +9,7 @@ let sliderWidth = 250.0
 let sliderHeight = 40.0
 let cameraButtonWidth = 70.0
 let pickerBorderColor = Color.gray
-var pickerBackgroundColor = Color.black.opacity(0.4)
+nonisolated(unsafe) var pickerBackgroundColor = Color.black.opacity(0.4)
 
 private struct SegmentedPicker<T: Equatable, Content: View>: View {
     @Namespace private var selectionAnimation

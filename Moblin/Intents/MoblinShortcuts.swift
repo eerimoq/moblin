@@ -2,9 +2,9 @@ import AppIntents
 import IntentsUI
 
 final class MoblinShortcuts: AppShortcutsProvider {
-    static var shortcutTileColor = ShortcutTileColor.navy
+    static let shortcutTileColor = ShortcutTileColor.navy
 
-    static var appShortcuts: [AppShortcut] = [
+    static let appShortcuts: [AppShortcut] = [
         AppShortcut(intent: MuteIntent(), phrases: [
             "\(.applicationName), mute",
         ],

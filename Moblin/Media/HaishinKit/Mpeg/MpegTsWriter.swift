@@ -1,7 +1,7 @@
 import AVFoundation
 import TrueTime
 
-var payloadSize = 1316
+nonisolated(unsafe) var payloadSize = 1316
 
 protocol MpegTsWriterDelegate: AnyObject {
     func writer(_ writer: MpegTsWriter, doOutput data: Data)

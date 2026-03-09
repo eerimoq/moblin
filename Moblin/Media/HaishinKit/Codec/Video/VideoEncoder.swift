@@ -1,7 +1,7 @@
 import AVFoundation
 import VideoToolbox
 
-var numberOfFailedEncodings = 0
+nonisolated(unsafe) var numberOfFailedEncodings = 0
 
 protocol VideoEncoderDelegate: AnyObject {
     func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription)

@@ -7,7 +7,7 @@ struct DrawOnStreamLine: Identifiable {
     let color: Color
 }
 
-private var drawing = false
+nonisolated(unsafe) private var drawing = false
 
 private struct DrawOnStreamCanvasView: View {
     let model: Model

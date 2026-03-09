@@ -22,7 +22,7 @@ func openUrl(url: String) {
     return UIApplication.shared.open(URL(string: url)!)
 }
 
-private var thumbnails: [URL: UIImage] = [:]
+nonisolated(unsafe) private var thumbnails: [URL: UIImage] = [:]
 private let thumbnailQueue = DispatchQueue(label: "com.eerimoq.moblin.thumbnail")
 
 private func createThumbnailInternal(path: URL, offset: Double) -> UIImage? {

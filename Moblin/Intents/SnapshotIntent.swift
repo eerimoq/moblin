@@ -1,9 +1,9 @@
 import AppIntents
 
 struct SnapshotIntent: AppIntent {
-    static var title: LocalizedStringResource = "Take snapshot"
-    static var description: IntentDescription? = IntentDescription("Take a snapshot.")
-    static var openAppWhenRun: Bool = false
+    static let title: LocalizedStringResource = "Take snapshot"
+    static let description: IntentDescription? = IntentDescription("Take a snapshot.")
+    static let openAppWhenRun: Bool = false
 
     @MainActor
     func perform() async throws -> some IntentResult {

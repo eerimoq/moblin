@@ -81,8 +81,8 @@ struct CaptureDevices {
     var devices: [CaptureDevice]
 }
 
-var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-var allowVideoRangePixelFormat = false
+nonisolated(unsafe) var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+nonisolated(unsafe) var allowVideoRangePixelFormat = false
 private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
     attributes: .concurrent

@@ -220,7 +220,7 @@ private func decodeKicksGiftedEvent(data: String) throws -> KickPusherKicksGifte
     return try JSONDecoder().decode(KickPusherKicksGiftedEvent.self, from: data.utf8Data)
 }
 
-private var url =
+nonisolated(unsafe) private var url =
     URL(
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
     )!

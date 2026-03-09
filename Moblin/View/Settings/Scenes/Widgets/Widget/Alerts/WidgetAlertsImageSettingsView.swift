@@ -3,7 +3,7 @@ import PhotosUI
 import SDWebImageSwiftUI
 import SwiftUI
 
-private var loadedImages: [UUID: Data] = [:]
+nonisolated(unsafe) private var loadedImages: [UUID: Data] = [:]
 
 func loadAlertImage(model: Model, imageId: UUID) -> Data? {
     if let image = loadedImages[imageId] {

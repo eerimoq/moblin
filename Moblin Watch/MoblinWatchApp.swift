@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct MoblinWatchApp: App {
     @StateObject var model: WatchModel
-    static var globalModel: WatchModel?
+    nonisolated(unsafe) static var globalModel: WatchModel?
 
     init() {
         MoblinWatchApp.globalModel = WatchModel()

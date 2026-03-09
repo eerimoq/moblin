@@ -4,7 +4,7 @@ import SwiftUI
 
 private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
 private let relayIdKey = "srtlaRelayId"
-private var relayId: String = ""
+nonisolated(unsafe) private var relayId: String = ""
 
 func moblinkRelayLoadRelayId() {
     relayId = UserDefaults.standard.string(forKey: relayIdKey) ?? ""

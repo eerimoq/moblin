@@ -1,7 +1,7 @@
 import Foundation
 import VideoToolbox
 
-var videoEncoderDataRateLimitFactor = 1.2
+nonisolated(unsafe) var videoEncoderDataRateLimitFactor = 1.2
 
 func createDataRateLimits(bitRate: UInt32) -> CFArray {
     var bitRate = Double(bitRate)

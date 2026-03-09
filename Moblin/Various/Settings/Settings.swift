@@ -392,7 +392,7 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     }
 }
 
-var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
+nonisolated(unsafe) var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
     if #available(iOS 18.0, *) {
         return true
     } else {

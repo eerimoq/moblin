@@ -105,7 +105,7 @@ private struct SoundGalleryView: View {
     }
 }
 
-private var player: AudioPlayer?
+nonisolated(unsafe) private var player: AudioPlayer?
 
 struct AlertSoundSelectorView: View {
     @EnvironmentObject var model: Model

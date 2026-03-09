@@ -242,7 +242,7 @@ private struct NotificationChannelModerateMessage: Decodable {
     var payload: NotificationChannelModeratePayload
 }
 
-private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
+nonisolated(unsafe) private var url = URL(string: "wss://eventsub.wss.twitch.tv/ws")!
 
 protocol TwitchEventSubDelegate: AnyObject {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent)

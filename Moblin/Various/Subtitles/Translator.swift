@@ -6,7 +6,7 @@ protocol TranslatorDelegate: AnyObject {
 
 @available(iOS 26.0, *)
 class Translator {
-    static var translators: [Translator] = []
+    nonisolated(unsafe) static var translators: [Translator] = []
 
     private let session: TranslationSession
     private var ready = true

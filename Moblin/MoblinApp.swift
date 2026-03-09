@@ -4,7 +4,7 @@ import SwiftUI
 struct MoblinApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var model: Model
-    static var globalModel: Model?
+    nonisolated(unsafe) static var globalModel: Model?
 
     init() {
         MoblinApp.globalModel = Model()
@@ -86,7 +86,7 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static var orientationLock: UIInterfaceOrientationMask = .landscape {
+    nonisolated(unsafe) static var orientationLock: UIInterfaceOrientationMask = .landscape {
         didSet {
             for scene in UIApplication.shared.connectedScenes {
                 if let windowScene = scene as? UIWindowScene {
