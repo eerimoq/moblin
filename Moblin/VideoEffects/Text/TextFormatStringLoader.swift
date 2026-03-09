@@ -125,13 +125,13 @@ class TextFormatLoader {
                 } else if appendSubtitlesIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendPaceIfPresent(formatFromIndex: formatFromIndex) {
                 } else if appendCadenceIfPresent(formatFromIndex: formatFromIndex) {
-                } else if isPhone(), formatFromIndex.hasPrefix("{activeenergyburned}") {
+                } else if !isMac(), formatFromIndex.hasPrefix("{activeenergyburned}") {
                     loadItem(part: .activeEnergyBurned, offsetBy: 20)
-                } else if isPhone(), formatFromIndex.hasPrefix("{power}") {
+                } else if !isMac(), formatFromIndex.hasPrefix("{power}") {
                     loadItem(part: .power, offsetBy: 7)
-                } else if isPhone(), formatFromIndex.hasPrefix("{stepcount}") {
+                } else if !isMac(), formatFromIndex.hasPrefix("{stepcount}") {
                     loadItem(part: .stepCount, offsetBy: 11)
-                } else if isPhone(), formatFromIndex.hasPrefix("{workoutdistance}") {
+                } else if !isMac(), formatFromIndex.hasPrefix("{workoutdistance}") {
                     loadItem(part: .workoutDistance, offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{teslabatterylevel}") {
                     loadItem(part: .teslaBatteryLevel, offsetBy: 19)
