@@ -1043,7 +1043,7 @@ struct TextWidgetTextView: View {
 }
 
 private struct WarningsView: View {
-    let model: Model
+    @ObservedObject var model: Model
     @ObservedObject var location: SettingsLocation
     @Binding var value: String
 
@@ -1057,11 +1057,25 @@ private struct WarningsView: View {
         Section {
             if textFormat.isLocationVariable(), !location.enabled {
                 LocationMessageView()
+                NavigationLink {
+                    LocationSettingsView(database: model.database,
+                                         location: location,
+                                         stream: $model.stream)
+                } label: {
+                    Label("Location", systemImage: "location")
+                }
             }
         }
         Section {
             if textFormat.isWeatherVariable(), !location.enabled {
                 WeatherMessageView()
+                NavigationLink {
+                    LocationSettingsView(database: model.database,
+                                         location: location,
+                                         stream: $model.stream)
+                } label: {
+                    Label("Location", systemImage: "location")
+                }
             }
         }
     }
