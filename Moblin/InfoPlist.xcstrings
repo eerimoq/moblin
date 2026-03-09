@@ -139,67 +139,67 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin kommuniziert mit DJI-Kameras über Bluetooth."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Moblin communicates with DJI cameras using Bluetooth."
+            "value" : "Moblin communicates with cameras using Bluetooth."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin communique avec les caméras DJI par Bluetooth"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin tcomunica con DJI usando il Bluetooth."
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin communiceert met DJI-camera's via Bluetooth."
           }
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin komunikuje się z kamerami DJI przez Bluetooth"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin использует Bluetooth для подключения к камерам DJI"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin Bluetooth'u DJI kameraları için kullanır."
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin 使用藍芽與 DJI 設備進行連線"
           }
         },
         "zh-Hant-TW" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin 需使用藍牙與 DJI 相機進行通訊。"
           }
         },
         "zh-HK" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Moblin使用藍牙和DJI裝置進行通訊"
           }
         }

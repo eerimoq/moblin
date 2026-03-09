@@ -39,6 +39,7 @@ enum ShowingPanel {
     case djiDevices
     case sceneSettings
     case goPro
+    case metaGlasses
     case connectionPriorities
     case autoSceneSwitcher
     case quickButtonSettings
@@ -308,6 +309,11 @@ class GoProState: ObservableObject {
     @Published var rtmpUrlSelection: UUID?
 }
 
+class MetaGlassesState: ObservableObject {
+    @Published var registrationState: MetaGlassesRegistrationState = .unregistered
+    @Published var streamingState: MetaGlassesStreamingState = .stopped
+}
+
 class QuickButtons: ObservableObject {
     @Published var pairs: [[QuickButtonPair]] = Array(repeating: [], count: controlBarPages)
     @Published var selectedButtonType: SettingsQuickButtonType?
@@ -402,6 +408,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let quickButtons = QuickButtons()
     let mic = Mic()
     let goPro = GoProState()
+    let metaGlasses = MetaGlassesState()
+    let metaGlassesDevice = MetaGlassesDevice()
     let obsQuickButton = QuickButtonObs()
     let streamingHistory = StreamingHistory()
     let quickButtonChatState = QuickButtonChat()
@@ -754,6 +762,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             .obs,
             .djiDevices,
             .goPro,
+            .metaGlasses,
             .connectionPriorities,
             .autoSceneSwitcher,
             .live,
@@ -1145,6 +1154,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         goPro.launchLiveStreamSelection = database.goPro.selectedLaunchLiveStream
         goPro.wifiCredentialsSelection = database.goPro.selectedWifiCredentials
         goPro.rtmpUrlSelection = database.goPro.selectedRtmpUrl
+        setupMetaGlasses()
         replay.speed = database.replay.speed
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()

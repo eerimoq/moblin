@@ -19,6 +19,27 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>MWDAT</key>
+	<dict>
+		<key>AppLinkURLScheme</key>
+		<string>moblin://</string>
+		<key>ClientToken</key>
+		<string>$(MWDAT_CLIENT_TOKEN)</string>
+		<key>MetaAppID</key>
+		<string>$(MWDAT_META_APP_ID)</string>
+		<key>TeamID</key>
+		<string>$(DEVELOPMENT_TEAM)</string>
+		<key>Analytics</key>
+		<dict>
+			<key>OptOut</key>
+			<true/>
+		</dict>
+	</dict>
+	<!-- External Accessory protocol for Meta Wearables -->
+	<key>UISupportedExternalAccessoryProtocols</key>
+	<array>
+		<string>com.meta.ar.wearable</string>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -44,34 +65,34 @@
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
-    <key>UIApplicationSceneManifest</key>
-    <dict>
-            <key>UIApplicationSupportsMultipleScenes</key>
-            <true/>
-            <key>UISceneConfigurations</key>
-            <dict>
-                    <key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
-                    <array>
-                            <dict>
-                                    <key>UISceneDelegateClassName</key>
-                                    <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
+			<array>
+				<dict>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
                                     <key>UISceneConfigurationName</key>
                                     <string>External Display</string>
-                            </dict>
-                    </array>
-            </dict>
-    </dict>
+				</dict>
+			</array>
+		</dict>
+	</dict>
     <key>CFBundleIdentifier</key>
     <string></string>
-    <key>WiFiAwareServices</key>
-    <dict>
-        <key>_moblin._udp</key>
-        <dict>
-            <key>Publishable</key>
-            <dict/>
-            <key>Subscribable</key>
-            <dict/>
-        </dict>
-    </dict>
+	<key>WiFiAwareServices</key>
+	<dict>
+		<key>_moblin._udp</key>
+		<dict>
+			<key>Publishable</key>
+			<dict/>
+			<key>Subscribable</key>
+			<dict/>
+		</dict>
+	</dict>
 </dict>
 </plist>

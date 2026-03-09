@@ -2309,6 +2309,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case whip = "WHIP"
     case mediaPlayer = "Media player"
     case screenCapture = "Screen capture"
+    case metaGlasses = "Meta glasses"
     case backTripleLowEnergy = "Back triple"
     case backDualLowEnergy = "Back dual"
     case backWideDualLowEnergy = "Back wide dual"
@@ -2367,6 +2368,8 @@ struct SettingsVideoSource {
             return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
             return .screenCapture
+        case .metaGlasses:
+            return .metaGlasses
         case .backTripleLowEnergy:
             return .backTripleLowEnergy
         case .backDualLowEnergy:
@@ -2410,6 +2413,8 @@ struct SettingsVideoSource {
             externalCameraName = name
         case .screenCapture:
             cameraPosition = .screenCapture
+        case .metaGlasses:
+            cameraPosition = .metaGlasses
         case .backTripleLowEnergy:
             cameraPosition = .backTripleLowEnergy
         case .backDualLowEnergy:

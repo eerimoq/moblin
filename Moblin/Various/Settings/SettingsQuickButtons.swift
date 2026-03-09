@@ -45,6 +45,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case djiDevices = "DJI devices"
     case portrait = "Portrait"
     case goPro = "GoPro"
+    case metaGlasses = "Meta glasses"
     case replay = "Replay"
     case connectionPriorities = "Connection priorities"
     case instantReplay = "Instant replay"

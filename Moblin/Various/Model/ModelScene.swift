@@ -241,6 +241,9 @@ extension Model {
     func attachSingleLayout(scene: SettingsScene) {
         streamOverlay.isFrontCameraSelected = false
         deactivateAllMediaPlayers()
+        if scene.videoSource.cameraPosition != .metaGlasses {
+            stopMetaGlassesStreamingIfActive()
+        }
         switch scene.videoSource.cameraPosition {
         case .back:
             attachCamera(scene: scene, position: .back)
@@ -264,6 +267,11 @@ extension Model {
             attachExternalCamera(scene: scene)
         case .screenCapture:
             attachBufferedCamera(cameraId: screenCaptureCameraId, scene: scene)
+        case .metaGlasses:
+            attachBufferedCamera(cameraId: metaGlassesCameraId, scene: scene)
+            if database.metaGlasses.autoStartStopStreaming {
+                startMetaGlassesStreamingIfRegistered()
+            }
         case .backTripleLowEnergy:
             attachBackTripleLowEnergyCamera()
         case .backDualLowEnergy:
@@ -313,7 +321,17 @@ extension Model {
     }
 
     func getFillFrame(scene: SettingsScene) -> Bool {
+        if scene.videoSource.cameraPosition == .metaGlasses {
+            return database.metaGlasses.fillFrame
+        }
         return scene.fillFrame
+    }
+
+    func getVideoSourceRotation(scene: SettingsScene) -> Double {
+        if scene.videoSource.cameraPosition == .metaGlasses {
+            return scene.videoSourceRotation + 90
+        }
+        return scene.videoSourceRotation
     }
 
     func widgetsInCurrentScene(onlyEnabled: Bool) -> [WidgetInScene] {
@@ -897,7 +915,7 @@ extension Model {
             effects.append(drawOnStreamEffect)
         }
         effects += registerGlobalVideoEffectsOnTop()
-        media.setPendingAfterAttachEffects(effects: effects, rotation: scene.videoSourceRotation)
+        media.setPendingAfterAttachEffects(effects: effects, rotation: getVideoSourceRotation(scene: scene))
         for effect in browserEffects.values where !effects.contains(effect) {
             effect.setSceneWidget(sceneWidget: nil, crops: [])
         }

@@ -133,6 +133,11 @@ struct SettingsView: View {
                         Label("GoPro", systemImage: "appletvremote.gen1")
                     }
                     NavigationLink {
+                        MetaGlassesSettingsView(metaGlasses: model.metaGlasses)
+                    } label: {
+                        Label("Meta glasses", systemImage: "eyeglasses")
+                    }
+                    NavigationLink {
                         CatPrintersSettingsView(catPrinters: database.catPrinters)
                     } label: {
                         Label("Cat printers", systemImage: "pawprint")
