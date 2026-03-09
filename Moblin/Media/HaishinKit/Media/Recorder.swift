@@ -14,7 +14,7 @@ protocol RecorderDelegate: AnyObject {
 
 private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder")
 
-class Recorder: NSObject {
+class Recorder: NSObject, @unchecked Sendable {
     private var replay = false
     private var audioOutputSettings: [String: Any] = [:]
     private var videoOutputSettings: [String: Any] = [:]
