@@ -1000,6 +1000,7 @@ private struct TextSelectionView: View {
     var body: some View {
         Form {
             TextWidgetTextView(value: $value)
+            WarningsView(model: model, location: model.database.location, value: $value)
             Section {
                 TextWidgetSuggestionsView(text: $value)
             }
