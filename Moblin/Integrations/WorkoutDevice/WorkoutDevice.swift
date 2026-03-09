@@ -3,7 +3,7 @@ import Foundation
 
 private let dispatchQueue = DispatchQueue(label: "com.eerimoq.workout-device")
 
-let workoutDeviceScanner = BluetoothScanner(serviceIds: [
+nonisolated(unsafe) let workoutDeviceScanner = BluetoothScanner(serviceIds: [
     workoutDeviceHeartRateServiceId,
     workoutDeviceCyclingPowerServiceId,
     workoutDeviceRunningServiceId,

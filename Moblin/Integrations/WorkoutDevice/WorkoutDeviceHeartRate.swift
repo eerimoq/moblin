@@ -1,7 +1,7 @@
 import CoreBluetooth
 
-let workoutDeviceHeartRateServiceId = CBUUID(string: "180D")
-let workoutDeviceHeartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
+nonisolated(unsafe) let workoutDeviceHeartRateServiceId = CBUUID(string: "180D")
+nonisolated(unsafe) let workoutDeviceHeartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
 private let measurementHeartRateValueFormatIndex = 0
 
 private struct HeartRateMeasurement {

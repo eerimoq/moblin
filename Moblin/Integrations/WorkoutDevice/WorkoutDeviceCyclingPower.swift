@@ -2,9 +2,9 @@ import Collections
 import CoreBluetooth
 import Foundation
 
-let workoutDeviceCyclingPowerServiceId = CBUUID(string: "1818")
-let workoutDeviceCyclingPowerMeasurementCharacteristicId = CBUUID(string: "2A63")
-let workoutDeviceCyclingPowerVectorCharacteristicId = CBUUID(string: "2A64")
+nonisolated(unsafe) let workoutDeviceCyclingPowerServiceId = CBUUID(string: "1818")
+nonisolated(unsafe) let workoutDeviceCyclingPowerMeasurementCharacteristicId = CBUUID(string: "2A63")
+nonisolated(unsafe) let workoutDeviceCyclingPowerVectorCharacteristicId = CBUUID(string: "2A64")
 
 private let measurementPedalPowerBalanceFlagIndex = 0
 private let measurementAccumulatedTorqueFlagIndex = 2

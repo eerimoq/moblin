@@ -118,7 +118,7 @@ private func createUptimeFormatter() -> DateComponentsFormatter {
     return formatter
 }
 
-let uptimeFormatter = createUptimeFormatter()
+nonisolated(unsafe) let uptimeFormatter = createUptimeFormatter()
 
 private func createDigitalClockFormatter() -> DateFormatter {
     let formatter = DateFormatter()
@@ -128,7 +128,7 @@ private func createDigitalClockFormatter() -> DateFormatter {
     return formatter
 }
 
-let digitalClockFormatter = createDigitalClockFormatter()
+nonisolated(unsafe) let digitalClockFormatter = createDigitalClockFormatter()
 
 private func createDurationFormatter() -> DateComponentsFormatter {
     let formatter = DateComponentsFormatter()
@@ -137,7 +137,7 @@ private func createDurationFormatter() -> DateComponentsFormatter {
     return formatter
 }
 
-let durationFormatter = createDurationFormatter()
+nonisolated(unsafe) let durationFormatter = createDurationFormatter()
 
 func formatDate(_ dateString: String) -> String? {
     return try? Date.ISO8601FormatStyle()
@@ -163,7 +163,7 @@ private func createFullDurationFormatter() -> DateComponentsFormatter {
     return formatter
 }
 
-private let fullDurationFormatter = createFullDurationFormatter()
+nonisolated(unsafe) private let fullDurationFormatter = createFullDurationFormatter()
 
 func formatFullDuration(seconds: Int) -> String {
     return fullDurationFormatter.string(from: Double(seconds)) ?? ""
@@ -175,7 +175,7 @@ private func createSpeedFormatter() -> MeasurementFormatter {
     return formatter
 }
 
-private let speedFormatter = createSpeedFormatter()
+nonisolated(unsafe) private let speedFormatter = createSpeedFormatter()
 
 func format(speed: Double) -> String {
     let measurement = Measurement(value: max(speed, 0), unit: UnitSpeed.metersPerSecond)
@@ -188,7 +188,7 @@ private func createDistanceFormatter() -> LengthFormatter {
     return formatter
 }
 
-private let distanceFormatter = createDistanceFormatter()
+nonisolated(unsafe) private let distanceFormatter = createDistanceFormatter()
 
 func format(distance: Double) -> String {
     return distanceFormatter.string(fromMeters: distance)
@@ -218,7 +218,7 @@ private func createAltitudeFormatter() -> MeasurementFormatter {
     return formatter
 }
 
-private let altitudeFormatter = createAltitudeFormatter()
+nonisolated(unsafe) private let altitudeFormatter = createAltitudeFormatter()
 
 func format(altitude: Double) -> String {
     var measurement = Measurement(value: altitude, unit: UnitLength.meters)

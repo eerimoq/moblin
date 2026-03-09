@@ -23,8 +23,8 @@ private let setupWifiType: UInt32 = 0x470740
 private let configureType: UInt32 = 0x8E0240
 private let startStreamingType: UInt32 = 0x780840
 
-private let fff4Id = CBUUID(string: "FFF4")
-private let fff5Id = CBUUID(string: "FFF5")
+nonisolated(unsafe) private let fff4Id = CBUUID(string: "FFF4")
+nonisolated(unsafe) private let fff5Id = CBUUID(string: "FFF5")
 
 private let pairPinCode = "mbln"
 

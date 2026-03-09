@@ -1,7 +1,7 @@
 import CoreImage
 import SwiftUI
 
-private let eventTimestampFormatter: DateFormatter = {
+nonisolated(unsafe) private let eventTimestampFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateFormat = "MMM d, yyyy HH:mm:ss"
     return formatter

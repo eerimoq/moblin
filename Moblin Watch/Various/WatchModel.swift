@@ -7,7 +7,7 @@ import WatchConnectivity
 // Remote control assistant polls status every 5 seconds.
 private let previewTimeout = Duration.seconds(6)
 
-private let healthKitTypes: Set<HKSampleType> = [
+nonisolated(unsafe) private let healthKitTypes: Set<HKSampleType> = [
     .quantityType(forIdentifier: .heartRate)!,
     .quantityType(forIdentifier: .distanceCycling)!,
     .quantityType(forIdentifier: .distanceWalkingRunning)!,

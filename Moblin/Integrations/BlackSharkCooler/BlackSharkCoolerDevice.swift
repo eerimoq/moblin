@@ -23,9 +23,9 @@ enum BlackSharkCoolerDeviceState {
     case connected
 }
 
-private let blackSharkCoolerServiceId = CBUUID(string: BlackSharkLib.getServiceUUID().uuidString)
+nonisolated(unsafe) private let blackSharkCoolerServiceId = CBUUID(string: BlackSharkLib.getServiceUUID().uuidString)
 
-let blackSharkCoolerScanner = BluetoothScanner(serviceIds: [])
+nonisolated(unsafe) let blackSharkCoolerScanner = BluetoothScanner(serviceIds: [])
 
 class BlackSharkCoolerDevice: NSObject {
     private var state: BlackSharkCoolerDeviceState = .disconnected

@@ -57,7 +57,7 @@ private class Cache {
     }
 }
 
-private let cache = Cache()
+nonisolated(unsafe) private let cache = Cache()
 
 struct CacheImage<Content: View>: View {
     private let url: URL

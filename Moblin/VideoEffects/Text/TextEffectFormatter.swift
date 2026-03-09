@@ -12,8 +12,8 @@ private func createFullDateFormatter() -> DateFormatter {
     return formatter
 }
 
-let textEffectDateFormatter = createDateFormatter()
-let textEffectFullDateFormatter = createFullDateFormatter()
+nonisolated(unsafe) let textEffectDateFormatter = createDateFormatter()
+nonisolated(unsafe) let textEffectFullDateFormatter = createFullDateFormatter()
 let textEffectTimeFormat: Date.FormatStyle = .dateTime.hour().minute().second()
 let textEffectShortTimeFormat: Date.FormatStyle = .dateTime.hour().minute()
 

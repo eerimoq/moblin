@@ -18,7 +18,7 @@ private class Cache {
     }
 }
 
-private let cache = Cache()
+nonisolated(unsafe) private let cache = Cache()
 
 struct CacheAsyncImage<Content: View, Content2: View>: View {
     private let url: URL

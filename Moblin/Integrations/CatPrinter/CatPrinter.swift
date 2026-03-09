@@ -70,15 +70,15 @@ private class CurrentJob {
     }
 }
 
-private let catPrinterServices = [
+nonisolated(unsafe) private let catPrinterServices = [
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
-let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
+nonisolated(unsafe) let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
 
-private let printCharacteristicId = CBUUID(string: "AE01")
-private let notifyCharacteristicId = CBUUID(string: "AE02")
-private let dataCharacteristicId = CBUUID(string: "AE03")
+nonisolated(unsafe) private let printCharacteristicId = CBUUID(string: "AE01")
+nonisolated(unsafe) private let notifyCharacteristicId = CBUUID(string: "AE02")
+nonisolated(unsafe) private let dataCharacteristicId = CBUUID(string: "AE03")
 
 private struct PrintJob {
     let image: CIImage
