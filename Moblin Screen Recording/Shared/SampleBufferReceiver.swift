@@ -35,7 +35,7 @@ protocol SampleBufferReceiverDelegate: AnyObject {
     func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer)
 }
 
-private var lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.SampleBufferReceiver")
+private let lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.SampleBufferReceiver")
 
 class SampleBufferReceiver {
     private var listenerFd: Int32 = -1
