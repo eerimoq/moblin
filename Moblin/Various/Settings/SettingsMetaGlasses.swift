@@ -6,7 +6,14 @@ enum SettingsMetaGlassesResolution: String, Codable, CaseIterable {
     case high = "High"
 
     func toString() -> String {
-        return rawValue
+        switch self {
+        case .low:
+            return String(localized: "Low")
+        case .medium:
+            return String(localized: "Medium")
+        case .high:
+            return String(localized: "High")
+        }
     }
 }
 

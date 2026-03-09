@@ -214,6 +214,10 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
 - DJI camera Bluetooth controller.
   - Automatically start DJI camera live stream.
   - Tested with OA4, OA3 and OP3.
+- Meta smart glasses as camera source.
+  - Stream video from Meta glasses directly into scenes.
+  - Auto start/stop streaming when switching scenes.
+  - Configurable resolution and frame rate.
 - GoPro QR-code creator.
 - Show grid for easier positioning.
 - Camera settings (on some cameras).

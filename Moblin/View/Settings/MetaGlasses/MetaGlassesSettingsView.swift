@@ -19,7 +19,7 @@ struct MetaGlassesSettingsView: View {
                     HStack {
                         Text("Status")
                         Spacer()
-                        Text(metaGlasses.registrationState.rawValue)
+                        Text(metaGlasses.registrationState.toString())
                             .foregroundColor(.secondary)
                     }
                     if metaGlasses.registrationState == .unregistered {
@@ -35,8 +35,7 @@ struct MetaGlassesSettingsView: View {
                     Text("Connection")
                 } footer: {
                     Text("""
-                    Connect your Meta AI glasses through the Meta AI app. \
-                    Make sure developer mode is enabled in the Meta AI app settings.
+                    Connect your Meta AI glasses through the Meta AI app.
                     """)
                 }
                 Section {

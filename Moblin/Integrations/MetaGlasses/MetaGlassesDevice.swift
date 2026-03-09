@@ -5,16 +5,38 @@ import MWDATCore
 
 private let metaGlassesStreamLatency = 0.1
 
-enum MetaGlassesRegistrationState: String {
-    case unregistered = "Unregistered"
-    case registering = "Registering..."
-    case registered = "Registered"
+enum MetaGlassesRegistrationState {
+    case unregistered
+    case registering
+    case registered
+
+    func toString() -> String {
+        switch self {
+        case .unregistered:
+            return String(localized: "Unregistered")
+        case .registering:
+            return String(localized: "Registering...")
+        case .registered:
+            return String(localized: "Registered")
+        }
+    }
 }
 
-enum MetaGlassesStreamingState: String {
-    case stopped = "Stopped"
-    case waiting = "Waiting..."
-    case streaming = "Streaming"
+enum MetaGlassesStreamingState {
+    case stopped
+    case waiting
+    case streaming
+
+    func toString() -> String {
+        switch self {
+        case .stopped:
+            return String(localized: "Stopped")
+        case .waiting:
+            return String(localized: "Waiting...")
+        case .streaming:
+            return String(localized: "Streaming")
+        }
+    }
 }
 
 protocol MetaGlassesDeviceDelegate: AnyObject {
@@ -56,7 +78,7 @@ class MetaGlassesDevice {
             wearables = Wearables.shared
             isConfigured = true
         } catch {
-            delegate?.metaGlassesDeviceError("Failed to configure Meta Wearables SDK: \(error)")
+            logger.info("meta-glasses: Failed to configure MWDAT SDK: \(error)")
         }
     }
 
@@ -97,9 +119,9 @@ class MetaGlassesDevice {
             do {
                 try await wearables.startRegistration()
             } catch let error as RegistrationError {
-                self.delegate?.metaGlassesDeviceError("Registration failed: \(error.description)")
+                self.delegate?.metaGlassesDeviceError(String(localized: "Registration failed: \(error.description)"))
             } catch {
-                self.delegate?.metaGlassesDeviceError("Registration failed: \(error.localizedDescription)")
+                self.delegate?.metaGlassesDeviceError(String(localized: "Registration failed: \(error.localizedDescription)"))
             }
         }
     }
@@ -112,7 +134,7 @@ class MetaGlassesDevice {
                 try await wearables.startUnregistration()
             } catch {
                 self.delegate?.metaGlassesDeviceError(
-                    "Disconnect failed: \(error.localizedDescription)")
+                    String(localized: "Disconnect failed: \(error.localizedDescription)"))
             }
         }
     }
@@ -215,10 +237,10 @@ class MetaGlassesDevice {
             if requestStatus == .granted {
                 await session.start()
             } else {
-                delegate?.metaGlassesDeviceError("Camera permission denied")
+                delegate?.metaGlassesDeviceError(String(localized: "Camera permission denied"))
             }
         } catch {
-            delegate?.metaGlassesDeviceError("Permission error: \(error.localizedDescription)")
+            delegate?.metaGlassesDeviceError(String(localized: "Permission error: \(error.localizedDescription)"))
         }
     }
 
@@ -240,23 +262,23 @@ class MetaGlassesDevice {
         let message: String
         switch error {
         case .internalError:
-            message = "Internal streaming error"
+            message = String(localized: "Internal streaming error")
         case .deviceNotFound:
-            message = "Glasses not found"
+            message = String(localized: "Glasses not found")
         case .deviceNotConnected:
-            message = "Glasses not connected"
+            message = String(localized: "Glasses not connected")
         case .timeout:
-            message = "Connection timed out"
+            message = String(localized: "Connection timed out")
         case .videoStreamingError:
-            message = "Video streaming failed"
+            message = String(localized: "Video streaming failed")
         case .audioStreamingError:
-            message = "Audio streaming failed"
+            message = String(localized: "Audio streaming failed")
         case .permissionDenied:
-            message = "Camera permission denied"
+            message = String(localized: "Camera permission denied")
         case .hingesClosed:
-            message = "Glasses hinges are closed"
+            message = String(localized: "Glasses hinges are closed")
         @unknown default:
-            message = "Unknown streaming error"
+            message = String(localized: "Unknown streaming error")
         }
         delegate?.metaGlassesDeviceError(message)
     }

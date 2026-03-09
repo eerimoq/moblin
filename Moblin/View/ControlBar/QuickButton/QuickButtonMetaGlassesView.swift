@@ -10,13 +10,13 @@ struct QuickButtonMetaGlassesView: View {
                 HStack {
                     Text("Registration")
                     Spacer()
-                    Text(metaGlasses.registrationState.rawValue)
+                    Text(metaGlasses.registrationState.toString())
                         .foregroundColor(.secondary)
                 }
                 HStack {
                     Text("Streaming")
                     Spacer()
-                    Text(metaGlasses.streamingState.rawValue)
+                    Text(metaGlasses.streamingState.toString())
                         .foregroundColor(.secondary)
                 }
             } header: {
