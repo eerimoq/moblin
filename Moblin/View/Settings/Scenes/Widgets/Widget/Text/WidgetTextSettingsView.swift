@@ -706,7 +706,6 @@ private struct TimeVariablesView: View {
 }
 
 private struct LocationVariablesView: View {
-    @ObservedObject var location: SettingsLocation
     @Binding var value: String
 
     var body: some View {
@@ -742,10 +741,6 @@ private struct LocationVariablesView: View {
                         text: $value
                     )
                     VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
-                } footer: {
-                    if !location.enabled {
-                        LocationMessageView()
-                    }
                 }
             }
             .navigationTitle("Location")
@@ -756,7 +751,6 @@ private struct LocationVariablesView: View {
 }
 
 private struct WeatherVariablesView: View {
-    @ObservedObject var location: SettingsLocation
     @Binding var value: String
 
     var body: some View {
@@ -790,10 +784,6 @@ private struct WeatherVariablesView: View {
                         Weather data is provided by \(image) Weather. \
                         [Legal information](https://weatherkit.apple.com/legal-attribution.html).
                         """)
-                        if !location.enabled {
-                            Text("")
-                            WeatherMessageView()
-                        }
                     }
                 }
             }
@@ -826,28 +816,6 @@ private struct LanguageVariablesView: View {
     }
 }
 
-private struct WorkoutMessageView: View {
-    var body: some View {
-        let image = Image(systemName: "figure.run")
-        Text("""
-        ⚠️ Start a workout using the \(image)Workout quick button or the Start workout \
-        button on your Apple Watch to update Apple workout variables.
-        """)
-    }
-}
-
-private struct LocationMessageView: View {
-    var body: some View {
-        Text("⚠️ Enable Settings → Location to update location variables.")
-    }
-}
-
-private struct WeatherMessageView: View {
-    var body: some View {
-        Text("⚠️ Enable Settings → Location to update weather variables.")
-    }
-}
-
 private struct WorkoutVariablesView: View {
     let model: Model
     @Binding var value: String
@@ -875,8 +843,6 @@ private struct WorkoutVariablesView: View {
                     )
                 } header: {
                     Text("Apple workout")
-                } footer: {
-                    WorkoutMessageView()
                 }
                 Section("Other devices") {
                     ForEach(model.database.workoutDevices.devices) { device in
@@ -1007,8 +973,8 @@ private struct TextSelectionView: View {
             Section {
                 GeneralVariablesView(value: $value)
                 TimeVariablesView(value: $value)
-                LocationVariablesView(location: model.database.location, value: $value)
-                WeatherVariablesView(location: model.database.location, value: $value)
+                LocationVariablesView(value: $value)
+                WeatherVariablesView(value: $value)
                 LanguageVariablesView(value: $value)
                 WorkoutVariablesView(model: model, value: $value)
                 TeslaVariablesView(value: $value)
@@ -1049,33 +1015,31 @@ private struct WarningsView: View {
 
     var body: some View {
         let textFormat = loadTextFormat(format: value)
-        Section {
-            if textFormat.isWorkoutVariable(), model.workoutType == nil {
-                WorkoutMessageView()
+        if textFormat.isWorkoutVariable(), model.workoutType == nil {
+            Section {
+                let image = Image(systemName: "figure.run")
+                Text("""
+                ⚠️ Start a workout using the \(image)Workout quick button or the Start workout \
+                button on your Apple Watch to update Apple workout variables.
+                """)
             }
         }
-        Section {
-            if textFormat.isLocationVariable(), !location.enabled {
-                LocationMessageView()
-                NavigationLink {
-                    LocationSettingsView(database: model.database,
-                                         location: location,
-                                         stream: $model.stream)
-                } label: {
-                    Label("Location", systemImage: "location")
-                }
+        if textFormat.isLocationVariable(), !location.enabled {
+            Section {
+                Text("⚠️ Enable Location to update location variables.")
+                Toggle("Location", isOn: $location.enabled)
+                    .onChange(of: location.enabled) { _ in
+                        model.reloadLocation()
+                    }
             }
         }
-        Section {
-            if textFormat.isWeatherVariable(), !location.enabled {
-                WeatherMessageView()
-                NavigationLink {
-                    LocationSettingsView(database: model.database,
-                                         location: location,
-                                         stream: $model.stream)
-                } label: {
-                    Label("Location", systemImage: "location")
-                }
+        if textFormat.isWeatherVariable(), !location.enabled {
+            Section {
+                Text("⚠️ Enable Location to update weather variables.")
+                Toggle("Location", isOn: $location.enabled)
+                    .onChange(of: location.enabled) { _ in
+                        model.reloadLocation()
+                    }
             }
         }
     }
