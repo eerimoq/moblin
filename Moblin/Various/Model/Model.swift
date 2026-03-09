@@ -63,7 +63,7 @@ class Browser: Identifiable {
     }
 }
 
-let fallbackStream = SettingsStream(name: "Fallback")
+nonisolated(unsafe) let fallbackStream = SettingsStream(name: "Fallback")
 let flameRedMessage = String(localized: "🔥 Flame is red 🔥")
 let flameRedSubMessage = String(localized: "Your device is hot and may overheat.")
 let unknownSad = String(localized: "Unknown 😢")
@@ -81,7 +81,7 @@ func formatWarning(_ message: String) -> String {
     return "⚠️ \(message) ⚠️"
 }
 
-let noMic = SettingsMicsMic()
+nonisolated(unsafe) let noMic = SettingsMicsMic()
 
 class ButtonState: ObservableObject {
     @Published var isOn: Bool

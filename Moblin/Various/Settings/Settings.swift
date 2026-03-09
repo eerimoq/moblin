@@ -3,8 +3,8 @@ import SwiftUI
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
-let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
-let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
+nonisolated(unsafe) let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
+nonisolated(unsafe) let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
 let defaultSrtLatency: Int32 = 3000
 let minZoomX: Float = 0.5
 
@@ -709,7 +709,7 @@ class SettingsWorkoutDevices: Codable, ObservableObject {
     }
 }
 
-private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
+nonisolated(unsafe) private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
 class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My cooler")

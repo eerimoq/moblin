@@ -65,8 +65,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     }
 }
 
-private let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
-private let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
+nonisolated(unsafe) private let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
+nonisolated(unsafe) private let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
 
 class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
     var from: RgbColor = defaultFromColor
