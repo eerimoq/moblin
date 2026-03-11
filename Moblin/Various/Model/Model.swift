@@ -440,7 +440,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var showBackgroundStreamingDisabledToast = false
     private var manualFocusMotionAttitude: CMAttitude?
     var streaming = false
-    var inBackground = false
+    var inServiceBackground = false
     var streamStartTime: ContinuousClock.Instant?
     var isRecorderRecording = false
     var currentRecording: Recording?
@@ -1374,11 +1374,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        inBackground = true
         switch backgroundRunLevel() {
         case .full:
             disableScreenPreview()
         case let .service(keepChatRunning, keepBatteryLevelRunning):
+            inServiceBackground = true
             disableScreenPreview()
             stopPeriodicTimers(keepChatRunning: keepChatRunning,
                                keepBatteryLevelRunning: keepBatteryLevelRunning)
@@ -1393,7 +1393,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        inBackground = false
+        inServiceBackground = false
         switch backgroundRunLevel() {
         case .full:
             maybeEnableScreenPreview()
@@ -1615,7 +1615,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let monotonicNow = ContinuousClock.now
         updateDigitalClock(now: now)
         removeOldChatMessages(now: monotonicNow)
-        guard !inBackground else {
+        guard !inServiceBackground else {
             return
         }
         updateStreamUptime(now: monotonicNow)
