@@ -106,6 +106,7 @@ extension Model {
         isRecording = value
         setQuickButton(type: .record, isOn: value)
         updateQuickButtonStates()
+        updatePictureInPicture()
         if isWatchLocal() {
             sendIsRecordingToWatch(isRecording: isRecording)
         }

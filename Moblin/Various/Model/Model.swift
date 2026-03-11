@@ -1,4 +1,5 @@
 import AlertToast
+import AVKit
 import Collections
 import Combine
 import CoreBluetooth
@@ -480,6 +481,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let externalDisplayStreamPreviewView = PreviewView()
     let cameraPreviewView = CameraPreviewUiView()
     var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
+    var pipController: AVPictureInPictureController?
     var textEffects: [UUID: TextEffect] = [:]
     var imageEffects: [UUID: ImageEffect] = [:]
     var browserEffects: [UUID: BrowserEffect] = [:]
@@ -1069,6 +1071,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRistServer()
         reloadRtspClient()
         reloadWhipServer()
+        setupPictureInPicture()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -1376,7 +1379,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         switch backgroundRunLevel() {
         case .full:
-            disableScreenPreview()
+            if !pictureInPictureEnabled() {
+                disableScreenPreview()
+            }
         case let .service(keepChatRunning, keepBatteryLevelRunning):
             inServiceBackground = true
             disableScreenPreview()
@@ -1435,6 +1440,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                     localized: "Tap here to enable background streaming."
                 )) {
                     self.stream.backgroundStreaming = true
+                    self.updatePictureInPicture()
                     self.makeToast(title: String(localized: "Background streaming enabled"))
                 }
                 showBackgroundStreamingDisabledToast = false

@@ -286,6 +286,11 @@ struct StreamSettingsView: View {
             }
             if !isMac() {
                 BackgroundStreamingToggleView(enabled: $stream.backgroundStreaming)
+                    .onChange(of: stream.backgroundStreaming) { _ in
+                        if stream.enabled {
+                            model.updatePictureInPicture()
+                        }
+                    }
             }
             Section {
                 NavigationLink {

@@ -313,6 +313,7 @@ extension Model {
         reloadRtmpStreams()
         updateStatusStreamText()
         updateKickChannelInfoIfNeeded()
+        updatePictureInPicture()
     }
 
     func reloadStreamIfEnabled(stream: SettingsStream) {
@@ -760,6 +761,7 @@ extension Model {
 
     func setIsLive(value: Bool) {
         isLive = value
+        updatePictureInPicture()
         if isWatchLocal() {
             sendIsLiveToWatch(isLive: isLive)
         }
