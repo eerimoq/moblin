@@ -1,4 +1,5 @@
 import AlertToast
+import AVKit
 import Collections
 import Combine
 import CoreBluetooth
@@ -480,6 +481,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let externalDisplayStreamPreviewView = PreviewView()
     let cameraPreviewView = CameraPreviewUiView()
     var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
+    var pipController: AVPictureInPictureController?
     var textEffects: [UUID: TextEffect] = [:]
     var imageEffects: [UUID: ImageEffect] = [:]
     var browserEffects: [UUID: BrowserEffect] = [:]
@@ -1069,6 +1071,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRistServer()
         reloadRtspClient()
         reloadWhipServer()
+        setupPictureInPicture()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
         NotificationCenter.default.addObserver(self,
@@ -1377,7 +1380,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         inBackground = true
         switch backgroundRunLevel() {
         case .full:
-            disableScreenPreview()
+            if pipController == nil {
+                disableScreenPreview()
+            }
         case let .service(keepChatRunning, keepBatteryLevelRunning):
             disableScreenPreview()
             stopPeriodicTimers(keepChatRunning: keepChatRunning,

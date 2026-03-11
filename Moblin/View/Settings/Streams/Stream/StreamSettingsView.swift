@@ -175,9 +175,11 @@ struct BackgroundStreamingToggleView: View {
                 Text("Live stream and record when the app is in background mode.")
                 Text("")
                 Text("""
-                Built-in camera and USB sources blur the last frame in background mode \
-                (Apple limitation), but audio stays active. Both audio and video from \
-                ingests (RTMP/SRT/...) stay active in background mode.
+                On supported devices, a picture-in-picture video feed keeps the \
+                camera active in background mode. On other devices, built-in camera \
+                and USB sources blur the last frame in background mode, but audio \
+                stays active. Both audio and video from ingests (RTMP/SRT/...) stay \
+                active in background mode.
                 """)
             }
         }
