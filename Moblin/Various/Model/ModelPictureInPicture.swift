@@ -15,18 +15,6 @@ extension Model {
         controller.canStartPictureInPictureAutomaticallyFromInline = true
         pipController = controller
     }
-
-    func startPictureInPicture() {
-        pipController?.startPictureInPicture()
-    }
-
-    func stopPictureInPicture() {
-        pipController?.stopPictureInPicture()
-    }
-
-    var isPictureInPictureActive: Bool {
-        return pipController?.isPictureInPictureActive ?? false
-    }
 }
 
 extension Model: AVPictureInPictureControllerDelegate {
