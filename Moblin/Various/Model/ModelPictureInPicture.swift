@@ -6,14 +6,25 @@ extension Model {
         guard AVPictureInPictureController.isPictureInPictureSupported() else {
             return
         }
+        let pipVideoCallVC = AVPictureInPictureVideoCallViewController()
+        pipVideoCallVC.preferredContentSize = CGSize(width: 1920, height: 1080)
+        pipVideoCallVC.view.addSubview(pipPreviewView)
+        pipPreviewView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            pipPreviewView.leadingAnchor.constraint(equalTo: pipVideoCallVC.view.leadingAnchor),
+            pipPreviewView.trailingAnchor.constraint(equalTo: pipVideoCallVC.view.trailingAnchor),
+            pipPreviewView.topAnchor.constraint(equalTo: pipVideoCallVC.view.topAnchor),
+            pipPreviewView.bottomAnchor.constraint(equalTo: pipVideoCallVC.view.bottomAnchor),
+        ])
         let pipContentSource = AVPictureInPictureController.ContentSource(
-            sampleBufferDisplayLayer: streamPreviewView.layer,
-            playbackDelegate: self
+            activeVideoCallSourceView: streamPreviewView,
+            contentViewController: pipVideoCallVC
         )
         let controller = AVPictureInPictureController(contentSource: pipContentSource)
         controller.delegate = self
         controller.canStartPictureInPictureAutomaticallyFromInline = true
         pipController = controller
+        pipVideoCallViewController = pipVideoCallVC
     }
 }
 
@@ -39,37 +50,5 @@ extension Model: AVPictureInPictureControllerDelegate {
         failedToStartPictureInPictureWithError error: Error
     ) {
         logger.warning("PiP failed to start: \(error)")
-    }
-}
-
-extension Model: AVPictureInPictureSampleBufferPlaybackDelegate {
-    func pictureInPictureController(
-        _: AVPictureInPictureController,
-        setPlaying _: Bool
-    ) {}
-
-    func pictureInPictureControllerTimeRangeForPlayback(
-        _: AVPictureInPictureController
-    ) -> CMTimeRange {
-        return CMTimeRange(start: .negativeInfinity, duration: .positiveInfinity)
-    }
-
-    func pictureInPictureControllerIsPlaybackPaused(
-        _: AVPictureInPictureController
-    ) -> Bool {
-        return false
-    }
-
-    func pictureInPictureController(
-        _: AVPictureInPictureController,
-        didTransitionToRenderSize _: CMVideoDimensions
-    ) {}
-
-    func pictureInPictureController(
-        _: AVPictureInPictureController,
-        skipByInterval _: CMTime,
-        completion completionHandler: @escaping () -> Void
-    ) {
-        completionHandler()
     }
 }

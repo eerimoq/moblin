@@ -478,10 +478,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var previousBitrateStatusColorSrtDroppedPacketsTotal: Int32 = 0
     var previousBitrateStatusNumberOfFailedEncodings = 0
     let streamPreviewView = PreviewView()
+    let pipPreviewView = PreviewView()
     let externalDisplayStreamPreviewView = PreviewView()
     let cameraPreviewView = CameraPreviewUiView()
     var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
     var pipController: AVPictureInPictureController?
+    var pipVideoCallViewController: AVPictureInPictureVideoCallViewController?
     var textEffects: [UUID: TextEffect] = [:]
     var imageEffects: [UUID: ImageEffect] = [:]
     var browserEffects: [UUID: BrowserEffect] = [:]
@@ -666,6 +668,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     weak var processor: Processor? {
         didSet {
             oldValue?.setDrawable(drawable: nil)
+            oldValue?.setPipDrawable(drawable: nil)
         }
     }
 

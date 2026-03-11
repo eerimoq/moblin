@@ -167,6 +167,7 @@ final class VideoUnit: NSObject {
     private let context = CIContext()
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
+    weak var pipDrawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
     private var nextDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedDetectionsSequenceNumber: UInt64 = 0
@@ -1423,6 +1424,7 @@ final class VideoUnit: NSObject {
         if !showCameraPreview, screenPreviewEnabled {
             drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
+        pipDrawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         if externalDisplayPreview {
             if cleanExternalDisplay {
                 externalDisplayDrawable?.enqueue(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach)

@@ -286,6 +286,10 @@ final class Processor {
         video.drawable = drawable
     }
 
+    func setPipDrawable(drawable: PreviewView?) {
+        video.pipDrawable = drawable
+    }
+
     func setExternalDisplayDrawable(drawable: PreviewView?) {
         video.externalDisplayDrawable = drawable
     }

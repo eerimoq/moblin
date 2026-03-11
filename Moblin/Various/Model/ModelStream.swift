@@ -351,6 +351,7 @@ extension Model {
         }
         processorControlQueue.async {
             processor.setDrawable(drawable: self.streamPreviewView)
+            processor.setPipDrawable(drawable: self.pipPreviewView)
             processor.setExternalDisplayDrawable(drawable: self.externalDisplayStreamPreviewView)
             self.processor = processor
             processor.startRunning()
