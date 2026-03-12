@@ -201,6 +201,7 @@ private struct PagesView: View {
                                      quickButtonsSettings: quickButtonsSettings,
                                      status: model.statusOther,
                                      height: height)
+                            .id(1)
                         ForEach(1 ..< controlBarPages, id: \.self) { page in
                             if !quickButtons.pairs[page].isEmpty {
                                 PageView(model: model,
@@ -208,6 +209,7 @@ private struct PagesView: View {
                                          quickButtonsSettings: quickButtonsSettings,
                                          page: page,
                                          height: height)
+                                    .id(page + 1)
                                     .padding([.top, .leading, .trailing], 5)
                             }
                         }
@@ -218,6 +220,7 @@ private struct PagesView: View {
             }
             .scrollTargetBehavior(ControlBarPageScrollTargetBehavior(model: model))
             .scrollIndicators(.never)
+            .scrollPosition(id: $quickButtons.activePage)
             .ignoresSafeArea(.all, edges: [.bottom])
         } else {
             ScrollView(.vertical) {
