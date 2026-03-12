@@ -260,6 +260,10 @@ struct QuickButtonsInnerView: View {
         model.toggleDrawOnStream()
     }
 
+    private func sceneEditAction() {
+        model.toggleSceneEditMode()
+    }
+
     private func localOverlaysAction() {
         state.button.isOn.toggle()
         model.setQuickButton(type: .localOverlays, isOn: state.button.isOn)
@@ -937,6 +941,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             beautyAction()
+                        }
+                    case .sceneEdit:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            sceneEditAction()
                         }
                     }
                 }

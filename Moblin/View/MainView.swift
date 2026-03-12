@@ -408,6 +408,9 @@ struct MainView: View {
                 if model.showDrawOnStream, model.stream.portrait {
                     DrawOnStreamView(model: model)
                 }
+                if model.showSceneEditMode, model.stream.portrait {
+                    SceneEditModeView(model: model)
+                }
                 MutedView(level: model.audio.level)
                 if model.showBrowser {
                     WebBrowserView(model: model,
@@ -482,6 +485,9 @@ struct MainView: View {
                 }
                 if model.showDrawOnStream {
                     DrawOnStreamView(model: model)
+                }
+                if model.showSceneEditMode {
+                    SceneEditModeView(model: model)
                 }
                 MutedView(level: model.audio.level)
                 if model.showBrowser {
