@@ -569,6 +569,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var currentDjiDeviceSettings: SettingsDjiDevice?
     var djiDeviceWrappers: [UUID: DjiDeviceWrapper] = [:]
     let autoSceneSwitcher = AutoSceneSwitcherProvider()
+    let autoCameraSwitcher = AutoCameraSwitcherProvider()
     var currentCatPrinterSettings: SettingsCatPrinter?
     var catPrinters: [UUID: CatPrinter] = [:]
     var cyclingPower = 0
@@ -1657,6 +1658,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateStatusEventsText()
         updateStatusChatText()
         updateAutoSceneSwitcher(now: monotonicNow)
+        updateAutoCameraSwitcher(now: monotonicNow)
         sendPeriodicRemoteControlStreamerStatus()
         speechToTextProcess()
         updateTwitchRaid()
