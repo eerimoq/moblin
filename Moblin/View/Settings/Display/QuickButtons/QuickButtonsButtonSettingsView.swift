@@ -211,9 +211,9 @@ struct QuickButtonsButtonSettingsView: View {
                     } label: {
                         Text("Page")
                     }
-                    .onChange(of: button.page) { _ in
-                        model.quickButtons.page = button.page
-                        model.quickButtons.activePage = button.page
+                    .onChange(of: button.page) { page in
+                        model.quickButtons.page = page
+                        model.quickButtons.activePage = page
                         model.updateQuickButtonStates()
                     }
                 }

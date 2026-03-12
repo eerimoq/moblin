@@ -51,7 +51,9 @@ private struct ButtonSettingsView: View {
                     model.quickButtons.activePage = button.page
                 }
                 .onDisappear {
-                    model.quickButtons.selectedButtonType = nil
+                    if model.showingPanel != .quickButtonSettings {
+                        model.quickButtons.selectedButtonType = nil
+                    }
                 }
         } label: {
             Toggle(isOn: $button.enabled) {
