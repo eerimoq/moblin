@@ -68,6 +68,7 @@ struct QuickButtonsButtonSettingsView: View {
     @ObservedObject var orientation: Orientation
     @ObservedObject var quickButtonsSettings: SettingsQuickButtons
     @ObservedObject var button: SettingsQuickButton
+    let showAll: Bool
 
     private func onColorChange(color: Color) {
         guard let color = color.toRgb() else {
@@ -211,6 +212,8 @@ struct QuickButtonsButtonSettingsView: View {
                         Text("Page")
                     }
                     .onChange(of: button.page) { _ in
+                        model.quickButtons.page = button.page
+                        model.quickButtons.activePage = button.page
                         model.updateQuickButtonStates()
                     }
                 }
@@ -248,18 +251,21 @@ struct QuickButtonsButtonSettingsView: View {
             default:
                 EmptyView()
             }
-            Section {
-                Toggle("Enabled", isOn: $button.enabled)
-                    .onChange(of: button.enabled) { _ in
-                        model.updateQuickButtonStates()
+            if showAll {
+                Section {
+                    Toggle("Enabled", isOn: $button.enabled)
+                        .onChange(of: button.enabled) { _ in
+                            model.updateQuickButtonStates()
+                        }
+                        .disabled(model.getQuickButtonState(type: button.type)?.isOn == true && button
+                            .enabled)
+                }
+                ShortcutSectionView {
+                    NavigationLink {
+                        QuickButtonsSettingsView(model: model, showAll: false)
+                    } label: {
+                        Label("Quick buttons", systemImage: "rectangle.inset.topright.fill")
                     }
-                    .disabled(model.getQuickButtonState(type: button.type)?.isOn == true && button.enabled)
-            }
-            ShortcutSectionView {
-                NavigationLink {
-                    QuickButtonsSettingsView(model: model)
-                } label: {
-                    Label("Quick buttons", systemImage: "rectangle.inset.topright.fill")
                 }
             }
         }

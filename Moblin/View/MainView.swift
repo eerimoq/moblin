@@ -187,7 +187,8 @@ private struct MenuView: View {
                     QuickButtonsButtonSettingsView(model: model,
                                                    orientation: model.orientation,
                                                    quickButtonsSettings: model.database.quickButtonsGeneral,
-                                                   button: button)
+                                                   button: button,
+                                                   showAll: true)
                 }
             }
         case .streamingButtonSettings:

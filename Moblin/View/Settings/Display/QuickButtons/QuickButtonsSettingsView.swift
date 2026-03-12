@@ -39,16 +39,32 @@ private struct ButtonSettingsView: View {
     @ObservedObject var state: ButtonState
 
     var body: some View {
-        Toggle(isOn: $button.enabled) {
-            IconAndTextView(
-                image: button.imageOff,
-                text: button.name,
-                longDivider: true
-            )
-        }
-        .disabled(state.isOn && button.enabled)
-        .onChange(of: button.enabled) { _ in
-            model.updateQuickButtonStates()
+        NavigationLink {
+            QuickButtonsButtonSettingsView(model: model,
+                                           orientation: model.orientation,
+                                           quickButtonsSettings: model.database.quickButtonsGeneral,
+                                           button: button,
+                                           showAll: false)
+                .onAppear {
+                    model.quickButtons.selectedButtonType = button.type
+                    model.quickButtons.page = button.page
+                    model.quickButtons.activePage = button.page
+                }
+                .onDisappear {
+                    model.quickButtons.selectedButtonType = nil
+                }
+        } label: {
+            Toggle(isOn: $button.enabled) {
+                IconAndTextView(
+                    image: button.imageOff,
+                    text: button.name,
+                    longDivider: true
+                )
+            }
+            .disabled(state.isOn && button.enabled)
+            .onChange(of: button.enabled) { _ in
+                model.updateQuickButtonStates()
+            }
         }
     }
 }
@@ -56,6 +72,7 @@ private struct ButtonSettingsView: View {
 private struct ButtonsSettingsView: View {
     let model: Model
     @ObservedObject var database: Database
+    @ObservedObject var quickButtons: QuickButtons
 
     var body: some View {
         ForEach(1 ... controlBarPages, id: \.self) { page in
@@ -77,13 +94,18 @@ private struct ButtonsSettingsView: View {
 
 struct QuickButtonsSettingsView: View {
     let model: Model
+    let showAll: Bool
 
     var body: some View {
         Form {
             AppearanceSettingsView(model: model,
                                    database: model.database,
                                    quickButtons: model.database.quickButtonsGeneral)
-            ButtonsSettingsView(model: model, database: model.database)
+            if showAll {
+                ButtonsSettingsView(model: model,
+                                    database: model.database,
+                                    quickButtons: model.quickButtons)
+            }
         }
         .navigationTitle("Quick buttons")
     }
