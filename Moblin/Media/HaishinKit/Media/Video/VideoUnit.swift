@@ -872,8 +872,8 @@ final class VideoUnit: NSObject {
         attributes[kCVPixelBufferPixelFormatTypeKey] = NSNumber(value: pixelFormatType)
         attributes[kCVPixelBufferIOSurfacePropertiesKey] = NSDictionary()
         attributes[kCVPixelBufferMetalCompatibilityKey] = kCFBooleanTrue
-        attributes[kCVPixelBufferWidthKey] = NSNumber(value: captureSize.width)
-        attributes[kCVPixelBufferHeightKey] = NSNumber(value: captureSize.height)
+        attributes[kCVPixelBufferWidthKey] = NSNumber(value: formatDescription.dimensions.width)
+        attributes[kCVPixelBufferHeightKey] = NSNumber(value: formatDescription.dimensions.height)
         // This is not correct, I'm sure. Colors are not always correct. At least for Apple Log.
         if let formatDescriptionExtension = formatDescriptionExtension as Dictionary? {
             let colorPrimaries = formatDescriptionExtension[kCVImageBufferColorPrimariesKey]
