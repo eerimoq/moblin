@@ -53,6 +53,30 @@ private struct HighlightMessageView: View {
     }
 }
 
+private struct URLButtonView: View {
+    let text: String
+    let url: URL
+    let deleted: Bool
+    @State private var presentingConfirm = false
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        Button(text) {
+            presentingConfirm = true
+        }
+        .foregroundStyle(deleted ? .gray : .blue)
+        .strikethrough(deleted)
+        .confirmationDialog(url.absoluteString, isPresented: $presentingConfirm) {
+            Button("Open URL in browser") {
+                openURL(url)
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(url.absoluteString)
+        }
+    }
+}
+
 private struct LineView: View {
     let postState: ChatPostState
     let post: ChatPost
@@ -120,10 +144,10 @@ private struct LineView: View {
             }
             ForEach(post.segments) { segment in
                 if let text = segment.text {
-                    if let url = URL(string: text.trimmingCharacters(in: .whitespaces)), url.scheme == "https" {
-                        Link(text, destination: url)
-                            .foregroundStyle(postState.deleted ? .gray : .blue)
-                            .strikethrough(postState.deleted)
+                    if let url = URL(string: text.trimmingCharacters(in: .whitespaces)),
+                       url.scheme == "https"
+                    {
+                        URLButtonView(text: text, url: url, deleted: postState.deleted)
                     } else {
                         Text(text)
                             .foregroundStyle(postState.deleted ? .gray : .white)
