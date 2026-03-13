@@ -69,6 +69,12 @@ struct StreamOverlayRightBeautyView: View {
         .onChange(of: beauty.enabled) { _ in
             model.updateBeautyButtonState()
             model.sceneUpdated(updateRemoteScene: false)
+            if beauty.enabled {
+                model.makeToast(
+                    title: String(localized: "Other widgets will not work with Beauty filters enabled"),
+                    subTitle: String(localized: "Too much work to fix it, sorry.")
+                )
+            }
         }
         .padding([.trailing], 10)
         .fixedSize()
