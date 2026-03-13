@@ -3,6 +3,7 @@ import SwiftUI
 let settingsHalfWidth = 350.0
 
 private enum SettingsSearchDestination {
+    // Top level
     case streams
     case scenes
     case chat
@@ -32,6 +33,29 @@ private enum SettingsSearchDestination {
     case debug
     case importExport
     case deepLinkCreator
+    // Chat sub-items
+    case chatBot
+    case chatTextToSpeech
+    // Display sub-items
+    case displayQuickButtons
+    case displayStreamButton
+    case displayLocalOverlays
+    case displayNetworkInterfaceNames
+    // Camera sub-items
+    case cameraVideo
+    case cameraZoom
+    case cameraLuts
+    // Audio sub-items
+    case audioMic
+    // Location sub-items
+    case locationRealtimeIrl
+    // Debug sub-items
+    case debugVideo
+    // About sub-items
+    case aboutAttributions
+    // Watch sub-items
+    case watchChat
+    case watchDisplay
 }
 
 private struct SettingsSearchItem: Identifiable {
@@ -39,6 +63,7 @@ private struct SettingsSearchItem: Identifiable {
     let title: String
     let icon: String
     let destination: SettingsSearchDestination
+    var path: String?
 }
 
 struct SettingsView: View {
@@ -52,31 +77,85 @@ struct SettingsView: View {
 
     private var allSettingsItems: [SettingsSearchItem] {
         var items: [SettingsSearchItem] = []
+        // Streams
         items.append(.init(title: String(localized: "Streams"),
                            icon: "dot.radiowaves.left.and.right", destination: .streams))
+        // Scenes
         items.append(.init(title: String(localized: "Scenes"),
                            icon: "photo.on.rectangle", destination: .scenes))
+        // Chat
         items.append(.init(title: String(localized: "Chat"),
                            icon: "message", destination: .chat))
+        items.append(.init(title: String(localized: "Bot"),
+                           icon: "message", destination: .chatBot,
+                           path: String(localized: "Chat")))
+        items.append(.init(title: String(localized: "Text to speech"),
+                           icon: "message", destination: .chatTextToSpeech,
+                           path: String(localized: "Chat")))
+        // Display
         items.append(.init(title: String(localized: "Display"),
                            icon: "rectangle.inset.topright.fill", destination: .display))
+        items.append(.init(title: String(localized: "Quick buttons"),
+                           icon: "rectangle.inset.topright.fill",
+                           destination: .displayQuickButtons,
+                           path: String(localized: "Display")))
+        if database.showAllSettings {
+            items.append(.init(title: String(localized: "Stream button"),
+                               icon: "rectangle.inset.topright.fill",
+                               destination: .displayStreamButton,
+                               path: String(localized: "Display")))
+            items.append(.init(title: String(localized: "Local overlays"),
+                               icon: "rectangle.inset.topright.fill",
+                               destination: .displayLocalOverlays,
+                               path: String(localized: "Display")))
+            items.append(.init(title: String(localized: "Network interface names"),
+                               icon: "rectangle.inset.topright.fill",
+                               destination: .displayNetworkInterfaceNames,
+                               path: String(localized: "Display")))
+        }
+        // Camera
         items.append(.init(title: String(localized: "Camera"),
                            icon: "camera", destination: .camera))
+        items.append(.init(title: String(localized: "Video"),
+                           icon: "camera", destination: .cameraVideo,
+                           path: String(localized: "Camera")))
+        if database.showAllSettings {
+            items.append(.init(title: String(localized: "Zoom"),
+                               icon: "camera", destination: .cameraZoom,
+                               path: String(localized: "Camera")))
+            items.append(.init(title: String(localized: "LUTs"),
+                               icon: "camera", destination: .cameraLuts,
+                               path: String(localized: "Camera")))
+        }
+        // Audio
         if database.showAllSettings {
             items.append(.init(title: String(localized: "Audio"),
                                icon: "waveform", destination: .audio))
+            items.append(.init(title: String(localized: "Mic"),
+                               icon: "waveform", destination: .audioMic,
+                               path: String(localized: "Audio")))
         }
+        // Location
         items.append(.init(title: String(localized: "Location"),
                            icon: "location", destination: .location))
+        if database.showAllSettings {
+            items.append(.init(title: String(localized: "RealtimeIRL"),
+                               icon: "location", destination: .locationRealtimeIrl,
+                               path: String(localized: "Location")))
+        }
+        // Store
         items.append(.init(title: String(localized: "Store (support us) ❤️"),
                            icon: "cart", destination: .store))
+        // Ingests
         if database.showAllSettings {
             items.append(.init(title: String(localized: "Ingests"),
                                icon: "server.rack", destination: .ingests))
         }
+        // Moblink
         items.append(.init(title: String(localized: "Moblink"),
                            icon: "app.connected.to.app.below.fill", destination: .moblink))
         if database.showAllSettings {
+            // Media players, Selfie stick, etc.
             items.append(.init(title: String(localized: "Media players"),
                                icon: "play.rectangle.on.rectangle", destination: .mediaPlayers))
             items.append(.init(title: String(localized: "Selfie stick"),
@@ -102,23 +181,38 @@ struct SettingsView: View {
             items.append(.init(title: String(localized: "Black Shark coolers"),
                                icon: "fan", destination: .blackSharkCoolers))
         }
+        // Recordings
         items.append(.init(title: String(localized: "Recordings"),
                            icon: "photo.on.rectangle.angled", destination: .recordings))
         if database.showAllSettings {
             items.append(.init(title: String(localized: "Streaming history"),
                                icon: "text.book.closed", destination: .streamingHistory))
         }
+        // Watch
         if database.showAllSettings, isPhone() {
             items.append(.init(title: String(localized: "Apple Watch"),
                                icon: "applewatch", destination: .watch))
+            items.append(.init(title: String(localized: "Chat"),
+                               icon: "applewatch", destination: .watchChat,
+                               path: String(localized: "Apple Watch")))
+            items.append(.init(title: String(localized: "Display"),
+                               icon: "applewatch", destination: .watchDisplay,
+                               path: String(localized: "Apple Watch")))
         }
+        // Help, About, Debug
         items.append(.init(title: String(localized: "Help and support"),
                            icon: "questionmark.circle", destination: .helpAndSupport))
         if database.showAllSettings {
             items.append(.init(title: String(localized: "About"),
                                icon: "info.circle", destination: .about))
+            items.append(.init(title: String(localized: "Attributions"),
+                               icon: "info.circle", destination: .aboutAttributions,
+                               path: String(localized: "About")))
             items.append(.init(title: String(localized: "Debug"),
                                icon: "ladybug", destination: .debug))
+            items.append(.init(title: String(localized: "Video"),
+                               icon: "ladybug", destination: .debugVideo,
+                               path: String(localized: "Debug")))
             items.append(.init(title: String(localized: "Import and export settings"),
                                icon: "gearshape", destination: .importExport))
             items.append(.init(title: String(localized: "Deep link creator"),
@@ -128,7 +222,10 @@ struct SettingsView: View {
     }
 
     private var filteredSettingsItems: [SettingsSearchItem] {
-        allSettingsItems.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+        allSettingsItems.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText) ||
+                ($0.path?.localizedCaseInsensitiveContains(searchText) ?? false)
+        }
     }
 
     @ViewBuilder
@@ -199,6 +296,45 @@ struct SettingsView: View {
             ImportExportSettingsView()
         case .deepLinkCreator:
             DeepLinkCreatorSettingsView(deepLinkCreator: database.deepLinkCreator)
+        // Chat sub-items
+        case .chatBot:
+            ChatBotSettingsView()
+        case .chatTextToSpeech:
+            ChatTextToSpeechSettingsView(chat: database.chat,
+                                         ttsMonster: database.chat.ttsMonster)
+        // Display sub-items
+        case .displayQuickButtons:
+            QuickButtonsSettingsView(model: model, showAll: true)
+        case .displayStreamButton:
+            StreamButtonsSettingsView(database: database)
+        case .displayLocalOverlays:
+            LocalOverlaysSettingsView(show: database.show)
+        case .displayNetworkInterfaceNames:
+            LocalOverlaysNetworkInterfaceNamesSettingsView(database: database)
+        // Camera sub-items
+        case .cameraVideo:
+            StreamVideoSettingsView(database: database, stream: model.stream)
+        case .cameraZoom:
+            ZoomSettingsView(zoom: database.zoom)
+        case .cameraLuts:
+            CameraSettingsLutsView(color: database.color)
+        // Audio sub-items
+        case .audioMic:
+            QuickButtonMicView(model: model, mics: database.mics, modelMic: model.mic)
+        // Location sub-items
+        case .locationRealtimeIrl:
+            StreamRealtimeIrlSettingsView(stream: model.stream)
+        // Debug sub-items
+        case .debugVideo:
+            DebugVideoSettingsView(debug: database.debug)
+        // About sub-items
+        case .aboutAttributions:
+            AboutAttributionsSettingsView()
+        // Watch sub-items
+        case .watchChat:
+            WatchChatSettingsView(chat: database.watch.chat)
+        case .watchDisplay:
+            WatchDisplaySettingsView(show: database.watch.show)
         }
     }
 
@@ -209,7 +345,20 @@ struct SettingsView: View {
                     NavigationLink {
                         destinationView(for: item.destination)
                     } label: {
-                        Label(item.title, systemImage: item.icon)
+                        if let path = item.path {
+                            Label {
+                                VStack(alignment: .leading) {
+                                    Text(item.title)
+                                    Text(path)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            } icon: {
+                                Image(systemName: item.icon)
+                            }
+                        } else {
+                            Label(item.title, systemImage: item.icon)
+                        }
                     }
                 }
             } else {
