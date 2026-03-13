@@ -2,6 +2,7 @@ import Foundation
 import SDWebImageSwiftUI
 import SwiftUI
 import WrappingHStack
+import UIKit
 
 private struct HighlightMessageView: View {
     let postState: ChatPostState
@@ -23,8 +24,14 @@ private struct HighlightMessageView: View {
             Text(" ")
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
-                    Text(text)
-                        .foregroundStyle(highlight.messageColor())
+                    DetectingTextView(
+                        text,
+                        font: UIFont.systemFont(ofSize: CGFloat(chat.fontSize)),
+                        textColor: (highlight.kind == .reply ? UIColor.gray : UIColor.white),
+                        italic: false,
+                        strikethrough: false
+                    )
+                    .frame(minHeight: CGFloat(chat.fontSize))
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
@@ -120,10 +127,15 @@ private struct LineView: View {
             }
             ForEach(post.segments) { segment in
                 if let text = segment.text {
-                    Text(text)
-                        .foregroundStyle(postState.deleted ? .gray : .white)
-                        .strikethrough(postState.deleted)
-                        .italic(post.isAction)
+                    // Use a UITextView-backed wrapper so detected links become tappable
+                    DetectingTextView(
+                        text,
+                        font: UIFont.systemFont(ofSize: CGFloat(chat.fontSize)),
+                        textColor: (postState.deleted ? UIColor.gray : UIColor.white),
+                        italic: post.isAction,
+                        strikethrough: postState.deleted
+                    )
+                    .frame(minHeight: CGFloat(chat.fontSize))
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
