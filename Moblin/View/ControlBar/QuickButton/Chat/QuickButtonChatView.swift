@@ -120,10 +120,16 @@ private struct LineView: View {
             }
             ForEach(post.segments) { segment in
                 if let text = segment.text {
-                    Text(text)
-                        .foregroundStyle(postState.deleted ? .gray : .white)
-                        .strikethrough(postState.deleted)
-                        .italic(post.isAction)
+                    if let url = URL(string: text.trimmingCharacters(in: .whitespaces)), url.scheme == "https" {
+                        Link(text, destination: url)
+                            .foregroundStyle(postState.deleted ? .gray : .blue)
+                            .strikethrough(postState.deleted)
+                    } else {
+                        Text(text)
+                            .foregroundStyle(postState.deleted ? .gray : .white)
+                            .strikethrough(postState.deleted)
+                            .italic(post.isAction)
+                    }
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
