@@ -85,10 +85,32 @@ struct DetectingTextView: UIViewRepresentable {
     }
 
     class Coordinator: NSObject, UITextViewDelegate {
+        private func confirmAndOpen(url: URL, in textView: UITextView) {
+            guard let scene = textView.window?.windowScene,
+                  let rootVC = scene.windows.first(where: { $0.isKeyWindow })?.rootViewController
+            else {
+                openUrl(url: url.absoluteString)
+                return
+            }
+            var presenter = rootVC
+            while let presented = presenter.presentedViewController {
+                presenter = presented
+            }
+            let alert = UIAlertController(
+                title: String(localized: "Open Link"),
+                message: url.absoluteString,
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: String(localized: "Cancel"), style: .cancel))
+            alert.addAction(UIAlertAction(title: String(localized: "Open"), style: .default) { _ in
+                openUrl(url: url.absoluteString)
+            })
+            presenter.present(alert, animated: true)
+        }
+
         func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-            // Use the project's helper to open URLs so behaviour is consistent
             DispatchQueue.main.async {
-                openUrl(url: URL.absoluteString)
+                self.confirmAndOpen(url: URL, in: textView)
             }
             return false
         }
@@ -96,7 +118,7 @@ struct DetectingTextView: UIViewRepresentable {
         // Support older variant without interaction param
         func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
             DispatchQueue.main.async {
-                openUrl(url: URL.absoluteString)
+                self.confirmAndOpen(url: URL, in: textView)
             }
             return false
         }
