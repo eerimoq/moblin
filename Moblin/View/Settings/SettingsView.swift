@@ -10,11 +10,9 @@ struct SettingsView: View {
         Form {
             if model.isLive {
                 Section {
-                    HStack {
-                        Image(systemName: "info.circle.fill")
-                            .foregroundStyle(.blue)
-                        Text("Settings that would stop the stream are disabled when live.")
-                    }
+                    InfoBannerView(
+                        message: String(localized: "Settings that would stop the stream are disabled when live.")
+                    )
                 }
             }
             Section {

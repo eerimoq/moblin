@@ -97,7 +97,7 @@ private struct UrlSettingsView: View {
                         }
                     }
                     .disableAutocorrection(true)
-                    .disabled(stream.enabled && model.isLive)
+                    .disabledWhenLiveStreaming(stream: stream, model: model)
             } footer: {
                 if let error {
                     FormFieldError(error: error)

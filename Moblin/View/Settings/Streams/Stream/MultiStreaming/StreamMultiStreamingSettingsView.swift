@@ -14,7 +14,7 @@ private struct DestinationView: View {
                 Section {
                     NavigationLink {
                         StreamMultiStreamingUrlView(stream: stream, destination: destination)
-                            .disabled(stream.enabled && (model.isLive || model.isRecording))
+                            .disabledWhenLiveStreamingOrRecording(stream: stream, model: model)
                     } label: {
                         TextItemLocalizedView(name: "URL", value: destination.url, sensitive: true)
                     }
@@ -28,7 +28,7 @@ private struct DestinationView: View {
             .onChange(of: destination.enabled) { _ in
                 model.reloadStreamIfEnabled(stream: stream)
             }
-            .disabled(stream.enabled && (model.isLive || model.isRecording))
+            .disabledWhenLiveStreamingOrRecording(stream: stream, model: model)
         }
     }
 }
@@ -75,7 +75,7 @@ struct StreamMultiStreamingSettingsView: View {
                         )
                         multiStreaming.destinations.append(destination)
                     }
-                    .disabled(stream.enabled && (model.isLive || model.isRecording))
+                    .disabledWhenLiveStreamingOrRecording(stream: stream, model: model)
                 } footer: {
                     SwipeLeftToDeleteHelpView(kind: String(localized: "a destination"))
                 }

@@ -13,7 +13,7 @@ struct StreamRtmpSettingsView: View {
                     stream.rtmp.adaptiveBitrateEnabled = value
                     model.reloadStreamIfEnabled(stream: stream)
                 }))
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
             }
         }
         .navigationTitle("RTMP")

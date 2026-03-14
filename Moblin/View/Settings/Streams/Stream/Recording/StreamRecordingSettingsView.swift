@@ -141,7 +141,7 @@ struct StreamRecordingSettingsView: View {
                     """)
                 }
             }
-            .disabled(stream.enabled && (model.isLive || model.isRecording))
+            .disabledWhenLiveStreamingOrRecording(stream: stream, model: model)
             Section {
                 Picker("Video codec", selection: $recording.videoCodec) {
                     ForEach(SettingsStreamCodec.allCases, id: \.self) {

@@ -32,7 +32,7 @@ struct StreamWhipSettingsView: View {
                                        value: getBearerToken(),
                                        onSubmit: setBearerToken,
                                        sensitive: true)
-                    .disabled(stream.enabled && model.isLive)
+                    .disabledWhenLiveStreaming(stream: stream, model: model)
             }
             Section {
                 Picker(selection: $whip.httpTransport) {
@@ -42,7 +42,7 @@ struct StreamWhipSettingsView: View {
                 } label: {
                     Text("HTTP transport")
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
                 .onChange(of: whip.httpTransport) { _ in
                     model.reloadStreamIfEnabled(stream: stream)
                 }

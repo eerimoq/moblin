@@ -270,7 +270,7 @@ struct StreamSettingsView: View {
                     Toggle(isOn: $stream.portrait) {
                         Text("Portrait")
                     }
-                    .disabled(stream.enabled && (model.isLive || model.isRecording))
+                    .disabledWhenLiveStreamingOrRecording(stream: stream, model: model)
                     .onChange(of: stream.portrait) { _ in
                         if stream.enabled {
                             model.setCurrentStream(stream: stream)

@@ -34,11 +34,9 @@ struct RistServerSettingsView: View {
                 }
                 if ristServer.enabled {
                     Section {
-                        HStack {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundStyle(.blue)
-                            Text("Disable the RIST server to change its settings.")
-                        }
+                        InfoBannerView(
+                            message: String(localized: "Disable the RIST server to change its settings.")
+                        )
                     }
                 }
                 Section {

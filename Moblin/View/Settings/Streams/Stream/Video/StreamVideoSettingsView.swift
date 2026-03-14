@@ -14,7 +14,7 @@ private struct ResolutionSettingsView: View {
             .onChange(of: stream.resolution) { _ in
                 model.reloadStreamIfEnabled(stream: stream)
             }
-            .disabled(stream.enabled && (model.isLive || model.isRecording))
+            .disabledWhenLiveStreamingOrRecording(stream: stream, model: model)
         }
     }
 }
@@ -33,7 +33,7 @@ private struct FpsSettingsView: View {
             .onChange(of: stream.fps) { _ in
                 model.reloadStreamIfEnabled(stream: stream)
             }
-            .disabled(stream.enabled && (model.isLive || model.isRecording))
+            .disabledWhenLiveStreamingOrRecording(stream: stream, model: model)
         } footer: {
             Text("Lower FPS generally gives brighter image in low light conditions.")
         }
@@ -75,7 +75,7 @@ private struct CodecSettingsView: View {
             .onChange(of: stream.codec) { _ in
                 model.reloadStreamIfEnabled(stream: stream)
             }
-            .disabled(stream.enabled && model.isLive)
+            .disabledWhenLiveStreaming(stream: stream, model: model)
             if stream.codec == .h264avc {
                 Picker("Profile", selection: $stream.h264Profile) {
                     ForEach(SettingsStreamH264Profile.allCases, id: \.self) {
@@ -85,7 +85,7 @@ private struct CodecSettingsView: View {
                 .onChange(of: stream.h264Profile) { _ in
                     model.reloadStreamIfEnabled(stream: stream)
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
             }
         } footer: {
             Text("""
@@ -162,7 +162,7 @@ private struct KeyFrameIntervalSettingsView: View {
             } label: {
                 TextItemLocalizedView(name: "Key frame interval", value: stream.maxKeyFrameIntervalString())
             }
-            .disabled(stream.enabled && model.isLive)
+            .disabledWhenLiveStreaming(stream: stream, model: model)
         }
     }
 }
@@ -176,7 +176,7 @@ private struct BFramesSettingsView: View {
             .onChange(of: stream.bFrames) { _ in
                 model.reloadStreamIfEnabled(stream: stream)
             }
-            .disabled(stream.enabled && model.isLive)
+            .disabledWhenLiveStreaming(stream: stream, model: model)
     }
 }
 
@@ -206,7 +206,7 @@ private struct AdaptiveResolutionThresholdSettingsView: View {
                     }
                     model.reloadStreamIfEnabled(stream: stream)
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
             } header: {
                 Text("Thresholds")
             } footer: {
@@ -237,7 +237,7 @@ private struct AdaptiveResolutionSettingsView: View {
                     .onChange(of: stream.adaptiveEncoderResolution) { _ in
                         model.reloadStreamIfEnabled(stream: stream)
                     }
-                    .disabled(stream.enabled && model.isLive)
+                    .disabledWhenLiveStreaming(stream: stream, model: model)
             }
         } footer: {
             VStack(alignment: .leading) {

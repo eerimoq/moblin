@@ -54,7 +54,7 @@ struct StreamSrtSettingsView: View {
                     keyboardType: .numbersAndPunctuation,
                     valueFormat: { "\($0) ms" }
                 )
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
                 if srt.implementation == .moblin && srt.latency < 1000 {
                     Text("""
                     ⚠️ The \"Moblin\" implementation does not perform well with low latency. \
@@ -68,7 +68,7 @@ struct StreamSrtSettingsView: View {
                         .onChange(of: srt.adaptiveBitrateEnabled) { _ in
                             model.reloadStreamIfEnabled(stream: stream)
                         }
-                        .disabled(stream.enabled && model.isLive)
+                        .disabledWhenLiveStreaming(stream: stream, model: model)
                 }
                 NavigationLink {
                     StreamSrtConnectionPriorityView(stream: stream)
@@ -81,7 +81,7 @@ struct StreamSrtSettingsView: View {
                         .onChange(of: srt.maximumBandwidthFollowInput) { _ in
                             model.reloadStreamIfEnabled(stream: stream)
                         }
-                        .disabled(stream.enabled && model.isLive)
+                        .disabledWhenLiveStreaming(stream: stream, model: model)
                     TextEditNavigationView(
                         title: String(localized: "Overhead bandwidth"),
                         value: String(srt.overheadBandwidth),
@@ -90,7 +90,7 @@ struct StreamSrtSettingsView: View {
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0)%" }
                     )
-                    .disabled(stream.enabled && model.isLive)
+                    .disabledWhenLiveStreaming(stream: stream, model: model)
                 case .moblin:
                     EmptyView()
                 }
@@ -98,7 +98,7 @@ struct StreamSrtSettingsView: View {
                     .onChange(of: srt.bigPackets) { _ in
                         model.reloadStreamIfEnabled(stream: stream)
                     }
-                    .disabled(stream.enabled && model.isLive)
+                    .disabledWhenLiveStreaming(stream: stream, model: model)
             } footer: {
                 VStack(alignment: .leading) {
                     Text(
@@ -115,7 +115,7 @@ struct StreamSrtSettingsView: View {
                         Text($0.rawValue)
                     }
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
             } footer: {
                 Text("System seems to work best for TMobile. IPv4 probably best for IRLToolkit.")
             }
@@ -125,7 +125,7 @@ struct StreamSrtSettingsView: View {
                         Text($0.toString())
                     }
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
                 .onChange(of: srt.implementation) { _ in
                     model.reloadStreamIfEnabled(stream: stream)
                 }

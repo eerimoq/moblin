@@ -34,11 +34,9 @@ struct WhipServerSettingsView: View {
                 }
                 if whipServer.enabled {
                     Section {
-                        HStack {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundStyle(.blue)
-                            Text("Disable the WHIP server to change its settings.")
-                        }
+                        InfoBannerView(
+                            message: String(localized: "Disable the WHIP server to change its settings.")
+                        )
                     }
                 }
                 Section {

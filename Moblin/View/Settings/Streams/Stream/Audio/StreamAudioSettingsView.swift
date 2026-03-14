@@ -20,7 +20,7 @@ struct StreamAudioSettingsView: View {
                 .onChange(of: stream.audioCodec) { _ in
                     model.reloadStreamIfEnabled(stream: stream)
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
             } footer: {
                 Text("WHIP generally only supports Opus.")
             }
@@ -46,7 +46,7 @@ struct StreamAudioSettingsView: View {
                     Text(formatBytesPerSecond(speed: Int64(calcBitrate())))
                         .frame(width: 90)
                 }
-                .disabled(stream.enabled && model.isLive)
+                .disabledWhenLiveStreaming(stream: stream, model: model)
             } header: {
                 Text("Bitrate")
             } footer: {
