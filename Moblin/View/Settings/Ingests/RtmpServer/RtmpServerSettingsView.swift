@@ -36,13 +36,7 @@ struct RtmpServerSettingsView: View {
                         }
                 }
                 if rtmpServer.enabled {
-                    Section {
-                        HStack {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundStyle(.blue)
-                            Text("Disable the RTMP server to change its settings.")
-                        }
-                    }
+                    InfoBannerView(text: "Disable the RTMP server to change its settings.")
                 }
                 Section {
                     TextEditNavigationView(

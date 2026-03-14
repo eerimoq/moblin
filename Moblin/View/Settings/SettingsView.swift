@@ -9,13 +9,7 @@ struct SettingsView: View {
     var body: some View {
         Form {
             if model.isLive {
-                Section {
-                    HStack {
-                        Image(systemName: "info.circle.fill")
-                            .foregroundStyle(.blue)
-                        Text("Settings that would stop the stream are disabled when live.")
-                    }
-                }
+                InfoBannerView(text: "Settings that would stop the stream are disabled when live.")
             }
             Section {
                 NavigationLink {

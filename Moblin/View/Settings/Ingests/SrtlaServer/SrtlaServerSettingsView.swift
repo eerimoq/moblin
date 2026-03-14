@@ -38,13 +38,7 @@ struct SrtlaServerSettingsView: View {
                         }
                 }
                 if srtlaServer.enabled {
-                    Section {
-                        HStack {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundStyle(.blue)
-                            Text("Disable the SRT(LA) server to change its settings.")
-                        }
-                    }
+                    InfoBannerView(text: "Disable the SRT(LA) server to change its settings.")
                 }
                 Section {
                     TextEditNavigationView(
