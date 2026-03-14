@@ -23,8 +23,12 @@ private struct HighlightMessageView: View {
             Text(" ")
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
-                    Text(text)
-                        .foregroundStyle(highlight.messageColor())
+                    if let url = getHttpsUrl(text: text) {
+                        UrlView(text: text, url: url, deleted: postState.deleted)
+                    } else {
+                        Text(text)
+                            .foregroundStyle(highlight.messageColor())
+                    }
                 }
                 if let url = segment.url {
                     if chat.animatedEmotes {
@@ -53,24 +57,23 @@ private struct HighlightMessageView: View {
     }
 }
 
-private struct URLButtonView: View {
+private struct UrlView: View {
     let text: String
     let url: URL
     let deleted: Bool
-    @State private var presentingConfirm = false
-    @Environment(\.openURL) private var openURL
+    @State private var presentingConfirmation = false
 
     var body: some View {
         Button(text) {
-            presentingConfirm = true
+            presentingConfirmation = true
         }
         .foregroundStyle(deleted ? .gray : .blue)
         .strikethrough(deleted)
-        .confirmationDialog(url.absoluteString, isPresented: $presentingConfirm) {
-            Button("Open URL in browser") {
-                openURL(url)
+        .disabled(deleted)
+        .confirmationDialog("", isPresented: $presentingConfirmation) {
+            Button("Open link") {
+                UIApplication.shared.open(url)
             }
-            Button("Cancel", role: .cancel) {}
         } message: {
             Text(url.absoluteString)
         }
@@ -144,10 +147,8 @@ private struct LineView: View {
             }
             ForEach(post.segments) { segment in
                 if let text = segment.text {
-                    if let url = URL(string: text.trimmingCharacters(in: .whitespaces)),
-                       url.scheme == "https"
-                    {
-                        URLButtonView(text: text, url: url, deleted: postState.deleted)
+                    if let url = getHttpsUrl(text: text) {
+                        UrlView(text: text, url: url, deleted: postState.deleted)
                     } else {
                         Text(text)
                             .foregroundStyle(postState.deleted ? .gray : .white)

@@ -98,3 +98,10 @@ func httpRequest(request: URLRequest,
     }
     .resume()
 }
+
+func getHttpsUrl(text: String) -> URL? {
+    if text.starts(with: "https://"), let url = URL(string: text.trim()) {
+        return url
+    }
+    return nil
+}
