@@ -8,7 +8,11 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -277,11 +281,11 @@ struct Signatures_SignatureData: Sendable {
   // methods supported on all messages.
 
   var signerIdentity: Signatures_KeyIdentity {
-    get {return _signerIdentity ?? Signatures_KeyIdentity()}
+    get {_signerIdentity ?? Signatures_KeyIdentity()}
     set {_signerIdentity = newValue}
   }
   /// Returns true if `signerIdentity` has been explicitly set.
-  var hasSignerIdentity: Bool {return self._signerIdentity != nil}
+  var hasSignerIdentity: Bool {self._signerIdentity != nil}
   /// Clears the value of `signerIdentity`. Subsequent reads from it will return its default value.
   mutating func clearSignerIdentity() {self._signerIdentity = nil}
 
@@ -340,11 +344,11 @@ struct Signatures_GetSessionInfoRequest: Sendable {
   // methods supported on all messages.
 
   var keyIdentity: Signatures_KeyIdentity {
-    get {return _keyIdentity ?? Signatures_KeyIdentity()}
+    get {_keyIdentity ?? Signatures_KeyIdentity()}
     set {_keyIdentity = newValue}
   }
   /// Returns true if `keyIdentity` has been explicitly set.
-  var hasKeyIdentity: Bool {return self._keyIdentity != nil}
+  var hasKeyIdentity: Bool {self._keyIdentity != nil}
   /// Clears the value of `keyIdentity`. Subsequent reads from it will return its default value.
   mutating func clearKeyIdentity() {self._keyIdentity = nil}
 

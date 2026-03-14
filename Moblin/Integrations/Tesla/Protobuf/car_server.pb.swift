@@ -8,7 +8,11 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -511,6 +515,22 @@ struct CarServer_VehicleAction: Sendable {
     set {vehicleActionMsg = .batchRemoveChargeSchedulesAction(newValue)}
   }
 
+  var setLowPowerModeAction: CarServer_SetLowPowerModeAction {
+    get {
+      if case .setLowPowerModeAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_SetLowPowerModeAction()
+    }
+    set {vehicleActionMsg = .setLowPowerModeAction(newValue)}
+  }
+
+  var setKeepAccessoryPowerModeAction: CarServer_SetKeepAccessoryPowerModeAction {
+    get {
+      if case .setKeepAccessoryPowerModeAction(let v)? = vehicleActionMsg {return v}
+      return CarServer_SetKeepAccessoryPowerModeAction()
+    }
+    set {vehicleActionMsg = .setKeepAccessoryPowerModeAction(newValue)}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum OneOf_VehicleActionMsg: Equatable, Sendable {
@@ -567,6 +587,8 @@ struct CarServer_VehicleAction: Sendable {
     case removePreconditionScheduleAction(CarServer_RemovePreconditionScheduleAction)
     case batchRemovePreconditionSchedulesAction(CarServer_BatchRemovePreconditionSchedulesAction)
     case batchRemoveChargeSchedulesAction(CarServer_BatchRemoveChargeSchedulesAction)
+    case setLowPowerModeAction(CarServer_SetLowPowerModeAction)
+    case setKeepAccessoryPowerModeAction(CarServer_SetKeepAccessoryPowerModeAction)
 
   }
 
@@ -579,110 +601,110 @@ struct CarServer_GetVehicleData: Sendable {
   // methods supported on all messages.
 
   var getChargeState: CarServer_GetChargeState {
-    get {return _getChargeState ?? CarServer_GetChargeState()}
+    get {_getChargeState ?? CarServer_GetChargeState()}
     set {_getChargeState = newValue}
   }
   /// Returns true if `getChargeState` has been explicitly set.
-  var hasGetChargeState: Bool {return self._getChargeState != nil}
+  var hasGetChargeState: Bool {self._getChargeState != nil}
   /// Clears the value of `getChargeState`. Subsequent reads from it will return its default value.
   mutating func clearGetChargeState() {self._getChargeState = nil}
 
   var getClimateState: CarServer_GetClimateState {
-    get {return _getClimateState ?? CarServer_GetClimateState()}
+    get {_getClimateState ?? CarServer_GetClimateState()}
     set {_getClimateState = newValue}
   }
   /// Returns true if `getClimateState` has been explicitly set.
-  var hasGetClimateState: Bool {return self._getClimateState != nil}
+  var hasGetClimateState: Bool {self._getClimateState != nil}
   /// Clears the value of `getClimateState`. Subsequent reads from it will return its default value.
   mutating func clearGetClimateState() {self._getClimateState = nil}
 
   var getDriveState: CarServer_GetDriveState {
-    get {return _getDriveState ?? CarServer_GetDriveState()}
+    get {_getDriveState ?? CarServer_GetDriveState()}
     set {_getDriveState = newValue}
   }
   /// Returns true if `getDriveState` has been explicitly set.
-  var hasGetDriveState: Bool {return self._getDriveState != nil}
+  var hasGetDriveState: Bool {self._getDriveState != nil}
   /// Clears the value of `getDriveState`. Subsequent reads from it will return its default value.
   mutating func clearGetDriveState() {self._getDriveState = nil}
 
   var getLocationState: CarServer_GetLocationState {
-    get {return _getLocationState ?? CarServer_GetLocationState()}
+    get {_getLocationState ?? CarServer_GetLocationState()}
     set {_getLocationState = newValue}
   }
   /// Returns true if `getLocationState` has been explicitly set.
-  var hasGetLocationState: Bool {return self._getLocationState != nil}
+  var hasGetLocationState: Bool {self._getLocationState != nil}
   /// Clears the value of `getLocationState`. Subsequent reads from it will return its default value.
   mutating func clearGetLocationState() {self._getLocationState = nil}
 
   var getClosuresState: CarServer_GetClosuresState {
-    get {return _getClosuresState ?? CarServer_GetClosuresState()}
+    get {_getClosuresState ?? CarServer_GetClosuresState()}
     set {_getClosuresState = newValue}
   }
   /// Returns true if `getClosuresState` has been explicitly set.
-  var hasGetClosuresState: Bool {return self._getClosuresState != nil}
+  var hasGetClosuresState: Bool {self._getClosuresState != nil}
   /// Clears the value of `getClosuresState`. Subsequent reads from it will return its default value.
   mutating func clearGetClosuresState() {self._getClosuresState = nil}
 
   var getChargeScheduleState: CarServer_GetChargeScheduleState {
-    get {return _getChargeScheduleState ?? CarServer_GetChargeScheduleState()}
+    get {_getChargeScheduleState ?? CarServer_GetChargeScheduleState()}
     set {_getChargeScheduleState = newValue}
   }
   /// Returns true if `getChargeScheduleState` has been explicitly set.
-  var hasGetChargeScheduleState: Bool {return self._getChargeScheduleState != nil}
+  var hasGetChargeScheduleState: Bool {self._getChargeScheduleState != nil}
   /// Clears the value of `getChargeScheduleState`. Subsequent reads from it will return its default value.
   mutating func clearGetChargeScheduleState() {self._getChargeScheduleState = nil}
 
   var getPreconditioningScheduleState: CarServer_GetPreconditioningScheduleState {
-    get {return _getPreconditioningScheduleState ?? CarServer_GetPreconditioningScheduleState()}
+    get {_getPreconditioningScheduleState ?? CarServer_GetPreconditioningScheduleState()}
     set {_getPreconditioningScheduleState = newValue}
   }
   /// Returns true if `getPreconditioningScheduleState` has been explicitly set.
-  var hasGetPreconditioningScheduleState: Bool {return self._getPreconditioningScheduleState != nil}
+  var hasGetPreconditioningScheduleState: Bool {self._getPreconditioningScheduleState != nil}
   /// Clears the value of `getPreconditioningScheduleState`. Subsequent reads from it will return its default value.
   mutating func clearGetPreconditioningScheduleState() {self._getPreconditioningScheduleState = nil}
 
   var getTirePressureState: CarServer_GetTirePressureState {
-    get {return _getTirePressureState ?? CarServer_GetTirePressureState()}
+    get {_getTirePressureState ?? CarServer_GetTirePressureState()}
     set {_getTirePressureState = newValue}
   }
   /// Returns true if `getTirePressureState` has been explicitly set.
-  var hasGetTirePressureState: Bool {return self._getTirePressureState != nil}
+  var hasGetTirePressureState: Bool {self._getTirePressureState != nil}
   /// Clears the value of `getTirePressureState`. Subsequent reads from it will return its default value.
   mutating func clearGetTirePressureState() {self._getTirePressureState = nil}
 
   var getMediaState: CarServer_GetMediaState {
-    get {return _getMediaState ?? CarServer_GetMediaState()}
+    get {_getMediaState ?? CarServer_GetMediaState()}
     set {_getMediaState = newValue}
   }
   /// Returns true if `getMediaState` has been explicitly set.
-  var hasGetMediaState: Bool {return self._getMediaState != nil}
+  var hasGetMediaState: Bool {self._getMediaState != nil}
   /// Clears the value of `getMediaState`. Subsequent reads from it will return its default value.
   mutating func clearGetMediaState() {self._getMediaState = nil}
 
   var getMediaDetailState: CarServer_GetMediaDetailState {
-    get {return _getMediaDetailState ?? CarServer_GetMediaDetailState()}
+    get {_getMediaDetailState ?? CarServer_GetMediaDetailState()}
     set {_getMediaDetailState = newValue}
   }
   /// Returns true if `getMediaDetailState` has been explicitly set.
-  var hasGetMediaDetailState: Bool {return self._getMediaDetailState != nil}
+  var hasGetMediaDetailState: Bool {self._getMediaDetailState != nil}
   /// Clears the value of `getMediaDetailState`. Subsequent reads from it will return its default value.
   mutating func clearGetMediaDetailState() {self._getMediaDetailState = nil}
 
   var getSoftwareUpdateState: CarServer_GetSoftwareUpdateState {
-    get {return _getSoftwareUpdateState ?? CarServer_GetSoftwareUpdateState()}
+    get {_getSoftwareUpdateState ?? CarServer_GetSoftwareUpdateState()}
     set {_getSoftwareUpdateState = newValue}
   }
   /// Returns true if `getSoftwareUpdateState` has been explicitly set.
-  var hasGetSoftwareUpdateState: Bool {return self._getSoftwareUpdateState != nil}
+  var hasGetSoftwareUpdateState: Bool {self._getSoftwareUpdateState != nil}
   /// Clears the value of `getSoftwareUpdateState`. Subsequent reads from it will return its default value.
   mutating func clearGetSoftwareUpdateState() {self._getSoftwareUpdateState = nil}
 
   var getParentalControlsState: CarServer_GetParentalControlsState {
-    get {return _getParentalControlsState ?? CarServer_GetParentalControlsState()}
+    get {_getParentalControlsState ?? CarServer_GetParentalControlsState()}
     set {_getParentalControlsState = newValue}
   }
   /// Returns true if `getParentalControlsState` has been explicitly set.
-  var hasGetParentalControlsState: Bool {return self._getParentalControlsState != nil}
+  var hasGetParentalControlsState: Bool {self._getParentalControlsState != nil}
   /// Clears the value of `getParentalControlsState`. Subsequent reads from it will return its default value.
   mutating func clearGetParentalControlsState() {self._getParentalControlsState = nil}
 
@@ -842,11 +864,11 @@ struct CarServer_Response: Sendable {
   // methods supported on all messages.
 
   var actionStatus: CarServer_ActionStatus {
-    get {return _actionStatus ?? CarServer_ActionStatus()}
+    get {_actionStatus ?? CarServer_ActionStatus()}
     set {_actionStatus = newValue}
   }
   /// Returns true if `actionStatus` has been explicitly set.
-  var hasActionStatus: Bool {return self._actionStatus != nil}
+  var hasActionStatus: Bool {self._actionStatus != nil}
   /// Clears the value of `actionStatus`. Subsequent reads from it will return its default value.
   mutating func clearActionStatus() {self._actionStatus = nil}
 
@@ -907,11 +929,11 @@ struct CarServer_ActionStatus: Sendable {
   var result: CarServer_OperationStatus_E = .operationstatusOk
 
   var resultReason: CarServer_ResultReason {
-    get {return _resultReason ?? CarServer_ResultReason()}
+    get {_resultReason ?? CarServer_ResultReason()}
     set {_resultReason = newValue}
   }
   /// Returns true if `resultReason` has been explicitly set.
-  var hasResultReason: Bool {return self._resultReason != nil}
+  var hasResultReason: Bool {self._resultReason != nil}
   /// Clears the value of `resultReason`. Subsequent reads from it will return its default value.
   mutating func clearResultReason() {self._resultReason = nil}
 
@@ -1455,11 +1477,11 @@ struct CarServer_HvacTemperatureAdjustmentAction: Sendable {
   var absoluteCelsius: Float = 0
 
   var level: CarServer_HvacTemperatureAdjustmentAction.Temperature {
-    get {return _level ?? CarServer_HvacTemperatureAdjustmentAction.Temperature()}
+    get {_level ?? CarServer_HvacTemperatureAdjustmentAction.Temperature()}
     set {_level = newValue}
   }
   /// Returns true if `level` has been explicitly set.
-  var hasLevel: Bool {return self._level != nil}
+  var hasLevel: Bool {self._level != nil}
   /// Clears the value of `level`. Subsequent reads from it will return its default value.
   mutating func clearLevel() {self._level = nil}
 
@@ -1593,11 +1615,11 @@ struct CarServer_NearbyChargingSites: Sendable {
   // methods supported on all messages.
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {self._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
@@ -1618,106 +1640,106 @@ struct CarServer_Superchargers: @unchecked Sendable {
   // methods supported on all messages.
 
   var id: Int64 {
-    get {return _storage._id}
+    get {_storage._id}
     set {_uniqueStorage()._id = newValue}
   }
 
   var amenities: String {
-    get {return _storage._amenities}
+    get {_storage._amenities}
     set {_uniqueStorage()._amenities = newValue}
   }
 
   var availableStalls: Int32 {
-    get {return _storage._availableStalls}
+    get {_storage._availableStalls}
     set {_uniqueStorage()._availableStalls = newValue}
   }
 
   var billingInfo: String {
-    get {return _storage._billingInfo}
+    get {_storage._billingInfo}
     set {_uniqueStorage()._billingInfo = newValue}
   }
 
   var billingTime: String {
-    get {return _storage._billingTime}
+    get {_storage._billingTime}
     set {_uniqueStorage()._billingTime = newValue}
   }
 
   var city: String {
-    get {return _storage._city}
+    get {_storage._city}
     set {_uniqueStorage()._city = newValue}
   }
 
   var country: String {
-    get {return _storage._country}
+    get {_storage._country}
     set {_uniqueStorage()._country = newValue}
   }
 
   var distanceMiles: Float {
-    get {return _storage._distanceMiles}
+    get {_storage._distanceMiles}
     set {_uniqueStorage()._distanceMiles = newValue}
   }
 
   var district: String {
-    get {return _storage._district}
+    get {_storage._district}
     set {_uniqueStorage()._district = newValue}
   }
 
   var location: CarServer_LatLong {
-    get {return _storage._location ?? CarServer_LatLong()}
+    get {_storage._location ?? CarServer_LatLong()}
     set {_uniqueStorage()._location = newValue}
   }
   /// Returns true if `location` has been explicitly set.
-  var hasLocation: Bool {return _storage._location != nil}
+  var hasLocation: Bool {_storage._location != nil}
   /// Clears the value of `location`. Subsequent reads from it will return its default value.
   mutating func clearLocation() {_uniqueStorage()._location = nil}
 
   var name: String {
-    get {return _storage._name}
+    get {_storage._name}
     set {_uniqueStorage()._name = newValue}
   }
 
   var postalCode: String {
-    get {return _storage._postalCode}
+    get {_storage._postalCode}
     set {_uniqueStorage()._postalCode = newValue}
   }
 
   var siteClosed: Bool {
-    get {return _storage._siteClosed}
+    get {_storage._siteClosed}
     set {_uniqueStorage()._siteClosed = newValue}
   }
 
   var state: String {
-    get {return _storage._state}
+    get {_storage._state}
     set {_uniqueStorage()._state = newValue}
   }
 
   var streetAddress: String {
-    get {return _storage._streetAddress}
+    get {_storage._streetAddress}
     set {_uniqueStorage()._streetAddress = newValue}
   }
 
   var totalStalls: Int32 {
-    get {return _storage._totalStalls}
+    get {_storage._totalStalls}
     set {_uniqueStorage()._totalStalls = newValue}
   }
 
   var withinRange: Bool {
-    get {return _storage._withinRange}
+    get {_storage._withinRange}
     set {_uniqueStorage()._withinRange = newValue}
   }
 
   var maxPowerKw: Int32 {
-    get {return _storage._maxPowerKw}
+    get {_storage._maxPowerKw}
     set {_uniqueStorage()._maxPowerKw = newValue}
   }
 
   var outOfOrderStallsNumber: Int32 {
-    get {return _storage._outOfOrderStallsNumber}
+    get {_storage._outOfOrderStallsNumber}
     set {_uniqueStorage()._outOfOrderStallsNumber = newValue}
   }
 
   var outOfOrderStallsNames: String {
-    get {return _storage._outOfOrderStallsNames}
+    get {_storage._outOfOrderStallsNames}
     set {_uniqueStorage()._outOfOrderStallsNames = newValue}
   }
 
@@ -1963,11 +1985,11 @@ struct CarServer_VehicleControlTriggerHomelinkAction: Sendable {
   // methods supported on all messages.
 
   var location: CarServer_LatLong {
-    get {return _location ?? CarServer_LatLong()}
+    get {_location ?? CarServer_LatLong()}
     set {_location = newValue}
   }
   /// Returns true if `location` has been explicitly set.
-  var hasLocation: Bool {return self._location != nil}
+  var hasLocation: Bool {self._location != nil}
   /// Clears the value of `location`. Subsequent reads from it will return its default value.
   mutating func clearLocation() {self._location = nil}
 
@@ -2109,20 +2131,20 @@ struct CarServer_Ping: Sendable {
   var pingID: Int32 = 0
 
   var localTimestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _localTimestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_localTimestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_localTimestamp = newValue}
   }
   /// Returns true if `localTimestamp` has been explicitly set.
-  var hasLocalTimestamp: Bool {return self._localTimestamp != nil}
+  var hasLocalTimestamp: Bool {self._localTimestamp != nil}
   /// Clears the value of `localTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearLocalTimestamp() {self._localTimestamp = nil}
 
   var lastRemoteTimestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _lastRemoteTimestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_lastRemoteTimestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_lastRemoteTimestamp = newValue}
   }
   /// Returns true if `lastRemoteTimestamp` has been explicitly set.
-  var hasLastRemoteTimestamp: Bool {return self._lastRemoteTimestamp != nil}
+  var hasLastRemoteTimestamp: Bool {self._lastRemoteTimestamp != nil}
   /// Clears the value of `lastRemoteTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearLastRemoteTimestamp() {self._lastRemoteTimestamp = nil}
 
@@ -2158,20 +2180,20 @@ struct CarServer_ScheduledDepartureAction: Sendable {
   var departureTime: Int32 = 0
 
   var preconditioningTimes: CarServer_PreconditioningTimes {
-    get {return _preconditioningTimes ?? CarServer_PreconditioningTimes()}
+    get {_preconditioningTimes ?? CarServer_PreconditioningTimes()}
     set {_preconditioningTimes = newValue}
   }
   /// Returns true if `preconditioningTimes` has been explicitly set.
-  var hasPreconditioningTimes: Bool {return self._preconditioningTimes != nil}
+  var hasPreconditioningTimes: Bool {self._preconditioningTimes != nil}
   /// Clears the value of `preconditioningTimes`. Subsequent reads from it will return its default value.
   mutating func clearPreconditioningTimes() {self._preconditioningTimes = nil}
 
   var offPeakChargingTimes: CarServer_OffPeakChargingTimes {
-    get {return _offPeakChargingTimes ?? CarServer_OffPeakChargingTimes()}
+    get {_offPeakChargingTimes ?? CarServer_OffPeakChargingTimes()}
     set {_offPeakChargingTimes = newValue}
   }
   /// Returns true if `offPeakChargingTimes` has been explicitly set.
-  var hasOffPeakChargingTimes: Bool {return self._offPeakChargingTimes != nil}
+  var hasOffPeakChargingTimes: Bool {self._offPeakChargingTimes != nil}
   /// Clears the value of `offPeakChargingTimes`. Subsequent reads from it will return its default value.
   mutating func clearOffPeakChargingTimes() {self._offPeakChargingTimes = nil}
 
@@ -2405,6 +2427,30 @@ struct CarServer_VehicleControlResetPinToDriveAdminAction: Sendable {
   init() {}
 }
 
+struct CarServer_SetLowPowerModeAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var lowPowerMode: Bool = false
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct CarServer_SetKeepAccessoryPowerModeAction: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var keepAccessoryPowerMode: Bool = false
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "CarServer"
@@ -2461,7 +2507,7 @@ extension CarServer_Action: SwiftProtobuf.Message, SwiftProtobuf._MessageImpleme
 
 extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".VehicleAction"
-  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}getVehicleData\0\u{2}\u{4}chargingSetLimitAction\0\u{1}chargingStartStopAction\0\u{1}drivingClearSpeedLimitPinAction\0\u{1}drivingSetSpeedLimitAction\0\u{1}drivingSpeedLimitAction\0\u{1}hvacAutoAction\0\u{2}\u{2}hvacSetPreconditioningMaxAction\0\u{1}hvacSteeringWheelHeaterAction\0\u{1}hvacTemperatureAdjustmentAction\0\u{1}mediaPlayAction\0\u{1}mediaUpdateVolume\0\u{1}mediaNextFavorite\0\u{1}mediaPreviousFavorite\0\u{1}mediaNextTrack\0\u{1}mediaPreviousTrack\0\u{2}\u{3}getNearbyChargingSites\0\u{2}\u{2}vehicleControlCancelSoftwareUpdateAction\0\u{1}vehicleControlFlashLightsAction\0\u{1}vehicleControlHonkHornAction\0\u{1}vehicleControlResetValetPinAction\0\u{1}vehicleControlScheduleSoftwareUpdateAction\0\u{1}vehicleControlSetSentryModeAction\0\u{1}vehicleControlSetValetModeAction\0\u{1}vehicleControlSunroofOpenCloseAction\0\u{1}vehicleControlTriggerHomelinkAction\0\u{1}vehicleControlWindowAction\0\u{1}hvacBioweaponModeAction\0\u{1}hvacSeatHeaterActions\0\u{2}\u{5}scheduledChargingAction\0\u{1}scheduledDepartureAction\0\u{1}setChargingAmpsAction\0\u{1}hvacClimateKeeperAction\0\u{2}\u{2}ping\0\u{2}\u{2}autoSeatClimateAction\0\u{1}hvacSeatCoolerActions\0\u{1}setCabinOverheatProtectionAction\0\u{2}\u{4}setVehicleNameAction\0\u{2}\u{7}chargePortDoorClose\0\u{1}chargePortDoorOpen\0\u{2}\u{3}guestModeAction\0\u{1}setCopTempAction\0\u{2}\u{6}eraseUserDataAction\0\u{2}\u{5}vehicleControlSetPinToDriveAction\0\u{1}vehicleControlResetPinToDriveAction\0\u{1}drivingClearSpeedLimitPinAdminAction\0\u{2}\u{a}vehicleControlResetPinToDriveAdminAction\0\u{2}\u{8}addChargeScheduleAction\0\u{1}removeChargeScheduleAction\0\u{1}addPreconditionScheduleAction\0\u{1}removePreconditionScheduleAction\0\u{2}\u{7}batchRemovePreconditionSchedulesAction\0\u{1}batchRemoveChargeSchedulesAction\0\u{c}\u{b}\u{1}\u{c}<\u{1}\u{c}L\u{1}\u{1}")
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}getVehicleData\0\u{2}\u{4}chargingSetLimitAction\0\u{1}chargingStartStopAction\0\u{1}drivingClearSpeedLimitPinAction\0\u{1}drivingSetSpeedLimitAction\0\u{1}drivingSpeedLimitAction\0\u{1}hvacAutoAction\0\u{2}\u{2}hvacSetPreconditioningMaxAction\0\u{1}hvacSteeringWheelHeaterAction\0\u{1}hvacTemperatureAdjustmentAction\0\u{1}mediaPlayAction\0\u{1}mediaUpdateVolume\0\u{1}mediaNextFavorite\0\u{1}mediaPreviousFavorite\0\u{1}mediaNextTrack\0\u{1}mediaPreviousTrack\0\u{2}\u{3}getNearbyChargingSites\0\u{2}\u{2}vehicleControlCancelSoftwareUpdateAction\0\u{1}vehicleControlFlashLightsAction\0\u{1}vehicleControlHonkHornAction\0\u{1}vehicleControlResetValetPinAction\0\u{1}vehicleControlScheduleSoftwareUpdateAction\0\u{1}vehicleControlSetSentryModeAction\0\u{1}vehicleControlSetValetModeAction\0\u{1}vehicleControlSunroofOpenCloseAction\0\u{1}vehicleControlTriggerHomelinkAction\0\u{1}vehicleControlWindowAction\0\u{1}hvacBioweaponModeAction\0\u{1}hvacSeatHeaterActions\0\u{2}\u{5}scheduledChargingAction\0\u{1}scheduledDepartureAction\0\u{1}setChargingAmpsAction\0\u{1}hvacClimateKeeperAction\0\u{2}\u{2}ping\0\u{2}\u{2}autoSeatClimateAction\0\u{1}hvacSeatCoolerActions\0\u{1}setCabinOverheatProtectionAction\0\u{2}\u{4}setVehicleNameAction\0\u{2}\u{7}chargePortDoorClose\0\u{1}chargePortDoorOpen\0\u{2}\u{3}guestModeAction\0\u{1}setCopTempAction\0\u{2}\u{6}eraseUserDataAction\0\u{2}\u{5}vehicleControlSetPinToDriveAction\0\u{1}vehicleControlResetPinToDriveAction\0\u{1}drivingClearSpeedLimitPinAdminAction\0\u{2}\u{a}vehicleControlResetPinToDriveAdminAction\0\u{2}\u{8}addChargeScheduleAction\0\u{1}removeChargeScheduleAction\0\u{1}addPreconditionScheduleAction\0\u{1}removePreconditionScheduleAction\0\u{2}\u{7}batchRemovePreconditionSchedulesAction\0\u{1}batchRemoveChargeSchedulesAction\0\u{2}\u{16}setLowPowerModeAction\0\u{2}\u{8}setKeepAccessoryPowerModeAction\0\u{c}\u{b}\u{1}\u{c}<\u{1}\u{c}L\u{1}\u{1}")
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3158,6 +3204,32 @@ extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.vehicleActionMsg = .batchRemoveChargeSchedulesAction(v)
         }
       }()
+      case 130: try {
+        var v: CarServer_SetLowPowerModeAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .setLowPowerModeAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .setLowPowerModeAction(v)
+        }
+      }()
+      case 138: try {
+        var v: CarServer_SetKeepAccessoryPowerModeAction?
+        var hadOneofValue = false
+        if let current = self.vehicleActionMsg {
+          hadOneofValue = true
+          if case .setKeepAccessoryPowerModeAction(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.vehicleActionMsg = .setKeepAccessoryPowerModeAction(v)
+        }
+      }()
       default: break
       }
     }
@@ -3380,6 +3452,14 @@ extension CarServer_VehicleAction: SwiftProtobuf.Message, SwiftProtobuf._Message
     case .batchRemoveChargeSchedulesAction?: try {
       guard case .batchRemoveChargeSchedulesAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 108)
+    }()
+    case .setLowPowerModeAction?: try {
+      guard case .setLowPowerModeAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 130)
+    }()
+    case .setKeepAccessoryPowerModeAction?: try {
+      guard case .setKeepAccessoryPowerModeAction(let v)? = self.vehicleActionMsg else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 138)
     }()
     case nil: break
     }
@@ -6473,6 +6553,66 @@ extension CarServer_VehicleControlResetPinToDriveAdminAction: SwiftProtobuf.Mess
   }
 
   static func ==(lhs: CarServer_VehicleControlResetPinToDriveAdminAction, rhs: CarServer_VehicleControlResetPinToDriveAdminAction) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension CarServer_SetLowPowerModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SetLowPowerModeAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}low_power_mode\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.lowPowerMode) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.lowPowerMode != false {
+      try visitor.visitSingularBoolField(value: self.lowPowerMode, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_SetLowPowerModeAction, rhs: CarServer_SetLowPowerModeAction) -> Bool {
+    if lhs.lowPowerMode != rhs.lowPowerMode {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension CarServer_SetKeepAccessoryPowerModeAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".SetKeepAccessoryPowerModeAction"
+  static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}keep_accessory_power_mode\0")
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.keepAccessoryPowerMode) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.keepAccessoryPowerMode != false {
+      try visitor.visitSingularBoolField(value: self.keepAccessoryPowerMode, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: CarServer_SetKeepAccessoryPowerModeAction, rhs: CarServer_SetKeepAccessoryPowerModeAction) -> Bool {
+    if lhs.keepAccessoryPowerMode != rhs.keepAccessoryPowerMode {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

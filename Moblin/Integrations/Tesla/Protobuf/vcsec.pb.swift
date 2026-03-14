@@ -8,7 +8,11 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -709,11 +713,11 @@ struct VCSEC_ToVCSECMessage: Sendable {
   // methods supported on all messages.
 
   var signedMessage: VCSEC_SignedMessage {
-    get {return _signedMessage ?? VCSEC_SignedMessage()}
+    get {_signedMessage ?? VCSEC_SignedMessage()}
     set {_signedMessage = newValue}
   }
   /// Returns true if `signedMessage` has been explicitly set.
-  var hasSignedMessage: Bool {return self._signedMessage != nil}
+  var hasSignedMessage: Bool {self._signedMessage != nil}
   /// Clears the value of `signedMessage`. Subsequent reads from it will return its default value.
   mutating func clearSignedMessage() {self._signedMessage = nil}
 
@@ -782,29 +786,29 @@ struct VCSEC_WhitelistEntryInfo: Sendable {
   // methods supported on all messages.
 
   var keyID: VCSEC_KeyIdentifier {
-    get {return _keyID ?? VCSEC_KeyIdentifier()}
+    get {_keyID ?? VCSEC_KeyIdentifier()}
     set {_keyID = newValue}
   }
   /// Returns true if `keyID` has been explicitly set.
-  var hasKeyID: Bool {return self._keyID != nil}
+  var hasKeyID: Bool {self._keyID != nil}
   /// Clears the value of `keyID`. Subsequent reads from it will return its default value.
   mutating func clearKeyID() {self._keyID = nil}
 
   var publicKey: VCSEC_PublicKey {
-    get {return _publicKey ?? VCSEC_PublicKey()}
+    get {_publicKey ?? VCSEC_PublicKey()}
     set {_publicKey = newValue}
   }
   /// Returns true if `publicKey` has been explicitly set.
-  var hasPublicKey: Bool {return self._publicKey != nil}
+  var hasPublicKey: Bool {self._publicKey != nil}
   /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
   mutating func clearPublicKey() {self._publicKey = nil}
 
   var metadataForKey: VCSEC_KeyMetadata {
-    get {return _metadataForKey ?? VCSEC_KeyMetadata()}
+    get {_metadataForKey ?? VCSEC_KeyMetadata()}
     set {_metadataForKey = newValue}
   }
   /// Returns true if `metadataForKey` has been explicitly set.
-  var hasMetadataForKey: Bool {return self._metadataForKey != nil}
+  var hasMetadataForKey: Bool {self._metadataForKey != nil}
   /// Clears the value of `metadataForKey`. Subsequent reads from it will return its default value.
   mutating func clearMetadataForKey() {self._metadataForKey = nil}
 
@@ -898,11 +902,11 @@ struct VCSEC_PermissionChange: Sendable {
   // methods supported on all messages.
 
   var key: VCSEC_PublicKey {
-    get {return _key ?? VCSEC_PublicKey()}
+    get {_key ?? VCSEC_PublicKey()}
     set {_key = newValue}
   }
   /// Returns true if `key` has been explicitly set.
-  var hasKey: Bool {return self._key != nil}
+  var hasKey: Bool {self._key != nil}
   /// Clears the value of `key`. Subsequent reads from it will return its default value.
   mutating func clearKey() {self._key = nil}
 
@@ -941,11 +945,11 @@ struct VCSEC_ReplaceKey: Sendable {
   }
 
   var keyToAdd: VCSEC_PublicKey {
-    get {return _keyToAdd ?? VCSEC_PublicKey()}
+    get {_keyToAdd ?? VCSEC_PublicKey()}
     set {_keyToAdd = newValue}
   }
   /// Returns true if `keyToAdd` has been explicitly set.
-  var hasKeyToAdd: Bool {return self._keyToAdd != nil}
+  var hasKeyToAdd: Bool {self._keyToAdd != nil}
   /// Clears the value of `keyToAdd`. Subsequent reads from it will return its default value.
   mutating func clearKeyToAdd() {self._keyToAdd = nil}
 
@@ -1054,11 +1058,11 @@ struct VCSEC_WhitelistOperation: Sendable {
   }
 
   var metadataForKey: VCSEC_KeyMetadata {
-    get {return _metadataForKey ?? VCSEC_KeyMetadata()}
+    get {_metadataForKey ?? VCSEC_KeyMetadata()}
     set {_metadataForKey = newValue}
   }
   /// Returns true if `metadataForKey` has been explicitly set.
-  var hasMetadataForKey: Bool {return self._metadataForKey != nil}
+  var hasMetadataForKey: Bool {self._metadataForKey != nil}
   /// Clears the value of `metadataForKey`. Subsequent reads from it will return its default value.
   mutating func clearMetadataForKey() {self._metadataForKey = nil}
 
@@ -1091,11 +1095,11 @@ struct VCSEC_WhitelistOperation_status: Sendable {
   var whitelistOperationInformation: VCSEC_WhitelistOperation_information_E = .whitelistoperationInformationNone
 
   var signerOfOperation: VCSEC_KeyIdentifier {
-    get {return _signerOfOperation ?? VCSEC_KeyIdentifier()}
+    get {_signerOfOperation ?? VCSEC_KeyIdentifier()}
     set {_signerOfOperation = newValue}
   }
   /// Returns true if `signerOfOperation` has been explicitly set.
-  var hasSignerOfOperation: Bool {return self._signerOfOperation != nil}
+  var hasSignerOfOperation: Bool {self._signerOfOperation != nil}
   /// Clears the value of `signerOfOperation`. Subsequent reads from it will return its default value.
   mutating func clearSignerOfOperation() {self._signerOfOperation = nil}
 
@@ -1254,11 +1258,11 @@ struct VCSEC_VehicleStatus: Sendable {
   // methods supported on all messages.
 
   var closureStatuses: VCSEC_ClosureStatuses {
-    get {return _closureStatuses ?? VCSEC_ClosureStatuses()}
+    get {_closureStatuses ?? VCSEC_ClosureStatuses()}
     set {_closureStatuses = newValue}
   }
   /// Returns true if `closureStatuses` has been explicitly set.
-  var hasClosureStatuses: Bool {return self._closureStatuses != nil}
+  var hasClosureStatuses: Bool {self._closureStatuses != nil}
   /// Clears the value of `closureStatuses`. Subsequent reads from it will return its default value.
   mutating func clearClosureStatuses() {self._closureStatuses = nil}
 
@@ -1269,11 +1273,11 @@ struct VCSEC_VehicleStatus: Sendable {
   var userPresence: VCSEC_UserPresence_E = .vehicleUserPresenceUnknown
 
   var detailedClosureStatus: VCSEC_DetailedClosureStatus {
-    get {return _detailedClosureStatus ?? VCSEC_DetailedClosureStatus()}
+    get {_detailedClosureStatus ?? VCSEC_DetailedClosureStatus()}
     set {_detailedClosureStatus = newValue}
   }
   /// Returns true if `detailedClosureStatus` has been explicitly set.
-  var hasDetailedClosureStatus: Bool {return self._detailedClosureStatus != nil}
+  var hasDetailedClosureStatus: Bool {self._detailedClosureStatus != nil}
   /// Clears the value of `detailedClosureStatus`. Subsequent reads from it will return its default value.
   mutating func clearDetailedClosureStatus() {self._detailedClosureStatus = nil}
 

@@ -8,7 +8,11 @@
 // For information on using the generated types, please see the documentation:
 //   https://github.com/apple/swift-protobuf/
 
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 import SwiftProtobuf
 
 // If the compiler emits an error on this type, it is because this file
@@ -393,20 +397,20 @@ struct UniversalMessage_RoutableMessage: Sendable {
   // methods supported on all messages.
 
   var toDestination: UniversalMessage_Destination {
-    get {return _toDestination ?? UniversalMessage_Destination()}
+    get {_toDestination ?? UniversalMessage_Destination()}
     set {_toDestination = newValue}
   }
   /// Returns true if `toDestination` has been explicitly set.
-  var hasToDestination: Bool {return self._toDestination != nil}
+  var hasToDestination: Bool {self._toDestination != nil}
   /// Clears the value of `toDestination`. Subsequent reads from it will return its default value.
   mutating func clearToDestination() {self._toDestination = nil}
 
   var fromDestination: UniversalMessage_Destination {
-    get {return _fromDestination ?? UniversalMessage_Destination()}
+    get {_fromDestination ?? UniversalMessage_Destination()}
     set {_fromDestination = newValue}
   }
   /// Returns true if `fromDestination` has been explicitly set.
-  var hasFromDestination: Bool {return self._fromDestination != nil}
+  var hasFromDestination: Bool {self._fromDestination != nil}
   /// Clears the value of `fromDestination`. Subsequent reads from it will return its default value.
   mutating func clearFromDestination() {self._fromDestination = nil}
 
@@ -447,11 +451,11 @@ struct UniversalMessage_RoutableMessage: Sendable {
   }
 
   var signedMessageStatus: UniversalMessage_MessageStatus {
-    get {return _signedMessageStatus ?? UniversalMessage_MessageStatus()}
+    get {_signedMessageStatus ?? UniversalMessage_MessageStatus()}
     set {_signedMessageStatus = newValue}
   }
   /// Returns true if `signedMessageStatus` has been explicitly set.
-  var hasSignedMessageStatus: Bool {return self._signedMessageStatus != nil}
+  var hasSignedMessageStatus: Bool {self._signedMessageStatus != nil}
   /// Clears the value of `signedMessageStatus`. Subsequent reads from it will return its default value.
   mutating func clearSignedMessageStatus() {self._signedMessageStatus = nil}
 

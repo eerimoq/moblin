@@ -190,110 +190,110 @@ struct CarServer_VehicleData: @unchecked Sendable {
   // methods supported on all messages.
 
   var chargeState: CarServer_ChargeState {
-    get {return _storage._chargeState ?? CarServer_ChargeState()}
+    get {_storage._chargeState ?? CarServer_ChargeState()}
     set {_uniqueStorage()._chargeState = newValue}
   }
   /// Returns true if `chargeState` has been explicitly set.
-  var hasChargeState: Bool {return _storage._chargeState != nil}
+  var hasChargeState: Bool {_storage._chargeState != nil}
   /// Clears the value of `chargeState`. Subsequent reads from it will return its default value.
   mutating func clearChargeState() {_uniqueStorage()._chargeState = nil}
 
   var climateState: CarServer_ClimateState {
-    get {return _storage._climateState ?? CarServer_ClimateState()}
+    get {_storage._climateState ?? CarServer_ClimateState()}
     set {_uniqueStorage()._climateState = newValue}
   }
   /// Returns true if `climateState` has been explicitly set.
-  var hasClimateState: Bool {return _storage._climateState != nil}
+  var hasClimateState: Bool {_storage._climateState != nil}
   /// Clears the value of `climateState`. Subsequent reads from it will return its default value.
   mutating func clearClimateState() {_uniqueStorage()._climateState = nil}
 
   var driveState: CarServer_DriveState {
-    get {return _storage._driveState ?? CarServer_DriveState()}
+    get {_storage._driveState ?? CarServer_DriveState()}
     set {_uniqueStorage()._driveState = newValue}
   }
   /// Returns true if `driveState` has been explicitly set.
-  var hasDriveState: Bool {return _storage._driveState != nil}
+  var hasDriveState: Bool {_storage._driveState != nil}
   /// Clears the value of `driveState`. Subsequent reads from it will return its default value.
   mutating func clearDriveState() {_uniqueStorage()._driveState = nil}
 
   var locationState: CarServer_LocationState {
-    get {return _storage._locationState ?? CarServer_LocationState()}
+    get {_storage._locationState ?? CarServer_LocationState()}
     set {_uniqueStorage()._locationState = newValue}
   }
   /// Returns true if `locationState` has been explicitly set.
-  var hasLocationState: Bool {return _storage._locationState != nil}
+  var hasLocationState: Bool {_storage._locationState != nil}
   /// Clears the value of `locationState`. Subsequent reads from it will return its default value.
   mutating func clearLocationState() {_uniqueStorage()._locationState = nil}
 
   var closuresState: CarServer_ClosuresState {
-    get {return _storage._closuresState ?? CarServer_ClosuresState()}
+    get {_storage._closuresState ?? CarServer_ClosuresState()}
     set {_uniqueStorage()._closuresState = newValue}
   }
   /// Returns true if `closuresState` has been explicitly set.
-  var hasClosuresState: Bool {return _storage._closuresState != nil}
+  var hasClosuresState: Bool {_storage._closuresState != nil}
   /// Clears the value of `closuresState`. Subsequent reads from it will return its default value.
   mutating func clearClosuresState() {_uniqueStorage()._closuresState = nil}
 
   var chargeScheduleState: CarServer_ChargeScheduleState {
-    get {return _storage._chargeScheduleState ?? CarServer_ChargeScheduleState()}
+    get {_storage._chargeScheduleState ?? CarServer_ChargeScheduleState()}
     set {_uniqueStorage()._chargeScheduleState = newValue}
   }
   /// Returns true if `chargeScheduleState` has been explicitly set.
-  var hasChargeScheduleState: Bool {return _storage._chargeScheduleState != nil}
+  var hasChargeScheduleState: Bool {_storage._chargeScheduleState != nil}
   /// Clears the value of `chargeScheduleState`. Subsequent reads from it will return its default value.
   mutating func clearChargeScheduleState() {_uniqueStorage()._chargeScheduleState = nil}
 
   var preconditioningScheduleState: CarServer_PreconditioningScheduleState {
-    get {return _storage._preconditioningScheduleState ?? CarServer_PreconditioningScheduleState()}
+    get {_storage._preconditioningScheduleState ?? CarServer_PreconditioningScheduleState()}
     set {_uniqueStorage()._preconditioningScheduleState = newValue}
   }
   /// Returns true if `preconditioningScheduleState` has been explicitly set.
-  var hasPreconditioningScheduleState: Bool {return _storage._preconditioningScheduleState != nil}
+  var hasPreconditioningScheduleState: Bool {_storage._preconditioningScheduleState != nil}
   /// Clears the value of `preconditioningScheduleState`. Subsequent reads from it will return its default value.
   mutating func clearPreconditioningScheduleState() {_uniqueStorage()._preconditioningScheduleState = nil}
 
   var tirePressureState: CarServer_TirePressureState {
-    get {return _storage._tirePressureState ?? CarServer_TirePressureState()}
+    get {_storage._tirePressureState ?? CarServer_TirePressureState()}
     set {_uniqueStorage()._tirePressureState = newValue}
   }
   /// Returns true if `tirePressureState` has been explicitly set.
-  var hasTirePressureState: Bool {return _storage._tirePressureState != nil}
+  var hasTirePressureState: Bool {_storage._tirePressureState != nil}
   /// Clears the value of `tirePressureState`. Subsequent reads from it will return its default value.
   mutating func clearTirePressureState() {_uniqueStorage()._tirePressureState = nil}
 
   var mediaState: CarServer_MediaState {
-    get {return _storage._mediaState ?? CarServer_MediaState()}
+    get {_storage._mediaState ?? CarServer_MediaState()}
     set {_uniqueStorage()._mediaState = newValue}
   }
   /// Returns true if `mediaState` has been explicitly set.
-  var hasMediaState: Bool {return _storage._mediaState != nil}
+  var hasMediaState: Bool {_storage._mediaState != nil}
   /// Clears the value of `mediaState`. Subsequent reads from it will return its default value.
   mutating func clearMediaState() {_uniqueStorage()._mediaState = nil}
 
   var mediaDetailState: CarServer_MediaDetailState {
-    get {return _storage._mediaDetailState ?? CarServer_MediaDetailState()}
+    get {_storage._mediaDetailState ?? CarServer_MediaDetailState()}
     set {_uniqueStorage()._mediaDetailState = newValue}
   }
   /// Returns true if `mediaDetailState` has been explicitly set.
-  var hasMediaDetailState: Bool {return _storage._mediaDetailState != nil}
+  var hasMediaDetailState: Bool {_storage._mediaDetailState != nil}
   /// Clears the value of `mediaDetailState`. Subsequent reads from it will return its default value.
   mutating func clearMediaDetailState() {_uniqueStorage()._mediaDetailState = nil}
 
   var softwareUpdateState: CarServer_SoftwareUpdateState {
-    get {return _storage._softwareUpdateState ?? CarServer_SoftwareUpdateState()}
+    get {_storage._softwareUpdateState ?? CarServer_SoftwareUpdateState()}
     set {_uniqueStorage()._softwareUpdateState = newValue}
   }
   /// Returns true if `softwareUpdateState` has been explicitly set.
-  var hasSoftwareUpdateState: Bool {return _storage._softwareUpdateState != nil}
+  var hasSoftwareUpdateState: Bool {_storage._softwareUpdateState != nil}
   /// Clears the value of `softwareUpdateState`. Subsequent reads from it will return its default value.
   mutating func clearSoftwareUpdateState() {_uniqueStorage()._softwareUpdateState = nil}
 
   var parentalControlsState: CarServer_ParentalControlsState {
-    get {return _storage._parentalControlsState ?? CarServer_ParentalControlsState()}
+    get {_storage._parentalControlsState ?? CarServer_ParentalControlsState()}
     set {_uniqueStorage()._parentalControlsState = newValue}
   }
   /// Returns true if `parentalControlsState` has been explicitly set.
-  var hasParentalControlsState: Bool {return _storage._parentalControlsState != nil}
+  var hasParentalControlsState: Bool {_storage._parentalControlsState != nil}
   /// Clears the value of `parentalControlsState`. Subsequent reads from it will return its default value.
   mutating func clearParentalControlsState() {_uniqueStorage()._parentalControlsState = nil}
 
@@ -441,11 +441,11 @@ struct CarServer_ClosuresState: @unchecked Sendable {
 
   /// only set when sunroof installed
   var sunRoofState: CarServer_ClosuresState.SunRoofState {
-    get {return _storage._sunRoofState ?? CarServer_ClosuresState.SunRoofState()}
+    get {_storage._sunRoofState ?? CarServer_ClosuresState.SunRoofState()}
     set {_uniqueStorage()._sunRoofState = newValue}
   }
   /// Returns true if `sunRoofState` has been explicitly set.
-  var hasSunRoofState: Bool {return _storage._sunRoofState != nil}
+  var hasSunRoofState: Bool {_storage._sunRoofState != nil}
   /// Clears the value of `sunRoofState`. Subsequent reads from it will return its default value.
   mutating func clearSunRoofState() {_uniqueStorage()._sunRoofState = nil}
 
@@ -489,11 +489,11 @@ struct CarServer_ClosuresState: @unchecked Sendable {
   }
 
   var centerDisplayState: CarServer_ClosuresState.DisplayState {
-    get {return _storage._centerDisplayState ?? CarServer_ClosuresState.DisplayState()}
+    get {_storage._centerDisplayState ?? CarServer_ClosuresState.DisplayState()}
     set {_uniqueStorage()._centerDisplayState = newValue}
   }
   /// Returns true if `centerDisplayState` has been explicitly set.
-  var hasCenterDisplayState: Bool {return _storage._centerDisplayState != nil}
+  var hasCenterDisplayState: Bool {_storage._centerDisplayState != nil}
   /// Clears the value of `centerDisplayState`. Subsequent reads from it will return its default value.
   mutating func clearCenterDisplayState() {_uniqueStorage()._centerDisplayState = nil}
 
@@ -539,11 +539,11 @@ struct CarServer_ClosuresState: @unchecked Sendable {
 
   /// only set when sentry mode supported
   var sentryModeState: CarServer_ClosuresState.SentryModeState {
-    get {return _storage._sentryModeState ?? CarServer_ClosuresState.SentryModeState()}
+    get {_storage._sentryModeState ?? CarServer_ClosuresState.SentryModeState()}
     set {_uniqueStorage()._sentryModeState = newValue}
   }
   /// Returns true if `sentryModeState` has been explicitly set.
-  var hasSentryModeState: Bool {return _storage._sentryModeState != nil}
+  var hasSentryModeState: Bool {_storage._sentryModeState != nil}
   /// Clears the value of `sentryModeState`. Subsequent reads from it will return its default value.
   mutating func clearSentryModeState() {_uniqueStorage()._sentryModeState = nil}
 
@@ -562,11 +562,11 @@ struct CarServer_ClosuresState: @unchecked Sendable {
 
   /// only set when speed limit mode supported
   var speedLimitMode: CarServer_SpeedLimitMode {
-    get {return _storage._speedLimitMode ?? CarServer_SpeedLimitMode()}
+    get {_storage._speedLimitMode ?? CarServer_SpeedLimitMode()}
     set {_uniqueStorage()._speedLimitMode = newValue}
   }
   /// Returns true if `speedLimitMode` has been explicitly set.
-  var hasSpeedLimitMode: Bool {return _storage._speedLimitMode != nil}
+  var hasSpeedLimitMode: Bool {_storage._speedLimitMode != nil}
   /// Clears the value of `speedLimitMode`. Subsequent reads from it will return its default value.
   mutating func clearSpeedLimitMode() {_uniqueStorage()._speedLimitMode = nil}
 
@@ -610,11 +610,11 @@ struct CarServer_ClosuresState: @unchecked Sendable {
   }
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return _storage._timestamp != nil}
+  var hasTimestamp: Bool {_storage._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
 
@@ -978,7 +978,7 @@ struct CarServer_ChargeScheduleState: @unchecked Sendable {
   // methods supported on all messages.
 
   var chargeSchedules: [CarServer_ChargeSchedule] {
-    get {return _storage._chargeSchedules}
+    get {_storage._chargeSchedules}
     set {_uniqueStorage()._chargeSchedules = newValue}
   }
 
@@ -1048,11 +1048,11 @@ struct CarServer_ChargeScheduleState: @unchecked Sendable {
   }
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return _storage._timestamp != nil}
+  var hasTimestamp: Bool {_storage._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
 
@@ -1126,11 +1126,11 @@ struct CarServer_PreconditioningScheduleState: Sendable {
   }
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {self._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
@@ -1392,11 +1392,11 @@ struct CarServer_ParentalControlsState: Sendable {
   // methods supported on all messages.
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {self._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
@@ -1421,11 +1421,11 @@ struct CarServer_ParentalControlsState: Sendable {
   }
 
   var parentalControlsSettings: CarServer_ParentalControlsSettings {
-    get {return _parentalControlsSettings ?? CarServer_ParentalControlsSettings()}
+    get {_parentalControlsSettings ?? CarServer_ParentalControlsSettings()}
     set {_parentalControlsSettings = newValue}
   }
   /// Returns true if `parentalControlsSettings` has been explicitly set.
-  var hasParentalControlsSettings: Bool {return self._parentalControlsSettings != nil}
+  var hasParentalControlsSettings: Bool {self._parentalControlsSettings != nil}
   /// Clears the value of `parentalControlsSettings`. Subsequent reads from it will return its default value.
   mutating func clearParentalControlsSettings() {self._parentalControlsSettings = nil}
 
@@ -1453,11 +1453,11 @@ struct CarServer_SoftwareUpdateState: Sendable {
   // methods supported on all messages.
 
   var status: CarServer_SoftwareUpdateState.SoftwareUpdateStatus {
-    get {return _status ?? CarServer_SoftwareUpdateState.SoftwareUpdateStatus()}
+    get {_status ?? CarServer_SoftwareUpdateState.SoftwareUpdateStatus()}
     set {_status = newValue}
   }
   /// Returns true if `status` has been explicitly set.
-  var hasStatus: Bool {return self._status != nil}
+  var hasStatus: Bool {self._status != nil}
   /// Clears the value of `status`. Subsequent reads from it will return its default value.
   mutating func clearStatus() {self._status = nil}
 
@@ -1522,11 +1522,11 @@ struct CarServer_SoftwareUpdateState: Sendable {
   }
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {self._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
@@ -1644,11 +1644,11 @@ struct CarServer_DriveState: Sendable {
   // methods supported on all messages.
 
   var shiftState: CarServer_ShiftState {
-    get {return _shiftState ?? CarServer_ShiftState()}
+    get {_shiftState ?? CarServer_ShiftState()}
     set {_shiftState = newValue}
   }
   /// Returns true if `shiftState` has been explicitly set.
-  var hasShiftState: Bool {return self._shiftState != nil}
+  var hasShiftState: Bool {self._shiftState != nil}
   /// Clears the value of `shiftState`. Subsequent reads from it will return its default value.
   mutating func clearShiftState() {self._shiftState = nil}
 
@@ -1673,11 +1673,11 @@ struct CarServer_DriveState: Sendable {
   }
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {self._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
@@ -1762,20 +1762,20 @@ struct CarServer_DriveState: Sendable {
   }
 
   var lastTrafficUpdate: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _lastTrafficUpdate ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_lastTrafficUpdate ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_lastTrafficUpdate = newValue}
   }
   /// Returns true if `lastTrafficUpdate` has been explicitly set.
-  var hasLastTrafficUpdate: Bool {return self._lastTrafficUpdate != nil}
+  var hasLastTrafficUpdate: Bool {self._lastTrafficUpdate != nil}
   /// Clears the value of `lastTrafficUpdate`. Subsequent reads from it will return its default value.
   mutating func clearLastTrafficUpdate() {self._lastTrafficUpdate = nil}
 
   var activeRouteCoordinates: CarServer_LatLong {
-    get {return _activeRouteCoordinates ?? CarServer_LatLong()}
+    get {_activeRouteCoordinates ?? CarServer_LatLong()}
     set {_activeRouteCoordinates = newValue}
   }
   /// Returns true if `activeRouteCoordinates` has been explicitly set.
-  var hasActiveRouteCoordinates: Bool {return self._activeRouteCoordinates != nil}
+  var hasActiveRouteCoordinates: Bool {self._activeRouteCoordinates != nil}
   /// Clears the value of `activeRouteCoordinates`. Subsequent reads from it will return its default value.
   mutating func clearActiveRouteCoordinates() {self._activeRouteCoordinates = nil}
 
@@ -1845,29 +1845,29 @@ struct CarServer_ChargeState: @unchecked Sendable {
   // methods supported on all messages.
 
   var chargingState: CarServer_ChargeState.ChargingState {
-    get {return _storage._chargingState ?? CarServer_ChargeState.ChargingState()}
+    get {_storage._chargingState ?? CarServer_ChargeState.ChargingState()}
     set {_uniqueStorage()._chargingState = newValue}
   }
   /// Returns true if `chargingState` has been explicitly set.
-  var hasChargingState: Bool {return _storage._chargingState != nil}
+  var hasChargingState: Bool {_storage._chargingState != nil}
   /// Clears the value of `chargingState`. Subsequent reads from it will return its default value.
   mutating func clearChargingState() {_uniqueStorage()._chargingState = nil}
 
   var fastChargerType: CarServer_ChargeState.ChargerType {
-    get {return _storage._fastChargerType ?? CarServer_ChargeState.ChargerType()}
+    get {_storage._fastChargerType ?? CarServer_ChargeState.ChargerType()}
     set {_uniqueStorage()._fastChargerType = newValue}
   }
   /// Returns true if `fastChargerType` has been explicitly set.
-  var hasFastChargerType: Bool {return _storage._fastChargerType != nil}
+  var hasFastChargerType: Bool {_storage._fastChargerType != nil}
   /// Clears the value of `fastChargerType`. Subsequent reads from it will return its default value.
   mutating func clearFastChargerType() {_uniqueStorage()._fastChargerType = nil}
 
   var fastChargerBrand: CarServer_ChargeState.ChargerBrand {
-    get {return _storage._fastChargerBrand ?? CarServer_ChargeState.ChargerBrand()}
+    get {_storage._fastChargerBrand ?? CarServer_ChargeState.ChargerBrand()}
     set {_uniqueStorage()._fastChargerBrand = newValue}
   }
   /// Returns true if `fastChargerBrand` has been explicitly set.
-  var hasFastChargerBrand: Bool {return _storage._fastChargerBrand != nil}
+  var hasFastChargerBrand: Bool {_storage._fastChargerBrand != nil}
   /// Clears the value of `fastChargerBrand`. Subsequent reads from it will return its default value.
   mutating func clearFastChargerBrand() {_uniqueStorage()._fastChargerBrand = nil}
 
@@ -2173,11 +2173,11 @@ struct CarServer_ChargeState: @unchecked Sendable {
   }
 
   var connChargeCable: CarServer_ChargeState.CableType {
-    get {return _storage._connChargeCable ?? CarServer_ChargeState.CableType()}
+    get {_storage._connChargeCable ?? CarServer_ChargeState.CableType()}
     set {_uniqueStorage()._connChargeCable = newValue}
   }
   /// Returns true if `connChargeCable` has been explicitly set.
-  var hasConnChargeCable: Bool {return _storage._connChargeCable != nil}
+  var hasConnChargeCable: Bool {_storage._connChargeCable != nil}
   /// Clears the value of `connChargeCable`. Subsequent reads from it will return its default value.
   mutating func clearConnChargeCable() {_uniqueStorage()._connChargeCable = nil}
 
@@ -2209,11 +2209,11 @@ struct CarServer_ChargeState: @unchecked Sendable {
   }
 
   var scheduledDepartureTime: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._scheduledDepartureTime ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._scheduledDepartureTime ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._scheduledDepartureTime = newValue}
   }
   /// Returns true if `scheduledDepartureTime` has been explicitly set.
-  var hasScheduledDepartureTime: Bool {return _storage._scheduledDepartureTime != nil}
+  var hasScheduledDepartureTime: Bool {_storage._scheduledDepartureTime != nil}
   /// Clears the value of `scheduledDepartureTime`. Subsequent reads from it will return its default value.
   mutating func clearScheduledDepartureTime() {_uniqueStorage()._scheduledDepartureTime = nil}
 
@@ -2257,11 +2257,11 @@ struct CarServer_ChargeState: @unchecked Sendable {
   }
 
   var chargePortLatch: CarServer_ChargePortLatchState {
-    get {return _storage._chargePortLatch ?? CarServer_ChargePortLatchState()}
+    get {_storage._chargePortLatch ?? CarServer_ChargePortLatchState()}
     set {_uniqueStorage()._chargePortLatch = newValue}
   }
   /// Returns true if `chargePortLatch` has been explicitly set.
-  var hasChargePortLatch: Bool {return _storage._chargePortLatch != nil}
+  var hasChargePortLatch: Bool {_storage._chargePortLatch != nil}
   /// Clears the value of `chargePortLatch`. Subsequent reads from it will return its default value.
   mutating func clearChargePortLatch() {_uniqueStorage()._chargePortLatch = nil}
 
@@ -2344,29 +2344,29 @@ struct CarServer_ChargeState: @unchecked Sendable {
   }
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return _storage._timestamp != nil}
+  var hasTimestamp: Bool {_storage._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
 
   var preconditioningTimes: CarServer_PreconditioningTimes {
-    get {return _storage._preconditioningTimes ?? CarServer_PreconditioningTimes()}
+    get {_storage._preconditioningTimes ?? CarServer_PreconditioningTimes()}
     set {_uniqueStorage()._preconditioningTimes = newValue}
   }
   /// Returns true if `preconditioningTimes` has been explicitly set.
-  var hasPreconditioningTimes: Bool {return _storage._preconditioningTimes != nil}
+  var hasPreconditioningTimes: Bool {_storage._preconditioningTimes != nil}
   /// Clears the value of `preconditioningTimes`. Subsequent reads from it will return its default value.
   mutating func clearPreconditioningTimes() {_uniqueStorage()._preconditioningTimes = nil}
 
   var offPeakChargingTimes: CarServer_OffPeakChargingTimes {
-    get {return _storage._offPeakChargingTimes ?? CarServer_OffPeakChargingTimes()}
+    get {_storage._offPeakChargingTimes ?? CarServer_OffPeakChargingTimes()}
     set {_uniqueStorage()._offPeakChargingTimes = newValue}
   }
   /// Returns true if `offPeakChargingTimes` has been explicitly set.
-  var hasOffPeakChargingTimes: Bool {return _storage._offPeakChargingTimes != nil}
+  var hasOffPeakChargingTimes: Bool {_storage._offPeakChargingTimes != nil}
   /// Clears the value of `offPeakChargingTimes`. Subsequent reads from it will return its default value.
   mutating func clearOffPeakChargingTimes() {_uniqueStorage()._offPeakChargingTimes = nil}
 
@@ -2514,11 +2514,11 @@ struct CarServer_ChargeState: @unchecked Sendable {
   }
 
   var managedChargingState: CarServer_ManagedChargingState {
-    get {return _storage._managedChargingState ?? CarServer_ManagedChargingState()}
+    get {_storage._managedChargingState ?? CarServer_ManagedChargingState()}
     set {_uniqueStorage()._managedChargingState = newValue}
   }
   /// Returns true if `managedChargingState` has been explicitly set.
-  var hasManagedChargingState: Bool {return _storage._managedChargingState != nil}
+  var hasManagedChargingState: Bool {_storage._managedChargingState != nil}
   /// Clears the value of `managedChargingState`. Subsequent reads from it will return its default value.
   mutating func clearManagedChargingState() {_uniqueStorage()._managedChargingState = nil}
 
@@ -3791,11 +3791,11 @@ struct CarServer_ManagedChargingState: Sendable {
   // methods supported on all messages.
 
   var chargeOnSolarState: CarServer_ChargeOnSolarState {
-    get {return _chargeOnSolarState ?? CarServer_ChargeOnSolarState()}
+    get {_chargeOnSolarState ?? CarServer_ChargeOnSolarState()}
     set {_chargeOnSolarState = newValue}
   }
   /// Returns true if `chargeOnSolarState` has been explicitly set.
-  var hasChargeOnSolarState: Bool {return self._chargeOnSolarState != nil}
+  var hasChargeOnSolarState: Bool {self._chargeOnSolarState != nil}
   /// Clears the value of `chargeOnSolarState`. Subsequent reads from it will return its default value.
   mutating func clearChargeOnSolarState() {self._chargeOnSolarState = nil}
 
@@ -4171,11 +4171,11 @@ struct CarServer_LocationState: @unchecked Sendable {
   }
 
   var nativeType: CarServer_LocationState.GPSCoordinateType {
-    get {return _storage._nativeType ?? CarServer_LocationState.GPSCoordinateType()}
+    get {_storage._nativeType ?? CarServer_LocationState.GPSCoordinateType()}
     set {_uniqueStorage()._nativeType = newValue}
   }
   /// Returns true if `nativeType` has been explicitly set.
-  var hasNativeType: Bool {return _storage._nativeType != nil}
+  var hasNativeType: Bool {_storage._nativeType != nil}
   /// Clears the value of `nativeType`. Subsequent reads from it will return its default value.
   mutating func clearNativeType() {_uniqueStorage()._nativeType = nil}
 
@@ -4206,11 +4206,11 @@ struct CarServer_LocationState: @unchecked Sendable {
   }
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return _storage._timestamp != nil}
+  var hasTimestamp: Bool {_storage._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
 
@@ -4468,11 +4468,11 @@ struct CarServer_VehicleState: Sendable {
   // methods supported on all messages.
 
   var guestMode: CarServer_VehicleState.GuestMode {
-    get {return _guestMode ?? CarServer_VehicleState.GuestMode()}
+    get {_guestMode ?? CarServer_VehicleState.GuestMode()}
     set {_guestMode = newValue}
   }
   /// Returns true if `guestMode` has been explicitly set.
-  var hasGuestMode: Bool {return self._guestMode != nil}
+  var hasGuestMode: Bool {self._guestMode != nil}
   /// Clears the value of `guestMode`. Subsequent reads from it will return its default value.
   mutating func clearGuestMode() {self._guestMode = nil}
 
@@ -4865,20 +4865,20 @@ struct CarServer_ClimateState: @unchecked Sendable {
   }
 
   var climateKeeperMode: CarServer_ClimateState.ClimateKeeperMode {
-    get {return _storage._climateKeeperMode ?? CarServer_ClimateState.ClimateKeeperMode()}
+    get {_storage._climateKeeperMode ?? CarServer_ClimateState.ClimateKeeperMode()}
     set {_uniqueStorage()._climateKeeperMode = newValue}
   }
   /// Returns true if `climateKeeperMode` has been explicitly set.
-  var hasClimateKeeperMode: Bool {return _storage._climateKeeperMode != nil}
+  var hasClimateKeeperMode: Bool {_storage._climateKeeperMode != nil}
   /// Clears the value of `climateKeeperMode`. Subsequent reads from it will return its default value.
   mutating func clearClimateKeeperMode() {_uniqueStorage()._climateKeeperMode = nil}
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return _storage._timestamp != nil}
+  var hasTimestamp: Bool {_storage._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
 
@@ -4896,11 +4896,11 @@ struct CarServer_ClimateState: @unchecked Sendable {
   }
 
   var defrostMode: CarServer_ClimateState.DefrostMode {
-    get {return _storage._defrostMode ?? CarServer_ClimateState.DefrostMode()}
+    get {_storage._defrostMode ?? CarServer_ClimateState.DefrostMode()}
     set {_uniqueStorage()._defrostMode = newValue}
   }
   /// Returns true if `defrostMode` has been explicitly set.
-  var hasDefrostMode: Bool {return _storage._defrostMode != nil}
+  var hasDefrostMode: Bool {_storage._defrostMode != nil}
   /// Clears the value of `defrostMode`. Subsequent reads from it will return its default value.
   mutating func clearDefrostMode() {_uniqueStorage()._defrostMode = nil}
 
@@ -5671,11 +5671,11 @@ struct CarServer_TirePressureState: @unchecked Sendable {
 
   /// tpms pressure values in bar
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return _storage._timestamp != nil}
+  var hasTimestamp: Bool {_storage._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {_uniqueStorage()._timestamp = nil}
 
@@ -5732,38 +5732,38 @@ struct CarServer_TirePressureState: @unchecked Sendable {
   }
 
   var tpmsLastSeenPressureTimeFl: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._tpmsLastSeenPressureTimeFl ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._tpmsLastSeenPressureTimeFl ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._tpmsLastSeenPressureTimeFl = newValue}
   }
   /// Returns true if `tpmsLastSeenPressureTimeFl` has been explicitly set.
-  var hasTpmsLastSeenPressureTimeFl: Bool {return _storage._tpmsLastSeenPressureTimeFl != nil}
+  var hasTpmsLastSeenPressureTimeFl: Bool {_storage._tpmsLastSeenPressureTimeFl != nil}
   /// Clears the value of `tpmsLastSeenPressureTimeFl`. Subsequent reads from it will return its default value.
   mutating func clearTpmsLastSeenPressureTimeFl() {_uniqueStorage()._tpmsLastSeenPressureTimeFl = nil}
 
   var tpmsLastSeenPressureTimeFr: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._tpmsLastSeenPressureTimeFr ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._tpmsLastSeenPressureTimeFr ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._tpmsLastSeenPressureTimeFr = newValue}
   }
   /// Returns true if `tpmsLastSeenPressureTimeFr` has been explicitly set.
-  var hasTpmsLastSeenPressureTimeFr: Bool {return _storage._tpmsLastSeenPressureTimeFr != nil}
+  var hasTpmsLastSeenPressureTimeFr: Bool {_storage._tpmsLastSeenPressureTimeFr != nil}
   /// Clears the value of `tpmsLastSeenPressureTimeFr`. Subsequent reads from it will return its default value.
   mutating func clearTpmsLastSeenPressureTimeFr() {_uniqueStorage()._tpmsLastSeenPressureTimeFr = nil}
 
   var tpmsLastSeenPressureTimeRl: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._tpmsLastSeenPressureTimeRl ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._tpmsLastSeenPressureTimeRl ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._tpmsLastSeenPressureTimeRl = newValue}
   }
   /// Returns true if `tpmsLastSeenPressureTimeRl` has been explicitly set.
-  var hasTpmsLastSeenPressureTimeRl: Bool {return _storage._tpmsLastSeenPressureTimeRl != nil}
+  var hasTpmsLastSeenPressureTimeRl: Bool {_storage._tpmsLastSeenPressureTimeRl != nil}
   /// Clears the value of `tpmsLastSeenPressureTimeRl`. Subsequent reads from it will return its default value.
   mutating func clearTpmsLastSeenPressureTimeRl() {_uniqueStorage()._tpmsLastSeenPressureTimeRl = nil}
 
   var tpmsLastSeenPressureTimeRr: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _storage._tpmsLastSeenPressureTimeRr ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_storage._tpmsLastSeenPressureTimeRr ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_uniqueStorage()._tpmsLastSeenPressureTimeRr = newValue}
   }
   /// Returns true if `tpmsLastSeenPressureTimeRr` has been explicitly set.
-  var hasTpmsLastSeenPressureTimeRr: Bool {return _storage._tpmsLastSeenPressureTimeRr != nil}
+  var hasTpmsLastSeenPressureTimeRr: Bool {_storage._tpmsLastSeenPressureTimeRr != nil}
   /// Clears the value of `tpmsLastSeenPressureTimeRr`. Subsequent reads from it will return its default value.
   mutating func clearTpmsLastSeenPressureTimeRr() {_uniqueStorage()._tpmsLastSeenPressureTimeRr = nil}
 
@@ -5982,11 +5982,11 @@ struct CarServer_MediaState: Sendable {
   // methods supported on all messages.
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {self._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
@@ -6123,11 +6123,11 @@ struct CarServer_MediaDetailState: Sendable {
   // methods supported on all messages.
 
   var timestamp: SwiftProtobuf.Google_Protobuf_Timestamp {
-    get {return _timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
+    get {_timestamp ?? SwiftProtobuf.Google_Protobuf_Timestamp()}
     set {_timestamp = newValue}
   }
   /// Returns true if `timestamp` has been explicitly set.
-  var hasTimestamp: Bool {return self._timestamp != nil}
+  var hasTimestamp: Bool {self._timestamp != nil}
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
