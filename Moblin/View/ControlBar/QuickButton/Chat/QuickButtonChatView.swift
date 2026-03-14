@@ -24,7 +24,7 @@ private struct HighlightMessageView: View {
             ForEach(highlight.titleSegments, id: \.id) { segment in
                 if let text = segment.text {
                     if let url = getHttpsUrl(text: text) {
-                        UrlView(text: text, url: url, deleted: postState.deleted)
+                        QuickButtonChatUrlView(text: text, url: url, deleted: postState.deleted)
                     } else {
                         Text(text)
                             .foregroundStyle(highlight.messageColor())
@@ -54,29 +54,6 @@ private struct HighlightMessageView: View {
         }
         .foregroundStyle(highlight.messageColor())
         .padding([.leading], 5)
-    }
-}
-
-private struct UrlView: View {
-    let text: String
-    let url: URL
-    let deleted: Bool
-    @State private var presentingConfirmation = false
-
-    var body: some View {
-        Button(text) {
-            presentingConfirmation = true
-        }
-        .foregroundStyle(deleted ? .gray : .blue)
-        .strikethrough(deleted)
-        .disabled(deleted)
-        .confirmationDialog("", isPresented: $presentingConfirmation) {
-            Button("Open link") {
-                UIApplication.shared.open(url)
-            }
-        } message: {
-            Text(url.absoluteString)
-        }
     }
 }
 
@@ -148,7 +125,7 @@ private struct LineView: View {
             ForEach(post.segments) { segment in
                 if let text = segment.text {
                     if let url = getHttpsUrl(text: text) {
-                        UrlView(text: text, url: url, deleted: postState.deleted)
+                        QuickButtonChatUrlView(text: text, url: url, deleted: postState.deleted)
                     } else {
                         Text(text)
                             .foregroundStyle(postState.deleted ? .gray : .white)
@@ -1054,9 +1031,13 @@ private struct ActionButtonsView: View {
     var body: some View {
         if let selectedPost {
             if showingChatterInfo {
-                ChatterInfoView(model: model, post: selectedPost, presenting: $showingChatterInfo)
-                    .border(.gray)
-                    .padding([.horizontal], 5)
+                QuickButtonChatChatterInfoView(
+                    model: model,
+                    post: selectedPost,
+                    presenting: $showingChatterInfo
+                )
+                .border(.gray)
+                .padding([.horizontal], 5)
             } else {
                 VStack {
                     Spacer()

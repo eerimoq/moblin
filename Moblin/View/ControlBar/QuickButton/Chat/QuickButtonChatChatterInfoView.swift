@@ -45,7 +45,7 @@ private struct InfoRowView: View {
     }
 }
 
-struct ChatterInfoView: View {
+struct QuickButtonChatChatterInfoView: View {
     let model: Model
     let post: ChatPost
     @Binding var presenting: Bool
