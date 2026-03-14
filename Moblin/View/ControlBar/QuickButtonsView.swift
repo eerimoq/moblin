@@ -355,6 +355,10 @@ struct QuickButtonsInnerView: View {
         model.toggleShowingPanel(type: .goPro, panel: .goPro)
     }
 
+    private func metaGlassesAction() {
+        model.toggleShowingPanel(type: .metaGlasses, panel: .metaGlasses)
+    }
+
     private func replayAction(state: ButtonState) {
         model.streamOverlay.showingReplay.toggle()
         state.button.isOn.toggle()
@@ -799,6 +803,17 @@ struct QuickButtonsInnerView: View {
                                 goProAction()
                             }
                             ButtonTextOverlayView(text: String(localized: "GoPro"))
+                        }
+                    case .metaGlasses:
+                        ZStack {
+                            QuickButtonImage(model: model,
+                                             quickButtonsSettings: quickButtonsSettings,
+                                             state: state,
+                                             buttonSize: size)
+                            {
+                                metaGlassesAction()
+                            }
+                            ButtonTextOverlayView(text: String(localized: "Meta"))
                         }
                     case .replay:
                         QuickButtonImage(model: model,

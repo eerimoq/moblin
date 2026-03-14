@@ -19,6 +19,7 @@ enum SettingsCameraId {
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture
+    case metaGlasses
     case none
     case backTripleLowEnergy
     case backDualLowEnergy
@@ -1144,6 +1145,7 @@ class Database: Codable, ObservableObject {
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
     var goPro: SettingsGoPro = .init()
+    var metaGlasses: SettingsMetaGlasses = .init()
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
     var autoSceneSwitchers: SettingsAutoSceneSwitchers = .init()
@@ -1249,6 +1251,7 @@ class Database: Codable, ObservableObject {
              remoteSceneId,
              sceneNumericInput,
              goPro,
+             metaGlasses,
              replay,
              portraitVideoOffsetFromTop,
              autoSceneSwitchers,
@@ -1325,6 +1328,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
         try container.encode(.goPro, goPro)
+        try container.encode(.metaGlasses, metaGlasses)
         try container.encode(.replay, replay)
         try container.encode(.portraitVideoOffsetFromTop, portraitVideoOffsetFromTop)
         try container.encode(.autoSceneSwitchers, autoSceneSwitchers)
@@ -1447,6 +1451,7 @@ class Database: Codable, ObservableObject {
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())
+        metaGlasses = container.decode(.metaGlasses, SettingsMetaGlasses.self, .init())
         replay = container.decode(.replay, SettingsReplay.self, .init())
         portraitVideoOffsetFromTop = container.decode(.portraitVideoOffsetFromTop, Double.self, 0.0)
         autoSceneSwitchers = container.decode(.autoSceneSwitchers, SettingsAutoSceneSwitchers.self, .init())
@@ -1819,6 +1824,11 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  type: .goPro,
                                  imageOn: "appletvremote.gen1.fill",
                                  imageOff: "appletvremote.gen1",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Meta glasses"),
+                                 type: .metaGlasses,
+                                 imageOn: "eyeglasses",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Interactive chat"),
