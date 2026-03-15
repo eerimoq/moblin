@@ -2156,6 +2156,9 @@ final class Settings {
                         includingPropertiesForKeys: [.isRegularFileKey],
                         options: [.skipsHiddenFiles]
                     ) {
+                        let sourcePath = sourceUrl.standardizedFileURL.path
+                            .hasSuffix("/") ? sourceUrl.standardizedFileURL
+                            .path : sourceUrl.standardizedFileURL.path + "/"
                         for case let fileUrl as URL in enumerator {
                             guard let values = try? fileUrl.resourceValues(
                                 forKeys: [.isRegularFileKey]
@@ -2164,9 +2167,13 @@ final class Settings {
                             else {
                                 continue
                             }
-                            let relativePath = fileUrl.path.dropFirst(sourceUrl.path.count)
-                            let destPath = "\(storageDirectory)\(relativePath)"
-                            let destUrl = URL.documentsDirectory.appending(path: destPath)
+                            let filePath = fileUrl.standardizedFileURL.path
+                            guard filePath.hasPrefix(sourcePath) else {
+                                continue
+                            }
+                            let relativePath =
+                                "\(storageDirectory)/\(filePath.dropFirst(sourcePath.count))"
+                            let destUrl = URL.documentsDirectory.appending(path: relativePath)
                             let parentUrl = destUrl.deletingLastPathComponent()
                             try fileManager.createDirectory(
                                 at: parentUrl,
@@ -2227,6 +2234,7 @@ final class Settings {
             }
             defer { try? encodeStream.close() }
             let tempFilePath = FilePath(tempDir.path)
+            // TYP=Type, PAT=Path, DAT=Data, UID=User ID, GID=Group ID, MOD=Modification time
             guard let keySet = ArchiveHeader.FieldKeySet("TYP,PAT,DAT,UID,GID,MOD") else {
                 return nil
             }
