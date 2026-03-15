@@ -2112,7 +2112,7 @@ final class Settings {
         do {
             try storage.write(to: url, atomically: true, encoding: .utf8)
         } catch {
-            logger.info("settings: Failed to export to file.")
+            logger.info("settings: Failed to export to file: \(error.localizedDescription)")
             return nil
         }
         return url

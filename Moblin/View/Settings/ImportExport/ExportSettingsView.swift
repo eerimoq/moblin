@@ -12,7 +12,12 @@ struct ExportSettingsView: View {
                 isPresentingExporter = true
             }
         }
-        .sheet(isPresented: $isPresentingExporter) {
+        .sheet(isPresented: $isPresentingExporter, onDismiss: {
+            if let exportUrl {
+                try? FileManager.default.removeItem(at: exportUrl)
+            }
+            exportUrl = nil
+        }) {
             if let exportUrl {
                 ShareView(activityItems: [exportUrl])
             }
