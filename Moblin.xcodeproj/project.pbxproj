@@ -11,6 +11,7 @@
 		0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0318D36A2CF51D6900E12F3B /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 0318D3692CF51D6900E12F3B /* SwiftProtobuf */; };
 		0320D8762AED36860030418F /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 0320D8752AED36860030418F /* WrappingHStack */; };
+		032303212F671CC600790A63 /* ZipArchive in Frameworks */ = {isa = PBXBuildFile; productRef = 03AA00012F6500000000AA00 /* ZipArchive */; };
 		033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */ = {isa = PBXBuildFile; productRef = 033BEAC32C0FCC0B005F4E06 /* NWWebSocket */; };
 		035351942F1C271700428DAC /* AppAuthCore in Frameworks */ = {isa = PBXBuildFile; productRef = 035351932F1C271700428DAC /* AppAuthCore */; };
 		035351962F1C27A500428DAC /* AppAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 035351952F1C27A500428DAC /* AppAuth */; };
@@ -252,6 +253,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				032303212F671CC600790A63 /* ZipArchive in Frameworks */,
 				03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */,
 				033BEAC42C0FCC0B005F4E06 /* NWWebSocket in Frameworks */,
 				03BC11672AE5654700C38FC4 /* SDWebImageSwiftUI in Frameworks */,
@@ -1370,6 +1372,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adam-fowler/swift-zip-archive";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.6.4;
+			};
+		};
 		03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Gisman4ik/TrueTime.swift";
@@ -1424,14 +1434,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.1.1;
-			};
-		};
-		03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/adam-fowler/swift-zip-archive";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.6.4;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1515,6 +1517,11 @@
 			package = 03A974262AC137A000610E21 /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = Collections;
 		};
+		03AA00012F6500000000AA00 /* ZipArchive */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */;
+			productName = ZipArchive;
+		};
 		03AC6B942D17786700832A7E /* TrueTime */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 03AC6B932D17786700832A7E /* XCRemoteSwiftPackageReference "TrueTime" */;
@@ -1554,11 +1561,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 882D0C142DF76F5B0035BFAF /* XCRemoteSwiftPackageReference "BlackSharkLib" */;
 			productName = BlackSharkLib;
-		};
-		03AA00012F6500000000AA00 /* ZipArchive */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03AA00002F6500000000AA00 /* XCRemoteSwiftPackageReference "swift-zip-archive" */;
-			productName = ZipArchive;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
