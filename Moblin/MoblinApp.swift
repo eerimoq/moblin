@@ -128,6 +128,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_: UIApplication,
                      supportedInterfaceOrientationsFor _: UIWindow?) -> UIInterfaceOrientationMask
     {
+        #if targetEnvironment(macCatalyst)
+        return .all
+        #else
         return AppDelegate.orientationLock
+        #endif
     }
 }
