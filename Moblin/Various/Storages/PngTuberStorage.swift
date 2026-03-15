@@ -1,5 +1,7 @@
+let pngTuberStorageDirectory = "PNGTuber"
+
 class PngTuberStorage: FileStorage {
     init() {
-        super.init(directory: "PNGTuber")
+        super.init(directory: pngTuberStorageDirectory)
     }
 }

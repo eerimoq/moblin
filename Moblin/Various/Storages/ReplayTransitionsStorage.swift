@@ -1,12 +1,14 @@
 import Foundation
 
+let replayTransitionsStorageDirectory = "ReplayTransitions"
+
 class ReplayTransitionsStorage {
     private var fileManager: FileManager
     private var mediasUrl: URL
 
     init() {
         fileManager = FileManager.default
-        mediasUrl = createAndGetDirectory(name: "ReplayTransitions")
+        mediasUrl = createAndGetDirectory(name: replayTransitionsStorageDirectory)
     }
 
     func makePath(filename: String) -> URL {

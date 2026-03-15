@@ -1,12 +1,14 @@
 import Foundation
 
+let mediaPlayerStorageDirectory = "Medias"
+
 class MediaPlayerStorage {
     private var fileManager: FileManager
     private var mediasUrl: URL
 
     init() {
         fileManager = FileManager.default
-        mediasUrl = createAndGetDirectory(name: "Medias")
+        mediasUrl = createAndGetDirectory(name: mediaPlayerStorageDirectory)
     }
 
     func makePath(id: UUID) -> URL {

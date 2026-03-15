@@ -1,5 +1,7 @@
+let vTuberStorageDirectory = "VTuber"
+
 class VTuberStorage: FileStorage {
     init() {
-        super.init(directory: "VTuber")
+        super.init(directory: vTuberStorageDirectory)
     }
 }

@@ -1,7 +1,9 @@
 import Foundation
 
+let imagesStorageDirectory = "Images"
+
 class ImageStorage: FileStorage {
     init() {
-        super.init(directory: "Images")
+        super.init(directory: imagesStorageDirectory)
     }
 }

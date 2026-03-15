@@ -2053,12 +2053,12 @@ private func createDefault() -> Database {
 
 private let settingsJsonName = "settings.json"
 private let exportDirectories = [
-    "Medias",
-    "PNGTuber",
-    "Images",
-    "Alerts",
-    "VTuber",
-    "ReplayTransitions",
+    mediaPlayerStorageDirectory,
+    pngTuberStorageDirectory,
+    imagesStorageDirectory,
+    alertsStorageDirectory,
+    vTuberStorageDirectory,
+    replayTransitionsStorageDirectory,
 ]
 
 final class Settings {
