@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 extension UTType {
     static let moblinSettings = UTType(
         exportedAs: "com.eerimoq.moblin.settings",
-        conformingTo: .data
+        conformingTo: .archive
     )
 }
 

@@ -7,7 +7,7 @@
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
-				<string>public.data</string>
+				<string>public.archive</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Moblin Settings Archive</string>

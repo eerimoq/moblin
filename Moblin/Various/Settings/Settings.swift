@@ -1,5 +1,6 @@
 import AVFoundation
 import SwiftUI
+import ZIPFoundation
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
@@ -2088,18 +2089,52 @@ final class Settings {
         store()
     }
 
+    private static let storageDirectories = [
+        "Medias",
+        "PNGTuber",
+        "Images",
+        "Alerts",
+        "VTuber",
+        "ReplayTransitions",
+    ]
+
     func importFromFile(url: URL) -> String? {
         do {
-            let archiveData = try Data(contentsOf: url)
-            let entries = TarArchive.extract(data: archiveData)
-            guard let settingsEntry = entries.first(where: { $0.name == "settings.json" }) else {
+            guard let archive = Archive(url: url, accessMode: .read) else {
                 return String(localized: "Malformed settings")
             }
-            guard let settings = String(data: settingsEntry.data, encoding: .utf8) else {
+            guard let settingsEntry = archive["moblin-settings.json"] else {
+                return String(localized: "Malformed settings")
+            }
+            var settingsData = Data()
+            _ = try archive.extract(settingsEntry) { data in
+                settingsData.append(data)
+            }
+            guard let settings = String(data: settingsData, encoding: .utf8) else {
                 return String(localized: "Malformed settings")
             }
             try tryLoadAndMigrate(settings: settings)
             store()
+            let fileManager = FileManager.default
+            for directory in Settings.storageDirectories {
+                let directoryUrl = URL.documentsDirectory.appending(component: directory)
+                try? fileManager.removeItem(at: directoryUrl)
+                try fileManager.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+            }
+            for entry in archive {
+                for directory in Settings.storageDirectories {
+                    if entry.path.hasPrefix("\(directory)/"), entry.type == .file {
+                        let destinationUrl = URL.documentsDirectory.appending(path: entry.path)
+                        let parentUrl = destinationUrl.deletingLastPathComponent()
+                        try fileManager.createDirectory(
+                            at: parentUrl,
+                            withIntermediateDirectories: true
+                        )
+                        _ = try archive.extract(entry, to: destinationUrl)
+                        break
+                    }
+                }
+            }
             return nil
         } catch {
             return String(localized: "Malformed settings")
@@ -2108,16 +2143,51 @@ final class Settings {
 
     func exportToFile() -> URL? {
         store()
-        guard let settingsData = storage.data(using: .utf8) else {
-            return nil
-        }
-        let entries = [TarArchiveEntry(name: "settings.json", data: settingsData)]
-        let archiveData = TarArchive.create(entries: entries)
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("moblin-settings")
             .appendingPathExtension("moblin")
+        try? FileManager.default.removeItem(at: url)
         do {
-            try archiveData.write(to: url, options: .atomic)
+            guard let archive = Archive(url: url, accessMode: .create) else {
+                return nil
+            }
+            let settingsData = Data(storage.utf8)
+            try archive.addEntry(
+                with: "moblin-settings.json",
+                type: .file,
+                uncompressedSize: Int64(settingsData.count),
+                provider: { position, size in
+                    settingsData[position ..< position + size]
+                }
+            )
+            let fileManager = FileManager.default
+            for directory in Settings.storageDirectories {
+                let directoryUrl = URL.documentsDirectory.appending(component: directory)
+                guard let enumerator = fileManager.enumerator(
+                    at: directoryUrl,
+                    includingPropertiesForKeys: [.isRegularFileKey],
+                    options: [.skipsHiddenFiles]
+                ) else {
+                    continue
+                }
+                for case let fileUrl as URL in enumerator {
+                    guard let values = try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]),
+                          values.isRegularFile == true
+                    else {
+                        continue
+                    }
+                    let relativePath = "\(directory)/\(fileUrl.path().dropFirst(directoryUrl.path().count))"
+                    let fileData = try Data(contentsOf: fileUrl)
+                    try archive.addEntry(
+                        with: relativePath,
+                        type: .file,
+                        uncompressedSize: Int64(fileData.count),
+                        provider: { position, size in
+                            fileData[position ..< position + size]
+                        }
+                    )
+                }
+            }
         } catch {
             logger.info("settings: Failed to export to file: \(error.localizedDescription)")
             return nil
