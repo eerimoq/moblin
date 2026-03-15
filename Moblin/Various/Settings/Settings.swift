@@ -2176,7 +2176,14 @@ final class Settings {
                     else {
                         continue
                     }
-                    let relativePath = "\(directory)/\(fileUrl.path().dropFirst(directoryUrl.path().count))"
+                    let filePath = fileUrl.standardizedFileURL.path
+                    let directoryPath = directoryUrl.standardizedFileURL.path
+                        .hasSuffix("/") ? directoryUrl.standardizedFileURL
+                        .path : directoryUrl.standardizedFileURL.path + "/"
+                    guard filePath.hasPrefix(directoryPath) else {
+                        continue
+                    }
+                    let relativePath = "\(directory)/\(filePath.dropFirst(directoryPath.count))"
                     let fileData = try Data(contentsOf: fileUrl)
                     try archive.addEntry(
                         with: relativePath,
