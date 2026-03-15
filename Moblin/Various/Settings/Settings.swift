@@ -2090,7 +2090,14 @@ final class Settings {
 
     func importFromFile(url: URL) -> String? {
         do {
-            let settings = try String(contentsOf: url, encoding: .utf8)
+            let archiveData = try Data(contentsOf: url)
+            let entries = TarArchive.extract(data: archiveData)
+            guard let settingsEntry = entries.first(where: { $0.name == "settings.json" }) else {
+                return String(localized: "Malformed settings")
+            }
+            guard let settings = String(data: settingsEntry.data, encoding: .utf8) else {
+                return String(localized: "Malformed settings")
+            }
             try tryLoadAndMigrate(settings: settings)
             store()
             return nil
@@ -2101,11 +2108,16 @@ final class Settings {
 
     func exportToFile() -> URL? {
         store()
+        guard let settingsData = storage.data(using: .utf8) else {
+            return nil
+        }
+        let entries = [TarArchiveEntry(name: "settings.json", data: settingsData)]
+        let archiveData = TarArchive.create(entries: entries)
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("moblin-settings")
-            .appendingPathExtension("json")
+            .appendingPathExtension("moblin")
         do {
-            try storage.write(to: url, atomically: true, encoding: .utf8)
+            try archiveData.write(to: url, options: .atomic)
         } catch {
             logger.info("settings: Failed to export to file: \(error.localizedDescription)")
             return nil

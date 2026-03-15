@@ -1,12 +1,19 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+extension UTType {
+    static let moblinSettings = UTType(
+        exportedAs: "com.eerimoq.moblin.settings",
+        conformingTo: .data
+    )
+}
+
 private struct SettingsFilePickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
 
     func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
         let documentPicker = UIDocumentPickerViewController(
-            forOpeningContentTypes: [.json],
+            forOpeningContentTypes: [.moblinSettings],
             asCopy: true
         )
         documentPicker.delegate = model
