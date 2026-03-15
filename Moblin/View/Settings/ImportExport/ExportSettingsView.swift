@@ -1,11 +1,22 @@
 import SwiftUI
 
 struct ExportSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @State private var url: URL?
 
     var body: some View {
-        TextButtonView("Export to clipboard") {
-            model.settings.exportToClipboard()
+        HCenter {
+            if let url {
+                ShareLink(item: url) {
+                    Text("Export")
+                }
+            } else {
+                ProgressView()
+            }
+        }
+        .disabled(url == nil)
+        .onAppear {
+            url = model.settings.exportToFile()
         }
     }
 }

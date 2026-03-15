@@ -194,7 +194,7 @@ struct SettingsView: View {
             if database.showAllSettings {
                 Section {
                     NavigationLink {
-                        ImportExportSettingsView()
+                        ImportExportSettingsView(model: model)
                     } label: {
                         Label("Import and export settings", systemImage: "gearshape")
                     }

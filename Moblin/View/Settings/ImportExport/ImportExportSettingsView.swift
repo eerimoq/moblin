@@ -1,13 +1,15 @@
 import SwiftUI
 
 struct ImportExportSettingsView: View {
+    let model: Model
+
     var body: some View {
         Form {
             Section {
-                ImportSettingsView()
+                ImportSettingsView(model: model)
             }
             Section {
-                ExportSettingsView()
+                ExportSettingsView(model: model)
             } footer: {
                 VStack(alignment: .leading) {
                     Text("")
