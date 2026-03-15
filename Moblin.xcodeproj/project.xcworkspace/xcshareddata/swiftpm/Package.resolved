@@ -180,24 +180,6 @@
         "revision" : "5e1ada828d2618ecb79c974e03f79c8f4df90b71",
         "version" : "0.18.0"
       }
-    },
-    {
-      "identity" : "swift-system",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-system.git",
-      "state" : {
-        "revision" : "7c6ad0fc39d0763e0b699210e4124afd5041c5df",
-        "version" : "1.6.4"
-      }
-    },
-    {
-      "identity" : "swift-zip-archive",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/adam-fowler/swift-zip-archive",
-      "state" : {
-        "revision" : "b04d3d130b9a8b212db9d97da3b8853b024887be",
-        "version" : "0.6.4"
-      }
     }
   ],
   "version" : 3

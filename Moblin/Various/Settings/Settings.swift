@@ -1,6 +1,7 @@
+import AppleArchive
 import AVFoundation
 import SwiftUI
-import ZipArchive
+import System
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
@@ -2100,44 +2101,78 @@ final class Settings {
 
     func importFromFile(url: URL) -> String? {
         do {
-            try ZipArchiveReader.withFile(url.path) { reader in
-                let directory = try reader.readDirectory()
-                guard let settingsEntry = directory.first(where: {
-                    $0.filename.string == "moblin-settings.json"
-                }) else {
-                    throw "No settings found in archive"
-                }
-                let settingsBytes = try reader.readFile(settingsEntry)
-                guard let settings = String(bytes: settingsBytes, encoding: .utf8) else {
-                    throw "Invalid settings encoding"
-                }
-                try tryLoadAndMigrate(settings: settings)
-                store()
-                let fileManager = FileManager.default
-                for storageDirectory in Settings.storageDirectories {
-                    let directoryUrl = URL.documentsDirectory.appending(component: storageDirectory)
-                    try? fileManager.removeItem(at: directoryUrl)
-                    try fileManager.createDirectory(
-                        at: directoryUrl,
-                        withIntermediateDirectories: true
-                    )
-                }
-                for entry in directory {
-                    guard !entry.isDirectory else {
-                        continue
-                    }
-                    let entryPath = entry.filename.string
-                    for storageDirectory in Settings.storageDirectories {
-                        if entryPath.hasPrefix("\(storageDirectory)/") {
-                            let destinationUrl = URL.documentsDirectory.appending(path: entryPath)
-                            let parentUrl = destinationUrl.deletingLastPathComponent()
+            let fileManager = FileManager.default
+            let tempDir = fileManager.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+            try fileManager.createDirectory(at: tempDir, withIntermediateDirectories: true)
+            defer { try? fileManager.removeItem(at: tempDir) }
+            guard let readFileStream = ArchiveByteStream.fileStream(
+                path: FilePath(url.path),
+                mode: .readOnly,
+                options: [],
+                permissions: FilePermissions(rawValue: 0o644)
+            ) else {
+                return String(localized: "Malformed settings")
+            }
+            defer { try? readFileStream.close() }
+            guard let decompressStream = ArchiveByteStream.decompressionStream(
+                readingFrom: readFileStream
+            ) else {
+                return String(localized: "Malformed settings")
+            }
+            defer { try? decompressStream.close() }
+            guard let decodeStream = ArchiveStream.decodeStream(
+                readingFrom: decompressStream
+            ) else {
+                return String(localized: "Malformed settings")
+            }
+            defer { try? decodeStream.close() }
+            guard let extractStream = ArchiveStream.extractStream(
+                extractingTo: FilePath(tempDir.path),
+                flags: [.ignoreOperationNotPermitted]
+            ) else {
+                return String(localized: "Malformed settings")
+            }
+            defer { try? extractStream.close() }
+            _ = try ArchiveStream.process(readingFrom: decodeStream, writingTo: extractStream)
+            let settingsUrl = tempDir.appendingPathComponent("moblin-settings.json")
+            guard fileManager.fileExists(atPath: settingsUrl.path) else {
+                return String(localized: "Malformed settings")
+            }
+            let settings = try String(contentsOf: settingsUrl, encoding: .utf8)
+            try tryLoadAndMigrate(settings: settings)
+            store()
+            for storageDirectory in Settings.storageDirectories {
+                let directoryUrl = URL.documentsDirectory.appending(component: storageDirectory)
+                try? fileManager.removeItem(at: directoryUrl)
+                try fileManager.createDirectory(
+                    at: directoryUrl,
+                    withIntermediateDirectories: true
+                )
+                let sourceUrl = tempDir.appendingPathComponent(storageDirectory)
+                if fileManager.fileExists(atPath: sourceUrl.path) {
+                    if let enumerator = fileManager.enumerator(
+                        at: sourceUrl,
+                        includingPropertiesForKeys: [.isRegularFileKey],
+                        options: [.skipsHiddenFiles]
+                    ) {
+                        for case let fileUrl as URL in enumerator {
+                            guard let values = try? fileUrl.resourceValues(
+                                forKeys: [.isRegularFileKey]
+                            ),
+                                values.isRegularFile == true
+                            else {
+                                continue
+                            }
+                            let relativePath = fileUrl.path.dropFirst(sourceUrl.path.count)
+                            let destPath = "\(storageDirectory)\(relativePath)"
+                            let destUrl = URL.documentsDirectory.appending(path: destPath)
+                            let parentUrl = destUrl.deletingLastPathComponent()
                             try fileManager.createDirectory(
                                 at: parentUrl,
                                 withIntermediateDirectories: true
                             )
-                            let fileBytes = try reader.readFile(entry)
-                            try Data(fileBytes).write(to: destinationUrl)
-                            break
+                            try fileManager.copyItem(at: fileUrl, to: destUrl)
                         }
                     }
                 }
@@ -2155,42 +2190,50 @@ final class Settings {
             .appendingPathExtension("moblin")
         try? FileManager.default.removeItem(at: url)
         do {
-            try ZipArchiveWriter.withFile(url.path, options: .create) { writer in
-                try writer.writeFile(
-                    filename: "moblin-settings.json",
-                    contents: [UInt8](storage.utf8)
-                )
-                let fileManager = FileManager.default
-                for directory in Settings.storageDirectories {
-                    let directoryUrl = URL.documentsDirectory.appending(component: directory)
-                    guard let enumerator = fileManager.enumerator(
-                        at: directoryUrl,
-                        includingPropertiesForKeys: [.isRegularFileKey],
-                        options: [.skipsHiddenFiles]
-                    ) else {
-                        continue
-                    }
-                    for case let fileUrl as URL in enumerator {
-                        guard let values = try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]),
-                              values.isRegularFile == true
-                        else {
-                            continue
-                        }
-                        let filePath = fileUrl.standardizedFileURL.path
-                        let directoryPath = directoryUrl.standardizedFileURL.path
-                            .hasSuffix("/") ? directoryUrl.standardizedFileURL
-                            .path : directoryUrl.standardizedFileURL.path + "/"
-                        guard filePath.hasPrefix(directoryPath) else {
-                            continue
-                        }
-                        let relativePath = "\(directory)/\(filePath.dropFirst(directoryPath.count))"
-                        try writer.writeFile(
-                            filename: relativePath,
-                            sourceFile: filePath
-                        )
-                    }
+            let fileManager = FileManager.default
+            let tempDir = fileManager.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+            try fileManager.createDirectory(at: tempDir, withIntermediateDirectories: true)
+            defer { try? fileManager.removeItem(at: tempDir) }
+            let settingsUrl = tempDir.appendingPathComponent("moblin-settings.json")
+            try storage.write(to: settingsUrl, atomically: true, encoding: .utf8)
+            for directory in Settings.storageDirectories {
+                let sourceUrl = URL.documentsDirectory.appending(component: directory)
+                let destUrl = tempDir.appendingPathComponent(directory)
+                if fileManager.fileExists(atPath: sourceUrl.path) {
+                    try fileManager.copyItem(at: sourceUrl, to: destUrl)
                 }
             }
+            guard let writeFileStream = ArchiveByteStream.fileStream(
+                path: FilePath(url.path),
+                mode: .writeOnly,
+                options: [.create, .truncate],
+                permissions: FilePermissions(rawValue: 0o644)
+            ) else {
+                return nil
+            }
+            defer { try? writeFileStream.close() }
+            guard let compressStream = ArchiveByteStream.compressionStream(
+                using: .lzfse,
+                writingTo: writeFileStream
+            ) else {
+                return nil
+            }
+            defer { try? compressStream.close() }
+            guard let encodeStream = ArchiveStream.encodeStream(
+                writingTo: compressStream
+            ) else {
+                return nil
+            }
+            defer { try? encodeStream.close() }
+            let tempFilePath = FilePath(tempDir.path)
+            guard let keySet = ArchiveHeader.FieldKeySet("TYP,PAT,DAT,UID,GID,MOD") else {
+                return nil
+            }
+            try encodeStream.writeDirectoryContents(
+                archiveFrom: tempFilePath,
+                keySet: keySet
+            )
         } catch {
             logger.info("settings: Failed to export to file: \(error.localizedDescription)")
             return nil
