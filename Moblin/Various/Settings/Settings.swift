@@ -1,5 +1,6 @@
 import AVFoundation
 import SwiftUI
+import ZipArchive
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
@@ -2050,6 +2051,16 @@ private func createDefault() -> Database {
     return database
 }
 
+private let settingsJsonName = "settings.json"
+private let exportDirectories = [
+    "Medias",
+    "PNGTuber",
+    "Images",
+    "Alerts",
+    "VTuber",
+    "ReplayTransitions",
+]
+
 final class Settings {
     private var realDatabase = Database()
     var database: Database {
@@ -2088,29 +2099,75 @@ final class Settings {
         store()
     }
 
-    func importFromFile(url: URL) -> String? {
-        do {
-            let settings = try String(contentsOf: url, encoding: .utf8)
-            try tryLoadAndMigrate(settings: settings)
-            store()
-            return nil
-        } catch {
-            return String(localized: "Malformed settings")
+    func importFromFile(url: URL, onCompleted: @escaping (String?) -> Void) {
+        let root = URL.documentsDirectory
+        DispatchQueue.global().async {
+            do {
+                try ZipArchiveReader.withFile(url.path) { reader in
+                    try reader.extract(to: .init(root.path()))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    onCompleted(String(localized: "Failed to extract settings archive"))
+                }
+                return
+            }
+            DispatchQueue.main.async {
+                do {
+                    let settings = try Data(contentsOf: root.appendingPathComponent(settingsJsonName))
+                    try self.tryLoadAndMigrate(settings: String(bytes: settings, encoding: .utf8) ?? "")
+                    self.store()
+                    onCompleted(nil)
+                } catch {
+                    onCompleted(String(localized: "Malformed settings"))
+                }
+            }
         }
     }
 
-    func exportToFile() -> URL? {
+    func exportToFile(onCompleted: @escaping (URL?) -> Void) {
         store()
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("moblin-settings")
-            .appendingPathExtension("json")
-        do {
-            try storage.write(to: url, atomically: true, encoding: .utf8)
-        } catch {
-            logger.info("settings: Failed to export to file: \(error.localizedDescription)")
-            return nil
+        let settingsJson = [UInt8](storage.utf8)
+        DispatchQueue.global().async {
+            let url = FileManager.default.temporaryDirectory
+                .appendingPathComponent("MoblinSettings")
+                .appendingPathExtension("zip")
+            try? FileManager.default.removeItem(at: url)
+            do {
+                try ZipArchiveWriter.withFile(url.path, options: .create) { writer in
+                    try writer.writeFile(filename: settingsJsonName, contents: settingsJson)
+                    let fileManager = FileManager.default
+                    let prefixCount = createAndGetDirectory().standardizedFileURL.path.count + 1
+                    for directory in exportDirectories {
+                        let directoryUrl = createAndGetDirectory(name: directory)
+                        guard let enumerator = fileManager.enumerator(
+                            at: directoryUrl,
+                            includingPropertiesForKeys: nil,
+                            options: [.producesRelativePathURLs]
+                        ) else {
+                            continue
+                        }
+                        for case let fileUrl as URL in enumerator {
+                            guard let values = try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]),
+                                  values.isRegularFile == true
+                            else {
+                                continue
+                            }
+                            let filePath = fileUrl.standardizedFileURL.path
+                            let relativeFilePath = String(filePath.dropFirst(prefixCount))
+                            try writer.writeFile(filename: relativeFilePath, sourceFile: filePath)
+                        }
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    onCompleted(nil)
+                }
+            }
+            DispatchQueue.main.async {
+                onCompleted(url)
+            }
         }
-        return url
     }
 
     private func addSensitiveData(database: Database) {

@@ -1,12 +1,19 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+extension UTType {
+    static let moblinSettings = UTType(
+        exportedAs: "com.eerimoq.moblin.settings",
+        conformingTo: .archive
+    )
+}
+
 private struct SettingsFilePickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
 
     func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
         let documentPicker = UIDocumentPickerViewController(
-            forOpeningContentTypes: [.json],
+            forOpeningContentTypes: [.zip],
             asCopy: true
         )
         documentPicker.delegate = model
@@ -17,8 +24,9 @@ private struct SettingsFilePickerView: UIViewControllerRepresentable {
 }
 
 struct ImportSettingsView: View {
-    let model: Model
+    @ObservedObject var model: Model
     @State private var showPicker = false
+    @State private var importing = false
 
     private func succeeded() {
         model.setCurrentStream()
@@ -36,21 +44,31 @@ struct ImportSettingsView: View {
     }
 
     private func onUrl(url: URL) {
-        if let message = model.settings.importFromFile(url: url) {
-            failed(message: message)
-        } else {
-            succeeded()
+        importing = true
+        model.settings.importFromFile(url: url) { message in
+            if let message {
+                failed(message: message)
+            } else {
+                succeeded()
+            }
+            importing = false
         }
     }
 
     var body: some View {
-        TextButtonView("Import") {
-            showPicker = true
-            model.onDocumentPickerUrl = onUrl
-        }
-        .disabled(model.isLive || model.isRecording)
-        .sheet(isPresented: $showPicker) {
-            SettingsFilePickerView()
+        if importing {
+            HCenter {
+                ProgressView()
+            }
+        } else {
+            TextButtonView("Import") {
+                showPicker = true
+                model.onDocumentPickerUrl = onUrl
+            }
+            .disabled(model.isLive || model.isRecording)
+            .sheet(isPresented: $showPicker) {
+                SettingsFilePickerView()
+            }
         }
     }
 }

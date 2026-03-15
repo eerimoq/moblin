@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ExportSettingsView: View {
-    let model: Model
+    @ObservedObject var model: Model
     @State private var url: URL?
 
     var body: some View {
@@ -14,9 +14,12 @@ struct ExportSettingsView: View {
                 ProgressView()
             }
         }
-        .disabled(url == nil)
         .onAppear {
-            url = model.settings.exportToFile()
+            model.settings.exportToFile { url in
+                DispatchQueue.main.async {
+                    self.url = url
+                }
+            }
         }
     }
 }

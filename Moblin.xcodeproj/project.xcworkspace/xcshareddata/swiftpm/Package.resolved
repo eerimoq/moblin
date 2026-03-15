@@ -1,5 +1,5 @@
 {
-  "originHash" : "75c04dc272d23930ef4db707876baa41c267fbbc75ffeb482851868e6e5d71d4",
+  "originHash" : "28372b62409b078c82307b90176be36c0e6c3fb8799c4cb0bb489192a485fa55",
   "pins" : [
     {
       "identity" : "alerttoast",
@@ -134,6 +134,24 @@
       "state" : {
         "revision" : "a008af1a102ff3dd6cc3764bb69bf63226d0f5f6",
         "version" : "1.36.1"
+      }
+    },
+    {
+      "identity" : "swift-system",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-system.git",
+      "state" : {
+        "revision" : "7c6ad0fc39d0763e0b699210e4124afd5041c5df",
+        "version" : "1.6.4"
+      }
+    },
+    {
+      "identity" : "swift-zip-archive",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/adam-fowler/swift-zip-archive",
+      "state" : {
+        "revision" : "b04d3d130b9a8b212db9d97da3b8853b024887be",
+        "version" : "0.6.4"
       }
     },
     {
