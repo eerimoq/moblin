@@ -170,6 +170,10 @@ private struct MenuView: View {
             NavigationStack {
                 QuickButtonGoProView(goProState: model.goPro, goPro: model.database.goPro)
             }
+        case .metaGlasses:
+            NavigationStack {
+                QuickButtonMetaGlassesView(metaGlasses: model.metaGlasses)
+            }
         case .connectionPriorities:
             NavigationStack {
                 StreamSrtConnectionPriorityView(stream: model.stream)

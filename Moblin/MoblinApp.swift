@@ -81,7 +81,22 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
     }
 
     func scene(_: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
-        MoblinApp.globalModel?.handleSettingsUrls(urls: urlContexts)
+        guard let model = MoblinApp.globalModel else {
+            return
+        }
+        var settingsUrlContexts = Set<UIOpenURLContext>()
+        for urlContext in urlContexts {
+            if let components = URLComponents(url: urlContext.url, resolvingAgainstBaseURL: false),
+               components.queryItems?.contains(where: { $0.name == "metaWearablesAction" }) == true
+            {
+                model.handleMetaGlassesUrl(urlContext.url)
+            } else {
+                settingsUrlContexts.insert(urlContext)
+            }
+        }
+        if !settingsUrlContexts.isEmpty {
+            model.handleSettingsUrls(urls: settingsUrlContexts)
+        }
     }
 }
 

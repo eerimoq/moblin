@@ -576,6 +576,7 @@ extension Model {
             ($0.0.uuidString, $0.1)
         }
         cameras.append((screenCaptureCamera, screenCaptureCamera))
+        cameras.append((metaGlassesCamera, metaGlassesCamera))
         cameras.append((noneCamera, noneCamera))
         return cameras
     }
@@ -643,6 +644,8 @@ extension Model {
             return .backWideDualLowEnergy
         } else if isNoneCamera(cameraId: cameraId) {
             return .none
+        } else if isMetaGlassesCamera(cameraId: cameraId) {
+            return .metaGlasses
         } else {
             return .external(id: cameraId, name: getExternalCameraName(cameraId: cameraId))
         }
@@ -673,6 +676,8 @@ extension Model {
             return id
         case .screenCapture:
             return screenCaptureCamera
+        case .metaGlasses:
+            return metaGlassesCamera
         case .backTripleLowEnergy:
             return backTripleLowEnergyCamera
         case .backDualLowEnergy:
@@ -737,6 +742,8 @@ extension Model {
             }
         case .screenCapture:
             return screenCaptureCamera
+        case .metaGlasses:
+            return metaGlassesCamera
         case .backTripleLowEnergy:
             return backTripleLowEnergyCamera
         case .backDualLowEnergy:
@@ -830,6 +837,8 @@ extension Model {
             return id
         case .screenCapture:
             return screenCaptureCameraId
+        case .metaGlasses:
+            return metaGlassesCameraId
         case let .back(id: id):
             return getBuiltinCameraId(id)
         case let .front(id: id):

@@ -6,3 +6,9 @@ BASE_PRODUCT_BUNDLE_IDENTIFIER = com.eerimoq.Mobs
 
 // 'free' or 'all'. 'all' requires paying for Apple development account.
 CAPABILITIES = free
+
+// Meta Wearables Application Id from Meta Wearables Developer Center.
+MWDAT_META_APP_ID = 0
+
+// Client token from Meta Wearables Developer Center.
+MWDAT_CLIENT_TOKEN =
