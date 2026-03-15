@@ -164,22 +164,42 @@ struct StreamPlatformsSettingsView: View {
     }
 }
 
-struct BackgroundStreamingToggleView: View {
-    @Binding var enabled: Bool
+struct BackgroundStreamingFooterView: View {
+    var body: some View {
+        Text("Live stream and record when the app is in background mode.")
+    }
+}
+
+private struct BackgroundStreamingView: View {
+    let model: Model
+    @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Section {
-            Toggle("Background streaming", isOn: $enabled)
-        } footer: {
-            VStack(alignment: .leading) {
-                Text("Live stream and record when the app is in background mode.")
-                Text("")
-                Text("""
-                Built-in camera and USB sources blur the last frame in background mode \
-                (Apple limitation), but audio stays active. Both audio and video from \
-                ingests (RTMP/SRT/...) stay active in background mode.
-                """)
+            NavigationLink {
+                Form {
+                    Section {
+                        Toggle("Show PiP", isOn: $stream.backgroundStreamingPiP)
+                            .onChange(of: stream.backgroundStreamingPiP) { _ in
+                                if stream.enabled {
+                                    model.updatePictureInPicture()
+                                }
+                            }
+                    } footer: {
+                        Text("Make built-in and USB cameras not freeze in background mode.")
+                    }
+                }
+                .navigationTitle("Background streaming")
+            } label: {
+                Toggle("Background streaming", isOn: $stream.backgroundStreaming)
+                    .onChange(of: stream.backgroundStreaming) { _ in
+                        if stream.enabled {
+                            model.updatePictureInPicture()
+                        }
+                    }
             }
+        } footer: {
+            BackgroundStreamingFooterView()
         }
     }
 }
@@ -285,12 +305,7 @@ struct StreamSettingsView: View {
                 StreamPlatformsSettingsView(model: model, stream: stream)
             }
             if !isMac() {
-                BackgroundStreamingToggleView(enabled: $stream.backgroundStreaming)
-                    .onChange(of: stream.backgroundStreaming) { _ in
-                        if stream.enabled {
-                            model.updatePictureInPicture()
-                        }
-                    }
+                BackgroundStreamingView(model: model, stream: stream)
             }
             Section {
                 NavigationLink {

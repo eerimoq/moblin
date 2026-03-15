@@ -1093,6 +1093,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var realtimeIrlPushKey: String = ""
     @Published var portrait: Bool = false
     @Published var backgroundStreaming: Bool = false
+    @Published var backgroundStreamingPiP: Bool = true
     @Published var estimatedViewerDelay: Float = 8.0
     @Published var ntpPoolAddress: String = "time.apple.com"
     @Published var timecodesEnabled: Bool = false
@@ -1182,6 +1183,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              realtimeIrlPushKey,
              portrait,
              backgroundStreaming,
+             backgroundStreamingPiP,
              estimatedViewerDelay,
              ntpPoolAddress,
              timecodesEnabled,
@@ -1266,6 +1268,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.realtimeIrlPushKey, realtimeIrlPushKey)
         try container.encode(.portrait, portrait)
         try container.encode(.backgroundStreaming, backgroundStreaming)
+        try container.encode(.backgroundStreamingPiP, backgroundStreamingPiP)
         try container.encode(.estimatedViewerDelay, estimatedViewerDelay)
         try container.encode(.ntpPoolAddress, ntpPoolAddress)
         try container.encode(.timecodesEnabled, timecodesEnabled)
@@ -1367,6 +1370,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         realtimeIrlPushKey = container.decode(.realtimeIrlPushKey, String.self, "")
         portrait = container.decode(.portrait, Bool.self, false)
         backgroundStreaming = container.decode(.backgroundStreaming, Bool.self, false)
+        backgroundStreamingPiP = container.decode(.backgroundStreamingPiP, Bool.self, true)
         estimatedViewerDelay = container.decode(.estimatedViewerDelay, Float.self, 8.0)
         ntpPoolAddress = container.decode(.ntpPoolAddress, String.self, "time.apple.com")
         timecodesEnabled = container.decode(.timecodesEnabled, Bool.self, false)

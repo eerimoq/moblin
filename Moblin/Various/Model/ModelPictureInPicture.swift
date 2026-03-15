@@ -17,7 +17,7 @@ extension Model {
     }
 
     func updatePictureInPicture() {
-        if stream.backgroundStreaming, isLive || isRecording {
+        if stream.backgroundStreaming, stream.backgroundStreamingPiP, isLive || isRecording {
             if pipController?.contentSource == nil {
                 pipController?.contentSource = AVPictureInPictureController.ContentSource(
                     sampleBufferDisplayLayer: streamPreviewView.layer,

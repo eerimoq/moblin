@@ -13,7 +13,11 @@ struct StreamWizardGeneralSettingsView: View {
                     .disableAutocorrection(true)
             }
             if !isMac() {
-                BackgroundStreamingToggleView(enabled: $createStreamWizard.backgroundStreaming)
+                Section {
+                    Toggle("Background streaming", isOn: $createStreamWizard.backgroundStreaming)
+                } footer: {
+                    BackgroundStreamingFooterView()
+                }
             }
             Section {
                 TextButtonView("Create") {
