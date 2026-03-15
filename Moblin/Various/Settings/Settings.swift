@@ -1,6 +1,6 @@
 import AVFoundation
 import SwiftUI
-import ZIPFoundation
+import ZipArchive
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
@@ -2100,38 +2100,45 @@ final class Settings {
 
     func importFromFile(url: URL) -> String? {
         do {
-            guard let archive = Archive(url: url, accessMode: .read) else {
-                return String(localized: "Malformed settings")
-            }
-            guard let settingsEntry = archive["moblin-settings.json"] else {
-                return String(localized: "Malformed settings")
-            }
-            var settingsData = Data()
-            _ = try archive.extract(settingsEntry) { data in
-                settingsData.append(data)
-            }
-            guard let settings = String(data: settingsData, encoding: .utf8) else {
-                return String(localized: "Malformed settings")
-            }
-            try tryLoadAndMigrate(settings: settings)
-            store()
-            let fileManager = FileManager.default
-            for directory in Settings.storageDirectories {
-                let directoryUrl = URL.documentsDirectory.appending(component: directory)
-                try? fileManager.removeItem(at: directoryUrl)
-                try fileManager.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
-            }
-            for entry in archive {
-                for directory in Settings.storageDirectories {
-                    if entry.path.hasPrefix("\(directory)/"), entry.type == .file {
-                        let destinationUrl = URL.documentsDirectory.appending(path: entry.path)
-                        let parentUrl = destinationUrl.deletingLastPathComponent()
-                        try fileManager.createDirectory(
-                            at: parentUrl,
-                            withIntermediateDirectories: true
-                        )
-                        _ = try archive.extract(entry, to: destinationUrl)
-                        break
+            try ZipArchiveReader.withFile(url.path) { reader in
+                let directory = try reader.readDirectory()
+                guard let settingsEntry = directory.first(where: {
+                    $0.filename.string == "moblin-settings.json"
+                }) else {
+                    throw "No settings found in archive"
+                }
+                let settingsBytes = try reader.readFile(settingsEntry)
+                guard let settings = String(bytes: settingsBytes, encoding: .utf8) else {
+                    throw "Invalid settings encoding"
+                }
+                try tryLoadAndMigrate(settings: settings)
+                store()
+                let fileManager = FileManager.default
+                for storageDirectory in Settings.storageDirectories {
+                    let directoryUrl = URL.documentsDirectory.appending(component: storageDirectory)
+                    try? fileManager.removeItem(at: directoryUrl)
+                    try fileManager.createDirectory(
+                        at: directoryUrl,
+                        withIntermediateDirectories: true
+                    )
+                }
+                for entry in directory {
+                    guard !entry.isDirectory else {
+                        continue
+                    }
+                    let entryPath = entry.filename.string
+                    for storageDirectory in Settings.storageDirectories {
+                        if entryPath.hasPrefix("\(storageDirectory)/") {
+                            let destinationUrl = URL.documentsDirectory.appending(path: entryPath)
+                            let parentUrl = destinationUrl.deletingLastPathComponent()
+                            try fileManager.createDirectory(
+                                at: parentUrl,
+                                withIntermediateDirectories: true
+                            )
+                            let fileBytes = try reader.readFile(entry)
+                            try Data(fileBytes).write(to: destinationUrl)
+                            break
+                        }
                     }
                 }
             }
@@ -2148,51 +2155,40 @@ final class Settings {
             .appendingPathExtension("moblin")
         try? FileManager.default.removeItem(at: url)
         do {
-            guard let archive = Archive(url: url, accessMode: .create) else {
-                return nil
-            }
-            let settingsData = Data(storage.utf8)
-            try archive.addEntry(
-                with: "moblin-settings.json",
-                type: .file,
-                uncompressedSize: Int64(settingsData.count),
-                provider: { position, size in
-                    settingsData[position ..< position + size]
-                }
-            )
-            let fileManager = FileManager.default
-            for directory in Settings.storageDirectories {
-                let directoryUrl = URL.documentsDirectory.appending(component: directory)
-                guard let enumerator = fileManager.enumerator(
-                    at: directoryUrl,
-                    includingPropertiesForKeys: [.isRegularFileKey],
-                    options: [.skipsHiddenFiles]
-                ) else {
-                    continue
-                }
-                for case let fileUrl as URL in enumerator {
-                    guard let values = try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]),
-                          values.isRegularFile == true
-                    else {
+            try ZipArchiveWriter.withFile(url.path, options: .create) { writer in
+                try writer.writeFile(
+                    filename: "moblin-settings.json",
+                    contents: [UInt8](storage.utf8)
+                )
+                let fileManager = FileManager.default
+                for directory in Settings.storageDirectories {
+                    let directoryUrl = URL.documentsDirectory.appending(component: directory)
+                    guard let enumerator = fileManager.enumerator(
+                        at: directoryUrl,
+                        includingPropertiesForKeys: [.isRegularFileKey],
+                        options: [.skipsHiddenFiles]
+                    ) else {
                         continue
                     }
-                    let filePath = fileUrl.standardizedFileURL.path
-                    let directoryPath = directoryUrl.standardizedFileURL.path
-                        .hasSuffix("/") ? directoryUrl.standardizedFileURL
-                        .path : directoryUrl.standardizedFileURL.path + "/"
-                    guard filePath.hasPrefix(directoryPath) else {
-                        continue
-                    }
-                    let relativePath = "\(directory)/\(filePath.dropFirst(directoryPath.count))"
-                    let fileData = try Data(contentsOf: fileUrl)
-                    try archive.addEntry(
-                        with: relativePath,
-                        type: .file,
-                        uncompressedSize: Int64(fileData.count),
-                        provider: { position, size in
-                            fileData[position ..< position + size]
+                    for case let fileUrl as URL in enumerator {
+                        guard let values = try? fileUrl.resourceValues(forKeys: [.isRegularFileKey]),
+                              values.isRegularFile == true
+                        else {
+                            continue
                         }
-                    )
+                        let filePath = fileUrl.standardizedFileURL.path
+                        let directoryPath = directoryUrl.standardizedFileURL.path
+                            .hasSuffix("/") ? directoryUrl.standardizedFileURL
+                            .path : directoryUrl.standardizedFileURL.path + "/"
+                        guard filePath.hasPrefix(directoryPath) else {
+                            continue
+                        }
+                        let relativePath = "\(directory)/\(filePath.dropFirst(directoryPath.count))"
+                        try writer.writeFile(
+                            filename: relativePath,
+                            sourceFile: filePath
+                        )
+                    }
                 }
             }
         } catch {

@@ -182,12 +182,21 @@
       }
     },
     {
-      "identity" : "zipfoundation",
+      "identity" : "swift-system",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/weichsel/ZIPFoundation",
+      "location" : "https://github.com/apple/swift-system.git",
       "state" : {
-        "revision" : "22787ffb59de99e5dc1fbfe80b19c97a904ad48d",
-        "version" : "0.9.20"
+        "revision" : "7c6ad0fc39d0763e0b699210e4124afd5041c5df",
+        "version" : "1.6.4"
+      }
+    },
+    {
+      "identity" : "swift-zip-archive",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/adam-fowler/swift-zip-archive",
+      "state" : {
+        "revision" : "b04d3d130b9a8b212db9d97da3b8853b024887be",
+        "version" : "0.6.4"
       }
     }
   ],
