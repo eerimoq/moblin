@@ -2088,9 +2088,12 @@ final class Settings {
         store()
     }
 
-    func importFromClipboard() -> String? {
-        guard let settings = UIPasteboard.general.string else {
-            return String(localized: "Empty clipboard")
+    func importFromFile(url: URL) -> String? {
+        let settings: String
+        do {
+            settings = try String(contentsOf: url, encoding: .utf8)
+        } catch {
+            return String(localized: "Failed to read file")
         }
         do {
             try tryLoadAndMigrate(settings: settings)
@@ -2101,9 +2104,18 @@ final class Settings {
         return nil
     }
 
-    func exportToClipboard() {
+    func exportToFile() -> URL? {
         store()
-        UIPasteboard.general.string = storage
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("moblin-settings")
+            .appendingPathExtension("json")
+        do {
+            try storage.write(to: url, atomically: true, encoding: .utf8)
+        } catch {
+            logger.info("settings: Failed to export to file.")
+            return nil
+        }
+        return url
     }
 
     private func addSensitiveData(database: Database) {
