@@ -45,7 +45,8 @@ extension CIImage {
         if layout.alignment.isVerticalCenter() {
             y = (streamSize.height - extent.height) / 2 - extent.minY
         } else if layout.alignment.isTop() {
-            y = streamSize.height - toPixels(layout.y, streamSize.height) - extent.height - extent.minY
+            // No idea why the extra pixel is needed to get to the top.
+            y = streamSize.height - toPixels(layout.y, streamSize.height) - extent.height - extent.minY + 1
         } else {
             y = toPixels(layout.y, streamSize.height) - extent.minY
         }
