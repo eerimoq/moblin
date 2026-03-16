@@ -51,6 +51,7 @@ private class MacKeyPressUIView: UIView {
 
 struct MacKeyPressView: UIViewRepresentable {
     let model: Model
+    let shouldClaimFocus: Bool
 
     func makeUIView(context _: Context) -> MacKeyPressUIView {
         let view = MacKeyPressUIView()
@@ -61,5 +62,11 @@ struct MacKeyPressView: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_: MacKeyPressUIView, context _: Context) {}
+    func updateUIView(_ uiView: MacKeyPressUIView, context _: Context) {
+        if shouldClaimFocus {
+            uiView.claimFocus()
+        } else if uiView.isFirstResponder {
+            uiView.resignFirstResponder()
+        }
+    }
 }

@@ -643,7 +643,7 @@ struct MainView: View {
         }
         .background {
             if isMac() {
-                MacKeyPressView(model: model)
+                MacKeyPressView(model: model, shouldClaimFocus: model.isKeyboardActive())
                     .frame(width: 0, height: 0)
             }
         }
