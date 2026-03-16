@@ -1014,33 +1014,32 @@ private struct WarningsView: View {
     @Binding var value: String
 
     var body: some View {
-        let textFormat = loadTextFormat(format: value)
-        if textFormat.isWorkoutVariable(), model.workoutType == nil {
-            Section {
-                let image = Image(systemName: "figure.run")
-                Text("""
-                ⚠️ Start a workout using the \(image)Workout quick button or the Start workout \
-                button on your Apple Watch to update Apple workout variables.
-                """)
+        Group {
+            let textFormat = loadTextFormat(format: value)
+            if textFormat.isWorkoutVariable(), model.workoutType == nil {
+                Section {
+                    let image = Image(systemName: "figure.run")
+                    Text("""
+                    ⚠️ Start a workout using the \(image)Workout quick button or the Start workout \
+                    button on your Apple Watch to update Apple workout variables.
+                    """)
+                }
+            }
+            if textFormat.isLocationVariable(), !location.enabled {
+                Section {
+                    Text("⚠️ Enable Location to update location variables.")
+                    Toggle("Location", isOn: $location.enabled)
+                }
+            }
+            if textFormat.isWeatherVariable(), !location.enabled {
+                Section {
+                    Text("⚠️ Enable Location to update weather variables.")
+                    Toggle("Location", isOn: $location.enabled)
+                }
             }
         }
-        if textFormat.isLocationVariable(), !location.enabled {
-            Section {
-                Text("⚠️ Enable Location to update location variables.")
-                Toggle("Location", isOn: $location.enabled)
-                    .onChange(of: location.enabled) { _ in
-                        model.reloadLocation()
-                    }
-            }
-        }
-        if textFormat.isWeatherVariable(), !location.enabled {
-            Section {
-                Text("⚠️ Enable Location to update weather variables.")
-                Toggle("Location", isOn: $location.enabled)
-                    .onChange(of: location.enabled) { _ in
-                        model.reloadLocation()
-                    }
-            }
+        .onChange(of: location.enabled) { _ in
+            model.reloadLocation()
         }
     }
 }
