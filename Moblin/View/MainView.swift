@@ -641,6 +641,12 @@ struct MainView: View {
                 .foregroundStyle(.black)
                 .frame(height: isMac() ? 10 : 0)
         }
+        .background {
+            if isMac() {
+                MacKeyPressView(model: model, shouldClaimFocus: model.isKeyboardActive())
+                    .frame(width: 0, height: 0)
+            }
+        }
         .ignoresSafeArea(.container, edges: edgesToIgnore())
     }
 }
