@@ -596,6 +596,9 @@ struct MainView: View {
                 model.toast.onTapped?()
             }
             .persistentSystemOverlays(.hidden)
+            #if targetEnvironment(macCatalyst)
+            all
+            #else
             if #available(iOS 17.0, *) {
                 let all = all
                     .focusable()
@@ -637,10 +640,17 @@ struct MainView: View {
             } else {
                 all
             }
+            #endif
             Rectangle()
                 .foregroundStyle(.black)
                 .frame(height: isMac() ? 10 : 0)
         }
+        #if targetEnvironment(macCatalyst)
+        .background {
+            MacKeyPressView(model: model, shouldClaimFocus: model.isKeyboardActive())
+                .frame(width: 0, height: 0)
+        }
+        #endif
         .ignoresSafeArea(.container, edges: edgesToIgnore())
     }
 }
