@@ -48,7 +48,7 @@
     <key>UIApplicationSceneManifest</key>
     <dict>
             <key>UIApplicationSupportsMultipleScenes</key>
-            <true/>
+            <$(ENABLE_MULTIPLE_SCENES)/>
             <key>UISceneConfigurations</key>
             <dict>
                     <key>UIWindowSceneSessionRoleExternalDisplayNonInteractive</key>
