@@ -1144,6 +1144,7 @@ class Database: Codable, ObservableObject {
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
+    @Published var positioningLockEnabled: Bool = false
     var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
@@ -1249,6 +1250,7 @@ class Database: Codable, ObservableObject {
              phoneCoolerDevices,
              remoteSceneId,
              sceneNumericInput,
+             positioningLockEnabled,
              goPro,
              replay,
              portraitVideoOffsetFromTop,
@@ -1325,6 +1327,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.phoneCoolerDevices, blackSharkCoolerDevices)
         try container.encode(.remoteSceneId, remoteSceneId)
         try container.encode(.sceneNumericInput, sceneNumericInput)
+        try container.encode(.positioningLockEnabled, positioningLockEnabled)
         try container.encode(.goPro, goPro)
         try container.encode(.replay, replay)
         try container.encode(.portraitVideoOffsetFromTop, portraitVideoOffsetFromTop)
@@ -1447,6 +1450,7 @@ class Database: Codable, ObservableObject {
         )
         remoteSceneId = try? container.decode(UUID?.self, forKey: .remoteSceneId)
         sceneNumericInput = container.decode(.sceneNumericInput, Bool.self, false)
+        positioningLockEnabled = container.decode(.positioningLockEnabled, Bool.self, false)
         goPro = container.decode(.goPro, SettingsGoPro.self, .init())
         replay = container.decode(.replay, SettingsReplay.self, .init())
         portraitVideoOffsetFromTop = container.decode(.portraitVideoOffsetFromTop, Double.self, 0.0)

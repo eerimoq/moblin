@@ -60,6 +60,7 @@ struct WidgetLayoutView: View {
     @Binding var layout: SettingsWidgetLayout
     @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
+    @Binding var positioningLockEnabled: Bool
 
     private func dimensions() -> CMVideoDimensions {
         return model.stream.resolution.dimensions(portrait: model.stream.portrait)
@@ -73,66 +74,138 @@ struct WidgetLayoutView: View {
         return 100 / Double(dimensions().height)
     }
 
-    var body: some View {
-        if widget.hasPosition() || widget.hasSize() || widget.hasAlignment() {
-            Section {
-                if widget.hasAlignment() {
-                    HStack {
-                        HStack {
-                            SaveLoadLayoutView(layout: $layout, widget: widget)
-                            Spacer()
-                        }
-                        Divider()
-                        VStack(spacing: 5) {
-                            HStack(spacing: 3) {
-                                AlignmentOptionView(layout: $layout, alignment: .topLeft)
-                                AlignmentOptionView(layout: $layout, alignment: .topCenter)
-                                AlignmentOptionView(layout: $layout, alignment: .topRight)
-                            }
-                            HStack(spacing: 3) {
-                                AlignmentOptionView(layout: $layout, alignment: .leftCenter)
-                                AlignmentOptionView(layout: $layout, alignment: .center)
-                                AlignmentOptionView(layout: $layout, alignment: .rightCenter)
-                            }
-                            HStack(spacing: 3) {
-                                AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
-                                AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
-                                AlignmentOptionView(layout: $layout, alignment: .bottomRight)
-                            }
-                        }
-                        .onChange(of: layout.alignment) { _ in
-                            model.sceneUpdated()
-                        }
+    private func setXBasedOnYIfLocked() {
+        guard positioningLockEnabled else {
+            return
+        }
+        layout.x = layout.y * horizontalIncrement() / verticalIncrement()
+        layout.xString = String(layout.x)
+    }
+
+    private func setYBasedOnXIfLocked() {
+        guard positioningLockEnabled else {
+            return
+        }
+        layout.y = layout.x * verticalIncrement() / horizontalIncrement()
+        layout.yString = String(layout.y)
+    }
+
+    private func generalAndAlignmentPicker() -> some View {
+        HStack {
+            HStack {
+                SaveLoadLayoutView(layout: $layout, widget: widget)
+                Spacer()
+            }
+            if widget.hasAlignment() {
+                Divider()
+                VStack(spacing: 5) {
+                    HStack(spacing: 3) {
+                        AlignmentOptionView(layout: $layout, alignment: .topLeft)
+                        AlignmentOptionView(layout: $layout, alignment: .topCenter)
+                        AlignmentOptionView(layout: $layout, alignment: .topRight)
+                    }
+                    HStack(spacing: 3) {
+                        AlignmentOptionView(layout: $layout, alignment: .leftCenter)
+                        AlignmentOptionView(layout: $layout, alignment: .center)
+                        AlignmentOptionView(layout: $layout, alignment: .rightCenter)
+                    }
+                    HStack(spacing: 3) {
+                        AlignmentOptionView(layout: $layout, alignment: .bottomLeft)
+                        AlignmentOptionView(layout: $layout, alignment: .bottomCenter)
+                        AlignmentOptionView(layout: $layout, alignment: .bottomRight)
                     }
                 }
+                .onChange(of: layout.alignment) { _ in
+                    model.sceneUpdated()
+                }
+            }
+        }
+    }
+
+    private func horizontalAndVerticalPositioning() -> some View {
+        HStack(alignment: .center) {
+            VStack {
+                PositionEditView(
+                    number: $layout.x,
+                    value: $layout.xString,
+                    onSubmit: {
+                        setYBasedOnXIfLocked()
+                        model.sceneUpdated()
+                    },
+                    numericInput: $numericInput,
+                    incrementImageName: "arrow.forward.circle",
+                    decrementImageName: "arrow.backward.circle",
+                    mirror: layout.alignment.mirrorPositionHorizontally(),
+                    increment: horizontalIncrement()
+                )
+                .padding([.bottom], 10)
+                PositionEditView(
+                    number: $layout.y,
+                    value: $layout.yString,
+                    onSubmit: {
+                        setXBasedOnYIfLocked()
+                        model.sceneUpdated()
+                    },
+                    numericInput: $numericInput,
+                    incrementImageName: "arrow.down.circle",
+                    decrementImageName: "arrow.up.circle",
+                    mirror: layout.alignment.mirrorPositionVertically(),
+                    increment: verticalIncrement()
+                )
+            }
+            Button {
+                positioningLockEnabled.toggle()
+                setYBasedOnXIfLocked()
+            } label: {
+                Image(systemName: positioningLockEnabled ? "lock" : "lock.open")
+                    .font(.title)
+                    .frame(width: 35)
+            }
+            .buttonStyle(.borderless)
+        }
+    }
+
+    private func horizontalPositioning() -> some View {
+        PositionEditView(
+            number: $layout.x,
+            value: $layout.xString,
+            onSubmit: {
+                model.sceneUpdated()
+            },
+            numericInput: $numericInput,
+            incrementImageName: "arrow.forward.circle",
+            decrementImageName: "arrow.backward.circle",
+            mirror: layout.alignment.mirrorPositionHorizontally(),
+            increment: horizontalIncrement()
+        )
+    }
+
+    private func verticalPositioning() -> some View {
+        PositionEditView(
+            number: $layout.y,
+            value: $layout.yString,
+            onSubmit: {
+                model.sceneUpdated()
+            },
+            numericInput: $numericInput,
+            incrementImageName: "arrow.down.circle",
+            decrementImageName: "arrow.up.circle",
+            mirror: layout.alignment.mirrorPositionVertically(),
+            increment: verticalIncrement()
+        )
+    }
+
+    var body: some View {
+        if widget.hasAlignment() || widget.hasPosition() || widget.hasSize() {
+            Section {
+                generalAndAlignmentPicker()
                 if widget.hasPosition() {
-                    if !layout.alignment.isHorizontalCenter() {
-                        PositionEditView(
-                            number: $layout.x,
-                            value: $layout.xString,
-                            onSubmit: {
-                                model.sceneUpdated()
-                            },
-                            numericInput: $numericInput,
-                            incrementImageName: "arrow.forward.circle",
-                            decrementImageName: "arrow.backward.circle",
-                            mirror: layout.alignment.mirrorPositionHorizontally(),
-                            increment: horizontalIncrement()
-                        )
-                    }
-                    if !layout.alignment.isVerticalCenter() {
-                        PositionEditView(
-                            number: $layout.y,
-                            value: $layout.yString,
-                            onSubmit: {
-                                model.sceneUpdated()
-                            },
-                            numericInput: $numericInput,
-                            incrementImageName: "arrow.down.circle",
-                            decrementImageName: "arrow.up.circle",
-                            mirror: layout.alignment.mirrorPositionVertically(),
-                            increment: verticalIncrement()
-                        )
+                    if !layout.alignment.isHorizontalCenter(), !layout.alignment.isVerticalCenter() {
+                        horizontalAndVerticalPositioning()
+                    } else if !layout.alignment.isHorizontalCenter() {
+                        horizontalPositioning()
+                    } else if !layout.alignment.isVerticalCenter() {
+                        verticalPositioning()
                     }
                 }
                 if widget.hasSize() {
