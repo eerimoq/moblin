@@ -2204,6 +2204,7 @@ struct SettingsWidgetLayout {
     var size: Double = 100.0
     var sizeString: String = "100.0"
     var alignment: SettingsAlignment = .topLeft
+    var positioningLock: Bool = false
 
     mutating func updateXString() {
         xString = String(x)
@@ -2250,6 +2251,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              height,
              size,
              alignment,
+             positioningLock,
              migrated,
              migrated2
     }
@@ -2264,6 +2266,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.height, height2)
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
+        try container.encode(.positioningLock, layout.positioningLock)
         try container.encode(.migrated, migrated)
         try container.encode(.migrated2, migrated2)
     }
@@ -2285,6 +2288,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         }
         layout.updateSizeString()
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
+        layout.positioningLock = container.decode(.positioningLock, Bool.self, false)
         migrated = container.decode(.migrated, Bool.self, false)
         migrated2 = container.decode(.migrated2, Bool.self, false)
     }

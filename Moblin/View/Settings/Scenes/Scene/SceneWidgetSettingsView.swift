@@ -12,8 +12,7 @@ struct SceneWidgetSettingsView: View {
                              database: database,
                              layout: $sceneWidget.layout,
                              widget: widget,
-                             numericInput: $database.sceneNumericInput,
-                             positioningLockEnabled: $database.positioningLockEnabled)
+                             numericInput: $database.sceneNumericInput)
             ShortcutSectionView {
                 WidgetShortcutView(model: model, database: model.database, widget: widget)
                 if widget.type == .scene,

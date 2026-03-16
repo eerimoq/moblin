@@ -60,7 +60,6 @@ struct WidgetLayoutView: View {
     @Binding var layout: SettingsWidgetLayout
     @ObservedObject var widget: SettingsWidget
     @Binding var numericInput: Bool
-    @Binding var positioningLockEnabled: Bool
 
     private func dimensions() -> CMVideoDimensions {
         return model.stream.resolution.dimensions(portrait: model.stream.portrait)
@@ -75,7 +74,7 @@ struct WidgetLayoutView: View {
     }
 
     private func setXBasedOnYIfLocked() {
-        guard positioningLockEnabled else {
+        guard layout.positioningLock else {
             return
         }
         layout.x = layout.y * horizontalIncrement() / verticalIncrement()
@@ -83,7 +82,7 @@ struct WidgetLayoutView: View {
     }
 
     private func setYBasedOnXIfLocked() {
-        guard positioningLockEnabled else {
+        guard layout.positioningLock else {
             return
         }
         layout.y = layout.x * verticalIncrement() / horizontalIncrement()
@@ -154,10 +153,10 @@ struct WidgetLayoutView: View {
                 )
             }
             Button {
-                positioningLockEnabled.toggle()
+                layout.positioningLock.toggle()
                 setYBasedOnXIfLocked()
             } label: {
-                Image(systemName: positioningLockEnabled ? "lock" : "lock.open")
+                Image(systemName: layout.positioningLock ? "lock" : "lock.open")
                     .font(.title)
                     .frame(width: 35)
             }
