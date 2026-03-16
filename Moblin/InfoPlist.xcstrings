@@ -571,6 +571,18 @@
         }
       }
     },
+    "NSLocationUsageDescription" : {
+      "comment" : "Privacy - Location Usage Description",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Moblin can display your location and/or speed on screen and stream."
+          }
+        }
+      }
+    },
     "NSLocationWhenInUseUsageDescription" : {
       "comment" : "Privacy - Location When In Use Usage Description",
       "extractionState" : "extracted_with_value",
