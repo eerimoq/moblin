@@ -40,8 +40,8 @@ final class VTuberEffect: VideoEffect {
                 scene.rootNode.addChildNode(cameraNode)
                 self.renderer.scene = scene
                 let node = scene.vrmNode
-                node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, 40 * CGFloat.pi / 180)
-                node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(
+                node.humanoid.node(for: .leftUpperArm)?.eulerAngles = SCNVector3(0, 0, 40 * CGFloat.pi / 180)
+                node.humanoid.node(for: .rightUpperArm)?.eulerAngles = SCNVector3(
                     0,
                     0,
                     -40 * CGFloat.pi / 180
@@ -132,8 +132,8 @@ final class VTuberEffect: VideoEffect {
         angle -= .pi / 2
         angle *= 0.5
         let armAngle = (angle * 0.1) + .pi / 3.5
-        node.humanoid.node(for: .leftShoulder)?.eulerAngles = SCNVector3(0, 0, armAngle)
-        node.humanoid.node(for: .rightShoulder)?.eulerAngles = SCNVector3(0, 0, -armAngle)
+        node.humanoid.node(for: .leftUpperArm)?.eulerAngles = SCNVector3(0, 0, armAngle)
+        node.humanoid.node(for: .rightUpperArm)?.eulerAngles = SCNVector3(0, 0, -armAngle)
     }
 
     private func renderIfNeeded(node: VRMNode, image: CIImage, presentationTimeStamp: Double, time: Double) {
