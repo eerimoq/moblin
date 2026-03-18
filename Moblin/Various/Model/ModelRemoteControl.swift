@@ -573,6 +573,13 @@ extension Model {
             setCameraManQuickButton(on: on)
         }
     }
+
+    private func handleRemoteControlTriggerReaction(reaction: RemoteControlReaction) {
+        guard #available(iOS 17, *) else {
+            return
+        }
+        triggerReaction(reaction: reaction.toSystem())
+    }
 }
 
 extension Model: RemoteControlStreamerDelegate {
@@ -886,6 +893,10 @@ extension Model: RemoteControlStreamerDelegate {
     func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool) {
         handleRemoteControlSetFilter(filter: filter, on: on)
     }
+
+    func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction) {
+        handleRemoteControlTriggerReaction(reaction: reaction)
+    }
 }
 
 extension Model: RemoteControlAssistantDelegate {
@@ -1081,5 +1092,9 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool) {
         handleRemoteControlSetFilter(filter: filter, on: on)
+    }
+
+    func remoteControlWebTriggerReaction(reaction: RemoteControlReaction) {
+        handleRemoteControlTriggerReaction(reaction: reaction)
     }
 }

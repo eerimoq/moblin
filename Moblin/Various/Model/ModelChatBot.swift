@@ -431,14 +431,19 @@ extension Model {
             default:
                 return
             }
-            guard let scene = self.getSelectedScene() else {
-                return
-            }
-            for device in self.getBuiltinCameraDevices(scene: scene, sceneDevice: self.cameraDevice).devices
-                where device.device.availableReactionTypes.contains(reaction)
-            {
-                device.device.performEffect(for: reaction)
-            }
+            self.triggerReaction(reaction: reaction)
+        }
+    }
+
+    @available(iOS 17, *)
+    func triggerReaction(reaction: AVCaptureReactionType) {
+        guard let scene = getSelectedScene() else {
+            return
+        }
+        for device in getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice).devices
+            where device.device.availableReactionTypes.contains(reaction)
+        {
+            device.device.performEffect(for: reaction)
         }
     }
 

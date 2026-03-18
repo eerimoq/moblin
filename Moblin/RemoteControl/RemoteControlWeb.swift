@@ -17,6 +17,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetScoreboardDuration(minutes: Int)
     func remoteControlWebSetScoreboardClock(time: String)
     func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool)
+    func remoteControlWebTriggerReaction(reaction: RemoteControlReaction)
 }
 
 private struct StaticFile {
@@ -278,6 +279,9 @@ class RemoteControlWeb {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setFilter(filter: filter, on: on):
             delegate.remoteControlWebSetFilter(filter: filter, on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .triggerReaction(reaction: reaction):
+            delegate.remoteControlWebTriggerReaction(reaction: reaction)
             sendEmptyOkResponse(connection: connection, id: id)
         default:
             break

@@ -44,6 +44,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
                                    body: Data,
                                    onCompleted: @escaping (Int, [SettingsHttpHeader], Data) -> Void)
     func remoteControlStreamerSetFilter(filter: RemoteControlFilter, on: Bool)
+    func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction)
 }
 
 class RemoteControlStreamer {
@@ -331,6 +332,9 @@ class RemoteControlStreamer {
                 }
         case let .setFilter(filter: filter, on: on):
             delegate.remoteControlStreamerSetFilter(filter: filter, on: on)
+            sendEmptyOkResponse(id: id)
+        case let .triggerReaction(reaction: reaction):
+            delegate.remoteControlStreamerTriggerReaction(reaction: reaction)
             sendEmptyOkResponse(id: id)
         }
     }

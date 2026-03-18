@@ -1,3 +1,4 @@
+import AVFoundation
 import CoreLocation
 import CryptoKit
 import Foundation
@@ -44,6 +45,7 @@ enum RemoteControlRequest: Codable {
     case setScoreboardClock(time: String)
     case whip(url: String, method: String, headers: [SettingsHttpHeader], body: Data)
     case setFilter(filter: RemoteControlFilter, on: Bool)
+    case triggerReaction(reaction: RemoteControlReaction)
 }
 
 enum RemoteControlResponse: Codable {
@@ -82,6 +84,35 @@ struct RemoteControlChatMessage: Codable {
     var isSubscriber: Bool
     var isOwner: Bool
     var bits: String?
+}
+
+enum RemoteControlReaction: Codable, CaseIterable {
+    case fireworks
+    case balloons
+    case hearts
+    case confetti
+    case lasers
+    case rain
+
+    @available(iOS 17, *)
+    func toSystem() -> AVCaptureReactionType {
+        let reaction: AVCaptureReactionType
+        switch self {
+        case .fireworks:
+            reaction = .fireworks
+        case .balloons:
+            reaction = .balloons
+        case .hearts:
+            reaction = .heart
+        case .confetti:
+            reaction = .confetti
+        case .lasers:
+            reaction = .lasers
+        case .rain:
+            reaction = .rain
+        }
+        return reaction
+    }
 }
 
 enum RemoteControlFilter: Codable, CaseIterable {
