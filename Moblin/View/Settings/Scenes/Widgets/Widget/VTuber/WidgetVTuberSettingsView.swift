@@ -62,7 +62,8 @@ struct WidgetVTuberSettingsView: View {
                 cameraFieldOfView: vTuber.cameraFieldOfView,
                 cameraPositionY: vTuber.cameraPositionY,
                 mirror: vTuber.mirror,
-                sensitivity: vTuber.sensitivity
+                sensitivity: vTuber.sensitivity,
+                armsAngle: vTuber.armsAngle
             )
     }
 
@@ -126,5 +127,20 @@ struct WidgetVTuberSettingsView: View {
             .onChange(of: vTuber.sensitivity) { _ in
                 setEffectSettings()
             }
+        Section {
+            HStack {
+                Text("Arms")
+                Slider(
+                    value: $vTuber.armsAngle,
+                    in: 20 ... 90,
+                    step: 1.0
+                )
+                .onChange(of: vTuber.armsAngle) { _ in
+                    setEffectSettings()
+                }
+            }
+        } header: {
+            Text("Angles")
+        }
     }
 }

@@ -1510,6 +1510,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     @Published var modelName: String = ""
     @Published var mirror: Bool = false
     @Published var sensitivity: SettingsSensitivity = .init()
+    @Published var armsAngle: Double = 72.0
 
     enum CodingKeys: CodingKey {
         case id,
@@ -1528,7 +1529,8 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
              cameraFieldOfView,
              modelName,
              mirror,
-             sensitivity
+             sensitivity,
+             armsAngle
     }
 
     init() {}
@@ -1552,6 +1554,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.modelName, modelName)
         try container.encode(.mirror, mirror)
         try container.encode(.sensitivity, sensitivity)
+        try container.encode(.armsAngle, armsAngle)
     }
 
     required init(from decoder: Decoder) throws {
@@ -1573,6 +1576,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         modelName = container.decode(.modelName, String.self, "")
         mirror = container.decode(.mirror, Bool.self, false)
         sensitivity = container.decode(.sensitivity, SettingsSensitivity.self, .init())
+        armsAngle = container.decode(.armsAngle, Double.self, 72.0)
     }
 
     func toCameraId() -> SettingsCameraId {

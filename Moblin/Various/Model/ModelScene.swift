@@ -1175,7 +1175,8 @@ extension Model {
             cameraFieldOfView: widget.vTuber.cameraFieldOfView,
             cameraPositionY: widget.vTuber.cameraPositionY,
             mirror: widget.vTuber.mirror,
-            sensitivity: widget.vTuber.sensitivity
+            sensitivity: widget.vTuber.sensitivity,
+            armsAngle: widget.vTuber.armsAngle
         )
         effects.append(effect)
     }

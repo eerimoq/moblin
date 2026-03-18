@@ -7,6 +7,8 @@ final class VTuberEffect: VideoEffect {
     private var videoSourceId: UUID = .init()
     private var scene: VRMScene?
     private var mirror: Bool = false
+    private var sensitivity = SettingsSensitivity()
+    private var armsAngle: Double = .pi / 2.5
     private let renderer = SCNRenderer(device: nil)
     private var timeStampRebaser = TimeStampRebaser()
     private var previousPresentationTimeStamp = 0.0
@@ -18,7 +20,6 @@ final class VTuberEffect: VideoEffect {
     private var sceneWidget: SettingsSceneWidget?
     private var renderedImagePresentationTimeStamp = 0.0
     private var renderedImage: CIImage?
-    private var sensitivity = SettingsSensitivity()
 
     init(vrm: URL, cameraFieldOfView: Double, cameraPositionY: Double) {
         super.init()
@@ -61,13 +62,15 @@ final class VTuberEffect: VideoEffect {
     func setSettings(cameraFieldOfView: Double,
                      cameraPositionY: Double,
                      mirror: Bool,
-                     sensitivity: SettingsSensitivity)
+                     sensitivity: SettingsSensitivity,
+                     armsAngle: Double)
     {
         processorPipelineQueue.async {
             self.cameraNode?.camera?.fieldOfView = cameraFieldOfView
             self.cameraNode?.position = SCNVector3(0, cameraPositionY, -1.8)
             self.mirror = mirror
             self.sensitivity = sensitivity
+            self.armsAngle = armsAngle.toRadians()
         }
     }
 
@@ -131,7 +134,7 @@ final class VTuberEffect: VideoEffect {
         }
         angle -= .pi / 2
         angle *= 0.5
-        let armAngle = (angle * 0.1) + .pi / 3.5
+        let armAngle = (angle * 0.1) + armsAngle
         node.humanoid.node(for: .leftUpperArm)?.eulerAngles = SCNVector3(0, 0, armAngle)
         node.humanoid.node(for: .rightUpperArm)?.eulerAngles = SCNVector3(0, 0, -armAngle)
     }
