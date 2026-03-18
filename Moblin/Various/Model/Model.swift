@@ -2028,7 +2028,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.quickButtons.first(where: { $0.type == type })?.isOn = isOn
         if let state = getQuickButtonState(type: type) {
             state.isOn = isOn
-            remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(filters: [
+            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(filters: [
                 RemoteControlFilter(type: type): state.isOn,
             ]))
         }
@@ -2038,7 +2038,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.quickButtons.first(where: { $0.type == type })?.isOn.toggle()
         if let state = getQuickButtonState(type: type) {
             state.isOn.toggle()
-            remoteControlStreamer?.stateChanged(state: RemoteControlAssistantStreamerState(filters: [
+            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(filters: [
                 RemoteControlFilter(type: type): state.isOn,
             ]))
         }

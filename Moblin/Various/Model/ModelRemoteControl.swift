@@ -1074,4 +1074,39 @@ extension Model: RemoteControlWebDelegate {
     func remoteControlWebSetScoreboardClock(time: String) {
         handleScoreboardSetClockManual(time: time)
     }
+
+    func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool) {
+        switch filter {
+        case .pixellate:
+            setPixellateQuickButton(on: on)
+        case .movie:
+            setFilterQuickButton(type: .movie, on: on)
+        case .grayScale:
+            setFilterQuickButton(type: .grayScale, on: on)
+        case .sepia:
+            setFilterQuickButton(type: .sepia, on: on)
+        case .triple:
+            setFilterQuickButton(type: .triple, on: on)
+        case .twin:
+            setFilterQuickButton(type: .twin, on: on)
+        case .fourThree:
+            setFilterQuickButton(type: .fourThree, on: on)
+        case .pinch:
+            setPinchQuickButton(on: on)
+        case .whirlpool:
+            setWhirlpoolQuickButton(on: on)
+        case .poll:
+            setPollQuickButton(on: on)
+        case .blurFaces:
+            setBlurFaces(on: on)
+        case .privacy:
+            setPrivacy(on: on)
+        case .beauty:
+            setBeautyQuickButton(on: on)
+        case .moblinInMouth:
+            setMoblinInMouth(on: on)
+        case .cameraMan:
+            setCameraManQuickButton(on: on)
+        }
+    }
 }
