@@ -15,7 +15,7 @@ struct StreamRecordingAudioSettingsView: View {
                 HStack {
                     Slider(
                         value: $bitrate,
-                        in: 0 ... 192,
+                        in: 0 ... 256,
                         step: 32,
                         label: {
                             EmptyView()
