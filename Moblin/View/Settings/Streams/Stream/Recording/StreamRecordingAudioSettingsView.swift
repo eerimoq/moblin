@@ -36,6 +36,8 @@ struct StreamRecordingAudioSettingsView: View {
             } footer: {
                 VStack(alignment: .leading) {
                     Text("128 Kbps or higher is recommended. Set to 0 for automatic.")
+                    Text("")
+                    Text("320 Kbps typically requires stereo mic.")
                 }
             }
         }
