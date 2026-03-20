@@ -182,18 +182,6 @@ func format(speed: Double) -> String {
     return speedFormatter.string(from: measurement)
 }
 
-private func createDistanceFormatter() -> LengthFormatter {
-    let formatter = LengthFormatter()
-    formatter.numberFormatter.maximumFractionDigits = 1
-    return formatter
-}
-
-private let distanceFormatter = createDistanceFormatter()
-
-func format(distance: Double) -> String {
-    return distanceFormatter.string(fromMeters: distance)
-}
-
 private func createWindSpeedFormatter() -> MeasurementFormatter {
     let formatter = MeasurementFormatter()
     formatter.numberFormatter.maximumFractionDigits = 0
@@ -228,6 +216,18 @@ func formatPace(speed: Double) -> String {
         pace = "-"
     }
     return String(localized: "\(pace) min/\(unit.symbol)")
+}
+
+private func createDistanceFormatter() -> LengthFormatter {
+    let formatter = LengthFormatter()
+    formatter.numberFormatter.maximumFractionDigits = 1
+    return formatter
+}
+
+private let distanceFormatter = createDistanceFormatter()
+
+func format(distance: Double) -> String {
+    return distanceFormatter.string(fromMeters: distance)
 }
 
 private func createAltitudeFormatter() -> MeasurementFormatter {
