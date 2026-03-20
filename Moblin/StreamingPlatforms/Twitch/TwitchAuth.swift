@@ -82,9 +82,11 @@ class TwitchAuth: NSObject {
         }
         urlComponents.queryItems = [
             .init(name: "client_id", value: twitchMoblinAppClientId),
+            .init(name: "force_verify", value: "true"),
             .init(name: "redirect_uri", value: redirectUri),
             .init(name: "response_type", value: "token"),
             .init(name: "scope", value: scopes.joined(separator: "+")),
+            .init(name: "state", value: randomHumanString()),
         ]
         return urlComponents.url
     }
