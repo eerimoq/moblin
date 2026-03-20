@@ -580,6 +580,41 @@ extension Model {
         }
         triggerReaction(reaction: reaction.toSystem())
     }
+
+    private func handleGetSettings() -> RemoteControlSettings {
+        let scenes = enabledScenes.map {
+            RemoteControlSettingsScene(id: $0.id, name: $0.name)
+        }
+        let autoSceneSwitchers = database.autoSceneSwitchers.switchers.map {
+            RemoteControlSettingsAutoSceneSwitcher(id: $0.id, name: $0.name)
+        }
+        let mics = database.mics.mics.map {
+            RemoteControlSettingsMic(id: $0.id, name: $0.name)
+        }
+        let bitratePresets = database.bitratePresets.map {
+            RemoteControlSettingsBitratePreset(id: $0.id, bitrate: $0.bitrate)
+        }
+        let connectionPriorities = stream.srt.connectionPriorities.priorities
+            .map {
+                RemoteControlSettingsSrtConnectionPriority(
+                    id: $0.id,
+                    name: $0.name,
+                    priority: $0.priority,
+                    enabled: $0.enabled
+                )
+            }
+        let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
+        return RemoteControlSettings(
+            scenes: scenes,
+            autoSceneSwitchers: autoSceneSwitchers,
+            bitratePresets: bitratePresets,
+            mics: mics,
+            srt: RemoteControlSettingsSrt(
+                connectionPrioritiesEnabled: connectionPrioritiesEnabled,
+                connectionPriorities: connectionPriorities
+            )
+        )
+    }
 }
 
 extension Model: RemoteControlStreamerDelegate {
@@ -618,38 +653,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerGetSettings() -> RemoteControlSettings {
-        let scenes = enabledScenes.map {
-            RemoteControlSettingsScene(id: $0.id, name: $0.name)
-        }
-        let autoSceneSwitchers = database.autoSceneSwitchers.switchers.map {
-            RemoteControlSettingsAutoSceneSwitcher(id: $0.id, name: $0.name)
-        }
-        let mics = database.mics.mics.map {
-            RemoteControlSettingsMic(id: $0.id, name: $0.name)
-        }
-        let bitratePresets = database.bitratePresets.map {
-            RemoteControlSettingsBitratePreset(id: $0.id, bitrate: $0.bitrate)
-        }
-        let connectionPriorities = stream.srt.connectionPriorities.priorities
-            .map {
-                RemoteControlSettingsSrtConnectionPriority(
-                    id: $0.id,
-                    name: $0.name,
-                    priority: $0.priority,
-                    enabled: $0.enabled
-                )
-            }
-        let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
-        return RemoteControlSettings(
-            scenes: scenes,
-            autoSceneSwitchers: autoSceneSwitchers,
-            bitratePresets: bitratePresets,
-            mics: mics,
-            srt: RemoteControlSettingsSrt(
-                connectionPrioritiesEnabled: connectionPrioritiesEnabled,
-                connectionPriorities: connectionPriorities
-            )
-        )
+        return handleGetSettings()
     }
 
     func remoteControlStreamerSetScene(id: UUID) {
@@ -1044,6 +1048,14 @@ extension Model: RemoteControlWebDelegate {
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     {
         return remoteControlStreamerGetStatus()
+    }
+
+    func remoteControlWebGetSettings() -> RemoteControlSettings {
+        return handleGetSettings()
+    }
+
+    func remoteControlWebSetScene(id: UUID) {
+        selectScene(id: id)
     }
 
     func remoteControlWebSetRecord(on: Bool) {

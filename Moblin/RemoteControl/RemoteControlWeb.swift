@@ -5,6 +5,8 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebConnected()
     func remoteControlWebGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
+    func remoteControlWebGetSettings() -> RemoteControlSettings
+    func remoteControlWebSetScene(id: UUID)
     func remoteControlWebSetRecord(on: Bool)
     func remoteControlWebSetStream(on: Bool)
     func remoteControlWebSetDebugLogging(on: Bool)
@@ -241,6 +243,13 @@ class RemoteControlWeb {
                      result: .ok,
                      data: .getStatus(general: general, topLeft: topLeft, topRight: topRight)
                  ))
+        case .getSettings:
+            let data = delegate.remoteControlWebGetSettings()
+            send(connection: connection,
+                 message: .response(id: id, result: .ok, data: .getSettings(data: data)))
+        case let .setScene(id: sceneId):
+            delegate.remoteControlWebSetScene(id: sceneId)
+            sendEmptyOkResponse(connection: connection, id: id)
         case let .setRecord(on: on):
             delegate.remoteControlWebSetRecord(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
