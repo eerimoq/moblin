@@ -1148,6 +1148,7 @@ class Database: Codable, ObservableObject {
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
     var autoSceneSwitchers: SettingsAutoSceneSwitchers = .init()
+    var autoCameraSwitchers: SettingsAutoCameraSwitchers = .init()
     @Published var fixedHorizon: Bool = false
     @Published var whirlpoolAngle: Float = .pi / 2
     @Published var pinchScale: Float = 0.5
@@ -1253,6 +1254,7 @@ class Database: Codable, ObservableObject {
              replay,
              portraitVideoOffsetFromTop,
              autoSceneSwitchers,
+             autoCameraSwitchers,
              fixedHorizon,
              whirlpoolAngle,
              pinchScale,
@@ -1329,6 +1331,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.portraitVideoOffsetFromTop, portraitVideoOffsetFromTop)
         try container.encode(.autoSceneSwitchers, autoSceneSwitchers)
+        try container.encode(.autoCameraSwitchers, autoCameraSwitchers)
         try container.encode(.fixedHorizon, fixedHorizon)
         try container.encode(.whirlpoolAngle, whirlpoolAngle)
         try container.encode(.pinchScale, pinchScale)
@@ -1451,6 +1454,11 @@ class Database: Codable, ObservableObject {
         replay = container.decode(.replay, SettingsReplay.self, .init())
         portraitVideoOffsetFromTop = container.decode(.portraitVideoOffsetFromTop, Double.self, 0.0)
         autoSceneSwitchers = container.decode(.autoSceneSwitchers, SettingsAutoSceneSwitchers.self, .init())
+        autoCameraSwitchers = container.decode(
+            .autoCameraSwitchers,
+            SettingsAutoCameraSwitchers.self,
+            .init()
+        )
         fixedHorizon = container.decode(.fixedHorizon, Bool.self, false)
         whirlpoolAngle = container.decode(.whirlpoolAngle, Float.self, .pi / 2)
         pinchScale = container.decode(.pinchScale, Float.self, 0.5)
