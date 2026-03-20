@@ -8,6 +8,24 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "32.0.0", date: "2026-03-20", changes: [
+        "• Setting to disable PiP when streaming in background. 💡 cliffcreates",
+        "• Move widgets slightly up not to sometimes show a gap.",
+        "• Export/import settings via files instead of clipboard.",
+        "  • The exported archive contains widget assets.",
+        "• Widget positioning lock button.",
+        "  • To easily set identical vertical and horizontal offsets.",
+        "• Single window on Mac.",
+        "  • Was impossible to close second window.",
+        "• Make keyboard work on MacOS. 🐛 JohannesLiv 🧑‍🏭 Copilot",
+        "• Make text widget Location toggle work.",
+        "• Fix V-Tuber shoulders. 🧑‍🏭 kat",
+        "• Enable/disable filters over web remote control.",
+        "• VTuber arms angle setting. 💡 kat",
+        "• 320 kbps maximum audio bitrate when recording. 💡 kat",
+        "  • Typically requires stereo mic.",
+        "• Make Twitch login work? 🐛 R•O•X•Y",
+    ]),
     Version(version: "31.0.0", date: "2026-03-14", changes: [
         "• Korean translation updated. ✍️ Winter1l",
         "• Make it look better on Mac. 💡 JohannesLiv",
