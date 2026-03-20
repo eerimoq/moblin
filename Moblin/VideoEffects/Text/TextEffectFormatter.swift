@@ -303,12 +303,10 @@ class TextEffectFormatter {
 
     private func formatWind(stats: TextEffectStats) {
         if let windSpeed = stats.windSpeed {
-            let windSpeed = Int(windSpeed.converted(to: .metersPerSecond).value)
             if let windGust = stats.windGust {
-                let windGust = Int(windGust.converted(to: .metersPerSecond).value)
-                appendTextPart(value: "\(windSpeed) (\(windGust)) m/s")
+                appendTextPart(value: formatWindAndGustSpeed(speed: windSpeed, gust: windGust))
             } else {
-                appendTextPart(value: "\(windSpeed) m/s")
+                appendTextPart(value: formatWindSpeed(speed: windSpeed))
             }
         } else {
             appendTextPart(value: "-")

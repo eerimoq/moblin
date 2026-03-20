@@ -194,6 +194,27 @@ func format(distance: Double) -> String {
     return distanceFormatter.string(fromMeters: distance)
 }
 
+private func createWindSpeedFormatter() -> MeasurementFormatter {
+    let formatter = MeasurementFormatter()
+    formatter.numberFormatter.maximumFractionDigits = 0
+    formatter.unitOptions = .providedUnit
+    return formatter
+}
+
+private let windSpeedFormatter = createWindSpeedFormatter()
+
+func formatWindSpeed(speed: Measurement<UnitSpeed>) -> String {
+    let unit: UnitSpeed = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+    return windSpeedFormatter.string(from: speed.converted(to: unit))
+}
+
+func formatWindAndGustSpeed(speed: Measurement<UnitSpeed>, gust: Measurement<UnitSpeed>) -> String {
+    let unit: UnitSpeed = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+    let speed = Int(speed.converted(to: unit).value)
+    let gust = Int(gust.converted(to: unit).value)
+    return "\(speed) (\(gust)) \(unit.symbol)"
+}
+
 func formatPace(speed: Double) -> String {
     let unit: UnitLength = Locale.current.measurementSystem == .metric ? .kilometers : .miles
     let pace: String

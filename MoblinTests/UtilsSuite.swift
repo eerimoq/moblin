@@ -28,6 +28,20 @@ struct UtilsSuite {
         #expect(formatPace(speed: 16.667) == "0:59 min/km")
     }
 
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    func windSpeed() {
+        #expect(formatWindSpeed(speed: Measurement(value: 5, unit: .milesPerHour)) == "2 m/s")
+        #expect(formatWindSpeed(speed: Measurement(value: 10, unit: .milesPerHour)) == "4 m/s")
+    }
+
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
+    func windSpeedAndGust() {
+        #expect(formatWindAndGustSpeed(speed: Measurement(value: 5, unit: .milesPerHour),
+                                       gust: Measurement(value: 10, unit: .milesPerHour)) == "2 (4) m/s")
+        #expect(formatWindAndGustSpeed(speed: Measurement(value: 15, unit: .milesPerHour),
+                                       gust: Measurement(value: 20, unit: .milesPerHour)) == "6 (8) m/s")
+    }
+
     @Test
     func uuidAddEmpty() throws {
         let original = try #require(UUID(uuidString: "00000000-1111-2222-3333-000000000000"))
