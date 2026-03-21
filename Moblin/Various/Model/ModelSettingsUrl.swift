@@ -139,11 +139,40 @@ extension Model {
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
         for url in urls {
-            if let message = handleSettingsUrl(url: url.url) {
+            if url.url.isFileURL,
+               url.url.pathExtension.caseInsensitiveCompare("moblinSettings") == .orderedSame
+            {
+                handleSettingsFileImport(url: url.url)
+            } else if let message = handleSettingsUrl(url: url.url) {
                 makeErrorToast(
                     title: String(localized: "URL import failed"),
                     subTitle: message
                 )
+            }
+        }
+    }
+
+    private func handleSettingsFileImport(url: URL) {
+        guard !isLive, !isRecording else {
+            makeErrorToast(
+                title: String(localized: "Import settings failed"),
+                subTitle: String(localized: "Cannot import settings while live or recording")
+            )
+            return
+        }
+        settings.importFromFile(url: url) { message in
+            if let message {
+                self.makeErrorToast(
+                    title: String(localized: "Import settings failed"),
+                    subTitle: message
+                )
+            } else {
+                self.setCurrentStream()
+                self.updateIconImageFromDatabase()
+                self.reloadStream()
+                self.resetSelectedScene()
+                self.updateQuickButtonStates()
+                self.makeToast(title: String(localized: "Settings imported successfully"))
             }
         }
     }
