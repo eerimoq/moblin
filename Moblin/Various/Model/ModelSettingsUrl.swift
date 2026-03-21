@@ -139,12 +139,26 @@ extension Model {
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
         for url in urls {
-            if let message = handleSettingsUrl(url: url.url) {
+            if url.url.isFileURL,
+               url.url.pathExtension.caseInsensitiveCompare("moblinSettings") == .orderedSame
+            {
+                handleSettingsFileImport(url: url.url)
+            } else if let message = handleSettingsUrl(url: url.url) {
                 makeErrorToast(
                     title: String(localized: "URL import failed"),
                     subTitle: message
                 )
             }
+        }
+    }
+
+    private func handleSettingsFileImport(url: URL) {
+        guard !isLive, !isRecording else {
+            return
+        }
+        _ = url.startAccessingSecurityScopedResource()
+        importFromFile(url: url) {
+            url.stopAccessingSecurityScopedResource()
         }
     }
 

@@ -45,12 +45,7 @@ struct ImportSettingsView: View {
 
     private func onUrl(url: URL) {
         importing = true
-        model.settings.importFromFile(url: url) { message in
-            if let message {
-                failed(message: message)
-            } else {
-                succeeded()
-            }
+        model.importFromFile(url: url) {
             importing = false
         }
     }

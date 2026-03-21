@@ -2,49 +2,49 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleIdentifier</key>
-			<string></string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.eerimoq.Mobs</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>moblin</string>
-			</array>
-		</dict>
-	</array>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_http._tcp</string>
-		<string>_moblink._tcp</string>
-	</array>
-	<key>NSCameraReactionEffectsEnabled</key>
-	<true/>
-	<key>NSUserActivityTypes</key>
-	<array>
-		<string>IntentIntent</string>
-		<string>MuteIntent</string>
-	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
-		<string>location</string>
-		<string>bluetooth-central</string>
-		<string>voip</string>
-	</array>
-	<key>UIFileSharingEnabled</key>
-	<true/>
+        <key>CFBundleURLTypes</key>
+        <array>
+                <dict>
+                        <key>CFBundleIdentifier</key>
+                        <string></string>
+                        <key>CFBundleTypeRole</key>
+                        <string>Editor</string>
+                        <key>CFBundleURLName</key>
+                        <string>com.eerimoq.Mobs</string>
+                        <key>CFBundleURLSchemes</key>
+                        <array>
+                                <string>moblin</string>
+                        </array>
+                </dict>
+        </array>
+        <key>ITSAppUsesNonExemptEncryption</key>
+        <false/>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+                <key>NSAllowsArbitraryLoads</key>
+                <true/>
+        </dict>
+        <key>NSBonjourServices</key>
+        <array>
+                <string>_http._tcp</string>
+                <string>_moblink._tcp</string>
+        </array>
+        <key>NSCameraReactionEffectsEnabled</key>
+        <true/>
+        <key>NSUserActivityTypes</key>
+        <array>
+                <string>IntentIntent</string>
+                <string>MuteIntent</string>
+        </array>
+        <key>UIBackgroundModes</key>
+        <array>
+                <string>audio</string>
+                <string>location</string>
+                <string>bluetooth-central</string>
+                <string>voip</string>
+        </array>
+        <key>UIFileSharingEnabled</key>
+        <true/>
     <key>UIApplicationSceneManifest</key>
     <dict>
             <key>UIApplicationSupportsMultipleScenes</key>
@@ -74,5 +74,40 @@
             <dict/>
         </dict>
     </dict>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>Moblin Settings</string>
+            <key>LSHandlerRank</key>
+            <string>Owner</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>com.eerimoq.moblin.settings</string>
+            </array>
+        </dict>
+    </array>
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.data</string>
+            </array>
+            <key>UTTypeDescription</key>
+            <string>Moblin Settings</string>
+            <key>UTTypeIconFiles</key>
+            <array/>
+            <key>UTTypeIdentifier</key>
+            <string>com.eerimoq.moblin.settings</string>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <array>
+                    <string>moblinSettings</string>
+                </array>
+            </dict>
+        </dict>
+    </array>
 </dict>
 </plist>

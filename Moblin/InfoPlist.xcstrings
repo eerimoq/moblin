@@ -133,6 +133,9 @@
         }
       }
     },
+    "Moblin Settings" : {
+
+    },
     "NSBluetoothAlwaysUsageDescription" : {
       "comment" : "Privacy - Bluetooth Always Usage Description",
       "extractionState" : "extracted_with_value",
