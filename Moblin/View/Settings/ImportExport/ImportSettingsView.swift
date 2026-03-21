@@ -34,13 +34,6 @@ struct ImportSettingsView: View {
     @State private var showPicker = false
     @State private var importState: ImportState = .idle
 
-    private func onUrl(url: URL) {
-        importState = .fromFile
-        model.importFromFile(url: url) {
-            importState = .idle
-        }
-    }
-
     var body: some View {
         Section {
             if importState == .fromFile {
@@ -50,7 +43,14 @@ struct ImportSettingsView: View {
             } else {
                 TextButtonView("Import from file") {
                     showPicker = true
-                    model.onDocumentPickerUrl = onUrl
+                    model.onDocumentPickerUrl = { url in
+                        model.importSettingsWithConfirmation {
+                            importState = .fromFile
+                            model.importFromFile(url: url) {
+                                importState = .idle
+                            }
+                        }
+                    }
                 }
                 .disabled(model.isLive || model.isRecording || importState != .idle)
                 .sheet(isPresented: $showPicker) {
@@ -65,9 +65,11 @@ struct ImportSettingsView: View {
                 }
             } else {
                 TextButtonView("Import from clipboard") {
-                    importState = .fromClipboard
-                    model.importFromClipboard {
-                        importState = .idle
+                    model.importSettingsWithConfirmation {
+                        importState = .fromClipboard
+                        model.importFromClipboard {
+                            importState = .idle
+                        }
                     }
                 }
                 .disabled(model.isLive || model.isRecording || importState != .idle)

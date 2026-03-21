@@ -32,6 +32,11 @@ extension Model {
         completion()
     }
 
+    func importSettingsWithConfirmation(action: @escaping () -> Void) {
+        pendingSettingsImportAction = action
+        presentingSettingsImportConfirmation = true
+    }
+
     private func handleClipboardData(data: Data?, completion: @escaping () -> Void) {
         guard let data else {
             failed(message: String(localized: "Failed to read clipboard data"))

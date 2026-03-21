@@ -78,7 +78,7 @@
     <array>
         <dict>
             <key>CFBundleTypeName</key>
-            <string>Moblin Settings</string>
+            <string>Moblin settings</string>
             <key>LSHandlerRank</key>
             <string>Owner</string>
             <key>LSItemContentTypes</key>
@@ -95,7 +95,7 @@
                 <string>public.data</string>
             </array>
             <key>UTTypeDescription</key>
-            <string>Moblin Settings</string>
+            <string>Moblin settings</string>
             <key>UTTypeIconFiles</key>
             <array/>
             <key>UTTypeIdentifier</key>
