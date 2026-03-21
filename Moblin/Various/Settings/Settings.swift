@@ -2131,6 +2131,16 @@ final class Settings {
         }
     }
 
+    func importFromClipboard(settings: String, onCompleted: @escaping (String?) -> Void) {
+        do {
+            try tryLoadAndMigrate(settings: settings)
+            store()
+            onCompleted(nil)
+        } catch {
+            onCompleted(String(localized: "Malformed settings"))
+        }
+    }
+
     func exportToFile(onCompleted: @escaping (URL?) -> Void) {
         store()
         let settingsJson = [UInt8](storage.utf8)
