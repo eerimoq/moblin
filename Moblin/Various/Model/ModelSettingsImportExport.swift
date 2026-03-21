@@ -12,6 +12,17 @@ extension Model {
         }
     }
 
+    func importFromClipboard(completion: @escaping () -> Void) {
+        settings.importFromClipboard { message in
+            if let message {
+                self.failed(message: message)
+            } else {
+                self.succeeded()
+            }
+            completion()
+        }
+    }
+
     private func succeeded() {
         setCurrentStream()
         updateIconImageFromDatabase()

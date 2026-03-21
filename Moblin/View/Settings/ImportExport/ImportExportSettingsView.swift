@@ -5,9 +5,7 @@ struct ImportExportSettingsView: View {
 
     var body: some View {
         Form {
-            Section {
-                ImportSettingsView(model: model)
-            }
+            ImportSettingsView(model: model)
             Section {
                 ExportSettingsView(model: model)
             } footer: {
