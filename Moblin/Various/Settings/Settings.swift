@@ -2060,6 +2060,11 @@ private let exportDirectories = [
     vTuberStorageDirectory,
     replayTransitionsStorageDirectory,
 ]
+private let exportSettingsDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd-HHmmss"
+    return formatter
+}()
 
 final class Settings {
     private var realDatabase = Database()
@@ -2128,9 +2133,10 @@ final class Settings {
     func exportToFile(onCompleted: @escaping (URL?) -> Void) {
         store()
         let settingsJson = [UInt8](storage.utf8)
+        let dateString = exportSettingsDateFormatter.string(from: Date())
         DispatchQueue.global().async {
             let url = FileManager.default.temporaryDirectory
-                .appendingPathComponent("MoblinSettings")
+                .appendingPathComponent("moblinSettings-\(dateString)")
                 .appendingPathExtension("zip")
             try? FileManager.default.removeItem(at: url)
             do {
