@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 
 extension Model {
     func importFromFile(url: URL, completion: @escaping () -> Void) {
@@ -13,13 +13,22 @@ extension Model {
     }
 
     func importFromClipboard(completion: @escaping () -> Void) {
-        settings.importFromClipboard { message in
-            if let message {
-                self.failed(message: message)
+        guard let url = UIPasteboard.general.url ?? UIPasteboard.general.string
+            .flatMap({ URL(string: $0) })
+        else {
+            failed(message: String(localized: "No URL found in clipboard"))
+            completion()
+            return
+        }
+        if url.scheme == "moblin" {
+            if let message = handleSettingsUrl(url: url) {
+                failed(message: message)
             } else {
-                self.succeeded()
+                succeeded()
             }
             completion()
+        } else {
+            importFromFile(url: url, completion: completion)
         }
     }
 

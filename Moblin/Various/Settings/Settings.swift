@@ -2131,16 +2131,6 @@ final class Settings {
         }
     }
 
-    func importFromClipboard(onCompleted: @escaping (String?) -> Void) {
-        guard let url = UIPasteboard.general.url else {
-            onCompleted("Not a URL")
-            let count = UIPasteboard.general.string?.count
-            logger.info("xxx number of items \(UIPasteboard.general.numberOfItems) \(count)")
-            return
-        }
-        importFromFile(url: url, onCompleted: onCompleted)
-    }
-
     func exportToFile(onCompleted: @escaping (URL?) -> Void) {
         store()
         let settingsJson = [UInt8](storage.utf8)
