@@ -368,6 +368,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showModerationAuth = false
     @Published var presentingModeration = false
     @Published var presentingPredefinedMessages: Bool = false
+    @Published var presentingSettingsImportConfirmation = false
+    var pendingSettingsImportAction: (() -> Void)?
     @Published var showDrawOnStream = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false

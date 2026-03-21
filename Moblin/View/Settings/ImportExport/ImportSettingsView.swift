@@ -33,10 +33,24 @@ struct ImportSettingsView: View {
     @ObservedObject var model: Model
     @State private var showPicker = false
     @State private var importState: ImportState = .idle
+    @State private var pendingFileUrl: URL?
+    @State private var presentingImportConfirmation = false
 
     private func onUrl(url: URL) {
+        pendingFileUrl = url
+        presentingImportConfirmation = true
+    }
+
+    private func performFileImport(url: URL) {
         importState = .fromFile
         model.importFromFile(url: url) {
+            importState = .idle
+        }
+    }
+
+    private func performClipboardImport() {
+        importState = .fromClipboard
+        model.importFromClipboard {
             importState = .idle
         }
     }
@@ -65,13 +79,22 @@ struct ImportSettingsView: View {
                 }
             } else {
                 TextButtonView("Import from clipboard") {
-                    importState = .fromClipboard
-                    model.importFromClipboard {
-                        importState = .idle
-                    }
+                    pendingFileUrl = nil
+                    presentingImportConfirmation = true
                 }
                 .disabled(model.isLive || model.isRecording || importState != .idle)
             }
+        }
+        .confirmationDialog("", isPresented: $presentingImportConfirmation) {
+            Button("Import settings", role: .destructive) {
+                if let url = pendingFileUrl {
+                    performFileImport(url: url)
+                } else {
+                    performClipboardImport()
+                }
+            }
+        } message: {
+            Text("Are you sure you want to import settings? This will replace your current settings.")
         }
     }
 }

@@ -142,8 +142,12 @@ extension Model {
             if url.url.isFileURL,
                url.url.pathExtension.caseInsensitiveCompare("moblinSettings") == .orderedSame
             {
-                handleSettingsFileImport(url: url.url)
-            } else if let message = handleSettingsUrl(url: url.url) {
+                let fileUrl = url.url
+                pendingSettingsImportAction = { [weak self] in
+                    self?.handleSettingsFileImport(url: fileUrl)
+                }
+                presentingSettingsImportConfirmation = true
+            } else if let message = handleSettingsUrlWithConfirmation(url: url.url) {
                 makeErrorToast(
                     title: String(localized: "URL import failed"),
                     subTitle: message
@@ -162,7 +166,7 @@ extension Model {
         }
     }
 
-    func handleSettingsUrl(url: URL) -> String? {
+    private func handleSettingsUrlWithConfirmation(url: URL) -> String? {
         guard url.path.isEmpty else {
             return "Custom URL path is not empty"
         }
@@ -178,7 +182,10 @@ extension Model {
         if createStreamWizard.presenting || createStreamWizard.presentingSetup {
             handleSettingsUrlsInWizard(settings: settings)
         } else {
-            handleSettingsUrlsDefault(settings: settings)
+            pendingSettingsImportAction = { [weak self] in
+                self?.handleSettingsUrlsDefault(settings: settings)
+            }
+            presentingSettingsImportConfirmation = true
         }
         return nil
     }
