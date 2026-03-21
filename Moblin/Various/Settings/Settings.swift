@@ -2061,6 +2061,12 @@ private let exportDirectories = [
     replayTransitionsStorageDirectory,
 ]
 
+private let exportSettingsDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd_HHmmss"
+    return formatter
+}()
+
 final class Settings {
     private var realDatabase = Database()
     var database: Database {
@@ -2128,10 +2134,11 @@ final class Settings {
     func exportToFile(onCompleted: @escaping (URL?) -> Void) {
         store()
         let settingsJson = [UInt8](storage.utf8)
+        let dateAndTime = exportSettingsDateFormatter.string(from: Date())
         DispatchQueue.global().async {
             let url = FileManager.default.temporaryDirectory
-                .appendingPathComponent("MoblinSettings")
-                .appendingPathExtension("zip")
+                .appendingPathComponent("\(UIDevice.current.name)_\(dateAndTime)")
+                .appendingPathExtension("moblinSettings")
             try? FileManager.default.removeItem(at: url)
             do {
                 try ZipArchiveWriter.withFile(url.path, options: .create) { writer in
