@@ -335,7 +335,6 @@ private class RtpVideoProcessor: RtpProcessor {
     private var formatDescription: CMFormatDescription?
     private weak var client: RtspClient?
 
-    // periphery:ignore
     init(formatDescription: CMFormatDescription, client: RtspClient) {
         self.formatDescription = formatDescription
         self.client = client
@@ -577,6 +576,7 @@ class RtspClient {
     weak var delegate: RtspClientDelegate?
     private var connectTimer = SimpleTimer(queue: rtspClientQueue)
     private var keepAliveTimer = SimpleTimer(queue: rtspClientQueue)
+    private var reconnectTimer = SimpleTimer(queue: rtspClientQueue)
     private var started = false
     private var isAlive = true
     private var totalBytesReceived: UInt64 = 0
@@ -654,7 +654,7 @@ class RtspClient {
         rtpVideo.client = self
         setState(newState: .connecting)
         connectTimer.startSingleShot(timeout: 5) { [weak self] in
-            self?.startInternal()
+            self?.reconnectSoon()
         }
         isAlive = true
         realm = nil
@@ -668,9 +668,17 @@ class RtspClient {
     private func stopInternal() {
         connectTimer.stop()
         keepAliveTimer.stop()
+        reconnectTimer.stop()
         connection?.cancel()
         connection = nil
         setState(newState: .disconnected)
+    }
+
+    private func reconnectSoon() {
+        stopInternal()
+        reconnectTimer.startSingleShot(timeout: 5) { [weak self] in
+            self?.startInternal()
+        }
     }
 
     private func rtspConnectionStateDidChange(to state: NWConnection.State) {
@@ -907,7 +915,7 @@ class RtspClient {
 
     private func keepAlive() {
         guard isAlive else {
-            startInternal()
+            reconnectSoon()
             return
         }
         isAlive = false
