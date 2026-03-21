@@ -530,11 +530,16 @@ private class Rtp {
         guard version == 2 else {
             throw "Unsupported version \(version)"
         }
-        guard x == 0 else {
-            throw "Unsupported x \(x)"
+        var payloadOffset = 12 + Int(cc) * 4
+        if x == 1 {
+            guard packet.count >= payloadOffset + 4 else {
+                throw "Packet too short for extension header"
+            }
+            let extensionLength = Int(packet[payloadOffset + 2]) << 8 | Int(packet[payloadOffset + 3])
+            payloadOffset += 4 + extensionLength * 4
         }
-        guard cc == 0 else {
-            throw "Unsupported cc \(cc)"
+        guard packet.count >= payloadOffset else {
+            throw "Packet too short for payload"
         }
         if nextExpectedSequenceNumber == nil {
             nextExpectedSequenceNumber = sequenceNumber
@@ -542,7 +547,13 @@ private class Rtp {
         guard sequenceNumber == nextExpectedSequenceNumber else {
             throw "Wrong sequence number"
         }
-        try processor?.process(packet: packet, timestamp: updateTimestamp(timestamp: timestamp))
+        let processPacket: Data
+        if payloadOffset == 12 {
+            processPacket = packet
+        } else {
+            processPacket = packet[..<12] + packet[payloadOffset...]
+        }
+        try processor?.process(packet: processPacket, timestamp: updateTimestamp(timestamp: timestamp))
         nextExpectedSequenceNumber! &+= 1
     }
 
