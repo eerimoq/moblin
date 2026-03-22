@@ -331,24 +331,24 @@ private struct LiveView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
     @State private var presentingConfirm: Bool = false
-    @State private var pendingValue: Bool = false
+    @State private var pendingStreaming: Bool = false
 
     var body: some View {
         Toggle("Live", isOn: Binding(
             get: { remoteControl.streaming },
-            set: { newValue in
-                let confirmed = model.remoteControlAssistantStreamerState.streaming
-                guard newValue != confirmed else { return }
-                pendingValue = newValue
+            set: { streaming in
+                guard streaming != model.remoteControlAssistantStreamerState.streaming else {
+                    return
+                }
+                pendingStreaming = streaming
                 presentingConfirm = true
             }
         ))
         .confirmationDialog("", isPresented: $presentingConfirm) {
-            Button(pendingValue ? "Go Live" : "End") {
-                model.remoteControlAssistantSetStream(on: pendingValue)
-                remoteControl.streaming = pendingValue
+            Button(pendingStreaming ? "Go Live" : "End") {
+                model.remoteControlAssistantSetStream(on: pendingStreaming)
+                remoteControl.streaming = pendingStreaming
             }
-            Button("Cancel", role: .cancel) {}
         }
     }
 }
@@ -357,24 +357,24 @@ private struct RecordingView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
     @State private var presentingConfirm: Bool = false
-    @State private var pendingValue: Bool = false
+    @State private var pendingRecording: Bool = false
 
     var body: some View {
         Toggle("Recording", isOn: Binding(
             get: { remoteControl.recording },
-            set: { newValue in
-                let confirmed = model.remoteControlAssistantStreamerState.recording
-                guard newValue != confirmed else { return }
-                pendingValue = newValue
+            set: { recording in
+                guard recording != model.remoteControlAssistantStreamerState.recording else {
+                    return
+                }
+                pendingRecording = recording
                 presentingConfirm = true
             }
         ))
         .confirmationDialog("", isPresented: $presentingConfirm) {
-            Button(pendingValue ? "Start recording" : "Stop recording") {
-                model.remoteControlAssistantSetRecord(on: pendingValue)
-                remoteControl.recording = pendingValue
+            Button(pendingRecording ? "Start recording" : "Stop recording") {
+                model.remoteControlAssistantSetRecord(on: pendingRecording)
+                remoteControl.recording = pendingRecording
             }
-            Button("Cancel", role: .cancel) {}
         }
     }
 }
