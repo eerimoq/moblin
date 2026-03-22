@@ -15,10 +15,8 @@ struct ExportSettingsView: View {
             }
         }
         .onAppear {
-            model.settings.exportToFile { url in
-                DispatchQueue.main.async {
-                    self.url = url
-                }
+            model.exportToFile {
+                self.url = $0
             }
         }
     }

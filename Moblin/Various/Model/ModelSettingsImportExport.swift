@@ -47,6 +47,10 @@ extension Model {
         }
     }
 
+    func exportToFile(completion: @escaping (URL?) -> Void) {
+        settings.exportToFile(onCompleted: completion)
+    }
+
     private func importDone(message: String?) {
         if let message {
             importFailed(message: message)
