@@ -1,19 +1,12 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-extension UTType {
-    static let moblinSettings = UTType(
-        exportedAs: "com.eerimoq.moblin.settings",
-        conformingTo: .data
-    )
-}
-
 private struct SettingsFilePickerView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
 
     func makeUIViewController(context _: Context) -> UIDocumentPickerViewController {
         let documentPicker = UIDocumentPickerViewController(
-            forOpeningContentTypes: [UTType.moblinSettings],
+            forOpeningContentTypes: [moblinSettingsFileType],
             asCopy: true
         )
         documentPicker.delegate = model
@@ -46,7 +39,7 @@ struct ImportSettingsView: View {
                     model.onDocumentPickerUrl = { url in
                         model.importSettingsWithConfirmation {
                             importState = .fromFile
-                            model.importFromFile(url: url) {
+                            model.importSettingsFromFile(url: url) {
                                 importState = .idle
                             }
                         }
@@ -67,7 +60,7 @@ struct ImportSettingsView: View {
                 TextButtonView("Import from clipboard") {
                     model.importSettingsWithConfirmation {
                         importState = .fromClipboard
-                        model.importFromClipboard {
+                        model.importSettingsFromClipboard {
                             importState = .idle
                         }
                     }

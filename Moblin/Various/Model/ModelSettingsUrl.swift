@@ -159,7 +159,7 @@ extension Model {
             return
         }
         _ = url.startAccessingSecurityScopedResource()
-        importFromFile(url: url) {
+        importSettingsFromFile(url: url) {
             url.stopAccessingSecurityScopedResource()
         }
     }

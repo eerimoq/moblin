@@ -1,4 +1,5 @@
 import Foundation
+import UniformTypeIdentifiers
 
 extension URL {
     var attributes: [FileAttributeKey: Any]? {
@@ -75,3 +76,5 @@ func createAndGetDirectory(name: String...) -> URL {
     try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     return directory
 }
+
+let moblinSettingsFileType = UTType(exportedAs: "com.eerimoq.moblin.settings", conformingTo: .data)

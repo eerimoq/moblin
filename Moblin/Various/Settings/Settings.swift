@@ -2114,7 +2114,7 @@ final class Settings {
                 }
             } catch {
                 DispatchQueue.main.async {
-                    onCompleted(String(localized: "Failed to extract settings archive"))
+                    onCompleted(String(localized: "Malformed settings"))
                 }
                 return
             }
