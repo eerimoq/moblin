@@ -444,12 +444,14 @@ class MpegTsReader {
                             if let deviceNtpTime = TrueTimeClient.sharedInstance.referenceTime?.now() {
                                 let timecodeNtp = timecode.timeIntervalSince1970
                                 let deviceNtp = deviceNtpTime.timeIntervalSince1970
-                                syncLatency = timecodeNtp - deviceNtp
+                                let latency = timecodeNtp - deviceNtp
+                                syncLatency = latency
                                 basePresentationTimeStamp = currentPresentationTimeStamp()
-                                    + CMTime(seconds: syncLatency!)
+                                    + CMTime(seconds: latency)
                                 firstReceivedPresentationTimeStamp = nil
+                                previousReceivedPresentationTimeStamps.removeAll()
                                 logger.info("""
-                                mpeg-ts-reader: Sync latency calculated: \(syncLatency!) s \
+                                mpeg-ts-reader: Sync latency calculated: \(latency) s \
                                 (timecode NTP: \(timecodeNtp), device NTP: \(deviceNtp))
                                 """)
                             }
