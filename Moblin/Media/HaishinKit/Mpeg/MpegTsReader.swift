@@ -1,4 +1,7 @@
 import AVFoundation
+import TrueTime
+
+private let syncBaseLatency: Double = 2.0
 
 protocol MpegTsReaderDelegate: AnyObject {
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer)
@@ -26,16 +29,21 @@ class MpegTsReader {
     private let targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let timecodesEnabled: Bool
     private let targetLatency: Double
+    private let syncEnabled: Bool
+    private var syncLatency: Double?
     weak var delegate: MpegTsReaderDelegate?
     private let decoderQueue: DispatchQueue
     private let wrappingTimestamp = WrappingTimestamp(name: "MpegTsReader",
                                                       maximumTimestamp: CMTime(seconds: 0x2_0000_0000))
 
-    init(decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double) {
+    init(decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double, syncEnabled: Bool = false) {
         self.decoderQueue = decoderQueue
-        self.timecodesEnabled = timecodesEnabled
-        self.targetLatency = targetLatency
-        targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: targetLatency)
+        self.timecodesEnabled = timecodesEnabled || syncEnabled
+        self.syncEnabled = syncEnabled
+        self.targetLatency = syncEnabled ? syncBaseLatency : targetLatency
+        targetLatenciesSynchronizer = TargetLatenciesSynchronizer(
+            targetLatency: syncEnabled ? syncBaseLatency : targetLatency
+        )
     }
 
     func handlePacketFromClient(packet: Data) throws {
@@ -432,6 +440,20 @@ class MpegTsReader {
                     switch hevcSei.payload {
                     case let .timeCode(timeCode):
                         let (timecode, frame) = timeCode.makeClock()
+                        if syncEnabled, syncLatency == nil {
+                            if let deviceNtpTime = TrueTimeClient.sharedInstance.referenceTime?.now() {
+                                let timecodeNtp = timecode.timeIntervalSince1970
+                                let deviceNtp = deviceNtpTime.timeIntervalSince1970
+                                syncLatency = timecodeNtp - deviceNtp
+                                basePresentationTimeStamp = currentPresentationTimeStamp()
+                                    + CMTime(seconds: syncLatency!)
+                                firstReceivedPresentationTimeStamp = nil
+                                logger.info("""
+                                mpeg-ts-reader: Sync latency calculated: \(syncLatency!) s \
+                                (timecode NTP: \(timecodeNtp), device NTP: \(deviceNtp))
+                                """)
+                            }
+                        }
                         logger.debug("xxx Got H.265 SEI timecode \(timecode) (frame: \(frame))")
                     }
                 default:

@@ -8,12 +8,14 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var streamKey: String = ""
     @Published var latency: Int32 = defaultRtmpLatency
+    @Published var syncEnabled: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              streamKey,
-             latency
+             latency,
+             syncEnabled
     }
 
     func encode(to encoder: Encoder) throws {
@@ -22,6 +24,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.streamKey, streamKey)
         try container.encode(.latency, latency)
+        try container.encode(.syncEnabled, syncEnabled)
     }
 
     init() {}
@@ -32,6 +35,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, defaultRtmpLatency)
+        syncEnabled = container.decode(.syncEnabled, Bool.self, false)
     }
 
     func camera() -> String {
@@ -48,6 +52,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
+        new.syncEnabled = syncEnabled
         return new
     }
 }
@@ -183,13 +188,15 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var virtualDestinationPort: UInt16 = 1
     @Published var latency: Int32 = 2000
+    @Published var syncEnabled: Bool = false
     var connected: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              virtualDestinationPort,
-             latency
+             latency,
+             syncEnabled
     }
 
     func encode(to encoder: Encoder) throws {
@@ -198,6 +205,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.virtualDestinationPort, virtualDestinationPort)
         try container.encode(.latency, latency)
+        try container.encode(.syncEnabled, syncEnabled)
     }
 
     init() {}
@@ -208,6 +216,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         virtualDestinationPort = container.decode(.virtualDestinationPort, UInt16.self, 1)
         latency = container.decode(.latency, Int32.self, 2000)
+        syncEnabled = container.decode(.syncEnabled, Bool.self, false)
     }
 
     func latencySeconds() -> Double {
@@ -219,6 +228,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
         new.name = name
         new.virtualDestinationPort = virtualDestinationPort
         new.latency = latency
+        new.syncEnabled = syncEnabled
         return new
     }
 
@@ -270,13 +280,15 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     @Published var url: String = ""
     @Published var enabled: Bool = false
     @Published var latency: Int32 = 2000
+    @Published var syncEnabled: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              url,
              enabled,
-             latency
+             latency,
+             syncEnabled
     }
 
     func latencySeconds() -> Double {
@@ -290,6 +302,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.url, url)
         try container.encode(.enabled, enabled)
         try container.encode(.latency, latency)
+        try container.encode(.syncEnabled, syncEnabled)
     }
 
     init() {}
@@ -301,6 +314,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         url = container.decode(.url, String.self, "")
         enabled = container.decode(.enabled, Bool.self, false)
         latency = container.decode(.latency, Int32.self, 2000)
+        syncEnabled = container.decode(.syncEnabled, Bool.self, false)
     }
 
     func camera() -> String {
@@ -334,12 +348,14 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var streamKey: String = ""
     @Published var latency: Int32 = 100
+    @Published var syncEnabled: Bool = false
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              streamKey,
-             latency
+             latency,
+             syncEnabled
     }
 
     func encode(to encoder: Encoder) throws {
@@ -348,6 +364,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.streamKey, streamKey)
         try container.encode(.latency, latency)
+        try container.encode(.syncEnabled, syncEnabled)
     }
 
     init() {}
@@ -358,6 +375,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, 100)
+        syncEnabled = container.decode(.syncEnabled, Bool.self, false)
     }
 
     func camera() -> String {
@@ -374,6 +392,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
         new.name = name
         new.streamKey = streamKey
         new.latency = latency
+        new.syncEnabled = syncEnabled
         return new
     }
 }
