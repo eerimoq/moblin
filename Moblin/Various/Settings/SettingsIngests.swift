@@ -380,7 +380,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
 
 class SettingsWhipServer: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var port: UInt16 = 7777
+    @Published var port: UInt16 = 8888
     @Published var streams: [SettingsWhipServerStream] = []
 
     enum CodingKeys: CodingKey {
@@ -401,7 +401,7 @@ class SettingsWhipServer: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        port = container.decode(.port, UInt16.self, 7777)
+        port = container.decode(.port, UInt16.self, 8888)
         streams = container.decode(.streams, [SettingsWhipServerStream].self, [])
     }
 
