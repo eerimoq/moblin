@@ -407,7 +407,7 @@ Roughly the steps to setup Moblin's developement environment.
 
 1. Install tools.
 
-    `brew install swiftlint swiftformat periphery codespell`
+    `brew install swiftlint swiftformat periphery codespell oxfmt oxlint`
 
 2. Perform styling, linting and more.
 
