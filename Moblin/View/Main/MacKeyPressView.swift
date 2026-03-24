@@ -42,7 +42,9 @@ struct MacKeyPressView: UIViewRepresentable {
 
     func updateUIView(_ uiView: MacKeyPressUIView, context _: Context) {
         if shouldClaimFocus {
-            uiView.claimFocus()
+            DispatchQueue.main.async { [weak uiView] in
+                uiView?.claimFocus()
+            }
         }
     }
 }
