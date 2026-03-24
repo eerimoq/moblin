@@ -2,8 +2,7 @@ import SwiftUI
 import UIKit
 
 class MacKeyPressUIView: UIView {
-    var onKeyPress: ((String) -> Bool)?
-    var observer: NSObjectProtocol?
+    var model: Model?
 
     override var canBecomeFirstResponder: Bool {
         return true
@@ -13,7 +12,7 @@ class MacKeyPressUIView: UIView {
         var handled = false
         for press in presses {
             if let characters = press.key?.characters, !characters.isEmpty {
-                if onKeyPress?(characters) == true {
+                if model?.handleKeyPressCharacters(characters) == true {
                     handled = true
                 }
             }
@@ -28,25 +27,6 @@ class MacKeyPressUIView: UIView {
             becomeFirstResponder()
         }
     }
-
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-        if let window {
-            observer = NotificationCenter.default.addObserver(
-                forName: UIWindow.didBecomeKeyNotification,
-                object: window,
-                queue: .main
-            ) { [weak self] _ in
-                self?.claimFocus()
-            }
-            DispatchQueue.main.async {
-                self.claimFocus()
-            }
-        } else if let observer {
-            NotificationCenter.default.removeObserver(observer)
-            self.observer = nil
-        }
-    }
 }
 
 struct MacKeyPressView: UIViewRepresentable {
@@ -56,17 +36,13 @@ struct MacKeyPressView: UIViewRepresentable {
     func makeUIView(context _: Context) -> MacKeyPressUIView {
         let view = MacKeyPressUIView()
         view.backgroundColor = .clear
-        view.onKeyPress = { characters in
-            model.handleKeyPressCharacters(characters)
-        }
+        view.model = model
         return view
     }
 
     func updateUIView(_ uiView: MacKeyPressUIView, context _: Context) {
         if shouldClaimFocus {
             uiView.claimFocus()
-        } else if uiView.isFirstResponder {
-            uiView.resignFirstResponder()
         }
     }
 }
