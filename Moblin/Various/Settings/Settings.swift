@@ -2108,24 +2108,26 @@ final class Settings {
     func importFromFile(url: URL, onCompleted: @escaping (String?) -> Void) {
         let root = URL.documentsDirectory
         DispatchQueue.global().async {
+            let settingsJson = root.appendingPathComponent(settingsJsonName)
+            try? FileManager.default.removeItem(at: settingsJson)
             do {
                 try ZipArchiveReader.withFile(url.path) { reader in
                     try reader.extract(to: .init(root.path()))
                 }
             } catch {
                 DispatchQueue.main.async {
-                    onCompleted(String(localized: "Malformed settings"))
+                    onCompleted(error.localizedDescription)
                 }
                 return
             }
             DispatchQueue.main.async {
                 do {
-                    let settings = try Data(contentsOf: root.appendingPathComponent(settingsJsonName))
+                    let settings = try Data(contentsOf: settingsJson)
                     try self.tryLoadAndMigrate(settings: String(bytes: settings, encoding: .utf8) ?? "")
                     self.store()
                     onCompleted(nil)
                 } catch {
-                    onCompleted(String(localized: "Malformed settings"))
+                    onCompleted(error.localizedDescription)
                 }
             }
         }
@@ -2137,7 +2139,7 @@ final class Settings {
             store()
             onCompleted(nil)
         } catch {
-            onCompleted(String(localized: "Malformed settings"))
+            onCompleted(error.localizedDescription)
         }
     }
 

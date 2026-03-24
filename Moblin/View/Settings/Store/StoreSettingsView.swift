@@ -88,7 +88,7 @@ private struct StoreSettingsMyIconsView: View {
         }
         UIApplication.shared.setAlternateIconName(iconImage) { error in
             if let error {
-                logger.info("Failed to change app icon with error \(error)")
+                logger.debug("Failed to change app icon with error \(error)")
             }
         }
     }
