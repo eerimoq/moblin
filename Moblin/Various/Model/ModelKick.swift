@@ -2,6 +2,14 @@ import Foundation
 import SwiftUI
 
 extension Model {
+    func updateViewersKick() -> StreamingPlatformStatus {
+        if let platformStatus = kickPlatformStatus?.platformStatus {
+            return StreamingPlatformStatus(platform: .kick, status: platformStatus)
+        } else {
+            return StreamingPlatformStatus(platform: .kick, status: .unknown)
+        }
+    }
+
     func kickLogin(stream: SettingsStream, onComplete: (() -> Void)? = nil) {
         kickAuthOnComplete = { accessToken in
             stream.kickLoggedIn = true

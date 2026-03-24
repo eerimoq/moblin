@@ -3,6 +3,10 @@ import Foundation
 import SwiftUI
 
 extension Model {
+    func updateViewersTwitch() -> StreamingPlatformStatus {
+        return StreamingPlatformStatus(platform: .twitch, status: twitchPlatformStatus)
+    }
+
     func isTwitchEventSubConfigured() -> Bool {
         return stream.twitchLoggedIn
     }

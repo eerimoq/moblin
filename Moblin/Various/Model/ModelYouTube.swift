@@ -8,6 +8,16 @@ class YouTube {
 }
 
 extension Model {
+    func youTubeVideoIdUpdated() {
+        reloadViewers()
+        reloadYouTubeLiveChat()
+        resetChat()
+    }
+
+    func updateViewersYouTube() -> StreamingPlatformStatus {
+        return StreamingPlatformStatus(platform: .youTube, status: youTubePlatformStatus)
+    }
+
     func youTubeSignIn(stream: SettingsStream) {
         guard let rootViewController = getRootViewController() else {
             return
@@ -91,6 +101,32 @@ extension Model {
 
     func isYouTubeViewersConfigured() -> Bool {
         return stream.youTubeAuthState != nil && !stream.youTubeVideoId.isEmpty
+    }
+
+    func isYouTubeLiveChatConfigured() -> Bool {
+        return database.chat.enabled && stream.youTubeVideoId != ""
+    }
+
+    func isYouTubeLiveChatConnected() -> Bool {
+        return youTubeLiveChat?.isConnected() ?? false
+    }
+
+    func hasYouTubeLiveChatEmotes() -> Bool {
+        return youTubeLiveChat?.hasEmotes() ?? false
+    }
+
+    func reloadYouTubeLiveChat() {
+        youTubeLiveChat?.stop()
+        youTubeLiveChat = nil
+        if isYouTubeLiveChatConfigured(), !isRemoteControlChatAndEvents(platform: .youTube) {
+            youTubeLiveChat = YouTubeLiveChat(
+                model: self,
+                videoId: stream.youTubeVideoId,
+                settings: stream.chat
+            )
+            youTubeLiveChat!.start()
+        }
+        updateChatMoreThanOneChatConfigured()
     }
 
     func updateYouTubeStream(monotonicNow: ContinuousClock.Instant) {

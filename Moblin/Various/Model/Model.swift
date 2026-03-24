@@ -457,8 +457,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var twitchEventSub: TwitchEventSub?
     var kickPusher: KickPusher?
     var kickPlatformStatus: KickPlatformStatus?
-    private var youTubeLiveChat: YouTubeLiveChat?
-    private var soopChat: SoopChat?
+    var youTubeLiveChat: YouTubeLiveChat?
+    var soopChat: SoopChat?
+    var soopPlatformStatus: SoopPlatformStatus?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
     var dliveChat: DLiveChat?
     var youTubeFetchVideoIdStartTime: ContinuousClock.Instant?
@@ -1787,6 +1788,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 newStreamingPlatformStatus = updateViewersKick()
             case .youTube:
                 newStreamingPlatformStatus = updateViewersYouTube()
+            case .soop:
+                newStreamingPlatformStatus = updateViewersSoop()
             default:
                 newStreamingPlatformStatus = streamingPlatformStatus
             }
@@ -1814,22 +1817,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             statusTopLeft.numberOfViewersCompact = newNumberOfViewersCompact
             sendViewerCountWatch()
         }
-    }
-
-    private func updateViewersTwitch() -> StreamingPlatformStatus {
-        return StreamingPlatformStatus(platform: .twitch, status: twitchPlatformStatus)
-    }
-
-    private func updateViewersKick() -> StreamingPlatformStatus {
-        if let platformStatus = kickPlatformStatus?.platformStatus {
-            return StreamingPlatformStatus(platform: .kick, status: platformStatus)
-        } else {
-            return StreamingPlatformStatus(platform: .kick, status: .unknown)
-        }
-    }
-
-    private func updateViewersYouTube() -> StreamingPlatformStatus {
-        return StreamingPlatformStatus(platform: .youTube, status: youTubePlatformStatus)
     }
 
     private func updateViewersCompact(_ newNumberOfViewers: Int, _ hasCount: Bool) -> String {
@@ -2162,6 +2149,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRemoteControlRelay()
         reloadRemoteControlWeb()
         reloadKickViewers()
+        reloadSoopPlatformStatus()
         reloadNtpClient()
     }
 
@@ -2195,31 +2183,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isViewersConfigured() -> Bool {
-        return isTwitchViewersConfigured() || isKickViewersConfigured() || isYouTubeViewersConfigured()
-    }
-
-    func isYouTubeLiveChatConfigured() -> Bool {
-        return database.chat.enabled && stream.youTubeVideoId != ""
-    }
-
-    func isYouTubeLiveChatConnected() -> Bool {
-        return youTubeLiveChat?.isConnected() ?? false
-    }
-
-    func hasYouTubeLiveChatEmotes() -> Bool {
-        return youTubeLiveChat?.hasEmotes() ?? false
-    }
-
-    func isSoopChatConfigured() -> Bool {
-        return database.chat.enabled && stream.soopChannelName != "" && stream.soopStreamId != ""
-    }
-
-    func isSoopChatConnected() -> Bool {
-        return soopChat?.isConnected() ?? false
-    }
-
-    func hasSoopChatEmotes() -> Bool {
-        return soopChat?.hasEmotes() ?? false
+        return isTwitchViewersConfigured() || isKickViewersConfigured() || isYouTubeViewersConfigured() ||
+            isSoopViewersConfigured()
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
@@ -2233,35 +2198,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func hasOpenStreamingPlatformChatEmotes() -> Bool {
         return openStreamingPlatformChat?.hasEmotes() ?? false
-    }
-
-    func reloadYouTubeLiveChat() {
-        youTubeLiveChat?.stop()
-        youTubeLiveChat = nil
-        if isYouTubeLiveChatConfigured(), !isRemoteControlChatAndEvents(platform: .youTube) {
-            youTubeLiveChat = YouTubeLiveChat(
-                model: self,
-                videoId: stream.youTubeVideoId,
-                settings: stream.chat
-            )
-            youTubeLiveChat!.start()
-        }
-        updateChatMoreThanOneChatConfigured()
-    }
-
-    func reloadSoopChat() {
-        soopChat?.stop()
-        soopChat = nil
-        setTextToSpeechStreamerMentions()
-        if isSoopChatConfigured(), !isRemoteControlChatAndEvents(platform: .soop) {
-            soopChat = SoopChat(
-                model: self,
-                channelName: stream.soopChannelName,
-                streamId: stream.soopStreamId
-            )
-            soopChat!.start()
-        }
-        updateChatMoreThanOneChatConfigured()
     }
 
     func reloadOpenStreamingPlatformChat() {
@@ -2278,22 +2214,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             openStreamingPlatformChat!.start()
         }
         updateChatMoreThanOneChatConfigured()
-    }
-
-    func youTubeVideoIdUpdated() {
-        reloadViewers()
-        reloadYouTubeLiveChat()
-        resetChat()
-    }
-
-    func soopChannelNameUpdated() {
-        reloadSoopChat()
-        resetChat()
-    }
-
-    func soopStreamIdUpdated() {
-        reloadSoopChat()
-        resetChat()
     }
 
     func openStreamingPlatformUrlUpdated() {
@@ -2357,6 +2277,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isYouTubeViewersConfigured() {
             statusTopLeft.streamingPlatformStatuses.append(.init(platform: .youTube, status: .unknown))
+        }
+        if isSoopViewersConfigured() {
+            statusTopLeft.streamingPlatformStatuses.append(.init(platform: .soop, status: .unknown))
         }
         twitchPlatformStatus = .unknown
         twitchStreamUpdateTime = .now.advanced(by: .seconds(15))
