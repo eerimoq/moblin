@@ -103,7 +103,17 @@ struct DebugSettingsView: View {
                         Slider(
                             value: $debug.builtinAudioAndVideoDelay,
                             in: 0.0 ... 4.0,
-                            step: 0.01
+                            step: 0.01,
+                            onEditingChanged: { begin in
+                                guard !begin else {
+                                    return
+                                }
+                                debug.builtinAudioAndVideoDelayUserValue = debug.builtinAudioAndVideoDelay
+                                model.setQuickButton(
+                                    type: .builtinAudioAndVideoDelay,
+                                    isOn: debug.builtinAudioAndVideoDelay > SettingsDebug.builtinAudioAndVideoDelayDefault
+                                )
+                            }
                         )
                         Text(formatTwoDecimals(debug.builtinAudioAndVideoDelay))
                             .frame(width: 40)

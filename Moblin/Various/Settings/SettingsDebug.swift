@@ -43,6 +43,7 @@ class SettingsDebug: Codable, ObservableObject {
     var replay: Bool = false
     var recordSegmentLength: Double = 5.0
     @Published var builtinAudioAndVideoDelay: Double = builtinAudioAndVideoDelayDefault
+    var builtinAudioAndVideoDelayUserValue: Double = builtinAudioAndVideoDelayDefault
     var builtinAudioAndVideoDelay70msMigrated: Bool = false
     @Published var cameraManMoveVertically: Bool = false
     @Published var cameraManSpeed: Double = 1.0
@@ -80,6 +81,7 @@ class SettingsDebug: Codable, ObservableObject {
              replay,
              recordSegmentLength,
              builtinAudioAndVideoDelay,
+             builtinAudioAndVideoDelayUserValue,
              overrideSceneMic,
              autoLowPowerMode,
              builtinAudioAndVideoDelay70msMigrated,
@@ -116,6 +118,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.replay, replay)
         try container.encode(.recordSegmentLength, recordSegmentLength)
         try container.encode(.builtinAudioAndVideoDelay, builtinAudioAndVideoDelay)
+        try container.encode(.builtinAudioAndVideoDelayUserValue, builtinAudioAndVideoDelayUserValue)
         try container.encode(.builtinAudioAndVideoDelay70msMigrated, builtinAudioAndVideoDelay70msMigrated)
         try container.encode(.cameraManMoveVertically, cameraManMoveVertically)
         try container.encode(.cameraManSpeed, cameraManSpeed)
@@ -158,6 +161,9 @@ class SettingsDebug: Codable, ObservableObject {
         builtinAudioAndVideoDelay = container.decode(.builtinAudioAndVideoDelay,
                                                      Double.self,
                                                      Self.builtinAudioAndVideoDelayDefault)
+        builtinAudioAndVideoDelayUserValue = container.decode(.builtinAudioAndVideoDelayUserValue,
+                                                              Double.self,
+                                                              Self.builtinAudioAndVideoDelayDefault)
         builtinAudioAndVideoDelay70msMigrated = container.decode(.builtinAudioAndVideoDelay70msMigrated,
                                                                  Bool.self,
                                                                  false)

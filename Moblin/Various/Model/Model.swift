@@ -1146,6 +1146,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setQuickButton(type: .privacy, isOn: database.face.blurBackground)
         setQuickButton(type: .moblinInMouth, isOn: database.face.showMoblin)
         setQuickButton(type: .beauty, isOn: database.beauty.enabled)
+        setQuickButton(
+            type: .builtinAudioAndVideoDelay,
+            isOn: database.debug.builtinAudioAndVideoDelay > SettingsDebug.builtinAudioAndVideoDelayDefault
+        )
         updateLutsButtonState()
         updateAutoSceneSwitcherButtonState()
         reloadNtpClient()
@@ -2092,6 +2096,22 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                           speed: database.debug.cameraManSpeed,
                                           alwaysMove: database.debug.cameraManAlwaysMove)
         setFilterQuickButton(type: .cameraMan, on: on)
+    }
+
+    func toggleBuiltinAudioAndVideoDelayQuickButton() {
+        let isCurrentlyOn = database.quickButtons.first(where: {
+            $0.type == .builtinAudioAndVideoDelay
+        })?.isOn ?? false
+        if isCurrentlyOn {
+            // Turning off: save current value and reset to default
+            database.debug.builtinAudioAndVideoDelayUserValue = database.debug.builtinAudioAndVideoDelay
+            database.debug.builtinAudioAndVideoDelay = SettingsDebug.builtinAudioAndVideoDelayDefault
+        } else {
+            // Turning on: restore user value
+            database.debug.builtinAudioAndVideoDelay = database.debug.builtinAudioAndVideoDelayUserValue
+        }
+        toggleQuickButton(type: .builtinAudioAndVideoDelay)
+        updateQuickButtonStates()
     }
 
     func toggleCameraManQuickButton() {

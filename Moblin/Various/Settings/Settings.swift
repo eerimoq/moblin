@@ -1610,6 +1610,12 @@ private func addMissingQuickButtonsPageOne(database: Database) {
                                      imageOff: "flashlight.off.fill",
                                      page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Audio delay"),
+                                 type: .builtinAudioAndVideoDelay,
+                                 imageOn: "waveform.circle.fill",
+                                 imageOff: "waveform.circle",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Mute"),
                                  type: .mute,
                                  imageOn: "mic.slash",

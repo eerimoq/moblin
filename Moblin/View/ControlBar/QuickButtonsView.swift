@@ -403,6 +403,10 @@ struct QuickButtonsInnerView: View {
         model.triggerSparkle()
     }
 
+    private func builtinAudioAndVideoDelayAction() {
+        model.toggleBuiltinAudioAndVideoDelayQuickButton()
+    }
+
     private func beautyAction() {
         model.toggleBeautyQuickButton()
     }
@@ -949,6 +953,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             beautyAction()
+                        }
+                    case .builtinAudioAndVideoDelay:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            builtinAudioAndVideoDelayAction()
                         }
                     }
                 }
