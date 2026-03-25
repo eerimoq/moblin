@@ -68,6 +68,13 @@ extension CIImage {
         return scaled(x: scale, y: scale)
     }
 
+    func scaledToFill(size: CGSize) -> CIImage {
+        let scaleX = size.width / extent.width
+        let scaleY = size.height / extent.height
+        let scale = max(scaleX, scaleY)
+        return scaled(x: scale, y: scale)
+    }
+
     func centered(size: CGSize) -> CIImage {
         let targetCenterX = size.width / 2
         let targetCenterY = size.height / 2

@@ -971,6 +971,7 @@ class SettingsWiFiAware: Codable, ObservableObject {
 enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
     case blur
     case pixellate
+    case backgroundImage
 
     func toString() -> LocalizedStringKey {
         switch self {
@@ -978,6 +979,8 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
             return "Blur"
         case .pixellate:
             return "Pixellate"
+        case .backgroundImage:
+            return "Background image"
         }
     }
 }
@@ -1017,13 +1020,15 @@ class SettingsFace: Codable, ObservableObject {
         pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
     }
 
-    func toEffectSettings() -> FaceEffectSettings {
+    func toEffectSettings(backgroundImage: CIImage?) -> FaceEffectSettings {
         let faceEffectPrivacyMode: FaceEffectPrivacyMode
         switch privacyMode {
         case .blur:
             faceEffectPrivacyMode = .blur(strength: blurStrength)
         case .pixellate:
             faceEffectPrivacyMode = .pixellate(strength: pixellateStrength)
+        case .backgroundImage:
+            faceEffectPrivacyMode = .backgroundImage(backgroundImage)
         }
         return FaceEffectSettings(blurFaces: blurFaces,
                                   blurText: blurText,
@@ -2061,7 +2066,8 @@ private let exportDirectories = [
     replayTransitionsStorageDirectory,
 ]
 private let exportFiles = [
-    URL.documentsDirectory.appending(component: "stealthModeImage.img")
+    URL.documentsDirectory.appending(component: "stealthModeImage.img"),
+    URL.documentsDirectory.appending(component: "faceBackgroundImage.img"),
 ]
 
 private let exportSettingsDateFormatter: DateFormatter = {

@@ -413,6 +413,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let tesla = Tesla()
     let debugOverlay = DebugOverlayProvider()
     let stealthMode = StealthMode()
+    var faceBackgroundImage: CIImage?
     let drawOnStream = DrawOnStream()
     let store = Store()
     let show = Show()
@@ -1159,6 +1160,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
         loadStealthModeImage()
+        loadFaceBackgroundImage()
         updateKickChannelInfoIfNeeded()
         reloadSpeechToText()
         if #available(iOS 26, *), false {
@@ -1317,7 +1319,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateFaceFilterSettings() {
-        faceEffect.setSettings(settings: database.face.toEffectSettings())
+        faceEffect.setSettings(settings: database.face.toEffectSettings(backgroundImage: faceBackgroundImage))
     }
 
     func updateImageButtonState() {

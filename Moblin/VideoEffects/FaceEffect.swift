@@ -13,7 +13,7 @@ struct FaceEffectSettings {
 enum FaceEffectPrivacyMode {
     case blur(strength: Float)
     case pixellate(strength: Float)
-    case backgroundImage(CIImage)
+    case backgroundImage(CIImage?)
     case faceImage(CIImage)
 }
 
@@ -87,8 +87,9 @@ final class FaceEffect: VideoEffect {
             filter.scale = pixellateCalcScale(size: image.extent.size, strength: strength)
             return filter.outputImage?.cropped(to: image.extent) ?? image
         case let .backgroundImage(backgroundImage):
-            return backgroundImage
-                .scaledTo(size: image.extent.size)
+            return backgroundImage?
+                .scaledToFill(size: image.extent.size)
+                .cropped(to: image.extent)
         case .faceImage:
             return nil
         }
@@ -111,7 +112,7 @@ final class FaceEffect: VideoEffect {
             case .pixellate:
                 faceMask.radius1 = faceMask.radius0 * 1.5
             case .backgroundImage:
-                faceMask.radius1 = faceMask.radius0
+                faceMask.radius1 = faceMask.radius0 * 1.2
             case .faceImage:
                 faceMask.radius1 = faceMask.radius0
             }
