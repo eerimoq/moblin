@@ -2060,6 +2060,9 @@ private let exportDirectories = [
     vTuberStorageDirectory,
     replayTransitionsStorageDirectory,
 ]
+private let exportFiles = [
+    URL.documentsDirectory.appending(component: "stealthModeImage.img")
+]
 
 private let exportSettingsDateFormatter: DateFormatter = {
     let formatter = DateFormatter()
@@ -2157,6 +2160,11 @@ final class Settings {
                     try writer.writeFile(filename: settingsJsonName, contents: settingsJson)
                     let fileManager = FileManager.default
                     let prefixCount = createAndGetDirectory().standardizedFileURL.path.count + 1
+                    for fileUrl in exportFiles where FileManager.default.fileExists(atPath: fileUrl.path()) {
+                        let filePath = fileUrl.standardizedFileURL.path
+                        let relativeFilePath = String(filePath.dropFirst(prefixCount))
+                        try writer.writeFile(filename: relativeFilePath, sourceFile: filePath)
+                    }
                     for directory in exportDirectories {
                         let directoryUrl = createAndGetDirectory(name: directory)
                         guard let enumerator = fileManager.enumerator(

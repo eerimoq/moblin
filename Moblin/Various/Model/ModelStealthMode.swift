@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-private let stealthModeImagePath = URL.documentsDirectory.appending(component: "stealthModeImage.img")
+let stealthModeImagePath = URL.documentsDirectory.appending(component: "stealthModeImage.img")
 
 extension Model {
     func toggleStealthMode() {
