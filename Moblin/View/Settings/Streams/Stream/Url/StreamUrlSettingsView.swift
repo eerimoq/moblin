@@ -47,6 +47,9 @@ private struct WhipHelpView: View {
         Section("MediaMTX WHIP") {
             UrlCopyView("whip://120.12.32.12:8889/mystream/whip")
         }
+        Section("MESHCAST.IO WHIP") {
+            UrlCopyView("whips://de1.meshcast.io/whip/mystream")
+        }
     }
 }
 
