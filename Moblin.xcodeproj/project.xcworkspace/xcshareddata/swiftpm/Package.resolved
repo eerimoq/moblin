@@ -70,7 +70,7 @@
       "location" : "https://github.com/eerimoq/NWWebSocket",
       "state" : {
         "branch" : "main",
-        "revision" : "1b44f9ea56a300d1642a4e99aa4801622d49ea1c"
+        "revision" : "883fac3d524d1367d4cb82dd5dfca718ab3f2142"
       }
     },
     {
@@ -123,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections.git",
       "state" : {
-        "revision" : "8d9834a6189db730f6264db7556a7ffb751e99ee",
-        "version" : "1.4.0"
+        "revision" : "6675bc0ff86e61436e615df6fc5174e043e57924",
+        "version" : "1.4.1"
       }
     },
     {
