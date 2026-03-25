@@ -1019,7 +1019,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setupSampleBufferReceiver()
         reloadStream()
         resetSelectedScene()
-        setupAudio()
+        DispatchQueue.main.async {
+            self.setupAudio()
+        }
         startPeriodicTimers()
         setupThermalState()
         updateQuickButtonStates()
