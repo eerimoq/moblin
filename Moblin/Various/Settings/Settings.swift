@@ -971,6 +971,7 @@ class SettingsWiFiAware: Codable, ObservableObject {
 enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
     case blur
     case pixellate
+    case backgroundImage
 
     func toString() -> LocalizedStringKey {
         switch self {
@@ -978,6 +979,8 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
             return "Blur"
         case .pixellate:
             return "Pixellate"
+        case .backgroundImage:
+            return "Background image"
         }
     }
 }
@@ -990,11 +993,13 @@ class SettingsFace: Codable, ObservableObject {
     @Published var privacyMode: SettingsFacePrivacyMode = .blur
     @Published var blurStrength: Float = 0.8
     @Published var pixellateStrength: Float = 0.3
+    @Published var backgroundImageId: UUID = .init()
 
     enum CodingKeys: CodingKey {
         case privacyMode,
              blurStrength,
-             pixellateStrength
+             pixellateStrength,
+             backgroundImageId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1002,6 +1007,7 @@ class SettingsFace: Codable, ObservableObject {
         try container.encode(.privacyMode, privacyMode)
         try container.encode(.blurStrength, blurStrength)
         try container.encode(.pixellateStrength, pixellateStrength)
+        try container.encode(.backgroundImageId, backgroundImageId)
     }
 
     init() {}
@@ -1015,15 +1021,18 @@ class SettingsFace: Codable, ObservableObject {
         privacyMode = container.decode(.privacyMode, SettingsFacePrivacyMode.self, .blur)
         blurStrength = container.decode(.blurStrength, Float.self, 0.8)
         pixellateStrength = container.decode(.pixellateStrength, Float.self, 0.3)
+        backgroundImageId = container.decode(.backgroundImageId, UUID.self, .init())
     }
 
-    func toEffectSettings() -> FaceEffectSettings {
+    func toEffectSettings(backgroundImage: CIImage? = nil) -> FaceEffectSettings {
         let faceEffectPrivacyMode: FaceEffectPrivacyMode
         switch privacyMode {
         case .blur:
             faceEffectPrivacyMode = .blur(strength: blurStrength)
         case .pixellate:
             faceEffectPrivacyMode = .pixellate(strength: pixellateStrength)
+        case .backgroundImage:
+            faceEffectPrivacyMode = .backgroundImage(backgroundImage ?? CIImage.empty())
         }
         return FaceEffectSettings(blurFaces: blurFaces,
                                   blurText: blurText,

@@ -1,3 +1,4 @@
+import PhotosUI
 import SwiftUI
 
 struct EffectSlider: View {
@@ -27,6 +28,7 @@ struct EffectSlider: View {
 struct StreamOverlayRightFaceView: View {
     let model: Model
     @ObservedObject var face: SettingsFace
+    @State private var selectedImageItem: PhotosPickerItem?
 
     var body: some View {
         if face.blurFaces || face.blurText || face.blurBackground {
@@ -48,6 +50,33 @@ struct StreamOverlayRightFaceView: View {
                         )
                         .onChange(of: face.pixellateStrength) { _ in
                             model.updateFaceFilterSettings()
+                        }
+                    case .backgroundImage:
+                        PhotosPicker(selection: $selectedImageItem, matching: .images) {
+                            Text("Select image")
+                                .foregroundStyle(.white)
+                                .padding([.top, .bottom], 5)
+                                .padding([.leading, .trailing], 7)
+                                .frame(width: sliderWidth, height: sliderHeight)
+                                .background(backgroundColor)
+                                .cornerRadius(7)
+                                .padding([.bottom], 5)
+                        }
+                        .onChange(of: selectedImageItem) { imageItem in
+                            selectedImageItem = nil
+                            imageItem?.loadTransferable(type: Data.self) { result in
+                                switch result {
+                                case let .success(data?):
+                                    model.imageStorage.write(id: face.backgroundImageId, data: data)
+                                    DispatchQueue.main.async {
+                                        model.updateFaceFilterSettings()
+                                    }
+                                case .success(nil):
+                                    logger.info("face: background image is nil")
+                                case let .failure(error):
+                                    logger.info("face: background image error: \(error)")
+                                }
+                            }
                         }
                     }
                     Picker("", selection: $face.privacyMode) {
