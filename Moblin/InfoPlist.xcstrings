@@ -134,7 +134,14 @@
       }
     },
     "Moblin settings" : {
-
+      "localizations" : {
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 設定"
+          }
+        }
+      }
     },
     "NSBluetoothAlwaysUsageDescription" : {
       "comment" : "Privacy - Bluetooth Always Usage Description",
@@ -582,6 +589,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Moblin can display your location and/or speed on screen and stream."
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 可以在螢幕和串流畫面上顯示您的定位和/或速度。"
           }
         }
       }
