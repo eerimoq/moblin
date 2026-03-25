@@ -67,8 +67,9 @@ struct StreamOverlayRightFaceView: View {
                             imageItem?.loadTransferable(type: Data.self) { result in
                                 switch result {
                                 case let .success(data?):
-                                    model.imageStorage.write(id: face.backgroundImageId, data: data)
+                                    model.saveFaceBackgroundImage(data: data)
                                     DispatchQueue.main.async {
+                                        model.loadFaceBackgroundImage()
                                         model.updateFaceFilterSettings()
                                     }
                                 case .success(nil):

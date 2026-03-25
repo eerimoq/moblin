@@ -413,6 +413,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let tesla = Tesla()
     let debugOverlay = DebugOverlayProvider()
     let stealthMode = StealthMode()
+    var faceBackgroundImage: CIImage?
     let drawOnStream = DrawOnStream()
     let store = Store()
     let show = Show()
@@ -1159,6 +1160,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         gForceManager = GForceManager(motionManager: motionManager)
         startGForceManager()
         loadStealthModeImage()
+        loadFaceBackgroundImage()
         updateKickChannelInfoIfNeeded()
         reloadSpeechToText()
         if #available(iOS 26, *), false {
@@ -1317,19 +1319,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateFaceFilterSettings() {
-        var backgroundImage: CIImage?
-        if database.face.privacyMode == .backgroundImage {
-            if let data = imageStorage.tryRead(id: database.face.backgroundImageId),
-               let uiImage = UIImage(data: data),
-               let cgImage = uiImage.cgImage
-            {
-                backgroundImage = CIImage(cgImage: cgImage)
-            } else {
-                backgroundImage = CIImage(color: .black)
-                    .cropped(to: CGRect(x: 0, y: 0, width: 1, height: 1))
-            }
-        }
-        faceEffect.setSettings(settings: database.face.toEffectSettings(backgroundImage: backgroundImage))
+        faceEffect.setSettings(settings: database.face.toEffectSettings(backgroundImage: faceBackgroundImage))
     }
 
     func updateImageButtonState() {
@@ -1779,9 +1769,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 used = true
             }
             if database.color.diskLutsCube.contains(where: { $0.id == id }) {
-                used = true
-            }
-            if database.face.backgroundImageId == id {
                 used = true
             }
             if !used {
