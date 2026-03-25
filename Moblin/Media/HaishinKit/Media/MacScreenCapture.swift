@@ -14,9 +14,9 @@ class MacScreenCapture: NSObject {
     weak var delegate: MacScreenCaptureDelegate?
     private var stream: SCStream?
 
-    func start() {
+    func start(fps: Float64) {
         Task {
-            await startInternal()
+            await startInternal(fps: fps)
         }
     }
 
@@ -26,11 +26,11 @@ class MacScreenCapture: NSObject {
         }
     }
 
-    private func startInternal() async {
+    private func startInternal(fps: Float64) async {
         do {
             let filter = try await makeContentFilter()
             let config = SCStreamConfiguration()
-            config.minimumFrameInterval = CMTime(value: 1, timescale: 30)
+            config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(fps.rounded()))
             config.pixelFormat = kCVPixelFormatType_32BGRA
             let stream = SCStream(filter: filter, configuration: config, delegate: self)
             try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: processorPipelineQueue)
