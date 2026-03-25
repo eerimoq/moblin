@@ -597,7 +597,7 @@ final class VideoUnit: NSObject {
             if enabled, !macScreenCaptureActive {
                 macScreenCaptureActive = true
                 MacScreenCapture.shared.delegate = self
-                MacScreenCapture.shared.start()
+                MacScreenCapture.shared.start(fps: fps)
             } else if !enabled, macScreenCaptureActive {
                 macScreenCaptureActive = false
                 MacScreenCapture.shared.stop()
