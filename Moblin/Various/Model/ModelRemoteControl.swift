@@ -29,6 +29,7 @@ class RemoteControl: ObservableObject {
     @Published var triple: Bool = false
     @Published var twin: Bool = false
     @Published var fourThree: Bool = false
+    @Published var crt: Bool = false
     @Published var pinch: Bool = false
     @Published var whirlpool: Bool = false
     @Published var poll: Bool = false
@@ -555,6 +556,8 @@ extension Model {
             setFilterQuickButton(type: .twin, on: on)
         case .fourThree:
             setFilterQuickButton(type: .fourThree, on: on)
+        case .crt:
+            setFilterQuickButton(type: .crt, on: on)
         case .pinch:
             setPinchQuickButton(on: on)
         case .whirlpool:
@@ -988,6 +991,8 @@ extension Model: RemoteControlAssistantDelegate {
                     remoteControl.twin = on
                 case .fourThree:
                     remoteControl.fourThree = on
+                case .crt:
+                    remoteControl.crt = on
                 case .pinch:
                     remoteControl.pinch = on
                 case .whirlpool:

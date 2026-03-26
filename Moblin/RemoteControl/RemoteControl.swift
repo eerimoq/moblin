@@ -123,6 +123,7 @@ enum RemoteControlFilter: Codable, CaseIterable {
     case triple
     case twin
     case fourThree
+    case crt
     case pinch
     case whirlpool
     case poll
@@ -148,6 +149,8 @@ enum RemoteControlFilter: Codable, CaseIterable {
             self = .twin
         case .fourThree:
             self = .fourThree
+        case .crt:
+            self = .crt
         case .pinch:
             self = .pinch
         case .whirlpool:
@@ -185,6 +188,8 @@ enum RemoteControlFilter: Codable, CaseIterable {
             return .twin
         case .fourThree:
             return .fourThree
+        case .crt:
+            return .crt
         case .pinch:
             return .pinch
         case .whirlpool:
@@ -220,6 +225,8 @@ enum RemoteControlFilter: Codable, CaseIterable {
             return String(localized: "Twin")
         case .fourThree:
             return String(localized: "4:3")
+        case .crt:
+            return String(localized: "CRT")
         case .pinch:
             return String(localized: "Pinch")
         case .whirlpool:

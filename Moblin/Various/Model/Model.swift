@@ -643,6 +643,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var whirlpoolEffect = WhirlpoolEffect(angle: .pi / 2)
     var pinchEffect = PinchEffect(scale: 0.5)
     var fourThreeEffect = FourThreeEffect()
+    var crtEffect = CrtEffect()
     var grayScaleEffect = GrayScaleEffect()
     var sepiaEffect = SepiaEffect()
     var tripleEffect = TripleEffect()

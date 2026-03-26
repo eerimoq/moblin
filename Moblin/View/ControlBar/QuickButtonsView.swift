@@ -199,6 +199,10 @@ struct QuickButtonsInnerView: View {
         model.toggleFilterQuickButton(type: .fourThree)
     }
 
+    private func crtAction() {
+        model.toggleFilterQuickButton(type: .crt)
+    }
+
     private func grayScaleAction() {
         model.toggleFilterQuickButton(type: .grayScale)
     }
@@ -530,6 +534,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             fourThreeAction()
+                        }
+                    case .crt:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            crtAction()
                         }
                     case .grayScale:
                         QuickButtonImage(model: model,

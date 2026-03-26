@@ -1739,6 +1739,16 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  imageOff: "square",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "CRT"),
+                                 type: .crt,
+                                 imageOn: "tv",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Pixellate"),
+                                 type: .pixellate,
+                                 imageOn: "squareshape.split.2x2",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Gray scale"),
                                  type: .grayScale,
                                  imageOn: "moon.fill",
@@ -1766,11 +1776,6 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
     button = SettingsQuickButton(name: String(localized: "Moblin in mouth"),
                                  type: .moblinInMouth,
                                  imageOn: "mouth",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Pixellate"),
-                                 type: .pixellate,
-                                 imageOn: "squareshape.split.2x2",
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(name: String(localized: "Camera man"),

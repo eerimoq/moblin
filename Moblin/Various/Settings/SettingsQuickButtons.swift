@@ -30,6 +30,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case lut = "LUT"
     case cameraPreview = "Camera preview"
     case fourThree = "4:3"
+    case crt = "CRT"
     case poll = "Poll"
     case snapshot = "Snapshot"
     case widgets = "Widgets"
