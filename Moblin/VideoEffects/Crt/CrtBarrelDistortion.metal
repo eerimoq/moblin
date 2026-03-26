@@ -9,9 +9,10 @@ extern "C" float2 crtBarrelDistortion(
     coreimage::destination dest)
 {
     float2 center = float2(inputWidth / 2.0, inputHeight / 2.0);
-    float2 coord = (dest.coord() - center) / center;
+    float scale = min(center.x, center.y);
+    float2 coord = (dest.coord() - center) / scale;
     float r2 = dot(coord, coord);
     float distortion = 1.0 + strength * r2;
     float2 distorted = coord * distortion;
-    return distorted * center + center;
+    return distorted * scale + center;
 }
