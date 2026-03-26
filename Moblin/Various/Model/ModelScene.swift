@@ -624,7 +624,6 @@ extension Model {
     }
 
     private func resetVideoEffects(widgets: [SettingsWidget]) {
-        media.unregisterAllEffects()
         createGlobalVideoEffects()
         resetImageEffects(widgets: widgets)
         resetTextVideoEffects(widgets: widgets)
