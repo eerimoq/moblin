@@ -8,6 +8,25 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.0.0", date: "2026-03-26", changes: [
+        "• Fix text widget wind unit. 🐛 kat",
+        "• Export settings with file extension `.moblinSettings`.",
+        "• Import settings from clipboard as well.",
+        "  • Can import both old JSON format and new `.moblinSettings` files.",
+        "• Show confirmation alert when settings are about to be imported.",
+        "• Make live and recording confirmation in remote control assistant work better. 🧑‍🏭 xcopy94",
+        "• Port 8888 for WHIP by default. 🐛 Jeffro1265",
+        "• Show number of SOOP viewers. 🧑‍🏭 고블린",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Chinese (HK) translation updated. ✍️ tkg2222",
+        "• Another WHIP URL example. 💡 Tony Mah",
+        "• Try to make mic initialization work every time on Mac.",
+        "• Chinese Taiwan translation updated. ✍️ ИƎØ_ΙΙØZ",
+        "• Optionally use an image as background instead of blur or pixellate in privacy quick button. 💡 JohannesLiv",
+        "• Make Mac screen capture use the same FPS as the stream. 🧑‍🏭 Copilot",
+        "• Fix video effects not being applied to a few frames when deleting a widget. 🐛 Gohgo",
+        "• Korean translation updated. ✍️ Winter1l",
+    ]),
     Version(version: "32.0.0", date: "2026-03-20", changes: [
         "• Setting to disable PiP when streaming in background. 💡 cliffcreates",
         "• Move widgets slightly up not to sometimes show a gap.",
