@@ -11,6 +11,7 @@ private let barrelKernel: CIWarpKernel? = {
 
 class CrtBarrelDistortionFilter: CIFilter {
     var inputImage: CIImage?
+    var width: CGFloat = 1
     var strength: Float = 0.1
 
     override var outputImage: CIImage? {
@@ -25,7 +26,7 @@ class CrtBarrelDistortionFilter: CIFilter {
             },
             image: inputImage,
             arguments: [
-                Float(extent.width),
+                Float(width),
                 Float(extent.height),
                 strength,
             ]

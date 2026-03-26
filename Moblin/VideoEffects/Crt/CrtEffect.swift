@@ -15,13 +15,14 @@ final class CrtEffect: VideoEffect {
         )
         var image = image.cropped(to: cropRect)
         image = applyScanlines(image, cropRect)
-        image = applyBarrelDistortion(image, cropRect)
+        image = applyBarrelDistortion(image, extent.width)
         image = applyColors(image)
         return image.composited(over: CIImage.black.cropped(to: extent))
     }
 
-    private func applyBarrelDistortion(_ image: CIImage, _: CGRect) -> CIImage {
+    private func applyBarrelDistortion(_ image: CIImage, _ width: CGFloat) -> CIImage {
         barrelFilter.inputImage = image
+        barrelFilter.width = width
         return barrelFilter.outputImage ?? image
     }
 
