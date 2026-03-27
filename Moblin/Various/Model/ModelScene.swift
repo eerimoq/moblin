@@ -579,9 +579,6 @@ extension Model {
         if isQuickButtonOn(type: .fourThree) {
             effects.append(fourThreeEffect)
         }
-        if isQuickButtonOn(type: .crt) {
-            effects.append(crtEffect)
-        }
         if isQuickButtonOn(type: .grayScale) {
             effects.append(grayScaleEffect)
         }
@@ -600,6 +597,9 @@ extension Model {
         }
         if database.beauty.enabled {
             effects.append(beautyEffect)
+        }
+        if isQuickButtonOn(type: .crt) {
+            effects.append(crtEffect)
         }
         return effects
     }
