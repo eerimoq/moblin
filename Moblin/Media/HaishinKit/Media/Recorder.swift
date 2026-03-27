@@ -27,6 +27,9 @@ class Recorder: NSObject {
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
     private var basePresentationTimeStamp: CMTime = .zero
+    private var totalAudioSamplesWritten: CMTimeValue = 0
+    private var audioSampleRate: CMTimeScale = 0
+    private var firstAudioPresentationTimeStamp: CMTime?
     weak var delegate: RecorderDelegate?
 
     func setAudioChannelsMap(map: [Int: Int]) {
@@ -85,9 +88,23 @@ class Recorder: NSObject {
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
               let input = getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp),
               isReadyForStartWriting(writer: writer),
-              input.isReadyForMoreMediaData,
-              let sampleBuffer = sampleBuffer
-              .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
+              input.isReadyForMoreMediaData
+        else {
+            return
+        }
+        if firstAudioPresentationTimeStamp == nil {
+            firstAudioPresentationTimeStamp = presentationTimeStamp - basePresentationTimeStamp
+            audioSampleRate = CMTimeScale(
+                sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 48000
+            )
+        }
+        let audioPresentationTimeStamp = firstAudioPresentationTimeStamp! + CMTime(
+            value: totalAudioSamplesWritten,
+            timescale: audioSampleRate
+        )
+        let numberOfSamples = sampleBuffer.numSamples
+        guard let sampleBuffer = sampleBuffer
+            .replacePresentationTimeStamp(audioPresentationTimeStamp)
         else {
             return
         }
@@ -97,7 +114,9 @@ class Recorder: NSObject {
             (status: \(writer.status))
             """)
             stopRunningInternal()
+            return
         }
+        totalAudioSamplesWritten += CMTimeValue(numberOfSamples)
     }
 
     func appendVideo(_ sampleBuffer: CMSampleBuffer) {
@@ -351,6 +370,9 @@ class Recorder: NSObject {
         audioConverter = nil
         audioOutputFormat = nil
         basePresentationTimeStamp = .zero
+        totalAudioSamplesWritten = 0
+        audioSampleRate = 0
+        firstAudioPresentationTimeStamp = nil
         fileWriterQueue.async {
             self.fileHandle = nil
             self.initSegment = nil
