@@ -98,7 +98,10 @@ class Recorder: NSObject {
                 sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 48000
             )
         }
-        let audioPresentationTimeStamp = firstAudioPresentationTimeStamp! + CMTime(
+        guard let firstAudioPresentationTimeStamp else {
+            return
+        }
+        let audioPresentationTimeStamp = firstAudioPresentationTimeStamp + CMTime(
             value: totalAudioSamplesWritten,
             timescale: audioSampleRate
         )
