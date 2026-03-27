@@ -32,8 +32,8 @@ final class CrtEffect: VideoEffect {
         colorControls.contrast = 1.05
         colorControls.brightness = -0.02
         vignette.inputImage = colorControls.outputImage ?? image
-        vignette.intensity = 1.5
-        vignette.radius = 2.0
+        vignette.intensity = 3.5
+        vignette.radius = 1.5
         return vignette.outputImage ?? image
     }
 
