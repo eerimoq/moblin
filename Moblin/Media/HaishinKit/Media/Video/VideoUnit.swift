@@ -913,6 +913,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffects(_ imageBuffer: CVImageBuffer,
                               _ sampleBuffer: CMSampleBuffer,
+                              _ enabledEffects: [VideoEffect],
                               _ sceneVideoSourceId: UUID,
                               _ detectionJobs: [DetectionJob],
                               _ detections: [UUID: Detections],
@@ -928,11 +929,12 @@ final class VideoUnit: NSObject {
             isFirstAfterAttach: isFirstAfterAttach
         )
         if isMetalPetalGraphics {
-            return applyEffectsMetalPetal(imageBuffer, sampleBuffer, info)
+            return applyEffectsMetalPetal(imageBuffer, sampleBuffer, enabledEffects, info)
         } else {
             return applyEffectsCoreImage(
                 imageBuffer,
                 sampleBuffer,
+                enabledEffects,
                 isSceneSwitchTransition,
                 info
             )
@@ -940,12 +942,12 @@ final class VideoUnit: NSObject {
     }
 
     private func removeEffects() {
-        var effectsToRemove: [VideoEffect] = []
-        for effect in effects where effect.shouldRemove() {
-            effectsToRemove.append(effect)
-        }
-        for effect in effectsToRemove {
-            unregisterEffectInternal(effect)
+        effects.removeAll { effect in
+            guard effect.shouldRemove() else {
+                return false
+            }
+            effect.removed()
+            return true
         }
     }
 
@@ -996,6 +998,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffectsCoreImage(_ imageBuffer: CVImageBuffer,
                                        _ sampleBuffer: CMSampleBuffer,
+                                       _ enabledEffects: [VideoEffect],
                                        _ isSceneSwitchTransition: Bool,
                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
@@ -1011,7 +1014,7 @@ final class VideoUnit: NSObject {
         if isSceneSwitchTransition {
             image = applySceneSwitchTransition(image)
         }
-        for effect in effects where effect.isEnabled() {
+        for effect in enabledEffects {
             let effectOutputImage = effect.execute(image, info)
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
@@ -1042,6 +1045,7 @@ final class VideoUnit: NSObject {
 
     private func applyEffectsMetalPetal(_ imageBuffer: CVImageBuffer,
                                         _ sampleBuffer: CMSampleBuffer,
+                                        _ enabledEffects: [VideoEffect],
                                         _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let image: MTIImage? = MTIImage(cvPixelBuffer: imageBuffer, alphaType: .alphaIsOne)
@@ -1049,7 +1053,7 @@ final class VideoUnit: NSObject {
         guard var image else {
             return (nil, nil)
         }
-        for effect in effects where effect.isEnabled() {
+        for effect in enabledEffects {
             image = effect.executeMetalPetal(image, info)
         }
         guard image != originalImage,
@@ -1260,9 +1264,10 @@ final class VideoUnit: NSObject {
         latestSampleBufferAppendTime = sampleBuffer.presentationTimeStamp
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp.seconds
         updateFps(presentationTimeStamp)
+        let enabledEffects = effects.filter { $0.isEnabled() }
         let detectionJobs = prepareDetectionJobs(
-            needsFaceDetections(presentationTimeStamp),
-            needsTextDetections(presentationTimeStamp),
+            needsFaceDetections(enabledEffects, presentationTimeStamp),
+            needsTextDetections(enabledEffects, presentationTimeStamp),
             sampleBuffer.presentationTimeStamp,
             imageBuffer
         )
@@ -1373,13 +1378,6 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func isAnyEffectEnabled() -> Bool {
-        for effect in effects where effect.isEnabled() {
-            return true
-        }
-        return false
-    }
-
     private func appendSampleBufferWithDetections(
         _ sampleBuffer: CMSampleBuffer,
         _ isFirstAfterAttach: Bool,
@@ -1396,7 +1394,8 @@ final class VideoUnit: NSObject {
         if isFirstAfterAttach {
             usePendingAfterAttachEffectsInternal()
         }
-        if isAnyEffectEnabled()
+        let enabledEffects = effects.filter { $0.isEnabled() }
+        if !enabledEffects.isEmpty
             || isSceneSwitchTransition
             || imageBuffer.size != canvasSize
             || rotation != 0.0
@@ -1404,6 +1403,7 @@ final class VideoUnit: NSObject {
             (newImageBuffer, newSampleBuffer) = applyEffects(
                 imageBuffer,
                 sampleBuffer,
+                enabledEffects,
                 sceneVideoSourceId,
                 detectionJobs,
                 detections,
@@ -1567,10 +1567,12 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func needsFaceDetections(_ presentationTimeStamp: Double) -> Set<UUID> {
+    private func needsFaceDetections(_ enabledEffects: [VideoEffect],
+                                     _ presentationTimeStamp: Double) -> Set<UUID>
+    {
         var detectionsIntervals: [UUID: Double] = [:]
         var ids: Set<UUID> = []
-        for effect in effects where effect.isEnabled() {
+        for effect in enabledEffects {
             switch effect.needsFaceDetections(presentationTimeStamp) {
             case .off:
                 break
@@ -1603,10 +1605,12 @@ final class VideoUnit: NSObject {
         return ids
     }
 
-    private func needsTextDetections(_ presentationTimeStamp: Double) -> Set<UUID> {
+    private func needsTextDetections(_ enabledEffects: [VideoEffect],
+                                     _ presentationTimeStamp: Double) -> Set<UUID>
+    {
         var detectionsIntervals: [UUID: Double] = [:]
         var ids: Set<UUID> = []
-        for effect in effects where effect.isEnabled() {
+        for effect in enabledEffects {
             switch effect.needsTextDetections(presentationTimeStamp) {
             case .off:
                 break
