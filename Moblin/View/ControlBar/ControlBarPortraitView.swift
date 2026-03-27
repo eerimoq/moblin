@@ -124,6 +124,7 @@ private struct IconAndSettingsView: View {
                     .offset(x: 2)
                     .frame(width: controlBarButtonSize, height: controlBarButtonSize)
             }
+            .buttonStyle(.plain)
             Button {
                 model.toggleShowingPanel(type: nil, panel: .settings)
             } label: {
@@ -135,6 +136,7 @@ private struct IconAndSettingsView: View {
                     )
                     .foregroundStyle(.white)
             }
+            .buttonStyle(.plain)
             .padding([.leading], 10)
         }
         .padding([.leading, .trailing], 10)
@@ -166,6 +168,7 @@ private struct MainPageView: View {
                     } label: {
                         ThermalStateView(thermalState: status.thermalState)
                     }
+                    .buttonStyle(.plain)
                     Spacer(minLength: 0)
                 }
                 .padding([.top], 3)

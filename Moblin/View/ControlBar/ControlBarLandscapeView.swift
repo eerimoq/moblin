@@ -114,6 +114,7 @@ private struct StatusView: View {
             } label: {
                 ThermalStateView(thermalState: status.thermalState)
             }
+            .buttonStyle(.plain)
             Spacer(minLength: 0)
             if isPhone() {
                 Text(status.digitalClock)
@@ -144,6 +145,7 @@ private struct IconAndSettingsView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: controlBarButtonSize, height: controlBarButtonSize)
             }
+            .buttonStyle(.plain)
             Button {
                 model.toggleShowingPanel(type: nil, panel: .settings)
             } label: {
@@ -155,6 +157,7 @@ private struct IconAndSettingsView: View {
                     )
                     .foregroundStyle(.white)
             }
+            .buttonStyle(.plain)
         }
     }
 }
