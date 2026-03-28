@@ -15,12 +15,21 @@ private func loadRecordingPath(settings: SettingsStreamRecording?) -> URL? {
 }
 
 class Recording {
-    private var id: UUID = .init()
+    private var filename: String
     private var recording: SettingsStreamRecording?
     var startTime: Date = .init()
     private var recordingPath: URL?
 
     init?(recording: SettingsStreamRecording) {
+        var date = Date()
+        while true {
+            filename = "Recording_\(formatFilenameDateAndTime(date: date)).mp4"
+            if let path = url()?.path(), FileManager.default.fileExists(atPath: path) {
+                date = Date(timeInterval: 1, since: date)
+                continue
+            }
+            break
+        }
         self.recording = recording
         if !isDefaultRecordingPath() {
             recordingPath = loadRecordingPath(settings: recording)
@@ -30,8 +39,8 @@ class Recording {
         }
     }
 
-    func name() -> String {
-        return "\(id).mp4"
+    private func name() -> String {
+        return filename
     }
 
     func url() -> URL? {
@@ -45,7 +54,7 @@ class Recording {
         }
     }
 
-    func isDefaultRecordingPath() -> Bool {
+    private func isDefaultRecordingPath() -> Bool {
         return recording?.isDefaultRecordingPath() ?? true
     }
 }

@@ -395,3 +395,13 @@ struct TimeStampRebaser {
         return presentationTimeStamp
     }
 }
+
+private let filenameDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd_HHmmss"
+    return formatter
+}()
+
+func formatFilenameDateAndTime(date: Date? = nil) -> String {
+    return filenameDateFormatter.string(from: date ?? Date())
+}

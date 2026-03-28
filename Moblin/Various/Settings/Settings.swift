@@ -2075,12 +2075,6 @@ private let exportFiles = [
     URL.documentsDirectory.appending(component: "faceBackgroundImage.img"),
 ]
 
-private let exportSettingsDateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy-MM-dd_HHmmss"
-    return formatter
-}()
-
 final class Settings {
     private var realDatabase = Database()
     var database: Database {
@@ -2160,10 +2154,9 @@ final class Settings {
     func exportToFile(onCompleted: @escaping (URL?) -> Void) {
         store()
         let settingsJson = [UInt8](storage.utf8)
-        let dateAndTime = exportSettingsDateFormatter.string(from: Date())
         DispatchQueue.global().async {
             let url = FileManager.default.temporaryDirectory
-                .appendingPathComponent("\(UIDevice.current.name)_\(dateAndTime)")
+                .appendingPathComponent("\(UIDevice.current.name)_\(formatFilenameDateAndTime())")
                 .appendingPathExtension("moblinSettings")
             try? FileManager.default.removeItem(at: url)
             do {
