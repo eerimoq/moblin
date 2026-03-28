@@ -94,7 +94,7 @@ private class File: NSObject {
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let writer,
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
-              let _ = getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp)
+              getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp) != nil
         else {
             return
         }
@@ -108,7 +108,7 @@ private class File: NSObject {
 
     func appendVideo(_ sampleBuffer: CMSampleBuffer) {
         guard let writer,
-              let _ = getVideoWriterInput(sampleBuffer: sampleBuffer)
+              getVideoWriterInput(sampleBuffer: sampleBuffer) != nil
         else {
             return
         }
