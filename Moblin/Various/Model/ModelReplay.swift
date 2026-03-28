@@ -173,7 +173,7 @@ extension Model {
 
     func streamReplayEnabledUpdated() {
         replayBuffer = ReplayBuffer()
-        media.setReplayBuffering(enabled: stream.replay.enabled)
+        media.setReplay(enabled: stream.replay.enabled)
         if stream.replay.enabled {
             startRecorderIfNeeded()
         } else {

@@ -253,11 +253,15 @@ final class Processor {
     }
 
     func setRecordingUrl(baseUrl: URL?) {
-        recorder.setUrl(baseUrl: baseUrl)
+        processorControlQueue.async {
+            self.recorder.setUrl(baseUrl: baseUrl)
+        }
     }
 
-    func setReplayBuffering(enabled: Bool) {
-        recorder.setReplayBuffering(enabled: enabled)
+    func setReplay(enabled: Bool) {
+        processorControlQueue.async {
+            self.recorder.setReplay(enabled: enabled)
+        }
     }
 
     func stop() {

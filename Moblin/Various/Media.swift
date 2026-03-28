@@ -965,8 +965,8 @@ final class Media: NSObject {
         processor?.setRecordingUrl(baseUrl: baseUrl)
     }
 
-    func setReplayBuffering(enabled: Bool) {
-        processor?.setReplayBuffering(enabled: enabled)
+    func setReplay(enabled: Bool) {
+        processor?.setReplay(enabled: enabled)
     }
 
     private func makeVideoCompressionSettings(videoCodec: SettingsStreamCodec,
