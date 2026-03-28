@@ -24,12 +24,17 @@ private class File: NSObject {
     private var audioOutputFormat: AVAudioFormat?
     private var basePresentationTimeStamp: CMTime = .zero
     private var replay = false
+    private let number: Int
     weak var recorder: Recorder?
+
+    init(number: Int) {
+        self.number = number
+    }
 
     func setUrl(baseUrl: URL?) {
         fileWriterQueue.async {
             if let baseUrl {
-                let fileUrl = baseUrl.appendingPathComponent("0001.mp4")
+                let fileUrl = baseUrl.appendingPathComponent(String(format: "%04d.mp4", self.number))
                 try? Data().write(to: fileUrl)
                 self.fileHandle = FileHandle(forWritingAtPath: fileUrl.path)
                 if let initSegment = self.initSegment {
@@ -50,6 +55,38 @@ private class File: NSObject {
         }
     }
 
+    func startInternal(baseUrl: URL?, replay: Bool) {
+        self.replay = replay
+        guard writer == nil else {
+            logger.info("recorder: Will not start recording as it is already running or missing URL")
+            return
+        }
+        reset()
+        writer = AVAssetWriter(contentType: .mpeg4Movie)
+        writer?.shouldOptimizeForNetworkUse = true
+        writer?.outputFileTypeProfile = .mpeg4AppleHLS
+        writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
+        writer?.delegate = self
+        writer?.initialSegmentStartTime = .zero
+        setUrl(baseUrl: baseUrl)
+    }
+
+    func stopInternal() {
+        guard let writer else {
+            logger.info("recorder: Will not stop recording as it is not running")
+            return
+        }
+        guard writer.status == .writing else {
+            logger.info("recorder: Failed to finish writing \(writer.error?.localizedDescription ?? "")")
+            reset()
+            return
+        }
+        writer.finishWriting {
+            self.recorder?.delegate?.recorderFinished()
+        }
+        reset()
+    }
+
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let writer,
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
@@ -66,7 +103,7 @@ private class File: NSObject {
             recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
-            stopRunningInternal()
+            stopInternal()
         }
     }
 
@@ -85,7 +122,7 @@ private class File: NSObject {
             recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
-            stopRunningInternal()
+            stopInternal()
         }
     }
 
@@ -278,38 +315,6 @@ private class File: NSObject {
         return AVAudioFormat(streamDescription: &basicDescription)
     }
 
-    func startRunningInternal(baseUrl: URL?, replay: Bool) {
-        self.replay = replay
-        guard writer == nil else {
-            logger.info("recorder: Will not start recording as it is already running or missing URL")
-            return
-        }
-        reset()
-        writer = AVAssetWriter(contentType: .mpeg4Movie)
-        writer?.shouldOptimizeForNetworkUse = true
-        writer?.outputFileTypeProfile = .mpeg4AppleHLS
-        writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
-        writer?.delegate = self
-        writer?.initialSegmentStartTime = .zero
-        setUrl(baseUrl: baseUrl)
-    }
-
-    func stopRunningInternal() {
-        guard let writer else {
-            logger.info("recorder: Will not stop recording as it is not running")
-            return
-        }
-        guard writer.status == .writing else {
-            logger.info("recorder: Failed to finish writing \(writer.error?.localizedDescription ?? "")")
-            reset()
-            return
-        }
-        writer.finishWriting {
-            self.recorder?.delegate?.recorderFinished()
-        }
-        reset()
-    }
-
     private func reset() {
         writer = nil
         audioWriterInput = nil
@@ -360,7 +365,8 @@ extension File: AVAssetWriterDelegate {
 }
 
 class Recorder: NSObject {
-    private let currentFile = File()
+    private let currentFile = File(number: 1)
+    private let nextFile = File(number: 2)
     fileprivate var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
     fileprivate var audioOutputSettings: [String: Any] = [:]
     fileprivate var videoOutputSettings: [String: Any] = [:]
@@ -371,13 +377,7 @@ class Recorder: NSObject {
         currentFile.recorder = self
     }
 
-    func setAudioChannelsMap(map: [Int: Int]) {
-        processorPipelineQueue.async {
-            self.outputChannelsMap = map
-        }
-    }
-
-    func startRunning(
+    func start(
         baseUrl: URL?,
         replay: Bool,
         audioOutputSettings: [String: Any],
@@ -386,13 +386,19 @@ class Recorder: NSObject {
         processorPipelineQueue.async {
             self.audioOutputSettings = audioOutputSettings
             self.videoOutputSettings = videoOutputSettings
-            self.currentFile.startRunningInternal(baseUrl: baseUrl, replay: replay)
+            self.currentFile.startInternal(baseUrl: baseUrl, replay: replay)
         }
     }
 
-    func stopRunning() {
+    func stop() {
         processorPipelineQueue.async {
-            self.currentFile.stopRunningInternal()
+            self.currentFile.stopInternal()
+        }
+    }
+
+    func setAudioChannelsMap(map: [Int: Int]) {
+        processorPipelineQueue.async {
+            self.outputChannelsMap = map
         }
     }
 

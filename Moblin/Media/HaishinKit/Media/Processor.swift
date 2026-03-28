@@ -234,7 +234,7 @@ final class Processor {
                         audioSettings: [String: Any],
                         videoSettings: [String: Any])
     {
-        recorder.startRunning(
+        recorder.start(
             baseUrl: baseUrl,
             replay: replay,
             audioOutputSettings: audioSettings,
@@ -243,7 +243,7 @@ final class Processor {
     }
 
     func stopRecording() {
-        recorder.stopRunning()
+        recorder.stop()
     }
 
     func setRecordingUrl(baseUrl: URL?) {
