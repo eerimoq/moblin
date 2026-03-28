@@ -15,8 +15,8 @@ private func loadRecordingPath(settings: SettingsStreamRecording?) -> URL? {
 }
 
 class Recording {
-    var id: UUID = .init()
-    var recording: SettingsStreamRecording?
+    private var id: UUID = .init()
+    private var recording: SettingsStreamRecording?
     var startTime: Date = .init()
     private var recordingPath: URL?
 
