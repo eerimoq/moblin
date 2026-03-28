@@ -34,6 +34,7 @@ private class File: NSObject {
             if let baseUrl {
                 let fileUrl = baseUrl.appendingPathComponent(String(format: "%04d.mp4", number))
                 try? Data().write(to: fileUrl)
+                logger.info("recorder: Created \(fileUrl)")
                 self.fileHandle = FileHandle(forWritingAtPath: fileUrl.path)
                 if let initSegment = self.initSegment {
                     self.fileHandle?.write(initSegment)
@@ -70,7 +71,7 @@ private class File: NSObject {
         setUrl(baseUrl: baseUrl, number: number)
     }
 
-    func stop() {
+    func stop(notify: Bool) {
         guard let writer else {
             logger.info("recorder: Will not stop recording as it is not running")
             return
@@ -81,7 +82,9 @@ private class File: NSObject {
             return
         }
         writer.finishWriting {
-            self.recorder?.delegate?.recorderFinished()
+            if notify {
+                self.recorder?.delegate?.recorderFinished()
+            }
         }
         reset()
     }
@@ -103,7 +106,7 @@ private class File: NSObject {
             recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
-            stop()
+            stop(notify: true)
         }
     }
 
@@ -123,7 +126,7 @@ private class File: NSObject {
             recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
-            stop()
+            stop(notify: true)
         }
     }
 
@@ -383,7 +386,6 @@ class Recorder: NSObject {
     override init() {
         super.init()
         currentFile.recorder = self
-        createNextFile()
     }
 
     func start(
@@ -397,10 +399,11 @@ class Recorder: NSObject {
         self.videoOutputSettings = videoOutputSettings
         setNextRotationPresentationTimeStamp()
         currentFile.start(baseUrl: baseUrl, number: 1, replay: replay)
+        createNextFile()
     }
 
     func stop() {
-        currentFile.stop()
+        currentFile.stop(notify: true)
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
@@ -481,6 +484,7 @@ class Recorder: NSObject {
         logger.info("recorder: Rotation completed")
         rotating = false
         setNextRotationPresentationTimeStamp()
+        currentFile.stop(notify: false)
         currentFile = nextFile
         createNextFile()
     }
