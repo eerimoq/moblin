@@ -959,6 +959,10 @@ extension Model: MediaDelegate {
         handleRecorderDataSegment(segment: segment)
     }
 
+    func mediaOnRecorderFileRotated() {
+        handleRecorderFileRotated()
+    }
+
     func mediaOnRecorderFinished() {
         handleRecorderFinished()
     }

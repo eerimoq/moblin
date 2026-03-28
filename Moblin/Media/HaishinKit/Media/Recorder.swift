@@ -9,12 +9,14 @@ struct RecorderDataSegment {
 protocol RecorderDelegate: AnyObject {
     func recorderInitSegment(data: Data)
     func recorderDataSegment(segment: RecorderDataSegment)
+    func recorderFileRotated()
     func recorderFinished()
 }
 
 private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder")
 
 class Recorder: NSObject {
+    private let fileRotationInterval: Double = 15 * 60
     private var replay = false
     private var audioOutputSettings: [String: Any] = [:]
     private var videoOutputSettings: [String: Any] = [:]
@@ -101,6 +103,9 @@ class Recorder: NSObject {
     }
 
     func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+        if shouldRotateFile(currentPTS: sampleBuffer.presentationTimeStamp) {
+            rotateFile()
+        }
         guard let writer,
               let input = getVideoWriterInput(sampleBuffer: sampleBuffer),
               isReadyForStartWriting(writer: writer),
@@ -303,6 +308,39 @@ class Recorder: NSObject {
             return AVAudioFormat(streamDescription: &basicDescription, channelLayout: layout)
         }
         return AVAudioFormat(streamDescription: &basicDescription)
+    }
+
+    private func shouldRotateFile(currentPTS: CMTime) -> Bool {
+        guard writer != nil, basePresentationTimeStamp != .zero else {
+            return false
+        }
+        return (currentPTS - basePresentationTimeStamp).seconds >= fileRotationInterval
+    }
+
+    private func rotateFile() {
+        guard let writer else {
+            return
+        }
+        guard writer.status == .writing else {
+            return
+        }
+        logger.info("recorder: Rotating file")
+        writer.finishWriting {}
+        self.writer = nil
+        audioWriterInput = nil
+        videoWriterInput = nil
+        basePresentationTimeStamp = .zero
+        fileWriterQueue.async {
+            self.fileHandle = nil
+            self.initSegment = nil
+        }
+        delegate?.recorderFileRotated()
+        self.writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
+        self.writer?.shouldOptimizeForNetworkUse = true
+        self.writer?.outputFileTypeProfile = .mpeg4AppleHLS
+        self.writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
+        self.writer?.delegate = self
+        self.writer?.initialSegmentStartTime = .zero
     }
 
     private func startRunningInternal(

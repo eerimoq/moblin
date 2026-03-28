@@ -47,6 +47,16 @@ extension Model {
         currentRecording = nil
     }
 
+    func handleRecorderFileRotated() {
+        guard isRecording else {
+            return
+        }
+        let startTime = currentRecording?.startTime ?? Date()
+        currentRecording = recordingsStorage.createRecording(recording: stream.recording.clone())
+        currentRecording?.startTime = startTime
+        media.setRecordUrl(url: currentRecording?.url())
+    }
+
     func startRecorderIfNeeded() {
         guard !isRecorderRecording else {
             return

@@ -38,6 +38,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnEncoderResolutionChanged(resolution: CGSize)
     func mediaOnRecorderInitSegment(data: Data)
     func mediaOnRecorderDataSegment(segment: RecorderDataSegment)
+    func mediaOnRecorderFileRotated()
     func mediaOnRecorderFinished()
     func mediaOnNoTorch()
     func mediaOnFps(fps: Int)
@@ -1065,6 +1066,10 @@ extension Media: ProcessorDelegate {
 
     func streamRecorderDataSegment(segment: RecorderDataSegment) {
         delegate?.mediaOnRecorderDataSegment(segment: segment)
+    }
+
+    func streamRecorderFileRotated() {
+        delegate?.mediaOnRecorderFileRotated()
     }
 
     func streamRecorderFinished() {

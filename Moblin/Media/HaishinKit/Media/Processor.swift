@@ -12,6 +12,7 @@ protocol ProcessorDelegate: AnyObject {
     func streamVideoEncoderResolution(resolution: CGSize)
     func streamRecorderInitSegment(data: Data)
     func streamRecorderDataSegment(segment: RecorderDataSegment)
+    func streamRecorderFileRotated()
     func streamRecorderFinished()
     func streamAudio(sampleBuffer: CMSampleBuffer)
     func streamNoTorch()
@@ -353,6 +354,10 @@ extension Processor: RecorderDelegate {
 
     func recorderDataSegment(segment: RecorderDataSegment) {
         delegate?.streamRecorderDataSegment(segment: segment)
+    }
+
+    func recorderFileRotated() {
+        delegate?.streamRecorderFileRotated()
     }
 
     func recorderFinished() {
