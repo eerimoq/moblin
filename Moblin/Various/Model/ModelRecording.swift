@@ -27,7 +27,7 @@ extension Model {
         if let toastTitle {
             makeToast(title: toastTitle, subTitle: toastSubTitle)
         }
-        media.setRecordUrl(url: nil)
+        media.setRecordingUrl(baseUrl: nil)
         suspendRecording()
     }
 
@@ -36,7 +36,7 @@ extension Model {
         if currentRecording == nil {
             return false
         }
-        media.setRecordUrl(url: currentRecording?.url())
+        media.setRecordingUrl(baseUrl: currentRecording?.baseUrl())
         startRecorderIfNeeded()
         return true
     }
@@ -59,7 +59,7 @@ extension Model {
         let keyFrameInterval = Int(stream.recording.maxKeyFrameInterval)
         let audioBitrate = Int(stream.recording.audioBitrate)
         media.startRecording(
-            url: isRecording ? currentRecording?.url() : nil,
+            baseUrl: isRecording ? currentRecording?.baseUrl() : nil,
             replay: stream.replay.enabled,
             videoCodec: stream.recording.videoCodec,
             videoBitrate: bitrate != 0 ? bitrate : nil,
@@ -81,7 +81,7 @@ extension Model {
     func updateRecordingLength(now: Date) {
         if let currentRecording {
             let elapsed = uptimeFormatter.string(from: now.timeIntervalSince(currentRecording.startTime))!
-            let size = currentRecording.url()?.fileSize.formatBytes() ?? "-"
+            let size = currentRecording.baseUrl()?.fileSize.formatBytes() ?? "-"
             recording.length = "\(elapsed) (\(size))"
             if isWatchLocal() {
                 sendRecordingLengthToWatch(recordingLength: recording.length)

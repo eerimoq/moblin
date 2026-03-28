@@ -944,13 +944,14 @@ final class Media: NSObject {
     }
 
     func startRecording(
-        url: URL?, replay: Bool,
+        baseUrl: URL?,
+        replay: Bool,
         videoCodec: SettingsStreamCodec,
         videoBitrate: Int?,
         keyFrameInterval: Int?,
         audioBitrate: Int?
     ) {
-        processor?.startRecording(url: url,
+        processor?.startRecording(baseUrl: baseUrl,
                                   replay: replay,
                                   audioSettings: makeAudioCompressionSettings(audioBitrate: audioBitrate),
                                   videoSettings: makeVideoCompressionSettings(
@@ -960,8 +961,8 @@ final class Media: NSObject {
                                   ))
     }
 
-    func setRecordUrl(url: URL?) {
-        processor?.setUrl(url: url)
+    func setRecordingUrl(baseUrl: URL?) {
+        processor?.setRecordingUrl(baseUrl: baseUrl)
     }
 
     func setReplayBuffering(enabled: Bool) {

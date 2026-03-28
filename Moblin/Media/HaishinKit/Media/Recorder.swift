@@ -36,14 +36,14 @@ class Recorder: NSObject {
     }
 
     func startRunning(
-        url: URL?,
+        baseUrl: URL?,
         replay: Bool,
         audioOutputSettings: [String: Any],
         videoOutputSettings: [String: Any]
     ) {
         processorPipelineQueue.async {
             self.startRunningInternal(
-                url: url,
+                baseUrl: baseUrl,
                 replay: replay,
                 audioOutputSettings: audioOutputSettings,
                 videoOutputSettings: videoOutputSettings
@@ -57,11 +57,12 @@ class Recorder: NSObject {
         }
     }
 
-    func setUrl(url: URL?) {
+    func setUrl(baseUrl: URL?) {
         fileWriterQueue.async {
-            if let url {
-                try? Data().write(to: url)
-                self.fileHandle = FileHandle(forWritingAtPath: url.path)
+            if let baseUrl {
+                let fileUrl = baseUrl.appendingPathComponent("0001.mp4")
+                try? Data().write(to: fileUrl)
+                self.fileHandle = FileHandle(forWritingAtPath: fileUrl.path)
                 if let initSegment = self.initSegment {
                     self.fileHandle?.write(initSegment)
                 }
@@ -306,7 +307,7 @@ class Recorder: NSObject {
     }
 
     private func startRunningInternal(
-        url: URL?,
+        baseUrl: URL?,
         replay: Bool,
         audioOutputSettings: [String: Any],
         videoOutputSettings: [String: Any]
@@ -325,7 +326,7 @@ class Recorder: NSObject {
         writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
         writer?.delegate = self
         writer?.initialSegmentStartTime = .zero
-        setUrl(url: url)
+        setUrl(baseUrl: baseUrl)
     }
 
     private func stopRunningInternal() {

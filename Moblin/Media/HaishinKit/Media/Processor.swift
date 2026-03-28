@@ -229,9 +229,13 @@ final class Processor {
         audio.setSpeechToText(enabled: enabled)
     }
 
-    func startRecording(url: URL?, replay: Bool, audioSettings: [String: Any], videoSettings: [String: Any]) {
+    func startRecording(baseUrl: URL?,
+                        replay: Bool,
+                        audioSettings: [String: Any],
+                        videoSettings: [String: Any])
+    {
         recorder.startRunning(
-            url: url,
+            baseUrl: baseUrl,
             replay: replay,
             audioOutputSettings: audioSettings,
             videoOutputSettings: videoSettings
@@ -242,8 +246,8 @@ final class Processor {
         recorder.stopRunning()
     }
 
-    func setUrl(url: URL?) {
-        recorder.setUrl(url: url)
+    func setRecordingUrl(baseUrl: URL?) {
+        recorder.setUrl(baseUrl: baseUrl)
     }
 
     func setReplayBuffering(enabled: Bool) {

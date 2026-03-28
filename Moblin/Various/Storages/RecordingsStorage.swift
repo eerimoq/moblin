@@ -15,7 +15,7 @@ private func loadRecordingPath(settings: SettingsStreamRecording?) -> URL? {
 }
 
 class Recording {
-    private var filename: String
+    private var baseName: String
     private var recording: SettingsStreamRecording?
     var startTime: Date = .init()
     private var recordingPath: URL?
@@ -24,12 +24,15 @@ class Recording {
         self.recording = recording
         var date = Date()
         while true {
-            filename = "Recording_\(formatFilenameDateAndTime(date: date)).mp4"
-            if let path = url()?.path(), FileManager.default.fileExists(atPath: path) {
+            baseName = formatFilenameDateAndTime(date: date)
+            if let path = baseUrl()?.path(), FileManager.default.fileExists(atPath: path) {
                 date = Date(timeInterval: 1, since: date)
                 continue
             }
             break
+        }
+        if let baseUrl = baseUrl() {
+            try? FileManager.default.createDirectory(at: baseUrl, withIntermediateDirectories: true)
         }
         if !isDefaultRecordingPath() {
             recordingPath = loadRecordingPath(settings: recording)
@@ -39,18 +42,14 @@ class Recording {
         }
     }
 
-    private func name() -> String {
-        return filename
-    }
-
-    func url() -> URL? {
+    func baseUrl() -> URL? {
         if isDefaultRecordingPath() {
-            return getRecordingsDirectory().appending(component: name())
+            return getRecordingsDirectory().appending(component: baseName)
         } else {
             if recordingPath == nil {
                 recordingPath = loadRecordingPath(settings: recording)
             }
-            return recordingPath?.appending(component: name())
+            return recordingPath?.appending(component: baseName)
         }
     }
 
