@@ -55,7 +55,7 @@ private class File: NSObject {
         }
     }
 
-    func startInternal(baseUrl: URL?, replay: Bool) {
+    func start(baseUrl: URL?, replay: Bool) {
         self.replay = replay
         guard writer == nil else {
             logger.info("recorder: Will not start recording as it is already running or missing URL")
@@ -71,7 +71,7 @@ private class File: NSObject {
         setUrl(baseUrl: baseUrl)
     }
 
-    func stopInternal() {
+    func stop() {
         guard let writer else {
             logger.info("recorder: Will not stop recording as it is not running")
             return
@@ -103,7 +103,7 @@ private class File: NSObject {
             recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
-            stopInternal()
+            stop()
         }
     }
 
@@ -122,7 +122,7 @@ private class File: NSObject {
             recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
-            stopInternal()
+            stop()
         }
     }
 
@@ -383,23 +383,17 @@ class Recorder: NSObject {
         audioOutputSettings: [String: Any],
         videoOutputSettings: [String: Any]
     ) {
-        processorPipelineQueue.async {
-            self.audioOutputSettings = audioOutputSettings
-            self.videoOutputSettings = videoOutputSettings
-            self.currentFile.startInternal(baseUrl: baseUrl, replay: replay)
-        }
+        self.audioOutputSettings = audioOutputSettings
+        self.videoOutputSettings = videoOutputSettings
+        currentFile.start(baseUrl: baseUrl, replay: replay)
     }
 
     func stop() {
-        processorPipelineQueue.async {
-            self.currentFile.stopInternal()
-        }
+        currentFile.stop()
     }
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        processorPipelineQueue.async {
-            self.outputChannelsMap = map
-        }
+        outputChannelsMap = map
     }
 
     func setUrl(baseUrl: URL?) {

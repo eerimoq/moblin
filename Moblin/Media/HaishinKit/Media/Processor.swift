@@ -221,10 +221,6 @@ final class Processor {
         video.setCleanExternalDisplay(enabled: enabled)
     }
 
-    func setAudioChannelsMap(map: [Int: Int]) {
-        recorder.setAudioChannelsMap(map: map)
-    }
-
     func setSpeechToText(enabled: Bool) {
         audio.setSpeechToText(enabled: enabled)
     }
@@ -234,16 +230,26 @@ final class Processor {
                         audioSettings: [String: Any],
                         videoSettings: [String: Any])
     {
-        recorder.start(
-            baseUrl: baseUrl,
-            replay: replay,
-            audioOutputSettings: audioSettings,
-            videoOutputSettings: videoSettings
-        )
+        processorPipelineQueue.async {
+            self.recorder.start(
+                baseUrl: baseUrl,
+                replay: replay,
+                audioOutputSettings: audioSettings,
+                videoOutputSettings: videoSettings
+            )
+        }
     }
 
     func stopRecording() {
-        recorder.stop()
+        processorPipelineQueue.async {
+            self.recorder.stop()
+        }
+    }
+
+    func setAudioChannelsMap(map: [Int: Int]) {
+        processorPipelineQueue.async {
+            self.recorder.setAudioChannelsMap(map: map)
+        }
     }
 
     func setRecordingUrl(baseUrl: URL?) {
