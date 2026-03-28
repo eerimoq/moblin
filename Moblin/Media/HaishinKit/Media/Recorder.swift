@@ -325,7 +325,11 @@ class Recorder: NSObject {
             return
         }
         logger.info("recorder: Rotating file")
-        writer.finishWriting {}
+        writer.finishWriting {
+            if writer.status == .failed {
+                logger.info("recorder: Failed to finish writing during rotation: \(writer.error?.localizedDescription ?? "")")
+            }
+        }
         self.writer = nil
         audioWriterInput = nil
         videoWriterInput = nil
