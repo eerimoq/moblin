@@ -319,7 +319,7 @@ class Recorder: NSObject {
             return
         }
         reset()
-        writer = AVAssetWriter(contentType: UTType(AVFileType.mp4.rawValue)!)
+        writer = AVAssetWriter(contentType: .mpeg4Movie)
         writer?.shouldOptimizeForNetworkUse = true
         writer?.outputFileTypeProfile = .mpeg4AppleHLS
         writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
