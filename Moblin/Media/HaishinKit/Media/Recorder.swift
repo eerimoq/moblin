@@ -27,6 +27,8 @@ private class File: NSObject {
     private(set) var replay = false
     weak var recorder: Recorder?
     private(set) var number: Int = 0
+    private var pendingAudioSamples: [(CMSampleBuffer, CMTime)] = []
+    private var pendingVideoSamples: [CMSampleBuffer] = []
 
     func setUrl(baseUrl: URL?, number: Int) {
         self.number = number
@@ -92,8 +94,35 @@ private class File: NSObject {
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         guard let writer,
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
-              let input = getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp),
-              isReadyForStartWriting(writer: writer),
+              let _ = getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp)
+        else {
+            return
+        }
+        if !isReadyForStartWriting(writer: writer) {
+            pendingAudioSamples.append((sampleBuffer, presentationTimeStamp))
+            return
+        }
+        flushPendingSamples()
+        writeAudio(sampleBuffer, presentationTimeStamp)
+    }
+
+    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+        guard let writer,
+              let _ = getVideoWriterInput(sampleBuffer: sampleBuffer)
+        else {
+            return
+        }
+        if !isReadyForStartWriting(writer: writer) {
+            pendingVideoSamples.append(sampleBuffer)
+            return
+        }
+        flushPendingSamples()
+        writeVideo(sampleBuffer)
+    }
+
+    private func writeAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
+        guard let writer,
+              let input = audioWriterInput,
               input.isReadyForMoreMediaData,
               let sampleBuffer = sampleBuffer
               .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
@@ -110,23 +139,42 @@ private class File: NSObject {
         }
     }
 
-    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+    private func writeVideo(_ sampleBuffer: CMSampleBuffer) {
         guard let writer,
-              let input = getVideoWriterInput(sampleBuffer: sampleBuffer),
-              isReadyForStartWriting(writer: writer),
-              input.isReadyForMoreMediaData,
-              let sampleBuffer = sampleBuffer
-              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+              let input = videoWriterInput,
+              input.isReadyForMoreMediaData
         else {
             return
         }
-        maximumPresentationTimeStamp = max(maximumPresentationTimeStamp, sampleBuffer.presentationTimeStamp)
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp
+        guard let sampleBuffer = sampleBuffer
+            .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
+        else {
+            return
+        }
+        maximumPresentationTimeStamp = max(maximumPresentationTimeStamp, presentationTimeStamp)
         if !input.append(sampleBuffer) {
             logger.info("""
             recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
             """)
             stop(notify: true)
+        }
+    }
+
+    private func flushPendingSamples() {
+        guard !pendingAudioSamples.isEmpty || !pendingVideoSamples.isEmpty else {
+            return
+        }
+        let audioSamples = pendingAudioSamples
+        let videoSamples = pendingVideoSamples
+        pendingAudioSamples = []
+        pendingVideoSamples = []
+        for (sampleBuffer, pts) in audioSamples {
+            writeAudio(sampleBuffer, pts)
+        }
+        for sampleBuffer in videoSamples {
+            writeVideo(sampleBuffer)
         }
     }
 
@@ -249,7 +297,14 @@ private class File: NSObject {
         if writer?.inputs.count == 2 {
             writer?.startWriting()
             writer?.startSession(atSourceTime: .zero)
-            basePresentationTimeStamp = presentationTimeStamp
+            var minPTS = presentationTimeStamp
+            for (_, pts) in pendingAudioSamples {
+                minPTS = min(minPTS, pts)
+            }
+            for sampleBuffer in pendingVideoSamples {
+                minPTS = min(minPTS, sampleBuffer.presentationTimeStamp)
+            }
+            basePresentationTimeStamp = minPTS
         }
         return input
     }
@@ -327,6 +382,8 @@ private class File: NSObject {
         audioOutputFormat = nil
         basePresentationTimeStamp = .zero
         maximumPresentationTimeStamp = .negativeInfinity
+        pendingAudioSamples = []
+        pendingVideoSamples = []
         fileWriterQueue.async {
             self.fileHandle = nil
             self.initSegment = nil
