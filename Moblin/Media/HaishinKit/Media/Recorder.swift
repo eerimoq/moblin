@@ -14,20 +14,116 @@ protocol RecorderDelegate: AnyObject {
 
 private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder")
 
+private class RecorderFile: NSObject, AVAssetWriterDelegate {
+    let fileNumber: Int
+    // Accessed on processorPipelineQueue
+    var writer: AVAssetWriter?
+    var audioWriterInput: AVAssetWriterInput?
+    var videoWriterInput: AVAssetWriterInput?
+    var basePresentationTimeStamp: CMTime = .zero
+    // Accessed on fileWriterQueue
+    var fileHandle: FileHandle?
+    var initSegment: Data?
+    var replay: Bool = false
+    weak var recorderDelegate: RecorderDelegate?
+
+    init(fileNumber: Int) {
+        self.fileNumber = fileNumber
+        super.init()
+    }
+
+    func createWriter() {
+        writer = AVAssetWriter(contentType: .mpeg4Movie)
+        writer?.shouldOptimizeForNetworkUse = true
+        writer?.outputFileTypeProfile = .mpeg4AppleHLS
+        writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
+        writer?.delegate = self
+        writer?.initialSegmentStartTime = .zero
+    }
+
+    func createFileHandle(baseUrl: URL) {
+        let fileName = String(format: "%04d.mp4", fileNumber)
+        let fileUrl = baseUrl.appendingPathComponent(fileName)
+        try? Data().write(to: fileUrl)
+        fileHandle = FileHandle(forWritingAtPath: fileUrl.path)
+    }
+
+    func isReadyForStartWriting() -> Bool {
+        guard let writer else { return false }
+        return writer.inputs.count == 2
+    }
+
+    func finishWriting(completion: @escaping () -> Void) {
+        guard let writer else {
+            completion()
+            return
+        }
+        guard writer.status == .writing else {
+            completion()
+            return
+        }
+        writer.finishWriting(completionHandler: completion)
+    }
+
+    func reset() {
+        writer = nil
+        audioWriterInput = nil
+        videoWriterInput = nil
+        basePresentationTimeStamp = .zero
+        fileWriterQueue.async {
+            self.fileHandle = nil
+            self.initSegment = nil
+        }
+    }
+
+    func assetWriter(_: AVAssetWriter,
+                     didOutputSegmentData segmentData: Data,
+                     segmentType: AVAssetSegmentType,
+                     segmentReport: AVAssetSegmentReport?)
+    {
+        fileWriterQueue.async {
+            self.fileHandle?.write(segmentData)
+            if segmentType == .initialization {
+                self.initSegment = segmentData
+            }
+            if self.replay {
+                switch segmentType {
+                case .initialization:
+                    self.recorderDelegate?.recorderInitSegment(data: segmentData)
+                case .separable:
+                    if let report = segmentReport?.trackReports.first {
+                        self.recorderDelegate?.recorderDataSegment(segment: RecorderDataSegment(
+                            data: segmentData,
+                            startTime: report.earliestPresentationTimeStamp.seconds,
+                            duration: report.duration.seconds
+                        ))
+                    }
+                default:
+                    break
+                }
+            }
+        }
+    }
+}
+
 class Recorder: NSObject {
     private var replay = false
     private var audioOutputSettings: [String: Any] = [:]
     private var videoOutputSettings: [String: Any] = [:]
-    private var fileHandle: FileHandle?
-    private var initSegment: Data?
     private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
-    private var writer: AVAssetWriter?
-    private var audioWriterInput: AVAssetWriterInput?
-    private var videoWriterInput: AVAssetWriterInput?
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
-    private var basePresentationTimeStamp: CMTime = .zero
     weak var delegate: RecorderDelegate?
+    private var activeFile: RecorderFile?
+    private var nextFile: RecorderFile?
+    private var baseUrl: URL?
+    private var nextFileNumber: Int = 0
+    private let rotationInterval: Double = 15 * 60
+    private var rotationPending = false
+    private var audioPassedRotation = false
+    private var videoPassedRotation = false
+    private var pendingAudioBuffers: [(CMSampleBuffer, CMTime)] = []
+    private var pendingVideoBuffers: [CMSampleBuffer] = []
 
     func setAudioChannelsMap(map: [Int: Int]) {
         processorPipelineQueue.async {
@@ -60,14 +156,12 @@ class Recorder: NSObject {
     func setUrl(baseUrl: URL?) {
         fileWriterQueue.async {
             if let baseUrl {
-                let fileUrl = baseUrl.appendingPathComponent("0001.mp4")
-                try? Data().write(to: fileUrl)
-                self.fileHandle = FileHandle(forWritingAtPath: fileUrl.path)
-                if let initSegment = self.initSegment {
-                    self.fileHandle?.write(initSegment)
+                self.activeFile?.createFileHandle(baseUrl: baseUrl)
+                if let initSegment = self.activeFile?.initSegment {
+                    self.activeFile?.fileHandle?.write(initSegment)
                 }
             } else {
-                self.fileHandle = nil
+                self.activeFile?.fileHandle = nil
             }
         }
     }
@@ -75,24 +169,46 @@ class Recorder: NSObject {
     func setReplayBuffering(enabled: Bool) {
         fileWriterQueue.async {
             self.replay = enabled
-            if let initSegment = self.initSegment {
+            self.activeFile?.replay = enabled
+            self.nextFile?.replay = enabled
+            if let initSegment = self.activeFile?.initSegment {
                 self.delegate?.recorderInitSegment(data: initSegment)
             }
         }
     }
 
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        guard let writer,
+        guard let activeFile,
+              let writer = activeFile.writer,
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
-              let input = getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp),
-              isReadyForStartWriting(writer: writer),
-              input.isReadyForMoreMediaData,
-              let sampleBuffer = sampleBuffer
-              .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
+              let input = getAudioWriterInput(file: activeFile, sampleBuffer: sampleBuffer,
+                                              presentationTimeStamp),
+              activeFile.isReadyForStartWriting(),
+              input.isReadyForMoreMediaData
         else {
             return
         }
-        if !input.append(sampleBuffer) {
+        if !rotationPending &&
+            shouldRotate(file: activeFile, presentationTimeStamp: presentationTimeStamp)
+        {
+            rotationPending = true
+            audioPassedRotation = false
+            videoPassedRotation = false
+        }
+        if rotationPending {
+            audioPassedRotation = true
+            pendingAudioBuffers.append((sampleBuffer, presentationTimeStamp))
+            if audioPassedRotation && videoPassedRotation {
+                performRotation()
+            }
+            return
+        }
+        guard let adjusted = sampleBuffer
+            .replacePresentationTimeStamp(presentationTimeStamp - activeFile.basePresentationTimeStamp)
+        else {
+            return
+        }
+        if !input.append(adjusted) {
             logger.info("""
             recorder: audio: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
@@ -102,16 +218,36 @@ class Recorder: NSObject {
     }
 
     func appendVideo(_ sampleBuffer: CMSampleBuffer) {
-        guard let writer,
-              let input = getVideoWriterInput(sampleBuffer: sampleBuffer),
-              isReadyForStartWriting(writer: writer),
-              input.isReadyForMoreMediaData,
-              let sampleBuffer = sampleBuffer
-              .replacePresentationTimeStamp(sampleBuffer.presentationTimeStamp - basePresentationTimeStamp)
+        guard let activeFile,
+              let writer = activeFile.writer,
+              let input = getVideoWriterInput(file: activeFile, sampleBuffer: sampleBuffer),
+              activeFile.isReadyForStartWriting(),
+              input.isReadyForMoreMediaData
         else {
             return
         }
-        if !input.append(sampleBuffer) {
+        let presentationTimeStamp = sampleBuffer.presentationTimeStamp
+        if !rotationPending &&
+            shouldRotate(file: activeFile, presentationTimeStamp: presentationTimeStamp)
+        {
+            rotationPending = true
+            audioPassedRotation = false
+            videoPassedRotation = false
+        }
+        if rotationPending {
+            videoPassedRotation = true
+            pendingVideoBuffers.append(sampleBuffer)
+            if audioPassedRotation && videoPassedRotation {
+                performRotation()
+            }
+            return
+        }
+        guard let adjusted = sampleBuffer
+            .replacePresentationTimeStamp(presentationTimeStamp - activeFile.basePresentationTimeStamp)
+        else {
+            return
+        }
+        if !input.append(adjusted) {
             logger.info("""
             recorder: video: Append failed with \(writer.error?.localizedDescription ?? "") \
             (status: \(writer.status))
@@ -119,6 +255,125 @@ class Recorder: NSObject {
             stopRunningInternal()
         }
     }
+
+    // MARK: - Rotation
+
+    private func shouldRotate(file: RecorderFile, presentationTimeStamp: CMTime) -> Bool {
+        guard file.basePresentationTimeStamp != .zero else { return false }
+        let elapsed = (presentationTimeStamp - file.basePresentationTimeStamp).seconds
+        return elapsed >= rotationInterval
+    }
+
+    private func performRotation() {
+        guard let newFile = nextFile else { return }
+        let oldFile = activeFile
+        oldFile?.finishWriting {}
+        activeFile = newFile
+        rotationPending = false
+        audioPassedRotation = false
+        videoPassedRotation = false
+        let baseUrl = self.baseUrl
+        fileWriterQueue.async {
+            if let baseUrl {
+                newFile.createFileHandle(baseUrl: baseUrl)
+            }
+        }
+        writePendingBuffers(to: newFile)
+        prepareNextFile()
+    }
+
+    private func writePendingBuffers(to file: RecorderFile) {
+        if let (firstAudio, firstAudioPTS) = pendingAudioBuffers.first {
+            file.audioWriterInput = createAudioWriterInput(
+                file: file, sampleBuffer: firstAudio, firstAudioPTS
+            )
+        }
+        if let firstVideo = pendingVideoBuffers.first {
+            file.videoWriterInput = createVideoWriterInput(file: file, sampleBuffer: firstVideo)
+        }
+        guard file.isReadyForStartWriting() else {
+            logger.info("recorder: Failed to start writing on rotated file")
+            pendingAudioBuffers.removeAll()
+            pendingVideoBuffers.removeAll()
+            return
+        }
+        if let (_, firstAudioPTS) = pendingAudioBuffers.first,
+           let firstVideo = pendingVideoBuffers.first
+        {
+            file.basePresentationTimeStamp = min(firstAudioPTS, firstVideo.presentationTimeStamp)
+        }
+        for (sampleBuffer, pts) in pendingAudioBuffers {
+            guard let input = file.audioWriterInput,
+                  input.isReadyForMoreMediaData,
+                  let adjusted = sampleBuffer
+                  .replacePresentationTimeStamp(pts - file.basePresentationTimeStamp)
+            else {
+                continue
+            }
+            if !input.append(adjusted) {
+                logger.info("recorder: audio: Append to rotated file failed")
+            }
+        }
+        for sampleBuffer in pendingVideoBuffers {
+            guard let input = file.videoWriterInput,
+                  input.isReadyForMoreMediaData,
+                  let adjusted = sampleBuffer
+                  .replacePresentationTimeStamp(
+                      sampleBuffer.presentationTimeStamp - file.basePresentationTimeStamp)
+            else {
+                continue
+            }
+            if !input.append(adjusted) {
+                logger.info("recorder: video: Append to rotated file failed")
+            }
+        }
+        pendingAudioBuffers.removeAll()
+        pendingVideoBuffers.removeAll()
+    }
+
+    private func flushPendingBuffersToActiveFile() {
+        guard let activeFile else { return }
+        for (sampleBuffer, pts) in pendingAudioBuffers {
+            guard let input = activeFile.audioWriterInput,
+                  input.isReadyForMoreMediaData,
+                  let adjusted = sampleBuffer
+                  .replacePresentationTimeStamp(pts - activeFile.basePresentationTimeStamp)
+            else {
+                continue
+            }
+            _ = input.append(adjusted)
+        }
+        for sampleBuffer in pendingVideoBuffers {
+            guard let input = activeFile.videoWriterInput,
+                  input.isReadyForMoreMediaData,
+                  let adjusted = sampleBuffer
+                  .replacePresentationTimeStamp(
+                      sampleBuffer.presentationTimeStamp - activeFile.basePresentationTimeStamp)
+            else {
+                continue
+            }
+            _ = input.append(adjusted)
+        }
+        pendingAudioBuffers.removeAll()
+        pendingVideoBuffers.removeAll()
+    }
+
+    // MARK: - File Management
+
+    private func createNewFile() -> RecorderFile {
+        nextFileNumber += 1
+        let file = RecorderFile(fileNumber: nextFileNumber)
+        file.replay = replay
+        file.recorderDelegate = delegate
+        file.createWriter()
+        return file
+    }
+
+    private func prepareNextFile() {
+        nextFile = createNewFile()
+    }
+
+    // MARK: - Audio Conversion
 
     private func convertAudio(_ sampleBuffer: CMSampleBuffer,
                               _ presentationTimeStamp: CMTime) -> CMSampleBuffer?
@@ -161,7 +416,9 @@ class Recorder: NSObject {
         }
     }
 
-    private func createAudioWriterInput(sampleBuffer: CMSampleBuffer,
+    // MARK: - Writer Input Creation
+
+    private func createAudioWriterInput(file: RecorderFile, sampleBuffer: CMSampleBuffer,
                                         _ presentationTimeStamp: CMTime) -> AVAssetWriterInput
     {
         let sourceFormatHint = sampleBuffer.formatDescription
@@ -179,19 +436,23 @@ class Recorder: NSObject {
                 }
             }
         }
-        return makeWriterInput(.audio, outputSettings, sampleBuffer, presentationTimeStamp)
+        return makeWriterInput(file, .audio, outputSettings, sampleBuffer, presentationTimeStamp)
     }
 
-    private func getAudioWriterInput(sampleBuffer: CMSampleBuffer,
+    private func getAudioWriterInput(file: RecorderFile, sampleBuffer: CMSampleBuffer,
                                      _ presentationTimeStamp: CMTime) -> AVAssetWriterInput?
     {
-        if audioWriterInput == nil {
-            audioWriterInput = createAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp)
+        if file.audioWriterInput == nil {
+            file.audioWriterInput = createAudioWriterInput(
+                file: file, sampleBuffer: sampleBuffer, presentationTimeStamp
+            )
         }
-        return audioWriterInput
+        return file.audioWriterInput
     }
 
-    private func createVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
+    private func createVideoWriterInput(file: RecorderFile,
+                                        sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput?
+    {
         guard let pixelBuffer = sampleBuffer.imageBuffer else {
             return nil
         }
@@ -206,17 +467,21 @@ class Recorder: NSObject {
                 outputSettings[key] = value
             }
         }
-        return makeWriterInput(.video, outputSettings, sampleBuffer, sampleBuffer.presentationTimeStamp)
+        return makeWriterInput(file, .video, outputSettings, sampleBuffer,
+                               sampleBuffer.presentationTimeStamp)
     }
 
-    private func getVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
-        if videoWriterInput == nil {
-            videoWriterInput = createVideoWriterInput(sampleBuffer: sampleBuffer)
+    private func getVideoWriterInput(file: RecorderFile,
+                                     sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput?
+    {
+        if file.videoWriterInput == nil {
+            file.videoWriterInput = createVideoWriterInput(file: file, sampleBuffer: sampleBuffer)
         }
-        return videoWriterInput
+        return file.videoWriterInput
     }
 
-    private func makeWriterInput(_ mediaType: AVMediaType,
+    private func makeWriterInput(_ file: RecorderFile,
+                                 _ mediaType: AVMediaType,
                                  _ outputSettings: [String: Any],
                                  _ sampleBuffer: CMSampleBuffer,
                                  _ presentationTimeStamp: CMTime) -> AVAssetWriterInput
@@ -232,14 +497,16 @@ class Recorder: NSObject {
             sourceFormatHint: sampleBuffer.formatDescription
         )
         input.expectsMediaDataInRealTime = true
-        writer?.add(input)
-        if writer?.inputs.count == 2 {
-            writer?.startWriting()
-            writer?.startSession(atSourceTime: .zero)
-            basePresentationTimeStamp = presentationTimeStamp
+        file.writer?.add(input)
+        if file.writer?.inputs.count == 2 {
+            file.writer?.startWriting()
+            file.writer?.startSession(atSourceTime: .zero)
+            file.basePresentationTimeStamp = presentationTimeStamp
         }
         return input
     }
+
+    // MARK: - Audio Format
 
     private func makeAudioConverter(_ formatDescription: CMFormatDescription?) {
         guard var streamBasicDescription = formatDescription?.audioStreamBasicDescription else {
@@ -306,6 +573,8 @@ class Recorder: NSObject {
         return AVAudioFormat(streamDescription: &basicDescription)
     }
 
+    // MARK: - Start / Stop
+
     private func startRunningInternal(
         baseUrl: URL?,
         replay: Bool,
@@ -315,81 +584,53 @@ class Recorder: NSObject {
         self.replay = replay
         self.audioOutputSettings = audioOutputSettings
         self.videoOutputSettings = videoOutputSettings
-        guard writer == nil else {
+        self.baseUrl = baseUrl
+        guard activeFile == nil else {
             logger.info("recorder: Will not start recording as it is already running or missing URL")
             return
         }
         reset()
-        writer = AVAssetWriter(contentType: .mpeg4Movie)
-        writer?.shouldOptimizeForNetworkUse = true
-        writer?.outputFileTypeProfile = .mpeg4AppleHLS
-        writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
-        writer?.delegate = self
-        writer?.initialSegmentStartTime = .zero
+        activeFile = createNewFile()
+        prepareNextFile()
         setUrl(baseUrl: baseUrl)
     }
 
     private func stopRunningInternal() {
-        guard let writer else {
+        if rotationPending {
+            flushPendingBuffersToActiveFile()
+            rotationPending = false
+        }
+        guard let activeFile else {
             logger.info("recorder: Will not stop recording as it is not running")
             return
         }
-        guard writer.status == .writing else {
-            logger.info("recorder: Failed to finish writing \(writer.error?.localizedDescription ?? "")")
+        guard let writer = activeFile.writer, writer.status == .writing else {
+            logger.info("""
+            recorder: Failed to finish writing \
+            \(activeFile.writer?.error?.localizedDescription ?? "")
+            """)
             reset()
             return
         }
-        writer.finishWriting {
+        activeFile.finishWriting {
             self.delegate?.recorderFinished()
         }
         reset()
     }
 
     private func reset() {
-        writer = nil
-        audioWriterInput = nil
-        videoWriterInput = nil
+        activeFile?.reset()
+        activeFile = nil
+        nextFile?.reset()
+        nextFile = nil
         audioConverter = nil
         audioOutputFormat = nil
-        basePresentationTimeStamp = .zero
-        fileWriterQueue.async {
-            self.fileHandle = nil
-            self.initSegment = nil
-        }
-    }
-
-    private func isReadyForStartWriting(writer: AVAssetWriter) -> Bool {
-        return writer.inputs.count == 2
-    }
-}
-
-extension Recorder: AVAssetWriterDelegate {
-    func assetWriter(_: AVAssetWriter,
-                     didOutputSegmentData segmentData: Data,
-                     segmentType: AVAssetSegmentType,
-                     segmentReport: AVAssetSegmentReport?)
-    {
-        fileWriterQueue.async {
-            self.fileHandle?.write(segmentData)
-            if segmentType == .initialization {
-                self.initSegment = segmentData
-            }
-            if self.replay {
-                switch segmentType {
-                case .initialization:
-                    self.delegate?.recorderInitSegment(data: segmentData)
-                case .separable:
-                    if let report = segmentReport?.trackReports.first {
-                        self.delegate?.recorderDataSegment(segment: RecorderDataSegment(
-                            data: segmentData,
-                            startTime: report.earliestPresentationTimeStamp.seconds,
-                            duration: report.duration.seconds
-                        ))
-                    }
-                default:
-                    break
-                }
-            }
-        }
+        baseUrl = nil
+        nextFileNumber = 0
+        rotationPending = false
+        audioPassedRotation = false
+        videoPassedRotation = false
+        pendingAudioBuffers.removeAll()
+        pendingVideoBuffers.removeAll()
     }
 }
