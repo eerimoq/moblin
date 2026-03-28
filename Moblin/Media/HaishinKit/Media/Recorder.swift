@@ -14,47 +14,23 @@ protocol RecorderDelegate: AnyObject {
 
 private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder")
 
-class Recorder: NSObject {
-    private var replay = false
-    private var audioOutputSettings: [String: Any] = [:]
-    private var videoOutputSettings: [String: Any] = [:]
+class File: NSObject {
     private var fileHandle: FileHandle?
     private var initSegment: Data?
-    private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
     private var writer: AVAssetWriter?
     private var audioWriterInput: AVAssetWriterInput?
     private var videoWriterInput: AVAssetWriterInput?
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
     private var basePresentationTimeStamp: CMTime = .zero
+    private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
+    private var audioOutputSettings: [String: Any] = [:]
+    private var videoOutputSettings: [String: Any] = [:]
+    private var replay = false
     weak var delegate: RecorderDelegate?
 
     func setAudioChannelsMap(map: [Int: Int]) {
-        processorPipelineQueue.async {
-            self.outputChannelsMap = map
-        }
-    }
-
-    func startRunning(
-        baseUrl: URL?,
-        replay: Bool,
-        audioOutputSettings: [String: Any],
-        videoOutputSettings: [String: Any]
-    ) {
-        processorPipelineQueue.async {
-            self.startRunningInternal(
-                baseUrl: baseUrl,
-                replay: replay,
-                audioOutputSettings: audioOutputSettings,
-                videoOutputSettings: videoOutputSettings
-            )
-        }
-    }
-
-    func stopRunning() {
-        processorPipelineQueue.async {
-            self.stopRunningInternal()
-        }
+        outputChannelsMap = map
     }
 
     func setUrl(baseUrl: URL?) {
@@ -306,7 +282,7 @@ class Recorder: NSObject {
         return AVAudioFormat(streamDescription: &basicDescription)
     }
 
-    private func startRunningInternal(
+    func startRunningInternal(
         baseUrl: URL?,
         replay: Bool,
         audioOutputSettings: [String: Any],
@@ -329,7 +305,7 @@ class Recorder: NSObject {
         setUrl(baseUrl: baseUrl)
     }
 
-    private func stopRunningInternal() {
+    func stopRunningInternal() {
         guard let writer else {
             logger.info("recorder: Will not stop recording as it is not running")
             return
@@ -363,7 +339,7 @@ class Recorder: NSObject {
     }
 }
 
-extension Recorder: AVAssetWriterDelegate {
+extension File: AVAssetWriterDelegate {
     func assetWriter(_: AVAssetWriter,
                      didOutputSegmentData segmentData: Data,
                      segmentType: AVAssetSegmentType,
@@ -391,5 +367,53 @@ extension Recorder: AVAssetWriterDelegate {
                 }
             }
         }
+    }
+}
+
+class Recorder: NSObject {
+    let file = File()
+
+    func setAudioChannelsMap(map: [Int: Int]) {
+        processorPipelineQueue.async {
+            self.file.setAudioChannelsMap(map: map)
+        }
+    }
+
+    func startRunning(
+        baseUrl: URL?,
+        replay: Bool,
+        audioOutputSettings: [String: Any],
+        videoOutputSettings: [String: Any]
+    ) {
+        processorPipelineQueue.async {
+            self.file.startRunningInternal(
+                baseUrl: baseUrl,
+                replay: replay,
+                audioOutputSettings: audioOutputSettings,
+                videoOutputSettings: videoOutputSettings
+            )
+        }
+    }
+
+    func stopRunning() {
+        processorPipelineQueue.async {
+            self.file.stopRunningInternal()
+        }
+    }
+
+    func setUrl(baseUrl: URL?) {
+        file.setUrl(baseUrl: baseUrl)
+    }
+
+    func setReplayBuffering(enabled: Bool) {
+        file.setReplayBuffering(enabled: enabled)
+    }
+
+    func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
+        file.appendAudio(sampleBuffer, presentationTimeStamp)
+    }
+
+    func appendVideo(_ sampleBuffer: CMSampleBuffer) {
+        file.appendVideo(sampleBuffer)
     }
 }
