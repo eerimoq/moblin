@@ -44,7 +44,7 @@ final class Processor {
     init() {
         audio.processor = self
         video.processor = self
-        recorder.file.delegate = self
+        recorder.delegate = self
     }
 
     func setDelegate(delegate: ProcessorDelegate) {

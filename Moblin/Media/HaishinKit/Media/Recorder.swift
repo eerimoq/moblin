@@ -14,7 +14,7 @@ protocol RecorderDelegate: AnyObject {
 
 private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder")
 
-class File: NSObject {
+private class File: NSObject {
     private var fileHandle: FileHandle?
     private var initSegment: Data?
     private var writer: AVAssetWriter?
@@ -23,15 +23,8 @@ class File: NSObject {
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
     private var basePresentationTimeStamp: CMTime = .zero
-    private var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
-    private var audioOutputSettings: [String: Any] = [:]
-    private var videoOutputSettings: [String: Any] = [:]
     private var replay = false
-    weak var delegate: RecorderDelegate?
-
-    func setAudioChannelsMap(map: [Int: Int]) {
-        outputChannelsMap = map
-    }
+    weak var recorder: Recorder?
 
     func setUrl(baseUrl: URL?) {
         fileWriterQueue.async {
@@ -52,7 +45,7 @@ class File: NSObject {
         fileWriterQueue.async {
             self.replay = enabled
             if let initSegment = self.initSegment {
-                self.delegate?.recorderInitSegment(data: initSegment)
+                self.recorder?.delegate?.recorderInitSegment(data: initSegment)
             }
         }
     }
@@ -138,12 +131,15 @@ class File: NSObject {
     }
 
     private func createAudioWriterInput(sampleBuffer: CMSampleBuffer,
-                                        _ presentationTimeStamp: CMTime) -> AVAssetWriterInput
+                                        _ presentationTimeStamp: CMTime) -> AVAssetWriterInput?
     {
+        guard let recorder else {
+            return nil
+        }
         let sourceFormatHint = sampleBuffer.formatDescription
         var outputSettings: [String: Any] = [:]
         if let sourceFormatHint, let inSourceFormat = sourceFormatHint.audioStreamBasicDescription {
-            for (key, value) in audioOutputSettings {
+            for (key, value) in recorder.audioOutputSettings {
                 switch key {
                 case AVSampleRateKey:
                     outputSettings[key] = isZero(value) ? inSourceFormat.mSampleRate : value
@@ -168,11 +164,11 @@ class File: NSObject {
     }
 
     private func createVideoWriterInput(sampleBuffer: CMSampleBuffer) -> AVAssetWriterInput? {
-        guard let pixelBuffer = sampleBuffer.imageBuffer else {
+        guard let pixelBuffer = sampleBuffer.imageBuffer, let recorder else {
             return nil
         }
         var outputSettings: [String: Any] = [:]
-        for (key, value) in videoOutputSettings {
+        for (key, value) in recorder.videoOutputSettings {
             switch key {
             case AVVideoHeightKey:
                 outputSettings[key] = isZero(value) ? pixelBuffer.height : value
@@ -233,7 +229,7 @@ class File: NSObject {
                 interleaved: inputFormat.isInterleaved
             )
         }
-        guard let audioOutputFormat else {
+        guard let audioOutputFormat, let recorder else {
             return
         }
         logger.info("recorder: Input: \(inputFormat), output: \(audioOutputFormat)")
@@ -241,7 +237,7 @@ class File: NSObject {
         audioConverter?.channelMap = makeChannelMap(
             numberOfInputChannels: Int(inputFormat.channelCount),
             numberOfOutputChannels: Int(audioOutputFormat.channelCount),
-            outputToInputChannelsMap: outputChannelsMap
+            outputToInputChannelsMap: recorder.outputChannelsMap
         )
     }
 
@@ -282,15 +278,8 @@ class File: NSObject {
         return AVAudioFormat(streamDescription: &basicDescription)
     }
 
-    func startRunningInternal(
-        baseUrl: URL?,
-        replay: Bool,
-        audioOutputSettings: [String: Any],
-        videoOutputSettings: [String: Any]
-    ) {
+    func startRunningInternal(baseUrl: URL?, replay: Bool) {
         self.replay = replay
-        self.audioOutputSettings = audioOutputSettings
-        self.videoOutputSettings = videoOutputSettings
         guard writer == nil else {
             logger.info("recorder: Will not start recording as it is already running or missing URL")
             return
@@ -316,7 +305,7 @@ class File: NSObject {
             return
         }
         writer.finishWriting {
-            self.delegate?.recorderFinished()
+            self.recorder?.delegate?.recorderFinished()
         }
         reset()
     }
@@ -353,10 +342,10 @@ extension File: AVAssetWriterDelegate {
             if self.replay {
                 switch segmentType {
                 case .initialization:
-                    self.delegate?.recorderInitSegment(data: segmentData)
+                    self.recorder?.delegate?.recorderInitSegment(data: segmentData)
                 case .separable:
                     if let report = segmentReport?.trackReports.first {
-                        self.delegate?.recorderDataSegment(segment: RecorderDataSegment(
+                        self.recorder?.delegate?.recorderDataSegment(segment: RecorderDataSegment(
                             data: segmentData,
                             startTime: report.earliestPresentationTimeStamp.seconds,
                             duration: report.duration.seconds
@@ -371,11 +360,20 @@ extension File: AVAssetWriterDelegate {
 }
 
 class Recorder: NSObject {
-    let file = File()
+    private let currentFile = File()
+    fileprivate var outputChannelsMap: [Int: Int] = [0: 0, 1: 1]
+    fileprivate var audioOutputSettings: [String: Any] = [:]
+    fileprivate var videoOutputSettings: [String: Any] = [:]
+    weak var delegate: RecorderDelegate?
+
+    override init() {
+        super.init()
+        currentFile.recorder = self
+    }
 
     func setAudioChannelsMap(map: [Int: Int]) {
         processorPipelineQueue.async {
-            self.file.setAudioChannelsMap(map: map)
+            self.outputChannelsMap = map
         }
     }
 
@@ -386,34 +384,31 @@ class Recorder: NSObject {
         videoOutputSettings: [String: Any]
     ) {
         processorPipelineQueue.async {
-            self.file.startRunningInternal(
-                baseUrl: baseUrl,
-                replay: replay,
-                audioOutputSettings: audioOutputSettings,
-                videoOutputSettings: videoOutputSettings
-            )
+            self.audioOutputSettings = audioOutputSettings
+            self.videoOutputSettings = videoOutputSettings
+            self.currentFile.startRunningInternal(baseUrl: baseUrl, replay: replay)
         }
     }
 
     func stopRunning() {
         processorPipelineQueue.async {
-            self.file.stopRunningInternal()
+            self.currentFile.stopRunningInternal()
         }
     }
 
     func setUrl(baseUrl: URL?) {
-        file.setUrl(baseUrl: baseUrl)
+        currentFile.setUrl(baseUrl: baseUrl)
     }
 
     func setReplayBuffering(enabled: Bool) {
-        file.setReplayBuffering(enabled: enabled)
+        currentFile.setReplayBuffering(enabled: enabled)
     }
 
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
-        file.appendAudio(sampleBuffer, presentationTimeStamp)
+        currentFile.appendAudio(sampleBuffer, presentationTimeStamp)
     }
 
     func appendVideo(_ sampleBuffer: CMSampleBuffer) {
-        file.appendVideo(sampleBuffer)
+        currentFile.appendVideo(sampleBuffer)
     }
 }
