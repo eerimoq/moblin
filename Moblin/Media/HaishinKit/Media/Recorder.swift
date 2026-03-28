@@ -272,6 +272,9 @@ class Recorder: NSObject {
         rotationPending = false
         audioPassedRotation = false
         videoPassedRotation = false
+        // Create file handle on fileWriterQueue before any segment data arrives.
+        // writePendingBuffers triggers AVAssetWriter delegate callbacks that also
+        // dispatch to fileWriterQueue, so the file handle is created first.
         let baseUrl = self.baseUrl
         fileWriterQueue.async {
             if let baseUrl {
@@ -297,6 +300,8 @@ class Recorder: NSObject {
             pendingVideoBuffers.removeAll()
             return
         }
+        // Use the minimum of first audio and video PTS as basePTS to ensure
+        // all adjusted timestamps are non-negative in the rotated file.
         if let (_, firstAudioPTS) = pendingAudioBuffers.first,
            let firstVideo = pendingVideoBuffers.first
         {
@@ -332,7 +337,7 @@ class Recorder: NSObject {
     }
 
     private func flushPendingBuffersToActiveFile() {
-        guard let activeFile else { return }
+        guard let activeFile, let writer = activeFile.writer else { return }
         for (sampleBuffer, pts) in pendingAudioBuffers {
             guard let input = activeFile.audioWriterInput,
                   input.isReadyForMoreMediaData,
@@ -341,7 +346,12 @@ class Recorder: NSObject {
             else {
                 continue
             }
-            _ = input.append(adjusted)
+            if !input.append(adjusted) {
+                logger.info("""
+                recorder: audio: Flush append failed with \
+                \(writer.error?.localizedDescription ?? "") (status: \(writer.status))
+                """)
+            }
         }
         for sampleBuffer in pendingVideoBuffers {
             guard let input = activeFile.videoWriterInput,
@@ -352,7 +362,12 @@ class Recorder: NSObject {
             else {
                 continue
             }
-            _ = input.append(adjusted)
+            if !input.append(adjusted) {
+                logger.info("""
+                recorder: video: Flush append failed with \
+                \(writer.error?.localizedDescription ?? "") (status: \(writer.status))
+                """)
+            }
         }
         pendingAudioBuffers.removeAll()
         pendingVideoBuffers.removeAll()
