@@ -21,6 +21,7 @@ class Recording {
     private var recordingPath: URL?
 
     init?(recording: SettingsStreamRecording) {
+        self.recording = recording
         var date = Date()
         while true {
             filename = "Recording_\(formatFilenameDateAndTime(date: date)).mp4"
@@ -30,7 +31,6 @@ class Recording {
             }
             break
         }
-        self.recording = recording
         if !isDefaultRecordingPath() {
             recordingPath = loadRecordingPath(settings: recording)
             if recordingPath == nil {
