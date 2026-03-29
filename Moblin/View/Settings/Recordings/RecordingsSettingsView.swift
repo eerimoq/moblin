@@ -6,6 +6,10 @@ private let ffmpegConstantFrameRateCommand = """
 ffmpeg -i input.mp4 -vf "fps=60" -c:v hevc_videotoolbox -c:a copy output.mp4
 """
 
+private let ffmpegAudioAndVideoSlowlyDesynchronizingCommand = """
+ffmpeg -i input.mp4 -af "asetrate=48002.2,aresample=48000" -c:v copy -c:a aac output.mp4
+"""
+
 private struct RecordingsLocationView: View {
     let model: Model
     let text: Text
@@ -68,6 +72,15 @@ private struct HelpView: View {
                     CommandCopyView(command: ffmpegCommand)
                 } header: {
                     Text("How to convert a recording to standard MP4")
+                }
+                Section {
+                    VStack(alignment: .leading) {
+                        CommandCopyView(command: ffmpegAudioAndVideoSlowlyDesynchronizingCommand)
+                        Text("")
+                        Text("Replace sample rates and audio codec to match your recording.")
+                    }
+                } header: {
+                    Text("How to fix audio and video slowly desynchronizing")
                 }
                 Section {
                     VStack(alignment: .leading) {
