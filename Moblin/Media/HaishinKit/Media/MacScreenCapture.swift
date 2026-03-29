@@ -62,11 +62,12 @@ class MacScreenCapture: NSObject {
             guard let display = content.displays.first else {
                 continue
             }
-            let excludedApplications = content.applications
+            var excludedApplications = content.applications
                 .filter { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
             guard !excludedApplications.isEmpty else {
                 continue
             }
+            excludedApplications = []
             return SCContentFilter(
                 display: display,
                 excludingApplications: excludedApplications,
