@@ -48,6 +48,7 @@ class RtmpServerClient {
     private var totalBytesReceived: UInt64 = 0
     private var totalBytesReceivedAcked: UInt64 = 0
     var latency: Int32 = 2000
+    var syncEnabled: Bool = false
     var cameraId: UUID = .init()
     var targetLatenciesSynchronizer = TargetLatenciesSynchronizer(targetLatency: 2.0)
     private var basePresentationTimeStamp: Double

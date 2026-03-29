@@ -232,6 +232,7 @@ class RtmpServerChunkStream {
             .first(where: { $0.streamKey == streamKey })
         {
             client.latency = stream.latency
+            client.syncEnabled = stream.syncEnabled
             client.cameraId = stream.id
             client.targetLatenciesSynchronizer =
                 TargetLatenciesSynchronizer(targetLatency: stream.latencySeconds())
