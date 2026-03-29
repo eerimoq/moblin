@@ -322,8 +322,7 @@ Format: `moblin://?<URL encoded JSON blob>`
 The `MoblinSettingsUrl` class in
 [MoblinSettingsUrl.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/Various/MoblinSettingsUrl.swift) defines
 the JSON blob format. Class members are JSON object keys. Members with
-`?` after the type are optional. Some types are defined in
-[Settings.swift](https://github.com/eerimoq/moblin/blob/main/Moblin/Various/Settings.swift).
+`?` after the type are optional.
 
 # Browser widget JavaScript API
 
