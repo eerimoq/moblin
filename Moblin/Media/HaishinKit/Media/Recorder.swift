@@ -65,7 +65,7 @@ private class File: NSObject {
         }
         reset()
         writer = AVAssetWriter(contentType: .mpeg4Movie)
-        writer?.shouldOptimizeForNetworkUse = true
+        writer?.shouldOptimizeForNetworkUse = false
         writer?.outputFileTypeProfile = .mpeg4AppleHLS
         writer?.preferredOutputSegmentInterval = CMTime(seconds: 2)
         writer?.delegate = self
@@ -87,8 +87,11 @@ private class File: NSObject {
             if notify {
                 self.recorder?.delegate?.recorderFinished()
             }
+            fileWriterQueue.async {
+                try? self.fileHandle?.close()
+            }
         }
-        reset()
+        // self.writer = nil
     }
 
     func appendAudio(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
@@ -96,6 +99,7 @@ private class File: NSObject {
               let sampleBuffer = convertAudio(sampleBuffer, presentationTimeStamp),
               getAudioWriterInput(sampleBuffer: sampleBuffer, presentationTimeStamp) != nil
         else {
+            // logger.info("recoder: dropping audio")
             return
         }
         if !isReadyForStartWriting(writer: writer) {
@@ -110,6 +114,7 @@ private class File: NSObject {
         guard let writer,
               getVideoWriterInput(sampleBuffer: sampleBuffer) != nil
         else {
+            // logger.info("recoder: dropping video")
             return
         }
         if !isReadyForStartWriting(writer: writer) {
@@ -127,6 +132,7 @@ private class File: NSObject {
               let sampleBuffer = sampleBuffer
               .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
         else {
+            logger.info("recoder: dropping audio 2")
             return
         }
         maximumPresentationTimeStamp = max(maximumPresentationTimeStamp, presentationTimeStamp)
@@ -144,12 +150,14 @@ private class File: NSObject {
               let input = videoWriterInput,
               input.isReadyForMoreMediaData
         else {
+            logger.info("recoder: dropping video 2")
             return
         }
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp
         guard let sampleBuffer = sampleBuffer
             .replacePresentationTimeStamp(presentationTimeStamp - basePresentationTimeStamp)
         else {
+            logger.info("recoder: dropping video 3")
             return
         }
         maximumPresentationTimeStamp = max(maximumPresentationTimeStamp, presentationTimeStamp)
@@ -294,7 +302,7 @@ private class File: NSObject {
         )
         input.expectsMediaDataInRealTime = true
         writer?.add(input)
-        if writer?.inputs.count == 2 {
+        if writer?.inputs.count == 1 {
             writer?.startWriting()
             writer?.startSession(atSourceTime: .zero)
             var minPTS = presentationTimeStamp
@@ -391,7 +399,7 @@ private class File: NSObject {
     }
 
     private func isReadyForStartWriting(writer: AVAssetWriter) -> Bool {
-        return writer.inputs.count == 2
+        return writer.inputs.count == 1
     }
 }
 
@@ -486,17 +494,19 @@ class Recorder: NSObject {
     }
 
     func appendVideo(_ sampleBuffer: CMSampleBuffer) {
-        if rotating {
-            appendVideoRotating(sampleBuffer)
-        } else {
-            appendVideoNotRotating(sampleBuffer)
-        }
+        //if rotating {
+        //    appendVideoRotating(sampleBuffer)
+        //} else {
+        //    appendVideoNotRotating(sampleBuffer)
+        //}
     }
 
     private func appendAudioRotating(_ sampleBuffer: CMSampleBuffer, _ presentationTimeStamp: CMTime) {
         if presentationTimeStamp < maximumCurrentPresentationTimeStamp {
+            logger.info("recorder: appending audio to current file \(presentationTimeStamp.seconds)")
             currentFile.appendAudio(sampleBuffer, presentationTimeStamp)
         } else {
+            logger.info("recorder: appending audio to next file \(presentationTimeStamp.seconds)")
             nextFile?.appendAudio(sampleBuffer, presentationTimeStamp)
             audioRotated = true
         }
@@ -505,8 +515,10 @@ class Recorder: NSObject {
 
     private func appendVideoRotating(_ sampleBuffer: CMSampleBuffer) {
         if sampleBuffer.presentationTimeStamp < maximumCurrentPresentationTimeStamp {
+            logger.info("recorder: appending video to current file \(sampleBuffer.presentationTimeStamp.seconds)")
             currentFile.appendVideo(sampleBuffer)
         } else {
+            logger.info("recorder: appending video to next file \(sampleBuffer.presentationTimeStamp.seconds)")
             nextFile?.appendVideo(sampleBuffer)
             videoRotated = true
         }
@@ -527,11 +539,11 @@ class Recorder: NSObject {
         guard presentationTimeStamp > nextRotationPresentationTimeStamp else {
             return
         }
-        logger.info("recorder: Starting rotation")
+        logger.info("recorder: Starting rotation maximum \(currentFile.maximumPresentationTimeStamp.seconds)")
         rotating = true
         maximumCurrentPresentationTimeStamp = currentFile.maximumPresentationTimeStamp
         audioRotated = false
-        videoRotated = false
+        videoRotated = true
     }
 
     private func stopRotationIfNeeded() {
@@ -555,6 +567,6 @@ class Recorder: NSObject {
     }
 
     private func setNextRotationPresentationTimeStamp() {
-        nextRotationPresentationTimeStamp = currentPresentationTimeStamp() + CMTime(seconds: 15)
+        nextRotationPresentationTimeStamp = currentPresentationTimeStamp() + CMTime(seconds: 5)
     }
 }
