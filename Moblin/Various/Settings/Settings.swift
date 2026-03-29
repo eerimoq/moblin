@@ -145,7 +145,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var obsStatus: Bool = true
     @Published var rtmpSpeed: Bool = true
     @Published var gameController: Bool = true
-    @Published var location: Bool = true
+    @Published var location: Bool = false
     @Published var remoteControl: Bool = true
     @Published var browserWidgets: Bool = true
     @Published var bonding: Bool = true
@@ -232,7 +232,7 @@ class SettingsShow: Codable, ObservableObject {
         obsStatus = container.decode(.obsStatus, Bool.self, true)
         rtmpSpeed = container.decode(.rtmpSpeed, Bool.self, true)
         gameController = container.decode(.gameController, Bool.self, true)
-        location = container.decode(.location, Bool.self, true)
+        location = container.decode(.location, Bool.self, false)
         remoteControl = container.decode(.remoteControl, Bool.self, true)
         browserWidgets = container.decode(.browserWidgets, Bool.self, true)
         bonding = container.decode(.bonding, Bool.self, true)
