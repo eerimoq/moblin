@@ -75,7 +75,7 @@ function createRecordingRow(recording) {
 
 function downloadFile(filename) {
   const link = document.createElement("a");
-  link.href = `/api/recordings/${encodeURIComponent(filename)}`;
+  link.href = `/recordings/${encodeURIComponent(filename)}`;
   link.download = filename;
   document.body.appendChild(link);
   link.click();
@@ -96,7 +96,7 @@ async function loadRecordings() {
   const loadingMessage = document.getElementById("loadingMessage");
 
   try {
-    const response = await fetch("/api/recordings");
+    const response = await fetch("/recordings.json");
     const recordings = await response.json();
     loadingMessage.classList.add("hidden");
 

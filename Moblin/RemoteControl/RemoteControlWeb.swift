@@ -107,11 +107,11 @@ class RemoteControlWeb {
         }
         routes.append(HttpServerRoute(path: "/", handler: handleRoot))
         routes.append(HttpServerRoute(path: "/js/config.mjs", handler: handleConfigMjs))
-        routes.append(HttpServerRoute(path: "/api/recordings", handler: handleApiRecordings))
+        routes.append(HttpServerRoute(path: "/recordings.json", handler: handleRecordingsJson))
         routes.append(HttpServerRoute(
-            path: "/api/recordings/",
+            path: "/recordings/",
             prefixMatch: true,
-            handler: handleApiRecordingFile
+            handler: handleRecordingsFile
         ))
         server = HttpServer(queue: .main,
                             routes: routes,
@@ -178,7 +178,7 @@ class RemoteControlWeb {
         response.send(text: configMjs)
     }
 
-    private func handleApiRecordings(request: HttpServerRequest, response: HttpServerResponse) {
+    private func handleRecordingsJson(request: HttpServerRequest, response: HttpServerResponse) {
         guard request.method == "GET" else {
             return
         }
@@ -194,7 +194,7 @@ class RemoteControlWeb {
         response.send(data: json, status: .ok, contentType: "application/json")
     }
 
-    private func handleApiRecordingFile(request: HttpServerRequest, response: HttpServerResponse) {
+    private func handleRecordingsFile(request: HttpServerRequest, response: HttpServerResponse) {
         guard request.method == "GET" else {
             return
         }
@@ -202,7 +202,7 @@ class RemoteControlWeb {
             response.send(status: .notFound)
             return
         }
-        let prefix = "/api/recordings/"
+        let prefix = "/recordings/"
         let filename = String(request.path.dropFirst(prefix.count))
             .removingPercentEncoding ?? ""
         guard !filename.isEmpty, !filename.contains("/"), !filename.contains("..") else {
