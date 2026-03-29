@@ -57,11 +57,17 @@ function createRecordingRow(recording) {
     toggleFile(recording.name, e.target.checked);
   });
 
+  const thumbnail = document.createElement("img");
+  thumbnail.className = "recording-thumbnail";
+  thumbnail.src = `/thumbnails/${encodeURIComponent(recording.name)}`;
+  thumbnail.alt = "";
+
   const name = document.createElement("span");
   name.className = "recording-name";
   name.textContent = recording.name;
 
   label.appendChild(checkbox);
+  label.appendChild(thumbnail);
   label.appendChild(name);
   row.appendChild(label);
 

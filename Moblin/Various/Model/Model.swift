@@ -598,6 +598,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var frontCameras: [Camera] = []
     var externalCameras: [Camera] = []
     var recordingsStorage = RecordingsStorage()
+    var recordingThumbnailsCache: [String: Data] = [:]
     var latestLowBitrateTime = ContinuousClock.now
     // periphery:ignore
     var bluetoothCentralManger: CBCentralManager?

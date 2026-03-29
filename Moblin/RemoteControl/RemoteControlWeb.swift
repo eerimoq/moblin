@@ -22,6 +22,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebTriggerReaction(reaction: RemoteControlReaction)
     func remoteControlWebGetRecordings() -> [[String: String]]
     func remoteControlWebGetRecordingUrl(filename: String) -> URL?
+    func remoteControlWebGetRecordingThumbnail(filename: String) -> Data?
 }
 
 private struct StaticFile {
@@ -112,6 +113,11 @@ class RemoteControlWeb {
             path: "/recordings/",
             prefixMatch: true,
             handler: handleRecordingsFile
+        ))
+        routes.append(HttpServerRoute(
+            path: "/thumbnails/",
+            prefixMatch: true,
+            handler: handleRecordingsThumbnail
         ))
         server = HttpServer(queue: .main,
                             routes: routes,
@@ -218,6 +224,28 @@ class RemoteControlWeb {
             value: "attachment; filename=\"\(filename)\""
         )]
         response.sendFile(url: fileUrl, contentType: "video/mp4", headers: headers)
+    }
+
+    private func handleRecordingsThumbnail(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "GET" else {
+            return
+        }
+        guard let delegate else {
+            response.send(status: .notFound)
+            return
+        }
+        let prefix = "/thumbnails/"
+        let filename = String(request.path.dropFirst(prefix.count))
+            .removingPercentEncoding ?? ""
+        guard !filename.isEmpty, !filename.contains("/"), !filename.contains("..") else {
+            response.send(status: .badRequest)
+            return
+        }
+        guard let jpeg = delegate.remoteControlWebGetRecordingThumbnail(filename: filename) else {
+            response.send(status: .notFound)
+            return
+        }
+        response.send(data: jpeg, status: .ok, contentType: "image/jpeg")
     }
 
     private func handleWebsocketStateUpdate(_ newState: NWListener.State) {

@@ -1,3 +1,4 @@
+import AVFoundation
 import CoreLocation
 import Foundation
 import SwiftUI
@@ -1129,6 +1130,28 @@ extension Model: RemoteControlWebDelegate {
                 let size = url.fileSize
                 return ["name": filename, "size": size.formatBytes()]
             }
+    }
+
+    func remoteControlWebGetRecordingThumbnail(filename: String) -> Data? {
+        if let cached = recordingThumbnailsCache[filename] {
+            return cached
+        }
+        let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
+        guard FileManager.default.fileExists(atPath: url.path()) else {
+            return nil
+        }
+        let asset = AVURLAsset(url: url)
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.appliesPreferredTrackTransform = true
+        generator.maximumSize = CGSize(width: 320, height: 180)
+        guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil) else {
+            return nil
+        }
+        guard let jpeg = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.7) else {
+            return nil
+        }
+        recordingThumbnailsCache[filename] = jpeg
+        return jpeg
     }
 
     func remoteControlWebGetRecordingUrl(filename: String) -> URL? {
