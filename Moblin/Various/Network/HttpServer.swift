@@ -246,7 +246,8 @@ class HttpServerRoute {
     let prefixMatch: Bool
     let handler: (HttpServerRequest, HttpServerResponse) -> Void
 
-    init(path: String, prefixMatch: Bool = false,
+    init(path: String,
+         prefixMatch: Bool = false,
          handler: @escaping (HttpServerRequest, HttpServerResponse) -> Void)
     {
         self.path = path
