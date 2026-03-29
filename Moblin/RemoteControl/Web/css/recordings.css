@@ -14,9 +14,25 @@
   width: 5rem;
   max-height: 5rem;
   object-fit: contain;
-  border-radius: 0.25rem;
   flex-shrink: 0;
   margin-right: 0.75rem;
+}
+
+.thumbnail-preview {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  display: none;
+  max-width: min(80vw, 640px);
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.thumbnail-preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
 }
 
 .recording-row label {

@@ -1,4 +1,60 @@
 const selectedFiles = new Set();
+let previewEl = null;
+
+const PREVIEW_CURSOR_MARGIN = 16;
+const PREVIEW_FALLBACK_WIDTH = 320;
+const PREVIEW_FALLBACK_HEIGHT = 240;
+
+function getOrCreatePreview() {
+  if (!previewEl) {
+    previewEl = document.createElement("div");
+    previewEl.className = "thumbnail-preview";
+    const img = document.createElement("img");
+    previewEl.appendChild(img);
+    document.body.appendChild(previewEl);
+  }
+  return previewEl;
+}
+
+function showPreview(src, event) {
+  const preview = getOrCreatePreview();
+  const img = preview.querySelector("img");
+  img.src = src;
+  preview.style.display = "block";
+  positionPreview(preview, event);
+}
+
+function positionPreview(preview, event) {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const pw = preview.offsetWidth || PREVIEW_FALLBACK_WIDTH;
+  const ph = preview.offsetHeight || PREVIEW_FALLBACK_HEIGHT;
+
+  let x = event.clientX + PREVIEW_CURSOR_MARGIN;
+  let y = event.clientY + PREVIEW_CURSOR_MARGIN;
+
+  if (x + pw > vw - PREVIEW_CURSOR_MARGIN) {
+    x = event.clientX - pw - PREVIEW_CURSOR_MARGIN;
+  }
+  if (y + ph > vh - PREVIEW_CURSOR_MARGIN) {
+    y = vh - ph - PREVIEW_CURSOR_MARGIN;
+  }
+  if (x < PREVIEW_CURSOR_MARGIN) {
+    x = PREVIEW_CURSOR_MARGIN;
+  }
+  if (y < PREVIEW_CURSOR_MARGIN) {
+    y = PREVIEW_CURSOR_MARGIN;
+  }
+
+  preview.style.left = `${x}px`;
+  preview.style.top = `${y}px`;
+}
+
+function hidePreview() {
+  if (previewEl) {
+    previewEl.style.display = "none";
+  }
+}
 
 function updateSelectionUI() {
   const downloadButton = document.getElementById("downloadSelected");
@@ -61,6 +117,13 @@ function createRecordingRow(recording) {
   thumbnail.className = "recording-thumbnail";
   thumbnail.src = `/thumbnails/${encodeURIComponent(recording.name)}`;
   thumbnail.alt = "";
+  thumbnail.addEventListener("mouseenter", (e) => showPreview(thumbnail.src, e));
+  thumbnail.addEventListener("mousemove", (e) => {
+    if (previewEl && previewEl.style.display === "block") {
+      positionPreview(previewEl, e);
+    }
+  });
+  thumbnail.addEventListener("mouseleave", hidePreview);
 
   const name = document.createElement("span");
   name.className = "recording-name";
