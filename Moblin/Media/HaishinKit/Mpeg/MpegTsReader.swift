@@ -22,6 +22,7 @@ class MpegTsReader {
     private var latestAudioBufferPresentationTimeStamp: CMTime?
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
+    private var mpgaDecoder: MiniMp3Decoder?
     private var videoDecoder: VideoDecoder?
     private let targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let timecodesEnabled: Bool
@@ -82,7 +83,15 @@ class MpegTsReader {
 
     private func handleSampleBuffer(_ isAudio: Bool, _ sampleBuffer: CMSampleBuffer) {
         if isAudio {
-            handleAudioSampleBuffer(sampleBuffer)
+            if let asbd = sampleBuffer.formatDescription?.audioStreamBasicDescription,
+               asbd.mFormatID == kAudioFormatMPEGLayer1
+               || asbd.mFormatID == kAudioFormatMPEGLayer2
+               || asbd.mFormatID == kAudioFormatMPEGLayer3
+            {
+                handleMpgaAudioSampleBuffer(sampleBuffer)
+            } else {
+                handleAudioSampleBuffer(sampleBuffer)
+            }
         } else {
             handleVideoSampleBuffer(sampleBuffer)
         }
@@ -121,7 +130,7 @@ class MpegTsReader {
             logger.info("mpeg-ts-reader: Audio error \(error)")
             return
         }
-        outputSilenceIfGap(sampleBuffer.presentationTimeStamp, pcmAudioFormat)
+        outputSilenceIfGap(sampleBuffer.presentationTimeStamp, pcmAudioFormat, pcmAudioBuffer)
         guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(sampleBuffer.presentationTimeStamp) else {
             return
         }
@@ -129,15 +138,18 @@ class MpegTsReader {
     }
 
     // Maybe only fill gaps in audio unit?
-    private func outputSilenceIfGap(_ presentationTimeStamp: CMTime, _ pcmAudioFormat: AVAudioFormat) {
+    private func outputSilenceIfGap(_ presentationTimeStamp: CMTime,
+                                    _ pcmAudioFormat: AVAudioFormat,
+                                    _ pcmBuffer: AVAudioPCMBuffer)
+    {
         defer {
             latestAudioBufferPresentationTimeStamp = presentationTimeStamp
         }
-        guard let latestAudioBufferPresentationTimeStamp, let pcmAudioBuffer else {
+        guard let latestAudioBufferPresentationTimeStamp else {
             return
         }
-        let samplesPerBuffer = pcmAudioBuffer.frameLength
-        let sampleFrequency = pcmAudioBuffer.format.sampleRate
+        let samplesPerBuffer = pcmBuffer.frameLength
+        let sampleFrequency = pcmBuffer.format.sampleRate
         let numberOfGapBuffers = calcNumberOfGapBuffers(
             presentationTimeStamp,
             latestAudioBufferPresentationTimeStamp,
@@ -183,6 +195,52 @@ class MpegTsReader {
             return
         }
         videoDecoder.decodeSampleBuffer(sampleBuffer)
+    }
+
+    private func handleMpgaFormatDescription(_: CMFormatDescription) {
+        // MiniMp3Decoder initialises lazily on the first decoded frame —
+        // no separate setup step is needed.
+        if mpgaDecoder == nil {
+            mpgaDecoder = MiniMp3Decoder()
+        }
+    }
+
+    private func handleMpgaAudioSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        targetLatenciesSynchronizer
+            .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+        updateTargetLatencies()
+        guard let decoder = mpgaDecoder else {
+            logger.info("mpeg-ts-reader: MPGA decoder not ready")
+            return
+        }
+        guard let dataBuffer = sampleBuffer.dataBuffer,
+              let (dataPointer, length) = dataBuffer.getDataPointer()
+        else {
+            logger.info("mpeg-ts-reader: MPGA no data buffer")
+            return
+        }
+        let frameData = Data(bytesNoCopy: dataPointer, count: length, deallocator: .none)
+        let pcmBuffers = decoder.decodeAll(frameData)
+        guard !pcmBuffers.isEmpty, let fmt = decoder.outputFormat else {
+            if pcmBuffers.isEmpty { logger.info("mpeg-ts-reader: MPGA decode returned no frames") }
+            return
+        }
+        // Each decoded frame advances the PTS by one frame duration.
+        let samplesPerFrame = Double(pcmBuffers[0].frameLength)
+        let sampleRate = fmt.sampleRate
+        var pts = sampleBuffer.presentationTimeStamp
+        for pcmBuf in pcmBuffers {
+            outputSilenceIfGap(pts, fmt, pcmBuf)
+            guard let outputSampleBuffer = pcmBuf.makeSampleBuffer(pts) else {
+                logger.info("mpeg-ts-reader: MPGA failed to make output sample buffer")
+                pts = pts + CMTime(value: CMTimeValue(samplesPerFrame),
+                                   timescale: CMTimeScale(sampleRate))
+                continue
+            }
+            delegate?.mpegTsReaderAudioBuffer(outputSampleBuffer)
+            pts = pts + CMTime(value: CMTimeValue(samplesPerFrame),
+                               timescale: CMTimeScale(sampleRate))
+        }
     }
 
     private func handleAudioFormatDescription(_ formatDescription: CMFormatDescription) {
@@ -244,6 +302,8 @@ class MpegTsReader {
             return makeSampleBufferMpeg2PacketizedData(packetId, data, &packetizedElementaryStream)
         case .adtsAac:
             return makeSampleBufferAac(packetId, &packetizedElementaryStream)
+        case .mpeg1Audio, .mpeg2Audio:
+            return makeSampleBufferMpga(packetId, &packetizedElementaryStream)
         case .h264:
             return makeSampleBufferH264(packetId, &packetizedElementaryStream)
         case .h265:
@@ -251,6 +311,192 @@ class MpegTsReader {
         default:
             return nil
         }
+    }
+
+    // MPEG-1/2 audio frame header parser.
+    // Header layout (32 bits):
+    //   [31:21] sync (all 1s)
+    //   [20:19] MPEG version: 3=MPEG-1, 2=MPEG-2, 0=MPEG-2.5
+    //   [18:17] layer: 3=I, 2=II, 1=III
+    //   [16]    protection
+    //   [15:12] bitrate index
+    //   [11:10] sample rate index
+    //   [9]     padding
+    //   [8]     private
+    //   [7:6]   channel mode: 3=mono, else stereo/joint/dual
+    private func parseMpgaFrameHeader(_ data: Data) -> (formatId: AudioFormatID,
+                                                         sampleRate: Double,
+                                                         channels: UInt32,
+                                                         framesPerPacket: UInt32,
+                                                         frameSizeBytes: UInt32)? {
+        guard data.count >= 4 else {
+            return nil
+        }
+        let b0 = data[data.startIndex]
+        let b1 = data[data.startIndex + 1]
+        guard b0 == 0xFF, (b1 & 0xE0) == 0xE0 else {
+            return nil
+        }
+        let mpegVersion = (b1 >> 3) & 0x03 // 0=MPEG2.5, 1=reserved, 2=MPEG-2, 3=MPEG-1
+        let layer = (b1 >> 1) & 0x03       // 3=Layer I, 2=Layer II, 1=Layer III
+
+        let formatId: AudioFormatID
+        let framesPerPacket: UInt32
+        let samplesPerFrame: UInt32
+        switch layer {
+        case 3:
+            formatId = kAudioFormatMPEGLayer1
+            samplesPerFrame = 384
+            framesPerPacket = 384
+        case 2:
+            formatId = kAudioFormatMPEGLayer2
+            samplesPerFrame = 1152
+            framesPerPacket = 1152
+        case 1:
+            formatId = kAudioFormatMPEGLayer3
+            samplesPerFrame = (mpegVersion == 3) ? 1152 : 576
+            framesPerPacket = samplesPerFrame
+        default:
+            return nil
+        }
+
+        let b2 = data[data.startIndex + 2]
+        let b3 = data[data.startIndex + 3]
+
+        let bitrateIndex = (b2 >> 4) & 0x0F
+        let sampleRateIndex = (b2 >> 2) & 0x03
+        let padding = UInt32((b2 >> 1) & 0x01)
+
+        // Channel mode: 3 = single channel (mono), all others = 2 channels
+        let channelMode = (b3 >> 6) & 0x03
+        let channels: UInt32 = (channelMode == 3) ? 1 : 2
+
+        let sampleRate: Double
+        switch mpegVersion {
+        case 3: // MPEG-1
+            switch sampleRateIndex {
+            case 0: sampleRate = 44100
+            case 1: sampleRate = 48000
+            case 2: sampleRate = 32000
+            default: return nil
+            }
+        case 2: // MPEG-2
+            switch sampleRateIndex {
+            case 0: sampleRate = 22050
+            case 1: sampleRate = 24000
+            case 2: sampleRate = 16000
+            default: return nil
+            }
+        case 0: // MPEG-2.5
+            switch sampleRateIndex {
+            case 0: sampleRate = 11025
+            case 1: sampleRate = 12000
+            case 2: sampleRate = 8000
+            default: return nil
+            }
+        default:
+            return nil
+        }
+
+        // Bitrate tables (kbps), indexed by [mpegVersion==3 ? 0 : 1][layer][bitrateIndex]
+        let bitrateKbps: UInt32
+        switch layer {
+        case 3: // Layer I
+            let table: [UInt32] = [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 0]
+            bitrateKbps = table[Int(bitrateIndex)]
+        case 2: // Layer II
+            let tableV1: [UInt32] = [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, 0]
+            let tableV2: [UInt32] = [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0]
+            bitrateKbps = (mpegVersion == 3) ? tableV1[Int(bitrateIndex)] : tableV2[Int(bitrateIndex)]
+        case 1: // Layer III
+            let tableV1: [UInt32] = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0]
+            let tableV2: [UInt32] = [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160, 0]
+            bitrateKbps = (mpegVersion == 3) ? tableV1[Int(bitrateIndex)] : tableV2[Int(bitrateIndex)]
+        default:
+            return nil
+        }
+        guard bitrateKbps > 0 else {
+            return nil
+        }
+
+        // Frame size in bytes
+        let frameSizeBytes: UInt32
+        switch layer {
+        case 3: // Layer I: (12 * bitrate / sampleRate + padding) * 4
+            frameSizeBytes = (12 * bitrateKbps * 1000 / UInt32(sampleRate) + padding) * 4
+        default: // Layer II/III: 144 * bitrate / sampleRate + padding
+            frameSizeBytes = 144 * bitrateKbps * 1000 / UInt32(sampleRate) + padding
+        }
+
+        return (formatId, sampleRate, channels, framesPerPacket, frameSizeBytes)
+    }
+
+    private func getMpgaFormatDescription(_ packetId: UInt16,
+                                          _ data: Data) -> CMFormatDescription? {
+        guard let parsed = parseMpgaFrameHeader(data) else {
+            logger.info("mpeg-ts-reader: Failed to parse MPEG audio frame header")
+            return nil
+        }
+        // Re-use cached description if nothing changed
+        if let existing = formatDescriptions[packetId],
+           let asbd = existing.audioStreamBasicDescription,
+           asbd.mFormatID == parsed.formatId,
+           asbd.mSampleRate == parsed.sampleRate,
+           asbd.mChannelsPerFrame == parsed.channels
+        {
+            return existing
+        }
+        var asbd = AudioStreamBasicDescription(
+            mSampleRate: parsed.sampleRate,
+            mFormatID: parsed.formatId,
+            mFormatFlags: 0,
+            mBytesPerPacket: parsed.frameSizeBytes,
+            mFramesPerPacket: parsed.framesPerPacket,
+            mBytesPerFrame: 0,
+            mChannelsPerFrame: parsed.channels,
+            mBitsPerChannel: 0,
+            mReserved: 0
+        )
+        var formatDescription: CMAudioFormatDescription?
+        guard CMAudioFormatDescriptionCreate(
+            allocator: kCFAllocatorDefault,
+            asbd: &asbd,
+            layoutSize: 0,
+            layout: nil,
+            magicCookieSize: 0,
+            magicCookie: nil,
+            extensions: nil,
+            formatDescriptionOut: &formatDescription
+        ) == noErr, let formatDescription else {
+            logger.info("mpeg-ts-reader: Failed to create MPEG audio format description")
+            return nil
+        }
+        formatDescriptions[packetId] = formatDescription
+        handleMpgaFormatDescription(formatDescription)
+        return formatDescription
+    }
+
+    private func makeSampleBufferMpga(
+        _ packetId: UInt16,
+        _ packetizedElementaryStream: inout MpegTsPacketizedElementaryStream
+    ) -> (Bool, CMSampleBuffer)? {
+        guard let formatDescription = getMpgaFormatDescription(packetId,
+                                                               packetizedElementaryStream.data)
+        else {
+            return nil
+        }
+        let blockBuffer = packetizedElementaryStream.data.makeBlockBuffer()
+        var sampleSizes = [blockBuffer?.dataLength ?? 0]
+        guard let sampleBuffer = makeSampleBuffer(
+            packetId,
+            packetizedElementaryStream.optionalHeader,
+            formatDescription,
+            blockBuffer,
+            &sampleSizes
+        ) else {
+            return nil
+        }
+        return (true, sampleBuffer)
     }
 
     private func makeSampleBufferMpeg2PacketizedData(
