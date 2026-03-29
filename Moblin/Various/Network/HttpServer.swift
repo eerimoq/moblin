@@ -1,9 +1,6 @@
 import Foundation
 import Network
 
-private let fileChunkSize = 512 * 1024
-private let fileTransferQueue = DispatchQueue(label: "com.eerimoq.http-server.file-transfer")
-
 private struct HttpRequestParseResult {
     let method: String
     let path: String
@@ -270,8 +267,7 @@ private class HttpServerConnection {
         let headerData = lines.joined(separator: "\r\n").utf8Data
         connection.send(content: headerData, completion: .contentProcessed { error in
             if error != nil {
-                fileHandle.closeFile()
-                self.connection.cancel()
+                self.closeFileAndConnection(fileHandle: fileHandle)
                 return
             }
             self.sendFileChunk(fileHandle: fileHandle, remaining: fileSize)
@@ -279,28 +275,27 @@ private class HttpServerConnection {
     }
 
     private func sendFileChunk(fileHandle: FileHandle, remaining: UInt64) {
-        fileTransferQueue.async {
-            let chunkSize = min(Int(remaining), fileChunkSize)
-            guard chunkSize > 0 else {
-                fileHandle.closeFile()
-                self.connection.cancel()
-                return
-            }
-            guard let chunk = try? fileHandle.read(upToCount: chunkSize), !chunk.isEmpty else {
-                fileHandle.closeFile()
-                self.connection.cancel()
-                return
-            }
-            let newRemaining = remaining - UInt64(chunk.count)
-            self.connection.send(content: chunk, completion: .contentProcessed { error in
-                if error != nil {
-                    fileHandle.closeFile()
-                    self.connection.cancel()
-                    return
-                }
-                self.sendFileChunk(fileHandle: fileHandle, remaining: newRemaining)
-            })
+        let chunkSize = min(Int(remaining), 512 * 1024)
+        guard chunkSize > 0,
+              let chunk = try? fileHandle.read(upToCount: chunkSize),
+              !chunk.isEmpty
+        else {
+            closeFileAndConnection(fileHandle: fileHandle)
+            return
         }
+        let newRemaining = remaining - UInt64(chunk.count)
+        connection.send(content: chunk, completion: .contentProcessed { error in
+            if error != nil {
+                self.closeFileAndConnection(fileHandle: fileHandle)
+                return
+            }
+            self.sendFileChunk(fileHandle: fileHandle, remaining: newRemaining)
+        })
+    }
+
+    private func closeFileAndConnection(fileHandle: FileHandle) {
+        fileHandle.closeFile()
+        connection.cancel()
     }
 
     private func sendAndClose(data: Data) {
