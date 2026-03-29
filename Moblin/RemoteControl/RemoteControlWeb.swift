@@ -20,6 +20,8 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetScoreboardClock(time: String)
     func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool)
     func remoteControlWebTriggerReaction(reaction: RemoteControlReaction)
+    func remoteControlWebGetRecordings() -> [[String: String]]
+    func remoteControlWebGetRecordingUrl(filename: String) -> URL?
 }
 
 private struct StaticFile {
@@ -42,15 +44,18 @@ private let staticFiles: [StaticFile] = [
     StaticFile("/", "index", "html"),
     StaticFile("/", "remote", "html"),
     StaticFile("/", "scoreboard", "html"),
+    StaticFile("/", "recordings", "html"),
     StaticFile("/", "volleyball", "png"),
     StaticFile("/", "favicon", "ico"),
     StaticFile("/css/", "app", "css"),
     StaticFile("/css/", "remote", "css"),
     StaticFile("/css/", "scoreboard", "css"),
+    StaticFile("/css/", "recordings", "css"),
     StaticFile("/js/", "index", "mjs"),
     StaticFile("/js/", "utils", "mjs"),
     StaticFile("/js/", "remote", "mjs"),
     StaticFile("/js/", "scoreboard", "mjs"),
+    StaticFile("/js/", "recordings", "mjs"),
 ]
 
 class RemoteControlWeb {
@@ -102,6 +107,12 @@ class RemoteControlWeb {
         }
         routes.append(HttpServerRoute(path: "/", handler: handleRoot))
         routes.append(HttpServerRoute(path: "/js/config.mjs", handler: handleConfigMjs))
+        routes.append(HttpServerRoute(path: "/api/recordings", handler: handleApiRecordings))
+        routes.append(HttpServerRoute(
+            path: "/api/recordings/",
+            prefixMatch: true,
+            handler: handleApiRecordingFile
+        ))
         server = HttpServer(queue: .main,
                             routes: routes,
                             service: .init(name: "moblin", type: "_http._tcp"))
@@ -165,6 +176,48 @@ class RemoteControlWeb {
         export const websocketPort = \(websocketPort);
         """
         response.send(text: configMjs)
+    }
+
+    private func handleApiRecordings(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "GET" else {
+            return
+        }
+        guard let delegate else {
+            response.send(status: .notFound)
+            return
+        }
+        let recordings = delegate.remoteControlWebGetRecordings()
+        guard let json = try? JSONSerialization.data(withJSONObject: recordings) else {
+            response.send(status: .notFound)
+            return
+        }
+        response.send(data: json, status: .ok, contentType: "application/json")
+    }
+
+    private func handleApiRecordingFile(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "GET" else {
+            return
+        }
+        guard let delegate else {
+            response.send(status: .notFound)
+            return
+        }
+        let prefix = "/api/recordings/"
+        let filename = String(request.path.dropFirst(prefix.count))
+            .removingPercentEncoding ?? ""
+        guard !filename.isEmpty, !filename.contains("/"), !filename.contains("..") else {
+            response.send(status: .badRequest)
+            return
+        }
+        guard let fileUrl = delegate.remoteControlWebGetRecordingUrl(filename: filename) else {
+            response.send(status: .notFound)
+            return
+        }
+        let headers = [SettingsHttpHeader(
+            name: "Content-Disposition",
+            value: "attachment; filename=\"\(filename)\""
+        )]
+        response.sendFile(url: fileUrl, contentType: "video/mp4", headers: headers)
     }
 
     private func handleWebsocketStateUpdate(_ newState: NWListener.State) {

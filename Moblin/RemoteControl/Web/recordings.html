@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moblin Recordings</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/recordings.css" />
+  </head>
+
+  <body class="bg-zinc-950 text-zinc-100 font-sans p-4">
+    <div class="max-w-3xl mx-auto space-y-4">
+      <h1 class="text-2xl font-bold text-center">Moblin Recordings</h1>
+
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center space-x-3">
+            <label class="flex items-center cursor-pointer text-sm text-zinc-300">
+              <input
+                id="selectAll"
+                type="checkbox"
+                class="w-4 h-4 mr-2 accent-indigo-500 cursor-pointer"
+              />
+              Select all
+            </label>
+            <span id="selectionCount" class="text-sm text-zinc-500"></span>
+          </div>
+          <button
+            id="downloadSelected"
+            class="bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm font-medium py-1.5 px-4 rounded transition-colors"
+            disabled
+          >
+            Download selected
+          </button>
+        </div>
+        <div id="recordingsList" class="space-y-1"></div>
+        <div id="emptyMessage" class="text-sm text-zinc-500 text-center py-8 hidden">
+          No recordings found.
+        </div>
+        <div id="loadingMessage" class="text-sm text-zinc-500 text-center py-8">Loading...</div>
+      </div>
+
+      <div class="pb-5 text-center space-x-4">
+        <a href="./" class="text-indigo-400 hover:text-indigo-300 text-sm">Remote Control</a>
+        <a
+          href="https://github.com/eerimoq/moblin"
+          target="_blank"
+          class="text-indigo-400 hover:text-indigo-300 text-sm"
+        >
+          Github
+        </a>
+      </div>
+    </div>
+
+    <script src="js/recordings.mjs" type="module"></script>
+  </body>
+</html>

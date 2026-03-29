@@ -1,6 +1,9 @@
 import Foundation
 import Network
 
+private let fileChunkSize = 512 * 1024
+private let fileTransferQueue = DispatchQueue(label: "com.eerimoq.http-server.file-transfer")
+
 private struct HttpRequestParseResult {
     let method: String
     let path: String
@@ -164,6 +167,14 @@ class HttpServerResponse {
             extraHeaders: headers
         )
     }
+
+    func sendFile(url: URL, contentType: String, headers: [SettingsHttpHeader] = []) {
+        connection?.sendFileAndClose(
+            fileUrl: url,
+            contentType: contentType,
+            extraHeaders: headers
+        )
+    }
 }
 
 private class HttpServerConnection {
@@ -232,6 +243,64 @@ private class HttpServerConnection {
         lines.append("")
         lines.append("")
         sendAndClose(data: lines.joined(separator: "\r\n").utf8Data + content)
+    }
+
+    func sendFileAndClose(fileUrl: URL,
+                          contentType: String,
+                          extraHeaders: [SettingsHttpHeader] = [])
+    {
+        guard let request else {
+            return
+        }
+        guard let fileHandle = try? FileHandle(forReadingFrom: fileUrl) else {
+            sendAndClose(status: .notFound, content: Data())
+            return
+        }
+        let fileSize = fileUrl.fileSize
+        var lines: [String] = []
+        lines.append("\(request.version) \(HttpServerStatus.ok.code()) \(HttpServerStatus.ok.text())")
+        lines.append("Content-Type: \(contentType)")
+        lines.append("Content-Length: \(fileSize)")
+        for header in extraHeaders {
+            lines.append("\(header.name): \(header.value)")
+        }
+        lines.append("Connection: close")
+        lines.append("")
+        lines.append("")
+        let headerData = lines.joined(separator: "\r\n").utf8Data
+        connection.send(content: headerData, completion: .contentProcessed { error in
+            if error != nil {
+                fileHandle.closeFile()
+                self.connection.cancel()
+                return
+            }
+            self.sendFileChunk(fileHandle: fileHandle, remaining: fileSize)
+        })
+    }
+
+    private func sendFileChunk(fileHandle: FileHandle, remaining: UInt64) {
+        fileTransferQueue.async {
+            let chunkSize = min(Int(remaining), fileChunkSize)
+            guard chunkSize > 0 else {
+                fileHandle.closeFile()
+                self.connection.cancel()
+                return
+            }
+            guard let chunk = try? fileHandle.read(upToCount: chunkSize), !chunk.isEmpty else {
+                fileHandle.closeFile()
+                self.connection.cancel()
+                return
+            }
+            let newRemaining = remaining - UInt64(chunk.count)
+            self.connection.send(content: chunk, completion: .contentProcessed { error in
+                if error != nil {
+                    fileHandle.closeFile()
+                    self.connection.cancel()
+                    return
+                }
+                self.sendFileChunk(fileHandle: fileHandle, remaining: newRemaining)
+            })
+        }
     }
 
     private func sendAndClose(data: Data) {

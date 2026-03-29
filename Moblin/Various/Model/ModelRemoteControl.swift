@@ -1114,4 +1114,28 @@ extension Model: RemoteControlWebDelegate {
     func remoteControlWebTriggerReaction(reaction: RemoteControlReaction) {
         handleRemoteControlTriggerReaction(reaction: reaction)
     }
+
+    func remoteControlWebGetRecordings() -> [[String: String]] {
+        let directory = recordingsStorage.defaultStorageDirectory()
+        guard let files = try? FileManager.default.contentsOfDirectory(atPath: directory.path())
+        else {
+            return []
+        }
+        return files
+            .filter { $0.hasSuffix(".mp4") }
+            .sorted(by: >)
+            .map { filename in
+                let url = directory.appending(component: filename)
+                let size = url.fileSize
+                return ["name": filename, "size": size.formatBytes()]
+            }
+    }
+
+    func remoteControlWebGetRecordingUrl(filename: String) -> URL? {
+        let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
+        guard FileManager.default.fileExists(atPath: url.path()) else {
+            return nil
+        }
+        return url
+    }
 }
