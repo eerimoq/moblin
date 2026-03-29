@@ -221,7 +221,7 @@ class Recorder: NSObject {
                                  _ presentationTimeStamp: CMTime) -> AVAssetWriterInput
     {
         if let audioStreamBasicDescription = sampleBuffer.formatDescription?.audioStreamBasicDescription {
-            logger.info("""
+            logger.debug("""
             recorder: Make writer: Output: \(outputSettings), Input: \(audioStreamBasicDescription)
             """)
         }
@@ -244,7 +244,7 @@ class Recorder: NSObject {
         guard var streamBasicDescription = formatDescription?.audioStreamBasicDescription else {
             return
         }
-        logger.info("recorder: Creating converter from \(streamBasicDescription)")
+        logger.debug("recorder: Creating converter from \(streamBasicDescription)")
         guard let inputFormat = makeAudioFormat(&streamBasicDescription) else {
             return
         }
@@ -259,7 +259,7 @@ class Recorder: NSObject {
         guard let audioOutputFormat else {
             return
         }
-        logger.info("recorder: Input: \(inputFormat), output: \(audioOutputFormat)")
+        logger.debug("recorder: Input: \(inputFormat), output: \(audioOutputFormat)")
         audioConverter = AVAudioConverter(from: inputFormat, to: audioOutputFormat)
         audioConverter?.channelMap = makeChannelMap(
             numberOfInputChannels: Int(inputFormat.channelCount),
