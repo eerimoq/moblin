@@ -1143,7 +1143,7 @@ extension Model: RemoteControlWebDelegate {
         let asset = AVURLAsset(url: url)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
-        generator.maximumSize = CGSize(width: 320, height: 180)
+        generator.maximumSize = CGSize(width: 320, height: 320)
         guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil) else {
             return nil
         }

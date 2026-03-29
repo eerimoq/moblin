@@ -12,12 +12,11 @@
 
 .recording-thumbnail {
   width: 5rem;
-  height: 2.8125rem;
-  object-fit: cover;
+  max-height: 5rem;
+  object-fit: contain;
   border-radius: 0.25rem;
   flex-shrink: 0;
   margin-right: 0.75rem;
-  background-color: var(--color-zinc-800);
 }
 
 .recording-row label {
