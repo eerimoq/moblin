@@ -111,6 +111,7 @@ async function loadRecordings() {
   } catch {
     loadingMessage.textContent = "Failed to load recordings.";
   }
+  updateSelectionUI();
 }
 
 window.addEventListener("DOMContentLoaded", () => {

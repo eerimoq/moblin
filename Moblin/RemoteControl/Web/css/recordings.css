@@ -34,6 +34,15 @@
   margin-left: 0.75rem;
 }
 
+.select-all-checkbox {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.75rem;
+  accent-color: var(--color-indigo-500);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .recording-checkbox {
   width: 1rem;
   height: 1rem;
