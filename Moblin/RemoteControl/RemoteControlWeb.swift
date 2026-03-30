@@ -23,6 +23,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebGetRecordings() -> [[String: String]]
     func remoteControlWebGetRecordingUrl(filename: String) -> URL?
     func remoteControlWebGetRecordingThumbnail(filename: String) -> Data?
+    func remoteControlWebDeleteRecording(filename: String)
 }
 
 private struct StaticFile {
@@ -204,19 +205,24 @@ class RemoteControlWeb {
     }
 
     private func handleRecordingsFile(request: HttpServerRequest, response: HttpServerResponse) {
-        guard request.method == "GET" else {
-            return
-        }
         let filename = String(request.path.dropFirst(recordingsPrefix.count))
-        guard let fileUrl = delegate?.remoteControlWebGetRecordingUrl(filename: filename) else {
-            response.send(status: .notFound)
-            return
+        switch request.method {
+        case "GET":
+            guard let fileUrl = delegate?.remoteControlWebGetRecordingUrl(filename: filename) else {
+                response.send(status: .notFound)
+                return
+            }
+            let headers = [
+                SettingsHttpHeader(name: "Content-Disposition",
+                                   value: "attachment; filename=\"\(filename)\""),
+            ]
+            response.sendFile(url: fileUrl, contentType: "video/mp4", headers: headers)
+        case "DELETE":
+            delegate?.remoteControlWebDeleteRecording(filename: filename)
+            response.send(status: .ok)
+        default:
+            break
         }
-        let headers = [
-            SettingsHttpHeader(name: "Content-Disposition",
-                               value: "attachment; filename=\"\(filename)\""),
-        ]
-        response.sendFile(url: fileUrl, contentType: "video/mp4", headers: headers)
     }
 
     private func handleRecordingsThumbnail(request: HttpServerRequest, response: HttpServerResponse) {

@@ -1158,4 +1158,10 @@ extension Model: RemoteControlWebDelegate {
         }
         return url
     }
+
+    func remoteControlWebDeleteRecording(filename: String) {
+        let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
+        try? FileManager.default.removeItem(at: url)
+        recordingThumbnailsCache.removeValue(forKey: filename)
+    }
 }

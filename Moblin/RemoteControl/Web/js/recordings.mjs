@@ -1,5 +1,7 @@
 const selectedFiles = new Set();
 let previewEl = null;
+let confirmComplete = null;
+let confirmResult = false;
 
 const PREVIEW_CURSOR_MARGIN = 16;
 const PREVIEW_FALLBACK_WIDTH = 320;
@@ -58,8 +60,10 @@ function hidePreview() {
 
 function updateSelectionUI() {
   const downloadButton = document.getElementById("downloadSelected");
+  const deleteButton = document.getElementById("deleteSelected");
   const selectionCount = document.getElementById("selectionCount");
   downloadButton.disabled = selectedFiles.size === 0;
+  deleteButton.disabled = selectedFiles.size === 0;
   if (selectedFiles.size > 0) {
     selectionCount.textContent = `${selectedFiles.size} selected`;
   } else {
@@ -159,6 +163,58 @@ function downloadSelected() {
   }
 }
 
+async function confirm(message) {
+  document.getElementById("confirm-message").textContent = message;
+  const dialog = document.getElementById("confirm");
+  dialog.showModal();
+  await new Promise((resolve) => {
+    confirmComplete = (result) => {
+      confirmResult = result;
+      resolve();
+    };
+  });
+  dialog.close();
+  return confirmResult;
+}
+
+function confirmOk() {
+  confirmComplete(true);
+}
+
+function confirmCancel() {
+  confirmComplete(false);
+}
+
+async function deleteRecording(filename) {
+  const response = await fetch(`/recordings/${encodeURIComponent(filename)}`, { method: "DELETE" });
+  if (!response.ok) {
+    throw new Error(`Failed to delete ${filename}: ${response.status}`);
+  }
+}
+
+async function deleteSelected() {
+  const count = selectedFiles.size;
+  const noun = count === 1 ? "recording" : "recordings";
+  if (!(await confirm(`Delete ${count} selected ${noun}? This cannot be undone.`))) {
+    return;
+  }
+  const filenames = [...selectedFiles];
+  const results = await Promise.allSettled(filenames.map((filename) => deleteRecording(filename)));
+  results.forEach((result, index) => {
+    if (result.status === "fulfilled") {
+      selectedFiles.delete(filenames[index]);
+    }
+  });
+  const list = document.getElementById("recordingsList");
+  list.innerHTML = "";
+  const emptyMessage = document.getElementById("emptyMessage");
+  emptyMessage.classList.add("hidden");
+  const loadingMessage = document.getElementById("loadingMessage");
+  loadingMessage.textContent = "Loading...";
+  loadingMessage.classList.remove("hidden");
+  await loadRecordings();
+}
+
 async function loadRecordings() {
   const list = document.getElementById("recordingsList");
   const emptyMessage = document.getElementById("emptyMessage");
@@ -188,5 +244,8 @@ window.addEventListener("DOMContentLoaded", () => {
     toggleAll(e.target.checked);
   });
   document.getElementById("downloadSelected").addEventListener("click", downloadSelected);
+  document.getElementById("deleteSelected").addEventListener("click", deleteSelected);
+  document.getElementById("confirm-ok").addEventListener("click", confirmOk);
+  document.getElementById("confirm-cancel").addEventListener("click", confirmCancel);
   loadRecordings();
 });
