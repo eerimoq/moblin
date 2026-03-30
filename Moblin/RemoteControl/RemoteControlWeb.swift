@@ -204,25 +204,15 @@ class RemoteControlWeb {
         guard request.method == "GET" else {
             return
         }
-        guard let delegate else {
+        let filename = String(request.path.dropFirst("/recordings/".count))
+        guard let fileUrl = delegate?.remoteControlWebGetRecordingUrl(filename: filename) else {
             response.send(status: .notFound)
             return
         }
-        let prefix = "/recordings/"
-        let filename = String(request.path.dropFirst(prefix.count))
-            .removingPercentEncoding ?? ""
-        guard !filename.isEmpty, !filename.contains("/"), !filename.contains("..") else {
-            response.send(status: .badRequest)
-            return
-        }
-        guard let fileUrl = delegate.remoteControlWebGetRecordingUrl(filename: filename) else {
-            response.send(status: .notFound)
-            return
-        }
-        let headers = [SettingsHttpHeader(
-            name: "Content-Disposition",
-            value: "attachment; filename=\"\(filename)\""
-        )]
+        let headers = [
+            SettingsHttpHeader(name: "Content-Disposition",
+                               value: "attachment; filename=\"\(filename)\""),
+        ]
         response.sendFile(url: fileUrl, contentType: "video/mp4", headers: headers)
     }
 
@@ -230,22 +220,12 @@ class RemoteControlWeb {
         guard request.method == "GET" else {
             return
         }
-        guard let delegate else {
+        let filename = String(request.path.dropFirst("/thumbnails/".count))
+        guard let thumbnail = delegate?.remoteControlWebGetRecordingThumbnail(filename: filename) else {
             response.send(status: .notFound)
             return
         }
-        let prefix = "/thumbnails/"
-        let filename = String(request.path.dropFirst(prefix.count))
-            .removingPercentEncoding ?? ""
-        guard !filename.isEmpty, !filename.contains("/"), !filename.contains("..") else {
-            response.send(status: .badRequest)
-            return
-        }
-        guard let jpeg = delegate.remoteControlWebGetRecordingThumbnail(filename: filename) else {
-            response.send(status: .notFound)
-            return
-        }
-        response.send(data: jpeg, status: .ok, contentType: "image/jpeg")
+        response.send(data: thumbnail, status: .ok, contentType: "image/jpeg")
     }
 
     private func handleWebsocketStateUpdate(_ newState: NWListener.State) {

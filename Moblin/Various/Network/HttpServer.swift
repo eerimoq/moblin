@@ -23,6 +23,9 @@ private class HttpRequestParser: HttpParser {
         }
         let method = startParts[0]
         let path = startParts[1]
+        guard !path.contains("//"), !path.contains("..") else {
+            return (true, nil)
+        }
         let version = startParts[2]
         guard version.hasPrefix("HTTP/1.") else {
             return (true, nil)
