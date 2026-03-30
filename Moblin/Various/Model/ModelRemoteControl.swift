@@ -1133,13 +1133,10 @@ extension Model: RemoteControlWebDelegate {
     }
 
     func remoteControlWebGetRecordingThumbnail(filename: String) -> Data? {
-        if let cached = recordingThumbnailsCache[filename] {
-            return cached
+        if let thumbnail = recordingThumbnailsCache[filename] {
+            return thumbnail
         }
         let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
-        guard url.exists() else {
-            return nil
-        }
         let asset = AVURLAsset(url: url)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
@@ -1147,11 +1144,11 @@ extension Model: RemoteControlWebDelegate {
         guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil) else {
             return nil
         }
-        guard let jpeg = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.7) else {
+        guard let thumbnail = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.7) else {
             return nil
         }
-        recordingThumbnailsCache[filename] = jpeg
-        return jpeg
+        recordingThumbnailsCache[filename] = thumbnail
+        return thumbnail
     }
 
     func remoteControlWebGetRecordingUrl(filename: String) -> URL? {
