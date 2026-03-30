@@ -1,3 +1,23 @@
+.recordings-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recordings-toolbar-selection {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.recordings-toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 .recordings-toolbar-button {
   min-width: 6.75rem;
   text-align: center;
@@ -109,4 +129,24 @@ dialog {
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 0;
+}
+
+@media (max-width: 560px) {
+  .recordings-toolbar {
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .recordings-toolbar-selection {
+    width: 100%;
+  }
+
+  .recordings-toolbar-actions {
+    width: 100%;
+  }
+
+  .recordings-toolbar-button {
+    flex: 1;
+    min-width: 0;
+  }
 }

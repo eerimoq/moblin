@@ -25,28 +25,30 @@
       </div>
 
       <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
-        <div class="flex items-center px-2 mb-3">
-          <label class="flex items-center flex-1 cursor-pointer min-w-0">
+        <div class="recordings-toolbar px-2 mb-3">
+          <label class="recordings-toolbar-selection">
             <input id="selectAll" type="checkbox" class="select-all-checkbox" />
             <span class="text-sm text-zinc-300">Select all</span>
             <span id="selectionCount" class="text-sm text-zinc-500 ml-3"></span>
           </label>
-          <button
-            id="downloadSelected"
-            class="recordings-toolbar-button bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm font-medium py-1.5 px-4 rounded transition-colors"
-            aria-label="Download selected recordings"
-            disabled
-          >
-            Download
-          </button>
-          <button
-            id="deleteSelected"
-            class="recordings-toolbar-button ml-2 bg-red-700 hover:bg-red-600 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm font-medium py-1.5 px-4 rounded transition-colors"
-            aria-label="Delete selected recordings"
-            disabled
-          >
-            Delete
-          </button>
+          <div class="recordings-toolbar-actions">
+            <button
+              id="downloadSelected"
+              class="recordings-toolbar-button bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm font-medium py-1.5 px-4 rounded transition-colors"
+              aria-label="Download selected recordings"
+              disabled
+            >
+              Download
+            </button>
+            <button
+              id="deleteSelected"
+              class="recordings-toolbar-button bg-red-700 hover:bg-red-600 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm font-medium py-1.5 px-4 rounded transition-colors"
+              aria-label="Delete selected recordings"
+              disabled
+            >
+              Delete
+            </button>
+          </div>
         </div>
         <div id="recordingsList" class="space-y-1"></div>
         <div id="emptyMessage" class="text-sm text-zinc-500 text-center py-8 hidden">
