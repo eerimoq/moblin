@@ -1140,11 +1140,11 @@ extension Model: RemoteControlWebDelegate {
         let asset = AVURLAsset(url: url)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
-        generator.maximumSize = CGSize(width: 320, height: 320)
+        generator.maximumSize = CGSize(width: 480, height: 480)
         guard let cgImage = try? generator.copyCGImage(at: .zero, actualTime: nil) else {
             return nil
         }
-        guard let thumbnail = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.7) else {
+        guard let thumbnail = UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.9) else {
             return nil
         }
         recordingThumbnailsCache[filename] = thumbnail

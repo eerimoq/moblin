@@ -227,11 +227,10 @@ async function loadRecordings() {
 
     if (recordings.length === 0) {
       emptyMessage.classList.remove("hidden");
-      return;
-    }
-
-    for (const recording of recordings) {
-      list.appendChild(createRecordingRow(recording));
+    } else {
+      for (const recording of recordings) {
+        list.appendChild(createRecordingRow(recording));
+      }
     }
   } catch {
     loadingMessage.textContent = "Failed to load recordings.";
