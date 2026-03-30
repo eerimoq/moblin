@@ -6,6 +6,11 @@ let confirmResult = false;
 const PREVIEW_CURSOR_MARGIN = 16;
 const PREVIEW_FALLBACK_WIDTH = 320;
 const PREVIEW_FALLBACK_HEIGHT = 240;
+let mobilePreviewVisible = false;
+
+function hasHoverPreview() {
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+}
 
 function getOrCreatePreview() {
   if (!previewEl) {
@@ -55,6 +60,34 @@ function positionPreview(preview, event) {
 function hidePreview() {
   if (previewEl) {
     previewEl.style.display = "none";
+  }
+}
+
+function openMobilePreview(src) {
+  const preview = document.getElementById("mobilePreview");
+  const image = document.getElementById("mobilePreviewImage");
+  image.src = src;
+  preview.classList.remove("hidden");
+  preview.setAttribute("aria-hidden", "false");
+  document.body.classList.add("mobile-preview-open");
+  mobilePreviewVisible = true;
+}
+
+function closeMobilePreview() {
+  const preview = document.getElementById("mobilePreview");
+  const image = document.getElementById("mobilePreviewImage");
+  preview.classList.add("hidden");
+  preview.setAttribute("aria-hidden", "true");
+  image.removeAttribute("src");
+  document.body.classList.remove("mobile-preview-open");
+  mobilePreviewVisible = false;
+}
+
+function toggleMobilePreview(src) {
+  if (mobilePreviewVisible) {
+    closeMobilePreview();
+  } else {
+    openMobilePreview(src);
   }
 }
 
@@ -108,6 +141,7 @@ function createRecordingRow(recording) {
   row.className = "recording-row";
 
   const label = document.createElement("label");
+  label.className = "recording-main";
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
@@ -121,34 +155,40 @@ function createRecordingRow(recording) {
   thumbnail.className = "recording-thumbnail";
   thumbnail.src = `/thumbnails/${encodeURIComponent(recording.name)}`;
   thumbnail.alt = "";
-  thumbnail.addEventListener("mouseenter", (e) => showPreview(thumbnail.src, e));
-  thumbnail.addEventListener("mousemove", (e) => {
-    if (previewEl && previewEl.style.display === "block") {
-      positionPreview(previewEl, e);
+  if (hasHoverPreview()) {
+    thumbnail.addEventListener("mouseenter", (e) => showPreview(thumbnail.src, e));
+    thumbnail.addEventListener("mousemove", (e) => {
+      if (previewEl && previewEl.style.display === "block") {
+        positionPreview(previewEl, e);
+      }
+    });
+    thumbnail.addEventListener("mouseleave", hidePreview);
+  }
+  thumbnail.addEventListener("click", (e) => {
+    if (hasHoverPreview()) {
+      return;
     }
+    e.preventDefault();
+    e.stopPropagation();
+    toggleMobilePreview(thumbnail.src);
   });
-  thumbnail.addEventListener("mouseleave", hidePreview);
 
   const name = document.createElement("span");
   name.className = "recording-name";
   name.textContent = recording.name;
 
-  label.appendChild(checkbox);
-  label.appendChild(thumbnail);
-  label.appendChild(name);
-  row.appendChild(label);
-
   const size = document.createElement("span");
   size.className = "recording-size";
   size.textContent = recording.size;
-  row.appendChild(size);
 
   const shareButton = document.createElement("button");
   shareButton.type = "button";
   shareButton.className = "recording-share-button";
   shareButton.textContent = "Copy link";
   shareButton.setAttribute("aria-label", `Copy download link for ${recording.name}`);
-  shareButton.addEventListener("click", async () => {
+  shareButton.addEventListener("click", async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const originalText = shareButton.textContent;
     try {
       await copyText(downloadUrl(recording.name));
@@ -160,7 +200,23 @@ function createRecordingRow(recording) {
       shareButton.textContent = originalText;
     }, 1500);
   });
-  row.appendChild(shareButton);
+
+  const details = document.createElement("div");
+  details.className = "recording-details";
+
+  const footer = document.createElement("div");
+  footer.className = "recording-footer";
+
+  footer.appendChild(size);
+  footer.appendChild(shareButton);
+
+  details.appendChild(name);
+  details.appendChild(footer);
+
+  label.appendChild(checkbox);
+  label.appendChild(thumbnail);
+  label.appendChild(details);
+  row.appendChild(label);
 
   return row;
 }
@@ -295,5 +351,6 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("deleteSelected").addEventListener("click", deleteSelected);
   document.getElementById("confirm-ok").addEventListener("click", confirmOk);
   document.getElementById("confirm-cancel").addEventListener("click", confirmCancel);
+  document.getElementById("mobilePreviewBackdrop").addEventListener("click", closeMobilePreview);
   loadRecordings();
 });
