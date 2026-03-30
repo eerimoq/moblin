@@ -1,3 +1,8 @@
+.recordings-toolbar-button {
+  min-width: 6.75rem;
+  text-align: center;
+}
+
 .recording-row {
   display: flex;
   align-items: center;
