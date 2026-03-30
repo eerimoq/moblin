@@ -59,6 +59,9 @@ private let staticFiles: [StaticFile] = [
     StaticFile("/js/", "recordings", "mjs"),
 ]
 
+private let recordingsPrefix = "/recordings/"
+private let thumbnailsPrefix = "/thumbnails/"
+
 class RemoteControlWeb {
     private var server: HttpServer?
     private var started: Bool = false
@@ -110,12 +113,12 @@ class RemoteControlWeb {
         routes.append(HttpServerRoute(path: "/js/config.mjs", handler: handleConfigMjs))
         routes.append(HttpServerRoute(path: "/recordings.json", handler: handleRecordingsJson))
         routes.append(HttpServerRoute(
-            path: "/recordings/",
+            path: recordingsPrefix,
             prefixMatch: true,
             handler: handleRecordingsFile
         ))
         routes.append(HttpServerRoute(
-            path: "/thumbnails/",
+            path: thumbnailsPrefix,
             prefixMatch: true,
             handler: handleRecordingsThumbnail
         ))
@@ -204,7 +207,7 @@ class RemoteControlWeb {
         guard request.method == "GET" else {
             return
         }
-        let filename = String(request.path.dropFirst("/recordings/".count))
+        let filename = String(request.path.dropFirst(recordingsPrefix.count))
         guard let fileUrl = delegate?.remoteControlWebGetRecordingUrl(filename: filename) else {
             response.send(status: .notFound)
             return
@@ -220,7 +223,7 @@ class RemoteControlWeb {
         guard request.method == "GET" else {
             return
         }
-        let filename = String(request.path.dropFirst("/thumbnails/".count))
+        let filename = String(request.path.dropFirst(thumbnailsPrefix.count))
         guard let thumbnail = delegate?.remoteControlWebGetRecordingThumbnail(filename: filename) else {
             response.send(status: .notFound)
             return
