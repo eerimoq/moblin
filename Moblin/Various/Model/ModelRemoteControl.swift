@@ -1137,7 +1137,7 @@ extension Model: RemoteControlWebDelegate {
             return cached
         }
         let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
-        guard FileManager.default.fileExists(atPath: url.path()) else {
+        guard url.exists() else {
             return nil
         }
         let asset = AVURLAsset(url: url)
@@ -1156,7 +1156,7 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebGetRecordingUrl(filename: String) -> URL? {
         let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
-        guard FileManager.default.fileExists(atPath: url.path()) else {
+        guard url.exists() else {
             return nil
         }
         return url

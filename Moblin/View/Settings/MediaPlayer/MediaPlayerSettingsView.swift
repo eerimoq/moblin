@@ -10,7 +10,7 @@ struct Video: Transferable {
         } importing: { received in
             let fileName = received.file.lastPathComponent
             let copy = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-            if FileManager.default.fileExists(atPath: copy.path) {
+            if copy.exists() {
                 try FileManager.default.removeItem(at: copy)
             }
             try FileManager.default.copyItem(at: received.file, to: copy)

@@ -94,7 +94,7 @@ final class ReplaysStorage {
     }
 
     private func cleanup() {
-        database.replays = database.replays.filter { FileManager.default.fileExists(atPath: $0.url().path()) }
+        database.replays = database.replays.filter { $0.url().exists() }
         guard let enumerator = FileManager.default.enumerator(
             at: getReplaysDirectory(),
             includingPropertiesForKeys: nil

@@ -2164,7 +2164,7 @@ final class Settings {
                     try writer.writeFile(filename: settingsJsonName, contents: settingsJson)
                     let fileManager = FileManager.default
                     let prefixCount = createAndGetDirectory().standardizedFileURL.path.count + 1
-                    for fileUrl in exportFiles where FileManager.default.fileExists(atPath: fileUrl.path()) {
+                    for fileUrl in exportFiles where fileUrl.exists() {
                         let filePath = fileUrl.standardizedFileURL.path
                         let relativeFilePath = String(filePath.dropFirst(prefixCount))
                         try writer.writeFile(filename: relativeFilePath, sourceFile: filePath)

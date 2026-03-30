@@ -25,7 +25,7 @@ class Recording {
         var date = Date()
         while true {
             filename = "Recording_\(formatFilenameDateAndTime(date: date)).mp4"
-            if let path = url()?.path(), FileManager.default.fileExists(atPath: path) {
+            if url()?.exists() == true {
                 date = Date(timeInterval: 1, since: date)
                 continue
             }

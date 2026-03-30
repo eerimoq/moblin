@@ -18,6 +18,10 @@ extension URL {
     func remove() {
         try? FileManager.default.removeItem(at: self)
     }
+
+    func exists() -> Bool {
+        return FileManager.default.fileExists(atPath: path())
+    }
 }
 
 extension FileManager {
