@@ -403,5 +403,5 @@ private let filenameDateFormatter: DateFormatter = {
 }()
 
 func formatFilenameDateAndTime(date: Date? = nil) -> String {
-    return filenameDateFormatter.string(from: date ?? Date())
+    return filenameDateFormatter.string(from: date ?? Date()).replacing(/\s+/, with: "_")
 }
