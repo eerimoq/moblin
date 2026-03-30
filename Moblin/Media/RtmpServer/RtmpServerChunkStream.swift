@@ -367,7 +367,7 @@ class RtmpServerChunkStream {
         }
         audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
         if audioDecoder == nil {
-            logger.info("rtmp-server: client: Failed to create audio decdoer")
+            logger.info("rtmp-server: client: Failed to create audio decoder")
         }
     }
 

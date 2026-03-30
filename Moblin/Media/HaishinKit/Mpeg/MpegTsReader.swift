@@ -18,8 +18,8 @@ class MpegTsReader {
     private var previousReceivedPresentationTimeStamps: [UInt16: CMTime] = [:]
     private var basePresentationTimeStamp: CMTime = .invalid
     private var audioBuffer: AVAudioCompressedBuffer?
-    private var pcmAudioBuffer: AVAudioPCMBuffer?
     private var latestAudioBufferPresentationTimeStamp: CMTime?
+    private var typicalAudioPacketDuration: Double?
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private var mpgaDecoder: MiniMp3Decoder?
@@ -29,8 +29,7 @@ class MpegTsReader {
     private let targetLatency: Double
     weak var delegate: MpegTsReaderDelegate?
     private let decoderQueue: DispatchQueue
-    private let wrappingTimestamp = WrappingTimestamp(name: "MpegTsReader",
-                                                      maximumTimestamp: CMTime(seconds: 0x2_0000_0000))
+    private var wrappingTimestamps: [UInt16: WrappingTimestamp] = [:]
 
     init(decoderQueue: DispatchQueue, timecodesEnabled: Bool, targetLatency: Double) {
         self.decoderQueue = decoderQueue
@@ -101,90 +100,118 @@ class MpegTsReader {
         targetLatenciesSynchronizer
             .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         updateTargetLatencies()
-        guard let audioDecoder, let pcmAudioFormat, let audioBuffer, let pcmAudioBuffer else {
+        guard let audioDecoder, let pcmAudioFormat, let audioBuffer else {
             return
         }
         guard let dataBuffer = sampleBuffer.dataBuffer else {
             return
         }
-        guard let (dataPointer, length) = dataBuffer.getDataPointer() else {
+        guard let (basePointer, totalLength) = dataBuffer.getDataPointer() else {
             return
         }
-        guard length <= audioBuffer.maximumPacketSize else {
-            return
-        }
-        audioBuffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
-            mStartOffset: 0,
-            mVariableFramesInPacket: 0,
-            mDataByteSize: UInt32(length)
-        )
-        audioBuffer.packetCount = 1
-        audioBuffer.byteLength = UInt32(length)
-        audioBuffer.data.copyMemory(from: dataPointer, byteCount: length)
-        var error: NSError?
-        audioDecoder.convert(to: pcmAudioBuffer, error: &error) { _, inputStatus in
-            inputStatus.pointee = .haveData
-            return self.audioBuffer
-        }
-        if let error {
-            logger.info("mpeg-ts-reader: Audio error \(error)")
-            return
-        }
-        outputSilenceIfGap(sampleBuffer.presentationTimeStamp, pcmAudioFormat, pcmAudioBuffer)
-        guard let sampleBuffer = pcmAudioBuffer.makeSampleBuffer(sampleBuffer.presentationTimeStamp) else {
-            return
-        }
-        delegate?.mpegTsReaderAudioBuffer(sampleBuffer)
-    }
-
-    // Maybe only fill gaps in audio unit?
-    private func outputSilenceIfGap(_ presentationTimeStamp: CMTime,
-                                    _ pcmAudioFormat: AVAudioFormat,
-                                    _ pcmBuffer: AVAudioPCMBuffer)
-    {
-        defer {
-            latestAudioBufferPresentationTimeStamp = presentationTimeStamp
-        }
-        guard let latestAudioBufferPresentationTimeStamp else {
-            return
-        }
-        let samplesPerBuffer = pcmBuffer.frameLength
-        let sampleFrequency = pcmBuffer.format.sampleRate
-        let numberOfGapBuffers = calcNumberOfGapBuffers(
-            presentationTimeStamp,
-            latestAudioBufferPresentationTimeStamp,
-            samplesPerBuffer,
-            sampleFrequency
-        )
-        for index in 0 ..< numberOfGapBuffers {
-            let timeOffset = CMTime(
-                value: CMTimeValue(Double(samplesPerBuffer) * Double(1 + index)),
-                timescale: CMTimeScale(sampleFrequency)
-            )
-            let newPresentationTimeStamp = latestAudioBufferPresentationTimeStamp + timeOffset
-            logger.info("""
-            mpeg-ts-reader: Filling audio gap \
-            \(latestAudioBufferPresentationTimeStamp.seconds)..\(presentationTimeStamp.seconds) \
-            with \(newPresentationTimeStamp.seconds)
-            """)
-            if let sampleBuffer = CMSampleBuffer.createSilent(
-                pcmAudioFormat,
-                newPresentationTimeStamp,
-                samplesPerBuffer
-            ) {
-                delegate?.mpegTsReaderAudioBuffer(sampleBuffer)
+        // The CMSampleBuffer may contain multiple AAC frames. The block buffer was
+        // created by makeSampleBufferAac which skipped the ADTS header of the first
+        // frame only. Subsequent frames still have their ADTS headers (7 bytes) in
+        // the data. sampleSize(at:) returns the raw AAC payload size (excluding
+        // ADTS header), so for frames after the first we must skip AdtsHeader.size
+        // bytes before reading the payload.
+        let numSamples = sampleBuffer.numSamples
+        var offset = 0
+        let basePts = sampleBuffer.presentationTimeStamp
+        // Check for PTS discontinuity only once per PES packet (using the base PTS),
+        // not for each individual AAC frame within the packet.
+        checkAudioPtsDiscontinuity(basePts, numSamples)
+        for sampleIndex in 0 ..< numSamples {
+            // Skip ADTS header for frames after the first
+            if sampleIndex > 0 {
+                offset += AdtsHeader.size
             }
+            let sampleSize: Int
+            if numSamples == 1 {
+                sampleSize = totalLength
+            } else {
+                sampleSize = sampleBuffer.sampleSize(at: sampleIndex)
+            }
+            guard sampleSize > 0, offset + sampleSize <= totalLength else {
+                break
+            }
+            guard sampleSize <= audioBuffer.maximumPacketSize else {
+                offset += sampleSize
+                continue
+            }
+            audioBuffer.packetDescriptions?.pointee = AudioStreamPacketDescription(
+                mStartOffset: 0,
+                mVariableFramesInPacket: 0,
+                mDataByteSize: UInt32(sampleSize)
+            )
+            audioBuffer.packetCount = 1
+            audioBuffer.byteLength = UInt32(sampleSize)
+            audioBuffer.data.copyMemory(from: basePointer.advanced(by: offset), byteCount: sampleSize)
+            guard let freshPcmBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat,
+                                                        frameCapacity: 1024) else {
+                offset += sampleSize
+                continue
+            }
+            var error: NSError?
+            audioDecoder.convert(to: freshPcmBuffer, error: &error) { _, inputStatus in
+                inputStatus.pointee = .haveData
+                return self.audioBuffer
+            }
+            if let error {
+                logger.info("mpeg-ts-reader: Audio decode error \(error)")
+                offset += sampleSize
+                continue
+            }
+            guard freshPcmBuffer.frameLength > 0 else {
+                offset += sampleSize
+                continue
+            }
+            let framePts = basePts + CMTime(value: CMTimeValue(1024 * sampleIndex),
+                                           timescale: CMTimeScale(pcmAudioFormat.sampleRate))
+            if let outputBuffer = freshPcmBuffer.makeSampleBuffer(framePts) {
+                delegate?.mpegTsReaderAudioBuffer(outputBuffer)
+            }
+            offset += sampleSize
         }
     }
 
-    private func calcNumberOfGapBuffers(_ presentationTimeStamp: CMTime,
-                                        _ latestPresentationTimeStamp: CMTime,
-                                        _ samplesPerBuffer: UInt32,
-                                        _ sampleFrequency: Double) -> Int
+    // Track the PTS of the last delivered audio PES packet. Used only to detect large
+    // discontinuities (e.g. stream reconnect) that require a PTS anchor reset.
+    // Gap-filling for short network dropouts is handled by BufferedAudio.
+    // Called once per PES packet with the base PTS, the number of frames, and
+    // the samples-per-frame (1024 for AAC, 1152 for MP3/MPGA, etc.)
+    private func checkAudioPtsDiscontinuity(_ presentationTimeStamp: CMTime,
+                                            _ numFrames: Int,
+                                            samplesPerFrame: Int = 1024,
+                                            sampleRate: Double? = nil)
     {
-        let ptsDelta = (presentationTimeStamp - latestPresentationTimeStamp).seconds
-        let timePerBuffer = Double(samplesPerBuffer) / sampleFrequency
-        return max(Int((ptsDelta / timePerBuffer - 1).rounded()), 0)
+        let sampleRate = sampleRate ?? pcmAudioFormat?.sampleRate ?? 48000
+        let pesDuration = CMTime(value: CMTimeValue(samplesPerFrame * numFrames),
+                                 timescale: CMTimeScale(sampleRate))
+        let lastFramePts = presentationTimeStamp + pesDuration
+            - CMTime(value: CMTimeValue(samplesPerFrame), timescale: CMTimeScale(sampleRate))
+        guard let latestAudioBufferPresentationTimeStamp else {
+            self.latestAudioBufferPresentationTimeStamp = lastFramePts
+            return
+        }
+        let ptsDelta = (presentationTimeStamp - latestAudioBufferPresentationTimeStamp).seconds
+        let singleFrameDuration = Double(samplesPerFrame) / sampleRate
+        if ptsDelta > singleFrameDuration {
+            typicalAudioPacketDuration = min(typicalAudioPacketDuration ?? ptsDelta, ptsDelta)
+        }
+        let packetDuration = typicalAudioPacketDuration ?? singleFrameDuration
+        // Reset PTS anchor only on genuine large discontinuities (> 10 inter-packet intervals).
+        // Do NOT update latestAudioBufferPresentationTimeStamp on reset — leave it nil so the
+        // next frame after re-anchoring is treated as the first frame with no prior reference.
+        if ptsDelta > 10 * packetDuration {
+            logger.debug("mpeg-ts-reader: Audio gap too large (\(ptsDelta)s), resetting PTS")
+            firstReceivedPresentationTimeStamp = nil
+            basePresentationTimeStamp = .invalid
+            previousReceivedPresentationTimeStamps.removeAll()
+            self.latestAudioBufferPresentationTimeStamp = nil
+            return
+        }
+        self.latestAudioBufferPresentationTimeStamp = lastFramePts
     }
 
     private func handleVideoSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
@@ -229,8 +256,11 @@ class MpegTsReader {
         let samplesPerFrame = Double(pcmBuffers[0].frameLength)
         let sampleRate = fmt.sampleRate
         var pts = sampleBuffer.presentationTimeStamp
+        // Check for PTS discontinuity once per PES packet
+        checkAudioPtsDiscontinuity(pts, pcmBuffers.count,
+                                   samplesPerFrame: Int(samplesPerFrame),
+                                   sampleRate: sampleRate)
         for pcmBuf in pcmBuffers {
-            outputSilenceIfGap(pts, fmt, pcmBuf)
             guard let outputSampleBuffer = pcmBuf.makeSampleBuffer(pts) else {
                 logger.info("mpeg-ts-reader: MPGA failed to make output sample buffer")
                 pts = pts + CMTime(value: CMTimeValue(samplesPerFrame),
@@ -264,18 +294,16 @@ class MpegTsReader {
             commonFormat: .pcmFormatInt16,
             sampleRate: audioFormat.sampleRate,
             channels: audioFormat.channelCount,
-            interleaved: audioFormat.isInterleaved
+            interleaved: true
         )
         guard let pcmAudioFormat else {
             logger.info("mpeg-ts-reader: Failed to create PCM audio format")
             return
         }
         logger.info("mpeg-ts-reader: in: \(audioFormat), out: \(pcmAudioFormat)")
-        pcmAudioBuffer = AVAudioPCMBuffer(pcmFormat: pcmAudioFormat,
-                                          frameCapacity: streamBasicDescription.pointee.mFramesPerPacket)
         audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
         if audioDecoder == nil {
-            logger.info("mpeg-ts-reader: Failed to create audio decdoer")
+            logger.info("mpeg-ts-reader: Failed to create audio decoder")
         }
     }
 
@@ -710,9 +738,19 @@ class MpegTsReader {
     ) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
         let basePresentationTimeStamp = getBasePresentationTimeStamp()
-        let receivedPresentationTimeStamp = wrappingTimestamp
-            .update(optionalHeader.getPresentationTimeStamp())
-        let receivedDecodeTimeStamp = wrappingTimestamp.update(optionalHeader.getDecodeTimeStamp())
+        let wrappingTimestamp = wrappingTimestamps[packetId] ?? WrappingTimestamp(
+            name: "MpegTsReader-pts-\(packetId)",
+            maximumTimestamp: CMTime(seconds: 0x2_0000_0000)
+        )
+        wrappingTimestamps[packetId] = wrappingTimestamp
+        let rawPts = optionalHeader.getPresentationTimeStamp()
+        let receivedPresentationTimeStamp = rawPts.isValid
+            ? wrappingTimestamp.update(rawPts)
+            : rawPts
+        let rawDts = optionalHeader.getDecodeTimeStamp()
+        let receivedDecodeTimeStamp = rawDts.isValid
+            ? wrappingTimestamp.update(rawDts)
+            : rawDts
         var timing = CMSampleTimingInfo()
         var firstReceivedPresentationTimeStamp = firstReceivedPresentationTimeStamp
         if let firstReceivedPresentationTimeStamp {
