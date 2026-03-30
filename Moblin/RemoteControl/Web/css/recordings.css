@@ -59,6 +59,27 @@
   margin-left: 0.75rem;
 }
 
+.recording-share-button {
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-zinc-700);
+  background-color: var(--color-zinc-900);
+  color: var(--color-zinc-200);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.recording-share-button:hover {
+  background-color: var(--color-zinc-800);
+  border-color: var(--color-zinc-600);
+}
+
 .select-all-checkbox {
   width: 1rem;
   height: 1rem;

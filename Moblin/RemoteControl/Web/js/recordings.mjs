@@ -143,12 +143,61 @@ function createRecordingRow(recording) {
   size.textContent = recording.size;
   row.appendChild(size);
 
+  const shareButton = document.createElement("button");
+  shareButton.type = "button";
+  shareButton.className = "recording-share-button";
+  shareButton.textContent = "Copy link";
+  shareButton.setAttribute("aria-label", `Copy download link for ${recording.name}`);
+  shareButton.addEventListener("click", async () => {
+    const originalText = shareButton.textContent;
+    try {
+      await copyText(downloadUrl(recording.name));
+      shareButton.textContent = "Copied";
+    } catch {
+      shareButton.textContent = "Failed";
+    }
+    setTimeout(() => {
+      shareButton.textContent = originalText;
+    }, 1500);
+  });
+  row.appendChild(shareButton);
+
   return row;
+}
+
+function downloadUrl(filename) {
+  return new URL(`/recordings/${encodeURIComponent(filename)}`, window.location.origin).toString();
+}
+
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  fallbackCopyText(text);
+}
+
+function fallbackCopyText(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.top = "-1000px";
+  textArea.style.left = "-1000px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  textArea.setSelectionRange(0, text.length);
+  const success = document.execCommand("copy");
+  document.body.removeChild(textArea);
+  if (!success) {
+    throw new Error("Copy failed");
+  }
 }
 
 function downloadFile(filename) {
   const link = document.createElement("a");
-  link.href = `/recordings/${encodeURIComponent(filename)}`;
+  link.href = downloadUrl(filename);
   link.download = filename;
   document.body.appendChild(link);
   link.click();
