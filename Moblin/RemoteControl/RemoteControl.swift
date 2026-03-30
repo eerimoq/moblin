@@ -236,7 +236,7 @@ enum RemoteControlFilter: Codable, CaseIterable {
         case .blurFaces:
             return String(localized: "Blur faces")
         case .privacy:
-            return String(localized: "Privacy")
+            return String(localized: "Blur background")
         case .beauty:
             return String(localized: "Beauty")
         case .moblinInMouth:

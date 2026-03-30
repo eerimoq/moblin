@@ -1703,7 +1703,7 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
                                  imageOff: "face.dashed",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Privacy"),
+    button = SettingsQuickButton(name: String(localized: "Blur background"),
                                  type: .privacy,
                                  imageOn: "circle.rectangle.dashed",
                                  imageOff: "circle.rectangle.dashed",
