@@ -695,16 +695,6 @@
       }
     }
   }
-  .disabled\:bg-zinc-700 {
-    &:disabled {
-      background-color: var(--color-zinc-700);
-    }
-  }
-  .disabled\:text-zinc-500 {
-    &:disabled {
-      color: var(--color-zinc-500);
-    }
-  }
   .sm\:px-5 {
     @media (width >= 40rem) {
       padding-inline: calc(var(--spacing) * 5);
