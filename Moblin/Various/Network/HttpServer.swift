@@ -196,21 +196,20 @@ private class HttpServerConnection {
                 }
                 return
             }
-            if !self.handleData(data: data) {
-                self.receiveData()
-            }
+            self.handleData(data: data)
+            self.receiveData()
         }
     }
 
-    private func handleData(data: Data) -> Bool {
+    private func handleData(data: Data) {
         parser.append(data: data)
         let (done, result) = parser.parse()
         guard done else {
-            return false
+            return
         }
         guard let result, let server else {
             connection.cancel()
-            return true
+            return
         }
         request = HttpServerRequest(method: result.method,
                                     path: result.path,
@@ -219,10 +218,10 @@ private class HttpServerConnection {
                                     body: result.data)
         guard let route = server.findRoute(request: request!) else {
             sendAndClose(status: .notFound, content: Data())
-            return true
+            return
         }
         route.handler(request!, HttpServerResponse(connection: self))
-        return true
+        return
     }
 
     func sendAndClose(status: HttpServerStatus,
