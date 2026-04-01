@@ -17,6 +17,7 @@ enum SettingsCameraId {
     case rist(id: UUID)
     case rtsp(id: UUID)
     case whip(id: UUID)
+    case whipClient(id: UUID)
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture
@@ -1163,6 +1164,7 @@ class Database: Codable, ObservableObject {
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
     var whipServer: SettingsWhipServer = .init()
+    var whipClient: SettingsWhipClient = .init()
     var navigation: SettingsNavigation = .init()
     var wiFiAware: SettingsWiFiAware = .init()
     var face: SettingsFace = .init()

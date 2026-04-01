@@ -568,6 +568,16 @@ func isWhipCameraOrMic(camera: String) -> Bool {
     return camera.hasSuffix(cameraPositionWhip)
 }
 
+private let cameraPositionWhipClient = "(WHIP client)"
+
+func whipClientCamera(name: String) -> String {
+    return "\(name) \(cameraPositionWhipClient)"
+}
+
+func isWhipClientCameraOrMic(camera: String) -> Bool {
+    return camera.hasSuffix(cameraPositionWhipClient)
+}
+
 func mediaPlayerCamera(name: String) -> String {
     return "\(name) \(cameraPositionMediaPlayer)"
 }

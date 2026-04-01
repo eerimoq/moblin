@@ -12,6 +12,7 @@ struct IngestsSettingsView: View {
                 RistServerSettingsView(ristServer: database.ristServer)
                 RtspClientSettingsView(rtspClient: database.rtspClient)
                 WhipServerSettingsView(whipServer: database.whipServer)
+                WhipClientSettingsView(whipClient: database.whipClient)
                 if #available(iOS 26, *), false {
                     #if !targetEnvironment(macCatalyst)
                     NavigationLink {

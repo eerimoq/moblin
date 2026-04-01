@@ -572,6 +572,9 @@ extension Model {
         cameras += whipCameras().map {
             ($0.0.uuidString, $0.1)
         }
+        cameras += whipClientCameras().map {
+            ($0.0.uuidString, $0.1)
+        }
         cameras += playerCameras().map {
             ($0.0.uuidString, $0.1)
         }
@@ -627,6 +630,8 @@ extension Model {
             return .rtsp(id: id)
         } else if let id = getWhipStream(idString: cameraId)?.id {
             return .whip(id: id)
+        } else if let id = getWhipClientStream(idString: cameraId)?.id {
+            return .whipClient(id: id)
         } else if let id = getMediaPlayer(idString: cameraId)?.id {
             return .mediaPlayer(id: id)
         } else if isBackCamera(cameraId: cameraId) {
@@ -662,6 +667,8 @@ extension Model {
         case let .rtsp(id: id):
             return id.uuidString
         case let .whip(id: id):
+            return id.uuidString
+        case let .whipClient(id: id):
             return id.uuidString
         case let .mediaPlayer(id):
             return id.uuidString
@@ -715,6 +722,8 @@ extension Model {
             return getRtspStream(id: id)?.camera() ?? unknownSad
         case let .whip(id):
             return getWhipStream(id: id)?.camera() ?? unknownSad
+        case let .whipClient(id):
+            return getWhipClientStream(id: id)?.camera() ?? unknownSad
         case let .mediaPlayer(id):
             return getMediaPlayer(id: id)?.camera() ?? unknownSad
         case let .external(_, name):
@@ -825,6 +834,8 @@ extension Model {
         case let .rtsp(id: id):
             return id
         case let .whip(id: id):
+            return id
+        case let .whipClient(id: id):
             return id
         case let .mediaPlayer(id: id):
             return id

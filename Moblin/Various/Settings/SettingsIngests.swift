@@ -415,3 +415,70 @@ class SettingsWhipServer: Codable, ObservableObject {
         return new
     }
 }
+
+private let defaultWhipClientLatency: Int32 = 100
+
+class SettingsWhipClientStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var url: String = ""
+    @Published var enabled: Bool = false
+    @Published var latency: Int32 = defaultWhipClientLatency
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             url,
+             enabled,
+             latency
+    }
+
+    func latencySeconds() -> Double {
+        return Double(latency) / 1000
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+        try container.encode(.enabled, enabled)
+        try container.encode(.latency, latency)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        url = container.decode(.url, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        latency = container.decode(.latency, Int32.self, defaultWhipClientLatency)
+    }
+
+    func camera() -> String {
+        return whipClientCamera(name: name)
+    }
+}
+
+class SettingsWhipClient: Codable, ObservableObject {
+    @Published var streams: [SettingsWhipClientStream] = []
+
+    enum CodingKeys: CodingKey {
+        case streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streams = container.decode(.streams, [SettingsWhipClientStream].self, [])
+    }
+}
