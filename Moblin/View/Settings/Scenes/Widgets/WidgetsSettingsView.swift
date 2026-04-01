@@ -57,6 +57,7 @@ struct WidgetsSettingsView: View {
                                              database: database,
                                              createWidgetWizard: model.createWidgetWizard,
                                              presentingCreateWizard: $presentingCreateWizard)
+                        .navigationBarTitleDisplayMode(.inline)
                 }
             }
         } header: {

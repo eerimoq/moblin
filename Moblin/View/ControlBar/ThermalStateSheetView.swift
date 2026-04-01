@@ -67,6 +67,7 @@ struct ThermalStateSheetView: View {
                 }
             }
             .navigationTitle("Thermal state")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CloseToolbar(presenting: $presenting)
             }

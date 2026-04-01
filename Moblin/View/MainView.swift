@@ -120,59 +120,73 @@ private struct MenuView: View {
         case .settings:
             NavigationStack {
                 SettingsView(database: model.database)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .bitrate:
             NavigationStack {
                 QuickButtonBitrateView(model: model, database: model.database, stream: model.stream)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .mic:
             NavigationStack {
                 QuickButtonMicView(model: model, mics: model.database.mics, modelMic: model.mic)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .streamSwitcher:
             NavigationStack {
                 QuickButtonStreamSwitcherView(database: model.database)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .luts:
             NavigationStack {
                 QuickButtonLutsView(model: model, color: model.database.color)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .obs:
             NavigationStack {
                 QuickButtonObsView(stream: model.stream, obsQuickButton: model.obsQuickButton)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .sceneWidgets:
             NavigationStack {
                 QuickButtonSceneWidgetsView(sceneSelector: model.sceneSelector)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .recordings:
             NavigationStack {
                 RecordingsSettingsView(model: model)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .store:
             NavigationStack {
                 StoreSettingsView(store: model.store)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .chat:
             NavigationStack {
                 QuickButtonChatView(model: model, quickButtonChat: model.quickButtonChatState)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .djiDevices:
             NavigationStack {
                 QuickButtonDjiDevicesView(model: model, djiDevices: model.database.djiDevices)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .sceneSettings:
             NavigationStack {
                 SceneSettingsView(database: model.database, scene: model.sceneSettingsPanelScene)
+                    .navigationBarTitleDisplayMode(.inline)
             }
             .id(model.sceneSettingsPanelSceneId)
         case .goPro:
             NavigationStack {
                 QuickButtonGoProView(goProState: model.goPro, goPro: model.database.goPro)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .connectionPriorities:
             NavigationStack {
                 StreamSrtConnectionPriorityView(stream: model.stream)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .autoSceneSwitcher:
             NavigationStack {
@@ -180,6 +194,7 @@ private struct MenuView: View {
                     autoSceneSwitcher: model.autoSceneSwitcher,
                     autoSceneSwitchers: model.database.autoSceneSwitchers
                 )
+                .navigationBarTitleDisplayMode(.inline)
             }
         case .quickButtonSettings:
             NavigationStack {
@@ -189,15 +204,18 @@ private struct MenuView: View {
                                                    quickButtonsSettings: model.database.quickButtonsGeneral,
                                                    button: button,
                                                    showAll: true)
+                        .navigationBarTitleDisplayMode(.inline)
                 }
             }
         case .streamingButtonSettings:
             NavigationStack {
                 StreamButtonsSettingsView(database: model.database)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .live:
             NavigationStack {
                 QuickButtonLiveView(model: model, database: model.database, stream: model.stream)
+                    .navigationBarTitleDisplayMode(.inline)
             }
         case .none:
             EmptyView()

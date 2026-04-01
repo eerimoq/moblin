@@ -101,6 +101,7 @@ private struct SetupButtonView: View {
             .sheet(isPresented: $createStreamWizard.presentingSetup) {
                 NavigationStack {
                     StreamWizardSettingsView(model: model, createStreamWizard: createStreamWizard)
+                        .navigationBarTitleDisplayMode(.inline)
                 }
             }
     }

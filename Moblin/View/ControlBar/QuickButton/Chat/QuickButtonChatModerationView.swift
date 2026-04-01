@@ -953,6 +953,7 @@ struct QuickButtonChatModerationView: View {
                 }
             }
             .navigationTitle("Moderation")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CloseToolbar(presenting: $presentingModeration)
             }

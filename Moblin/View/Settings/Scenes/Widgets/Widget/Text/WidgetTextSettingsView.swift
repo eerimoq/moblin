@@ -172,6 +172,7 @@ private struct SubtitlesWithLanguageView: View {
                     }
                 }
                 .navigationTitle("Subtitles language")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     CloseToolbar(presenting: $presentingLanguagePicker)
                 }

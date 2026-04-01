@@ -414,6 +414,7 @@ struct StreamYouTubeScheduleStreamView: View {
                                 destroy: deleteUpcomingStream)
                 }
                 .navigationTitle("Manage streams")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     CloseToolbar(presenting: $presenting)
                 }

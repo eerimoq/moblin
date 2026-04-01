@@ -57,6 +57,7 @@ struct StreamsSettingsView: View {
                 .sheet(isPresented: $createStreamWizard.presenting) {
                     NavigationStack {
                         StreamWizardSettingsView(model: model, createStreamWizard: createStreamWizard)
+                            .navigationBarTitleDisplayMode(.inline)
                     }
                 }
             } footer: {

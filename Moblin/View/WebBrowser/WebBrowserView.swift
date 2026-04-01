@@ -122,6 +122,7 @@ private struct BookmarksView: View {
                 }
             }
             .navigationTitle("Bookmarks")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CloseToolbar(presenting: $presentingBookmarks)
             }

@@ -38,6 +38,7 @@ struct DebugLogSettingsView: View {
                 }
             }
             .navigationTitle("Log")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     ShareLink(item: model

@@ -827,6 +827,7 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                     )
                 }
                 .navigationTitle("Streamers")
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     CloseToolbar(presenting: $remoteControl.presentingStreamers)
                 }
@@ -845,6 +846,7 @@ struct ControlBarRemoteControlAssistantView: View {
                 ControlBarRemoteControlAssistantInnerView(remoteControlSettings: model.database.remoteControl,
                                                           remoteControl: model.remoteControl,
                                                           orientation: model.orientation)
+                    .navigationBarTitleDisplayMode(.inline)
             }
             ButtonsView()
         }

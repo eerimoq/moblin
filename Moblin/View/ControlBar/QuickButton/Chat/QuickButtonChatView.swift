@@ -689,6 +689,7 @@ struct PredefinedMessagesView: View {
                 }
             }
             .navigationTitle("Predefined messages")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 CloseToolbar(presenting: $presentingPredefinedMessages)
             }
