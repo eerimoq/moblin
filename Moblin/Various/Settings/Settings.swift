@@ -1270,6 +1270,7 @@ class Database: Codable, ObservableObject {
              disconnectProtection,
              rtspClient,
              whipServer,
+             whipClient,
              navigation,
              wiFiAware,
              face,
@@ -1346,6 +1347,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
         try container.encode(.whipServer, whipServer)
+        try container.encode(.whipClient, whipClient)
         try container.encode(.navigation, navigation)
         try container.encode(.wiFiAware, wiFiAware)
         try container.encode(.face, face)
@@ -1472,6 +1474,7 @@ class Database: Codable, ObservableObject {
         )
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
         whipServer = container.decode(.whipServer, SettingsWhipServer.self, .init())
+        whipClient = container.decode(.whipClient, SettingsWhipClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
         face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved
