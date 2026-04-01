@@ -471,6 +471,14 @@ final class VideoUnit: NSObject {
         return CIImage(cvPixelBuffer: imageBuffer)
     }
 
+    func getTalkBackVideoPixelBuffer(_ id: UUID) -> CVPixelBuffer? {
+        var pixelBuffer: CVPixelBuffer?
+        processorPipelineQueue.sync {
+            pixelBuffer = bufferedVideos[id]?.getCurrentSampleBuffer()?.imageBuffer
+        }
+        return pixelBuffer
+    }
+
     func attach(params: VideoUnitAttachParams) throws {
         if currentAttachParams?.canQuickSwitchTo(other: params) == true {
             attachQuickSwitch(params: params)

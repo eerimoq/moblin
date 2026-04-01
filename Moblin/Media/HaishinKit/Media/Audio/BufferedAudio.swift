@@ -202,6 +202,16 @@ class BufferedAudio {
         }
     }
 
+    func audioFormat() -> AVAudioFormat? {
+        guard let sampleBuffer = sampleBuffers.first ?? latestSampleBuffer,
+              let description = sampleBuffer.formatDescription?.audioStreamBasicDescription
+        else {
+            return nil
+        }
+        var asbd = description
+        return AVAudioFormat(streamDescription: &asbd)
+    }
+
     private func startOutput() {
         logger.info("""
         buffered-audio: \(name): Start output with sample rate \(sampleRate) and \

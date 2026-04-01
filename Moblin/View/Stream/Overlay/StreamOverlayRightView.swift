@@ -776,10 +776,15 @@ private struct RightOverlayBottomVerticalView: View {
                                                                     show: model.camera.show)
                     }
                 }
-                if show.zoomPresets && zoom.hasZoom {
-                    StreamOverlayRightZoomPresetVSelctorView(model: model,
-                                                             zoom: model.zoom,
-                                                             width: width)
+                VStack(alignment: .trailing) {
+                    if model.showTalkBackVideo {
+                        TalkBackVideoView(model: model)
+                    }
+                    if show.zoomPresets && zoom.hasZoom {
+                        StreamOverlayRightZoomPresetVSelctorView(model: model,
+                                                                 zoom: model.zoom,
+                                                                 width: width)
+                    }
                 }
             }
             StreamOverlayRightSceneVSelectorView(database: database,
@@ -815,6 +820,9 @@ private struct RightOverlayBottomHorizontalView: View {
                 StreamOverlayRightCameraSettingsControlView(model: model,
                                                             camera: model.camera,
                                                             show: model.camera.show)
+            }
+            if model.showTalkBackVideo {
+                TalkBackVideoView(model: model)
             }
             if show.zoomPresets && zoom.hasZoom {
                 StreamOverlayRightZoomPresetSelctorView(model: model,

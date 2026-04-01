@@ -37,6 +37,8 @@ final class AudioUnit: NSObject {
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
     private var latestAudioStatusTime = 0.0
+    private var talkBackAudioId: UUID?
+    private var talkBackAudioPlayer: TalkBackAudioPlayer?
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -140,6 +142,35 @@ final class AudioUnit: NSObject {
         processorPipelineQueue.async {
             self.setBufferedAudioTargetLatencyInternal(cameraId: cameraId, latency: latency)
         }
+    }
+
+    func setTalkBackAudioId(_ id: UUID?) {
+        processorPipelineQueue.async {
+            self.setTalkBackAudioIdInternal(id)
+        }
+    }
+
+    private func setTalkBackAudioIdInternal(_ id: UUID?) {
+        talkBackAudioId = id
+        if let id {
+            if let format = bufferedAudios[id]?.audioFormat() {
+                startTalkBackAudioPlayer(format: format)
+            }
+        } else {
+            stopTalkBackAudioPlayer()
+        }
+    }
+
+    private func startTalkBackAudioPlayer(format: AVAudioFormat) {
+        stopTalkBackAudioPlayer()
+        let player = TalkBackAudioPlayer()
+        player.start(format: format)
+        talkBackAudioPlayer = player
+    }
+
+    private func stopTalkBackAudioPlayer() {
+        talkBackAudioPlayer?.stop()
+        talkBackAudioPlayer = nil
     }
 
     private func addBufferedAudioInternal(cameraId: UUID, name: String, latency: Double) {
@@ -260,6 +291,12 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
 
 extension AudioUnit: BufferedAudioSampleBufferDelegate {
     func didOutputBufferedSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        if talkBackAudioId == cameraId {
+            if talkBackAudioPlayer == nil, let format = bufferedAudios[cameraId]?.audioFormat() {
+                startTalkBackAudioPlayer(format: format)
+            }
+            talkBackAudioPlayer?.appendSampleBuffer(sampleBuffer)
+        }
         guard selectedBufferedAudioId == cameraId, let processor else {
             return
         }

@@ -153,6 +153,10 @@ final class Processor {
         video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
     }
 
+    func getTalkBackVideoPixelBuffer(_ id: UUID) -> CVPixelBuffer? {
+        return video.getTalkBackVideoPixelBuffer(id)
+    }
+
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
         audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
     }
@@ -167,6 +171,10 @@ final class Processor {
 
     func setBufferedAudioTargetLatency(cameraId: UUID, _ latency: Double) {
         audio.setBufferedAudioTargetLatency(cameraId: cameraId, latency: latency)
+    }
+
+    func setTalkBackAudioId(_ id: UUID?) {
+        audio.setTalkBackAudioId(id)
     }
 
     func registerVideoEffect(_ effect: VideoEffect) {

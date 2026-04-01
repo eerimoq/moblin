@@ -912,6 +912,14 @@ final class Media: NSObject {
         processor?.setBufferedAudioTargetLatency(cameraId: cameraId, latency)
     }
 
+    func setTalkBackAudioId(_ id: UUID?) {
+        processor?.setTalkBackAudioId(id)
+    }
+
+    func getTalkBackVideoPixelBuffer(_ id: UUID) -> CVPixelBuffer? {
+        return processor?.getTalkBackVideoPixelBuffer(id)
+    }
+
     func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
         processor?.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
     }

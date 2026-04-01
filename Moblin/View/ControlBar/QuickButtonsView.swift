@@ -413,6 +413,13 @@ struct QuickButtonsInnerView: View {
         model.toggleBeautyQuickButton()
     }
 
+    private func talkBackAction() {
+        state.button.isOn.toggle()
+        model.setQuickButton(type: .talkBack, isOn: state.button.isOn)
+        model.updateQuickButtonStates()
+        model.toggleTalkBackVideo()
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -955,6 +962,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             beautyAction()
+                        }
+                    case .talkBack:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            talkBackAction()
                         }
                     }
                 }

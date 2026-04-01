@@ -1167,6 +1167,7 @@ class Database: Codable, ObservableObject {
     var wiFiAware: SettingsWiFiAware = .init()
     var face: SettingsFace = .init()
     var beauty: SettingsBeauty = .init()
+    var talkBack: SettingsTalkBack = .init()
 
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
@@ -1271,7 +1272,8 @@ class Database: Codable, ObservableObject {
              navigation,
              wiFiAware,
              face,
-             beauty
+             beauty,
+             talkBack
     }
 
     func encode(to encoder: Encoder) throws {
@@ -1348,6 +1350,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.wiFiAware, wiFiAware)
         try container.encode(.face, face)
         try container.encode(.beauty, beauty)
+        try container.encode(.talkBack, talkBack)
     }
 
     init() {}
@@ -1474,6 +1477,7 @@ class Database: Codable, ObservableObject {
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
         face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved
         beauty = container.decode(.beauty, SettingsBeauty.self, .init())
+        talkBack = container.decode(.talkBack, SettingsTalkBack.self, .init())
     }
 }
 
@@ -1935,6 +1939,12 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  type: .connectionPriorities,
                                  imageOn: "phone.connection.fill",
                                  imageOff: "phone.connection",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Talk back"),
+                                 type: .talkBack,
+                                 imageOn: "video.bubble.fill",
+                                 imageOff: "video.bubble",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }

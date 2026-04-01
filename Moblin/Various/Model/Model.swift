@@ -374,6 +374,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
     @Published var showNavigation = false
+    @Published var showTalkBackVideo = false
     @Published var webBrowserUrl: String = ""
     @Published var quickButtonSettingsButton: SettingsQuickButton?
     @Published var bluetoothAllowed = false
@@ -1028,6 +1029,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         startPeriodicTimers()
         setupThermalState()
         updateQuickButtonStates()
+        updateTalkBackAudio()
         removeUnusedImages()
         removeUnusedAlertMedias()
         removeUnusedVTubers()
