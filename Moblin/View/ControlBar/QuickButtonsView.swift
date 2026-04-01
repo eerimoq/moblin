@@ -287,6 +287,12 @@ struct QuickButtonsInnerView: View {
 
     private func cameraPreviewAction() {
         state.button.isOn.toggle()
+        if state.button.isOn {
+            model.makeToast(
+                title: String(localized: "Widgets will not be visible on screen when Camera preview is on"),
+                subTitle: String(localized: "They will be visible on stream and in recordings")
+            )
+        }
         model.updateQuickButtonStates()
         model.reattachCamera()
     }
