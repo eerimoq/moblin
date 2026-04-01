@@ -221,7 +221,6 @@ private class HttpServerConnection {
             return
         }
         route.handler(request!, HttpServerResponse(connection: self))
-        return
     }
 
     func sendAndClose(status: HttpServerStatus,
