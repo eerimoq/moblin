@@ -145,7 +145,7 @@ private struct IconAndSettingsView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: controlBarButtonSize, height: controlBarButtonSize)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.borderless)
             Button {
                 model.toggleShowingPanel(type: nil, panel: .settings)
             } label: {
@@ -157,7 +157,7 @@ private struct IconAndSettingsView: View {
                     )
                     .foregroundStyle(.white)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.borderless)
         }
     }
 }
