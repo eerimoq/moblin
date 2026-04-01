@@ -56,7 +56,7 @@ struct TalkBackSettingsView: View {
             } footer: {
                 Text("""
                 Audio received on the selected audio source is played through the device's speaker. \
-                The received video on the selected video source is shown above the zoom preset picker \
+                Video received on the selected video source is shown above the zoom preset picker \
                 in the bottom right on the stream view. Use the 'Talk back' quick button to show or \
                 hide the video.
                 """)

@@ -47,12 +47,11 @@ class TalkBackAudioPlayer {
 
     private func makePcmBuffer(from sampleBuffer: CMSampleBuffer) -> AVAudioPCMBuffer? {
         guard let formatDescription = sampleBuffer.formatDescription,
-              let asbd = formatDescription.audioStreamBasicDescription
+              var asbd = formatDescription.audioStreamBasicDescription
         else {
             return nil
         }
-        var mutableAsbd = asbd
-        guard let format = AVAudioFormat(streamDescription: &mutableAsbd) else {
+        guard let format = AVAudioFormat(streamDescription: &asbd) else {
             return nil
         }
         let frameCount = AVAudioFrameCount(sampleBuffer.numSamples)
@@ -62,45 +61,19 @@ class TalkBackAudioPlayer {
             return nil
         }
         pcmBuffer.frameLength = frameCount
-        var sizeNeeded = 0
-        CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
-            sampleBuffer,
-            bufferListSizeNeededOut: &sizeNeeded,
-            bufferListOut: nil,
-            bufferListSize: 0,
-            blockBufferAllocator: nil,
-            blockBufferMemoryAllocator: nil,
-            flags: 0,
-            blockBufferOut: nil
-        )
-        guard sizeNeeded > 0 else {
-            return nil
-        }
-        let listBytes = UnsafeMutableRawPointer.allocate(byteCount: sizeNeeded, alignment: 16)
-        defer { listBytes.deallocate() }
-        let list = listBytes.assumingMemoryBound(to: AudioBufferList.self)
-        var blockBuffer: CMBlockBuffer?
-        let status = CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
-            sampleBuffer,
-            bufferListSizeNeededOut: nil,
-            bufferListOut: list,
-            bufferListSize: sizeNeeded,
-            blockBufferAllocator: nil,
-            blockBufferMemoryAllocator: nil,
-            flags: 0,
-            blockBufferOut: &blockBuffer
-        )
-        guard status == noErr else {
-            return nil
-        }
-        let srcList = UnsafeMutableAudioBufferListPointer(list)
-        let dstList = UnsafeMutableAudioBufferListPointer(pcmBuffer.mutableAudioBufferList)
-        for i in 0 ..< min(srcList.count, dstList.count) {
-            guard let src = srcList[i].mData, let dst = dstList[i].mData else {
-                continue
+        do {
+            try sampleBuffer.withAudioBufferList { srcList, _ in
+                let dstList = UnsafeMutableAudioBufferListPointer(pcmBuffer.mutableAudioBufferList)
+                for i in 0 ..< min(srcList.count, dstList.count) {
+                    guard let src = srcList[i].mData, let dst = dstList[i].mData else {
+                        continue
+                    }
+                    let byteCount = Int(min(srcList[i].mDataByteSize, dstList[i].mDataByteSize))
+                    dst.copyMemory(from: src, byteCount: byteCount)
+                }
             }
-            let byteCount = Int(min(srcList[i].mDataByteSize, dstList[i].mDataByteSize))
-            dst.copyMemory(from: src, byteCount: byteCount)
+        } catch {
+            return nil
         }
         return pcmBuffer
     }

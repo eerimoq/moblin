@@ -1,11 +1,11 @@
 import SwiftUI
 
 private let talkBackVideoWidth: CGFloat = 250
+private let talkBackCiContext = CIContext()
 
 struct TalkBackVideoView: View {
     let model: Model
     @State private var image: UIImage?
-    private let ciContext = CIContext()
     private let timer = Timer.publish(every: 1 / 30.0, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -30,7 +30,7 @@ struct TalkBackVideoView: View {
             return
         }
         let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        guard let cgImage = ciContext.createCGImage(ciImage, from: ciImage.extent) else {
+        guard let cgImage = talkBackCiContext.createCGImage(ciImage, from: ciImage.extent) else {
             return
         }
         image = UIImage(cgImage: cgImage)
