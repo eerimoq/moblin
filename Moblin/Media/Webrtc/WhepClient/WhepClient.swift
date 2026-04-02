@@ -89,7 +89,7 @@ class WhepClient {
     }
 
     private func sendOffer(_ offer: String) {
-        logger.debug("whep-client: Sending offer to \(url.absoluteString)")
+        logger.info("whep-client: Sending offer to \(url.absoluteString)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
@@ -141,7 +141,7 @@ class WhepClient {
             )
             return
         }
-        logger.debug("whep-client: Got answer")
+        logger.info("whep-client: Got answer")
         do {
             try ingestClient?.setRemoteDescription(answer, type: "answer")
         } catch {
