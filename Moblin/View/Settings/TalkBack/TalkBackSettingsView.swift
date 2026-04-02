@@ -13,6 +13,9 @@ struct TalkBackSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Text("Play audio from an Ingest in your speakers.")
+            }
+            Section {
                 Toggle("Enabled", isOn: $talkBack.enabled)
                     .onChange(of: talkBack.enabled) { _ in
                         model.updateTalkBack()
