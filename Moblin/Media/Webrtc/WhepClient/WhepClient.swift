@@ -31,12 +31,14 @@ class WhepClient {
 
     func start() {
         dispatchQueue.async {
+            logger.info("whep-client: \(self.streamId): Start")
             self.startInternal()
         }
     }
 
     func stop() {
         dispatchQueue.async {
+            logger.info("whep-client: \(self.streamId): Stop")
             self.stopInternal()
         }
     }
@@ -83,13 +85,13 @@ class WhepClient {
             )
             try ingestClient.setLocalDescription("offer")
         } catch {
-            logger.info("whep-client: Failed to create offer: \(error)")
+            logger.info("whep-client: \(streamId): Failed to create offer: \(error)")
             stopInternal()
         }
     }
 
     private func sendOffer(_ offer: String) {
-        logger.info("whep-client: Sending offer to \(url.absoluteString)")
+        logger.info("whep-client: \(streamId): Sending offer to \(url.absoluteString)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
@@ -103,7 +105,7 @@ class WhepClient {
 
     private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
         if let error {
-            logger.info("whep-client: Offer request failed: \(error.localizedDescription)")
+            logger.info("whep-client: \(streamId): Offer request failed: \(error.localizedDescription)")
             stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
@@ -112,7 +114,7 @@ class WhepClient {
             return
         }
         guard let response = response as? HTTPURLResponse else {
-            logger.info("whep-client: Bad server response")
+            logger.info("whep-client: \(streamId): Bad server response")
             stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
@@ -121,7 +123,7 @@ class WhepClient {
             return
         }
         guard (200 ... 299).contains(response.statusCode) else {
-            logger.info("whep-client: Server returned HTTP status \(response.statusCode)")
+            logger.info("whep-client: \(streamId): Server returned HTTP status \(response.statusCode)")
             stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
@@ -133,7 +135,7 @@ class WhepClient {
             sessionUrl = URL(string: locationHeader, relativeTo: url)
         }
         guard let data, let answer = String(data: data, encoding: .utf8) else {
-            logger.info("whep-client: Answer missing in response")
+            logger.info("whep-client: \(streamId): Answer missing in response")
             stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
@@ -141,11 +143,11 @@ class WhepClient {
             )
             return
         }
-        logger.info("whep-client: Got answer")
+        logger.info("whep-client: \(streamId): Got answer")
         do {
             try ingestClient?.setRemoteDescription(answer, type: "answer")
         } catch {
-            logger.info("whep-client: Failed to set remote answer: \(error)")
+            logger.info("whep-client: \(streamId): Failed to set remote answer: \(error)")
             stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
