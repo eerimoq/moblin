@@ -4,23 +4,23 @@ import DataChannel
 import libdatachannel
 
 protocol WebrtcIngestClientDelegate: AnyObject {
-    func webRTCIngestClientOnConnected(clientId: UUID)
-    func webRTCIngestClientOnDisconnected(clientId: UUID, reason: String)
-    func webRTCIngestClientOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func webRTCIngestClientOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
-    func webRTCIngestClientSetTargetLatencies(
+    func webrtcIngestClientOnConnected(clientId: UUID)
+    func webrtcIngestClientOnDisconnected(clientId: UUID, reason: String)
+    func webrtcIngestClientOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func webrtcIngestClientOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
+    func webrtcIngestClientSetTargetLatencies(
         clientId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     )
-    func webRTCIngestClientOnGatheringComplete(clientId: UUID, localDescription: String)
+    func webrtcIngestClientOnGatheringComplete(clientId: UUID, localDescription: String)
 }
 
-private func toIngestClient(pointer: UnsafeMutableRawPointer?) -> WebRTCIngestClient? {
+private func toIngestClient(pointer: UnsafeMutableRawPointer?) -> WebrtcIngestClient? {
     guard let pointer else {
         return nil
     }
-    return Unmanaged<WebRTCIngestClient>.fromOpaque(pointer).takeUnretainedValue()
+    return Unmanaged<WebrtcIngestClient>.fromOpaque(pointer).takeUnretainedValue()
 }
 
 private enum VideoCodec {
@@ -38,7 +38,7 @@ private enum VideoCodec {
     }
 }
 
-final class WebRTCIngestClient {
+final class WebrtcIngestClient {
     let clientId: UUID
     private let latency: Double
     private(set) var peerConnectionId: Int32 = -1
@@ -157,7 +157,7 @@ final class WebRTCIngestClient {
         peerConnectionId = -1
         connected = false
         if let reason {
-            delegate?.webRTCIngestClientOnDisconnected(clientId: clientId, reason: reason)
+            delegate?.webrtcIngestClientOnDisconnected(clientId: clientId, reason: reason)
         }
     }
 
@@ -178,7 +178,7 @@ final class WebRTCIngestClient {
                 return
             }
             connected = true
-            delegate?.webRTCIngestClientOnConnected(clientId: clientId)
+            delegate?.webrtcIngestClientOnConnected(clientId: clientId)
         case .disconnected, .failed, .closed:
             stopInternal(reason: "Connection \(state)")
         case .new, .connecting:
@@ -201,7 +201,7 @@ final class WebRTCIngestClient {
         case .complete:
             do {
                 let localDescription = try getLocalDescription()
-                delegate?.webRTCIngestClientOnGatheringComplete(
+                delegate?.webrtcIngestClientOnGatheringComplete(
                     clientId: clientId,
                     localDescription: localDescription
                 )
@@ -382,7 +382,7 @@ final class WebRTCIngestClient {
         }
         targetLatenciesSynchronizer.setLatestAudioPresentationTimeStamp(presentationTimeStamp)
         updateTargetLatencies()
-        delegate?.webRTCIngestClientOnAudioBuffer(clientId: clientId, sampleBuffer)
+        delegate?.webrtcIngestClientOnAudioBuffer(clientId: clientId, sampleBuffer)
     }
 
     private func setupOpusDecoder() {
@@ -434,7 +434,7 @@ final class WebRTCIngestClient {
         guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
             return
         }
-        delegate?.webRTCIngestClientSetTargetLatencies(
+        delegate?.webrtcIngestClientSetTargetLatencies(
             clientId: clientId,
             videoTargetLatency,
             audioTargetLatency
@@ -442,8 +442,8 @@ final class WebRTCIngestClient {
     }
 }
 
-extension WebRTCIngestClient: VideoDecoderDelegate {
+extension WebrtcIngestClient: VideoDecoderDelegate {
     func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.webRTCIngestClientOnVideoBuffer(clientId: clientId, sampleBuffer)
+        delegate?.webrtcIngestClientOnVideoBuffer(clientId: clientId, sampleBuffer)
     }
 }

@@ -15,14 +15,14 @@ protocol WhipServerClientDelegate: AnyObject {
 
 final class WhipServerClient {
     let streamId: UUID
-    private var ingestClient: WebRTCIngestClient?
+    private var ingestClient: WebrtcIngestClient?
     private var answerCompletion: ((String?) -> Void)?
     weak var delegate: WhipServerClientDelegate?
 
     init(streamId: UUID, latency: Double, iceServers: [String], delegate: WhipServerClientDelegate) {
         self.streamId = streamId
         self.delegate = delegate
-        ingestClient = WebRTCIngestClient(
+        ingestClient = WebrtcIngestClient(
             clientId: streamId,
             latency: latency,
             iceServers: iceServers,
@@ -54,23 +54,23 @@ final class WhipServerClient {
 }
 
 extension WhipServerClient: WebrtcIngestClientDelegate {
-    func webRTCIngestClientOnConnected(clientId: UUID) {
+    func webrtcIngestClientOnConnected(clientId: UUID) {
         delegate?.whipServerClientOnConnected(streamId: clientId)
     }
 
-    func webRTCIngestClientOnDisconnected(clientId: UUID, reason: String) {
+    func webrtcIngestClientOnDisconnected(clientId: UUID, reason: String) {
         delegate?.whipServerClientOnDisconnected(streamId: clientId, reason: reason)
     }
 
-    func webRTCIngestClientOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    func webrtcIngestClientOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
         delegate?.whipServerClientOnVideoBuffer(streamId: clientId, sampleBuffer)
     }
 
-    func webRTCIngestClientOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
+    func webrtcIngestClientOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
         delegate?.whipServerClientOnAudioBuffer(streamId: clientId, sampleBuffer)
     }
 
-    func webRTCIngestClientSetTargetLatencies(
+    func webrtcIngestClientSetTargetLatencies(
         clientId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
@@ -82,7 +82,7 @@ extension WhipServerClient: WebrtcIngestClientDelegate {
         )
     }
 
-    func webRTCIngestClientOnGatheringComplete(clientId _: UUID, localDescription: String) {
+    func webrtcIngestClientOnGatheringComplete(clientId _: UUID, localDescription: String) {
         answerCompletion?(localDescription)
         answerCompletion = nil
     }
