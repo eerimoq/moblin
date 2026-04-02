@@ -47,7 +47,8 @@ final class WebrtcIngestClient {
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?
     private var basePresentationTimeStamp: Double = -1
-    private var timeStampRebaser = TimeStampRebaser()
+    private var videoTimeStampRebaser = TimeStampRebaser()
+    private var audioTimeStampRebaser = TimeStampRebaser()
     private var opusAudioConverter: AVAudioConverter?
     private var opusCompressedBuffer: AVAudioCompressedBuffer?
     private var pcmAudioFormat: AVAudioFormat?
@@ -298,7 +299,7 @@ final class WebrtcIngestClient {
             return
         }
         removeNalUnitStartCodes(&frameData, nalUnits)
-        guard let rebasedTimeStamp = timeStampRebaser.rebase(timestampSeconds) else {
+        guard let rebasedTimeStamp = videoTimeStampRebaser.rebase(timestampSeconds) else {
             return
         }
         let presentationTimeStamp = getBasePresentationTimeStamp() + rebasedTimeStamp
@@ -379,7 +380,7 @@ final class WebrtcIngestClient {
             logger.info("webrtc-ingest-client: Opus decode error: \(error)")
             return
         }
-        guard let rebasedTimeStamp = timeStampRebaser.rebase(timestampSeconds) else {
+        guard let rebasedTimeStamp = audioTimeStampRebaser.rebase(timestampSeconds) else {
             return
         }
         let presentationTimeStamp = getBasePresentationTimeStamp() + rebasedTimeStamp
