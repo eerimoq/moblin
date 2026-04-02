@@ -87,9 +87,19 @@ struct RistServerStreamSettingsView: View {
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0) ms" }
                     )
-                    .disabled(ristServer.enabled)
+                    .disabled(ristServer.enabled || stream.syncEnabled)
                 } footer: {
                     Text("The higher, the lower risk of stuttering.")
+                }
+                Section {
+                    Toggle("Sync", isOn: $stream.syncEnabled)
+                        .disabled(ristServer.enabled)
+                } footer: {
+                    Text("""
+                    Enable to synchronize this stream with other ingests \
+                    using H.265 SEI timecodes. When enabled, the latency \
+                    setting is not used.
+                    """)
                 }
                 Section {
                     UrlsView(status: status,

@@ -8,12 +8,13 @@ class SrtServerClient {
     private let streamId: String
     private let reader: MpegTsReader
 
-    init(server: SrtServer, streamId: String, timecodesEnabled: Bool) {
+    init(server: SrtServer, streamId: String, timecodesEnabled: Bool, syncEnabled: Bool = false) {
         self.server = server
         self.streamId = streamId
         reader = MpegTsReader(decoderQueue: srtlaServerQueue,
                               timecodesEnabled: timecodesEnabled,
-                              targetLatency: srtServerClientLatency)
+                              targetLatency: srtServerClientLatency,
+                              syncEnabled: syncEnabled)
         reader.delegate = self
     }
 
