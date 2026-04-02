@@ -56,14 +56,19 @@ class WhepClient {
             dispatchQueue: dispatchQueue,
             delegate: self
         )
-        connect2()
+        connect()
     }
 
     private func stopInternal() {
-        stop2()
+        if let sessionUrl {
+            sendDeleteRequest(url: sessionUrl)
+        }
+        sessionUrl = nil
+        ingestClient?.stop()
+        ingestClient = nil
     }
 
-    private func connect2() {
+    private func connect() {
         guard let ingestClient else {
             return
         }
@@ -79,17 +84,8 @@ class WhepClient {
             try ingestClient.setLocalDescription("offer")
         } catch {
             logger.info("whep-client: Failed to create offer: \(error)")
-            stop2()
+            stopInternal()
         }
-    }
-
-    private func stop2() {
-        if let sessionUrl {
-            sendDeleteRequest(url: sessionUrl)
-        }
-        sessionUrl = nil
-        ingestClient?.stop()
-        ingestClient = nil
     }
 
     private func sendOffer(_ offer: String) {
@@ -108,7 +104,7 @@ class WhepClient {
     private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
         if let error {
             logger.info("whep-client: Offer request failed: \(error.localizedDescription)")
-            stop2()
+            stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
                 reason: "Offer request failed: \(error.localizedDescription)"
@@ -117,7 +113,7 @@ class WhepClient {
         }
         guard let response = response as? HTTPURLResponse else {
             logger.info("whep-client: Bad server response")
-            stop2()
+            stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
                 reason: "Bad server response"
@@ -126,7 +122,7 @@ class WhepClient {
         }
         guard (200 ... 299).contains(response.statusCode) else {
             logger.info("whep-client: Server returned HTTP status \(response.statusCode)")
-            stop2()
+            stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
                 reason: "Server returned HTTP status \(response.statusCode)"
@@ -138,7 +134,7 @@ class WhepClient {
         }
         guard let data, let answer = String(data: data, encoding: .utf8) else {
             logger.info("whep-client: Answer missing in response")
-            stop2()
+            stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
                 reason: "Answer missing in response"
@@ -150,7 +146,7 @@ class WhepClient {
             try ingestClient?.setRemoteDescription(answer, type: "answer")
         } catch {
             logger.info("whep-client: Failed to set remote answer: \(error)")
-            stop2()
+            stopInternal()
             delegate?.whepClientOnPublishStop(
                 streamId: streamId,
                 reason: "Failed to set remote answer"
@@ -165,7 +161,7 @@ class WhepClient {
     }
 
     private func whepClientConnectionOnDisconnected(streamId: UUID, reason: String) {
-        stop2()
+        stopInternal()
         delegate?.whepClientOnPublishStop(streamId: streamId, reason: reason)
     }
 }
