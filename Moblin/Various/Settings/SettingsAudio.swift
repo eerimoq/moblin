@@ -80,6 +80,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
         return isWhipCameraOrMic(camera: name)
     }
 
+    func isNetwork() -> Bool {
+        return isRtmp() || isSrtla() || isRist() || isRtsp() || isWhip()
+    }
+
     func isMediaPlayer() -> Bool {
         return isMediaPlayerCameraOrMic(camera: name)
     }

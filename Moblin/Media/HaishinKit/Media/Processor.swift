@@ -229,6 +229,10 @@ final class Processor {
         audio.setSpeechToText(enabled: enabled)
     }
 
+    func setTalkBack(cameraId: UUID?) {
+        audio.setTalkBack(cameraId: cameraId)
+    }
+
     func startRecording(url: URL?, replay: Bool, audioSettings: [String: Any], videoSettings: [String: Any]) {
         recorder.startRunning(
             url: url,

@@ -1170,6 +1170,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             wiFiAwareUpdated()
             #endif
         }
+        updateTalkBack()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {

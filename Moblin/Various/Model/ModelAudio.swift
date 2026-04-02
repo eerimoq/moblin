@@ -264,6 +264,14 @@ extension Model {
         }
     }
 
+    func updateTalkBack() {
+        if database.talkBack.enabled, let mic = getMicById(id: database.talkBack.micId) {
+            startTalkBack(mic: mic)
+        } else {
+            stopTalkBack()
+        }
+    }
+
     @objc func systemVolumeDidChange(notification: NSNotification) {
         DispatchQueue.main.async {
             self.handleSystemVolumeDidChange(notification: notification)
@@ -615,15 +623,15 @@ extension Model {
             makeMicChangeToast(name: mic.name)
         }
         if isRtmpMic(mic: mic) {
-            selectMicRtmp(mic: mic)
+            attachBufferedAudio(cameraId: getRtmpMicCameraId(mic: mic), micId: mic.id)
         } else if isSrtlaMic(mic: mic) {
-            selectMicSrtla(mic: mic)
+            attachBufferedAudio(cameraId: getSrtlaMicCameraId(mic: mic), micId: mic.id)
         } else if isRistMic(mic: mic) {
-            selectMicRist(mic: mic)
+            attachBufferedAudio(cameraId: getRistMicCameraId(mic: mic), micId: mic.id)
         } else if isWhipMic(mic: mic) {
-            selectMicWhip(mic: mic)
+            attachBufferedAudio(cameraId: getWhipMicCameraId(mic: mic), micId: mic.id)
         } else if isMediaPlayerMic(mic: mic) {
-            selectMicMediaPlayer(mic: mic)
+            attachBufferedAudio(cameraId: getMediaPlayerMicCameraId(mic: mic), micId: mic.id)
         } else {
             selectMicDefault(mic: mic)
         }
@@ -670,24 +678,24 @@ extension Model {
         return getMediaPlayer(id: id) != nil
     }
 
-    private func selectMicRtmp(mic: SettingsMicsMic) {
-        attachBufferedAudio(cameraId: getRtmpStream(idString: mic.inputUid)?.id, micId: mic.id)
+    private func getRtmpMicCameraId(mic: SettingsMicsMic) -> UUID? {
+        return getRtmpStream(idString: mic.inputUid)?.id
     }
 
-    private func selectMicSrtla(mic: SettingsMicsMic) {
-        attachBufferedAudio(cameraId: getSrtlaStream(idString: mic.inputUid)?.id, micId: mic.id)
+    private func getSrtlaMicCameraId(mic: SettingsMicsMic) -> UUID? {
+        return getSrtlaStream(idString: mic.inputUid)?.id
     }
 
-    private func selectMicRist(mic: SettingsMicsMic) {
-        attachBufferedAudio(cameraId: getRistStream(idString: mic.inputUid)?.id, micId: mic.id)
+    private func getRistMicCameraId(mic: SettingsMicsMic) -> UUID? {
+        return getRistStream(idString: mic.inputUid)?.id
     }
 
-    private func selectMicWhip(mic: SettingsMicsMic) {
-        attachBufferedAudio(cameraId: getWhipStream(idString: mic.inputUid)?.id, micId: mic.id)
+    private func getWhipMicCameraId(mic: SettingsMicsMic) -> UUID? {
+        return getWhipStream(idString: mic.inputUid)?.id
     }
 
-    private func selectMicMediaPlayer(mic: SettingsMicsMic) {
-        attachBufferedAudio(cameraId: getMediaPlayer(idString: mic.inputUid)?.id, micId: mic.id)
+    private func getMediaPlayerMicCameraId(mic: SettingsMicsMic) -> UUID? {
+        return getMediaPlayer(idString: mic.inputUid)?.id
     }
 
     private func attachBufferedAudio(cameraId: UUID?, micId: String) {
@@ -697,6 +705,26 @@ extension Model {
         }
         media.attachBufferedAudio(cameraId: cameraId)
         remoteControlStateChanged(state: RemoteControlAssistantStreamerState(mic: micId))
+    }
+
+    private func startTalkBack(mic: SettingsMicsMic) {
+        if isRtmpMic(mic: mic) {
+            media.setTalkBack(cameraId: getRtmpMicCameraId(mic: mic))
+        } else if isSrtlaMic(mic: mic) {
+            media.setTalkBack(cameraId: getSrtlaMicCameraId(mic: mic))
+        } else if isRistMic(mic: mic) {
+            media.setTalkBack(cameraId: getRistMicCameraId(mic: mic))
+        } else if isWhipMic(mic: mic) {
+            media.setTalkBack(cameraId: getWhipMicCameraId(mic: mic))
+        } else if isMediaPlayerMic(mic: mic) {
+            media.setTalkBack(cameraId: getMediaPlayerMicCameraId(mic: mic))
+        } else {
+            media.setTalkBack(cameraId: nil)
+        }
+    }
+
+    private func stopTalkBack() {
+        media.setTalkBack(cameraId: nil)
     }
 }
 

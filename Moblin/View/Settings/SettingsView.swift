@@ -76,6 +76,13 @@ struct SettingsView: View {
                     } label: {
                         Label("Ingests", systemImage: "server.rack")
                     }
+                    NavigationLink {
+                        TalkBackSettingsView(model: model,
+                                             mics: database.mics,
+                                             talkBack: database.talkBack)
+                    } label: {
+                        Label("Talk back", systemImage: "video.bubble")
+                    }
                 }
                 NavigationLink {
                     MoblinkSettingsView(status: model.statusOther, streamer: database.moblink.streamer)

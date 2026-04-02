@@ -1,5 +1,70 @@
 import AVFoundation
 import Collections
+import CoreAudio
+
+private class TalkBackPlayer {
+    private let engine = AVAudioEngine()
+    private let playerNode = AVAudioPlayerNode()
+    private(set) var isRunning = false
+
+    func start(format: AVAudioFormat) {
+        engine.attach(playerNode)
+        engine.connect(playerNode, to: engine.mainMixerNode, format: format)
+        do {
+            try engine.start()
+            playerNode.play()
+            isRunning = true
+        } catch {
+            logger.info("talk-back-audio-player: Failed to start engine: \(error)")
+        }
+    }
+
+    func stop() {
+        playerNode.stop()
+        engine.stop()
+        engine.detach(playerNode)
+    }
+
+    func appendSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        guard let pcmBuffer = makePcmBuffer(from: sampleBuffer) else {
+            return
+        }
+        playerNode.scheduleBuffer(pcmBuffer)
+    }
+
+    private func makePcmBuffer(from sampleBuffer: CMSampleBuffer) -> AVAudioPCMBuffer? {
+        guard let formatDescription = sampleBuffer.formatDescription,
+              var asbd = formatDescription.audioStreamBasicDescription
+        else {
+            return nil
+        }
+        guard let format = AVAudioFormat(streamDescription: &asbd) else {
+            return nil
+        }
+        let frameCount = AVAudioFrameCount(sampleBuffer.numSamples)
+        guard frameCount > 0,
+              let pcmBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount)
+        else {
+            return nil
+        }
+        pcmBuffer.frameLength = frameCount
+        do {
+            try sampleBuffer.withAudioBufferList { srcList, _ in
+                let dstList = UnsafeMutableAudioBufferListPointer(pcmBuffer.mutableAudioBufferList)
+                for i in 0 ..< min(srcList.count, dstList.count) {
+                    guard let src = srcList[i].mData, let dst = dstList[i].mData else {
+                        continue
+                    }
+                    let byteCount = Int(min(srcList[i].mDataByteSize, dstList[i].mDataByteSize))
+                    dst.copyMemory(from: src, byteCount: byteCount)
+                }
+            }
+        } catch {
+            return nil
+        }
+        return pcmBuffer
+    }
+}
 
 struct AudioUnitAttachParams {
     let device: AVCaptureDevice?
@@ -37,6 +102,8 @@ final class AudioUnit: NSObject {
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
     private var latestAudioStatusTime = 0.0
+    private var talkBackCameraId: UUID?
+    private var talkBackPlayer: TalkBackPlayer?
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -89,27 +156,10 @@ final class AudioUnit: NSObject {
         }
     }
 
-    private func attachDevice(_ device: AVCaptureDevice) throws {
-        session.beginConfiguration()
-        defer {
-            session.commitConfiguration()
+    func setTalkBack(cameraId: UUID?) {
+        processorPipelineQueue.async {
+            self.setTalkBackInternal(cameraId: cameraId)
         }
-        if let input, session.inputs.contains(input) {
-            session.removeInput(input)
-        }
-        if let output, session.outputs.contains(output) {
-            session.removeOutput(output)
-        }
-        input = try AVCaptureDeviceInput(device: device)
-        if session.canAddInput(input!) {
-            session.addInput(input!)
-        }
-        output = AVCaptureAudioDataOutput()
-        output?.setSampleBufferDelegate(self, queue: processorPipelineQueue)
-        if session.canAddOutput(output!) {
-            session.addOutput(output!)
-        }
-        session.automaticallyConfiguresApplicationAudioSession = false
     }
 
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
@@ -139,6 +189,39 @@ final class AudioUnit: NSObject {
     func setBufferedAudioTargetLatency(cameraId: UUID, latency: Double) {
         processorPipelineQueue.async {
             self.setBufferedAudioTargetLatencyInternal(cameraId: cameraId, latency: latency)
+        }
+    }
+
+    private func attachDevice(_ device: AVCaptureDevice) throws {
+        session.beginConfiguration()
+        defer {
+            session.commitConfiguration()
+        }
+        if let input, session.inputs.contains(input) {
+            session.removeInput(input)
+        }
+        if let output, session.outputs.contains(output) {
+            session.removeOutput(output)
+        }
+        input = try AVCaptureDeviceInput(device: device)
+        if session.canAddInput(input!) {
+            session.addInput(input!)
+        }
+        output = AVCaptureAudioDataOutput()
+        output?.setSampleBufferDelegate(self, queue: processorPipelineQueue)
+        if session.canAddOutput(output!) {
+            session.addOutput(output!)
+        }
+        session.automaticallyConfiguresApplicationAudioSession = false
+    }
+
+    private func setTalkBackInternal(cameraId: UUID?) {
+        talkBackCameraId = cameraId
+        if talkBackCameraId == nil {
+            talkBackPlayer?.stop()
+            talkBackPlayer = nil
+        } else {
+            talkBackPlayer = TalkBackPlayer()
         }
     }
 
@@ -234,6 +317,19 @@ final class AudioUnit: NSObject {
                                     numberOfAudioChannels: numberOfAudioChannels,
                                     sampleRate: sampleRate)
     }
+
+    private func appendTalkBack(sampleBuffer: CMSampleBuffer) {
+        guard let talkBackPlayer else {
+            return
+        }
+        if !talkBackPlayer.isRunning {
+            guard let format = audioFormat(sampleBuffer: sampleBuffer) else {
+                return
+            }
+            talkBackPlayer.start(format: format)
+        }
+        talkBackPlayer.appendSampleBuffer(sampleBuffer)
+    }
 }
 
 extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
@@ -258,8 +354,18 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
     }
 }
 
+func audioFormat(sampleBuffer: CMSampleBuffer) -> AVAudioFormat? {
+    guard var description = sampleBuffer.formatDescription?.audioStreamBasicDescription else {
+        return nil
+    }
+    return AVAudioFormat(streamDescription: &description)
+}
+
 extension AudioUnit: BufferedAudioSampleBufferDelegate {
     func didOutputBufferedSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        if cameraId == talkBackCameraId {
+            appendTalkBack(sampleBuffer: sampleBuffer)
+        }
         guard selectedBufferedAudioId == cameraId, let processor else {
             return
         }
