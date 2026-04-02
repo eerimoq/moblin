@@ -52,7 +52,7 @@ class WhepClient {
     private func startInternal() {
         stopInternal()
         ingestClient = WebrtcIngestClient(
-            clientId: streamId,
+            streamId: streamId,
             latency: latency,
             iceServers: [defaultStunServer],
             dispatchQueue: dispatchQueue,
@@ -176,35 +176,35 @@ class WhepClient {
 }
 
 extension WhepClient: WebrtcIngestClientDelegate {
-    func webrtcIngestClientOnConnected(clientId: UUID) {
-        delegate?.whepClientOnPublishStart(streamId: clientId)
+    func webrtcIngestClientOnConnected(streamId: UUID) {
+        delegate?.whepClientOnPublishStart(streamId: streamId)
     }
 
-    func webrtcIngestClientOnDisconnected(clientId: UUID, reason: String) {
-        delegate?.whepClientOnPublishStop(streamId: clientId, reason: reason)
+    func webrtcIngestClientOnDisconnected(streamId: UUID, reason: String) {
+        delegate?.whepClientOnPublishStop(streamId: streamId, reason: reason)
     }
 
-    func webrtcIngestClientOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whepClientOnVideoBuffer(streamId: clientId, sampleBuffer)
+    func webrtcIngestClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        delegate?.whepClientOnVideoBuffer(streamId: streamId, sampleBuffer)
     }
 
-    func webrtcIngestClientOnAudioBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whepClientOnAudioBuffer(streamId: clientId, sampleBuffer)
+    func webrtcIngestClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
+        delegate?.whepClientOnAudioBuffer(streamId: streamId, sampleBuffer)
     }
 
     func webrtcIngestClientSetTargetLatencies(
-        clientId: UUID,
+        streamId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
         delegate?.whepClientSetTargetLatencies(
-            streamId: clientId,
+            streamId: streamId,
             videoTargetLatency,
             audioTargetLatency
         )
     }
 
-    func webrtcIngestClientOnGatheringComplete(clientId _: UUID, localDescription: String) {
+    func webrtcIngestClientOnGatheringComplete(streamId _: UUID, localDescription: String) {
         sendOffer(localDescription)
     }
 }
