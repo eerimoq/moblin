@@ -70,11 +70,7 @@ class WhepClient {
                 name: "video",
                 profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f"
             )
-            rtcSetH264Depacketizer(videoTrackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
-            rtcChainRtcpReceivingSession(videoTrackId)
-            rtcSetFrameCallback(videoTrackId) { _, _, _, _, _ in
-                logger.info("xxx got video frame")
-            }
+            ingestClient.setTrackCodec(trackId: videoTrackId, description: "h264")
             let audioTrackId = try ingestClient.addRecvOnlyTrack(
                 codec: RTC_CODEC_OPUS,
                 payloadType: 111,
@@ -82,11 +78,7 @@ class WhepClient {
                 name: "audio",
                 profile: ""
             )
-            rtcSetOpusDepacketizer(audioTrackId)
-            rtcChainRtcpReceivingSession(audioTrackId)
-            rtcSetFrameCallback(audioTrackId) { _, _, _, _, _ in
-                logger.info("xxx got audio frame")
-            }
+            ingestClient.setTrackCodec(trackId: audioTrackId, description: "opus")
             try ingestClient.setLocalDescription("offer")
         } catch {
             logger.info("whep-client: \(streamId): Failed to create offer: \(error)")

@@ -150,6 +150,44 @@ final class WebrtcIngestClient {
         stopInternal()
     }
 
+    func setTrackCodec(trackId: Int32, description: String) {
+        let descriptionLower = description.lowercased()
+        let clientPointer = Unmanaged.passRetained(self).toOpaque()
+        rtcSetUserPointer(trackId, clientPointer)
+        if let videoCodec = VideoCodec(trackDescription: descriptionLower) {
+            self.videoCodec = videoCodec
+            switch videoCodec {
+            case .h264:
+                rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            case .h265:
+                rtcSetH265Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            }
+            rtcChainRtcpReceivingSession(trackId)
+            rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
+                guard let data, size > 0, let info, let pointer else {
+                    return
+                }
+                let frameData = Data(bytes: data, count: Int(size))
+                let timestampSeconds = info.pointee.timestampSeconds
+                toIngestClient(pointer: pointer)?.handleVideoMessage(data: frameData,
+                                                                     timestampSeconds: timestampSeconds)
+            }
+        } else if descriptionLower.contains("opus") {
+            setupOpusDecoder()
+            rtcSetOpusDepacketizer(trackId)
+            rtcChainRtcpReceivingSession(trackId)
+            rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
+                guard let data, size > 0, let info, let pointer else {
+                    return
+                }
+                let frameData = Data(bytes: data, count: Int(size))
+                let timestampSeconds = info.pointee.timestampSeconds
+                toIngestClient(pointer: pointer)?.handleAudioMessage(data: frameData,
+                                                                     timestampSeconds: timestampSeconds)
+            }
+        }
+    }
+
     private func stopInternal(reason: String? = nil) {
         videoDecoder?.stopRunning()
         videoDecoder = nil
@@ -226,42 +264,7 @@ final class WebrtcIngestClient {
         var descBuffer = [CChar](repeating: 0, count: 4096)
         let descSize = rtcGetTrackDescription(trackId, &descBuffer, Int32(descBuffer.count))
         let description = descSize > 0 ? String(cString: descBuffer) : ""
-        let descriptionLower = description.lowercased()
-        let clientPointer = Unmanaged.passRetained(self).toOpaque()
-        rtcSetUserPointer(trackId, clientPointer)
-        if let videoCodec = VideoCodec(trackDescription: descriptionLower) {
-            self.videoCodec = videoCodec
-            switch videoCodec {
-            case .h264:
-                rtcSetH264Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
-            case .h265:
-                rtcSetH265Depacketizer(trackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
-            }
-            rtcChainRtcpReceivingSession(trackId)
-            rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
-                logger.info("xxx got frame")
-                guard let data, size > 0, let info, let pointer else {
-                    return
-                }
-                let frameData = Data(bytes: data, count: Int(size))
-                let timestampSeconds = info.pointee.timestampSeconds
-                toIngestClient(pointer: pointer)?.handleVideoMessage(data: frameData,
-                                                                     timestampSeconds: timestampSeconds)
-            }
-        } else if descriptionLower.contains("opus") {
-            setupOpusDecoder()
-            rtcSetOpusDepacketizer(trackId)
-            rtcChainRtcpReceivingSession(trackId)
-            rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
-                guard let data, size > 0, let info, let pointer else {
-                    return
-                }
-                let frameData = Data(bytes: data, count: Int(size))
-                let timestampSeconds = info.pointee.timestampSeconds
-                toIngestClient(pointer: pointer)?.handleAudioMessage(data: frameData,
-                                                                     timestampSeconds: timestampSeconds)
-            }
-        }
+        setTrackCodec(trackId: trackId, description: description)
     }
 
     private func handleVideoMessage(data: Data, timestampSeconds: Double) {
