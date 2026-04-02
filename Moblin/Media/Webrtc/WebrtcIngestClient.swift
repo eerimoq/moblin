@@ -3,9 +3,7 @@ import CoreMedia
 import DataChannel
 import libdatachannel
 
-let webRTCIngestDispatchQueue = DispatchQueue(label: "com.eerimoq.webrtc-ingest")
-
-protocol WebRTCIngestClientDelegate: AnyObject {
+protocol WebrtcIngestClientDelegate: AnyObject {
     func webRTCIngestClientOnConnected(clientId: UUID)
     func webRTCIngestClientOnDisconnected(clientId: UUID, reason: String)
     func webRTCIngestClientOnVideoBuffer(clientId: UUID, _ sampleBuffer: CMSampleBuffer)
@@ -44,7 +42,7 @@ final class WebRTCIngestClient {
     let clientId: UUID
     private let latency: Double
     private(set) var peerConnectionId: Int32 = -1
-    weak var delegate: WebRTCIngestClientDelegate?
+    weak var delegate: WebrtcIngestClientDelegate?
     private var connected = false
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?
@@ -60,7 +58,7 @@ final class WebRTCIngestClient {
     let dispatchQueue: DispatchQueue
 
     init(clientId: UUID, latency: Double, iceServers: [String],
-         dispatchQueue: DispatchQueue, delegate: WebRTCIngestClientDelegate)
+         dispatchQueue: DispatchQueue, delegate: WebrtcIngestClientDelegate)
     {
         self.clientId = clientId
         self.latency = latency

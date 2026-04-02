@@ -53,7 +53,7 @@ final class WhipServerClient {
     }
 }
 
-extension WhipServerClient: WebRTCIngestClientDelegate {
+extension WhipServerClient: WebrtcIngestClientDelegate {
     func webRTCIngestClientOnConnected(clientId: UUID) {
         delegate?.whipServerClientOnConnected(streamId: clientId)
     }

@@ -170,7 +170,7 @@ class WhepClient {
     }
 }
 
-extension WhepClient: WebRTCIngestClientDelegate {
+extension WhepClient: WebrtcIngestClientDelegate {
     func webRTCIngestClientOnConnected(clientId: UUID) {
         delegate?.whepClientOnPublishStart(streamId: clientId)
     }
