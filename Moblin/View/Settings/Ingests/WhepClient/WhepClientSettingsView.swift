@@ -13,6 +13,9 @@ struct WhepClientSettingsView: View {
         NavigationLink {
             Form {
                 Section {
+                    Text(String("VERY ENIPMERXETAL!!! DO NOT USE!!!"))
+                }
+                Section {
                     Text("The WHEP client allows Moblin to receive video streams from a WHEP endpoint.")
                 }
                 Section {
