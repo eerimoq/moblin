@@ -58,7 +58,40 @@ class WhepClient {
             dispatchQueue: dispatchQueue,
             delegate: self
         )
-        connect()
+        guard let ingestClient else {
+            return
+        }
+        do {
+            try ingestClient.createPeerConnection()
+            let videoTrackId = try ingestClient.addRecvOnlyTrack(
+                codec: RTC_CODEC_H264,
+                payloadType: 96,
+                mid: "0",
+                name: "video",
+                profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f"
+            )
+            rtcSetH264Depacketizer(videoTrackId, RTC_NAL_SEPARATOR_LONG_START_SEQUENCE)
+            rtcChainRtcpReceivingSession(videoTrackId)
+            rtcSetFrameCallback(videoTrackId) { _, _, _, _, _ in
+                logger.info("xxx got video frame")
+            }
+            let audioTrackId = try ingestClient.addRecvOnlyTrack(
+                codec: RTC_CODEC_OPUS,
+                payloadType: 111,
+                mid: "1",
+                name: "audio",
+                profile: ""
+            )
+            rtcSetOpusDepacketizer(audioTrackId)
+            rtcChainRtcpReceivingSession(audioTrackId)
+            rtcSetFrameCallback(audioTrackId) { _, _, _, _, _ in
+                logger.info("xxx got audio frame")
+            }
+            try ingestClient.setLocalDescription("offer")
+        } catch {
+            logger.info("whep-client: \(streamId): Failed to create offer: \(error)")
+            stopInternal()
+        }
     }
 
     private func stopInternal() {
@@ -68,33 +101,6 @@ class WhepClient {
         sessionUrl = nil
         ingestClient?.stop()
         ingestClient = nil
-    }
-
-    private func connect() {
-        guard let ingestClient else {
-            return
-        }
-        do {
-            try ingestClient.createPeerConnection()
-            _ = try ingestClient.addRecvOnlyTrack(
-                codec: RTC_CODEC_H264,
-                payloadType: 96,
-                mid: "0",
-                name: "video",
-                profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f"
-            )
-            _ = try ingestClient.addRecvOnlyTrack(
-                codec: RTC_CODEC_OPUS,
-                payloadType: 111,
-                mid: "1",
-                name: "audio",
-                profile: ""
-            )
-            try ingestClient.setLocalDescription("offer")
-        } catch {
-            logger.info("whep-client: \(streamId): Failed to create offer: \(error)")
-            stopInternal()
-        }
     }
 
     private func sendOffer(_ offer: String) {
@@ -111,46 +117,21 @@ class WhepClient {
     }
 
     private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
-        if let error {
-            logger.info("whep-client: \(streamId): Offer request failed: \(error.localizedDescription)")
+        guard error == nil,
+              let response = response?.http,
+              response.isSuccessful,
+              let data,
+              let answer = String(data: data, encoding: .utf8)
+        else {
+            logger.info("whep-client: \(streamId): HTTP response not ok")
             stopInternal()
-            delegate?.whepClientOnPublishStop(
-                streamId: streamId,
-                reason: "Offer request failed: \(error.localizedDescription)"
-            )
-            return
-        }
-        guard let response = response as? HTTPURLResponse else {
-            logger.info("whep-client: \(streamId): Bad server response")
-            stopInternal()
-            delegate?.whepClientOnPublishStop(
-                streamId: streamId,
-                reason: "Bad server response"
-            )
-            return
-        }
-        guard (200 ... 299).contains(response.statusCode) else {
-            logger.info("whep-client: \(streamId): Server returned HTTP status \(response.statusCode)")
-            stopInternal()
-            delegate?.whepClientOnPublishStop(
-                streamId: streamId,
-                reason: "Server returned HTTP status \(response.statusCode)"
-            )
+            delegate?.whepClientOnPublishStop(streamId: streamId, reason: "HTTP response not ok")
             return
         }
         if let locationHeader = response.value(forHTTPHeaderField: "Location") {
             sessionUrl = URL(string: locationHeader, relativeTo: url)
         }
-        guard let data, let answer = String(data: data, encoding: .utf8) else {
-            logger.info("whep-client: \(streamId): Answer missing in response")
-            stopInternal()
-            delegate?.whepClientOnPublishStop(
-                streamId: streamId,
-                reason: "Answer missing in response"
-            )
-            return
-        }
-        logger.info("whep-client: \(streamId): Got answer")
+        logger.info("whep-client: \(streamId): Got answer \(answer)")
         do {
             try ingestClient?.setRemoteDescription(answer, type: "answer")
         } catch {

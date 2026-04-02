@@ -114,8 +114,11 @@ final class WebrtcIngestClient {
         return String(cString: buffer)
     }
 
-    func addRecvOnlyTrack(codec: rtcCodec, payloadType: Int32, mid: String,
-                          name: String, profile: String) throws -> Int32
+    func addRecvOnlyTrack(codec: rtcCodec,
+                          payloadType: Int32,
+                          mid: String,
+                          name: String,
+                          profile: String) throws -> Int32
     {
         return try mid.withCString { midCStr in
             try name.withCString { nameCStr in
@@ -236,6 +239,7 @@ final class WebrtcIngestClient {
             }
             rtcChainRtcpReceivingSession(trackId)
             rtcSetFrameCallback(trackId) { _, data, size, info, pointer in
+                logger.info("xxx got frame")
                 guard let data, size > 0, let info, let pointer else {
                     return
                 }
