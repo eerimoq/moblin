@@ -127,7 +127,7 @@ class WhipServer {
     {
         let client = WhipServerClient(streamId: stream.id,
                                       latency: stream.latencySeconds(),
-                                      iceServers: ["stun:stun.l.google.com:19302"],
+                                      iceServers: [defaultStunServer],
                                       delegate: self)
         let streamId = client.streamId
         clients[streamId] = client

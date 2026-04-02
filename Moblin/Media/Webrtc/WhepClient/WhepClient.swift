@@ -52,7 +52,7 @@ class WhepClient {
         ingestClient = WebrtcIngestClient(
             clientId: streamId,
             latency: latency,
-            iceServers: ["stun:stun.l.google.com:19302"],
+            iceServers: [defaultStunServer],
             dispatchQueue: dispatchQueue,
             delegate: self
         )

@@ -638,7 +638,7 @@ final class Media: NSObject {
         adaptiveBitrate = nil
         whipStream?.start(url: url,
                           headers: headers,
-                          iceServers: ["stun:stun.l.google.com:19302"],
+                          iceServers: [defaultStunServer],
                           videoCodec: videoCodec,
                           audioCodec: audioCodec,
                           videoBitrate: videoBitrate)
