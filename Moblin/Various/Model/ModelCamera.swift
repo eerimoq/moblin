@@ -630,6 +630,8 @@ extension Model {
             return .rtsp(id: id)
         } else if let id = getWhipStream(idString: cameraId)?.id {
             return .whip(id: id)
+        } else if let id = getWhepStream(idString: cameraId)?.id {
+            return .whep(id: id)
         } else if let id = getMediaPlayer(idString: cameraId)?.id {
             return .mediaPlayer(id: id)
         } else if isBackCamera(cameraId: cameraId) {

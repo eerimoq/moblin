@@ -77,6 +77,13 @@ class WhepClient {
         do {
             try ingestClient.createPeerConnection()
             _ = try ingestClient.addRecvOnlyTrack(
+                codec: RTC_CODEC_H264,
+                payloadType: 96,
+                mid: "0",
+                name: "video",
+                profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f"
+            )
+            _ = try ingestClient.addRecvOnlyTrack(
                 codec: RTC_CODEC_OPUS,
                 payloadType: 111,
                 mid: "1",
