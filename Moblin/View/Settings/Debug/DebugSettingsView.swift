@@ -109,6 +109,7 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
+                Toggle(String("48 kHz preferred sample rate"), isOn: $debug.setPreferredSampleRate)
             } header: {
                 Text("Experimental")
             }

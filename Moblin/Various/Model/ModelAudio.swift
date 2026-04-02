@@ -72,6 +72,7 @@ extension Model {
 
     func setupAudioSession() {
         let bluetoothOutputOnly = database.debug.bluetoothOutputOnly
+        let setPreferredSampleRate = database.debug.setPreferredSampleRate
         processorControlQueue.async {
             let session = AVAudioSession.sharedInstance()
             do {
@@ -93,7 +94,11 @@ extension Model {
                     .playAndRecord,
                     options: [.mixWithOthers, bluetoothOption, .defaultToSpeaker]
                 )
+                if setPreferredSampleRate {
+                    try session.setPreferredSampleRate(48000)
+                }
                 try session.setActive(true)
+                logger.info("audio: Preferred sample rate: \(session.preferredSampleRate)")
             } catch {
                 self.makeErrorToastMain(title: "Audio session setup failed",
                                         subTitle: error.localizedDescription)
