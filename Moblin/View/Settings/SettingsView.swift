@@ -81,7 +81,7 @@ struct SettingsView: View {
                                              mics: database.mics,
                                              talkBack: database.talkBack)
                     } label: {
-                        Label("Talk back", systemImage: "video.bubble")
+                        Label("Talk back", systemImage: "speaker.wave.2.bubble.left")
                     }
                 }
                 NavigationLink {
