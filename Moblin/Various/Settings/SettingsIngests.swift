@@ -415,3 +415,68 @@ class SettingsWhipServer: Codable, ObservableObject {
         return new
     }
 }
+
+class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var url: String = ""
+    @Published var enabled: Bool = false
+    @Published var latency: Int32 = 100
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             url,
+             enabled,
+             latency
+    }
+
+    func latencySeconds() -> Double {
+        return Double(latency) / 1000
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+        try container.encode(.enabled, enabled)
+        try container.encode(.latency, latency)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        url = container.decode(.url, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        latency = container.decode(.latency, Int32.self, 100)
+    }
+
+    func camera() -> String {
+        return whepCamera(name: name)
+    }
+}
+
+class SettingsWhepClient: Codable, ObservableObject {
+    @Published var streams: [SettingsWhepClientStream] = []
+
+    enum CodingKeys: CodingKey {
+        case streams
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streams = container.decode(.streams, [SettingsWhepClientStream].self, [])
+    }
+}

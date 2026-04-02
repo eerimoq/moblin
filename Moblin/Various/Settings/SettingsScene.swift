@@ -1522,6 +1522,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
              ristCameraId,
              rtspCameraId,
              whipCameraId,
+             whepCameraId,
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
@@ -1546,6 +1547,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.ristCameraId, videoSource.ristCameraId)
         try container.encode(.rtspCameraId, videoSource.rtspCameraId)
         try container.encode(.whipCameraId, videoSource.whipCameraId)
+        try container.encode(.whepCameraId, videoSource.whepCameraId)
         try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
         try container.encode(.externalCameraId, videoSource.externalCameraId)
         try container.encode(.externalCameraName, videoSource.externalCameraName)
@@ -1568,6 +1570,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
         videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
         videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
+        videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
         videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
         videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
@@ -1605,6 +1608,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
              ristCameraId,
              rtspCameraId,
              whipCameraId,
+             whepCameraId,
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
@@ -1625,6 +1629,8 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         try container.encode(.srtlaCameraId, videoSource.srtlaCameraId)
         try container.encode(.ristCameraId, videoSource.ristCameraId)
         try container.encode(.rtspCameraId, videoSource.rtspCameraId)
+        try container.encode(.whipCameraId, videoSource.whipCameraId)
+        try container.encode(.whepCameraId, videoSource.whepCameraId)
         try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
         try container.encode(.externalCameraId, videoSource.externalCameraId)
         try container.encode(.externalCameraName, videoSource.externalCameraName)
@@ -1644,6 +1650,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
         videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
         videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
+        videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
         videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
         videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
@@ -2315,6 +2322,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case rist = "RIST"
     case rtsp = "RTSP"
     case whip = "WHIP"
+    case whep = "WHEP"
     case mediaPlayer = "Media player"
     case screenCapture = "Screen capture"
     case backTripleLowEnergy = "Back triple"
@@ -2349,6 +2357,7 @@ struct SettingsVideoSource {
     var ristCameraId: UUID = .init()
     var rtspCameraId: UUID = .init()
     var whipCameraId: UUID = .init()
+    var whepCameraId: UUID = .init()
     var mediaPlayerCameraId: UUID = .init()
     var externalCameraId: String = ""
     var externalCameraName: String = ""
@@ -2371,6 +2380,8 @@ struct SettingsVideoSource {
             return .rtsp(id: rtspCameraId)
         case .whip:
             return .whip(id: whipCameraId)
+        case .whep:
+            return .whep(id: whepCameraId)
         case .mediaPlayer:
             return .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
@@ -2409,6 +2420,9 @@ struct SettingsVideoSource {
         case let .whip(id: id):
             cameraPosition = .whip
             whipCameraId = id
+        case let .whep(id: id):
+            cameraPosition = .whep
+            whepCameraId = id
         case let .mediaPlayer(id: id):
             cameraPosition = .mediaPlayer
             mediaPlayerCameraId = id
@@ -2473,6 +2487,8 @@ struct SettingsVideoSource {
             return cameraId == rtspCameraId
         case .whip:
             return cameraId == whipCameraId
+        case .whep:
+            return cameraId == whepCameraId
         default:
             return false
         }
@@ -2505,6 +2521,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
              ristCameraId,
              rtspCameraId,
              whipCameraId,
+             whepCameraId,
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
@@ -2536,6 +2553,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         try container.encode(.ristCameraId, videoSource.ristCameraId)
         try container.encode(.rtspCameraId, videoSource.rtspCameraId)
         try container.encode(.whipCameraId, videoSource.whipCameraId)
+        try container.encode(.whepCameraId, videoSource.whepCameraId)
         try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
         try container.encode(.externalCameraId, videoSource.externalCameraId)
         try container.encode(.externalCameraName, videoSource.externalCameraName)
@@ -2563,6 +2581,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
         videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
         videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
+        videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
         videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
         videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")
@@ -3296,6 +3315,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
              ristCameraId,
              rtspCameraId,
              whipCameraId,
+             whepCameraId,
              mediaPlayerCameraId,
              externalCameraId,
              externalCameraName,
@@ -3322,6 +3342,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.ristCameraId, videoSource.ristCameraId)
         try container.encode(.rtspCameraId, videoSource.rtspCameraId)
         try container.encode(.whipCameraId, videoSource.whipCameraId)
+        try container.encode(.whepCameraId, videoSource.whepCameraId)
         try container.encode(.mediaPlayerCameraId, videoSource.mediaPlayerCameraId)
         try container.encode(.externalCameraId, videoSource.externalCameraId)
         try container.encode(.externalCameraName, videoSource.externalCameraName)
@@ -3352,6 +3373,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         videoSource.ristCameraId = container.decode(.ristCameraId, UUID.self, .init())
         videoSource.rtspCameraId = container.decode(.rtspCameraId, UUID.self, .init())
         videoSource.whipCameraId = container.decode(.whipCameraId, UUID.self, .init())
+        videoSource.whepCameraId = container.decode(.whepCameraId, UUID.self, .init())
         videoSource.mediaPlayerCameraId = container.decode(.mediaPlayerCameraId, UUID.self, .init())
         videoSource.externalCameraId = container.decode(.externalCameraId, String.self, "")
         videoSource.externalCameraName = container.decode(.externalCameraName, String.self, "")

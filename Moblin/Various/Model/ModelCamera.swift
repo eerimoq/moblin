@@ -572,6 +572,9 @@ extension Model {
         cameras += whipCameras().map {
             ($0.0.uuidString, $0.1)
         }
+        cameras += whepCameras().map {
+            ($0.0.uuidString, $0.1)
+        }
         cameras += playerCameras().map {
             ($0.0.uuidString, $0.1)
         }
@@ -663,6 +666,8 @@ extension Model {
             return id.uuidString
         case let .whip(id: id):
             return id.uuidString
+        case let .whep(id: id):
+            return id.uuidString
         case let .mediaPlayer(id):
             return id.uuidString
         case let .external(id, _):
@@ -715,6 +720,8 @@ extension Model {
             return getRtspStream(id: id)?.camera() ?? unknownSad
         case let .whip(id):
             return getWhipStream(id: id)?.camera() ?? unknownSad
+        case let .whep(id):
+            return getWhepStream(id: id)?.camera() ?? unknownSad
         case let .mediaPlayer(id):
             return getMediaPlayer(id: id)?.camera() ?? unknownSad
         case let .external(_, name):
@@ -825,6 +832,8 @@ extension Model {
         case let .rtsp(id: id):
             return id
         case let .whip(id: id):
+            return id
+        case let .whep(id: id):
             return id
         case let .mediaPlayer(id: id):
             return id

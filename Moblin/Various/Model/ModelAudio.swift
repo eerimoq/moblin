@@ -173,6 +173,7 @@ extension Model {
                 || mic.isRist()
                 || mic.isRtsp()
                 || mic.isWhip()
+                || mic.isWhep()
                 || mic.isMediaPlayer(), !foundMics.contains(mic)
             {
                 continue
@@ -464,6 +465,7 @@ extension Model {
         listSrtlaMics(&mics)
         listRtmpMics(&mics)
         listWhipMics(&mics)
+        listWhepMics(&mics)
         listAudioSessionMics(&mics)
         return mics
     }
@@ -475,6 +477,7 @@ extension Model {
         listSrtlaMics(&mics)
         listRtmpMics(&mics)
         listWhipMics(&mics)
+        listWhepMics(&mics)
         processorControlQueue.async {
             self.listAudioSessionMics(&mics)
             DispatchQueue.main.async {
@@ -570,6 +573,16 @@ extension Model {
             mic.name = stream.camera()
             mic.inputUid = stream.id.uuidString
             mic.connected = isWhipStreamConnected(streamId: stream.id)
+            mics.append(mic)
+        }
+    }
+
+    private func listWhepMics(_ mics: inout [SettingsMicsMic]) {
+        for stream in database.whepClient.streams {
+            let mic = SettingsMicsMic()
+            mic.name = stream.camera()
+            mic.inputUid = stream.id.uuidString
+            mic.connected = isWhepStreamConnected(streamId: stream.id)
             mics.append(mic)
         }
     }

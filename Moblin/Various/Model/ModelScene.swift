@@ -257,6 +257,8 @@ extension Model {
             attachBufferedCamera(cameraId: scene.videoSource.rtspCameraId, scene: scene)
         case .whip:
             attachBufferedCamera(cameraId: scene.videoSource.whipCameraId, scene: scene)
+        case .whep:
+            attachBufferedCamera(cameraId: scene.videoSource.whepCameraId, scene: scene)
         case .mediaPlayer:
             mediaPlayers[scene.videoSource.mediaPlayerCameraId]?.activate()
             attachBufferedCamera(cameraId: scene.videoSource.mediaPlayerCameraId, scene: scene)
@@ -437,6 +439,10 @@ extension Model {
             return activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
         case .rtsp:
             return activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
+        case .whip:
+            return activeBufferedVideoIds.contains(scene.videoSource.whipCameraId)
+        case .whep:
+            return activeBufferedVideoIds.contains(scene.videoSource.whepCameraId)
         case .external:
             return isExternalCameraConnected(id: scene.videoSource.externalCameraId)
         default:

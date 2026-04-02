@@ -54,6 +54,9 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
         if isWhipCameraOrMic(camera: name) {
             return false
         }
+        if isWhepCameraOrMic(camera: name) {
+            return false
+        }
         if isMediaPlayerCameraOrMic(camera: name) {
             return false
         }
@@ -80,8 +83,12 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
         return isWhipCameraOrMic(camera: name)
     }
 
+    func isWhep() -> Bool {
+        return isWhepCameraOrMic(camera: name)
+    }
+
     func isNetwork() -> Bool {
-        return isRtmp() || isSrtla() || isRist() || isRtsp() || isWhip()
+        return isRtmp() || isSrtla() || isRist() || isRtsp() || isWhip() || isWhep()
     }
 
     func isMediaPlayer() -> Bool {

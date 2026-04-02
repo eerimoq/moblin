@@ -17,6 +17,7 @@ enum SettingsCameraId {
     case rist(id: UUID)
     case rtsp(id: UUID)
     case whip(id: UUID)
+    case whep(id: UUID)
     case mediaPlayer(id: UUID)
     case external(id: String, name: String)
     case screenCapture
@@ -1163,6 +1164,7 @@ class Database: Codable, ObservableObject {
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
     var whipServer: SettingsWhipServer = .init()
+    var whepClient: SettingsWhepClient = .init()
     var navigation: SettingsNavigation = .init()
     var wiFiAware: SettingsWiFiAware = .init()
     var face: SettingsFace = .init()
@@ -1269,6 +1271,7 @@ class Database: Codable, ObservableObject {
              disconnectProtection,
              rtspClient,
              whipServer,
+             whepClient,
              navigation,
              wiFiAware,
              face,
@@ -1346,6 +1349,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
         try container.encode(.whipServer, whipServer)
+        try container.encode(.whepClient, whepClient)
         try container.encode(.navigation, navigation)
         try container.encode(.wiFiAware, wiFiAware)
         try container.encode(.face, face)
@@ -1473,6 +1477,7 @@ class Database: Codable, ObservableObject {
         )
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
         whipServer = container.decode(.whipServer, SettingsWhipServer.self, .init())
+        whepClient = container.decode(.whepClient, SettingsWhepClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
         face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved

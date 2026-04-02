@@ -150,6 +150,7 @@ class Ingests: ObservableObject {
     var rist: RistServer?
     var rtsp: [RtspClient] = []
     var whip: WhipServer?
+    var whep: [WhepClient] = []
     @Published var speedAndTotal = noValue
 }
 
@@ -1079,6 +1080,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         reloadRistServer()
         reloadRtspClient()
         reloadWhipServer()
+        reloadWhepClient()
         setupPictureInPicture()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
@@ -1430,6 +1432,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadRistServer()
             reloadRtspClient()
             reloadWhipServer()
+            reloadWhepClient()
             chatTextToSpeech.reset(running: true)
             startWeatherManager()
             startGeographyManager()
@@ -1479,6 +1482,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopRtmpServer()
         stopSrtlaServer()
         stopRtspClient()
+        stopWhepClient()
         teardownAudioSession()
         chatTextToSpeech.reset(running: false)
         locationManager.stop()
