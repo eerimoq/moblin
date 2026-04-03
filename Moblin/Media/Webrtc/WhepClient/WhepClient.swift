@@ -26,6 +26,7 @@ class WhepClient {
     private var sessionUrl: URL?
     private var started = false
     private var reconnectTimer = SimpleTimer(queue: dispatchQueue)
+    private var connected: Bool = false
 
     init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool) {
         self.streamId = streamId
@@ -108,18 +109,19 @@ class WhepClient {
         sessionUrl = nil
         ingestClient?.stop()
         ingestClient = nil
+        connected = false
     }
 
     private func reconnectSoon() {
         stopInternal()
-        logger.info("whep-client: \(streamId): Reconnecting in \(reconnectDelay) seconds")
+        logger.debug("whep-client: \(streamId): Reconnecting in \(reconnectDelay) seconds")
         reconnectTimer.startSingleShot(timeout: reconnectDelay) { [weak self] in
             self?.startInternal()
         }
     }
 
     private func sendOffer(_ offer: String) {
-        logger.info("whep-client: \(streamId): Sending offer to \(url.absoluteString)")
+        logger.debug("whep-client: \(streamId): Sending offer to \(url.absoluteString)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
@@ -145,7 +147,7 @@ class WhepClient {
         if let locationHeader = response.value(forHTTPHeaderField: "Location") {
             sessionUrl = URL(string: locationHeader, relativeTo: url)
         }
-        logger.info("whep-client: \(streamId): Got answer \(answer)")
+        logger.debug("whep-client: \(streamId): Got answer \(answer)")
         do {
             try ingestClient?.setRemoteDescription(answer, type: "answer")
         } catch {
@@ -163,11 +165,15 @@ class WhepClient {
 
 extension WhepClient: WebrtcIngestClientDelegate {
     func webrtcIngestClientOnConnected(streamId: UUID) {
+        connected = true
         delegate?.whepClientOnPublishStart(streamId: streamId)
     }
 
     func webrtcIngestClientOnDisconnected(streamId: UUID, reason: String) {
-        delegate?.whepClientOnPublishStop(streamId: streamId, reason: reason)
+        if connected {
+            delegate?.whepClientOnPublishStop(streamId: streamId, reason: reason)
+            connected = false
+        }
         reconnectSoon()
     }
 
