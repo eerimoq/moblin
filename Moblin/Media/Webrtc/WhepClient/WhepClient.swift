@@ -2,6 +2,7 @@ import CoreMedia
 import libdatachannel
 
 private let dispatchQueue = DispatchQueue(label: "com.eerimoq.whep-client")
+private let reconnectDelay = 5.0
 
 protocol WhepClientDelegate: AnyObject {
     func whepClientOnPublishStart(streamId: UUID)
@@ -23,6 +24,8 @@ class WhepClient {
     weak var delegate: (any WhepClientDelegate)?
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
+    private var started = false
+    private var reconnectTimer = SimpleTimer(queue: dispatchQueue)
 
     init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool) {
         self.streamId = streamId
@@ -34,6 +37,7 @@ class WhepClient {
     func start() {
         dispatchQueue.async {
             logger.info("whep-client: \(self.streamId): Start")
+            self.started = true
             self.startInternal()
         }
     }
@@ -41,6 +45,7 @@ class WhepClient {
     func stop() {
         dispatchQueue.async {
             logger.info("whep-client: \(self.streamId): Stop")
+            self.started = false
             self.stopInternal()
         }
     }
@@ -52,6 +57,9 @@ class WhepClient {
     }
 
     private func startInternal() {
+        guard started else {
+            return
+        }
         stopInternal()
         ingestClient = WebrtcIngestClient(
             streamId: streamId,
@@ -93,12 +101,21 @@ class WhepClient {
     }
 
     private func stopInternal() {
+        reconnectTimer.stop()
         if let sessionUrl {
             sendDeleteRequest(url: sessionUrl)
         }
         sessionUrl = nil
         ingestClient?.stop()
         ingestClient = nil
+    }
+
+    private func reconnectSoon() {
+        stopInternal()
+        logger.info("whep-client: \(streamId): Reconnecting in \(reconnectDelay) seconds")
+        reconnectTimer.startSingleShot(timeout: reconnectDelay) { [weak self] in
+            self?.startInternal()
+        }
     }
 
     private func sendOffer(_ offer: String) {
@@ -122,8 +139,7 @@ class WhepClient {
               let answer = String(data: data, encoding: .utf8)
         else {
             logger.info("whep-client: \(streamId): HTTP response not ok")
-            stopInternal()
-            delegate?.whepClientOnPublishStop(streamId: streamId, reason: "HTTP response not ok")
+            reconnectSoon()
             return
         }
         if let locationHeader = response.value(forHTTPHeaderField: "Location") {
@@ -134,11 +150,7 @@ class WhepClient {
             try ingestClient?.setRemoteDescription(answer, type: "answer")
         } catch {
             logger.info("whep-client: \(streamId): Failed to set remote answer: \(error)")
-            stopInternal()
-            delegate?.whepClientOnPublishStop(
-                streamId: streamId,
-                reason: "Failed to set remote answer"
-            )
+            reconnectSoon()
         }
     }
 
@@ -146,11 +158,6 @@ class WhepClient {
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         URLSession.shared.dataTask(with: request) { _, _, _ in }.resume()
-    }
-
-    private func whepClientConnectionOnDisconnected(streamId: UUID, reason: String) {
-        stopInternal()
-        delegate?.whepClientOnPublishStop(streamId: streamId, reason: reason)
     }
 }
 
@@ -161,6 +168,7 @@ extension WhepClient: WebrtcIngestClientDelegate {
 
     func webrtcIngestClientOnDisconnected(streamId: UUID, reason: String) {
         delegate?.whepClientOnPublishStop(streamId: streamId, reason: reason)
+        reconnectSoon()
     }
 
     func webrtcIngestClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
