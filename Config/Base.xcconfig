@@ -1,3 +1,4 @@
 #include "User.xcconfig"
 
 MARKETING_VERSION = 33.2.0
+CURRENT_PROJECT_VERSION = 7
