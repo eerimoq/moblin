@@ -205,7 +205,7 @@ class SrtStreamOfficial {
 }
 
 extension SrtStreamOfficial: MpegTsWriterDelegate {
-    func writer(_: MpegTsWriter, doOutput data: Data) {
+    func writer(_: MpegTsWriter, doOutput data: Data, containsAudio _: Bool) {
         if data.withUnsafeBytes({ pointer in
             guard let buffer = pointer.baseAddress?.assumingMemoryBound(to: CChar.self) else {
                 logger.info("srt: error buffer size \(data.count)")
