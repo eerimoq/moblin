@@ -41,13 +41,13 @@ class SrtStreamMoblin {
         return srtSender?.getPerformanceData()
     }
 
-    private func write(data: Data) {
+    private func write(data: Data, containsAudio: Bool) {
         data.withUnsafeBytes { buffer in
-            write(buffer: buffer)
+            write(buffer: buffer, containsAudio: containsAudio)
         }
     }
 
-    private func write(buffer: UnsafeRawBufferPointer) {
+    private func write(buffer: UnsafeRawBufferPointer, containsAudio: Bool) {
         guard let srtSender else {
             return
         }
@@ -56,16 +56,16 @@ class SrtStreamMoblin {
             let length = min(payloadSize, buffer.count - offset)
             let payload = UnsafeRawBufferPointer(rebasing: buffer[offset ..< offset + length])
             let packet = srtSender.newDataPacket(payload: payload)
-            srtSender.enqueue(packet: packet, now: now)
+            srtSender.enqueue(packet: packet, now: now, containsAudio: containsAudio)
         }
         srtSender.send(now: now)
     }
 }
 
 extension SrtStreamMoblin: MpegTsWriterDelegate {
-    func writer(_: MpegTsWriter, doOutput data: Data) {
+    func writer(_: MpegTsWriter, doOutput data: Data, containsAudio: Bool) {
         srtlaClientQueue.async {
-            self.write(data: data)
+            self.write(data: data, containsAudio: containsAudio)
         }
     }
 
