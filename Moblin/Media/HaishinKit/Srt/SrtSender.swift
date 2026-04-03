@@ -319,13 +319,13 @@ class SrtSender {
         var numberOfPacketsToSend = sequenceNumbersToRetransmit.count + packetsToSend.count
         numberOfPacketsToSend = max(numberOfPacketsToSend / 10, min(numberOfPacketsToSend, 10))
         for _ in 0 ..< numberOfPacketsToSend {
-            if retransmitPacketIfNeeded(now: now) {
+            if let packet = packetsToSend.popFirst() {
+                sendPacket(packet: packet)
                 continue
             }
-            guard let packet = packetsToSend.popFirst() else {
+            if !retransmitPacketIfNeeded(now: now) {
                 break
             }
-            sendPacket(packet: packet)
         }
         updatePerformanceData()
     }
