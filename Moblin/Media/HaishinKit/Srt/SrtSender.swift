@@ -173,6 +173,11 @@ private enum HandshakeType: UInt32 {
     case induction = 0x0000_0001
 }
 
+private struct PendingHandshake: Equatable {
+    let peerSocketId: UInt32
+    let synCookie: UInt32
+}
+
 class SrtSender {
     weak var delegate: SrtSenderDelegate?
     private var nextSequenceNumber: UInt32 = .random(in: 0 ..< 10000)
@@ -200,6 +205,7 @@ class SrtSender {
     private let packetsToSendDropThreshold: ContinuousClock.Duration
     private var clock = SrtClock()
     private let connectTimer = SimpleTimer(queue: srtlaClientQueue)
+    private var pendingHandshake: PendingHandshake?
 
     init(streamId: String?, latency: UInt16) {
         self.streamId = streamId
@@ -213,6 +219,8 @@ class SrtSender {
         srtlaClientQueue.async {
             self.clock = SrtClock()
             self.latestReceivedPacketTime = .now
+            self.peerDestinationSrtSocketId = 0
+            self.pendingHandshake = nil
             self.setState(state: .connecting)
             self.outputPacket(packet: self.createInductionHandshakePacket())
             self.connectTimer.startSingleShot(timeout: 5) { [weak self] in
@@ -289,6 +297,7 @@ class SrtSender {
             return
         }
         connectTimer.stop()
+        pendingHandshake = nil
         setState(state: .disconnected)
         delegate?.srtSenderDisconnected()
     }
@@ -351,12 +360,14 @@ class SrtSender {
         numberOfBytesSent += UInt64(packet.count) + srtIpUdpHeaderSize
     }
 
-    private func setState(state: SrtSenderState) {
+    @discardableResult
+    private func setState(state: SrtSenderState) -> Bool {
         guard state != self.state else {
-            return
+            return false
         }
         logger.info("srt-sender: Job state change \(self.state) -> \(state)")
         self.state = state
+        return true
     }
 
     private func getNextSequenceNumber() -> UInt32 {
@@ -476,6 +487,16 @@ class SrtSender {
     }
 
     private func handleHandshakeInduction(peerSocketId: UInt32, synCookie: UInt32) {
+        guard state == .connecting else {
+            logger.debug("srt-sender: Ignoring induction while \(state)")
+            return
+        }
+        let handshake = PendingHandshake(peerSocketId: peerSocketId, synCookie: synCookie)
+        guard pendingHandshake != handshake else {
+            logger.debug("srt-sender: Ignoring duplicate induction for peer socket \(peerSocketId)")
+            return
+        }
+        pendingHandshake = handshake
         outputPacket(packet: createConclusionHandshakePacket(
             peerSocketId: peerSocketId,
             synCookie: synCookie
@@ -483,15 +504,34 @@ class SrtSender {
     }
 
     private func handleHandshakeConclusion(peerSocketId: UInt32) {
+        guard state == .connecting else {
+            logger.debug("srt-sender: Ignoring conclusion while \(state)")
+            return
+        }
+        if let pendingHandshake, pendingHandshake.peerSocketId != peerSocketId {
+            logger.debug(
+                """
+                srt-sender: Ignoring conclusion for unexpected peer socket \(peerSocketId), \
+                expected \(pendingHandshake.peerSocketId)
+                """
+            )
+            return
+        }
         peerDestinationSrtSocketId = peerSocketId
         ackAckPacket.update(destinationSocketId: peerSocketId)
         keepAlivePacket.update(destinationSocketId: peerSocketId)
+        pendingHandshake = nil
         connectTimer.stop()
-        setState(state: .connected)
-        delegate?.srtSenderConnected()
+        if setState(state: .connected) {
+            delegate?.srtSenderConnected()
+        }
     }
 
     private func handleKeepAlivePacket() {
+        guard state == .connected else {
+            logger.debug("srt-sender: Ignoring keepalive while \(state)")
+            return
+        }
         keepAlivePacket.update(timestamp: clock.timestamp())
         outputPacket(packet: keepAlivePacket.data)
     }
@@ -500,6 +540,10 @@ class SrtSender {
                                  reader: ByteReader,
                                  now: ContinuousClock.Instant) throws
     {
+        guard state == .connected else {
+            logger.debug("srt-sender: Ignoring ack while \(state)")
+            return
+        }
         let lastAcknowledgedPacketSequenceNumber = try reader.readUInt32()
         removeAckedPackets(lastAcknowledgedPacketSequenceNumber)
         if commonHeader.typeSpecificInformation != 0 {
@@ -546,6 +590,10 @@ class SrtSender {
     }
 
     private func handleNakPacket(reader: ByteReader) throws {
+        guard state == .connected else {
+            logger.debug("srt-sender: Ignoring nak while \(state)")
+            return
+        }
         // logger.info("xxx NAK packet")
         while let sequenceNumber = try? reader.readUInt32() {
             if isSrtSnRange(sn: sequenceNumber) {
@@ -578,6 +626,6 @@ class SrtSender {
     }
 
     private func handleAckAckPacket() throws {
-        throw "Got ack ack packet"
+        logger.debug("srt-sender: Ignoring ack ack while \(state)")
     }
 }

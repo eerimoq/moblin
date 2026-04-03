@@ -6,6 +6,9 @@ private class ModelMock {
     private let connected = MessageQueue<Void>()
     private let disconnected = MessageQueue<Void>()
     private let packets = MessageQueue<String>()
+    private var connectedCount = Atomic(0)
+    private var disconnectedCount = Atomic(0)
+    private var packetCount = Atomic(0)
 
     func waitForConnected() async {
         await connected.get()
@@ -18,18 +21,39 @@ private class ModelMock {
     func waitForPacket() async -> String {
         return await packets.get()
     }
+
+    func getConnectedCount() -> Int {
+        return connectedCount.value
+    }
+
+    func getDisconnectedCount() -> Int {
+        return disconnectedCount.value
+    }
+
+    func getPacketCount() -> Int {
+        return packetCount.value
+    }
 }
 
 extension ModelMock: SrtSenderDelegate {
     func srtSenderConnected() {
+        connectedCount.mutate {
+            $0 += 1
+        }
         connected.put(())
     }
 
     func srtSenderDisconnected() {
+        disconnectedCount.mutate {
+            $0 += 1
+        }
         disconnected.put(())
     }
 
     func srtSenderOutput(packet: Data) {
+        packetCount.mutate {
+            $0 += 1
+        }
         packets.put(packet.hexString())
     }
 }
@@ -48,6 +72,45 @@ struct SrtSenderSuite {
         await model.waitForConnected()
         sender.send(now: .now.advanced(by: .seconds(6)))
         await model.waitForDisconnected()
+    }
+
+    @Test
+    func duplicateInductionIsIgnored() async throws {
+        let sender = SrtSender(streamId: "1234", latency: 2000)
+        let model = ModelMock()
+        sender.delegate = model
+        sender.start()
+        _ = checkInductionHandshake(packet: await model.waitForPacket())
+        try sender.input(packet: createInductionHandshake())
+        _ = checkConclusionHandshake(packet: await model.waitForPacket())
+        #expect(model.getPacketCount() == 2)
+        try sender.input(packet: createInductionHandshake())
+        #expect(model.getPacketCount() == 2)
+        #expect(model.getConnectedCount() == 0)
+        try sender.input(packet: createConclusionHandshake())
+        #expect(model.getConnectedCount() == 1)
+        try sender.input(packet: createInductionHandshake())
+        #expect(model.getPacketCount() == 2)
+        #expect(model.getConnectedCount() == 1)
+    }
+
+    @Test
+    func duplicateConclusionIsIgnored() async throws {
+        let sender = SrtSender(streamId: "1234", latency: 2000)
+        let model = ModelMock()
+        sender.delegate = model
+        sender.start()
+        _ = checkInductionHandshake(packet: await model.waitForPacket())
+        try sender.input(packet: createInductionHandshake())
+        _ = checkConclusionHandshake(packet: await model.waitForPacket())
+        try sender.input(packet: createConclusionHandshake())
+        #expect(model.getConnectedCount() == 1)
+        #expect(model.getDisconnectedCount() == 0)
+        let packetCount = model.getPacketCount()
+        try sender.input(packet: createConclusionHandshake())
+        #expect(model.getConnectedCount() == 1)
+        #expect(model.getDisconnectedCount() == 0)
+        #expect(model.getPacketCount() == packetCount)
     }
 
     private func checkInductionHandshake(packet: String) -> (UInt32, UInt32) {

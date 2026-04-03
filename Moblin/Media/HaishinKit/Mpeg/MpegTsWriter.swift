@@ -55,6 +55,10 @@ class MpegTsWriter {
     }
 
     func startRunning() {
+        guard !isRunning else {
+            logger.debug("ts-writer: Ignoring duplicate start")
+            return
+        }
         isRunning = true
     }
 
