@@ -8,6 +8,26 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.1.0", date: "2026-04-03", changes: [
+        "• CRT TV filter quick button.",
+        "• Do not show iOS Accessibility button shapes in control bar. 💡 Gohgo",
+        "• Help for how to fix audio and video desynchronizing in recordings.",
+        "  • In Settings → Recordings → Help.",
+        "• Hide location status icon in to right by default.",
+        "• More YouTube stream scheduler help and configure button. 💡 rsil426",
+        "• Human readable recording file names.",
+        "• List and download recordings using the remote control web server. 💡 S1nGeN0r",
+        "• No whitespaces in filenames. 🐛  S1nGeN0r",
+        "• Rename Privacy quick button to Blur background. 💡 xcopy94 and others",
+        "• Inline navigation title bar to make scrolling on Mac work better.",
+        "• Make settings button easier to tap on Mac.",
+        "• Show toast when enabling Camera preview.",
+        "• Talk back. 💡 IvanV1986 and others",
+        "  • Play audio from an Ingest in your speakers.",
+        "• Experimental debug toggle to set preferred audio sample rate to 48 kHz. 💡 KristofferLislegaard",
+        "• Port 8310 by default for WHIP server. 💡 mikeful",
+        "• Optionally sync WHIP/WHEP audio and video streams to common time base.",
+    ]),
     Version(version: "33.0.0", date: "2026-03-26", changes: [
         "• Fix text widget wind unit. 🐛 kat",
         "• Export settings with file extension `.moblinSettings`.",
