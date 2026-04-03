@@ -336,6 +336,9 @@ class SrtSender {
             guard let packet = packetsInFlightBySequenceNumber[packetSequenceNumber] else {
                 continue
             }
+            if packet.createdAt.duration(to: now) > packetsInFlightDropThreshold {
+                continue
+            }
             if let retransmittedAt = packet.retransmittedAt,
                retransmittedAt.duration(to: now) < .microseconds(rttUs)
             {
