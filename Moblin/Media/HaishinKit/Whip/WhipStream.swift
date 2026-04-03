@@ -3,14 +3,14 @@ import DataChannel
 import libdatachannel
 
 private let whipQueue = DispatchQueue(label: "com.eerimoq.Moblin.whip")
-private let h264PayloadType: UInt8 = 96
+let h264PayloadType: UInt8 = 96
 private let h265PayloadType: UInt8 = 97
-private let opusPayloadType: UInt8 = 111
+let opusPayloadType: UInt8 = 111
 private let aacPayloadType: UInt8 = 112
 private let videoNackMaxStoredPacketCount: UInt32 = 8192
 private let audioNackMaxStoredPacketCount: UInt32 = 512
 
-private func makeSsrc() -> UInt32 {
+func makeSsrc() -> UInt32 {
     var ssrc: UInt32 = 0
     while ssrc == 0 {
         ssrc = UInt32.random(in: UInt32.min ... UInt32.max)

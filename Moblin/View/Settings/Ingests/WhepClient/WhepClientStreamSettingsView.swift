@@ -10,6 +10,7 @@ struct WhepClientStreamSettingsView: View {
             Form {
                 Section {
                     NameEditView(name: $stream.name, existingNames: whepClient.streams)
+                        .disabled(stream.enabled)
                 }
                 Section {
                     TextEditNavigationView(title: String(localized: "URL"),
@@ -22,6 +23,7 @@ struct WhepClientStreamSettingsView: View {
                                                "https://example.com/whep/stream",
                                            ],
                                            placeholder: "https://example.com/whep/stream")
+                        .disabled(stream.enabled)
                 }
                 Section {
                     TextEditNavigationView(
@@ -50,8 +52,16 @@ struct WhepClientStreamSettingsView: View {
                         keyboardType: .numbersAndPunctuation,
                         valueFormat: { "\($0) ms" }
                     )
+                    .disabled(stream.enabled)
                 } footer: {
                     Text("The higher, the lower risk of stuttering.")
+                }
+                Section {
+                    Toggle("Sync timestamps", isOn: $stream.syncTimestamps)
+                        .onChange(of: stream.syncTimestamps) { _ in
+                            model.reloadWhepClient()
+                        }
+                        .disabled(stream.enabled)
                 }
             }
             .navigationTitle("Stream")

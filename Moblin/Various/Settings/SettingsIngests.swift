@@ -334,12 +334,14 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var streamKey: String = ""
     @Published var latency: Int32 = 100
+    @Published var syncTimestamps: Bool = true
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              streamKey,
-             latency
+             latency,
+             syncTimestamps
     }
 
     func encode(to encoder: Encoder) throws {
@@ -348,6 +350,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.streamKey, streamKey)
         try container.encode(.latency, latency)
+        try container.encode(.syncTimestamps, syncTimestamps)
     }
 
     init() {}
@@ -358,6 +361,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         streamKey = container.decode(.streamKey, String.self, "")
         latency = container.decode(.latency, Int32.self, 100)
+        syncTimestamps = container.decode(.syncTimestamps, Bool.self, true)
     }
 
     func camera() -> String {
@@ -423,13 +427,15 @@ class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
     @Published var url: String = ""
     @Published var enabled: Bool = false
     @Published var latency: Int32 = 100
+    @Published var syncTimestamps: Bool = true
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              url,
              enabled,
-             latency
+             latency,
+             syncTimestamps
     }
 
     func latencySeconds() -> Double {
@@ -443,6 +449,7 @@ class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.url, url)
         try container.encode(.enabled, enabled)
         try container.encode(.latency, latency)
+        try container.encode(.syncTimestamps, syncTimestamps)
     }
 
     init() {}
@@ -454,6 +461,7 @@ class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
         url = container.decode(.url, String.self, "")
         enabled = container.decode(.enabled, Bool.self, false)
         latency = container.decode(.latency, Int32.self, 100)
+        syncTimestamps = container.decode(.syncTimestamps, Bool.self, true)
     }
 
     func camera() -> String {

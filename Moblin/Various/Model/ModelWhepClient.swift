@@ -30,7 +30,10 @@ extension Model {
             guard let url = URL(string: stream.url) else {
                 continue
             }
-            let client = WhepClient(streamId: stream.id, url: url, latency: stream.latencySeconds())
+            let client = WhepClient(streamId: stream.id,
+                                    url: url,
+                                    latency: stream.latencySeconds(),
+                                    syncTimestamps: stream.syncTimestamps)
             client.delegate = self
             client.start()
             ingests.whep.append(client)

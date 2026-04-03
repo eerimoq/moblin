@@ -19,14 +19,16 @@ class WhepClient {
     let streamId: UUID
     private let url: URL
     private let latency: Double
+    private let syncTimestamps: Bool
     weak var delegate: (any WhepClientDelegate)?
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
 
-    init(streamId: UUID, url: URL, latency: Double) {
+    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool) {
         self.streamId = streamId
         self.url = url
         self.latency = latency
+        self.syncTimestamps = syncTimestamps
     }
 
     func start() {
@@ -54,6 +56,7 @@ class WhepClient {
         ingestClient = WebrtcIngestClient(
             streamId: streamId,
             latency: latency,
+            syncTimestamps: syncTimestamps,
             iceServers: [defaultStunServer],
             dispatchQueue: dispatchQueue,
             delegate: self
@@ -62,19 +65,22 @@ class WhepClient {
             return
         }
         do {
+            let msid = UUID().uuidString
             try ingestClient.createPeerConnection()
             let videoTrackId = try ingestClient.addRecvOnlyTrack(
                 codec: RTC_CODEC_H264,
-                payloadType: 96,
+                payloadType: Int32(h264PayloadType),
                 mid: "0",
+                msid: msid,
                 name: "video",
-                profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f"
+                profile: ""
             )
             ingestClient.setTrackCodec(trackId: videoTrackId, description: "h264")
             let audioTrackId = try ingestClient.addRecvOnlyTrack(
                 codec: RTC_CODEC_OPUS,
-                payloadType: 111,
+                payloadType: Int32(opusPayloadType),
                 mid: "1",
+                msid: msid,
                 name: "audio",
                 profile: ""
             )

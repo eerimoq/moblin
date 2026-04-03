@@ -95,6 +95,10 @@ struct WhipServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
+                    Toggle("Sync timestamps", isOn: $stream.syncTimestamps)
+                        .disabled(whipServer.enabled)
+                }
+                Section {
                     UrlsView(status: status, port: whipServer.port, streamKey: stream.streamKey)
                 } header: {
                     Text("Publish URLs")

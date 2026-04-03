@@ -648,6 +648,8 @@ extension Model {
             attachBufferedAudio(cameraId: getRistMicCameraId(mic: mic), micId: mic.id)
         } else if isWhipMic(mic: mic) {
             attachBufferedAudio(cameraId: getWhipMicCameraId(mic: mic), micId: mic.id)
+        } else if isWhepMic(mic: mic) {
+            attachBufferedAudio(cameraId: getWhepMicCameraId(mic: mic), micId: mic.id)
         } else if isMediaPlayerMic(mic: mic) {
             attachBufferedAudio(cameraId: getMediaPlayerMicCameraId(mic: mic), micId: mic.id)
         } else {
@@ -689,6 +691,13 @@ extension Model {
         return getWhipStream(id: id) != nil
     }
 
+    private func isWhepMic(mic: SettingsMicsMic) -> Bool {
+        guard let id = UUID(uuidString: mic.inputUid) else {
+            return false
+        }
+        return getWhepStream(id: id) != nil
+    }
+
     private func isMediaPlayerMic(mic: SettingsMicsMic) -> Bool {
         guard let id = UUID(uuidString: mic.inputUid) else {
             return false
@@ -710,6 +719,10 @@ extension Model {
 
     private func getWhipMicCameraId(mic: SettingsMicsMic) -> UUID? {
         return getWhipStream(idString: mic.inputUid)?.id
+    }
+
+    private func getWhepMicCameraId(mic: SettingsMicsMic) -> UUID? {
+        return getWhepStream(idString: mic.inputUid)?.id
     }
 
     private func getMediaPlayerMicCameraId(mic: SettingsMicsMic) -> UUID? {
@@ -734,6 +747,8 @@ extension Model {
             media.setTalkBack(cameraId: getRistMicCameraId(mic: mic))
         } else if isWhipMic(mic: mic) {
             media.setTalkBack(cameraId: getWhipMicCameraId(mic: mic))
+        } else if isWhepMic(mic: mic) {
+            media.setTalkBack(cameraId: getWhepMicCameraId(mic: mic))
         } else if isMediaPlayerMic(mic: mic) {
             media.setTalkBack(cameraId: getMediaPlayerMicCameraId(mic: mic))
         } else {
