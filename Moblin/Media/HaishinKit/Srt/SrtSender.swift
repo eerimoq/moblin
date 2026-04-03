@@ -134,6 +134,7 @@ class SrtDataPacket {
     }
 
     fileprivate func setHeader(sequenceNumber: UInt32,
+                               messageNumber: UInt32,
                                now: ContinuousClock.Instant,
                                timestamp: UInt32,
                                destinationSrtSocketId: UInt32)
@@ -142,7 +143,7 @@ class SrtDataPacket {
         createdAt = now
         data.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
             pointer.writeUInt32(sequenceNumber, offset: 0)
-            pointer.writeUInt32(0xE000_0001, offset: 4)
+            pointer.writeUInt32(0xE000_0000 | (messageNumber & 0x03FF_FFFF), offset: 4)
             pointer.writeUInt32(timestamp, offset: 8)
             pointer.writeUInt32(destinationSrtSocketId, offset: 12)
         }
@@ -181,6 +182,7 @@ private struct PendingHandshake: Equatable {
 class SrtSender {
     weak var delegate: SrtSenderDelegate?
     private var nextSequenceNumber: UInt32 = .random(in: 0 ..< 10000)
+    private var nextMessageNumber: UInt32 = 1
     private var peerDestinationSrtSocketId: UInt32 = 0
     private let streamId: String?
     private var packetsToSend: Deque<SrtDataPacket> = []
@@ -244,6 +246,7 @@ class SrtSender {
             return
         }
         packet.setHeader(sequenceNumber: getNextSequenceNumber(),
+                         messageNumber: getNextMessageNumber(),
                          now: now,
                          timestamp: clock.timestamp(now: now),
                          destinationSrtSocketId: peerDestinationSrtSocketId)
@@ -380,6 +383,16 @@ class SrtSender {
             nextSequenceNumber &+= 1
         }
         return nextSequenceNumber
+    }
+
+    private func getNextMessageNumber() -> UInt32 {
+        defer {
+            nextMessageNumber &+= 1
+            if nextMessageNumber > 0x03FF_FFFF {
+                nextMessageNumber = 1
+            }
+        }
+        return nextMessageNumber
     }
 
     private func createInductionHandshakePacket() -> Data {
