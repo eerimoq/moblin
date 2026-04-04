@@ -173,6 +173,11 @@ private enum HandshakeType: UInt32 {
     case induction = 0x0000_0001
 }
 
+private struct PendingHandshake: Equatable {
+    let peerSocketId: UInt32
+    let synCookie: UInt32
+}
+
 class SrtSender {
     weak var delegate: SrtSenderDelegate?
     private var nextSequenceNumber: UInt32 = .random(in: 0 ..< 10000)
@@ -200,6 +205,7 @@ class SrtSender {
     private let packetsToSendDropThreshold: ContinuousClock.Duration
     private var clock = SrtClock()
     private let connectTimer = SimpleTimer(queue: srtlaClientQueue)
+    private var pendingHandshake: PendingHandshake?
 
     init(streamId: String?, latency: UInt16) {
         self.streamId = streamId
@@ -213,6 +219,8 @@ class SrtSender {
         srtlaClientQueue.async {
             self.clock = SrtClock()
             self.latestReceivedPacketTime = .now
+            self.peerDestinationSrtSocketId = 0
+            self.pendingHandshake = nil
             self.setState(state: .connecting)
             self.outputPacket(packet: self.createInductionHandshakePacket())
             self.connectTimer.startSingleShot(timeout: 5) { [weak self] in
@@ -252,9 +260,11 @@ class SrtSender {
     }
 
     func input(packet: Data) {
-        latestReceivedPacketTime = .now
+        let now = ContinuousClock.now
         do {
-            try handleControlPacket(packet: packet, now: latestReceivedPacketTime)
+            if try handleControlPacket(packet: packet, now: now) {
+                latestReceivedPacketTime = now
+            }
         } catch {
             logger.info("srt-sender: Input error: \(error)")
         }
@@ -289,6 +299,7 @@ class SrtSender {
             return
         }
         connectTimer.stop()
+        pendingHandshake = nil
         setState(state: .disconnected)
         delegate?.srtSenderDisconnected()
     }
@@ -351,12 +362,14 @@ class SrtSender {
         numberOfBytesSent += UInt64(packet.count) + srtIpUdpHeaderSize
     }
 
-    private func setState(state: SrtSenderState) {
+    @discardableResult
+    private func setState(state: SrtSenderState) -> Bool {
         guard state != self.state else {
-            return
+            return false
         }
         logger.info("srt-sender: Job state change \(self.state) -> \(state)")
         self.state = state
+        return true
     }
 
     private func getNextSequenceNumber() -> UInt32 {
@@ -434,27 +447,32 @@ class SrtSender {
         return streamId
     }
 
-    private func handleControlPacket(packet: Data, now: ContinuousClock.Instant) throws {
+    private func handleControlPacket(packet: Data, now: ContinuousClock.Instant) throws -> Bool {
         let reader = ByteReader(data: packet)
         let commonHeader = try CommonControlPacketHeader(reader: reader)
+        let accepted: Bool
         switch commonHeader.controlType {
         case .handshake:
-            try handleHandshakePacket(reader: reader)
+            accepted = try handleHandshakePacket(reader: reader)
         case .keepAlive:
-            handleKeepAlivePacket()
+            accepted = handleKeepAlivePacket()
         case .ack:
-            try handleAckPacket(commonHeader: commonHeader, reader: reader, now: now)
+            accepted = try handleAckPacket(commonHeader: commonHeader, reader: reader, now: now)
         case .nak:
-            try handleNakPacket(reader: reader)
+            accepted = try handleNakPacket(reader: reader)
         case .shutdown:
             try handleShutdownPacket()
+            accepted = false
         case .ackack:
-            try handleAckAckPacket()
+            accepted = try handleAckAckPacket()
         }
-        outputPackets(now: now)
+        if accepted {
+            outputPackets(now: now)
+        }
+        return accepted
     }
 
-    private func handleHandshakePacket(reader: ByteReader) throws {
+    private func handleHandshakePacket(reader: ByteReader) throws -> Bool {
         _ = try reader.readUInt32()
         _ = try reader.readUInt16()
         _ = try reader.readUInt16()
@@ -469,37 +487,78 @@ class SrtSender {
         _ = try reader.readBytes(16)
         switch handshakeType {
         case .induction:
-            handleHandshakeInduction(peerSocketId: peerSocketId, synCookie: synCookie)
+            return handleHandshakeInduction(peerSocketId: peerSocketId, synCookie: synCookie)
         case .conclusion:
-            handleHandshakeConclusion(peerSocketId: peerSocketId)
+            return handleHandshakeConclusion(peerSocketId: peerSocketId, synCookie: synCookie)
         }
     }
 
-    private func handleHandshakeInduction(peerSocketId: UInt32, synCookie: UInt32) {
+    private func handleHandshakeInduction(peerSocketId: UInt32, synCookie: UInt32) -> Bool {
+        guard state == .connecting else {
+            logger.debug("srt-sender: Ignoring induction while \(state)")
+            return false
+        }
+        let handshake = PendingHandshake(peerSocketId: peerSocketId, synCookie: synCookie)
+        guard pendingHandshake != handshake else {
+            logger.debug("srt-sender: Ignoring duplicate induction for peer socket \(peerSocketId)")
+            return false
+        }
+        pendingHandshake = handshake
         outputPacket(packet: createConclusionHandshakePacket(
             peerSocketId: peerSocketId,
             synCookie: synCookie
         ))
+        return true
     }
 
-    private func handleHandshakeConclusion(peerSocketId: UInt32) {
+    private func handleHandshakeConclusion(peerSocketId: UInt32, synCookie: UInt32) -> Bool {
+        guard state == .connecting else {
+            logger.debug("srt-sender: Ignoring conclusion while \(state)")
+            return false
+        }
+        guard let expectedHandshake = pendingHandshake else {
+            logger.debug("srt-sender: Ignoring conclusion without pending induction")
+            return false
+        }
+        guard expectedHandshake.synCookie == synCookie else {
+            logger.debug(
+                """
+                srt-sender: Ignoring conclusion with unexpected syn cookie \
+                \(synCookie), expected \(expectedHandshake.synCookie)
+                """
+            )
+            return false
+        }
         peerDestinationSrtSocketId = peerSocketId
         ackAckPacket.update(destinationSocketId: peerSocketId)
         keepAlivePacket.update(destinationSocketId: peerSocketId)
+        pendingHandshake = nil
         connectTimer.stop()
-        setState(state: .connected)
-        delegate?.srtSenderConnected()
+        if setState(state: .connected) {
+            delegate?.srtSenderConnected()
+        }
+        return true
     }
 
-    private func handleKeepAlivePacket() {
+    private func handleKeepAlivePacket() -> Bool {
+        guard state == .connected else {
+            logger.debug("srt-sender: Ignoring keepalive while \(state)")
+            return false
+        }
         keepAlivePacket.update(timestamp: clock.timestamp())
         outputPacket(packet: keepAlivePacket.data)
+        return true
     }
 
     private func handleAckPacket(commonHeader: CommonControlPacketHeader,
                                  reader: ByteReader,
                                  now: ContinuousClock.Instant) throws
+                                 -> Bool
     {
+        guard state == .connected else {
+            logger.debug("srt-sender: Ignoring ack while \(state)")
+            return false
+        }
         let lastAcknowledgedPacketSequenceNumber = try reader.readUInt32()
         removeAckedPackets(lastAcknowledgedPacketSequenceNumber)
         if commonHeader.typeSpecificInformation != 0 {
@@ -509,6 +568,7 @@ class SrtSender {
             ackAckPacket.update(ackNumber: commonHeader.typeSpecificInformation, timestamp: clock.timestamp())
             outputPacket(packet: ackAckPacket.data)
         }
+        return true
     }
 
     private func updatePerformanceData() {
@@ -545,7 +605,11 @@ class SrtSender {
         }
     }
 
-    private func handleNakPacket(reader: ByteReader) throws {
+    private func handleNakPacket(reader: ByteReader) throws -> Bool {
+        guard state == .connected else {
+            logger.debug("srt-sender: Ignoring nak while \(state)")
+            return false
+        }
         // logger.info("xxx NAK packet")
         while let sequenceNumber = try? reader.readUInt32() {
             if isSrtSnRange(sn: sequenceNumber) {
@@ -557,7 +621,7 @@ class SrtSender {
                     // logger.info("xxx   NAK-1 \(sequenceNumber)")
                     guard sequenceNumbersToRetransmit.count < 1000 else {
                         logger.info("xxx   Too many NAKs")
-                        return
+                        return true
                     }
                     sequenceNumbersToRetransmit.append(sequenceNumber)
                 }
@@ -565,19 +629,21 @@ class SrtSender {
                 // logger.info("xxx   NAK-2 \(sequenceNumber)")
                 guard sequenceNumbersToRetransmit.count < 1000 else {
                     logger.info("xxx   Too many NAKs")
-                    return
+                    return true
                 }
                 sequenceNumbersToRetransmit.append(sequenceNumber)
             }
         }
         pktRecvNakTotal += 1
+        return true
     }
 
     private func handleShutdownPacket() throws {
         throw "Got shutdown packet"
     }
 
-    private func handleAckAckPacket() throws {
-        throw "Got ack ack packet"
+    private func handleAckAckPacket() throws -> Bool {
+        logger.debug("srt-sender: Ignoring ack ack while \(state)")
+        return false
     }
 }

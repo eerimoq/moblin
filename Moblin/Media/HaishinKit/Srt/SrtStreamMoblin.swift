@@ -12,6 +12,7 @@ class SrtStreamMoblin {
     weak var srtStreamDelegate: SrtStreamMoblinDelegate?
     private let processor: Processor
     private var srtSender: SrtSender?
+    private var isPublishing = false
 
     init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamMoblinDelegate) {
         self.processor = processor
@@ -21,6 +22,7 @@ class SrtStreamMoblin {
     }
 
     func open(streamId: String?, latency: UInt16) {
+        isPublishing = false
         srtSender = SrtSender(streamId: streamId, latency: latency)
         srtSender?.delegate = self
         srtSender?.start()
@@ -73,6 +75,11 @@ extension SrtStreamMoblin: MpegTsWriterDelegate {
 extension SrtStreamMoblin: SrtSenderDelegate {
     func srtSenderConnected() {
         processorControlQueue.async {
+            guard !self.isPublishing else {
+                logger.info("srt-stream-moblin: Ignoring duplicate connected callback")
+                return
+            }
+            self.isPublishing = true
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
             self.srtStreamDelegate?.srtStreamMoblinConnected()
@@ -81,6 +88,11 @@ extension SrtStreamMoblin: SrtSenderDelegate {
 
     func srtSenderDisconnected() {
         processorControlQueue.async {
+            guard self.isPublishing else {
+                logger.info("srt-stream-moblin: Ignoring duplicate disconnected callback")
+                return
+            }
+            self.isPublishing = false
             self.writer.stopRunning()
             self.processor.stopEncoding(self.writer)
             self.srtStreamDelegate?.srtStreamMoblinDisconnected()

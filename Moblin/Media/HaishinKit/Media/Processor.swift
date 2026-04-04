@@ -261,6 +261,10 @@ final class Processor {
     }
 
     func startEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        guard !streams.contains(where: { $0.delegate === delegate }) else {
+            logger.info("processor: Ignoring duplicate start encoding request")
+            return
+        }
         streams.append(Stream(delegate: delegate))
         logger.info("processor: Starting encoding")
         video.startEncoding(self)
