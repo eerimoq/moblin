@@ -2,12 +2,12 @@ import AVFoundation
 import Foundation
 
 class VideoPreviewFeed: Identifiable, ObservableObject {
-    let id: UUID
+    let cameraId: UUID
     let name: String
     let previewView: PreviewView
 
     init(cameraId: UUID, name: String) {
-        id = cameraId
+        self.cameraId = cameraId
         self.name = name
         previewView = PreviewView()
         previewView.videoGravity = .resizeAspect
@@ -21,19 +21,21 @@ class VideoPreviewFeed: Identifiable, ObservableObject {
 class VideoPreviewProvider: ObservableObject {
     @Published var feeds: [VideoPreviewFeed] = []
 
-    func addFeed(cameraId: UUID, name: String) {
-        guard !feeds.contains(where: { $0.id == cameraId }) else {
-            return
+    func addFeed(cameraId: UUID, name: String) -> VideoPreviewFeed? {
+        guard !feeds.contains(where: { $0.cameraId == cameraId }) else {
+            return nil
         }
-        feeds.append(VideoPreviewFeed(cameraId: cameraId, name: name))
+        let feed = VideoPreviewFeed(cameraId: cameraId, name: name)
+        feeds.append(feed)
+        return feed
     }
 
     func removeFeed(cameraId: UUID) {
-        feeds.removeAll { $0.id == cameraId }
+        feeds.removeAll { $0.cameraId == cameraId }
     }
 
     func getFeed(cameraId: UUID) -> VideoPreviewFeed? {
-        return feeds.first { $0.id == cameraId }
+        return feeds.first { $0.cameraId == cameraId }
     }
 
     func removeAllFeeds() {

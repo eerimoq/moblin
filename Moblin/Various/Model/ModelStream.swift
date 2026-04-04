@@ -741,12 +741,8 @@ extension Model {
             return
         }
         let name = getBufferedVideoName(cameraId: cameraId)
-        videoPreview.addFeed(cameraId: cameraId, name: name)
-        if let feed = videoPreview.getFeed(cameraId: cameraId) {
-            media.setVideoPreviewDrawable(
-                cameraId: cameraId,
-                drawable: feed.previewView
-            )
+        if let feed = videoPreview.addFeed(cameraId: cameraId, name: name) {
+            media.setVideoPreviewDrawable(cameraId: cameraId, drawable: feed.previewView)
         }
     }
 

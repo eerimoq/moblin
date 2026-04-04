@@ -2091,29 +2091,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func updateVideoPreviewFeeds() {
-        guard streamOverlay.showingVideoPreview else {
-            return
-        }
-        guard let scene = getSelectedScene() else {
-            return
-        }
-        let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
-        let builtinDeviceIds = Set(devices.devices.map(\.id))
-        for feed in videoPreview.feeds {
-            if !builtinDeviceIds.contains(feed.id), !activeBufferedVideoIds.contains(feed.id) {
-                videoPreview.removeFeed(cameraId: feed.id)
-                media.removeVideoPreviewDrawable(cameraId: feed.id)
-            }
-        }
-        for device in devices.devices where videoPreview.getFeed(cameraId: device.id) == nil {
-            videoPreview.addFeed(cameraId: device.id, name: device.device.localizedName)
-            if let feed = videoPreview.getFeed(cameraId: device.id) {
-                media.setVideoPreviewDrawable(cameraId: device.id, drawable: feed.previewView)
-            }
-        }
-    }
-
     func setPinchQuickButton(on: Bool) {
         streamOverlay.showingPinch = on
         setFilterQuickButton(type: .pinch, on: on)
@@ -2391,6 +2368,28 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func findScoreboardPlayer(id: UUID) -> String {
         return database.scoreboardPlayers.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
+    }
+
+    private func updateVideoPreviewFeeds() {
+        guard streamOverlay.showingVideoPreview else {
+            return
+        }
+        guard let scene = getSelectedScene() else {
+            return
+        }
+        let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
+        let builtinDeviceIds = Set(devices.devices.map(\.id))
+        for feed in videoPreview.feeds {
+            if !builtinDeviceIds.contains(feed.cameraId), !activeBufferedVideoIds.contains(feed.cameraId) {
+                videoPreview.removeFeed(cameraId: feed.cameraId)
+                media.removeVideoPreviewDrawable(cameraId: feed.cameraId)
+            }
+        }
+        for device in devices.devices {
+            if let feed = videoPreview.addFeed(cameraId: device.id, name: device.device.localizedName) {
+                media.setVideoPreviewDrawable(cameraId: device.id, drawable: feed.previewView)
+            }
+        }
     }
 
     private func updateDigitalClock(now: Date) {
