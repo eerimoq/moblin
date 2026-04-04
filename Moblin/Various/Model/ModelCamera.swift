@@ -64,8 +64,8 @@ class CameraState: ObservableObject {
 
 let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
 let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
-let noneCamera = "None"
-let screenCaptureCamera = "Screen capture"
+let noneCameraName = "None"
+let screenCaptureCameraName = "Screen capture"
 private let backTripleLowEnergyCamera = "Back Triple (low power)"
 private let backDualLowEnergyCamera = "Back Dual (low power)"
 private let backWideDualLowEnergyCamera = "Back Wide dual (low power)"
@@ -580,8 +580,8 @@ extension Model {
         cameras += playerCameras().map {
             ($0.0.uuidString, $0.1)
         }
-        cameras.append((screenCaptureCamera, screenCaptureCamera))
-        cameras.append((noneCamera, noneCamera))
+        cameras.append((screenCaptureCameraId.uuidString, screenCaptureCameraName))
+        cameras.append((noneCameraId.uuidString, noneCameraName))
         return cameras
     }
 
@@ -681,7 +681,7 @@ extension Model {
         case let .front(id):
             return id
         case .screenCapture:
-            return screenCaptureCamera
+            return screenCaptureCameraId.uuidString
         case .backTripleLowEnergy:
             return backTripleLowEnergyCamera
         case .backDualLowEnergy:
@@ -689,7 +689,7 @@ extension Model {
         case .backWideDualLowEnergy:
             return backWideDualLowEnergyCamera
         case .none:
-            return noneCamera
+            return noneCameraId.uuidString
         }
     }
 
@@ -747,7 +747,7 @@ extension Model {
                 return unknownSad
             }
         case .screenCapture:
-            return screenCaptureCamera
+            return screenCaptureCameraName
         case .backTripleLowEnergy:
             return backTripleLowEnergyCamera
         case .backDualLowEnergy:
@@ -755,7 +755,7 @@ extension Model {
         case .backWideDualLowEnergy:
             return backWideDualLowEnergyCamera
         case .none:
-            return noneCamera
+            return noneCameraName
         }
     }
 

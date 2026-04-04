@@ -3,11 +3,11 @@ import ReplayKit
 
 extension Model {
     func isScreenCaptureCamera(cameraId: CameraId) -> Bool {
-        return cameraId == screenCaptureCamera
+        return cameraId == screenCaptureCameraId.uuidString
     }
 
     func isNoneCamera(cameraId: CameraId) -> Bool {
-        return cameraId == noneCamera
+        return cameraId == noneCameraId.uuidString
     }
 
     #if targetEnvironment(macCatalyst)
