@@ -192,6 +192,14 @@ extension Model {
         }
     }
 
+    func setCurrentSceneVideoSource(cameraId: UUID) {
+        guard let scene = getSelectedScene() else {
+            return
+        }
+        scene.updateCameraId(settingsCameraId: cameraIdToSettingsCameraId(cameraId: cameraId.uuidString))
+        sceneUpdated(attachCamera: true, updateRemoteScene: false)
+    }
+
     func toggleWidgetOnOff(id: UUID) {
         guard let widget = findWidget(id: id) else {
             return
