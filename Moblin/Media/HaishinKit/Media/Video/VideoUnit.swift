@@ -74,6 +74,17 @@ struct CaptureDevice {
     let device: AVCaptureDevice
     let id: UUID
     let isVideoMirrored: Bool
+
+    func name() -> String {
+        switch device.position {
+        case .back:
+            return "Back \(cameraName(device: device))"
+        case .front:
+            return "Front \(cameraName(device: device))"
+        default:
+            return cameraName(device: device)
+        }
+    }
 }
 
 struct CaptureDevices {
