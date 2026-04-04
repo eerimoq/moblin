@@ -269,6 +269,7 @@ class StreamOverlay: ObservableObject {
     @Published var showingPixellate = false
     @Published var showingWhirlpool = false
     @Published var showingBeauty = false
+    @Published var showingVideoPreview = false
     @Published var isTorchOn = false
 }
 
@@ -486,6 +487,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let externalDisplayStreamPreviewView = PreviewView()
     let cameraPreviewView = CameraPreviewUiView()
     var cameraPreviewLayer: AVCaptureVideoPreviewLayer?
+    let videoPreview = VideoPreviewProvider()
     var pipController: AVPictureInPictureController?
     var textEffects: [UUID: TextEffect] = [:]
     var imageEffects: [UUID: ImageEffect] = [:]
@@ -2074,6 +2076,37 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         setBeautyQuickButton(on: !streamOverlay.showingBeauty)
     }
 
+    func toggleVideoPreview() {
+        let newValue = !streamOverlay.showingVideoPreview
+        streamOverlay.showingVideoPreview = newValue
+        media.setVideoPreviewEnabled(enabled: newValue)
+        if newValue {
+            updateVideoPreviewFeeds()
+        } else {
+            videoPreview.removeAllFeeds()
+            media.removeAllVideoPreviewDrawables()
+        }
+    }
+
+    func updateVideoPreviewFeeds() {
+        guard streamOverlay.showingVideoPreview else {
+            return
+        }
+        guard let scene = findEnabledScene(id: selectedSceneId) else {
+            return
+        }
+        let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
+        for device in devices.devices {
+            if videoPreview.getFeed(cameraId: device.id) == nil {
+                videoPreview.addFeed(cameraId: device.id, name: device.device.localizedName)
+                media.setVideoPreviewDrawable(
+                    cameraId: device.id,
+                    drawable: videoPreview.getFeed(cameraId: device.id)!.previewView
+                )
+            }
+        }
+    }
+
     func setPinchQuickButton(on: Bool) {
         streamOverlay.showingPinch = on
         setFilterQuickButton(type: .pinch, on: on)
@@ -2740,6 +2773,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime
                 self.relaxedBitrate = self.database.debug.relaxedBitrate
                 self.updateCameraPreviewRotation()
+                self.updateVideoPreviewFeeds()
             }
         )
         zoom.xPinch = zoom.x
