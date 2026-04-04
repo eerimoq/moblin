@@ -15,6 +15,7 @@ private struct VideoPreviewItem: View {
     @ObservedObject var orientation: Orientation
     let name: String
     let previewView: PreviewView
+    let onTap: () -> Void
 
     private func height() -> Double {
         if orientation.isPortrait {
@@ -38,6 +39,9 @@ private struct VideoPreviewItem: View {
                 .font(.caption2)
                 .foregroundStyle(.white)
                 .lineLimit(1)
+        }
+        .onTapGesture {
+            onTap()
         }
     }
 }
@@ -67,7 +71,8 @@ struct StreamOverlayRightVideoPreviewView: View {
                     VideoPreviewItem(
                         orientation: orientation,
                         name: feed.name,
-                        previewView: feed.previewView
+                        previewView: feed.previewView,
+                        onTap: { model.setCurrentSceneVideoSource(cameraId: feed.id) }
                     )
                 }
             }
