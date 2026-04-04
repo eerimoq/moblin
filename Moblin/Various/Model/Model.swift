@@ -2078,15 +2078,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleVideoPreview() {
         streamOverlay.showingVideoPreview.toggle()
-        media.setVideoPreviewEnabled(enabled: streamOverlay.showingVideoPreview)
-        if streamOverlay.showingVideoPreview {
-            for cameraId in activeBufferedVideoIds {
-                addVideoPreviewFeed(cameraId: cameraId)
-            }
-        } else {
-            videoPreview.removeAllFeeds()
-            media.removeAllVideoPreviews()
-        }
+        updateVideoPreviews()
     }
 
     func setPinchQuickButton(on: Bool) {

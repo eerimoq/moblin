@@ -708,7 +708,7 @@ extension Model {
             switchMicIfNeededAfterNetworkCameraChange()
         }
         updateDisconnectProtectionVideoSourceConnected()
-        addVideoPreviewFeed(cameraId: cameraId)
+        updateVideoPreviews()
     }
 
     private func handleBufferedVideoRemoved(cameraId: UUID) {
@@ -730,7 +730,7 @@ extension Model {
             }
         }
         updateDisconnectProtectionVideoSourceDisconnected()
-        removeVideoPreviewFeed(cameraId: cameraId)
+        updateVideoPreviews()
     }
 
     private func handleRecorderFinished() {}

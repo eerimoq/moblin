@@ -20,66 +20,52 @@ class VideoPreviewFeed: Identifiable, ObservableObject {
 
 class VideoPreviewProvider: ObservableObject {
     @Published var feeds: [VideoPreviewFeed] = []
-
-    func addFeed(cameraId: UUID, name: String) -> VideoPreviewFeed? {
-        guard !feeds.contains(where: { $0.cameraId == cameraId }) else {
-            return nil
-        }
-        let feed = VideoPreviewFeed(cameraId: cameraId, name: name)
-        feeds.append(feed)
-        feeds.sort {
-            $0.cameraId.uuidString < $1.cameraId.uuidString
-        }
-        return feed
-    }
-
-    func removeFeed(cameraId: UUID) {
-        feeds.removeAll { $0.cameraId == cameraId }
-    }
-
-    func getFeed(cameraId: UUID) -> VideoPreviewFeed? {
-        return feeds.first { $0.cameraId == cameraId }
-    }
-
-    func removeAllFeeds() {
-        feeds.removeAll()
-    }
 }
 
 extension Model {
-    func addVideoPreviewFeed(cameraId: UUID) {
-        guard streamOverlay.showingVideoPreview,
-              let name = getBufferedVideoName(cameraId: cameraId),
-              let feed = videoPreview.addFeed(cameraId: cameraId, name: name)
-        else {
-            return
-        }
-        media.setVideoPreview(cameraId: cameraId, drawable: feed.previewView)
-    }
-
-    func removeVideoPreviewFeed(cameraId: UUID) {
-        guard streamOverlay.showingVideoPreview else {
-            return
-        }
-        videoPreview.removeFeed(cameraId: cameraId)
-        media.removeVideoPreview(cameraId: cameraId)
-    }
-
-    private func getBufferedVideoName(cameraId: UUID) -> String? {
-        if let stream = getRtmpStream(id: cameraId) {
-            return stream.camera()
-        } else if let stream = getSrtlaStream(id: cameraId) {
-            return stream.camera()
-        } else if let stream = getRistStream(id: cameraId) {
-            return stream.camera()
-        } else if let stream = getRtspStream(id: cameraId) {
-            return stream.camera()
-        } else if let stream = getWhipStream(id: cameraId) {
-            return stream.camera()
-        } else if let stream = getWhepStream(id: cameraId) {
-            return stream.camera()
+    func updateVideoPreviews() {
+        media.setVideoPreviewEnabled(enabled: streamOverlay.showingVideoPreview)
+        let oldFeeds = videoPreview.feeds
+        videoPreview.feeds.removeAll()
+        if streamOverlay.showingVideoPreview {
+            for camera in listCameraPositions(excludeBuiltin: true) {
+                guard let cameraId = UUID(uuidString: camera.id) else {
+                    continue
+                }
+                guard activeBufferedVideoIds.contains(cameraId) else {
+                    continue
+                }
+                guard isIngestVideoSource(cameraId: cameraId) else {
+                    continue
+                }
+                if let feed = oldFeeds.first(where: { $0.cameraId == cameraId }) {
+                    videoPreview.feeds.append(feed)
+                } else {
+                    let feed = VideoPreviewFeed(cameraId: cameraId, name: camera.name)
+                    videoPreview.feeds.append(feed)
+                    media.setVideoPreview(cameraId: cameraId, drawable: feed.previewView)
+                }
+            }
         } else {
-            return nil
+            media.removeAllVideoPreviews()
+        }
+    }
+
+    private func isIngestVideoSource(cameraId: UUID) -> Bool {
+        if getRtmpStream(id: cameraId) != nil {
+            return true
+        } else if getSrtlaStream(id: cameraId) != nil {
+            return true
+        } else if getRistStream(id: cameraId) != nil {
+            return true
+        } else if getRtspStream(id: cameraId) != nil {
+            return true
+        } else if getWhipStream(id: cameraId) != nil {
+            return true
+        } else if getWhepStream(id: cameraId) != nil {
+            return true
+        } else {
+            return false
         }
     }
 }
