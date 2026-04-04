@@ -24,7 +24,6 @@ class VideoPreviewProvider: ObservableObject {
 
 extension Model {
     func updateVideoPreviews() {
-        media.setVideoPreviewEnabled(enabled: streamOverlay.showingVideoPreview)
         let oldFeeds = videoPreview.feeds
         videoPreview.feeds.removeAll()
         if streamOverlay.showingVideoPreview {

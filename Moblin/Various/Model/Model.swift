@@ -2078,6 +2078,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleVideoPreview() {
         streamOverlay.showingVideoPreview.toggle()
+        media.setVideoPreviewEnabled(enabled: streamOverlay.showingVideoPreview)
         updateVideoPreviews()
     }
 
