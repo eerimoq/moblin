@@ -22,27 +22,19 @@ extension Model {
     }
 
     func ristCameras() -> [(UUID, String)] {
-        return database.ristServer.streams.map { stream in
-            (stream.id, stream.camera())
-        }
+        return database.ristServer.streams.map { ($0.id, $0.camera()) }
     }
 
     func getRistStream(id: UUID) -> SettingsRistServerStream? {
-        return database.ristServer.streams.first { stream in
-            stream.id == id
-        }
+        return database.ristServer.streams.first { $0.id == id }
     }
 
     func getRistStream(idString: String) -> SettingsRistServerStream? {
-        return database.ristServer.streams.first { stream in
-            idString == stream.id.uuidString
-        }
+        return database.ristServer.streams.first { $0.id.uuidString == idString }
     }
 
     func getRistStream(virtualDestinationPort: UInt16) -> SettingsRistServerStream? {
-        return database.ristServer.streams.first { stream in
-            stream.virtualDestinationPort == virtualDestinationPort
-        }
+        return database.ristServer.streams.first { $0.virtualDestinationPort == virtualDestinationPort }
     }
 
     func isRistStreamConnected(port: UInt16) -> Bool {

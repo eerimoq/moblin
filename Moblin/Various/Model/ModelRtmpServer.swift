@@ -3,27 +3,19 @@ import Foundation
 
 extension Model {
     func rtmpCameras() -> [(UUID, String)] {
-        return database.rtmpServer.streams.map { stream in
-            (stream.id, stream.camera())
-        }
+        return database.rtmpServer.streams.map { ($0.id, $0.camera()) }
     }
 
     func getRtmpStream(id: UUID) -> SettingsRtmpServerStream? {
-        return database.rtmpServer.streams.first { stream in
-            stream.id == id
-        }
+        return database.rtmpServer.streams.first { $0.id == id }
     }
 
     func getRtmpStream(idString: String) -> SettingsRtmpServerStream? {
-        return database.rtmpServer.streams.first { stream in
-            idString == stream.id.uuidString
-        }
+        return database.rtmpServer.streams.first { $0.id.uuidString == idString }
     }
 
     func getRtmpStream(streamKey: String) -> SettingsRtmpServerStream? {
-        return database.rtmpServer.streams.first { stream in
-            stream.streamKey == streamKey
-        }
+        return database.rtmpServer.streams.first { $0.streamKey == streamKey }
     }
 
     func stopAllRtmpStreams() {

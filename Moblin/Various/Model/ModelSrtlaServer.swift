@@ -24,27 +24,19 @@ extension Model {
     }
 
     func srtlaCameras() -> [(UUID, String)] {
-        return database.srtlaServer.streams.map { stream in
-            (stream.id, stream.camera())
-        }
+        return database.srtlaServer.streams.map { ($0.id, $0.camera()) }
     }
 
     func getSrtlaStream(id: UUID) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer.streams.first { stream in
-            stream.id == id
-        }
+        return database.srtlaServer.streams.first { $0.id == id }
     }
 
     func getSrtlaStream(idString: String) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer.streams.first { stream in
-            idString == stream.id.uuidString
-        }
+        return database.srtlaServer.streams.first { $0.id.uuidString == idString }
     }
 
     func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer.streams.first { stream in
-            stream.streamId == streamId
-        }
+        return database.srtlaServer.streams.first { $0.streamId == streamId }
     }
 
     func isSrtlaStreamConnected(streamId: String) -> Bool {
