@@ -808,18 +808,24 @@ extension Model {
         })
     }
 
-    func getBuiltinCameraId(_ uniqueId: String) -> UUID {
-        if let id = builtinCameraIds[uniqueId] {
+    private func getBuiltinCameraId(deviceUniqueId: String) -> UUID {
+        if let id = builtinCameraIds[deviceUniqueId] {
             return id
         }
-        let id = UUID()
-        builtinCameraIds[uniqueId] = id
-        return id
+        let cameraId = UUID()
+        builtinCameraIds[deviceUniqueId] = cameraId
+        return cameraId
+    }
+
+    private func getBuiltinDeviceUniqueId(cameraId: UUID) -> String? {
+        return builtinCameraIds.first { _, value in
+            value == cameraId
+        }?.key
     }
 
     func makeCaptureDevice(device: AVCaptureDevice) -> CaptureDevice {
         return CaptureDevice(device: device,
-                             id: getBuiltinCameraId(device.uniqueID),
+                             id: getBuiltinCameraId(deviceUniqueId: device.uniqueID),
                              isVideoMirrored: getVideoMirroredOnStream(device: device))
     }
 
@@ -853,11 +859,11 @@ extension Model {
         case .screenCapture:
             return screenCaptureCameraId
         case let .back(id: id):
-            return getBuiltinCameraId(id)
+            return getBuiltinCameraId(deviceUniqueId: id)
         case let .front(id: id):
-            return getBuiltinCameraId(id)
+            return getBuiltinCameraId(deviceUniqueId: id)
         case let .external(id: id, name: _):
-            return getBuiltinCameraId(id)
+            return getBuiltinCameraId(deviceUniqueId: id)
         case .backDualLowEnergy:
             return nil
         case .backTripleLowEnergy:
