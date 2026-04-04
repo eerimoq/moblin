@@ -2111,10 +2111,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for device in devices.devices {
             if videoPreview.getFeed(cameraId: device.id) == nil {
                 videoPreview.addFeed(cameraId: device.id, name: device.device.localizedName)
-                media.setVideoPreviewDrawable(
-                    cameraId: device.id,
-                    drawable: videoPreview.getFeed(cameraId: device.id)!.previewView
-                )
+                if let feed = videoPreview.getFeed(cameraId: device.id) {
+                    media.setVideoPreviewDrawable(
+                        cameraId: device.id,
+                        drawable: feed.previewView
+                    )
+                }
             }
         }
     }

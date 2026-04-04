@@ -742,10 +742,12 @@ extension Model {
         }
         let name = getBufferedVideoName(cameraId: cameraId)
         videoPreview.addFeed(cameraId: cameraId, name: name)
-        media.setVideoPreviewDrawable(
-            cameraId: cameraId,
-            drawable: videoPreview.getFeed(cameraId: cameraId)!.previewView
-        )
+        if let feed = videoPreview.getFeed(cameraId: cameraId) {
+            media.setVideoPreviewDrawable(
+                cameraId: cameraId,
+                drawable: feed.previewView
+            )
+        }
     }
 
     private func removeVideoPreviewFeed(cameraId: UUID) {
