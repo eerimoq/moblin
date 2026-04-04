@@ -585,23 +585,23 @@ extension Model {
         return cameras
     }
 
-    private func isBackCamera(cameraId: String) -> Bool {
+    private func isBackCamera(cameraId: CameraId) -> Bool {
         return backCameras.contains(where: { $0.id == cameraId })
     }
 
-    private func isFrontCamera(cameraId: String) -> Bool {
+    private func isFrontCamera(cameraId: CameraId) -> Bool {
         return frontCameras.contains(where: { $0.id == cameraId })
     }
 
-    private func isBackTripleLowEnergyAutoCamera(cameraId: String) -> Bool {
+    private func isBackTripleLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
         return cameraId == backTripleLowEnergyCamera
     }
 
-    private func isBackDualLowEnergyAutoCamera(cameraId: String) -> Bool {
+    private func isBackDualLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
         return cameraId == backDualLowEnergyCamera
     }
 
-    private func isBackWideDualLowEnergyAutoCamera(cameraId: String) -> Bool {
+    private func isBackWideDualLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
         return cameraId == backWideDualLowEnergyCamera
     }
 
@@ -759,7 +759,7 @@ extension Model {
         }
     }
 
-    func getExternalCameraName(cameraId: String) -> String {
+    func getExternalCameraName(cameraId: CameraId) -> String {
         if let camera = externalCameras.first(where: { $0.id == cameraId }) {
             return camera.name
         } else {
@@ -767,10 +767,8 @@ extension Model {
         }
     }
 
-    func isExternalCameraConnected(id: String) -> Bool {
-        externalCameras.first { camera in
-            camera.id == id
-        } != nil
+    func isExternalCameraConnected(cameraId: String) -> Bool {
+        return externalCameras.first { $0.id == cameraId } != nil
     }
 
     func setColorSpace() {

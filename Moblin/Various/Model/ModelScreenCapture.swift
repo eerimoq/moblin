@@ -2,11 +2,11 @@ import AVFoundation
 import ReplayKit
 
 extension Model {
-    func isScreenCaptureCamera(cameraId: String) -> Bool {
+    func isScreenCaptureCamera(cameraId: CameraId) -> Bool {
         return cameraId == screenCaptureCamera
     }
 
-    func isNoneCamera(cameraId: String) -> Bool {
+    func isNoneCamera(cameraId: CameraId) -> Bool {
         return cameraId == noneCamera
     }
 

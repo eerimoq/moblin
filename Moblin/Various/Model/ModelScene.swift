@@ -444,7 +444,7 @@ extension Model {
         case .whep:
             return activeBufferedVideoIds.contains(scene.videoSource.whepCameraId)
         case .external:
-            return isExternalCameraConnected(id: scene.videoSource.externalCameraId)
+            return isExternalCameraConnected(cameraId: scene.videoSource.externalCameraId)
         default:
             return true
         }

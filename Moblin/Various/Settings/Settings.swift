@@ -19,7 +19,7 @@ enum SettingsCameraId {
     case whip(id: UUID)
     case whep(id: UUID)
     case mediaPlayer(id: UUID)
-    case external(id: String, name: String)
+    case external(id: CameraId, name: String)
     case screenCapture
     case none
     case backTripleLowEnergy

@@ -2359,7 +2359,7 @@ struct SettingsVideoSource {
     var whipCameraId: UUID = .init()
     var whepCameraId: UUID = .init()
     var mediaPlayerCameraId: UUID = .init()
-    var externalCameraId: String = ""
+    var externalCameraId: CameraId = ""
     var externalCameraName: String = ""
 
     func toCameraId() -> SettingsCameraId {
