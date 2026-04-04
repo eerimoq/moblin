@@ -154,6 +154,10 @@ struct ScenesSettingsView: View {
             if database.showAllSettings {
                 SceneSwitching(database: database, debug: database.debug)
                 AutoSwitchersSettingsView(autoSceneSwitchers: database.autoSceneSwitchers, showSelector: true)
+                AutoCameraSwitchersSettingsView(
+                    autoCameraSwitchers: database.autoCameraSwitchers,
+                    showSelector: true
+                )
                 DisconnectProtectionSettingsView(database: database,
                                                  disconnectProtection: database.disconnectProtection)
                 RemoteSceneView(selectedSceneId: database.remoteSceneId)
