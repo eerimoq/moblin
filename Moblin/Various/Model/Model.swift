@@ -2082,6 +2082,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.setVideoPreviewEnabled(enabled: newValue)
         if newValue {
             updateVideoPreviewFeeds()
+            for cameraId in activeBufferedVideoIds {
+                addVideoPreviewFeedIfNeeded(cameraId: cameraId)
+            }
         } else {
             videoPreview.removeAllFeeds()
             media.removeAllVideoPreviewDrawables()
@@ -2096,6 +2099,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             return
         }
         let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
+        let builtinDeviceIds = Set(devices.devices.map(\.id))
+        // Remove stale built-in camera feeds
+        for feed in videoPreview.feeds {
+            if !builtinDeviceIds.contains(feed.id), !activeBufferedVideoIds.contains(feed.id) {
+                videoPreview.removeFeed(cameraId: feed.id)
+                media.removeVideoPreviewDrawable(cameraId: feed.id)
+            }
+        }
+        // Add new built-in camera feeds
         for device in devices.devices {
             if videoPreview.getFeed(cameraId: device.id) == nil {
                 videoPreview.addFeed(cameraId: device.id, name: device.device.localizedName)

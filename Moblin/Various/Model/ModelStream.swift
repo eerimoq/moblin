@@ -733,7 +733,7 @@ extension Model {
         removeVideoPreviewFeed(cameraId: cameraId)
     }
 
-    private func addVideoPreviewFeedIfNeeded(cameraId: UUID) {
+    func addVideoPreviewFeedIfNeeded(cameraId: UUID) {
         guard streamOverlay.showingVideoPreview else {
             return
         }

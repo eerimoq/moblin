@@ -1225,9 +1225,8 @@ final class VideoUnit: NSObject {
         guard let drawable = videoPreviewDrawables[cameraId] else {
             return
         }
-        var previewSampleBuffer = sampleBuffer
-        previewSampleBuffer.setAttachmentDisplayImmediately()
-        drawable.enqueue(previewSampleBuffer, isFirstAfterAttach: false)
+        sampleBuffer.setAttachmentDisplayImmediately()
+        drawable.enqueue(sampleBuffer, isFirstAfterAttach: false)
     }
 
     private func addBufferedVideoInternal(cameraId: UUID, name: String, latency: Double) {
@@ -2108,9 +2107,8 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let drawable = videoPreviewDrawables[captureDevice.device.id] else {
             return
         }
-        var previewSampleBuffer = sampleBuffer
-        previewSampleBuffer.setAttachmentDisplayImmediately()
-        drawable.enqueue(previewSampleBuffer, isFirstAfterAttach: false)
+        sampleBuffer.setAttachmentDisplayImmediately()
+        drawable.enqueue(sampleBuffer, isFirstAfterAttach: false)
     }
 }
 
