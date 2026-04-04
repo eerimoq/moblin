@@ -308,13 +308,13 @@ class SrtSender {
         var numberOfPacketsToSend = sequenceNumbersToRetransmit.count + packetsToSend.count
         numberOfPacketsToSend = max(numberOfPacketsToSend / 10, min(numberOfPacketsToSend, 10))
         for _ in 0 ..< numberOfPacketsToSend {
-            if retransmitPacketIfNeeded(now: now) {
+            if let packet = packetsToSend.popFirst() {
+                sendPacket(packet: packet)
                 continue
             }
-            guard let packet = packetsToSend.popFirst() else {
+            if !retransmitPacketIfNeeded(now: now) {
                 break
             }
-            sendPacket(packet: packet)
         }
         updatePerformanceData()
     }
@@ -323,6 +323,9 @@ class SrtSender {
         while !sequenceNumbersToRetransmit.isEmpty {
             let packetSequenceNumber = sequenceNumbersToRetransmit.removeFirst()
             guard let packet = packetsInFlightBySequenceNumber[packetSequenceNumber] else {
+                continue
+            }
+            if packet.createdAt.duration(to: now) > packetsInFlightDropThreshold {
                 continue
             }
             if let retransmittedAt = packet.retransmittedAt,
