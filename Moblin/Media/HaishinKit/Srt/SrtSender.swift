@@ -546,16 +546,15 @@ class SrtSender {
             logger.debug("srt-sender: Ignoring conclusion while \(state)")
             return false
         }
-        guard let pendingHandshake else {
+        guard let expectedHandshake = pendingHandshake else {
             logger.debug("srt-sender: Ignoring conclusion without pending induction")
             return false
         }
-        guard pendingHandshake == PendingHandshake(peerSocketId: peerSocketId, synCookie: synCookie) else {
+        guard expectedHandshake.synCookie == synCookie else {
             logger.debug(
                 """
-                srt-sender: Ignoring conclusion for unexpected handshake peer socket \
-                \(peerSocketId) syn cookie \(synCookie), expected peer socket \
-                \(pendingHandshake.peerSocketId) syn cookie \(pendingHandshake.synCookie)
+                srt-sender: Ignoring conclusion with unexpected syn cookie \
+                \(synCookie), expected \(expectedHandshake.synCookie)
                 """
             )
             return false
