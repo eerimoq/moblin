@@ -193,10 +193,10 @@ extension Model {
     }
 
     func setCurrentSceneVideoSource(cameraId: UUID) {
-        guard let scene = getSelectedScene() else {
+        guard let cameraId = cameraIdToSettingsCameraId(cameraId: cameraId) else {
             return
         }
-        scene.updateCameraId(settingsCameraId: cameraIdToSettingsCameraId(cameraId: cameraId.uuidString))
+        getSelectedScene()?.updateCameraId(settingsCameraId: cameraId)
         sceneUpdated(attachCamera: true, updateRemoteScene: false)
     }
 

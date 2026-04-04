@@ -2077,13 +2077,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func toggleVideoPreview() {
-        let newValue = !streamOverlay.showingVideoPreview
-        streamOverlay.showingVideoPreview = newValue
-        media.setVideoPreviewEnabled(enabled: newValue)
-        if newValue {
+        streamOverlay.showingVideoPreview.toggle()
+        media.setVideoPreviewEnabled(enabled: streamOverlay.showingVideoPreview)
+        if streamOverlay.showingVideoPreview {
             updateVideoPreviewFeeds()
             for cameraId in activeBufferedVideoIds {
-                addVideoPreviewFeedIfNeeded(cameraId: cameraId)
+                addVideoPreviewFeed(cameraId: cameraId)
             }
         } else {
             videoPreview.removeAllFeeds()
@@ -2368,28 +2367,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func findScoreboardPlayer(id: UUID) -> String {
         return database.scoreboardPlayers.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
-    }
-
-    private func updateVideoPreviewFeeds() {
-        guard streamOverlay.showingVideoPreview else {
-            return
-        }
-        guard let scene = getSelectedScene() else {
-            return
-        }
-        let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
-        let builtinDeviceIds = Set(devices.devices.map(\.id))
-        for feed in videoPreview.feeds {
-            if !builtinDeviceIds.contains(feed.cameraId), !activeBufferedVideoIds.contains(feed.cameraId) {
-                videoPreview.removeFeed(cameraId: feed.cameraId)
-                media.removeVideoPreview(cameraId: feed.cameraId)
-            }
-        }
-        for device in devices.devices {
-            if let feed = videoPreview.addFeed(cameraId: device.id, name: device.name()) {
-                media.setVideoPreview(cameraId: device.id, drawable: feed.previewView)
-            }
-        }
     }
 
     private func updateDigitalClock(now: Date) {

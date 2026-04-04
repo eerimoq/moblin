@@ -42,3 +42,62 @@ class VideoPreviewProvider: ObservableObject {
         feeds.removeAll()
     }
 }
+
+extension Model {
+    func addVideoPreviewFeed(cameraId: UUID) {
+        guard streamOverlay.showingVideoPreview else {
+            return
+        }
+        let name = getBufferedVideoName(cameraId: cameraId)
+        if let feed = videoPreview.addFeed(cameraId: cameraId, name: name) {
+            media.setVideoPreview(cameraId: cameraId, drawable: feed.previewView)
+        }
+    }
+
+    func removeVideoPreviewFeed(cameraId: UUID) {
+        guard streamOverlay.showingVideoPreview else {
+            return
+        }
+        videoPreview.removeFeed(cameraId: cameraId)
+        media.removeVideoPreview(cameraId: cameraId)
+    }
+
+    func updateVideoPreviewFeeds() {
+        guard streamOverlay.showingVideoPreview else {
+            return
+        }
+        guard let scene = getSelectedScene() else {
+            return
+        }
+        let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
+        let builtinDeviceIds = Set(devices.devices.map(\.id))
+        for feed in videoPreview.feeds {
+            if !builtinDeviceIds.contains(feed.cameraId), !activeBufferedVideoIds.contains(feed.cameraId) {
+                videoPreview.removeFeed(cameraId: feed.cameraId)
+                media.removeVideoPreview(cameraId: feed.cameraId)
+            }
+        }
+        for device in devices.devices {
+            if let feed = videoPreview.addFeed(cameraId: device.id, name: device.name()) {
+                media.setVideoPreview(cameraId: device.id, drawable: feed.previewView)
+            }
+        }
+    }
+
+    private func getBufferedVideoName(cameraId: UUID) -> String {
+        if let stream = getRtmpStream(id: cameraId) {
+            return stream.camera()
+        } else if let stream = getSrtlaStream(id: cameraId) {
+            return stream.camera()
+        } else if let stream = getRistStream(id: cameraId) {
+            return stream.camera()
+        } else if let stream = getRtspStream(id: cameraId) {
+            return stream.camera()
+        } else if let stream = getWhipStream(id: cameraId) {
+            return stream.camera()
+        } else if let stream = getWhepStream(id: cameraId) {
+            return stream.camera()
+        }
+        return String(localized: "Unknown")
+    }
+}

@@ -666,6 +666,30 @@ extension Model {
         }
     }
 
+    func cameraIdToSettingsCameraId(cameraId: UUID) -> SettingsCameraId? {
+        if let id = getSrtlaStream(id: cameraId)?.id {
+            return .srtla(id: id)
+        } else if let id = getRtmpStream(id: cameraId)?.id {
+            return .rtmp(id: id)
+        } else if let id = getRistStream(id: cameraId)?.id {
+            return .rist(id: id)
+        } else if let id = getRtspStream(id: cameraId)?.id {
+            return .rtsp(id: id)
+        } else if let id = getWhipStream(id: cameraId)?.id {
+            return .whip(id: id)
+        } else if let id = getWhepStream(id: cameraId)?.id {
+            return .whep(id: id)
+        } else if let id = getMediaPlayer(id: cameraId)?.id {
+            return .mediaPlayer(id: id)
+        } else if isScreenCaptureCamera(cameraId: cameraId.uuidString) {
+            return .screenCapture
+        } else if isNoneCamera(cameraId: cameraId.uuidString) {
+            return SettingsCameraId.none
+        } else {
+            return nil
+        }
+    }
+
     private func getCameraPositionId(settingsCameraId: SettingsCameraId?) -> CameraId {
         guard let settingsCameraId else {
             return ""
