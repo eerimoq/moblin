@@ -168,6 +168,8 @@ final class VideoUnit: NSObject {
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
+    private var videoPreviewDrawables: [UUID: PreviewView] = [:]
+    private var videoPreviewEnabled = false
     private var nextDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedDetectionsSequenceNumber: UInt64 = 0
     private var completedDetections: [UInt64: DetectionsCompletion] = [:]
@@ -369,6 +371,32 @@ final class VideoUnit: NSObject {
             processorPipelineQueue.async {
                 self.screenPreviewEnabled = enabled
             }
+        }
+    }
+
+    func setVideoPreviewEnabled(enabled: Bool) {
+        processorControlQueue.async {
+            processorPipelineQueue.async {
+                self.videoPreviewEnabled = enabled
+            }
+        }
+    }
+
+    func setVideoPreviewDrawable(cameraId: UUID, drawable: PreviewView) {
+        processorPipelineQueue.async {
+            self.videoPreviewDrawables[cameraId] = drawable
+        }
+    }
+
+    func removeVideoPreviewDrawable(cameraId: UUID) {
+        processorPipelineQueue.async {
+            self.videoPreviewDrawables.removeValue(forKey: cameraId)
+        }
+    }
+
+    func removeAllVideoPreviewDrawables() {
+        processorPipelineQueue.async {
+            self.videoPreviewDrawables.removeAll()
         }
     }
 
@@ -687,8 +715,12 @@ final class VideoUnit: NSObject {
     }
 
     private func handleBufferedVideo(_ presentationTimeStamp: CMTime) {
-        for bufferedVideo in bufferedVideos.values {
+        for (cameraId, bufferedVideo) in bufferedVideos {
             bufferedVideo.updateSampleBuffer(presentationTimeStamp.seconds)
+            if videoPreviewEnabled,
+                let sampleBuffer = bufferedVideo.getSampleBuffer(presentationTimeStamp) {
+                enqueueVideoPreviewForBufferedVideo(cameraId: cameraId, sampleBuffer: sampleBuffer)
+            }
         }
         guard let selectedBufferedVideoCameraId else {
             return
@@ -1187,6 +1219,14 @@ final class VideoUnit: NSObject {
             return
         }
         bufferedVideo.appendSampleBuffer(sampleBuffer)
+    }
+
+    private func enqueueVideoPreviewForBufferedVideo(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
+        guard let drawable = videoPreviewDrawables[cameraId] else {
+            return
+        }
+        sampleBuffer.setAttachmentDisplayImmediately()
+        drawable.enqueue(sampleBuffer, isFirstAfterAttach: false)
     }
 
     private func addBufferedVideoInternal(cameraId: UUID, name: String, latency: Double) {
@@ -2038,6 +2078,9 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
+        if videoPreviewEnabled {
+            enqueueVideoPreview(sampleBuffer: sampleBuffer, device: input.device)
+        }
         if isSceneVideoSource(device: input.device) {
             var sampleBuffer = sampleBuffer
             if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
@@ -2054,6 +2097,17 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         } else {
             _ = appendBufferedBuiltinVideo(sampleBuffer, input.device)
         }
+    }
+
+    private func enqueueVideoPreview(sampleBuffer: CMSampleBuffer, device: AVCaptureDevice) {
+        guard let captureDevice = captureSessionDevices.first(where: { $0.device.device == device }) else {
+            return
+        }
+        guard let drawable = videoPreviewDrawables[captureDevice.device.id] else {
+            return
+        }
+        sampleBuffer.setAttachmentDisplayImmediately()
+        drawable.enqueue(sampleBuffer, isFirstAfterAttach: false)
     }
 }
 

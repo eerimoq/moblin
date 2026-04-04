@@ -1946,6 +1946,12 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOff: "phone.connection",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Video preview"),
+                                 type: .videoPreview,
+                                 imageOn: "rectangle.stack.fill",
+                                 imageOff: "rectangle.stack",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
 }
 
 private func addMissingQuickButtons(database: Database) {

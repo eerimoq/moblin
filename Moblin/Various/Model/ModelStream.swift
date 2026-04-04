@@ -708,6 +708,7 @@ extension Model {
             switchMicIfNeededAfterNetworkCameraChange()
         }
         updateDisconnectProtectionVideoSourceConnected()
+        addVideoPreviewFeedIfNeeded(cameraId: cameraId)
     }
 
     private func handleBufferedVideoRemoved(cameraId: UUID) {
@@ -729,6 +730,43 @@ extension Model {
             }
         }
         updateDisconnectProtectionVideoSourceDisconnected()
+        removeVideoPreviewFeed(cameraId: cameraId)
+    }
+
+    func addVideoPreviewFeedIfNeeded(cameraId: UUID) {
+        guard streamOverlay.showingVideoPreview else {
+            return
+        }
+        guard videoPreview.getFeed(cameraId: cameraId) == nil else {
+            return
+        }
+        let name = getBufferedVideoName(cameraId: cameraId)
+        videoPreview.addFeed(cameraId: cameraId, name: name)
+        if let feed = videoPreview.getFeed(cameraId: cameraId) {
+            media.setVideoPreviewDrawable(
+                cameraId: cameraId,
+                drawable: feed.previewView
+            )
+        }
+    }
+
+    private func removeVideoPreviewFeed(cameraId: UUID) {
+        guard streamOverlay.showingVideoPreview else {
+            return
+        }
+        videoPreview.removeFeed(cameraId: cameraId)
+        media.removeVideoPreviewDrawable(cameraId: cameraId)
+    }
+
+    private func getBufferedVideoName(cameraId: UUID) -> String {
+        if let stream = getRtmpStream(id: cameraId) {
+            return stream.camera()
+        } else if let stream = getSrtlaStream(id: cameraId) {
+            return stream.camera()
+        } else if let stream = getRistStream(id: cameraId) {
+            return stream.camera()
+        }
+        return String(localized: "Unknown")
     }
 
     private func handleRecorderFinished() {}
