@@ -179,7 +179,7 @@ final class VideoUnit: NSObject {
     private let metalPetalContext: MTIContext?
     weak var drawable: PreviewView?
     weak var externalDisplayDrawable: PreviewView?
-    private var videoPreviewDrawables: [UUID: PreviewView] = [:]
+    private var videoPreviews: [UUID: PreviewView] = [:]
     private var videoPreviewEnabled = false
     private var nextDetectionsSequenceNumber: UInt64 = 0
     private var nextCompletedDetectionsSequenceNumber: UInt64 = 0
@@ -393,21 +393,21 @@ final class VideoUnit: NSObject {
         }
     }
 
-    func setVideoPreviewDrawable(cameraId: UUID, drawable: PreviewView) {
+    func setVideoPreview(cameraId: UUID, drawable: PreviewView) {
         processorPipelineQueue.async {
-            self.videoPreviewDrawables[cameraId] = drawable
+            self.videoPreviews[cameraId] = drawable
         }
     }
 
-    func removeVideoPreviewDrawable(cameraId: UUID) {
+    func removeVideoPreview(cameraId: UUID) {
         processorPipelineQueue.async {
-            self.videoPreviewDrawables.removeValue(forKey: cameraId)
+            self.videoPreviews.removeValue(forKey: cameraId)
         }
     }
 
-    func removeAllVideoPreviewDrawables() {
+    func removeAllVideoPreviews() {
         processorPipelineQueue.async {
-            self.videoPreviewDrawables.removeAll()
+            self.videoPreviews.removeAll()
         }
     }
 
@@ -2076,7 +2076,7 @@ final class VideoUnit: NSObject {
         guard let captureDevice = captureSessionDevices.first(where: { $0.device.device == device }) else {
             return
         }
-        guard let drawable = videoPreviewDrawables[captureDevice.device.id] else {
+        guard let drawable = videoPreviews[captureDevice.device.id] else {
             return
         }
         sampleBuffer.setAttachmentDisplayImmediately()
@@ -2084,7 +2084,7 @@ final class VideoUnit: NSObject {
     }
 
     private func enqueueVideoPreviewForBufferedVideo(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        guard let drawable = videoPreviewDrawables[cameraId] else {
+        guard let drawable = videoPreviews[cameraId] else {
             return
         }
         sampleBuffer.setAttachmentDisplayImmediately()

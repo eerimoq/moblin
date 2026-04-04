@@ -2087,7 +2087,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             }
         } else {
             videoPreview.removeAllFeeds()
-            media.removeAllVideoPreviewDrawables()
+            media.removeAllVideoPreviews()
         }
     }
 
@@ -2382,12 +2382,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         for feed in videoPreview.feeds {
             if !builtinDeviceIds.contains(feed.cameraId), !activeBufferedVideoIds.contains(feed.cameraId) {
                 videoPreview.removeFeed(cameraId: feed.cameraId)
-                media.removeVideoPreviewDrawable(cameraId: feed.cameraId)
+                media.removeVideoPreview(cameraId: feed.cameraId)
             }
         }
         for device in devices.devices {
             if let feed = videoPreview.addFeed(cameraId: device.id, name: device.name()) {
-                media.setVideoPreviewDrawable(cameraId: device.id, drawable: feed.previewView)
+                media.setVideoPreview(cameraId: device.id, drawable: feed.previewView)
             }
         }
     }

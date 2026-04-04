@@ -692,16 +692,16 @@ final class Media: NSObject {
         processor?.setVideoPreviewEnabled(enabled: enabled)
     }
 
-    func setVideoPreviewDrawable(cameraId: UUID, drawable: PreviewView) {
-        processor?.setVideoPreviewDrawable(cameraId: cameraId, drawable: drawable)
+    func setVideoPreview(cameraId: UUID, drawable: PreviewView) {
+        processor?.setVideoPreview(cameraId: cameraId, drawable: drawable)
     }
 
-    func removeVideoPreviewDrawable(cameraId: UUID) {
-        processor?.removeVideoPreviewDrawable(cameraId: cameraId)
+    func removeVideoPreview(cameraId: UUID) {
+        processor?.removeVideoPreview(cameraId: cameraId)
     }
 
-    func removeAllVideoPreviewDrawables() {
-        processor?.removeAllVideoPreviewDrawables()
+    func removeAllVideoPreviews() {
+        processor?.removeAllVideoPreviews()
     }
 
     func setLowFpsImage(fps: Float) {
