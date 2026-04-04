@@ -128,8 +128,8 @@ private struct VideoSourceView: View {
                         one is used at a time. This allows the phone to quickly change camera when zooming.
                         """),
                     ],
-                    items: model.listCameraPositions().map { id, name in
-                        InlinePickerItem(id: id, text: name)
+                    items: model.listCameraPositions().map {
+                        InlinePickerItem(id: $0.id, text: $0.name)
                     },
                     selectedId: model.getCameraPositionId(scene: scene)
                 )

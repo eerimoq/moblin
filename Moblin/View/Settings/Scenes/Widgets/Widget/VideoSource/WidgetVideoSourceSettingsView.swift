@@ -166,8 +166,8 @@ struct WidgetVideoSourceSettingsView: View {
                 InlinePickerView(
                     title: "Video source",
                     onChange: onCameraChange,
-                    items: model.listCameraPositions(excludeBuiltin: false).map { id, name in
-                        InlinePickerItem(id: id, text: name)
+                    items: model.listCameraPositions(excludeBuiltin: false).map {
+                        InlinePickerItem(id: $0.id, text: $0.name)
                     },
                     selectedId: model.getCameraPositionId(videoSourceWidget: videoSource)
                 )

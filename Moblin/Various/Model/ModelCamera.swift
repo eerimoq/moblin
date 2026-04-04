@@ -62,13 +62,17 @@ class CameraState: ObservableObject {
     }
 }
 
-let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
-let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
 let noneCameraName = "None"
 let screenCaptureCameraName = "Screen capture"
-private let backTripleLowEnergyCamera = "Back Triple (low power)"
-private let backDualLowEnergyCamera = "Back Dual (low power)"
-private let backWideDualLowEnergyCamera = "Back Wide dual (low power)"
+private let backTripleLowEnergyCameraName = "Back Triple (low power)"
+private let backDualLowEnergyCameraName = "Back Dual (low power)"
+private let backWideDualLowEnergyCameraName = "Back Wide dual (low power)"
+
+let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
+let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
+private let backTripleLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-100000000000")!
+private let backDualLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-200000000000")!
+private let backWideDualLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-300000000000")!
 
 extension Model {
     func setFocusPointOfInterest(focusPoint: CGPoint) {
@@ -537,51 +541,58 @@ extension Model {
         }
     }
 
-    func listCameraPositions(excludeBuiltin: Bool = false) -> [(CameraId, String)] {
-        var cameras: [(CameraId, String)] = []
+    func listCameraPositions(excludeBuiltin: Bool = false) -> [Camera] {
+        var cameras: [Camera] = []
         if !excludeBuiltin {
             if hasTripleBackCamera {
-                cameras.append((backTripleLowEnergyCamera, backTripleLowEnergyCamera))
+                cameras.append(Camera(id: backTripleLowEnergyCameraId.uuidString,
+                                      name: backTripleLowEnergyCameraName))
             }
             if hasDualBackCamera {
-                cameras.append((backDualLowEnergyCamera, backDualLowEnergyCamera))
+                cameras.append(Camera(
+                    id: backDualLowEnergyCameraId.uuidString,
+                    name: backDualLowEnergyCameraName
+                ))
             }
             if hasWideDualBackCamera {
-                cameras.append((backWideDualLowEnergyCamera, backWideDualLowEnergyCamera))
+                cameras.append(Camera(
+                    id: backWideDualLowEnergyCameraId.uuidString,
+                    name: backWideDualLowEnergyCameraName
+                ))
             }
             cameras += backCameras.map {
-                ($0.id, "Back \($0.name)")
+                Camera(id: $0.id, name: "Back \($0.name)")
             }
             cameras += frontCameras.map {
-                ($0.id, "Front \($0.name)")
+                Camera(id: $0.id, name: "Front \($0.name)")
             }
             cameras += externalCameras.map {
-                ($0.id, $0.name)
+                Camera(id: $0.id, name: $0.name)
             }
         }
         cameras += rtmpCameras().map {
-            ($0.0.uuidString, $0.1)
+            Camera(id: $0.0.uuidString, name: $0.1)
         }
         cameras += srtlaCameras().map {
-            ($0.0.uuidString, $0.1)
+            Camera(id: $0.0.uuidString, name: $0.1)
         }
         cameras += ristCameras().map {
-            ($0.0.uuidString, $0.1)
+            Camera(id: $0.0.uuidString, name: $0.1)
         }
         cameras += rtspCameras().map {
-            ($0.0.uuidString, $0.1)
+            Camera(id: $0.0.uuidString, name: $0.1)
         }
         cameras += whipCameras().map {
-            ($0.0.uuidString, $0.1)
+            Camera(id: $0.0.uuidString, name: $0.1)
         }
         cameras += whepCameras().map {
-            ($0.0.uuidString, $0.1)
+            Camera(id: $0.0.uuidString, name: $0.1)
         }
         cameras += playerCameras().map {
-            ($0.0.uuidString, $0.1)
+            Camera(id: $0.0.uuidString, name: $0.1)
         }
-        cameras.append((screenCaptureCameraId.uuidString, screenCaptureCameraName))
-        cameras.append((noneCameraId.uuidString, noneCameraName))
+        cameras.append(Camera(id: screenCaptureCameraId.uuidString, name: screenCaptureCameraName))
+        cameras.append(Camera(id: noneCameraId.uuidString, name: noneCameraName))
         return cameras
     }
 
@@ -594,15 +605,15 @@ extension Model {
     }
 
     private func isBackTripleLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backTripleLowEnergyCamera
+        return cameraId == backTripleLowEnergyCameraId.uuidString
     }
 
     private func isBackDualLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backDualLowEnergyCamera
+        return cameraId == backDualLowEnergyCameraId.uuidString
     }
 
     private func isBackWideDualLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backWideDualLowEnergyCamera
+        return cameraId == backWideDualLowEnergyCameraId.uuidString
     }
 
     func getCameraPositionId(scene: SettingsScene?) -> CameraId {
@@ -683,11 +694,11 @@ extension Model {
         case .screenCapture:
             return screenCaptureCameraId.uuidString
         case .backTripleLowEnergy:
-            return backTripleLowEnergyCamera
+            return backTripleLowEnergyCameraId.uuidString
         case .backDualLowEnergy:
-            return backDualLowEnergyCamera
+            return backDualLowEnergyCameraId.uuidString
         case .backWideDualLowEnergy:
-            return backWideDualLowEnergyCamera
+            return backWideDualLowEnergyCameraId.uuidString
         case .none:
             return noneCameraId.uuidString
         }
@@ -749,11 +760,11 @@ extension Model {
         case .screenCapture:
             return screenCaptureCameraName
         case .backTripleLowEnergy:
-            return backTripleLowEnergyCamera
+            return backTripleLowEnergyCameraName
         case .backDualLowEnergy:
-            return backDualLowEnergyCamera
+            return backDualLowEnergyCameraName
         case .backWideDualLowEnergy:
-            return backWideDualLowEnergyCamera
+            return backWideDualLowEnergyCameraName
         case .none:
             return noneCameraName
         }
