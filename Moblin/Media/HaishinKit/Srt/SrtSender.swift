@@ -118,6 +118,7 @@ class SrtDataPacket {
     fileprivate var sequenceNumber: UInt32 = 0
     fileprivate var createdAt: ContinuousClock.Instant = .now
     fileprivate var retransmittedAt: ContinuousClock.Instant?
+    fileprivate var containsAudio: Bool = false
 
     init(payload: UnsafeRawBufferPointer) {
         let packetSize = srtDataPacketHeaderSize + payload.count
@@ -198,6 +199,8 @@ class SrtSender {
     private var latestReceivedPacketTime = ContinuousClock.now
     private let packetsInFlightDropThreshold: ContinuousClock.Duration
     private let packetsToSendDropThreshold: ContinuousClock.Duration
+    private let audioPacketsInFlightDropThreshold: ContinuousClock.Duration
+    private let audioPacketsToSendDropThreshold: ContinuousClock.Duration
     private var clock = SrtClock()
     private let connectTimer = SimpleTimer(queue: srtlaClientQueue)
 
@@ -207,6 +210,8 @@ class SrtSender {
         let latencyUs = 1000 * Int64(latency)
         packetsInFlightDropThreshold = .microseconds(latencyUs * 3 / 2)
         packetsToSendDropThreshold = .microseconds(latencyUs * 5 / 4)
+        audioPacketsInFlightDropThreshold = .microseconds(latencyUs * 3)
+        audioPacketsToSendDropThreshold = .microseconds(latencyUs * 5 / 2)
     }
 
     func start() {
@@ -231,10 +236,11 @@ class SrtSender {
         return SrtDataPacket(payload: payload)
     }
 
-    func enqueue(packet: SrtDataPacket, now: ContinuousClock.Instant) {
+    func enqueue(packet: SrtDataPacket, now: ContinuousClock.Instant, containsAudio: Bool = false) {
         guard state == .connected else {
             return
         }
+        packet.containsAudio = containsAudio
         packet.setHeader(sequenceNumber: getNextSequenceNumber(),
                          now: now,
                          timestamp: clock.timestamp(now: now),
@@ -269,16 +275,24 @@ class SrtSender {
     }
 
     private func dropOldPackets(now: ContinuousClock.Instant) {
-        while let packet = packetsInFlight.first,
-              packet.createdAt.duration(to: now) > packetsInFlightDropThreshold
-        {
+        while let packet = packetsInFlight.first {
+            let threshold = packet.containsAudio
+                ? audioPacketsInFlightDropThreshold
+                : packetsInFlightDropThreshold
+            guard packet.createdAt.duration(to: now) > threshold else {
+                break
+            }
             packetsInFlight.removeFirst()
             packetsInFlightBySequenceNumber.removeValue(forKey: packet.sequenceNumber)
             pktSndDropTotal += 1
         }
-        while let packet = packetsToSend.first,
-              packet.createdAt.duration(to: now) > packetsToSendDropThreshold
-        {
+        while let packet = packetsToSend.first {
+            let threshold = packet.containsAudio
+                ? audioPacketsToSendDropThreshold
+                : packetsToSendDropThreshold
+            guard packet.createdAt.duration(to: now) > threshold else {
+                break
+            }
             packetsToSend.removeFirst()
             pktSndDropTotal += 1
         }
