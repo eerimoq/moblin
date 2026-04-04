@@ -1,8 +1,10 @@
 import AVFoundation
 import Foundation
 
+typealias CameraId = String
+
 struct Camera: Identifiable, Equatable {
-    var id: String
+    var id: CameraId
     var name: String
 }
 
@@ -535,8 +537,8 @@ extension Model {
         }
     }
 
-    func listCameraPositions(excludeBuiltin: Bool = false) -> [(String, String)] {
-        var cameras: [(String, String)] = []
+    func listCameraPositions(excludeBuiltin: Bool = false) -> [(CameraId, String)] {
+        var cameras: [(CameraId, String)] = []
         if !excludeBuiltin {
             if hasTripleBackCamera {
                 cameras.append((backTripleLowEnergyCamera, backTripleLowEnergyCamera))
@@ -583,43 +585,43 @@ extension Model {
         return cameras
     }
 
-    func isBackCamera(cameraId: String) -> Bool {
+    private func isBackCamera(cameraId: String) -> Bool {
         return backCameras.contains(where: { $0.id == cameraId })
     }
 
-    func isFrontCamera(cameraId: String) -> Bool {
+    private func isFrontCamera(cameraId: String) -> Bool {
         return frontCameras.contains(where: { $0.id == cameraId })
     }
 
-    func isBackTripleLowEnergyAutoCamera(cameraId: String) -> Bool {
+    private func isBackTripleLowEnergyAutoCamera(cameraId: String) -> Bool {
         return cameraId == backTripleLowEnergyCamera
     }
 
-    func isBackDualLowEnergyAutoCamera(cameraId: String) -> Bool {
+    private func isBackDualLowEnergyAutoCamera(cameraId: String) -> Bool {
         return cameraId == backDualLowEnergyCamera
     }
 
-    func isBackWideDualLowEnergyAutoCamera(cameraId: String) -> Bool {
+    private func isBackWideDualLowEnergyAutoCamera(cameraId: String) -> Bool {
         return cameraId == backWideDualLowEnergyCamera
     }
 
-    func getCameraPositionId(scene: SettingsScene?) -> String {
+    func getCameraPositionId(scene: SettingsScene?) -> CameraId {
         return getCameraPositionId(settingsCameraId: scene?.toCameraId())
     }
 
-    func getCameraPositionId(videoSourceWidget: SettingsWidgetVideoSource?) -> String {
+    func getCameraPositionId(videoSourceWidget: SettingsWidgetVideoSource?) -> CameraId {
         return getCameraPositionId(settingsCameraId: videoSourceWidget?.toCameraId())
     }
 
-    func getCameraPositionId(vTuberWidget: SettingsWidgetVTuber?) -> String {
+    func getCameraPositionId(vTuberWidget: SettingsWidgetVTuber?) -> CameraId {
         return getCameraPositionId(settingsCameraId: vTuberWidget?.toCameraId())
     }
 
-    func getCameraPositionId(pngTuberWidget: SettingsWidgetPngTuber?) -> String {
+    func getCameraPositionId(pngTuberWidget: SettingsWidgetPngTuber?) -> CameraId {
         return getCameraPositionId(settingsCameraId: pngTuberWidget?.toCameraId())
     }
 
-    func cameraIdToSettingsCameraId(cameraId: String) -> SettingsCameraId {
+    func cameraIdToSettingsCameraId(cameraId: CameraId) -> SettingsCameraId {
         if let id = getSrtlaStream(idString: cameraId)?.id {
             return .srtla(id: id)
         } else if let id = getRtmpStream(idString: cameraId)?.id {
@@ -653,7 +655,7 @@ extension Model {
         }
     }
 
-    private func getCameraPositionId(settingsCameraId: SettingsCameraId?) -> String {
+    private func getCameraPositionId(settingsCameraId: SettingsCameraId?) -> CameraId {
         guard let settingsCameraId else {
             return ""
         }

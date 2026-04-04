@@ -844,6 +844,10 @@ struct RightOverlayBottomView: View {
                                                  orientation: model.orientation)
                 } else if streamOverlay.showingBeauty {
                     StreamOverlayRightBeautyView(model: model, beauty: database.beauty)
+                } else if streamOverlay.showingVideoPreview {
+                    StreamOverlayRightVideoPreviewView(model: model,
+                                                       orientation: model.orientation,
+                                                       videoPreview: model.videoPreview)
                 } else {
                     if database.verticalButtons {
                         RightOverlayBottomVerticalView(model: model,

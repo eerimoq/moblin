@@ -413,6 +413,13 @@ struct QuickButtonsInnerView: View {
         model.toggleBeautyQuickButton()
     }
 
+    private func videoPreviewAction(state: ButtonState) {
+        model.toggleVideoPreview()
+        state.button.isOn.toggle()
+        model.setQuickButton(type: .videoPreview, isOn: state.button.isOn)
+        model.updateQuickButtonStates()
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -955,6 +962,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             beautyAction()
+                        }
+                    case .videoPreview:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            videoPreviewAction(state: state)
                         }
                     }
                 }

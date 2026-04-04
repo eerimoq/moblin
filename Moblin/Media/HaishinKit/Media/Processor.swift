@@ -197,6 +197,22 @@ final class Processor {
         video.setScreenPreview(enabled: enabled)
     }
 
+    func setVideoPreviewEnabled(enabled: Bool) {
+        video.setVideoPreviewEnabled(enabled: enabled)
+    }
+
+    func setVideoPreviewDrawable(cameraId: UUID, drawable: PreviewView) {
+        video.setVideoPreviewDrawable(cameraId: cameraId, drawable: drawable)
+    }
+
+    func removeVideoPreviewDrawable(cameraId: UUID) {
+        video.removeVideoPreviewDrawable(cameraId: cameraId)
+    }
+
+    func removeAllVideoPreviewDrawables() {
+        video.removeAllVideoPreviewDrawables()
+    }
+
     func setLowFpsImage(fps: Float) {
         video.setLowFpsImage(fps: fps)
     }
