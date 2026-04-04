@@ -2080,7 +2080,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         streamOverlay.showingVideoPreview.toggle()
         media.setVideoPreviewEnabled(enabled: streamOverlay.showingVideoPreview)
         if streamOverlay.showingVideoPreview {
-            updateVideoPreviewFeeds()
             for cameraId in activeBufferedVideoIds {
                 addVideoPreviewFeed(cameraId: cameraId)
             }
@@ -2756,7 +2755,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime
                 self.relaxedBitrate = self.database.debug.relaxedBitrate
                 self.updateCameraPreviewRotation()
-                self.updateVideoPreviewFeeds()
             }
         )
         zoom.xPinch = zoom.x
