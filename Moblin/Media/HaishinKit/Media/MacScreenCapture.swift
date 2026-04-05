@@ -28,10 +28,14 @@ class MacScreenCapture: NSObject {
 
     private func startInternal(fps: Float64) async {
         do {
-            let filter = try await makeContentFilter()
+            let (filter, display) = try await makeContentFilter()
             let config = SCStreamConfiguration()
+            config.captureResolution = .best
             config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(fps.rounded()))
             config.pixelFormat = kCVPixelFormatType_32BGRA
+            let scaleFactor = 2
+            config.width = display.width * scaleFactor
+            config.height = display.height * scaleFactor
             let stream = SCStream(filter: filter, configuration: config, delegate: self)
             try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: processorPipelineQueue)
             try await stream.startCapture()
@@ -52,7 +56,7 @@ class MacScreenCapture: NSObject {
         delegate?.macScreenCaptureDidStop()
     }
 
-    private func makeContentFilter() async throws -> SCContentFilter {
+    private func makeContentFilter() async throws -> (SCContentFilter, SCDisplay) {
         while true {
             try await sleep(milliSeconds: 100)
             let content = try await SCShareableContent.excludingDesktopWindows(
@@ -68,11 +72,11 @@ class MacScreenCapture: NSObject {
                 continue
             }
             excludedApplications = []
-            return SCContentFilter(
+            return (SCContentFilter(
                 display: display,
                 excludingApplications: excludedApplications,
                 exceptingWindows: []
-            )
+            ), display)
         }
     }
 }
