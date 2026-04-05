@@ -67,7 +67,7 @@ func deleteTrash() {
             continue
         }
         for path in paths {
-            try? FileManager.default.removeItem(atPath: path)
+            try? FileManager.default.removeItem(at: folder.appending(component: path))
         }
     }
 }
