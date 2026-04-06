@@ -37,7 +37,7 @@ extension Model {
     }
 
     private func handleLocationUpdate(location: CLLocation) {
-        guard isLive || !stream.realtimeIrlOnlyWhenLive else {
+        guard isLive else {
             return
         }
         guard !isLocationInPrivacyRegion(location: location) else {
