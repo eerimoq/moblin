@@ -2559,7 +2559,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                            fillFrame: false,
                                            isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
                                            forceSceneTransition: false,
-                                           macScreenCapture: false)
+                                           macScreenRecording: false)
         media.attachCamera(params: params)
     }
 
@@ -2729,7 +2729,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             fillFrame: getFillFrame(scene: scene),
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
             forceSceneTransition: database.forceSceneSwitchTransition,
-            macScreenCapture: sceneNeedsMacScreenCapture(scene: scene)
+            macScreenRecording: sceneNeedsMacScreenRecording(scene: scene)
         )
         media.attachCamera(
             params: params,
@@ -2786,7 +2786,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             fillFrame: getFillFrame(scene: scene),
             isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi(),
             forceSceneTransition: database.forceSceneSwitchTransition,
-            macScreenCapture: sceneNeedsMacScreenCapture(scene: scene)
+            macScreenRecording: sceneNeedsMacScreenRecording(scene: scene)
         )
         media.usePendingAfterAttachEffects()
     }

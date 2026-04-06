@@ -273,7 +273,7 @@ extension Model {
         case .external:
             attachExternalCamera(scene: scene)
         case .screenCapture:
-            attachBufferedCamera(cameraId: screenCaptureCameraId, scene: scene)
+            attachBufferedCamera(cameraId: screenRecordingCameraId, scene: scene)
         case .backTripleLowEnergy:
             attachBackTripleLowEnergyCamera()
         case .backDualLowEnergy:

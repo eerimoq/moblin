@@ -143,14 +143,14 @@ struct WidgetVideoSourceSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var widget: SettingsWidget
     @ObservedObject var videoSource: SettingsWidgetVideoSource
-    @State private var presentingScreenCaptureAlert = false
+    @State private var presentingScreenRecordingAlert = false
 
     private func onCameraChange(cameraId: String) {
         videoSource.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
         #if !targetEnvironment(macCatalyst)
-        if model.isScreenCaptureCamera(cameraId: cameraId) {
-            presentingScreenCaptureAlert = true
+        if model.isScreenRecordingCamera(cameraId: cameraId) {
+            presentingScreenRecordingAlert = true
         }
         #endif
     }
@@ -178,9 +178,9 @@ struct WidgetVideoSourceSettingsView: View {
                     GrayTextView(text: model.getCameraPositionName(videoSourceWidget: videoSource))
                 }
             }
-            .alert(startScreenCatptureHelp, isPresented: $presentingScreenCaptureAlert) {
+            .alert(startScreenCatptureHelp, isPresented: $presentingScreenRecordingAlert) {
                 Button("Got it") {
-                    presentingScreenCaptureAlert = false
+                    presentingScreenRecordingAlert = false
                 }
             }
         }

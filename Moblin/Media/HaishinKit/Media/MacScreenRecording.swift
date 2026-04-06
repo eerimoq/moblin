@@ -2,16 +2,16 @@
 import AVFoundation
 import ScreenCaptureKit
 
-protocol MacScreenCaptureDelegate: AnyObject {
-    func macScreenCaptureDidStart(latency: Double)
-    func macScreenCaptureDidStop()
-    func macScreenCaptureDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer)
+protocol MacScreenRecordingDelegate: AnyObject {
+    func macScreenRecordingDidStart(latency: Double)
+    func macScreenRecordingDidStop()
+    func macScreenRecordingDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer)
 }
 
 @available(macCatalyst 18.2, *)
-class MacScreenCapture: NSObject {
-    static let shared = MacScreenCapture()
-    weak var delegate: MacScreenCaptureDelegate?
+class MacScreenRecording: NSObject {
+    static let shared = MacScreenRecording()
+    weak var delegate: MacScreenRecordingDelegate?
     private var stream: SCStream?
 
     func start(fps: Float64) {
@@ -40,7 +40,7 @@ class MacScreenCapture: NSObject {
             try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: processorPipelineQueue)
             try await stream.startCapture()
             self.stream = stream
-            delegate?.macScreenCaptureDidStart(latency: 0.1)
+            delegate?.macScreenRecordingDidStart(latency: 0.1)
         } catch {
             logger.info("mac-screen-capture: Failed to start: \(error.localizedDescription)")
         }
@@ -53,7 +53,7 @@ class MacScreenCapture: NSObject {
             logger.info("mac-screen-capture: Failed to stop: \(error.localizedDescription)")
         }
         stream = nil
-        delegate?.macScreenCaptureDidStop()
+        delegate?.macScreenRecordingDidStop()
     }
 
     private func makeContentFilter() async throws -> (SCContentFilter, SCDisplay) {
@@ -82,21 +82,21 @@ class MacScreenCapture: NSObject {
 }
 
 @available(macCatalyst 18.2, *)
-extension MacScreenCapture: SCStreamOutput {
+extension MacScreenRecording: SCStreamOutput {
     func stream(_: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of _: SCStreamOutputType) {
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp + CMTime(seconds: 0.1)
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
             return
         }
-        delegate?.macScreenCaptureDidOutputSampleBuffer(sampleBuffer)
+        delegate?.macScreenRecordingDidOutputSampleBuffer(sampleBuffer)
     }
 }
 
 @available(macCatalyst 18.2, *)
-extension MacScreenCapture: SCStreamDelegate {
+extension MacScreenRecording: SCStreamDelegate {
     func stream(_: SCStream, didStopWithError error: any Error) {
         logger.info("mac-screen-capture: Stopped with error: \(error.localizedDescription)")
-        delegate?.macScreenCaptureDidStop()
+        delegate?.macScreenRecordingDidStop()
     }
 }
 #endif

@@ -3240,7 +3240,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
         case .browser:
             return String(localized: "A browser widget shows a webpage.")
         case .videoSource:
-            return String(localized: "A video source widget shows another camera or screen capture.")
+            return String(localized: "A video source widget shows another camera or screen recording.")
         case .image:
             return String(localized: "An image widget shows an image.")
         case .alerts:
