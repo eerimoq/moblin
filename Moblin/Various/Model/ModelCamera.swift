@@ -419,7 +419,7 @@ extension Model {
             position: position
         )
         return deviceDiscovery.devices.map { device in
-            Camera(id: device.uniqueID, name: cameraName(device: device))
+            Camera(id: device.uniqueID, name: device.name())
         }
     }
 
@@ -536,9 +536,7 @@ extension Model {
             mediaType: .video,
             position: .unspecified
         )
-        return deviceDiscovery.devices.map { device in
-            Camera(id: device.uniqueID, name: cameraName(device: device))
-        }
+        return deviceDiscovery.devices.map { Camera(id: $0.uniqueID, name: $0.name()) }
     }
 
     func listCameras(excludeBuiltin: Bool = false) -> [Camera] {
@@ -546,7 +544,7 @@ extension Model {
         if !excludeBuiltin {
             if hasTripleBackCamera {
                 cameras.append(Camera(id: backTripleLowEnergyCameraId.uuidString,
-                                           name: backTripleLowEnergyCameraName))
+                                      name: backTripleLowEnergyCameraName))
             }
             if hasDualBackCamera {
                 cameras.append(Camera(
@@ -560,15 +558,9 @@ extension Model {
                     name: backWideDualLowEnergyCameraName
                 ))
             }
-            cameras += backCameras.map {
-                Camera(id: $0.id, name: "Back \($0.name)")
-            }
-            cameras += frontCameras.map {
-                Camera(id: $0.id, name: "Front \($0.name)")
-            }
-            cameras += externalCameras.map {
-                Camera(id: $0.id, name: $0.name)
-            }
+            cameras += backCameras
+            cameras += frontCameras
+            cameras += externalCameras
         }
         cameras += rtmpCameras().map {
             Camera(id: $0.0.uuidString, name: $0.1)
@@ -773,13 +765,13 @@ extension Model {
             }
         case let .back(id):
             if let camera = backCameras.first(where: { $0.id == id }) {
-                return "Back \(camera.name)"
+                return camera.name
             } else {
                 return unknownSad
             }
         case let .front(id):
             if let camera = frontCameras.first(where: { $0.id == id }) {
-                return "Front \(camera.name)"
+                return camera.name
             } else {
                 return unknownSad
             }

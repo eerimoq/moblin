@@ -48,14 +48,25 @@ extension AVCaptureDevice {
     }
 }
 
-func cameraName(device: AVCaptureDevice?) -> String {
-    guard let device else {
-        return ""
+extension AVCaptureDevice {
+    func name() -> String {
+        if isMac() {
+            return localizedName
+        } else {
+            let name = baseName()
+            switch position {
+            case .back:
+                return String(localized: "Back \(name)")
+            case .front:
+                return String(localized: "Front \(name)")
+            default:
+                return name
+            }
+        }
     }
-    if isMac() {
-        return device.localizedName
-    } else {
-        switch device.deviceType {
+
+    private func baseName() -> String {
+        switch deviceType {
         case .builtInTripleCamera:
             return String(localized: "Triple (auto)")
         case .builtInDualCamera:
@@ -69,7 +80,7 @@ func cameraName(device: AVCaptureDevice?) -> String {
         case .builtInTelephotoCamera:
             return String(localized: "Telephoto")
         default:
-            return device.localizedName
+            return localizedName
         }
     }
 }
