@@ -2139,7 +2139,7 @@ extension VideoUnit: MacScreenCaptureDelegate {
     func macScreenCaptureDidStart(latency: Double) {
         addBufferedVideo(
             cameraId: screenCaptureCameraId,
-            name: "Screen capture",
+            name: screenCaptureCameraName,
             latency: latency
         )
     }

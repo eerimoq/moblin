@@ -79,7 +79,7 @@ extension Model {
         makeToast(title: String(localized: "Screen capture started"))
         media.addBufferedVideo(
             cameraId: screenCaptureCameraId,
-            name: "Screen capture",
+            name: screenCaptureCameraName,
             latency: latency
         )
     }
