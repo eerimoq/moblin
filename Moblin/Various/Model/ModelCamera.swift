@@ -685,6 +685,8 @@ extension Model {
             return .screenCapture
         } else if isNoneCamera(cameraId: cameraId.uuidString) {
             return SettingsCameraId.none
+        } else if let deviceUniqueId = getBuiltinDeviceUniqueId(cameraId: cameraId) {
+            return cameraIdToSettingsCameraId(cameraId: deviceUniqueId)
         } else {
             return nil
         }

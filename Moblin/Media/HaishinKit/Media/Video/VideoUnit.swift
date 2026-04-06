@@ -2101,7 +2101,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let input = connection.inputPorts.first?.input as? AVCaptureDeviceInput else {
             return
         }
-        if false, videoPreviewEnabled {
+        if videoPreviewEnabled {
             enqueueVideoPreview(device: input.device, sampleBuffer: sampleBuffer)
         }
         if isSceneVideoSource(device: input.device) {

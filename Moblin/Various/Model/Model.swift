@@ -2748,6 +2748,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 self.relaxedBitrateStartTime = self.lastAttachCompletedTime
                 self.relaxedBitrate = self.database.debug.relaxedBitrate
                 self.updateCameraPreviewRotation()
+                self.updateVideoPreviews()
             }
         )
         zoom.xPinch = zoom.x

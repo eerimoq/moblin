@@ -27,6 +27,13 @@ extension Model {
         let oldFeeds = videoPreview.feeds
         videoPreview.feeds.removeAll()
         if streamOverlay.showingVideoPreview {
+            guard let scene = getSelectedScene() else {
+                return
+            }
+            let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
+            for device in devices.devices {
+                appendVideoPreviewIfNeeded(cameraId: device.id, name: device.name(), oldFeeds: oldFeeds)
+            }
             for camera in listCameraPositions(excludeBuiltin: true) {
                 guard let cameraId = UUID(uuidString: camera.id) else {
                     continue
@@ -37,16 +44,20 @@ extension Model {
                 guard isIngestVideoSource(cameraId: cameraId) else {
                     continue
                 }
-                if let feed = oldFeeds.first(where: { $0.cameraId == cameraId }) {
-                    videoPreview.feeds.append(feed)
-                } else {
-                    let feed = VideoPreviewFeed(cameraId: cameraId, name: camera.name)
-                    videoPreview.feeds.append(feed)
-                    media.setVideoPreview(cameraId: cameraId, drawable: feed.previewView)
-                }
+                appendVideoPreviewIfNeeded(cameraId: cameraId, name: camera.name, oldFeeds: oldFeeds)
             }
         } else {
             media.removeAllVideoPreviews()
+        }
+    }
+
+    private func appendVideoPreviewIfNeeded(cameraId: UUID, name: String, oldFeeds: [VideoPreviewFeed]) {
+        if let feed = oldFeeds.first(where: { $0.cameraId == cameraId }) {
+            videoPreview.feeds.append(feed)
+        } else {
+            let feed = VideoPreviewFeed(cameraId: cameraId, name: name)
+            videoPreview.feeds.append(feed)
+            media.setVideoPreview(cameraId: cameraId, drawable: feed.previewView)
         }
     }
 
