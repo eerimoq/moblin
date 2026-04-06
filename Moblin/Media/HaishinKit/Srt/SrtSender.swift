@@ -330,7 +330,6 @@ class SrtSender {
             {
                 continue
             }
-            // logger.info("xxx RETX  \(packetSequenceNumber) RTT: \(rttUs)")
             packet.retransmittedAt = now
             packet.setRetransmissionBit()
             pktRetransTotal += 1
@@ -546,7 +545,6 @@ class SrtSender {
     }
 
     private func handleNakPacket(reader: ByteReader) throws {
-        // logger.info("xxx NAK packet")
         while let sequenceNumber = try? reader.readUInt32() {
             if isSrtSnRange(sn: sequenceNumber) {
                 let upToNakSequenceNumber = try reader.readUInt32()
@@ -554,17 +552,13 @@ class SrtSender {
                                              through: upToNakSequenceNumber,
                                              by: 1)
                 {
-                    // logger.info("xxx   NAK-1 \(sequenceNumber)")
                     guard sequenceNumbersToRetransmit.count < 1000 else {
-                        logger.info("xxx   Too many NAKs")
                         return
                     }
                     sequenceNumbersToRetransmit.append(sequenceNumber)
                 }
             } else {
-                // logger.info("xxx   NAK-2 \(sequenceNumber)")
                 guard sequenceNumbersToRetransmit.count < 1000 else {
-                    logger.info("xxx   Too many NAKs")
                     return
                 }
                 sequenceNumbersToRetransmit.append(sequenceNumber)
