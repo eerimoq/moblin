@@ -47,7 +47,12 @@ extension Model {
     func pauseQuickButtonChat() {
         quickButtonChat.paused = true
         quickButtonChat.pausedPostsCount = 0
-        quickButtonChat.pausedPosts = [createRedLineChatPost()]
+        var initialPausedPosts = Deque<ChatPost>()
+        while let post = quickButtonChat.newPosts.popFirst() {
+            initialPausedPosts.append(post)
+        }
+        initialPausedPosts.append(createRedLineChatPost())
+        quickButtonChat.pausedPosts = initialPausedPosts
     }
 
     func endOfQuickButtonChatReachedWhenPaused() {
@@ -96,6 +101,9 @@ extension Model {
     func pauseQuickButtonChatAlerts() {
         quickButtonChatState.chatAlertsPaused = true
         quickButtonChatState.pausedChatAlertsPostsCount = 0
+        while let post = newQuickButtonChatAlertsPosts.popFirst() {
+            pausedQuickButtonChatAlertsPosts.append(post)
+        }
     }
 
     func endOfQuickButtonChatAlertsReachedWhenPaused() {

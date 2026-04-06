@@ -229,7 +229,9 @@ private struct MessagesView: View {
                 LazyVStack(alignment: .leading, spacing: 1) {
                     Color.clear
                         .onAppear {
-                            model.endOfQuickButtonChatReachedWhenPaused()
+                            DispatchQueue.main.async {
+                                model.endOfQuickButtonChatReachedWhenPaused()
+                            }
                         }
                         .onDisappear {
                             model.pauseQuickButtonChat()
@@ -425,7 +427,9 @@ private struct AlertsMessagesView: View {
                 LazyVStack(alignment: .leading, spacing: 1) {
                     Color.clear
                         .onAppear {
-                            model.endOfQuickButtonChatAlertsReachedWhenPaused()
+                            DispatchQueue.main.async {
+                                model.endOfQuickButtonChatAlertsReachedWhenPaused()
+                            }
                         }
                         .onDisappear {
                             model.pauseQuickButtonChatAlerts()
