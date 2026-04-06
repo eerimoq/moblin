@@ -138,6 +138,10 @@ extension Model {
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
+        guard !isLive, !isRecording else {
+            makeErrorToast(title: String(localized: "Cannot import settings when live or recording"))
+            return
+        }
         for url in urls {
             if url.url.isFileURL,
                url.url.pathExtension.caseInsensitiveCompare("moblinSettings") == .orderedSame
