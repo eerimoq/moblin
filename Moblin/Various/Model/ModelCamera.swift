@@ -70,9 +70,17 @@ private let backWideDualLowEnergyCameraName = "Back Wide dual (low power)"
 
 let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
 let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
+
 private let backTripleLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-100000000000")!
 private let backDualLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-200000000000")!
 private let backWideDualLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-300000000000")!
+
+private let backTripleLowEnergyCamera = Camera(id: backTripleLowEnergyCameraId.uuidString,
+                                               name: backTripleLowEnergyCameraName)
+private let backDualLowEnergyCamera = Camera(id: backDualLowEnergyCameraId.uuidString,
+                                             name: backDualLowEnergyCameraName)
+private let backWideDualLowEnergyCamera = Camera(id: backWideDualLowEnergyCameraId.uuidString,
+                                                 name: backWideDualLowEnergyCameraName)
 
 extension Model {
     func setFocusPointOfInterest(focusPoint: CGPoint) {
@@ -543,46 +551,25 @@ extension Model {
         var cameras: [Camera] = []
         if !excludeBuiltin {
             if hasTripleBackCamera {
-                cameras.append(Camera(id: backTripleLowEnergyCameraId.uuidString,
-                                      name: backTripleLowEnergyCameraName))
+                cameras.append(backTripleLowEnergyCamera)
             }
             if hasDualBackCamera {
-                cameras.append(Camera(
-                    id: backDualLowEnergyCameraId.uuidString,
-                    name: backDualLowEnergyCameraName
-                ))
+                cameras.append(backDualLowEnergyCamera)
             }
             if hasWideDualBackCamera {
-                cameras.append(Camera(
-                    id: backWideDualLowEnergyCameraId.uuidString,
-                    name: backWideDualLowEnergyCameraName
-                ))
+                cameras.append(backWideDualLowEnergyCamera)
             }
             cameras += backCameras
             cameras += frontCameras
             cameras += externalCameras
         }
-        cameras += rtmpCameras().map {
-            Camera(id: $0.0.uuidString, name: $0.1)
-        }
-        cameras += srtlaCameras().map {
-            Camera(id: $0.0.uuidString, name: $0.1)
-        }
-        cameras += ristCameras().map {
-            Camera(id: $0.0.uuidString, name: $0.1)
-        }
-        cameras += rtspCameras().map {
-            Camera(id: $0.0.uuidString, name: $0.1)
-        }
-        cameras += whipCameras().map {
-            Camera(id: $0.0.uuidString, name: $0.1)
-        }
-        cameras += whepCameras().map {
-            Camera(id: $0.0.uuidString, name: $0.1)
-        }
-        cameras += playerCameras().map {
-            Camera(id: $0.0.uuidString, name: $0.1)
-        }
+        cameras += rtmpCameras()
+        cameras += srtlaCameras()
+        cameras += ristCameras()
+        cameras += rtspCameras()
+        cameras += whipCameras()
+        cameras += whepCameras()
+        cameras += playerCameras()
         cameras.append(Camera(id: screenCaptureCameraId.uuidString, name: screenCaptureCameraName))
         cameras.append(Camera(id: noneCameraId.uuidString, name: noneCameraName))
         return cameras

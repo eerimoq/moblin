@@ -2,9 +2,9 @@ import CoreMedia
 import Foundation
 
 extension Model {
-    func rtspCameras() -> [(UUID, String)] {
+    func rtspCameras() -> [Camera] {
         return database.rtspClient.streams.map { stream in
-            (stream.id, stream.camera())
+            Camera(id: stream.id.uuidString, name: stream.camera())
         }
     }
 

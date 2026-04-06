@@ -2,8 +2,8 @@ import CoreMedia
 import Foundation
 
 extension Model {
-    func rtmpCameras() -> [(UUID, String)] {
-        return database.rtmpServer.streams.map { ($0.id, $0.camera()) }
+    func rtmpCameras() -> [Camera] {
+        return database.rtmpServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
     func getRtmpStream(id: UUID) -> SettingsRtmpServerStream? {

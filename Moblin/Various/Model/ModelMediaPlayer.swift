@@ -94,9 +94,9 @@ extension Model {
         }
     }
 
-    func playerCameras() -> [(UUID, String)] {
+    func playerCameras() -> [Camera] {
         return database.mediaPlayers.players.map {
-            ($0.id, $0.camera())
+            Camera(id: $0.id.uuidString, name: $0.camera())
         }
     }
 

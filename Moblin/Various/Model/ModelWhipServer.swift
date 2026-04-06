@@ -2,9 +2,9 @@ import CoreMedia
 import Foundation
 
 extension Model {
-    func whipCameras() -> [(UUID, String)] {
+    func whipCameras() -> [Camera] {
         return database.whipServer.streams.map { stream in
-            (stream.id, stream.camera())
+            Camera(id: stream.id.uuidString, name: stream.camera())
         }
     }
 
