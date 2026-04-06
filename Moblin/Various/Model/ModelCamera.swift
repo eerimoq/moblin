@@ -62,21 +62,25 @@ class CameraState: ObservableObject {
     }
 }
 
-let noneCameraName = "None"
-let screenCaptureCameraName = "Screen capture"
-private let backTripleLowEnergyCameraName = "Back Triple (low power)"
-private let backDualLowEnergyCameraName = "Back Dual (low power)"
-private let backWideDualLowEnergyCameraName = "Back Wide dual (low power)"
-
+let noneCameraName = String(localized: "None")
+let screenCaptureCameraName = String(localized: "Screen capture")
 let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
 let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
-
-private let backTripleLowEnergyCamera = Camera(id: "00000000-feed-b1ac-cafe-100000000000",
-                                               name: backTripleLowEnergyCameraName)
-private let backDualLowEnergyCamera = Camera(id: "00000000-feed-b1ac-cafe-200000000000",
-                                             name: backDualLowEnergyCameraName)
-private let backWideDualLowEnergyCamera = Camera(id: "00000000-feed-b1ac-cafe-300000000000",
-                                                 name: backWideDualLowEnergyCameraName)
+private let backTripleLowEnergyCameraBaseName = String(localized: "Triple (low power)")
+private let backDualLowEnergyCameraBaseName = String(localized: "Dual (low power)")
+private let backWideDualLowEnergyCameraBaseName = String(localized: "Wide dual (low power)")
+private let backTripleLowEnergyCamera = Camera(
+    id: "00000000-feed-b1ac-cafe-100000000000",
+    name: String(localized: "Back \(backTripleLowEnergyCameraBaseName)")
+)
+private let backDualLowEnergyCamera = Camera(
+    id: "00000000-feed-b1ac-cafe-200000000000",
+    name: String(localized: "Back \(backDualLowEnergyCameraBaseName)")
+)
+private let backWideDualLowEnergyCamera = Camera(
+    id: "00000000-feed-b1ac-cafe-300000000000",
+    name: String(localized: "Back \(backWideDualLowEnergyCameraBaseName)")
+)
 
 extension Model {
     func setFocusPointOfInterest(focusPoint: CGPoint) {
@@ -761,11 +765,11 @@ extension Model {
         case .screenCapture:
             return screenCaptureCameraName
         case .backTripleLowEnergy:
-            return backTripleLowEnergyCameraName
+            return backTripleLowEnergyCamera.name
         case .backDualLowEnergy:
-            return backDualLowEnergyCameraName
+            return backDualLowEnergyCamera.name
         case .backWideDualLowEnergy:
-            return backWideDualLowEnergyCameraName
+            return backWideDualLowEnergyCamera.name
         case .none:
             return noneCameraName
         }
