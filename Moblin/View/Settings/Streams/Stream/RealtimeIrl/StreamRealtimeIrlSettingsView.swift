@@ -37,6 +37,7 @@ struct StreamRealtimeIrlSettingsView: View {
                     onSubmit: submitPushKey,
                     sensitive: true
                 )
+                Toggle("Only when live", isOn: $stream.realtimeIrlOnlyWhenLive)
             }
         }
         .navigationTitle("RealtimeIRL")

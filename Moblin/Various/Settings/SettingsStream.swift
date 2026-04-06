@@ -1091,6 +1091,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var realtimeIrlEnabled: Bool = false
     @Published var realtimeIrlBaseUrl = defaultRealtimeIrlBaseUrl
     @Published var realtimeIrlPushKey: String = ""
+    @Published var realtimeIrlOnlyWhenLive: Bool = true
     @Published var portrait: Bool = false
     @Published var backgroundStreaming: Bool = false
     @Published var backgroundStreamingPiP: Bool = true
@@ -1181,6 +1182,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              realtimeIrlEnabled,
              realtimeIrlBaseUrl,
              realtimeIrlPushKey,
+             realtimeIrlOnlyWhenLive,
              portrait,
              backgroundStreaming,
              backgroundStreamingPiP,
@@ -1266,6 +1268,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.realtimeIrlEnabled, realtimeIrlEnabled)
         try container.encode(.realtimeIrlBaseUrl, realtimeIrlBaseUrl)
         try container.encode(.realtimeIrlPushKey, realtimeIrlPushKey)
+        try container.encode(.realtimeIrlOnlyWhenLive, realtimeIrlOnlyWhenLive)
         try container.encode(.portrait, portrait)
         try container.encode(.backgroundStreaming, backgroundStreaming)
         try container.encode(.backgroundStreamingPiP, backgroundStreamingPiP)
@@ -1368,6 +1371,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
             Self.defaultRealtimeIrlBaseUrl
         )
         realtimeIrlPushKey = container.decode(.realtimeIrlPushKey, String.self, "")
+        realtimeIrlOnlyWhenLive = container.decode(.realtimeIrlOnlyWhenLive, Bool.self, true)
         portrait = container.decode(.portrait, Bool.self, false)
         backgroundStreaming = container.decode(.backgroundStreaming, Bool.self, false)
         backgroundStreamingPiP = container.decode(.backgroundStreamingPiP, Bool.self, true)
