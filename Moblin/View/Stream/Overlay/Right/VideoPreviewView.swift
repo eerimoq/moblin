@@ -63,7 +63,7 @@ struct StreamOverlayRightVideoPreviewView: View {
         ScrollView(.horizontal) {
             LazyHStack {
                 if videoPreview.feeds.isEmpty {
-                    Text("No ingests connected")
+                    Text("No built-in cameras or ingests connected")
                         .padding([.leading], 30)
                         .foregroundStyle(.white)
                 }
