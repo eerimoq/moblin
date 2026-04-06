@@ -71,7 +71,7 @@ private struct OptionView: View {
                 DraggableItemPrefixView()
                 Text(options.text)
                 Spacer()
-                Text("\(calcPercent())%")
+                Text(String("\(calcPercent())%"))
             }
         }
     }
