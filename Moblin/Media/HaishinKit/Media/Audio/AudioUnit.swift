@@ -2,7 +2,7 @@ import AVFoundation
 import Collections
 import CoreAudio
 
-private class TalkBackPlayer {
+private class TalkbackPlayer {
     private let engine = AVAudioEngine()
     private let playerNode = AVAudioPlayerNode()
     private(set) var isRunning = false
@@ -102,8 +102,8 @@ final class AudioUnit: NSObject {
     private var speechToTextEnabled = false
     private var bufferedBuiltinAudio: BufferedAudio?
     private var latestAudioStatusTime = 0.0
-    private var talkBackCameraId: UUID?
-    private var talkBackPlayer: TalkBackPlayer?
+    private var talkbackCameraId: UUID?
+    private var talkbackPlayer: TalkbackPlayer?
 
     private var inputSourceFormat: AudioStreamBasicDescription? {
         didSet {
@@ -156,9 +156,9 @@ final class AudioUnit: NSObject {
         }
     }
 
-    func setTalkBack(cameraId: UUID?) {
+    func setTalkback(cameraId: UUID?) {
         processorPipelineQueue.async {
-            self.setTalkBackInternal(cameraId: cameraId)
+            self.setTalkbackInternal(cameraId: cameraId)
         }
     }
 
@@ -215,13 +215,13 @@ final class AudioUnit: NSObject {
         session.automaticallyConfiguresApplicationAudioSession = false
     }
 
-    private func setTalkBackInternal(cameraId: UUID?) {
-        talkBackCameraId = cameraId
-        if talkBackCameraId == nil {
-            talkBackPlayer?.stop()
-            talkBackPlayer = nil
+    private func setTalkbackInternal(cameraId: UUID?) {
+        talkbackCameraId = cameraId
+        if talkbackCameraId == nil {
+            talkbackPlayer?.stop()
+            talkbackPlayer = nil
         } else {
-            talkBackPlayer = TalkBackPlayer()
+            talkbackPlayer = TalkbackPlayer()
         }
     }
 
@@ -318,17 +318,17 @@ final class AudioUnit: NSObject {
                                     sampleRate: sampleRate)
     }
 
-    private func appendTalkBack(sampleBuffer: CMSampleBuffer) {
-        guard let talkBackPlayer else {
+    private func appendTalkback(sampleBuffer: CMSampleBuffer) {
+        guard let talkbackPlayer else {
             return
         }
-        if !talkBackPlayer.isRunning {
+        if !talkbackPlayer.isRunning {
             guard let format = audioFormat(sampleBuffer: sampleBuffer) else {
                 return
             }
-            talkBackPlayer.start(format: format)
+            talkbackPlayer.start(format: format)
         }
-        talkBackPlayer.appendSampleBuffer(sampleBuffer)
+        talkbackPlayer.appendSampleBuffer(sampleBuffer)
     }
 }
 
@@ -363,8 +363,8 @@ func audioFormat(sampleBuffer: CMSampleBuffer) -> AVAudioFormat? {
 
 extension AudioUnit: BufferedAudioSampleBufferDelegate {
     func didOutputBufferedSampleBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer) {
-        if cameraId == talkBackCameraId {
-            appendTalkBack(sampleBuffer: sampleBuffer)
+        if cameraId == talkbackCameraId {
+            appendTalkback(sampleBuffer: sampleBuffer)
         }
         guard selectedBufferedAudioId == cameraId, let processor else {
             return

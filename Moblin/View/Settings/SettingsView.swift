@@ -77,11 +77,11 @@ struct SettingsView: View {
                         Label("Ingests", systemImage: "server.rack")
                     }
                     NavigationLink {
-                        TalkBackSettingsView(model: model,
+                        TalkbackSettingsView(model: model,
                                              mics: database.mics,
-                                             talkBack: database.talkBack)
+                                             talkback: database.talkback)
                     } label: {
-                        Label("Talk back", systemImage: "speaker.wave.2.bubble.left")
+                        Label("Talkback", systemImage: "speaker.wave.2.bubble.left")
                     }
                 }
                 NavigationLink {

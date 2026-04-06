@@ -267,11 +267,11 @@ extension Model {
         }
     }
 
-    func updateTalkBack() {
-        if database.talkBack.enabled, let mic = getMicById(id: database.talkBack.micId) {
-            startTalkBack(mic: mic)
+    func updateTalkback() {
+        if database.talkback.enabled, let mic = getMicById(id: database.talkback.micId) {
+            startTalkback(mic: mic)
         } else {
-            stopTalkBack()
+            stopTalkback()
         }
     }
 
@@ -735,26 +735,26 @@ extension Model {
         remoteControlStateChanged(state: RemoteControlAssistantStreamerState(mic: micId))
     }
 
-    private func startTalkBack(mic: SettingsMicsMic) {
+    private func startTalkback(mic: SettingsMicsMic) {
         if isRtmpMic(mic: mic) {
-            media.setTalkBack(cameraId: getRtmpMicCameraId(mic: mic))
+            media.setTalkback(cameraId: getRtmpMicCameraId(mic: mic))
         } else if isSrtlaMic(mic: mic) {
-            media.setTalkBack(cameraId: getSrtlaMicCameraId(mic: mic))
+            media.setTalkback(cameraId: getSrtlaMicCameraId(mic: mic))
         } else if isRistMic(mic: mic) {
-            media.setTalkBack(cameraId: getRistMicCameraId(mic: mic))
+            media.setTalkback(cameraId: getRistMicCameraId(mic: mic))
         } else if isWhipMic(mic: mic) {
-            media.setTalkBack(cameraId: getWhipMicCameraId(mic: mic))
+            media.setTalkback(cameraId: getWhipMicCameraId(mic: mic))
         } else if isWhepMic(mic: mic) {
-            media.setTalkBack(cameraId: getWhepMicCameraId(mic: mic))
+            media.setTalkback(cameraId: getWhepMicCameraId(mic: mic))
         } else if isMediaPlayerMic(mic: mic) {
-            media.setTalkBack(cameraId: getMediaPlayerMicCameraId(mic: mic))
+            media.setTalkback(cameraId: getMediaPlayerMicCameraId(mic: mic))
         } else {
-            media.setTalkBack(cameraId: nil)
+            media.setTalkback(cameraId: nil)
         }
     }
 
-    private func stopTalkBack() {
-        media.setTalkBack(cameraId: nil)
+    private func stopTalkback() {
+        media.setTalkback(cameraId: nil)
     }
 }
 

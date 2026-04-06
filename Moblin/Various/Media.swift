@@ -824,8 +824,8 @@ final class Media: NSObject {
         processor?.setSpeechToText(enabled: enabled)
     }
 
-    func setTalkBack(cameraId: UUID?) {
-        processor?.setTalkBack(cameraId: cameraId)
+    func setTalkback(cameraId: UUID?) {
+        processor?.setTalkback(cameraId: cameraId)
     }
 
     func setVideoOrientation(value: AVCaptureVideoOrientation) {

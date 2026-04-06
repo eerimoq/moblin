@@ -1,6 +1,6 @@
 import Foundation
 
-class SettingsTalkBack: Codable, ObservableObject {
+class SettingsTalkback: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var micId: String = ""
 

@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct TalkBackSettingsView: View {
+struct TalkbackSettingsView: View {
     let model: Model
     @ObservedObject var mics: SettingsMics
-    @ObservedObject var talkBack: SettingsTalkBack
+    @ObservedObject var talkback: SettingsTalkback
 
     private func onChange(micId: String) {
-        talkBack.micId = micId
-        model.updateTalkBack()
+        talkback.micId = micId
+        model.updateTalkback()
     }
 
     var body: some View {
@@ -16,9 +16,9 @@ struct TalkBackSettingsView: View {
                 Text("Play audio from an Ingest in your speakers.")
             }
             Section {
-                Toggle("Enabled", isOn: $talkBack.enabled)
-                    .onChange(of: talkBack.enabled) { _ in
-                        model.updateTalkBack()
+                Toggle("Enabled", isOn: $talkback.enabled)
+                    .onChange(of: talkback.enabled) { _ in
+                        model.updateTalkback()
                     }
             }
             Section {
@@ -31,17 +31,20 @@ struct TalkBackSettingsView: View {
                             .map {
                                 InlinePickerItem(id: $0.id, text: $0.name)
                             },
-                        selectedId: talkBack.micId
+                        selectedId: talkback.micId
                     )
                 } label: {
                     HStack {
                         Text("Mic")
                         Spacer()
-                        GrayTextView(text: model.getMicById(id: talkBack.micId)?.name ?? "Unknown 😢")
+                        GrayTextView(text: model.getMicById(id: talkback.micId)?.name ?? "Unknown 😢")
                     }
                 }
             }
+            ShortcutSectionView {
+                IngestsShortcutView(model: model)
+            }
         }
-        .navigationTitle("Talk back")
+        .navigationTitle("Talkback")
     }
 }

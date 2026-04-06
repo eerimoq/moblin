@@ -89,3 +89,15 @@ struct RemoteControlAssistantShortcutView: View {
         }
     }
 }
+
+struct IngestsShortcutView: View {
+    let model: Model
+
+    var body: some View {
+        NavigationLink {
+            IngestsSettingsView(model: model, database: model.database)
+        } label: {
+            Label("Ingests", systemImage: "server.rack")
+        }
+    }
+}
