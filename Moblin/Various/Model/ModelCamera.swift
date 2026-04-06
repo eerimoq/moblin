@@ -71,15 +71,11 @@ private let backWideDualLowEnergyCameraName = "Back Wide dual (low power)"
 let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
 let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
 
-private let backTripleLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-100000000000")!
-private let backDualLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-200000000000")!
-private let backWideDualLowEnergyCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-300000000000")!
-
-private let backTripleLowEnergyCamera = Camera(id: backTripleLowEnergyCameraId.uuidString,
+private let backTripleLowEnergyCamera = Camera(id: "00000000-feed-b1ac-cafe-100000000000",
                                                name: backTripleLowEnergyCameraName)
-private let backDualLowEnergyCamera = Camera(id: backDualLowEnergyCameraId.uuidString,
+private let backDualLowEnergyCamera = Camera(id: "00000000-feed-b1ac-cafe-200000000000",
                                              name: backDualLowEnergyCameraName)
-private let backWideDualLowEnergyCamera = Camera(id: backWideDualLowEnergyCameraId.uuidString,
+private let backWideDualLowEnergyCamera = Camera(id: "00000000-feed-b1ac-cafe-300000000000",
                                                  name: backWideDualLowEnergyCameraName)
 
 extension Model {
@@ -584,15 +580,15 @@ extension Model {
     }
 
     private func isBackTripleLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backTripleLowEnergyCameraId.uuidString
+        return cameraId == backTripleLowEnergyCamera.id
     }
 
     private func isBackDualLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backDualLowEnergyCameraId.uuidString
+        return cameraId == backDualLowEnergyCamera.id
     }
 
     private func isBackWideDualLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backWideDualLowEnergyCameraId.uuidString
+        return cameraId == backWideDualLowEnergyCamera.id
     }
 
     func getCameraId(scene: SettingsScene?) -> CameraId {
@@ -699,11 +695,11 @@ extension Model {
         case .screenCapture:
             return screenCaptureCameraId.uuidString
         case .backTripleLowEnergy:
-            return backTripleLowEnergyCameraId.uuidString
+            return backTripleLowEnergyCamera.id
         case .backDualLowEnergy:
-            return backDualLowEnergyCameraId.uuidString
+            return backDualLowEnergyCamera.id
         case .backWideDualLowEnergy:
-            return backWideDualLowEnergyCameraId.uuidString
+            return backWideDualLowEnergyCamera.id
         case .none:
             return noneCameraId.uuidString
         }
