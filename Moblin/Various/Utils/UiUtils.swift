@@ -70,3 +70,11 @@ func getWindow() -> UIWindow? {
 func getRootViewController() -> UIViewController? {
     return getWindow()?.rootViewController
 }
+
+func screenScale() -> CGFloat {
+    if isMac() {
+        return 2
+    } else {
+        return UIScreen().scale
+    }
+}

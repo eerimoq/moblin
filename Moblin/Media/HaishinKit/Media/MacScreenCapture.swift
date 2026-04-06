@@ -33,9 +33,9 @@ class MacScreenCapture: NSObject {
             config.captureResolution = .best
             config.minimumFrameInterval = CMTime(value: 1, timescale: CMTimeScale(fps.rounded()))
             config.pixelFormat = kCVPixelFormatType_32BGRA
-            let scaleFactor = 2
-            config.width = display.width * scaleFactor
-            config.height = display.height * scaleFactor
+            let scale = Int(screenScale())
+            config.width = display.width * scale
+            config.height = display.height * scale
             let stream = SCStream(filter: filter, configuration: config, delegate: self)
             try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: processorPipelineQueue)
             try await stream.startCapture()

@@ -64,11 +64,7 @@ final class BrowserEffect: VideoEffect {
         widget: SettingsWidgetBrowser,
         moblinAccess: Bool
     ) {
-        if isMac() {
-            scale = 2
-        } else {
-            scale = UIScreen().scale
-        }
+        scale = screenScale()
         self.url = url
         baseFps = Double(widget.baseFps)
         fps = baseFps
