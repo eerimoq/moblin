@@ -166,10 +166,10 @@ struct WidgetVideoSourceSettingsView: View {
                 InlinePickerView(
                     title: "Video source",
                     onChange: onCameraChange,
-                    items: model.listCameraPositions(excludeBuiltin: false).map {
+                    items: model.listCameras(excludeBuiltin: false).map {
                         InlinePickerItem(id: $0.id, text: $0.name)
                     },
-                    selectedId: model.getCameraPositionId(videoSourceWidget: videoSource)
+                    selectedId: model.getCameraId(videoSourceWidget: videoSource)
                 )
             } label: {
                 HStack {

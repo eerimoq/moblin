@@ -541,12 +541,12 @@ extension Model {
         }
     }
 
-    func listCameraPositions(excludeBuiltin: Bool = false) -> [Camera] {
+    func listCameras(excludeBuiltin: Bool = false) -> [Camera] {
         var cameras: [Camera] = []
         if !excludeBuiltin {
             if hasTripleBackCamera {
                 cameras.append(Camera(id: backTripleLowEnergyCameraId.uuidString,
-                                      name: backTripleLowEnergyCameraName))
+                                           name: backTripleLowEnergyCameraName))
             }
             if hasDualBackCamera {
                 cameras.append(Camera(
@@ -616,20 +616,20 @@ extension Model {
         return cameraId == backWideDualLowEnergyCameraId.uuidString
     }
 
-    func getCameraPositionId(scene: SettingsScene?) -> CameraId {
-        return getCameraPositionId(settingsCameraId: scene?.toCameraId())
+    func getCameraId(scene: SettingsScene?) -> CameraId {
+        return getCameraId(settingsCameraId: scene?.toCameraId())
     }
 
-    func getCameraPositionId(videoSourceWidget: SettingsWidgetVideoSource?) -> CameraId {
-        return getCameraPositionId(settingsCameraId: videoSourceWidget?.toCameraId())
+    func getCameraId(videoSourceWidget: SettingsWidgetVideoSource?) -> CameraId {
+        return getCameraId(settingsCameraId: videoSourceWidget?.toCameraId())
     }
 
-    func getCameraPositionId(vTuberWidget: SettingsWidgetVTuber?) -> CameraId {
-        return getCameraPositionId(settingsCameraId: vTuberWidget?.toCameraId())
+    func getCameraId(vTuberWidget: SettingsWidgetVTuber?) -> CameraId {
+        return getCameraId(settingsCameraId: vTuberWidget?.toCameraId())
     }
 
-    func getCameraPositionId(pngTuberWidget: SettingsWidgetPngTuber?) -> CameraId {
-        return getCameraPositionId(settingsCameraId: pngTuberWidget?.toCameraId())
+    func getCameraId(pngTuberWidget: SettingsWidgetPngTuber?) -> CameraId {
+        return getCameraId(settingsCameraId: pngTuberWidget?.toCameraId())
     }
 
     func cameraIdToSettingsCameraId(cameraId: CameraId) -> SettingsCameraId {
@@ -692,7 +692,7 @@ extension Model {
         }
     }
 
-    private func getCameraPositionId(settingsCameraId: SettingsCameraId?) -> CameraId {
+    private func getCameraId(settingsCameraId: SettingsCameraId?) -> CameraId {
         guard let settingsCameraId else {
             return ""
         }

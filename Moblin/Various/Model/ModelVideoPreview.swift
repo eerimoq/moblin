@@ -34,7 +34,7 @@ extension Model {
             for device in devices.devices {
                 appendVideoPreviewIfNeeded(cameraId: device.id, name: device.name(), oldFeeds: oldFeeds)
             }
-            for camera in listCameraPositions(excludeBuiltin: true) {
+            for camera in listCameras(excludeBuiltin: true) {
                 guard let cameraId = UUID(uuidString: camera.id) else {
                     continue
                 }
