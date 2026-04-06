@@ -3,7 +3,7 @@ import Foundation
 
 typealias CameraId = String
 
-struct Camera: Identifiable, Equatable {
+struct Camera: Equatable {
     var id: CameraId
     var name: String
 }
