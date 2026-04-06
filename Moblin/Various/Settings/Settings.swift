@@ -10,8 +10,8 @@ let defaultSrtLatency: Int32 = 3000
 let minZoomX: Float = 0.5
 
 enum SettingsCameraId {
-    case back(id: String)
-    case front(id: String)
+    case back(id: CameraId)
+    case front(id: CameraId)
     case rtmp(id: UUID)
     case srtla(id: UUID)
     case rist(id: UUID)

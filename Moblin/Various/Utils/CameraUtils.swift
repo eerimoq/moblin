@@ -120,7 +120,7 @@ private func getBestFrontCameraDevice() -> AVCaptureDevice? {
 
 let bestFrontCameraDevice = getBestFrontCameraDevice()
 
-private func getBestBackCameraId() -> String {
+private func getBestBackCameraId() -> CameraId {
     return bestBackCameraDevice?.uniqueID ?? ""
 }
 

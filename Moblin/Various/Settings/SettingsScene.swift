@@ -3,9 +3,9 @@ import SwiftUI
 
 private func decodeCameraId<T>(_ container: KeyedDecodingContainer<T>,
                                _ key: KeyedDecodingContainer<T>.Key,
-                               _ defaultValue: String) -> String
+                               _ defaultValue: CameraId) -> CameraId
 {
-    var cameraId = container.decode(key, String.self, defaultValue)
+    var cameraId = container.decode(key, CameraId.self, defaultValue)
     if AVCaptureDevice(uniqueID: cameraId) == nil {
         cameraId = defaultValue
     }
@@ -2350,8 +2350,8 @@ private let builtinCameraPositions: [SettingsSceneCameraPosition] = [
 
 struct SettingsVideoSource {
     var cameraPosition: SettingsSceneCameraPosition = .screenCapture
-    var backCameraId: String = bestBackCameraId
-    var frontCameraId: String = bestFrontCameraId
+    var backCameraId: CameraId = bestBackCameraId
+    var frontCameraId: CameraId = bestFrontCameraId
     var rtmpCameraId: UUID = .init()
     var srtlaCameraId: UUID = .init()
     var ristCameraId: UUID = .init()
@@ -2462,7 +2462,7 @@ struct SettingsVideoSource {
         }
     }
 
-    func getCaptureDeviceCameraId() -> String? {
+    func getCaptureDeviceCameraId() -> CameraId? {
         switch cameraPosition {
         case .back:
             return backCameraId
