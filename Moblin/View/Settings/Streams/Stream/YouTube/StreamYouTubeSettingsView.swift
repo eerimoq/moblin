@@ -14,6 +14,7 @@ private struct StreamDescriptionView: View {
     let ingests: [YouTubeApiLiveStream]
     let thumbnailUrl: URL
     let startTime: Date
+    @State var presentingConfigureConfirm: Bool = false
 
     private func details() -> String {
         var details = [youTubeStream.status.visibility()?.toString() ?? String(localized: "Unknown")]
@@ -62,12 +63,7 @@ private struct StreamDescriptionView: View {
                 HStack {
                     Text("⚠️ Moblin is not configured to stream to this stream.")
                     Button {
-                        guard isValidRtmpUrl(url: ingestsUrl, rtmpStreamKeyRequired: true) == nil else {
-                            return
-                        }
-                        stream.url = ingestsUrl
-                        stream.youTubeVideoId = youTubeStream.id
-                        model.reloadStreamIfEnabled(stream: stream)
+                        presentingConfigureConfirm = true
                     } label: {
                         Text("Configure")
                     }
@@ -75,6 +71,23 @@ private struct StreamDescriptionView: View {
                     .disabled(model.isLive || model.isRecording)
                 }
                 .font(.caption)
+                .confirmationDialog("Overwrite Settings → Streams → \(stream.name) → URL?",
+                                    isPresented: $presentingConfigureConfirm,
+                                    titleVisibility: .visible)
+                {
+                    Button("Yes", role: .destructive) {
+                        guard isValidRtmpUrl(url: ingestsUrl, rtmpStreamKeyRequired: true) == nil else {
+                            return
+                        }
+                        stream.url = ingestsUrl
+                        stream.youTubeVideoId = youTubeStream.id
+                        model.reloadStreamIfEnabled(stream: stream)
+                    }
+                    Button("No") {
+                        stream.youTubeVideoId = youTubeStream.id
+                        model.youTubeVideoIdUpdated()
+                    }
+                }
             }
         }
     }
