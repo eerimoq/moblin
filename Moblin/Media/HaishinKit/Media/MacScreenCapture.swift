@@ -36,6 +36,7 @@ class MacScreenCapture: NSObject {
             let scale = Int(screenScale())
             config.width = display.width * scale
             config.height = display.height * scale
+            logger.info("mac-screen-capture: \(Int(fps)) FPS, \(config.width)x\(config.height) pixels")
             let stream = SCStream(filter: filter, configuration: config, delegate: self)
             try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: processorPipelineQueue)
             try await stream.startCapture()

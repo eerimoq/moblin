@@ -95,7 +95,7 @@ private struct SceneSwitching: View {
                     }
                 } footer: {
                     Text("""
-                    RTMP, SRT(LA), screen capture and media player video sources can instantly be switched \
+                    Ingest, screen capture and media player video sources can instantly be switched \
                     to, but if you want consistency you can force scene switch transitions to these as well.
                     """)
                 }
