@@ -58,14 +58,14 @@ private struct HighlightMessageView: View {
 }
 
 private struct LineView: View {
-    let postState: ChatPostState
+    let deleted: Bool
     let post: ChatPost
     let chat: SettingsChat
     let platform: Bool
     @Binding var selectedPost: ChatPost?
 
     private func imageOpacity() -> Double {
-        return postState.deleted ? 0.25 : 1
+        return deleted ? 0.25 : 1
     }
 
     var body: some View {
@@ -112,8 +112,8 @@ private struct LineView: View {
                 }
             }
             Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
-                .foregroundStyle(postState.deleted ? .gray : usernameColor)
-                .strikethrough(postState.deleted)
+                .foregroundStyle(deleted ? .gray : usernameColor)
+                .strikethrough(deleted)
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold()
@@ -125,11 +125,11 @@ private struct LineView: View {
             ForEach(post.segments) { segment in
                 if let text = segment.text {
                     if let url = getHttpsUrl(text: text) {
-                        QuickButtonChatUrlView(text: text, url: url, deleted: postState.deleted)
+                        QuickButtonChatUrlView(text: text, url: url, deleted: deleted)
                     } else {
                         Text(text)
-                            .foregroundStyle(postState.deleted ? .gray : .white)
-                            .strikethrough(postState.deleted)
+                            .foregroundStyle(deleted ? .gray : .white)
+                            .strikethrough(deleted)
                             .italic(post.isAction)
                     }
                 }
@@ -184,7 +184,7 @@ private struct PostView: View {
                             HighlightMessageView(postState: post.state,
                                                  chat: chatSettings,
                                                  highlight: highlight)
-                            LineView(postState: post.state,
+                            LineView(deleted: state.deleted,
                                      post: post,
                                      chat: chatSettings,
                                      platform: moreThanOneStreamingPlatform,
@@ -194,7 +194,7 @@ private struct PostView: View {
                     .rotationEffect(Angle(degrees: rotation))
                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 } else {
-                    LineView(postState: post.state,
+                    LineView(deleted: state.deleted,
                              post: post,
                              chat: chatSettings,
                              platform: moreThanOneStreamingPlatform,
@@ -435,7 +435,7 @@ private struct AlertsPostView: View {
                                 HighlightMessageView(postState: post.state,
                                                      chat: chatSettings,
                                                      highlight: highlight)
-                                LineView(postState: post.state,
+                                LineView(deleted: state.deleted,
                                          post: post,
                                          chat: chatSettings,
                                          platform: moreThanOneStreamingPlatform,
@@ -446,7 +446,7 @@ private struct AlertsPostView: View {
                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                     }
                 } else {
-                    LineView(postState: post.state,
+                    LineView(deleted: state.deleted,
                              post: post,
                              chat: chatSettings,
                              platform: moreThanOneStreamingPlatform,
@@ -1079,7 +1079,7 @@ private struct ActionButtonsView: View {
                         }
                     VStack(alignment: .leading) {
                         ScrollView {
-                            LineView(postState: selectedPost.state,
+                            LineView(deleted: selectedPost.state.deleted,
                                      post: selectedPost,
                                      chat: model.database.chat,
                                      platform: model.chat.moreThanOneStreamingPlatform,

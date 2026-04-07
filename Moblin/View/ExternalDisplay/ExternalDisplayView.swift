@@ -28,7 +28,7 @@ private struct HighlightMessageView: View {
 }
 
 private struct LineView: View {
-    let postState: ChatPostState
+    let deleted: Bool
     let post: ChatPost
     let chat: SettingsChat
     let platform: Bool
@@ -38,7 +38,7 @@ private struct LineView: View {
     }
 
     private func imageOpacity() -> Double {
-        return postState.deleted ? 0.25 : 1
+        return deleted ? 0.25 : 1
     }
 
     var body: some View {
@@ -75,8 +75,8 @@ private struct LineView: View {
                 }
             }
             Text(post.user!)
-                .foregroundStyle(postState.deleted ? .gray : usernameColor)
-                .strikethrough(postState.deleted)
+                .foregroundStyle(deleted ? .gray : usernameColor)
+                .strikethrough(deleted)
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold()
@@ -88,8 +88,8 @@ private struct LineView: View {
             ForEach(post.segments) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundStyle(postState.deleted ? .gray : .white)
-                        .strikethrough(postState.deleted)
+                        .foregroundStyle(deleted ? .gray : .white)
+                        .strikethrough(deleted)
                         .italic(post.isAction)
                 }
                 if let url = segment.url {
@@ -138,7 +138,7 @@ private struct PostView: View {
                             .foregroundStyle(highlight.barColor)
                         VStack(alignment: .leading, spacing: 1) {
                             HighlightMessageView(chat: chatSettings, highlight: highlight)
-                            LineView(postState: post.state,
+                            LineView(deleted: state.deleted,
                                      post: post,
                                      chat: chatSettings,
                                      platform: moreThanOneStreamingPlatform)
@@ -147,7 +147,7 @@ private struct PostView: View {
                     .rotationEffect(Angle(degrees: rotation))
                     .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 } else {
-                    LineView(postState: post.state,
+                    LineView(deleted: state.deleted,
                              post: post,
                              chat: chatSettings,
                              platform: moreThanOneStreamingPlatform)

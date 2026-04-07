@@ -81,7 +81,7 @@ private struct HighlightMessageView: View {
 }
 
 private struct LineView: View {
-    let postState: ChatPostState
+    let deleted: Bool
     let post: ChatPost
     let chat: SettingsChat
     let platform: Bool
@@ -123,7 +123,7 @@ private struct LineView: View {
     }
 
     private func imageOpacity() -> Double {
-        return postState.deleted ? 0.25 : 1
+        return deleted ? 0.25 : 1
     }
 
     var body: some View {
@@ -172,8 +172,8 @@ private struct LineView: View {
                 }
             }
             Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
-                .foregroundStyle(postState.deleted ? .gray : usernameColor)
-                .strikethrough(postState.deleted)
+                .foregroundStyle(deleted ? .gray : usernameColor)
+                .strikethrough(deleted)
                 .lineLimit(1)
                 .padding([.trailing], 0)
                 .bold(chat.boldUsername)
@@ -185,8 +185,8 @@ private struct LineView: View {
             ForEach(post.segments) { segment in
                 if let text = segment.text {
                     Text(text)
-                        .foregroundStyle(postState.deleted ? .gray : messageColor)
-                        .strikethrough(postState.deleted)
+                        .foregroundStyle(deleted ? .gray : messageColor)
+                        .strikethrough(deleted)
                         .bold(chat.boldMessage)
                         .italic(post.isAction)
                 }
@@ -244,14 +244,14 @@ private struct PostView: View {
                             HighlightMessageView(postState: post.state,
                                                  chat: chatSettings,
                                                  highlight: highlight)
-                            LineView(postState: post.state,
+                            LineView(deleted: state.deleted,
                                      post: post,
                                      chat: chatSettings,
                                      platform: moreThanOneStreamingPlatform)
                         }
                     }
                 } else {
-                    LineView(postState: post.state,
+                    LineView(deleted: state.deleted,
                              post: post,
                              chat: chatSettings,
                              platform: moreThanOneStreamingPlatform)
