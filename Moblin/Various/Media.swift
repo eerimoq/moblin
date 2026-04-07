@@ -68,6 +68,7 @@ final class Media: NSObject {
     private var audioSampleRate: Double = 0
     private var srtUrl: String = ""
     private var latency: Int32 = 2000
+    private var experimental: Bool = false
     private var overheadBandwidth: Int32 = 25
     private var maximumBandwidthFollowInput: Bool = false
     weak var delegate: (any MediaDelegate)?
@@ -205,6 +206,7 @@ final class Media: NSObject {
         targetBitrate: UInt32,
         adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
         latency: Int32,
+        experimental: Bool,
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
         mpegtsPacketsPerPacket: Int,
@@ -218,6 +220,7 @@ final class Media: NSObject {
             targetBitrate: targetBitrate,
             adaptiveBitrateAlgorithm: adaptiveBitrateAlgorithm,
             latency: latency,
+            experimental: experimental,
             overheadBandwidth: overheadBandwidth,
             maximumBandwidthFollowInput: maximumBandwidthFollowInput,
             mpegtsPacketsPerPacket: mpegtsPacketsPerPacket,
@@ -233,6 +236,7 @@ final class Media: NSObject {
         targetBitrate: UInt32,
         adaptiveBitrateAlgorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm?,
         latency: Int32,
+        experimental: Bool,
         overheadBandwidth: Int32,
         maximumBandwidthFollowInput: Bool,
         mpegtsPacketsPerPacket: Int,
@@ -241,6 +245,7 @@ final class Media: NSObject {
     ) {
         srtConnected = false
         self.latency = latency
+        self.experimental = experimental
         self.overheadBandwidth = overheadBandwidth
         self.maximumBandwidthFollowInput = maximumBandwidthFollowInput
         srtTotalByteCount = 0
@@ -1147,7 +1152,8 @@ extension Media: SrtlaDelegate {
                 }
             } else {
                 self.srtStreamNew?.open(streamId: self.makeStreamId(url: self.srtUrl),
-                                        latency: UInt16(self.latency))
+                                        latency: UInt16(self.latency),
+                                        experimental: self.experimental)
             }
         }
     }

@@ -214,6 +214,7 @@ extension Model {
                 ? srt.adaptiveBitrate.algorithm
                 : nil,
             latency: srt.latency,
+            experimental: database.debug.enhancedMoblinSrt,
             overheadBandwidth: database.debug.srtOverheadBandwidth,
             maximumBandwidthFollowInput: database.debug.maximumBandwidthFollowInput,
             mpegtsPacketsPerPacket: srt.mpegtsPacketsPerPacket(),

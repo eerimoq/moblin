@@ -118,6 +118,7 @@ class SrtDataPacket {
     fileprivate var sequenceNumber: UInt32 = 0
     fileprivate var createdAt: ContinuousClock.Instant = .now
     fileprivate var retransmittedAt: ContinuousClock.Instant?
+    var containsAudio: Bool = false
 
     init(payload: UnsafeRawBufferPointer) {
         let packetSize = srtDataPacketHeaderSize + payload.count
@@ -178,10 +179,12 @@ class SrtSender {
     private var nextSequenceNumber: UInt32 = .random(in: 0 ..< 10000)
     private var peerDestinationSrtSocketId: UInt32 = 0
     private let streamId: String?
+    private let experimental: Bool
     private var packetsToSend: Deque<SrtDataPacket> = []
     private var packetsInFlight: Deque<SrtDataPacket> = []
     private var packetsInFlightBySequenceNumber: [UInt32: SrtDataPacket] = [:]
-    private var sequenceNumbersToRetransmit: OrderedSet<UInt32> = []
+    private var audioSequenceNumbersToRetransmit: OrderedSet<UInt32> = []
+    private var videoSequenceNumbersToRetransmit: OrderedSet<UInt32> = []
     private var state: SrtSenderState = .connecting
     private var performanceData: Atomic<SrtPerformanceData> = .init(.zero)
     private var numberOfBytesSent: UInt64 = 0
@@ -201,12 +204,18 @@ class SrtSender {
     private var clock = SrtClock()
     private let connectTimer = SimpleTimer(queue: srtlaClientQueue)
 
-    init(streamId: String?, latency: UInt16) {
+    init(streamId: String?, latency: UInt16, experimental: Bool) {
         self.streamId = streamId
         self.latency = latency
+        self.experimental = experimental
         let latencyUs = 1000 * Int64(latency)
-        packetsInFlightDropThreshold = .microseconds(latencyUs * 3 / 2)
-        packetsToSendDropThreshold = .microseconds(latencyUs * 5 / 4)
+        if experimental {
+            packetsInFlightDropThreshold = .microseconds(latencyUs * 2 / 3)
+            packetsToSendDropThreshold = .microseconds(latencyUs * 4 / 5)
+        } else {
+            packetsInFlightDropThreshold = .microseconds(latencyUs * 3 / 2)
+            packetsToSendDropThreshold = .microseconds(latencyUs * 5 / 4)
+        }
     }
 
     func start() {
@@ -234,6 +243,9 @@ class SrtSender {
     func enqueue(packet: SrtDataPacket, now: ContinuousClock.Instant) {
         guard state == .connected else {
             return
+        }
+        if !experimental {
+            packet.containsAudio = true
         }
         packet.setHeader(sequenceNumber: getNextSequenceNumber(),
                          now: now,
@@ -305,11 +317,19 @@ class SrtSender {
             return
         }
         latestOutputPacketsTime = now
-        var numberOfPacketsToSend = sequenceNumbersToRetransmit.count + packetsToSend.count
+        var numberOfPacketsToSend = numberOfPacketsToRetransmit() + packetsToSend.count
         numberOfPacketsToSend = max(numberOfPacketsToSend / 10, min(numberOfPacketsToSend, 10))
+        var numberOfRetransmittedPackets = 0
         for _ in 0 ..< numberOfPacketsToSend {
-            if retransmitPacketIfNeeded(now: now) {
-                continue
+            if !experimental || (numberOfRetransmittedPackets < (numberOfPacketsToSend + 1) / 2) {
+                if retransmitPacketIfNeeded(sequenceNumbers: &audioSequenceNumbersToRetransmit, now: now) {
+                    numberOfRetransmittedPackets += 1
+                    continue
+                }
+                if retransmitPacketIfNeeded(sequenceNumbers: &videoSequenceNumbersToRetransmit, now: now) {
+                    numberOfRetransmittedPackets += 1
+                    continue
+                }
             }
             guard let packet = packetsToSend.popFirst() else {
                 break
@@ -319,9 +339,11 @@ class SrtSender {
         updatePerformanceData()
     }
 
-    private func retransmitPacketIfNeeded(now: ContinuousClock.Instant) -> Bool {
-        while !sequenceNumbersToRetransmit.isEmpty {
-            let packetSequenceNumber = sequenceNumbersToRetransmit.removeFirst()
+    private func retransmitPacketIfNeeded(sequenceNumbers: inout OrderedSet<UInt32>,
+                                          now: ContinuousClock.Instant) -> Bool
+    {
+        while !sequenceNumbers.isEmpty {
+            let packetSequenceNumber = sequenceNumbers.removeFirst()
             guard let packet = packetsInFlightBySequenceNumber[packetSequenceNumber] else {
                 continue
             }
@@ -552,19 +574,31 @@ class SrtSender {
                                              through: upToNakSequenceNumber,
                                              by: 1)
                 {
-                    guard sequenceNumbersToRetransmit.count < 1000 else {
+                    guard numberOfPacketsToRetransmit() < 1000 else {
                         return
                     }
-                    sequenceNumbersToRetransmit.append(sequenceNumber)
+                    appendSequenceNumberToRetransmit(sequenceNumber)
                 }
             } else {
-                guard sequenceNumbersToRetransmit.count < 1000 else {
+                guard numberOfPacketsToRetransmit() < 1000
+                else {
                     return
                 }
-                sequenceNumbersToRetransmit.append(sequenceNumber)
+                appendSequenceNumberToRetransmit(sequenceNumber)
             }
         }
         pktRecvNakTotal += 1
+    }
+
+    private func appendSequenceNumberToRetransmit(_ sequenceNumber: UInt32) {
+        guard let packet = packetsInFlightBySequenceNumber[sequenceNumber] else {
+            return
+        }
+        if packet.containsAudio {
+            audioSequenceNumbersToRetransmit.append(sequenceNumber)
+        } else {
+            videoSequenceNumbersToRetransmit.append(sequenceNumber)
+        }
     }
 
     private func handleShutdownPacket() throws {
@@ -573,5 +607,9 @@ class SrtSender {
 
     private func handleAckAckPacket() throws {
         throw "Got ack ack packet"
+    }
+
+    private func numberOfPacketsToRetransmit() -> Int {
+        return audioSequenceNumbersToRetransmit.count + videoSequenceNumbersToRetransmit.count
     }
 }

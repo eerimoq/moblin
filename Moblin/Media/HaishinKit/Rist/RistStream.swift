@@ -349,7 +349,7 @@ class RistStream {
 }
 
 extension RistStream: MpegTsWriterDelegate {
-    func writer(_: MpegTsWriter, doOutput data: Data) {
+    func writer(_: MpegTsWriter, doOutput data: Data, containsAudio _: Bool) {
         send(data: data)
     }
 

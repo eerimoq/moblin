@@ -4,7 +4,7 @@ import TrueTime
 var payloadSize = 1316
 
 protocol MpegTsWriterDelegate: AnyObject {
-    func writer(_ writer: MpegTsWriter, doOutput data: Data)
+    func writer(_ writer: MpegTsWriter, doOutput data: Data, containsAudio: Bool)
     func writer(_ writer: MpegTsWriter, doOutputPointer pointer: UnsafeRawBufferPointer, count: Int)
 }
 
@@ -170,8 +170,8 @@ class MpegTsWriter {
         latestPeriodicallySendProgramTime = now
     }
 
-    private func writeNew(_ data: Data) {
-        delegate?.writer(self, doOutput: data)
+    private func writeNew(_ data: Data, containsAudio: Bool) {
+        delegate?.writer(self, doOutput: data, containsAudio: containsAudio)
     }
 
     private func writeOld(_ data: Data) {
@@ -222,7 +222,7 @@ class MpegTsWriter {
 
     private func writeVideoNew(data: Data) {
         if let videoData = videoData[0] {
-            writeNew(videoData[videoDataOffset ..< videoData.count])
+            writeNew(videoData[videoDataOffset ..< videoData.count], containsAudio: false)
         }
         appendVideoData(data: data)
     }
@@ -238,13 +238,13 @@ class MpegTsWriter {
                         videoDataOffset = endOffset
                     }
                 }
-                writeNew(packet)
+                writeNew(packet, containsAudio: true)
             }
             if videoDataOffset == videoData.count {
                 appendVideoData(data: nil)
             }
         } else {
-            writeNew(data)
+            writeNew(data, containsAudio: true)
         }
     }
 
@@ -290,7 +290,7 @@ class MpegTsWriter {
         patPacket.continuityCounter = nextProgramAssociationTableContinuityCounter()
         pmtPacket.continuityCounter = nextProgramMappingTableContinuityCounter()
         if newSrt {
-            writeNew(patPacket.encode() + pmtPacket.encode())
+            writeNew(patPacket.encode() + pmtPacket.encode(), containsAudio: false)
         } else {
             writeOld(patPacket.encode() + pmtPacket.encode())
         }

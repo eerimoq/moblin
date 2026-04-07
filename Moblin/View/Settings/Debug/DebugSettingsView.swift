@@ -109,6 +109,7 @@ struct DebugSettingsView: View {
                             .frame(width: 40)
                     }
                 }
+                Toggle("Enhanced Moblin SRT", isOn: $debug.enhancedMoblinSrt)
             } header: {
                 Text("Experimental")
             }
