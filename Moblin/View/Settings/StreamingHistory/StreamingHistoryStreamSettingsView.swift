@@ -17,7 +17,6 @@ private struct StreamingHistoryStreamSettingsGeneralView: View {
                 }
                 TextValueView(name: "FFFFF:s", value: "\(stream.numberOfFffffs!)")
             }
-            TextValueView(name: "Chat messages", value: stream.numberOfChatMessagesString())
         } header: {
             Text("General")
         }

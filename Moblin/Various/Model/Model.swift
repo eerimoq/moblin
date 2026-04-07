@@ -639,7 +639,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var appStoreUpdateListenerTask: Task<Void, Error>?
     var products: [String: Product] = [:]
     var streamTotalBytes: UInt64 = 0
-    var streamTotalChatMessages: Int = 0
     var streamLog: Deque<String> = []
     private var ipMonitor = IPMonitor()
     var faceEffect = FaceEffect()

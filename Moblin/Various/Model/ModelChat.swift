@@ -143,7 +143,6 @@ extension Model {
                     sendChatMessageToWatch(post: post)
                 }
             }
-            streamTotalChatMessages += 1
         }
         chat.update()
         quickButtonChat.update()

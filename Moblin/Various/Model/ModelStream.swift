@@ -90,7 +90,6 @@ extension Model {
         setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0
-        streamTotalChatMessages = 0
         updateScreenAutoOff()
         startNetStream()
         startFetchingYouTubeChatVideoId()
@@ -139,7 +138,6 @@ extension Model {
             }
             streamingHistoryStream.stopTime = Date()
             streamingHistoryStream.totalBytes = streamTotalBytes
-            streamingHistoryStream.numberOfChatMessages = streamTotalChatMessages
             streamingHistory.append(stream: streamingHistoryStream)
             streamingHistory.store()
         }
