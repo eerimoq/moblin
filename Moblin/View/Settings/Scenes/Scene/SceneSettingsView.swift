@@ -91,21 +91,21 @@ private struct SceneWidgetView: View {
 }
 
 let startScreenCatptureHelp = String(localized: """
-Start a screen recording by long-pressing the record button in iOS Control Center and select Moblin.
+Start a screen capture by long-pressing the record button in iOS Control Center and select Moblin.
 """)
 
 private struct VideoSourceView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
-    @State private var presentingScreenRecordingAlert = false
+    @State private var presentingScreenCaptureAlert = false
 
     private func onCameraChange(cameraId: String) {
         scene.updateCameraId(settingsCameraId: model.cameraIdToSettingsCameraId(cameraId: cameraId))
         model.sceneUpdated(attachCamera: true, updateRemoteScene: false)
         #if !targetEnvironment(macCatalyst)
-        if model.isScreenRecordingCamera(cameraId: cameraId) {
-            presentingScreenRecordingAlert = true
+        if model.isScreenCaptureCamera(cameraId: cameraId) {
+            presentingScreenCaptureAlert = true
         }
         #endif
     }
@@ -147,9 +147,9 @@ private struct VideoSourceView: View {
                     Image(systemName: "camera")
                 }
             }
-            .alert(startScreenCatptureHelp, isPresented: $presentingScreenRecordingAlert) {
+            .alert(startScreenCatptureHelp, isPresented: $presentingScreenCaptureAlert) {
                 Button("Got it") {
-                    presentingScreenRecordingAlert = false
+                    presentingScreenCaptureAlert = false
                 }
             }
             if database.showAllSettings {

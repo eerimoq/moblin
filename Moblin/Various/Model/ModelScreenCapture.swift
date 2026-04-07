@@ -2,8 +2,8 @@ import AVFoundation
 import ReplayKit
 
 extension Model {
-    func isScreenRecordingCamera(cameraId: CameraId) -> Bool {
-        return cameraId == screenRecordingCameraId.uuidString
+    func isScreenCaptureCamera(cameraId: CameraId) -> Bool {
+        return cameraId == screenCaptureCameraId.uuidString
     }
 
     func isNoneCamera(cameraId: CameraId) -> Bool {
@@ -11,7 +11,7 @@ extension Model {
     }
 
     #if targetEnvironment(macCatalyst)
-    func sceneNeedsMacScreenRecording(scene: SettingsScene) -> Bool {
+    func sceneNeedsMacScreenCapture(scene: SettingsScene) -> Bool {
         if scene.videoSource.cameraPosition == .screenCapture {
             return true
         }
@@ -21,16 +21,16 @@ extension Model {
                 if otherScene.videoSource.cameraPosition == .screenCapture {
                     return true
                 }
-                if sceneWidgetsNeedMacScreenRecording(scene: scene, addedSceneIds: &addedSceneIds) {
+                if sceneWidgetsNeedMacScreenCapture(scene: scene, addedSceneIds: &addedSceneIds) {
                     return true
                 }
             }
         }
-        return sceneWidgetsNeedMacScreenRecording(scene: scene, addedSceneIds: &addedSceneIds)
+        return sceneWidgetsNeedMacScreenCapture(scene: scene, addedSceneIds: &addedSceneIds)
     }
 
-    private func sceneWidgetsNeedMacScreenRecording(scene: SettingsScene,
-                                                    addedSceneIds: inout Set<UUID>) -> Bool
+    private func sceneWidgetsNeedMacScreenCapture(scene: SettingsScene,
+                                                  addedSceneIds: inout Set<UUID>) -> Bool
     {
         for sceneWidget in scene.widgets {
             guard let widget = findWidget(id: sceneWidget.widgetId) else {
@@ -56,8 +56,8 @@ extension Model {
                 if !addedSceneIds.contains(widget.scene.sceneId) {
                     addedSceneIds.insert(widget.scene.sceneId)
                     if let nestedScene = database.scenes.first(where: { $0.id == widget.scene.sceneId }) {
-                        if sceneWidgetsNeedMacScreenRecording(scene: nestedScene,
-                                                              addedSceneIds: &addedSceneIds)
+                        if sceneWidgetsNeedMacScreenCapture(scene: nestedScene,
+                                                            addedSceneIds: &addedSceneIds)
                         {
                             return true
                         }
@@ -70,47 +70,47 @@ extension Model {
         return false
     }
     #else
-    func sceneNeedsMacScreenRecording(scene _: SettingsScene) -> Bool {
+    func sceneNeedsMacScreenCapture(scene _: SettingsScene) -> Bool {
         return false
     }
     #endif
 
-    private func handleScreenRecordingStarted(latency: Double) {
-        makeToast(title: String(localized: "Screen recording started"))
+    private func handleScreenCaptureStarted(latency: Double) {
+        makeToast(title: String(localized: "Screen capture started"))
         media.addBufferedVideo(
-            cameraId: screenRecordingCameraId,
-            name: screenRecordingCameraName,
+            cameraId: screenCaptureCameraId,
+            name: screenCaptureCameraName,
             latency: latency
         )
     }
 
-    private func handleScreenRecordingStopped() {
-        makeToast(title: String(localized: "Screen recording stopped"))
-        media.removeBufferedVideo(cameraId: screenRecordingCameraId)
+    private func handleScreenCaptureStopped() {
+        makeToast(title: String(localized: "Screen capture stopped"))
+        media.removeBufferedVideo(cameraId: screenCaptureCameraId)
     }
 
-    private func handleScreenRecordingSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        media.appendBufferedVideoSampleBuffer(cameraId: screenRecordingCameraId, sampleBuffer: sampleBuffer)
+    private func handleScreenCaptureSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        media.appendBufferedVideoSampleBuffer(cameraId: screenCaptureCameraId, sampleBuffer: sampleBuffer)
     }
 }
 
 extension Model: SampleBufferReceiverDelegate {
     func senderConnected() {
         DispatchQueue.main.async {
-            self.handleScreenRecordingStarted(latency: screenRecordingLatency)
+            self.handleScreenCaptureStarted(latency: screenRecordingLatency)
         }
     }
 
     func senderDisconnected() {
         DispatchQueue.main.async {
-            self.handleScreenRecordingStopped()
+            self.handleScreenCaptureStopped()
         }
     }
 
     func handleSampleBuffer(type: RPSampleBufferType, sampleBuffer: CMSampleBuffer) {
         switch type {
         case .video:
-            handleScreenRecordingSampleBuffer(sampleBuffer)
+            handleScreenCaptureSampleBuffer(sampleBuffer)
         default:
             break
         }

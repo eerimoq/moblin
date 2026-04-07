@@ -63,9 +63,9 @@ class CameraState: ObservableObject {
 }
 
 let noneCameraName = String(localized: "None")
-let screenRecordingCameraName = String(localized: "Screen recording")
+let screenCaptureCameraName = String(localized: "Screen capture")
 let noneCameraId = UUID(uuidString: "00000000-feed-b1ac-cafe-000000000000")!
-let screenRecordingCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
+let screenCaptureCameraId = UUID(uuidString: "00000000-cafe-babe-beef-000000000000")!
 private let backTripleLowEnergyCameraBaseName = String(localized: "Triple (low power)")
 private let backDualLowEnergyCameraBaseName = String(localized: "Dual (low power)")
 private let backWideDualLowEnergyCameraBaseName = String(localized: "Wide dual (low power)")
@@ -570,7 +570,7 @@ extension Model {
         cameras += whipCameras()
         cameras += whepCameras()
         cameras += playerCameras()
-        cameras.append(Camera(id: screenRecordingCameraId.uuidString, name: screenRecordingCameraName))
+        cameras.append(Camera(id: screenCaptureCameraId.uuidString, name: screenCaptureCameraName))
         cameras.append(Camera(id: noneCameraId.uuidString, name: noneCameraName))
         return cameras
     }
@@ -630,7 +630,7 @@ extension Model {
             return .back(id: cameraId)
         } else if isFrontCamera(cameraId: cameraId) {
             return .front(id: cameraId)
-        } else if isScreenRecordingCamera(cameraId: cameraId) {
+        } else if isScreenCaptureCamera(cameraId: cameraId) {
             return .screenCapture
         } else if isBackTripleLowEnergyAutoCamera(cameraId: cameraId) {
             return .backTripleLowEnergy
@@ -660,7 +660,7 @@ extension Model {
             return .whep(id: id)
         } else if let id = getMediaPlayer(id: cameraId)?.id {
             return .mediaPlayer(id: id)
-        } else if isScreenRecordingCamera(cameraId: cameraId.uuidString) {
+        } else if isScreenCaptureCamera(cameraId: cameraId.uuidString) {
             return .screenCapture
         } else if isNoneCamera(cameraId: cameraId.uuidString) {
             return SettingsCameraId.none
@@ -697,7 +697,7 @@ extension Model {
         case let .front(id):
             return id
         case .screenCapture:
-            return screenRecordingCameraId.uuidString
+            return screenCaptureCameraId.uuidString
         case .backTripleLowEnergy:
             return backTripleLowEnergyCamera.id
         case .backDualLowEnergy:
@@ -763,7 +763,7 @@ extension Model {
                 return unknownSad
             }
         case .screenCapture:
-            return screenRecordingCameraName
+            return screenCaptureCameraName
         case .backTripleLowEnergy:
             return backTripleLowEnergyCamera.name
         case .backDualLowEnergy:
@@ -862,7 +862,7 @@ extension Model {
         case let .mediaPlayer(id: id):
             return id
         case .screenCapture:
-            return screenRecordingCameraId
+            return screenCaptureCameraId
         case let .back(id: id):
             return getBuiltinCameraId(deviceUniqueId: id)
         case let .front(id: id):

@@ -27,7 +27,7 @@ struct VideoUnitAttachParams {
     let fillFrame: Bool
     let isLandscapeStreamAndPortraitUi: Bool
     let forceSceneTransition: Bool
-    let macScreenRecording: Bool
+    let macScreenCapture: Bool
 
     func canQuickSwitchTo(other: VideoUnitAttachParams) -> Bool {
         if devices.devices.count != other.devices.devices.count {
@@ -57,7 +57,7 @@ struct VideoUnitAttachParams {
         if forceSceneTransition {
             return false
         }
-        if macScreenRecording != other.macScreenRecording {
+        if macScreenCapture != other.macScreenCapture {
             return false
         }
         return true
@@ -235,7 +235,7 @@ final class VideoUnit: NSObject {
     private var nextFpsReportTime: Double = 0.0
     private var currentAttachParams: VideoUnitAttachParams?
     private var isMetalPetalGraphics: Bool = false
-    private var macScreenRecordingActive = false
+    private var macScreenCaptureActive = false
 
     var videoOrientation: AVCaptureVideoOrientation = .portrait {
         didSet {
@@ -286,7 +286,7 @@ final class VideoUnit: NSObject {
         stopFrameTimer()
         #if targetEnvironment(macCatalyst)
         if #available(macCatalyst 18.2, *) {
-            MacScreenRecording.shared.stop()
+            MacScreenCapture.shared.stop()
         }
         #endif
     }
@@ -531,7 +531,7 @@ final class VideoUnit: NSObject {
     }
 
     private func attachDefault(params: VideoUnitAttachParams) throws {
-        updateMacScreenRecording(enabled: params.macScreenRecording)
+        updateMacScreenCapture(enabled: params.macScreenCapture)
         for device in captureSessionDevices {
             device.output.setSampleBufferDelegate(nil, queue: processorPipelineQueue)
         }
@@ -619,16 +619,16 @@ final class VideoUnit: NSObject {
         }
     }
 
-    private func updateMacScreenRecording(enabled: Bool) {
+    private func updateMacScreenCapture(enabled: Bool) {
         #if targetEnvironment(macCatalyst)
         if #available(macCatalyst 18.2, *) {
-            if enabled, !macScreenRecordingActive {
-                macScreenRecordingActive = true
-                MacScreenRecording.shared.delegate = self
-                MacScreenRecording.shared.start(fps: fps)
-            } else if !enabled, macScreenRecordingActive {
-                macScreenRecordingActive = false
-                MacScreenRecording.shared.stop()
+            if enabled, !macScreenCaptureActive {
+                macScreenCaptureActive = true
+                MacScreenCapture.shared.delegate = self
+                MacScreenCapture.shared.start(fps: fps)
+            } else if !enabled, macScreenCaptureActive {
+                macScreenCaptureActive = false
+                MacScreenCapture.shared.stop()
             }
         }
         #endif
@@ -2135,21 +2135,21 @@ extension VideoUnit: VideoEncoderControlDelegate {
 
 #if targetEnvironment(macCatalyst)
 @available(macCatalyst 18.2, *)
-extension VideoUnit: MacScreenRecordingDelegate {
-    func macScreenRecordingDidStart(latency: Double) {
+extension VideoUnit: MacScreenCaptureDelegate {
+    func macScreenCaptureDidStart(latency: Double) {
         addBufferedVideo(
-            cameraId: screenRecordingCameraId,
-            name: screenRecordingCameraName,
+            cameraId: screenCaptureCameraId,
+            name: screenCaptureCameraName,
             latency: latency
         )
     }
 
-    func macScreenRecordingDidStop() {
-        removeBufferedVideo(cameraId: screenRecordingCameraId)
+    func macScreenCaptureDidStop() {
+        removeBufferedVideo(cameraId: screenCaptureCameraId)
     }
 
-    func macScreenRecordingDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        appendBufferedVideoSampleBufferInternal(cameraId: screenRecordingCameraId, sampleBuffer)
+    func macScreenCaptureDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        appendBufferedVideoSampleBufferInternal(cameraId: screenCaptureCameraId, sampleBuffer)
     }
 }
 #endif
