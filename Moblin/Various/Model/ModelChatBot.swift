@@ -88,6 +88,27 @@ private func getAnswer(_ language: String) -> String {
     return answerByLanguage[language] ?? ""
 }
 
+enum ChatBotResponseText {
+    static func zoomValueMustBeNumber() -> String {
+        return String(localized: "Sorry, zoom value must be a number.")
+    }
+
+    static func zoomUnavailable() -> String {
+        return String(localized: "Sorry, zoom is not available for the current camera.")
+    }
+
+    static func zoomUnavailable(value: Float, minX: Float, maxX: Float) -> String {
+        return String(
+            format: String(
+                localized: "Sorry, zoom %@x is not available for the current camera. Available range is %@x to %@x."
+            ),
+            formatOneDecimal(value),
+            formatOneDecimal(minX),
+            formatOneDecimal(maxX)
+        )
+    }
+}
+
 extension Model {
     func executeChatBotMessage() {
         guard let message = chatBotMessages.popFirst() else {
@@ -127,6 +148,8 @@ extension Model {
                 handleChatBotMessageFax(command: command)
             case "filter":
                 handleChatBotMessageFilter(command: command)
+            case "zoom":
+                handleChatBotMessageZoom(command: command)
             case "say":
                 handleChatBotMessageTtsSay(command: command)
             case "tesla":
@@ -636,6 +659,64 @@ extension Model {
                 break
             }
         }
+    }
+
+    private func handleChatBotMessageZoom(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.zoom
+        executeIfUserAllowedToUseChatBot(
+            permissions: permissions,
+            command: command
+        ) {
+            let value = command.rest()
+            guard !value.isEmpty, var x = Float(value) else {
+                self.sendChatBotZoomErrorIfEnabled(
+                    permissions: permissions,
+                    command: command,
+                    message: ChatBotResponseText.zoomValueMustBeNumber()
+                )
+                return
+            }
+            guard self.zoom.hasZoom else {
+                self.sendChatBotZoomErrorIfEnabled(
+                    permissions: permissions,
+                    command: command,
+                    message: ChatBotResponseText.zoomUnavailable()
+                )
+                return
+            }
+            let minX = self.cameraZoomXMinimum
+            let maxX = self.cameraZoomXMaximum
+            if x == 0 {
+                x = minX
+            }
+            guard x >= minX, x <= maxX else {
+                self.sendChatBotZoomErrorIfEnabled(
+                    permissions: permissions,
+                    command: command,
+                    message: ChatBotResponseText.zoomUnavailable(value: x, minX: minX, maxX: maxX)
+                )
+                return
+            }
+            guard self.setChatBotZoomX(x: x, rate: self.database.zoom.speed) != nil else {
+                self.sendChatBotZoomErrorIfEnabled(
+                    permissions: permissions,
+                    command: command,
+                    message: ChatBotResponseText.zoomUnavailable()
+                )
+                return
+            }
+        }
+    }
+
+    private func sendChatBotZoomErrorIfEnabled(
+        permissions: SettingsChatBotPermissionsCommand,
+        command: ChatBotCommand,
+        message: String
+    ) {
+        guard permissions.sendChatMessages else {
+            return
+        }
+        sendChatBotReply(message: message, platform: command.message.platform)
     }
 
     private func handleChatBotMessageTesla(command: ChatBotCommand) {

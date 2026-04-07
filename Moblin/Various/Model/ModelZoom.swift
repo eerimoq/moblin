@@ -33,16 +33,7 @@ extension Model {
             }
             if setCameraZoomX(x: preset.x, rate: database.zoom.speed) != nil {
                 setZoomXWhenInRange(x: preset.x)
-                switch getSelectedScene()?.videoSource.cameraPosition {
-                case .backTripleLowEnergy:
-                    attachBackTripleLowEnergyCamera(force: false)
-                case .backDualLowEnergy:
-                    attachBackDualLowEnergyCamera(force: false)
-                case .backWideDualLowEnergy:
-                    attachBackWideDualLowEnergyCamera(force: false)
-                default:
-                    break
-                }
+                updateLowEnergyCameraAfterZoomChange()
             }
         } else {
             clearZoomPresetId()
@@ -54,6 +45,16 @@ extension Model {
         if let x = setCameraZoomX(x: x, rate: rate) {
             setZoomXWhenInRange(x: x, setPinch: setPinch)
         }
+    }
+
+    func setChatBotZoomX(x: Float, rate: Float? = nil) -> Float? {
+        clearZoomPresetId()
+        guard let x = setCameraZoomX(x: x, rate: rate) else {
+            return nil
+        }
+        setZoomXWhenInRange(x: x)
+        updateLowEnergyCameraAfterZoomChange()
+        return x
     }
 
     func setZoomXWhenInRange(x: Float, setPinch: Bool = true) {
@@ -238,6 +239,19 @@ extension Model {
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
         let x = preset.x
         return x >= cameraZoomXMinimum && x <= cameraZoomXMaximum
+    }
+
+    func updateLowEnergyCameraAfterZoomChange() {
+        switch getSelectedScene()?.videoSource.cameraPosition {
+        case .backTripleLowEnergy:
+            attachBackTripleLowEnergyCamera(force: false)
+        case .backDualLowEnergy:
+            attachBackDualLowEnergyCamera(force: false)
+        case .backWideDualLowEnergy:
+            attachBackWideDualLowEnergyCamera(force: false)
+        default:
+            break
+        }
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
