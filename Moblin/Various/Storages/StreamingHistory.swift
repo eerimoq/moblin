@@ -47,7 +47,6 @@ class StreamingHistoryStream: Identifiable, Codable {
     var startTime: Date = .init()
     var stopTime: Date = .init()
     var totalBytes: UInt64 = 0
-    var numberOfFffffs: Int? = 0
     var highestThermalState: ThermalState? = .nominal
     var lowestBatteryLevel: Double? = 1.0
     var highestBitrate: Int64? = Int64.min
@@ -91,10 +90,6 @@ class StreamingHistoryStream: Identifiable, Codable {
 
     func duration() -> Duration {
         return .seconds(stopTime.timeIntervalSince(startTime))
-    }
-
-    func isSuccessful() -> Bool {
-        return numberOfFffffs! == 0
     }
 }
 
@@ -172,10 +167,6 @@ final class StreamingHistory {
     }
 
     private func migrateFromOlderVersions() {
-        for stream in database.streams where stream.numberOfFffffs == nil {
-            stream.numberOfFffffs = 0
-            store()
-        }
         for stream in database.streams where stream.highestThermalState == nil {
             stream.highestThermalState = .nominal
             store()

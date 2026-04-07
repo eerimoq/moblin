@@ -47,19 +47,10 @@ private struct StreamingHistorySettingsStreamsView: View {
                         NavigationLink {
                             StreamingHistoryStreamSettingsView(stream: stream)
                         } label: {
-                            HStack {
-                                if stream.isSuccessful() {
-                                    Image(systemName: "checkmark.circle")
-                                        .foregroundStyle(.green)
-                                } else {
-                                    Image(systemName: "exclamationmark.circle")
-                                        .foregroundStyle(.red)
-                                }
-                                VStack(alignment: .leading) {
-                                    Text(formatStreamTitle(stream: stream))
-                                    Text(stream.settings.name)
-                                        .font(.footnote)
-                                }
+                            VStack(alignment: .leading) {
+                                Text(formatStreamTitle(stream: stream))
+                                Text(stream.settings.name)
+                                    .font(.footnote)
                             }
                         }
                     }

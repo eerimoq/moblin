@@ -493,7 +493,6 @@ extension Model {
         let subTitle = String(localized: "Attempting again in 5 seconds.")
         if streamState == .connected {
             streamTotalBytes += UInt64(media.streamTotal())
-            streamingHistoryStream?.numberOfFffffs! += 1
             makeFffffToast(subTitle: subTitle)
         } else if streamState == .connecting {
             makeConnectFailureToast(subTitle: subTitle)
