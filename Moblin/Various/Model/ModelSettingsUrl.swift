@@ -9,6 +9,12 @@ extension Model {
             if stream.selected == true {
                 newSelectedStream = newStream
             }
+            if let backgroundStreaming = stream.backgroundStreaming {
+                newStream.backgroundStreaming = backgroundStreaming
+            }
+            if let backgroundStreamingPiP = stream.backgroundStreamingPiP {
+                newStream.backgroundStreamingPiP = backgroundStreamingPiP
+            }
             if let video = stream.video {
                 if let resolution = video.resolution {
                     newStream.resolution = resolution

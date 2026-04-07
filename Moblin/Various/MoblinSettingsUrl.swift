@@ -55,6 +55,8 @@ class MoblinSettingsUrlStream: Codable {
     var name: String
     var url: String
     var selected: Bool?
+    var backgroundStreaming: Bool?
+    var backgroundStreamingPiP: Bool?
     var video: MoblinSettingsUrlStreamVideo?
     var audio: MoblinSettingsUrlStreamAudio?
     var srt: MoblinSettingsSrt?
