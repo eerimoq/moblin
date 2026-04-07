@@ -397,18 +397,23 @@ private struct ChatView: View {
     }
 }
 
-private struct AlertsMessagesView: View {
-    let model: Model
-    @ObservedObject var chatSettings: SettingsChat
-    @ObservedObject var chat: ChatProvider
-    @ObservedObject var quickButtonChat: QuickButtonChat
+private struct AlertsPostView: View {
+    let chatSettings: SettingsChat
+    let moreThanOneStreamingPlatform: Bool
+    let showFirstTimeChatterMessage: Bool
+    let showNewFollowerMessage: Bool
     @Binding var selectedPost: ChatPost?
+    let post: ChatPost
+    @ObservedObject var state: ChatPostState
+    let rotation: Double
+    let scaleX: Double
+    let size: CGSize
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
-        if highlight.kind == .firstMessage && !quickButtonChat.showFirstTimeChatterMessage {
+        if highlight.kind == .firstMessage && !showFirstTimeChatterMessage {
             return false
         }
-        if highlight.kind == .newFollower && !quickButtonChat.showNewFollowerMessage {
+        if highlight.kind == .newFollower && !showNewFollowerMessage {
             return false
         }
         if highlight.kind == .reply {
@@ -416,6 +421,58 @@ private struct AlertsMessagesView: View {
         }
         return true
     }
+
+    var body: some View {
+        if post.user != nil {
+            if !state.deleted || chatSettings.showDeletedMessages {
+                if let highlight = post.highlight {
+                    if shouldShowMessage(highlight: highlight) {
+                        HStack(spacing: 0) {
+                            Rectangle()
+                                .frame(width: 3)
+                                .foregroundStyle(highlight.barColor)
+                            VStack(alignment: .leading, spacing: 1) {
+                                HighlightMessageView(postState: post.state,
+                                                     chat: chatSettings,
+                                                     highlight: highlight)
+                                LineView(postState: post.state,
+                                         post: post,
+                                         chat: chatSettings,
+                                         platform: moreThanOneStreamingPlatform,
+                                         selectedPost: $selectedPost)
+                            }
+                        }
+                        .rotationEffect(Angle(degrees: rotation))
+                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                    }
+                } else {
+                    LineView(postState: post.state,
+                             post: post,
+                             chat: chatSettings,
+                             platform: moreThanOneStreamingPlatform,
+                             selectedPost: $selectedPost)
+                        .padding([.leading], 3)
+                        .rotationEffect(Angle(degrees: rotation))
+                        .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+                }
+            }
+        } else {
+            Rectangle()
+                .fill(.red)
+                .frame(width: size.width, height: 1.5)
+                .padding(2)
+                .rotationEffect(Angle(degrees: rotation))
+                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
+        }
+    }
+}
+
+private struct AlertsMessagesView: View {
+    let model: Model
+    @ObservedObject var chatSettings: SettingsChat
+    @ObservedObject var chat: ChatProvider
+    @ObservedObject var quickButtonChat: QuickButtonChat
+    @Binding var selectedPost: ChatPost?
 
     var body: some View {
         let rotation = chatSettings.getRotation()
@@ -432,45 +489,18 @@ private struct AlertsMessagesView: View {
                         }
                         .frame(height: 1)
                     ForEach(quickButtonChat.chatAlertsPosts) { post in
-                        if post.user != nil {
-                            if let highlight = post.highlight {
-                                if shouldShowMessage(highlight: highlight) {
-                                    HStack(spacing: 0) {
-                                        Rectangle()
-                                            .frame(width: 3)
-                                            .foregroundStyle(highlight.barColor)
-                                        VStack(alignment: .leading, spacing: 1) {
-                                            HighlightMessageView(postState: post.state,
-                                                                 chat: chatSettings,
-                                                                 highlight: highlight)
-                                            LineView(postState: post.state,
-                                                     post: post,
-                                                     chat: chatSettings,
-                                                     platform: chat.moreThanOneStreamingPlatform,
-                                                     selectedPost: $selectedPost)
-                                        }
-                                    }
-                                    .rotationEffect(Angle(degrees: rotation))
-                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                                }
-                            } else {
-                                LineView(postState: post.state,
-                                         post: post,
-                                         chat: chatSettings,
-                                         platform: chat.moreThanOneStreamingPlatform,
-                                         selectedPost: $selectedPost)
-                                    .padding([.leading], 3)
-                                    .rotationEffect(Angle(degrees: rotation))
-                                    .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                            }
-                        } else {
-                            Rectangle()
-                                .fill(.red)
-                                .frame(width: metrics.size.width, height: 1.5)
-                                .padding(2)
-                                .rotationEffect(Angle(degrees: rotation))
-                                .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
-                        }
+                        AlertsPostView(
+                            chatSettings: chatSettings,
+                            moreThanOneStreamingPlatform: chat.moreThanOneStreamingPlatform,
+                            showFirstTimeChatterMessage: quickButtonChat.showFirstTimeChatterMessage,
+                            showNewFollowerMessage: quickButtonChat.showNewFollowerMessage,
+                            selectedPost: $selectedPost,
+                            post: post,
+                            state: post.state,
+                            rotation: rotation,
+                            scaleX: scaleX,
+                            size: metrics.size
+                        )
                     }
                     Spacer(minLength: 0)
                 }
