@@ -65,4 +65,31 @@ class ChatProvider: ObservableObject {
             }
         }
     }
+
+    func pause(redLine: ChatPost) {
+        paused = true
+        pausedPostsCount = 0
+        pausedPosts = [redLine]
+        while let post = newPosts.popFirst() {
+            appendMessage(post: post)
+        }
+    }
+
+    func endReachedWhenPaused() {
+        while let post = pausedPosts.popFirst() {
+            if post.isRedLine() {
+                if posts.first?.isRedLine() == true {
+                    continue
+                }
+                if pausedPosts.isEmpty {
+                    continue
+                }
+            }
+            if posts.count > maximumNumberOfMessages - 1 {
+                posts.removeLast()
+            }
+            posts.prepend(post)
+        }
+        paused = false
+    }
 }

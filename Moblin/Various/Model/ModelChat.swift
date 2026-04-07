@@ -8,94 +8,32 @@ let maximumNumberOfInteractiveChatMessages = 100
 
 extension Model {
     func pauseChat() {
-        chat.paused = true
-        chat.pausedPostsCount = 0
-        chat.pausedPosts = [createRedLineChatPost()]
-    }
-
-    func disableInteractiveChat() {
-        _ = appendPausedChatPosts(maximumNumberOfPostsToAppend: Int.max)
-        chat.paused = false
-    }
-
-    private func createRedLineChatPost() -> ChatPost {
-        defer {
-            chatPostId += 1
-        }
-        return ChatPost(
-            id: chatPostId,
-            messageId: nil,
-            displayName: nil,
-            user: nil,
-            userColor: .init(red: 0, green: 0, blue: 0),
-            userBadges: [],
-            segments: [],
-            timestamp: "",
-            timestampTime: .now,
-            isAction: false,
-            isSubscriber: false,
-            bits: nil,
-            highlight: nil,
-            live: true,
-            filter: nil,
-            platform: nil,
-            sourceChannelIcon: nil,
-            state: ChatPostState()
-        )
-    }
-
-    func pauseQuickButtonChat() {
-        quickButtonChat.paused = true
-        quickButtonChat.pausedPostsCount = 0
-        quickButtonChat.pausedPosts = [createRedLineChatPost()]
-    }
-
-    func endOfQuickButtonChatReachedWhenPaused() {
-        while let post = quickButtonChat.pausedPosts.popFirst() {
-            if post.isRedLine() {
-                if quickButtonChat.posts.first?.isRedLine() == true {
-                    continue
-                }
-                if quickButtonChat.pausedPosts.isEmpty {
-                    continue
-                }
-            }
-            if quickButtonChat.posts.count > maximumNumberOfInteractiveChatMessages - 1 {
-                quickButtonChat.posts.removeLast()
-            }
-            quickButtonChat.posts.prepend(post)
-        }
-        quickButtonChat.paused = false
+        chat.pause(redLine: createRedLineChatPost())
     }
 
     func endOfChatReachedWhenPaused() {
-        _ = appendPausedChatPosts(maximumNumberOfPostsToAppend: Int.max)
-        chat.paused = false
+        chat.endReachedWhenPaused()
     }
 
-    private func appendPausedChatPosts(maximumNumberOfPostsToAppend: Int) -> Int {
-        var numberOfPostsAppended = 0
-        while numberOfPostsAppended < maximumNumberOfPostsToAppend, let post = chat.pausedPosts.popFirst() {
-            if post.isRedLine() {
-                if chat.posts.first?.isRedLine() == true {
-                    continue
-                }
-                if chat.pausedPosts.isEmpty {
-                    continue
-                }
-            }
-            if chat.posts.count > maximumNumberOfChatMessages - 1 {
-                chat.posts.removeLast()
-            }
-            chat.posts.prepend(post)
-            numberOfPostsAppended += 1
-        }
-        return numberOfPostsAppended
+    func disableInteractiveChat() {
+        chat.endReachedWhenPaused()
+    }
+
+    func pauseQuickButtonChat() {
+        quickButtonChat.pause(redLine: createRedLineChatPost())
+    }
+
+    func endOfQuickButtonChatReachedWhenPaused() {
+        quickButtonChat.endReachedWhenPaused()
     }
 
     func pauseQuickButtonChatAlerts() {
         quickButtonChatState.chatAlertsPaused = true
         quickButtonChatState.pausedChatAlertsPostsCount = 0
+        pausedQuickButtonChatAlertsPosts = [createRedLineChatPost()]
+        while let post = newQuickButtonChatAlertsPosts.popFirst() {
+            pausedQuickButtonChatAlertsPosts.append(post)
+        }
     }
 
     func endOfQuickButtonChatAlertsReachedWhenPaused() {
@@ -133,17 +71,6 @@ extension Model {
     }
 
     func updateChat() {
-        while let post = chat.newPosts.popFirst() {
-            if chat.posts.count > maximumNumberOfChatMessages - 1 {
-                chat.posts.removeLast()
-            }
-            if post.filter?.showOnScreen != false {
-                chat.posts.prepend(post)
-                if isWatchLocal() {
-                    sendChatMessageToWatch(post: post)
-                }
-            }
-        }
         chat.update()
         quickButtonChat.update()
         if externalDisplay.chatEnabled {
@@ -191,6 +118,32 @@ extension Model {
         quickButtonChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         externalDisplayChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
         chatWidgetChat.moreThanOneStreamingPlatform = moreThanOneStreamingPlatform
+    }
+
+    private func createRedLineChatPost() -> ChatPost {
+        defer {
+            chatPostId += 1
+        }
+        return ChatPost(
+            id: chatPostId,
+            messageId: nil,
+            displayName: nil,
+            user: nil,
+            userColor: .init(red: 0, green: 0, blue: 0),
+            userBadges: [],
+            segments: [],
+            timestamp: "",
+            timestampTime: .now,
+            isAction: false,
+            isSubscriber: false,
+            bits: nil,
+            highlight: nil,
+            live: true,
+            filter: nil,
+            platform: nil,
+            sourceChannelIcon: nil,
+            state: ChatPostState()
+        )
     }
 
     private func isMoreThanOneChatConfigured() -> Bool {
@@ -379,11 +332,12 @@ extension Model {
         }
         if filter?.showOnScreen != false {
             chat.appendMessage(post: post)
-        }
-        if filter?.showOnScreen != false {
             quickButtonChat.appendMessage(post: post)
             for browserEffect in browserEffects.values {
                 browserEffect.sendChatMessage(post: post)
+            }
+            if isWatchLocal() {
+                sendChatMessageToWatch(post: post)
             }
             if externalDisplay.chatEnabled {
                 externalDisplayChat.appendMessage(post: post)
