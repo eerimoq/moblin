@@ -331,7 +331,7 @@ private struct CreatePollView: View {
                 ForEach($options) { $option in
                     TextField("Option", text: $option.text)
                         .deleteDisabled(options.count <= 2)
-                        .contextMenuDeleteButton(enabled: options.count > 2) {
+                        .contextMenuDeleteButton(disabled: options.count <= 2) {
                             options.removeAll { $0.id == option.id }
                         }
                 }

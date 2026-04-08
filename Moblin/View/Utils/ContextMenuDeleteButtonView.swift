@@ -13,9 +13,9 @@ struct ContextMenuDeleteButtonView: View {
 }
 
 extension View {
-    func contextMenuDeleteButton(enabled: Bool = true, action: @escaping () -> Void) -> some View {
+    func contextMenuDeleteButton(disabled: Bool = false, action: @escaping () -> Void) -> some View {
         contextMenu {
-            if enabled {
+            if !disabled {
                 ContextMenuDeleteButtonView(action: action)
             }
         }

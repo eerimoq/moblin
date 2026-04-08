@@ -696,7 +696,7 @@ struct PredefinedMessagesView: View {
                                                   filter: filter,
                                                   predefinedMessage: predefinedMessage,
                                                   showingPredefinedMessages: $presentingPredefinedMessages)
-                                .contextMenuDeleteButton(enabled: !filter.isEnabled()) {
+                                .contextMenuDeleteButton(disabled: filter.isEnabled()) {
                                     chat.predefinedMessages.removeAll { $0.id == predefinedMessage.id }
                                 }
                         }

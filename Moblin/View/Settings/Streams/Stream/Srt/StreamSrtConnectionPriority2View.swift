@@ -92,7 +92,7 @@ private struct SrtlaConnectionPriorityView: View {
                 ForEach(stream.srt.connectionPriorities.priorities) { priority in
                     PriorityItemView(priority: priority, prio: Float(priority.priority))
                         .deleteDisabled(["Cellular", "WiFi"].contains(priority.name))
-                        .contextMenuDeleteButton(enabled: !["Cellular", "WiFi"].contains(priority.name)) {
+                        .contextMenuDeleteButton(disabled: ["Cellular", "WiFi"].contains(priority.name)) {
                             stream.srt.connectionPriorities.priorities
                                 .removeAll { $0.id == priority.id }
                             model.updateSrtlaPriorities()

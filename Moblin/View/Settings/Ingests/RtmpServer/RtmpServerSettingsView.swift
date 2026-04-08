@@ -58,7 +58,7 @@ struct RtmpServerSettingsView: View {
                                 rtmpServer: rtmpServer,
                                 stream: stream
                             )
-                            .contextMenuDeleteButton(enabled: !rtmpServer.enabled) {
+                            .contextMenuDeleteButton(disabled: rtmpServer.enabled) {
                                 rtmpServer.streams.removeAll { $0.id == stream.id }
                                 model.reloadRtmpServer()
                                 model.updateMicsListAsync()

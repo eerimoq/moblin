@@ -76,7 +76,7 @@ struct SrtlaServerSettingsView: View {
                                 srtlaServer: srtlaServer,
                                 stream: stream
                             )
-                            .contextMenuDeleteButton(enabled: !model.srtlaServerEnabled()) {
+                            .contextMenuDeleteButton(disabled: model.srtlaServerEnabled()) {
                                 srtlaServer.streams.removeAll { $0.id == stream.id }
                                 model.reloadSrtlaServer()
                                 model.updateMicsListAsync()

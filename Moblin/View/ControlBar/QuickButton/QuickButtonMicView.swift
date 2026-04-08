@@ -40,7 +40,7 @@ struct QuickButtonMicView: View {
                     ForEach(mics.mics) { mic in
                         QuickButtonMicMicView(model: model, mic: mic, modelMic: modelMic)
                             .deleteDisabled(mic == modelMic.current)
-                            .contextMenuDeleteButton(enabled: mic != modelMic.current) {
+                            .contextMenuDeleteButton(disabled: mic == modelMic.current) {
                                 mics.mics.removeAll { $0.id == mic.id }
                             }
                     }
