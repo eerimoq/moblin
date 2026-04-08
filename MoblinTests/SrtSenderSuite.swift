@@ -37,7 +37,7 @@ extension ModelMock: SrtSenderDelegate {
 struct SrtSenderSuite {
     @Test
     func connectDisconnect() async throws {
-        let sender = SrtSender(streamId: "1234", latency: 2000)
+        let sender = SrtSender(streamId: "1234", latency: 2000, experimental: false)
         let model = ModelMock()
         sender.delegate = model
         sender.start()
