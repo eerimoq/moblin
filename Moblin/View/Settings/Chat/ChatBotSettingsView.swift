@@ -172,7 +172,10 @@ private struct ZoomPermissionsSettingsView: View {
                 Text("")
                 Text("0 means the lowest available zoom for the current camera.")
                 Text("")
-                Text("If the value is unavailable for the current camera, the command is ignored unless chat responses are enabled.")
+                Text("""
+                If the value is unavailable for the current camera, the command \
+                is ignored unless chat responses are enabled.
+                """)
             }
         }
     }
