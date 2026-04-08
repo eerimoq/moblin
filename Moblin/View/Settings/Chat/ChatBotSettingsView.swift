@@ -484,6 +484,13 @@ private struct ChatBotAliasesSettingsView: View {
                 List {
                     ForEach(chat.aliases) { alias in
                         ChatBotAliasSettingsView(alias: alias)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    chat.aliases.removeAll { $0.id == alias.id }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                     .onMove { froms, to in
                         chat.aliases.move(fromOffsets: froms, toOffset: to)

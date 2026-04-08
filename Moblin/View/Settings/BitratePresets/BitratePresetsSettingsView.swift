@@ -10,6 +10,15 @@ struct BitratePresetsSettingsView: View {
                     ForEach(database.bitratePresets) { preset in
                         BitratePresetsPresetSettingsView(preset: preset)
                             .deleteDisabled(database.bitratePresets.count == 1)
+                            .contextMenu {
+                                if database.bitratePresets.count > 1 {
+                                    Button(role: .destructive) {
+                                        database.bitratePresets.removeAll { $0.id == preset.id }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
                     }
                     .onMove { froms, to in
                         database.bitratePresets.move(fromOffsets: froms, toOffset: to)

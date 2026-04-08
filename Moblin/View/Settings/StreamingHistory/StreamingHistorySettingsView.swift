@@ -53,6 +53,14 @@ private struct StreamingHistorySettingsStreamsView: View {
                                     .font(.footnote)
                             }
                         }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                database.streams.removeAll { $0.id == stream.id }
+                                model.streamingHistory.store()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                     .onDelete { offsets in
                         database.streams.remove(atOffsets: offsets)
