@@ -55,8 +55,14 @@ struct StreamMultiStreamingSettingsView: View {
                 }
                 Section {
                     List {
-                        let items = ForEach(multiStreaming.destinations) {
-                            DestinationView(stream: stream, destination: $0)
+                        let items = ForEach(multiStreaming.destinations) { destination in
+                            DestinationView(stream: stream, destination: destination)
+                                .contextMenuDeleteButton(disabled: stream
+                                    .enabled && (model.isLive || model.isRecording))
+                                {
+                                    multiStreaming.destinations
+                                        .removeAll { $0.id == destination.id }
+                                }
                         }
                         if stream.enabled && (model.isLive || model.isRecording) {
                             items

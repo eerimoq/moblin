@@ -116,8 +116,14 @@ struct WidgetWheelOfLuckSettingsView: View {
     var body: some View {
         if wheelOfLuck.advanced {
             Section {
-                ForEach(wheelOfLuck.options) {
-                    OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: $0)
+                ForEach(wheelOfLuck.options) { option in
+                    OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: option)
+                        .contextMenuDeleteButton(disabled: wheelOfLuck.options.count < 2) {
+                            wheelOfLuck.options.removeAll { $0.id == option.id }
+                            wheelOfLuck.updateText()
+                            wheelOfLuck.updateTotalWeight()
+                            updateEffect()
+                        }
                 }
                 .onMove { froms, to in
                     wheelOfLuck.options.move(fromOffsets: froms, toOffset: to)

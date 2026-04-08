@@ -61,6 +61,9 @@ private struct AutoSwitcherScenesSettingsView: View {
         Section {
             ForEach(autoSwitcher.scenes) { scene in
                 AutoSwitcherSceneSettingsView(model: model, scene: scene)
+                    .contextMenuDeleteButton {
+                        autoSwitcher.scenes.removeAll { $0.id == scene.id }
+                    }
             }
             .onMove { froms, to in
                 autoSwitcher.scenes.move(fromOffsets: froms, toOffset: to)
@@ -160,6 +163,13 @@ struct AutoSwitchersView: View {
                         autoSceneSwitchers: autoSceneSwitchers,
                         autoSwitcher: autoSwitcher
                     )
+                    .contextMenuDeleteButton {
+                        if let index = autoSceneSwitchers.switchers.firstIndex(where: {
+                            $0.id == autoSwitcher.id
+                        }) {
+                            model.deleteAutoSceneSwitchers(offsets: IndexSet(integer: index))
+                        }
+                    }
                 }
                 .onMove { froms, to in
                     autoSceneSwitchers.switchers.move(fromOffsets: froms, toOffset: to)

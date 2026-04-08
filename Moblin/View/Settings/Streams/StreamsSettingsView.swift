@@ -30,6 +30,18 @@ private struct StreamItemView: View {
                 database.streams.append(stream.clone())
             }
         }
+        .contextMenu {
+            if isMac() {
+                ContextMenuDuplicateButtonView {
+                    database.streams.append(stream.clone())
+                }
+                if !stream.enabled {
+                    ContextMenuDeleteButtonView {
+                        database.streams.removeAll { $0 === stream }
+                    }
+                }
+            }
+        }
     }
 }
 

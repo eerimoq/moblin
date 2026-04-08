@@ -52,6 +52,9 @@ struct CatPrintersSettingsView: View {
                         CatPrinterSettingsWrapperView(catPrinters: catPrinters,
                                                       device: device,
                                                       status: model.statusTopRight)
+                            .contextMenuDeleteButton {
+                                catPrinters.devices.removeAll { $0.id == device.id }
+                            }
                     }
                     .onDelete { offsets in
                         catPrinters.devices.remove(atOffsets: offsets)

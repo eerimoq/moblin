@@ -87,6 +87,10 @@ struct WidgetEffectsView: View {
         Section {
             ForEach(widget.effects) { effect in
                 EffectView(widget: widget, effect: effect)
+                    .contextMenuDeleteButton {
+                        widget.effects.removeAll { $0.id == effect.id }
+                        model.resetSelectedScene(changeScene: false)
+                    }
             }
             .onMove { froms, to in
                 widget.effects.move(fromOffsets: froms, toOffset: to)

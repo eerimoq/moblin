@@ -100,6 +100,9 @@ struct ChatFiltersSettingsView: View {
                     List {
                         ForEach(chat.filters) { filter in
                             ChatFilterSettingsView(filter: filter)
+                                .contextMenuDeleteButton {
+                                    chat.filters.removeAll { $0.id == filter.id }
+                                }
                         }
                         .onMove { froms, to in
                             chat.filters.move(fromOffsets: froms, toOffset: to)

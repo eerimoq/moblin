@@ -13,6 +13,9 @@ struct KeyboardSettingsView: View {
                 List {
                     ForEach(keyboard.keys) { key in
                         KeyboardKeySettingsView(model: model, key: key)
+                            .contextMenuDeleteButton {
+                                keyboard.keys.removeAll { $0.id == key.id }
+                            }
                     }
                     .onDelete { indexSet in
                         keyboard.keys.remove(atOffsets: indexSet)

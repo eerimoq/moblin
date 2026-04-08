@@ -306,6 +306,10 @@ private struct KickGiftsView: View {
                 List {
                     ForEach(kick.kickGifts) { kickGift in
                         KickGiftItemView(alert: kickGift.alert, kickGift: kickGift)
+                            .contextMenuDeleteButton {
+                                kick.kickGifts.removeAll { $0.id == kickGift.id }
+                                model.updateAlertsSettings()
+                            }
                     }
                     .onMove { froms, to in
                         kick.kickGifts.move(fromOffsets: froms, toOffset: to)

@@ -24,6 +24,11 @@ private struct PlayersView: View {
             List {
                 ForEach(database.scoreboardPlayers) { player in
                     PlayersPlayerView(model: model, database: database, player: player)
+                        .contextMenuDeleteButton {
+                            database.scoreboardPlayers.removeAll { $0.id == player.id }
+                            updated()
+                            model.sendScoreboardPlayersToWatch()
+                        }
                 }
                 .onMove { froms, to in
                     database.scoreboardPlayers.move(fromOffsets: froms, toOffset: to)

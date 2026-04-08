@@ -24,6 +24,9 @@ struct BlackSharkCoolerDevicesSettingsView: View {
                         BlackSharkCoolerDeviceSettingsView(blackSharkCoolerDevices: blackSharkCoolerDevices,
                                                            device: device,
                                                            status: model.statusTopRight)
+                            .contextMenuDeleteButton {
+                                blackSharkCoolerDevices.devices.removeAll { $0.id == device.id }
+                            }
                     }
                     .onDelete { offsets in
                         blackSharkCoolerDevices.devices.remove(atOffsets: offsets)

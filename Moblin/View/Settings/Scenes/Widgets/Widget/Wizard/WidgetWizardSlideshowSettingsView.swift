@@ -28,11 +28,14 @@ private struct SlidesView: View {
 
     var body: some View {
         Section {
-            ForEach(slideshow.slides) {
+            ForEach(slideshow.slides) { slide in
                 SlideView(model: model,
                           database: model.database,
-                          slide: $0,
+                          slide: slide,
                           presentingCreateWizard: $presentingCreateWizard)
+                    .contextMenuDeleteButton {
+                        slideshow.slides.removeAll { $0.id == slide.id }
+                    }
             }
             .onMove { froms, to in
                 slideshow.slides.move(fromOffsets: froms, toOffset: to)

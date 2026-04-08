@@ -85,6 +85,12 @@ private struct SoundGalleryView: View {
                         } label: {
                             Text(sound.name)
                         }
+                        .contextMenuDeleteButton {
+                            model.database.alertsMediaGallery.customSounds
+                                .removeAll { $0.id == sound.id }
+                            model.fixAlertMedias()
+                            soundId = alert.soundId
+                        }
                     }
                     .onDelete { offsets in
                         model.database.alertsMediaGallery.customSounds.remove(atOffsets: offsets)

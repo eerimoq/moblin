@@ -50,6 +50,10 @@ struct MediaPlayerSettingsView: View {
                     List {
                         ForEach(player.playlist) { file in
                             MediaPlayerFileSettingsView(player: player, file: file)
+                                .contextMenuDeleteButton {
+                                    player.playlist.removeAll { $0.id == file.id }
+                                    model.updateMediaPlayerSettings(playerId: player.id, settings: player)
+                                }
                         }
                         .onMove { froms, to in
                             player.playlist.move(fromOffsets: froms, toOffset: to)

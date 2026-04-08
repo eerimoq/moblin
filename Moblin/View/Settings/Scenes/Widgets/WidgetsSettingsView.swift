@@ -31,6 +31,11 @@ private struct WidgetsSettingsItemView: View {
                 model.resetSelectedScene()
             }
         }
+        .contextMenuDeleteButton {
+            database.widgets.removeAll(where: { $0 === widget })
+            model.removeDeadWidgetsFromScenes()
+            model.resetSelectedScene()
+        }
     }
 }
 

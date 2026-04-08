@@ -33,6 +33,20 @@ private struct SceneItemView: View {
                 database.scenes.append(scene.clone())
             }
         }
+        .contextMenu {
+            if isMac() {
+                ContextMenuDuplicateButtonView {
+                    database.scenes.append(scene.clone())
+                }
+                ContextMenuDeleteButtonView {
+                    let deletedCurrentScene = model.getSelectedScene() === scene
+                    database.scenes.removeAll { $0 === scene }
+                    if deletedCurrentScene {
+                        model.resetSelectedScene()
+                    }
+                }
+            }
+        }
     }
 }
 

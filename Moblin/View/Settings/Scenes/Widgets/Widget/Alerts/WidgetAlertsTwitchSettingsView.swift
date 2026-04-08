@@ -265,6 +265,10 @@ private struct TwitchCheerBitsView: View {
                 List {
                     ForEach(twitch.cheerBits) { cheerBit in
                         TwitchCheerBitsItemView(alert: cheerBit.alert, cheerBit: cheerBit)
+                            .contextMenuDeleteButton {
+                                twitch.cheerBits.removeAll { $0.id == cheerBit.id }
+                                model.updateAlertsSettings()
+                            }
                     }
                     .onMove { froms, to in
                         twitch.cheerBits.move(fromOffsets: froms, toOffset: to)

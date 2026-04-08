@@ -92,6 +92,10 @@ struct LocationSettingsView: View {
                                 longitudeDelta: region.longitudeDelta
                             )
                         ))
+                        .contextMenuDeleteButton {
+                            location.privacyRegions.removeAll { $0.id == region.id }
+                            model.reloadLocation()
+                        }
                     }
                     .onDelete { indexes in
                         location.privacyRegions.remove(atOffsets: indexes)
