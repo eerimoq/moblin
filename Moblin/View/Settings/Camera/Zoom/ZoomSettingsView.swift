@@ -27,6 +27,16 @@ struct ZoomSettingsView: View {
                             maxX: model.getMinMaxZoomX(position: .back).1
                         )
                         .deleteDisabled(zoom.back.count == 1)
+                        .contextMenu {
+                            if zoom.back.count > 1 {
+                                Button(role: .destructive) {
+                                    zoom.back.removeAll { $0.id == preset.id }
+                                    model.backZoomPresetSettingsUpdated()
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                        }
                     }
                     .onMove { froms, to in
                         zoom.back.move(fromOffsets: froms, toOffset: to)
@@ -59,6 +69,16 @@ struct ZoomSettingsView: View {
                             maxX: model.getMinMaxZoomX(position: .front).1
                         )
                         .deleteDisabled(zoom.front.count == 1)
+                        .contextMenu {
+                            if zoom.front.count > 1 {
+                                Button(role: .destructive) {
+                                    zoom.front.removeAll { $0.id == preset.id }
+                                    model.frontZoomPresetSettingUpdated()
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                        }
                     }
                     .onMove { froms, to in
                         zoom.front.move(fromOffsets: froms, toOffset: to)

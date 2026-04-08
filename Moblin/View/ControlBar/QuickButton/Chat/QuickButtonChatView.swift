@@ -696,6 +696,15 @@ struct PredefinedMessagesView: View {
                                                   filter: filter,
                                                   predefinedMessage: predefinedMessage,
                                                   showingPredefinedMessages: $presentingPredefinedMessages)
+                                .contextMenu {
+                                    if !filter.isEnabled() {
+                                        Button(role: .destructive) {
+                                            chat.predefinedMessages.removeAll { $0.id == predefinedMessage.id }
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                }
                         }
                         if filter.isEnabled() {
                             items

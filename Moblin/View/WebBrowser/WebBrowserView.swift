@@ -102,6 +102,13 @@ private struct BookmarksView: View {
                                     Text(bookmark.url)
                                 }
                             }
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    webBrowser.bookmarks.removeAll { $0.id == bookmark.id }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                         }
                         .onDelete {
                             webBrowser.bookmarks.remove(atOffsets: $0)

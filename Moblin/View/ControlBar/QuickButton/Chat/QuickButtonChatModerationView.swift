@@ -331,6 +331,15 @@ private struct CreatePollView: View {
                 ForEach($options) { $option in
                     TextField("Option", text: $option.text)
                         .deleteDisabled(options.count <= 2)
+                        .contextMenu {
+                            if options.count > 2 {
+                                Button(role: .destructive) {
+                                    options.removeAll { $0.id == option.id }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                        }
                 }
                 .onDelete { offsets in
                     options.remove(atOffsets: offsets)
