@@ -30,6 +30,13 @@ struct GameControllersSettingsView: View {
                         } label: {
                             Text("Controller \(gameControllerIndex(gameController: gameController))")
                         }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                database.gameControllers.removeAll { $0.id == gameController.id }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                     .onDelete { indexSet in
                         database.gameControllers.remove(atOffsets: indexSet)

@@ -13,6 +13,13 @@ struct KeyboardSettingsView: View {
                 List {
                     ForEach(keyboard.keys) { key in
                         KeyboardKeySettingsView(model: model, key: key)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    keyboard.keys.removeAll { $0.id == key.id }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                     .onDelete { indexSet in
                         keyboard.keys.remove(atOffsets: indexSet)

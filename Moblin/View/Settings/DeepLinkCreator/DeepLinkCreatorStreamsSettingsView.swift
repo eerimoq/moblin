@@ -9,6 +9,13 @@ struct DeepLinkCreatorStreamsSettingsView: View {
                 List {
                     ForEach(deepLinkCreator.streams) { stream in
                         DeepLinkCreatorStreamSettingsView(deepLinkCreator: deepLinkCreator, stream: stream)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    deepLinkCreator.streams.removeAll { $0.id == stream.id }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                     .onMove { froms, to in
                         deepLinkCreator.streams.move(fromOffsets: froms, toOffset: to)

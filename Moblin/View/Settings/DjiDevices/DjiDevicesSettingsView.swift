@@ -34,6 +34,17 @@ struct DjiDevicesSettingsView: View {
                 List {
                     ForEach(djiDevices.devices) { device in
                         DjiDeviceSettingsWrapperView(djiDevices: djiDevices, device: device)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    if let index = djiDevices.devices
+                                        .firstIndex(where: { $0.id == device.id })
+                                    {
+                                        model.removeDjiDevices(offsets: IndexSet(integer: index))
+                                    }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                     .onMove { froms, to in
                         djiDevices.devices.move(fromOffsets: froms, toOffset: to)

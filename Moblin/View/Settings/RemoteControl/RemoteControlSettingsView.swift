@@ -317,6 +317,23 @@ struct RemoteControlStreamersView: View {
             List {
                 ForEach(remoteControlSettings.streamers) { streamer in
                     StreamerView(remoteControlSettings: remoteControlSettings, streamer: streamer)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                remoteControlSettings.streamers.removeAll { $0.id == streamer.id }
+                                guard remoteControlSettings.selectedStreamer != nil else {
+                                    return
+                                }
+                                guard !remoteControlSettings.streamers
+                                    .contains(where: { $0.id == remoteControlSettings.selectedStreamer })
+                                else {
+                                    return
+                                }
+                                remoteControlSettings.selectedStreamer = nil
+                                onStreamerChanged()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                 }
                 .onDelete {
                     remoteControlSettings.streamers.remove(atOffsets: $0)

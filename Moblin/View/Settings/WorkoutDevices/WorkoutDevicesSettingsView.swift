@@ -22,6 +22,13 @@ struct WorkoutDevicesSettingsView: View {
                                                   workoutDevices: workoutDevices,
                                                   device: device,
                                                   status: model.statusTopRight)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    workoutDevices.devices.removeAll { $0.id == device.id }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                     .onDelete { offsets in
                         workoutDevices.devices.remove(atOffsets: offsets)
