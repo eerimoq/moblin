@@ -22,10 +22,8 @@ struct WorkoutDevicesSettingsView: View {
                                                   workoutDevices: workoutDevices,
                                                   device: device,
                                                   status: model.statusTopRight)
-                            .contextMenu {
-                                ContextMenuDeleteButtonView {
-                                    workoutDevices.devices.removeAll { $0.id == device.id }
-                                }
+                            .contextMenuDeleteButton {
+                                workoutDevices.devices.removeAll { $0.id == device.id }
                             }
                     }
                     .onDelete { offsets in

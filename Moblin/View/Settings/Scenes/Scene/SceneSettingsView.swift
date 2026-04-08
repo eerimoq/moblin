@@ -260,18 +260,16 @@ private struct WidgetsView: View {
             List {
                 ForEach(scene.widgets) { sceneWidget in
                     SceneWidgetView(database: database, sceneWidget: sceneWidget)
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                var attachCamera = false
-                                if scene.id == model.getSelectedScene()?.id {
-                                    if let widget = model.findWidget(id: sceneWidget.widgetId) {
-                                        attachCamera = model.isCaptureDeviceWidget(widget: widget)
-                                    }
+                        .contextMenuDeleteButton {
+                            var attachCamera = false
+                            if scene.id == model.getSelectedScene()?.id {
+                                if let widget = model.findWidget(id: sceneWidget.widgetId) {
+                                    attachCamera = model.isCaptureDeviceWidget(widget: widget)
                                 }
-                                scene.widgets.removeAll { $0.id == sceneWidget.id }
-                                model.sceneUpdated(attachCamera: attachCamera)
-                                model.sceneSettingsPanelSceneId += 1
                             }
+                            scene.widgets.removeAll { $0.id == sceneWidget.id }
+                            model.sceneUpdated(attachCamera: attachCamera)
+                            model.sceneSettingsPanelSceneId += 1
                         }
                 }
                 .onMove { froms, to in

@@ -27,13 +27,9 @@ struct ZoomSettingsView: View {
                             maxX: model.getMinMaxZoomX(position: .back).1
                         )
                         .deleteDisabled(zoom.back.count == 1)
-                        .contextMenu {
-                            if zoom.back.count > 1 {
-                                ContextMenuDeleteButtonView {
-                                    zoom.back.removeAll { $0.id == preset.id }
-                                    model.backZoomPresetSettingsUpdated()
-                                }
-                            }
+                        .contextMenuDeleteButton(enabled: zoom.back.count > 1) {
+                            zoom.back.removeAll { $0.id == preset.id }
+                            model.backZoomPresetSettingsUpdated()
                         }
                     }
                     .onMove { froms, to in
@@ -67,13 +63,9 @@ struct ZoomSettingsView: View {
                             maxX: model.getMinMaxZoomX(position: .front).1
                         )
                         .deleteDisabled(zoom.front.count == 1)
-                        .contextMenu {
-                            if zoom.front.count > 1 {
-                                ContextMenuDeleteButtonView {
-                                    zoom.front.removeAll { $0.id == preset.id }
-                                    model.frontZoomPresetSettingUpdated()
-                                }
-                            }
+                        .contextMenuDeleteButton(enabled: zoom.front.count > 1) {
+                            zoom.front.removeAll { $0.id == preset.id }
+                            model.frontZoomPresetSettingUpdated()
                         }
                     }
                     .onMove { froms, to in

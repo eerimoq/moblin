@@ -92,15 +92,11 @@ private struct SrtlaConnectionPriorityView: View {
                 ForEach(stream.srt.connectionPriorities.priorities) { priority in
                     PriorityItemView(priority: priority, prio: Float(priority.priority))
                         .deleteDisabled(["Cellular", "WiFi"].contains(priority.name))
-                        .contextMenu {
-                            if !["Cellular", "WiFi"].contains(priority.name) {
-                                ContextMenuDeleteButtonView {
-                                    stream.srt.connectionPriorities.priorities
-                                        .removeAll { $0.id == priority.id }
-                                    model.updateSrtlaPriorities()
-                                    model.objectWillChange.send()
-                                }
-                            }
+                        .contextMenuDeleteButton(enabled: !["Cellular", "WiFi"].contains(priority.name)) {
+                            stream.srt.connectionPriorities.priorities
+                                .removeAll { $0.id == priority.id }
+                            model.updateSrtlaPriorities()
+                            model.objectWillChange.send()
                         }
                 }
                 .onDelete { offsets in

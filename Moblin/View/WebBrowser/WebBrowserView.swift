@@ -102,10 +102,8 @@ private struct BookmarksView: View {
                                     Text(bookmark.url)
                                 }
                             }
-                            .contextMenu {
-                                ContextMenuDeleteButtonView {
-                                    webBrowser.bookmarks.removeAll { $0.id == bookmark.id }
-                                }
+                            .contextMenuDeleteButton {
+                                webBrowser.bookmarks.removeAll { $0.id == bookmark.id }
                             }
                         }
                         .onDelete {

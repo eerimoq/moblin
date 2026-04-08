@@ -11,3 +11,13 @@ struct ContextMenuDeleteButtonView: View {
         }
     }
 }
+
+extension View {
+    func contextMenuDeleteButton(enabled: Bool = true, action: @escaping () -> Void) -> some View {
+        contextMenu {
+            if enabled {
+                ContextMenuDeleteButtonView(action: action)
+            }
+        }
+    }
+}

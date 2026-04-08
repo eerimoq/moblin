@@ -92,11 +92,9 @@ struct LocationSettingsView: View {
                                 longitudeDelta: region.longitudeDelta
                             )
                         ))
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                location.privacyRegions.removeAll { $0.id == region.id }
-                                model.reloadLocation()
-                            }
+                        .contextMenuDeleteButton {
+                            location.privacyRegions.removeAll { $0.id == region.id }
+                            model.reloadLocation()
                         }
                     }
                     .onDelete { indexes in

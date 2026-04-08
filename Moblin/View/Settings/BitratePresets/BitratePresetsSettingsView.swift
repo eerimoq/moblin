@@ -10,12 +10,8 @@ struct BitratePresetsSettingsView: View {
                     ForEach(database.bitratePresets) { preset in
                         BitratePresetsPresetSettingsView(preset: preset)
                             .deleteDisabled(database.bitratePresets.count == 1)
-                            .contextMenu {
-                                if database.bitratePresets.count > 1 {
-                                    ContextMenuDeleteButtonView {
-                                        database.bitratePresets.removeAll { $0.id == preset.id }
-                                    }
-                                }
+                            .contextMenuDeleteButton(enabled: database.bitratePresets.count > 1) {
+                                database.bitratePresets.removeAll { $0.id == preset.id }
                             }
                     }
                     .onMove { froms, to in

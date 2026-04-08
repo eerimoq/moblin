@@ -19,11 +19,9 @@ struct MediaPlayersSettingsView: View {
                 List {
                     ForEach(mediaPlayers.players) { player in
                         MediaPlayerSettingsView(mediaPlayers: mediaPlayers, player: player)
-                            .contextMenu {
-                                ContextMenuDeleteButtonView {
-                                    model.deleteMediaPlayer(playerId: player.id)
-                                    mediaPlayers.players.removeAll { $0.id == player.id }
-                                }
+                            .contextMenuDeleteButton {
+                                model.deleteMediaPlayer(playerId: player.id)
+                                mediaPlayers.players.removeAll { $0.id == player.id }
                             }
                     }
                     .onDelete { indexes in

@@ -78,11 +78,9 @@ private struct SlidesView: View {
         Section {
             ForEach(slideshow.slides) { slide in
                 SlideView(model: model, database: model.database, slide: slide)
-                    .contextMenu {
-                        ContextMenuDeleteButtonView {
-                            slideshow.slides.removeAll { $0.id == slide.id }
-                            model.resetSelectedScene(changeScene: false, attachCamera: false)
-                        }
+                    .contextMenuDeleteButton {
+                        slideshow.slides.removeAll { $0.id == slide.id }
+                        model.resetSelectedScene(changeScene: false, attachCamera: false)
                     }
             }
             .onMove { froms, to in

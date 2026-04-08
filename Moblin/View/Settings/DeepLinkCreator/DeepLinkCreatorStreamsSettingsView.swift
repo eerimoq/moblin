@@ -9,10 +9,8 @@ struct DeepLinkCreatorStreamsSettingsView: View {
                 List {
                     ForEach(deepLinkCreator.streams) { stream in
                         DeepLinkCreatorStreamSettingsView(deepLinkCreator: deepLinkCreator, stream: stream)
-                            .contextMenu {
-                                ContextMenuDeleteButtonView {
-                                    deepLinkCreator.streams.removeAll { $0.id == stream.id }
-                                }
+                            .contextMenuDeleteButton {
+                                deepLinkCreator.streams.removeAll { $0.id == stream.id }
                             }
                     }
                     .onMove { froms, to in

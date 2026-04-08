@@ -55,14 +55,10 @@ struct RistServerSettingsView: View {
                                 ristServer: ristServer,
                                 stream: stream
                             )
-                            .contextMenu {
-                                if !ristServer.enabled {
-                                    ContextMenuDeleteButtonView {
-                                        ristServer.streams.removeAll { $0.id == stream.id }
-                                        model.reloadRistServer()
-                                        model.updateMicsListAsync()
-                                    }
-                                }
+                            .contextMenuDeleteButton(enabled: !ristServer.enabled) {
+                                ristServer.streams.removeAll { $0.id == stream.id }
+                                model.reloadRistServer()
+                                model.updateMicsListAsync()
                             }
                         }
                         if !ristServer.enabled {

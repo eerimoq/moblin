@@ -56,11 +56,9 @@ private struct CameraSettingsCubeLutsView: View {
                 ForEach(color.diskLutsCube) { lut in
                     CustomLutView(lut: lut, name: lut.name)
                         .tag(lut.id)
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                if let index = color.diskLutsCube.firstIndex(where: { $0.id == lut.id }) {
-                                    model.removeLutCube(offsets: IndexSet(integer: index))
-                                }
+                        .contextMenuDeleteButton {
+                            if let index = color.diskLutsCube.firstIndex(where: { $0.id == lut.id }) {
+                                model.removeLutCube(offsets: IndexSet(integer: index))
                             }
                         }
                 }
@@ -92,11 +90,9 @@ private struct CameraSettingsPngLutsView: View {
                 ForEach(color.diskLutsPng) { lut in
                     CustomLutView(lut: lut, name: lut.name)
                         .tag(lut.id)
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                if let index = color.diskLutsPng.firstIndex(where: { $0.id == lut.id }) {
-                                    model.removeLutPng(offsets: IndexSet(integer: index))
-                                }
+                        .contextMenuDeleteButton {
+                            if let index = color.diskLutsPng.firstIndex(where: { $0.id == lut.id }) {
+                                model.removeLutPng(offsets: IndexSet(integer: index))
                             }
                         }
                 }

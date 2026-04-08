@@ -22,11 +22,9 @@ struct WhepClientSettingsView: View {
                     List {
                         ForEach(whepClient.streams) { stream in
                             WhepClientStreamSettingsView(whepClient: whepClient, stream: stream)
-                                .contextMenu {
-                                    ContextMenuDeleteButtonView {
-                                        whepClient.streams.removeAll { $0.id == stream.id }
-                                        model.reloadWhepClient()
-                                    }
+                                .contextMenuDeleteButton {
+                                    whepClient.streams.removeAll { $0.id == stream.id }
+                                    model.reloadWhepClient()
                                 }
                         }
                         .onDelete { indexes in

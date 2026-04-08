@@ -76,14 +76,10 @@ struct SrtlaServerSettingsView: View {
                                 srtlaServer: srtlaServer,
                                 stream: stream
                             )
-                            .contextMenu {
-                                if !model.srtlaServerEnabled() {
-                                    ContextMenuDeleteButtonView {
-                                        srtlaServer.streams.removeAll { $0.id == stream.id }
-                                        model.reloadSrtlaServer()
-                                        model.updateMicsListAsync()
-                                    }
-                                }
+                            .contextMenuDeleteButton(enabled: !model.srtlaServerEnabled()) {
+                                srtlaServer.streams.removeAll { $0.id == stream.id }
+                                model.reloadSrtlaServer()
+                                model.updateMicsListAsync()
                             }
                         }
                         if !model.srtlaServerEnabled() {

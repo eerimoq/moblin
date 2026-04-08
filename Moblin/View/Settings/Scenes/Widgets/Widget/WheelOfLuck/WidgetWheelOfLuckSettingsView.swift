@@ -118,15 +118,11 @@ struct WidgetWheelOfLuckSettingsView: View {
             Section {
                 ForEach(wheelOfLuck.options) { option in
                     OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: option)
-                        .contextMenu {
-                            if wheelOfLuck.options.count >= 2 {
-                                ContextMenuDeleteButtonView {
-                                    wheelOfLuck.options.removeAll { $0.id == option.id }
-                                    wheelOfLuck.updateText()
-                                    wheelOfLuck.updateTotalWeight()
-                                    updateEffect()
-                                }
-                            }
+                        .contextMenuDeleteButton(enabled: wheelOfLuck.options.count >= 2) {
+                            wheelOfLuck.options.removeAll { $0.id == option.id }
+                            wheelOfLuck.updateText()
+                            wheelOfLuck.updateTotalWeight()
+                            updateEffect()
                         }
                 }
                 .onMove { froms, to in

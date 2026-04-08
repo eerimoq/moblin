@@ -33,10 +33,8 @@ private struct SlidesView: View {
                           database: model.database,
                           slide: slide,
                           presentingCreateWizard: $presentingCreateWizard)
-                    .contextMenu {
-                        ContextMenuDeleteButtonView {
-                            slideshow.slides.removeAll { $0.id == slide.id }
-                        }
+                    .contextMenuDeleteButton {
+                        slideshow.slides.removeAll { $0.id == slide.id }
                     }
             }
             .onMove { froms, to in

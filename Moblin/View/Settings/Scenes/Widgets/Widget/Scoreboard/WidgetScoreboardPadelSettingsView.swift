@@ -24,12 +24,10 @@ private struct PlayersView: View {
             List {
                 ForEach(database.scoreboardPlayers) { player in
                     PlayersPlayerView(model: model, database: database, player: player)
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                database.scoreboardPlayers.removeAll { $0.id == player.id }
-                                updated()
-                                model.sendScoreboardPlayersToWatch()
-                            }
+                        .contextMenuDeleteButton {
+                            database.scoreboardPlayers.removeAll { $0.id == player.id }
+                            updated()
+                            model.sendScoreboardPlayersToWatch()
                         }
                 }
                 .onMove { froms, to in

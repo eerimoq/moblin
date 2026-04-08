@@ -54,11 +54,9 @@ struct ChatNicknamesSettingsView: View {
                     List {
                         ForEach(nicknames.nicknames) { nickname in
                             NicknameView(model: model, nickname: nickname)
-                                .contextMenu {
-                                    ContextMenuDeleteButtonView {
-                                        nicknames.nicknames.removeAll { $0.id == nickname.id }
-                                        model.reloadChatMessages()
-                                    }
+                                .contextMenuDeleteButton {
+                                    nicknames.nicknames.removeAll { $0.id == nickname.id }
+                                    model.reloadChatMessages()
                                 }
                         }
                         .onMove { froms, to in

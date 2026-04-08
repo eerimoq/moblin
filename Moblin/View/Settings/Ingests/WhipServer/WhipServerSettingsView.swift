@@ -55,14 +55,10 @@ struct WhipServerSettingsView: View {
                                 whipServer: whipServer,
                                 stream: stream
                             )
-                            .contextMenu {
-                                if !whipServer.enabled {
-                                    ContextMenuDeleteButtonView {
-                                        whipServer.streams.removeAll { $0.id == stream.id }
-                                        model.reloadWhipServer()
-                                        model.updateMicsListAsync()
-                                    }
-                                }
+                            .contextMenuDeleteButton(enabled: !whipServer.enabled) {
+                                whipServer.streams.removeAll { $0.id == stream.id }
+                                model.reloadWhipServer()
+                                model.updateMicsListAsync()
                             }
                         }
                         if !whipServer.enabled {

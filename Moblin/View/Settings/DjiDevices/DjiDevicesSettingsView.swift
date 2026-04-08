@@ -34,13 +34,11 @@ struct DjiDevicesSettingsView: View {
                 List {
                     ForEach(djiDevices.devices) { device in
                         DjiDeviceSettingsWrapperView(djiDevices: djiDevices, device: device)
-                            .contextMenu {
-                                ContextMenuDeleteButtonView {
-                                    if let index = djiDevices.devices
-                                        .firstIndex(where: { $0.id == device.id })
-                                    {
-                                        model.removeDjiDevices(offsets: IndexSet(integer: index))
-                                    }
+                            .contextMenuDeleteButton {
+                                if let index = djiDevices.devices
+                                    .firstIndex(where: { $0.id == device.id })
+                                {
+                                    model.removeDjiDevices(offsets: IndexSet(integer: index))
                                 }
                             }
                     }

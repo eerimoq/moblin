@@ -319,15 +319,13 @@ private struct GoProLaunchLiveStream: View {
             List {
                 ForEach(goPro.launchLiveStream) { launchLiveStream in
                     GoProLaunchLiveStreamSettingsEntryView(goPro: goPro, launchLiveStream: launchLiveStream)
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                goPro.launchLiveStream.removeAll { $0.id == launchLiveStream.id }
-                                if !goPro.launchLiveStream
-                                    .contains(where: { $0.id == goPro.selectedLaunchLiveStream })
-                                {
-                                    goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
-                                    goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
-                                }
+                        .contextMenuDeleteButton {
+                            goPro.launchLiveStream.removeAll { $0.id == launchLiveStream.id }
+                            if !goPro.launchLiveStream
+                                .contains(where: { $0.id == goPro.selectedLaunchLiveStream })
+                            {
+                                goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
+                                goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
                             }
                         }
                 }
@@ -369,15 +367,13 @@ private struct GoProWifiCredentials: View {
             List {
                 ForEach(goPro.wifiCredentials) { wifiCredentials in
                     GoProWifiCredentialsSettingsEntryView(goPro: goPro, wifiCredentials: wifiCredentials)
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                goPro.wifiCredentials.removeAll { $0.id == wifiCredentials.id }
-                                if !goPro.wifiCredentials
-                                    .contains(where: { $0.id == goPro.selectedWifiCredentials })
-                                {
-                                    goPro.selectedWifiCredentials = goPro.wifiCredentials.first?.id
-                                    goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
-                                }
+                        .contextMenuDeleteButton {
+                            goPro.wifiCredentials.removeAll { $0.id == wifiCredentials.id }
+                            if !goPro.wifiCredentials
+                                .contains(where: { $0.id == goPro.selectedWifiCredentials })
+                            {
+                                goPro.selectedWifiCredentials = goPro.wifiCredentials.first?.id
+                                goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
                             }
                         }
                 }
@@ -420,15 +416,13 @@ private struct GoProRtmpUrls: View {
             List {
                 ForEach(goPro.rtmpUrls) { rtmpUrl in
                     GoProRtmpUrlSettingsEntryView(goPro: goPro, status: status, rtmpUrl: rtmpUrl)
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                goPro.rtmpUrls.removeAll { $0.id == rtmpUrl.id }
-                                if !goPro.rtmpUrls
-                                    .contains(where: { $0.id == goPro.selectedRtmpUrl })
-                                {
-                                    goPro.selectedRtmpUrl = goPro.rtmpUrls.first?.id
-                                    goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
-                                }
+                        .contextMenuDeleteButton {
+                            goPro.rtmpUrls.removeAll { $0.id == rtmpUrl.id }
+                            if !goPro.rtmpUrls
+                                .contains(where: { $0.id == goPro.selectedRtmpUrl })
+                            {
+                                goPro.selectedRtmpUrl = goPro.rtmpUrls.first?.id
+                                goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
                             }
                         }
                 }

@@ -77,11 +77,9 @@ struct WidgetAlertsChatBotSettingsView: View {
                             command: command,
                             name: command.name
                         )
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                chatBot.commands.removeAll { $0.id == command.id }
-                                model.updateAlertsSettings()
-                            }
+                        .contextMenuDeleteButton {
+                            chatBot.commands.removeAll { $0.id == command.id }
+                            model.updateAlertsSettings()
                         }
                     }
                     .onDelete { indexes in

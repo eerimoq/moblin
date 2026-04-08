@@ -94,13 +94,11 @@ private struct ImageGalleryView: View {
                         } label: {
                             Text(image.name)
                         }
-                        .contextMenu {
-                            ContextMenuDeleteButtonView {
-                                model.database.alertsMediaGallery.customImages
-                                    .removeAll { $0.id == image.id }
-                                model.fixAlertMedias()
-                                imageId = alert.imageId
-                            }
+                        .contextMenuDeleteButton {
+                            model.database.alertsMediaGallery.customImages
+                                .removeAll { $0.id == image.id }
+                            model.fixAlertMedias()
+                            imageId = alert.imageId
                         }
                     }
                     .onDelete { offsets in
