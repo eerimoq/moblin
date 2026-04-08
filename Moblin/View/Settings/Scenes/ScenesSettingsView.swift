@@ -5,6 +5,14 @@ private struct SceneItemView: View {
     @ObservedObject var database: Database
     @ObservedObject var scene: SettingsScene
 
+    private func deleteItem() {
+        let deletedCurrentScene = model.getSelectedScene() === scene
+        database.scenes.removeAll { $0 === scene }
+        if deletedCurrentScene {
+            model.resetSelectedScene()
+        }
+    }
+
     var body: some View {
         NavigationLink {
             SceneSettingsView(database: model.database, scene: scene)
@@ -23,11 +31,7 @@ private struct SceneItemView: View {
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             SwipeLeftToDeleteButtonView {
-                let deletedCurrentScene = model.getSelectedScene() === scene
-                database.scenes.removeAll { $0 === scene }
-                if deletedCurrentScene {
-                    model.resetSelectedScene()
-                }
+                deleteItem()
             }
             SwipeLeftToDuplicateButtonView {
                 database.scenes.append(scene.clone())
@@ -39,11 +43,7 @@ private struct SceneItemView: View {
                     database.scenes.append(scene.clone())
                 }
                 ContextMenuDeleteButtonView {
-                    let deletedCurrentScene = model.getSelectedScene() === scene
-                    database.scenes.removeAll { $0 === scene }
-                    if deletedCurrentScene {
-                        model.resetSelectedScene()
-                    }
+                    deleteItem()
                 }
             }
         }
