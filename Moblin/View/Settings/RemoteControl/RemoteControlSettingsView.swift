@@ -332,10 +332,8 @@ struct RemoteControlStreamersView: View {
                 ForEach(remoteControlSettings.streamers) { streamer in
                     StreamerView(remoteControlSettings: remoteControlSettings, streamer: streamer)
                         .contextMenuDeleteButton {
-                            if let index = remoteControlSettings.streamers
-                                .firstIndex(where: { $0.id == streamer.id })
-                            {
-                                deleteStreamer(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(remoteControlSettings.streamers, streamer.id) {
+                                deleteStreamer(at: offsets)
                             }
                         }
                 }

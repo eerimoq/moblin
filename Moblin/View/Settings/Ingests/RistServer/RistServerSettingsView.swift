@@ -62,10 +62,8 @@ struct RistServerSettingsView: View {
                                 stream: stream
                             )
                             .contextMenuDeleteButton(disabled: ristServer.enabled) {
-                                if let index = ristServer.streams
-                                    .firstIndex(where: { $0.id == stream.id })
-                                {
-                                    deleteStream(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(ristServer.streams, stream.id) {
+                                    deleteStream(at: offsets)
                                 }
                             }
                         }

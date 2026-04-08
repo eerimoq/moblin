@@ -59,10 +59,8 @@ private struct StreamingHistorySettingsStreamsView: View {
                             }
                         }
                         .contextMenuDeleteButton {
-                            if let index = database.streams
-                                .firstIndex(where: { $0.id == stream.id })
-                            {
-                                deleteStream(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(database.streams, stream.id) {
+                                deleteStream(at: offsets)
                             }
                         }
                     }

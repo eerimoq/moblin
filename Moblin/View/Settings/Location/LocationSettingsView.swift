@@ -98,10 +98,8 @@ struct LocationSettingsView: View {
                             )
                         ))
                         .contextMenuDeleteButton {
-                            if let index = location.privacyRegions
-                                .firstIndex(where: { $0.id == region.id })
-                            {
-                                deletePrivacyRegion(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(location.privacyRegions, region.id) {
+                                deletePrivacyRegion(at: offsets)
                             }
                         }
                     }

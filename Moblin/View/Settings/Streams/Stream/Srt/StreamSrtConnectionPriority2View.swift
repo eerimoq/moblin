@@ -99,10 +99,11 @@ private struct SrtlaConnectionPriorityView: View {
                     PriorityItemView(priority: priority, prio: Float(priority.priority))
                         .deleteDisabled(["Cellular", "WiFi"].contains(priority.name))
                         .contextMenuDeleteButton(disabled: ["Cellular", "WiFi"].contains(priority.name)) {
-                            if let index = stream.srt.connectionPriorities.priorities
-                                .firstIndex(where: { $0.id == priority.id })
-                            {
-                                deletePriority(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(
+                                stream.srt.connectionPriorities.priorities,
+                                priority.id
+                            ) {
+                                deletePriority(at: offsets)
                             }
                         }
                 }

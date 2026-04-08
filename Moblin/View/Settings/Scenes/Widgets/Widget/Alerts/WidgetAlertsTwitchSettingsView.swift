@@ -271,10 +271,8 @@ private struct TwitchCheerBitsView: View {
                     ForEach(twitch.cheerBits) { cheerBit in
                         TwitchCheerBitsItemView(alert: cheerBit.alert, cheerBit: cheerBit)
                             .contextMenuDeleteButton {
-                                if let index = twitch.cheerBits
-                                    .firstIndex(where: { $0.id == cheerBit.id })
-                                {
-                                    deleteCheerBit(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(twitch.cheerBits, cheerBit.id) {
+                                    deleteCheerBit(at: offsets)
                                 }
                             }
                     }

@@ -39,10 +39,8 @@ struct DjiDevicesSettingsView: View {
                     ForEach(djiDevices.devices) { device in
                         DjiDeviceSettingsWrapperView(djiDevices: djiDevices, device: device)
                             .contextMenuDeleteButton {
-                                if let index = djiDevices.devices
-                                    .firstIndex(where: { $0.id == device.id })
-                                {
-                                    deleteDevice(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(djiDevices.devices, device.id) {
+                                    deleteDevice(at: offsets)
                                 }
                             }
                     }

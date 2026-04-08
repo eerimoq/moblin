@@ -168,10 +168,8 @@ struct AutoSwitchersView: View {
                         autoSwitcher: autoSwitcher
                     )
                     .contextMenuDeleteButton {
-                        if let index = autoSceneSwitchers.switchers
-                            .firstIndex(where: { $0.id == autoSwitcher.id })
-                        {
-                            deleteAutoSceneSwitcher(at: IndexSet(integer: index))
+                        if let offsets = makeOffsets(autoSceneSwitchers.switchers, autoSwitcher.id) {
+                            deleteAutoSceneSwitcher(at: offsets)
                         }
                     }
                 }

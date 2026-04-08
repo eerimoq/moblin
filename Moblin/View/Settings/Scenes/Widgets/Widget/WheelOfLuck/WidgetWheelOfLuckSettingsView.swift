@@ -126,10 +126,8 @@ struct WidgetWheelOfLuckSettingsView: View {
                 ForEach(wheelOfLuck.options) { option in
                     OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: option)
                         .contextMenuDeleteButton(disabled: wheelOfLuck.options.count < 2) {
-                            if let index = wheelOfLuck.options
-                                .firstIndex(where: { $0.id == option.id })
-                            {
-                                deleteOption(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(wheelOfLuck.options, option.id) {
+                                deleteOption(at: offsets)
                             }
                         }
                 }

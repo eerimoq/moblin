@@ -83,10 +83,8 @@ struct WidgetAlertsChatBotSettingsView: View {
                             name: command.name
                         )
                         .contextMenuDeleteButton {
-                            if let index = chatBot.commands
-                                .firstIndex(where: { $0.id == command.id })
-                            {
-                                deleteCommand(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(chatBot.commands, command.id) {
+                                deleteCommand(at: offsets)
                             }
                         }
                     }

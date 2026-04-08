@@ -78,3 +78,11 @@ func screenScale() -> CGFloat {
         return UIScreen().scale
     }
 }
+
+func makeOffsets<T: Identifiable>(_ items: [T], _ id: T.ID) -> IndexSet? {
+    if let index = items.firstIndex(where: { $0.id == id }) {
+        return IndexSet(integer: index)
+    } else {
+        return nil
+    }
+}

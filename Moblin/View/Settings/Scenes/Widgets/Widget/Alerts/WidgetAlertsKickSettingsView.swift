@@ -312,10 +312,8 @@ private struct KickGiftsView: View {
                     ForEach(kick.kickGifts) { kickGift in
                         KickGiftItemView(alert: kickGift.alert, kickGift: kickGift)
                             .contextMenuDeleteButton {
-                                if let index = kick.kickGifts
-                                    .firstIndex(where: { $0.id == kickGift.id })
-                                {
-                                    deleteKickGift(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(kick.kickGifts, kickGift.id) {
+                                    deleteKickGift(at: offsets)
                                 }
                             }
                     }

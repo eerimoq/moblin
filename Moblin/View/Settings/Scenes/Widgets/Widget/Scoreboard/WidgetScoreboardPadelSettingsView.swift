@@ -31,10 +31,8 @@ private struct PlayersView: View {
                 ForEach(database.scoreboardPlayers) { player in
                     PlayersPlayerView(model: model, database: database, player: player)
                         .contextMenuDeleteButton {
-                            if let index = database.scoreboardPlayers
-                                .firstIndex(where: { $0.id == player.id })
-                            {
-                                deletePlayer(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(database.scoreboardPlayers, player.id) {
+                                deletePlayer(at: offsets)
                             }
                         }
                 }

@@ -84,8 +84,8 @@ private struct SlidesView: View {
             ForEach(slideshow.slides) { slide in
                 SlideView(model: model, database: model.database, slide: slide)
                     .contextMenuDeleteButton {
-                        if let index = slideshow.slides.firstIndex(where: { $0.id == slide.id }) {
-                            deleteSlide(at: IndexSet(integer: index))
+                        if let offsets = makeOffsets(slideshow.slides, slide.id) {
+                            deleteSlide(at: offsets)
                         }
                     }
             }

@@ -328,10 +328,8 @@ private struct GoProLaunchLiveStream: View {
                 ForEach(goPro.launchLiveStream) { launchLiveStream in
                     GoProLaunchLiveStreamSettingsEntryView(goPro: goPro, launchLiveStream: launchLiveStream)
                         .contextMenuDeleteButton {
-                            if let index = goPro.launchLiveStream
-                                .firstIndex(where: { $0.id == launchLiveStream.id })
-                            {
-                                deleteLaunchLiveStream(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(goPro.launchLiveStream, launchLiveStream.id) {
+                                deleteLaunchLiveStream(at: offsets)
                             }
                         }
                 }
@@ -376,10 +374,8 @@ private struct GoProWifiCredentials: View {
                 ForEach(goPro.wifiCredentials) { wifiCredentials in
                     GoProWifiCredentialsSettingsEntryView(goPro: goPro, wifiCredentials: wifiCredentials)
                         .contextMenuDeleteButton {
-                            if let index = goPro.wifiCredentials
-                                .firstIndex(where: { $0.id == wifiCredentials.id })
-                            {
-                                deleteWifiCredentials(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(goPro.wifiCredentials, wifiCredentials.id) {
+                                deleteWifiCredentials(at: offsets)
                             }
                         }
                 }
@@ -425,10 +421,8 @@ private struct GoProRtmpUrls: View {
                 ForEach(goPro.rtmpUrls) { rtmpUrl in
                     GoProRtmpUrlSettingsEntryView(goPro: goPro, status: status, rtmpUrl: rtmpUrl)
                         .contextMenuDeleteButton {
-                            if let index = goPro.rtmpUrls
-                                .firstIndex(where: { $0.id == rtmpUrl.id })
-                            {
-                                deleteRtmpUrl(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(goPro.rtmpUrls, rtmpUrl.id) {
+                                deleteRtmpUrl(at: offsets)
                             }
                         }
                 }

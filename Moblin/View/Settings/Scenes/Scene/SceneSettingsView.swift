@@ -275,10 +275,8 @@ private struct WidgetsView: View {
                 ForEach(scene.widgets) { sceneWidget in
                     SceneWidgetView(database: database, sceneWidget: sceneWidget)
                         .contextMenuDeleteButton {
-                            if let index = scene.widgets
-                                .firstIndex(where: { $0.id == sceneWidget.id })
-                            {
-                                deleteSceneWidget(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(scene.widgets, sceneWidget.id) {
+                                deleteSceneWidget(at: offsets)
                             }
                         }
                 }

@@ -63,10 +63,8 @@ struct WidgetAlertsSpeechToTextSettingsView: View {
                     ForEach(speechToText.strings) { string in
                         SpeechToTextStringView(alert: string.alert, string: string, text: string.string)
                             .contextMenuDeleteButton {
-                                if let index = speechToText.strings
-                                    .firstIndex(where: { $0.id == string.id })
-                                {
-                                    deleteString(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(speechToText.strings, string.id) {
+                                    deleteString(at: offsets)
                                 }
                             }
                     }

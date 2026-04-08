@@ -92,10 +92,11 @@ private struct SoundGalleryView: View {
                             Text(sound.name)
                         }
                         .contextMenuDeleteButton {
-                            if let index = model.database.alertsMediaGallery.customSounds
-                                .firstIndex(where: { $0.id == sound.id })
-                            {
-                                deleteSound(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(
+                                model.database.alertsMediaGallery.customSounds,
+                                sound.id
+                            ) {
+                                deleteSound(at: offsets)
                             }
                         }
                     }

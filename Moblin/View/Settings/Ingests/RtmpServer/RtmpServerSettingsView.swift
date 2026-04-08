@@ -65,10 +65,8 @@ struct RtmpServerSettingsView: View {
                                 stream: stream
                             )
                             .contextMenuDeleteButton(disabled: rtmpServer.enabled) {
-                                if let index = rtmpServer.streams
-                                    .firstIndex(where: { $0.id == stream.id })
-                                {
-                                    deleteStream(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(rtmpServer.streams, stream.id) {
+                                    deleteStream(at: offsets)
                                 }
                             }
                         }

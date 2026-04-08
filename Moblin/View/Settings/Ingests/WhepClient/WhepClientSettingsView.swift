@@ -28,10 +28,8 @@ struct WhepClientSettingsView: View {
                         ForEach(whepClient.streams) { stream in
                             WhepClientStreamSettingsView(whepClient: whepClient, stream: stream)
                                 .contextMenuDeleteButton {
-                                    if let index = whepClient.streams
-                                        .firstIndex(where: { $0.id == stream.id })
-                                    {
-                                        deleteStream(at: IndexSet(integer: index))
+                                    if let offsets = makeOffsets(whepClient.streams, stream.id) {
+                                        deleteStream(at: offsets)
                                     }
                                 }
                         }

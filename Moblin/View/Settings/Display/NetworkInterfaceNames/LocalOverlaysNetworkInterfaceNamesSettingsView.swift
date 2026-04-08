@@ -26,10 +26,8 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                                 capitalize: true
                             )
                             .contextMenuDeleteButton {
-                                if let index = database.networkInterfaceNames
-                                    .firstIndex(where: { $0.id == interface.id })
-                                {
-                                    deleteNetworkInterface(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(database.networkInterfaceNames, interface.id) {
+                                    deleteNetworkInterface(at: offsets)
                                 }
                             }
                         }

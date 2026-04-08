@@ -38,8 +38,8 @@ struct ZoomSettingsView: View {
                         )
                         .deleteDisabled(zoom.back.count == 1)
                         .contextMenuDeleteButton(disabled: zoom.back.count == 1) {
-                            if let index = zoom.back.firstIndex(where: { $0.id == preset.id }) {
-                                deleteBackZoomPreset(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(zoom.back, preset.id) {
+                                deleteBackZoomPreset(at: offsets)
                             }
                         }
                     }
@@ -72,8 +72,8 @@ struct ZoomSettingsView: View {
                         )
                         .deleteDisabled(zoom.front.count == 1)
                         .contextMenuDeleteButton(disabled: zoom.front.count == 1) {
-                            if let index = zoom.front.firstIndex(where: { $0.id == preset.id }) {
-                                deleteFrontZoomPreset(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(zoom.front, preset.id) {
+                                deleteFrontZoomPreset(at: offsets)
                             }
                         }
                     }

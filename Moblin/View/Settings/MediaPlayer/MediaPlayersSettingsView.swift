@@ -27,10 +27,8 @@ struct MediaPlayersSettingsView: View {
                     ForEach(mediaPlayers.players) { player in
                         MediaPlayerSettingsView(mediaPlayers: mediaPlayers, player: player)
                             .contextMenuDeleteButton {
-                                if let index = mediaPlayers.players
-                                    .firstIndex(where: { $0.id == player.id })
-                                {
-                                    deletePlayer(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(mediaPlayers.players, player.id) {
+                                    deletePlayer(at: offsets)
                                 }
                             }
                     }

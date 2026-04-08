@@ -83,10 +83,8 @@ struct SrtlaServerSettingsView: View {
                                 stream: stream
                             )
                             .contextMenuDeleteButton(disabled: model.srtlaServerEnabled()) {
-                                if let index = srtlaServer.streams
-                                    .firstIndex(where: { $0.id == stream.id })
-                                {
-                                    deleteStream(at: IndexSet(integer: index))
+                                if let offsets = makeOffsets(srtlaServer.streams, stream.id) {
+                                    deleteStream(at: offsets)
                                 }
                             }
                         }

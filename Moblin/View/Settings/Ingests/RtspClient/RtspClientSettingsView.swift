@@ -22,10 +22,8 @@ struct RtspClientSettingsView: View {
                         ForEach(rtspClient.streams) { stream in
                             RtspClientStreamSettingsView(rtspClient: rtspClient, stream: stream)
                                 .contextMenuDeleteButton {
-                                    if let index = rtspClient.streams
-                                        .firstIndex(where: { $0.id == stream.id })
-                                    {
-                                        deleteStream(at: IndexSet(integer: index))
+                                    if let offsets = makeOffsets(rtspClient.streams, stream.id) {
+                                        deleteStream(at: offsets)
                                     }
                                 }
                         }

@@ -93,8 +93,8 @@ struct WidgetEffectsView: View {
             ForEach(widget.effects) { effect in
                 EffectView(widget: widget, effect: effect)
                     .contextMenuDeleteButton {
-                        if let index = widget.effects.firstIndex(where: { $0.id == effect.id }) {
-                            deleteEffect(at: IndexSet(integer: index))
+                        if let offsets = makeOffsets(widget.effects, effect.id) {
+                            deleteEffect(at: offsets)
                         }
                     }
             }

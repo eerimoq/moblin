@@ -60,10 +60,8 @@ struct ChatNicknamesSettingsView: View {
                         ForEach(nicknames.nicknames) { nickname in
                             NicknameView(model: model, nickname: nickname)
                                 .contextMenuDeleteButton {
-                                    if let index = nicknames.nicknames
-                                        .firstIndex(where: { $0.id == nickname.id })
-                                    {
-                                        deleteNickname(at: IndexSet(integer: index))
+                                    if let offsets = makeOffsets(nicknames.nicknames, nickname.id) {
+                                        deleteNickname(at: offsets)
                                     }
                                 }
                         }

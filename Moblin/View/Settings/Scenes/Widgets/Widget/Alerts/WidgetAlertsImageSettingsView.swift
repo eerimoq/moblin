@@ -101,10 +101,11 @@ private struct ImageGalleryView: View {
                             Text(image.name)
                         }
                         .contextMenuDeleteButton {
-                            if let index = model.database.alertsMediaGallery.customImages
-                                .firstIndex(where: { $0.id == image.id })
-                            {
-                                deleteImage(at: IndexSet(integer: index))
+                            if let offsets = makeOffsets(
+                                model.database.alertsMediaGallery.customImages,
+                                image.id
+                            ) {
+                                deleteImage(at: offsets)
                             }
                         }
                     }
