@@ -33,6 +33,22 @@ private struct SceneItemView: View {
                 database.scenes.append(scene.clone())
             }
         }
+        .contextMenu {
+            Button {
+                database.scenes.append(scene.clone())
+            } label: {
+                Label("Duplicate", systemImage: "plus.square.on.square")
+            }
+            Button(role: .destructive) {
+                let deletedCurrentScene = model.getSelectedScene() === scene
+                database.scenes.removeAll { $0 === scene }
+                if deletedCurrentScene {
+                    model.resetSelectedScene()
+                }
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
 }
 

@@ -22,6 +22,14 @@ struct WhepClientSettingsView: View {
                     List {
                         ForEach(whepClient.streams) { stream in
                             WhepClientStreamSettingsView(whepClient: whepClient, stream: stream)
+                                .contextMenu {
+                                    Button(role: .destructive) {
+                                        whepClient.streams.removeAll { $0.id == stream.id }
+                                        model.reloadWhepClient()
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
                         }
                         .onDelete { indexes in
                             whepClient.streams.remove(atOffsets: indexes)

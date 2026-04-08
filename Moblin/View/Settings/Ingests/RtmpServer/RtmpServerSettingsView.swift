@@ -58,6 +58,17 @@ struct RtmpServerSettingsView: View {
                                 rtmpServer: rtmpServer,
                                 stream: stream
                             )
+                            .contextMenu {
+                                if !rtmpServer.enabled {
+                                    Button(role: .destructive) {
+                                        rtmpServer.streams.removeAll { $0.id == stream.id }
+                                        model.reloadRtmpServer()
+                                        model.updateMicsListAsync()
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
                         }
                         if !rtmpServer.enabled {
                             list.onDelete { indexes in

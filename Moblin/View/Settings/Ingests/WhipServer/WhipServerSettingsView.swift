@@ -55,6 +55,17 @@ struct WhipServerSettingsView: View {
                                 whipServer: whipServer,
                                 stream: stream
                             )
+                            .contextMenu {
+                                if !whipServer.enabled {
+                                    Button(role: .destructive) {
+                                        whipServer.streams.removeAll { $0.id == stream.id }
+                                        model.reloadWhipServer()
+                                        model.updateMicsListAsync()
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
                         }
                         if !whipServer.enabled {
                             list.onDelete { indexes in

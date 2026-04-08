@@ -55,6 +55,17 @@ struct RistServerSettingsView: View {
                                 ristServer: ristServer,
                                 stream: stream
                             )
+                            .contextMenu {
+                                if !ristServer.enabled {
+                                    Button(role: .destructive) {
+                                        ristServer.streams.removeAll { $0.id == stream.id }
+                                        model.reloadRistServer()
+                                        model.updateMicsListAsync()
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
                         }
                         if !ristServer.enabled {
                             list.onDelete { indexes in

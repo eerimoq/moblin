@@ -76,6 +76,17 @@ struct SrtlaServerSettingsView: View {
                                 srtlaServer: srtlaServer,
                                 stream: stream
                             )
+                            .contextMenu {
+                                if !model.srtlaServerEnabled() {
+                                    Button(role: .destructive) {
+                                        srtlaServer.streams.removeAll { $0.id == stream.id }
+                                        model.reloadSrtlaServer()
+                                        model.updateMicsListAsync()
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
                         }
                         if !model.srtlaServerEnabled() {
                             list.onDelete { indexes in
