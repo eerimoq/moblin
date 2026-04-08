@@ -263,7 +263,11 @@ extension ReplayEffect {
         delegate?.replayEffectError(message: String(localized: "Bad replay stinger video"))
     }
 
-    private func scaleReplay(_ replayImage: CIImage?, _: CIImage) -> CIImage? {
-        return replayImage
+    private func scaleReplay(_ replayImage: CIImage?, _ image: CIImage) -> CIImage? {
+        if replayImage?.extent != image.extent {
+            return replayImage?.scaledTo(size: image.extent.size)
+        } else {
+            return replayImage
+        }
     }
 }
