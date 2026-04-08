@@ -306,6 +306,14 @@ private struct KickGiftsView: View {
                 List {
                     ForEach(kick.kickGifts) { kickGift in
                         KickGiftItemView(alert: kickGift.alert, kickGift: kickGift)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    kick.kickGifts.removeAll { $0.id == kickGift.id }
+                                    model.updateAlertsSettings()
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                     .onMove { froms, to in
                         kick.kickGifts.move(fromOffsets: froms, toOffset: to)

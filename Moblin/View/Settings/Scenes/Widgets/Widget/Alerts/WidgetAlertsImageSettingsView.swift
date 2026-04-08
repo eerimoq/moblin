@@ -94,6 +94,16 @@ private struct ImageGalleryView: View {
                         } label: {
                             Text(image.name)
                         }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                model.database.alertsMediaGallery.customImages
+                                    .removeAll { $0.id == image.id }
+                                model.fixAlertMedias()
+                                imageId = alert.imageId
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                     .onDelete { offsets in
                         model.database.alertsMediaGallery.customImages.remove(atOffsets: offsets)

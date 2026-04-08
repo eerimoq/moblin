@@ -57,6 +57,14 @@ struct WidgetAlertsSpeechToTextSettingsView: View {
                 List {
                     ForEach(speechToText.strings) { string in
                         SpeechToTextStringView(alert: string.alert, string: string, text: string.string)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    speechToText.strings.removeAll { $0.id == string.id }
+                                    model.updateAlertsSettings()
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
                     }
                     .onDelete { indexes in
                         speechToText.strings.remove(atOffsets: indexes)

@@ -77,6 +77,14 @@ struct WidgetAlertsChatBotSettingsView: View {
                             command: command,
                             name: command.name
                         )
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                chatBot.commands.removeAll { $0.id == command.id }
+                                model.updateAlertsSettings()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                     .onDelete { indexes in
                         chatBot.commands.remove(atOffsets: indexes)
