@@ -314,31 +314,31 @@ private struct GoProLaunchLiveStream: View {
     @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var goProState: GoProState
 
+    private func deleteLaunchLiveStream(at offsets: IndexSet) {
+        goPro.launchLiveStream.remove(atOffsets: offsets)
+        if !goPro.launchLiveStream.contains(where: { $0.id == goPro.selectedLaunchLiveStream }) {
+            goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
+            goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
+        }
+    }
+
     var body: some View {
         Section {
             List {
                 ForEach(goPro.launchLiveStream) { launchLiveStream in
                     GoProLaunchLiveStreamSettingsEntryView(goPro: goPro, launchLiveStream: launchLiveStream)
                         .contextMenuDeleteButton {
-                            goPro.launchLiveStream.removeAll { $0.id == launchLiveStream.id }
-                            if !goPro.launchLiveStream
-                                .contains(where: { $0.id == goPro.selectedLaunchLiveStream })
+                            if let index = goPro.launchLiveStream
+                                .firstIndex(where: { $0.id == launchLiveStream.id })
                             {
-                                goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
-                                goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
+                                deleteLaunchLiveStream(at: IndexSet(integer: index))
                             }
                         }
                 }
                 .onMove { froms, to in
                     goPro.launchLiveStream.move(fromOffsets: froms, toOffset: to)
                 }
-                .onDelete { offsets in
-                    goPro.launchLiveStream.remove(atOffsets: offsets)
-                    if !goPro.launchLiveStream.contains(where: { $0.id == goPro.selectedLaunchLiveStream }) {
-                        goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
-                        goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
-                    }
-                }
+                .onDelete(perform: deleteLaunchLiveStream)
             }
             CreateButtonView {
                 let launchLiveStream = SettingsGoProLaunchLiveStream()
@@ -362,31 +362,31 @@ private struct GoProWifiCredentials: View {
     @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var goProState: GoProState
 
+    private func deleteWifiCredentials(at offsets: IndexSet) {
+        goPro.wifiCredentials.remove(atOffsets: offsets)
+        if !goPro.wifiCredentials.contains(where: { $0.id == goPro.selectedWifiCredentials }) {
+            goPro.selectedWifiCredentials = goPro.wifiCredentials.first?.id
+            goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
+        }
+    }
+
     var body: some View {
         Section {
             List {
                 ForEach(goPro.wifiCredentials) { wifiCredentials in
                     GoProWifiCredentialsSettingsEntryView(goPro: goPro, wifiCredentials: wifiCredentials)
                         .contextMenuDeleteButton {
-                            goPro.wifiCredentials.removeAll { $0.id == wifiCredentials.id }
-                            if !goPro.wifiCredentials
-                                .contains(where: { $0.id == goPro.selectedWifiCredentials })
+                            if let index = goPro.wifiCredentials
+                                .firstIndex(where: { $0.id == wifiCredentials.id })
                             {
-                                goPro.selectedWifiCredentials = goPro.wifiCredentials.first?.id
-                                goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
+                                deleteWifiCredentials(at: IndexSet(integer: index))
                             }
                         }
                 }
                 .onMove { froms, to in
                     goPro.wifiCredentials.move(fromOffsets: froms, toOffset: to)
                 }
-                .onDelete { offsets in
-                    goPro.wifiCredentials.remove(atOffsets: offsets)
-                    if !goPro.wifiCredentials.contains(where: { $0.id == goPro.selectedWifiCredentials }) {
-                        goPro.selectedWifiCredentials = goPro.wifiCredentials.first?.id
-                        goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
-                    }
-                }
+                .onDelete(perform: deleteWifiCredentials)
             }
             CreateButtonView {
                 let wifiCredentials = SettingsGoProWifiCredentials()
@@ -411,31 +411,31 @@ private struct GoProRtmpUrls: View {
     @ObservedObject var goPro: SettingsGoPro
     @ObservedObject var goProState: GoProState
 
+    private func deleteRtmpUrl(at offsets: IndexSet) {
+        goPro.rtmpUrls.remove(atOffsets: offsets)
+        if !goPro.rtmpUrls.contains(where: { $0.id == goPro.selectedRtmpUrl }) {
+            goPro.selectedRtmpUrl = goPro.rtmpUrls.first?.id
+            goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
+        }
+    }
+
     var body: some View {
         Section {
             List {
                 ForEach(goPro.rtmpUrls) { rtmpUrl in
                     GoProRtmpUrlSettingsEntryView(goPro: goPro, status: status, rtmpUrl: rtmpUrl)
                         .contextMenuDeleteButton {
-                            goPro.rtmpUrls.removeAll { $0.id == rtmpUrl.id }
-                            if !goPro.rtmpUrls
-                                .contains(where: { $0.id == goPro.selectedRtmpUrl })
+                            if let index = goPro.rtmpUrls
+                                .firstIndex(where: { $0.id == rtmpUrl.id })
                             {
-                                goPro.selectedRtmpUrl = goPro.rtmpUrls.first?.id
-                                goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
+                                deleteRtmpUrl(at: IndexSet(integer: index))
                             }
                         }
                 }
                 .onMove { froms, to in
                     goPro.rtmpUrls.move(fromOffsets: froms, toOffset: to)
                 }
-                .onDelete { offsets in
-                    goPro.rtmpUrls.remove(atOffsets: offsets)
-                    if !goPro.rtmpUrls.contains(where: { $0.id == goPro.selectedRtmpUrl }) {
-                        goPro.selectedRtmpUrl = goPro.rtmpUrls.first?.id
-                        goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
-                    }
-                }
+                .onDelete(perform: deleteRtmpUrl)
             }
             CreateButtonView {
                 let rtmpUrl = SettingsGoProRtmpUrl()

@@ -19,15 +19,23 @@ private struct PlayersView: View {
     @ObservedObject var database: Database
     let updated: () -> Void
 
+    private func deletePlayer(at offsets: IndexSet) {
+        database.scoreboardPlayers.remove(atOffsets: offsets)
+        updated()
+        model.sendScoreboardPlayersToWatch()
+    }
+
     var body: some View {
         Section {
             List {
                 ForEach(database.scoreboardPlayers) { player in
                     PlayersPlayerView(model: model, database: database, player: player)
                         .contextMenuDeleteButton {
-                            database.scoreboardPlayers.removeAll { $0.id == player.id }
-                            updated()
-                            model.sendScoreboardPlayersToWatch()
+                            if let index = database.scoreboardPlayers
+                                .firstIndex(where: { $0.id == player.id })
+                            {
+                                deletePlayer(at: IndexSet(integer: index))
+                            }
                         }
                 }
                 .onMove { froms, to in
@@ -35,11 +43,7 @@ private struct PlayersView: View {
                     updated()
                     model.sendScoreboardPlayersToWatch()
                 }
-                .onDelete { offsets in
-                    database.scoreboardPlayers.remove(atOffsets: offsets)
-                    updated()
-                    model.sendScoreboardPlayersToWatch()
-                }
+                .onDelete(perform: deletePlayer)
             }
             CreateButtonView {
                 let player = SettingsWidgetScoreboardPlayer()

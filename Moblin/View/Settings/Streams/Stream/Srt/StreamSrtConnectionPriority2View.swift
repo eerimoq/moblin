@@ -75,6 +75,12 @@ private struct SrtlaConnectionPriorityView: View {
     @EnvironmentObject var model: Model
     let stream: SettingsStream
 
+    private func deletePriority(at offsets: IndexSet) {
+        stream.srt.connectionPriorities.priorities.remove(atOffsets: offsets)
+        model.updateSrtlaPriorities()
+        model.objectWillChange.send()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -93,17 +99,14 @@ private struct SrtlaConnectionPriorityView: View {
                     PriorityItemView(priority: priority, prio: Float(priority.priority))
                         .deleteDisabled(["Cellular", "WiFi"].contains(priority.name))
                         .contextMenuDeleteButton(disabled: ["Cellular", "WiFi"].contains(priority.name)) {
-                            stream.srt.connectionPriorities.priorities
-                                .removeAll { $0.id == priority.id }
-                            model.updateSrtlaPriorities()
-                            model.objectWillChange.send()
+                            if let index = stream.srt.connectionPriorities.priorities
+                                .firstIndex(where: { $0.id == priority.id })
+                            {
+                                deletePriority(at: IndexSet(integer: index))
+                            }
                         }
                 }
-                .onDelete { offsets in
-                    stream.srt.connectionPriorities.priorities.remove(atOffsets: offsets)
-                    model.updateSrtlaPriorities()
-                    model.objectWillChange.send()
-                }
+                .onDelete(perform: deletePriority)
             } footer: {
                 VStack(alignment: .leading) {
                     Text("""

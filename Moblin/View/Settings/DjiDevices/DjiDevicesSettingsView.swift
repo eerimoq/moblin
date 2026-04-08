@@ -23,6 +23,10 @@ struct DjiDevicesSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var djiDevices: SettingsDjiDevices
 
+    private func deleteDevice(at offsets: IndexSet) {
+        model.removeDjiDevices(offsets: offsets)
+    }
+
     var body: some View {
         Form {
             Section {
@@ -38,16 +42,14 @@ struct DjiDevicesSettingsView: View {
                                 if let index = djiDevices.devices
                                     .firstIndex(where: { $0.id == device.id })
                                 {
-                                    model.removeDjiDevices(offsets: IndexSet(integer: index))
+                                    deleteDevice(at: IndexSet(integer: index))
                                 }
                             }
                     }
                     .onMove { froms, to in
                         djiDevices.devices.move(fromOffsets: froms, toOffset: to)
                     }
-                    .onDelete { offsets in
-                        model.removeDjiDevices(offsets: offsets)
-                    }
+                    .onDelete(perform: deleteDevice)
                 }
                 CreateButtonView {
                     let device = SettingsDjiDevice()

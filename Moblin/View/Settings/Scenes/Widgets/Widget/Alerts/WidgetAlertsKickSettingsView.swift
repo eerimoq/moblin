@@ -300,6 +300,11 @@ private struct KickGiftsView: View {
     @EnvironmentObject var model: Model
     let kick: SettingsWidgetAlertsKick
 
+    private func deleteKickGift(at offsets: IndexSet) {
+        kick.kickGifts.remove(atOffsets: offsets)
+        model.updateAlertsSettings()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -307,18 +312,18 @@ private struct KickGiftsView: View {
                     ForEach(kick.kickGifts) { kickGift in
                         KickGiftItemView(alert: kickGift.alert, kickGift: kickGift)
                             .contextMenuDeleteButton {
-                                kick.kickGifts.removeAll { $0.id == kickGift.id }
-                                model.updateAlertsSettings()
+                                if let index = kick.kickGifts
+                                    .firstIndex(where: { $0.id == kickGift.id })
+                                {
+                                    deleteKickGift(at: IndexSet(integer: index))
+                                }
                             }
                     }
                     .onMove { froms, to in
                         kick.kickGifts.move(fromOffsets: froms, toOffset: to)
                         model.updateAlertsSettings()
                     }
-                    .onDelete { offsets in
-                        kick.kickGifts.remove(atOffsets: offsets)
-                        model.updateAlertsSettings()
-                    }
+                    .onDelete(perform: deleteKickGift)
                 }
                 CreateButtonView {
                     let kickGift = SettingsWidgetAlertsKickGiftsAlert()

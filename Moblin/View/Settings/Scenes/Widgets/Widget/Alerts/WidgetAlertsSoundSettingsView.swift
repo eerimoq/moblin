@@ -72,6 +72,12 @@ private struct SoundGalleryView: View {
     let alert: SettingsWidgetAlertsAlert
     @Binding var soundId: UUID
 
+    private func deleteSound(at offsets: IndexSet) {
+        model.database.alertsMediaGallery.customSounds.remove(atOffsets: offsets)
+        model.fixAlertMedias()
+        soundId = alert.soundId
+    }
+
     var body: some View {
         Form {
             Section {
@@ -86,17 +92,14 @@ private struct SoundGalleryView: View {
                             Text(sound.name)
                         }
                         .contextMenuDeleteButton {
-                            model.database.alertsMediaGallery.customSounds
-                                .removeAll { $0.id == sound.id }
-                            model.fixAlertMedias()
-                            soundId = alert.soundId
+                            if let index = model.database.alertsMediaGallery.customSounds
+                                .firstIndex(where: { $0.id == sound.id })
+                            {
+                                deleteSound(at: IndexSet(integer: index))
+                            }
                         }
                     }
-                    .onDelete { offsets in
-                        model.database.alertsMediaGallery.customSounds.remove(atOffsets: offsets)
-                        model.fixAlertMedias()
-                        soundId = alert.soundId
-                    }
+                    .onDelete(perform: deleteSound)
                 }
                 TextButtonView("Add") {
                     let sound = SettingsAlertsMediaGalleryItem(name: "My sound")

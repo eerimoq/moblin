@@ -20,6 +20,12 @@ struct RtmpServerSettingsView: View {
         }
     }
 
+    private func deleteStream(at indexes: IndexSet) {
+        rtmpServer.streams.remove(atOffsets: indexes)
+        model.reloadRtmpServer()
+        model.updateMicsListAsync()
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -59,17 +65,15 @@ struct RtmpServerSettingsView: View {
                                 stream: stream
                             )
                             .contextMenuDeleteButton(disabled: rtmpServer.enabled) {
-                                rtmpServer.streams.removeAll { $0.id == stream.id }
-                                model.reloadRtmpServer()
-                                model.updateMicsListAsync()
+                                if let index = rtmpServer.streams
+                                    .firstIndex(where: { $0.id == stream.id })
+                                {
+                                    deleteStream(at: IndexSet(integer: index))
+                                }
                             }
                         }
                         if !rtmpServer.enabled {
-                            list.onDelete { indexes in
-                                rtmpServer.streams.remove(atOffsets: indexes)
-                                model.reloadRtmpServer()
-                                model.updateMicsListAsync()
-                            }
+                            list.onDelete(perform: deleteStream)
                         } else {
                             list
                         }

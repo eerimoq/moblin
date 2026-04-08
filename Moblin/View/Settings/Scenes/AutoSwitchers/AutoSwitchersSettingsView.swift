@@ -151,6 +151,10 @@ struct AutoSwitchersView: View {
     @ObservedObject var autoSceneSwitchers: SettingsAutoSceneSwitchers
     let showSelector: Bool
 
+    private func deleteAutoSceneSwitcher(at offsets: IndexSet) {
+        model.deleteAutoSceneSwitchers(offsets: offsets)
+    }
+
     var body: some View {
         Form {
             if showSelector {
@@ -164,19 +168,17 @@ struct AutoSwitchersView: View {
                         autoSwitcher: autoSwitcher
                     )
                     .contextMenuDeleteButton {
-                        if let index = autoSceneSwitchers.switchers.firstIndex(where: {
-                            $0.id == autoSwitcher.id
-                        }) {
-                            model.deleteAutoSceneSwitchers(offsets: IndexSet(integer: index))
+                        if let index = autoSceneSwitchers.switchers
+                            .firstIndex(where: { $0.id == autoSwitcher.id })
+                        {
+                            deleteAutoSceneSwitcher(at: IndexSet(integer: index))
                         }
                     }
                 }
                 .onMove { froms, to in
                     autoSceneSwitchers.switchers.move(fromOffsets: froms, toOffset: to)
                 }
-                .onDelete { offsets in
-                    model.deleteAutoSceneSwitchers(offsets: offsets)
-                }
+                .onDelete(perform: deleteAutoSceneSwitcher)
                 CreateButtonView {
                     let switcher = SettingsAutoSceneSwitcher()
                     switcher.name = makeUniqueName(name: SettingsAutoSceneSwitcher.baseName,

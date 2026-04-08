@@ -47,6 +47,11 @@ struct ChatNicknamesSettingsView: View {
     let model: Model
     @ObservedObject var nicknames: SettingsChatNicknames
 
+    private func deleteNickname(at offsets: IndexSet) {
+        nicknames.nicknames.remove(atOffsets: offsets)
+        model.reloadChatMessages()
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -55,17 +60,17 @@ struct ChatNicknamesSettingsView: View {
                         ForEach(nicknames.nicknames) { nickname in
                             NicknameView(model: model, nickname: nickname)
                                 .contextMenuDeleteButton {
-                                    nicknames.nicknames.removeAll { $0.id == nickname.id }
-                                    model.reloadChatMessages()
+                                    if let index = nicknames.nicknames
+                                        .firstIndex(where: { $0.id == nickname.id })
+                                    {
+                                        deleteNickname(at: IndexSet(integer: index))
+                                    }
                                 }
                         }
                         .onMove { froms, to in
                             nicknames.nicknames.move(fromOffsets: froms, toOffset: to)
                         }
-                        .onDelete { offsets in
-                            nicknames.nicknames.remove(atOffsets: offsets)
-                            model.reloadChatMessages()
-                        }
+                        .onDelete(perform: deleteNickname)
                     }
                     CreateButtonView {
                         nicknames.nicknames.append(SettingsChatNickname())

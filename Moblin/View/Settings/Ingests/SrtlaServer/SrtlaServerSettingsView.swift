@@ -28,6 +28,12 @@ struct SrtlaServerSettingsView: View {
         }
     }
 
+    private func deleteStream(at indexes: IndexSet) {
+        srtlaServer.streams.remove(atOffsets: indexes)
+        model.reloadSrtlaServer()
+        model.updateMicsListAsync()
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -77,17 +83,15 @@ struct SrtlaServerSettingsView: View {
                                 stream: stream
                             )
                             .contextMenuDeleteButton(disabled: model.srtlaServerEnabled()) {
-                                srtlaServer.streams.removeAll { $0.id == stream.id }
-                                model.reloadSrtlaServer()
-                                model.updateMicsListAsync()
+                                if let index = srtlaServer.streams
+                                    .firstIndex(where: { $0.id == stream.id })
+                                {
+                                    deleteStream(at: IndexSet(integer: index))
+                                }
                             }
                         }
                         if !model.srtlaServerEnabled() {
-                            list.onDelete { indexes in
-                                srtlaServer.streams.remove(atOffsets: indexes)
-                                model.reloadSrtlaServer()
-                                model.updateMicsListAsync()
-                            }
+                            list.onDelete(perform: deleteStream)
                         } else {
                             list
                         }

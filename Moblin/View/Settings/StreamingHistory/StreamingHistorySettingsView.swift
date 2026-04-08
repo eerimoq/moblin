@@ -39,6 +39,11 @@ private struct StreamingHistorySettingsStreamsView: View {
         return "\(stream.startTime.formatted()), \(stream.duration().format())"
     }
 
+    private func deleteStream(at offsets: IndexSet) {
+        database.streams.remove(atOffsets: offsets)
+        model.streamingHistory.store()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -54,14 +59,14 @@ private struct StreamingHistorySettingsStreamsView: View {
                             }
                         }
                         .contextMenuDeleteButton {
-                            database.streams.removeAll { $0.id == stream.id }
-                            model.streamingHistory.store()
+                            if let index = database.streams
+                                .firstIndex(where: { $0.id == stream.id })
+                            {
+                                deleteStream(at: IndexSet(integer: index))
+                            }
                         }
                     }
-                    .onDelete { offsets in
-                        database.streams.remove(atOffsets: offsets)
-                        model.streamingHistory.store()
-                    }
+                    .onDelete(perform: deleteStream)
                 }
             }
         }

@@ -9,6 +9,11 @@ struct WhepClientSettingsView: View {
         return String(numberOfEnabledStreams)
     }
 
+    private func deleteStream(at indexes: IndexSet) {
+        whepClient.streams.remove(atOffsets: indexes)
+        model.reloadWhepClient()
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -23,14 +28,14 @@ struct WhepClientSettingsView: View {
                         ForEach(whepClient.streams) { stream in
                             WhepClientStreamSettingsView(whepClient: whepClient, stream: stream)
                                 .contextMenuDeleteButton {
-                                    whepClient.streams.removeAll { $0.id == stream.id }
-                                    model.reloadWhepClient()
+                                    if let index = whepClient.streams
+                                        .firstIndex(where: { $0.id == stream.id })
+                                    {
+                                        deleteStream(at: IndexSet(integer: index))
+                                    }
                                 }
                         }
-                        .onDelete { indexes in
-                            whepClient.streams.remove(atOffsets: indexes)
-                            model.reloadWhepClient()
-                        }
+                        .onDelete(perform: deleteStream)
                     }
                     CreateButtonView {
                         let stream = SettingsWhepClientStream()

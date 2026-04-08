@@ -295,6 +295,20 @@ struct RemoteControlStreamersView: View {
         model.reloadRemoteControlAssistant()
     }
 
+    private func deleteStreamer(at offsets: IndexSet) {
+        remoteControlSettings.streamers.remove(atOffsets: offsets)
+        guard remoteControlSettings.selectedStreamer != nil else {
+            return
+        }
+        guard !remoteControlSettings.streamers
+            .contains(where: { $0.id == remoteControlSettings.selectedStreamer })
+        else {
+            return
+        }
+        remoteControlSettings.selectedStreamer = nil
+        onStreamerChanged()
+    }
+
     var body: some View {
         Section {
             Picker("Current streamer", selection: $remoteControlSettings.selectedStreamer) {
@@ -318,32 +332,14 @@ struct RemoteControlStreamersView: View {
                 ForEach(remoteControlSettings.streamers) { streamer in
                     StreamerView(remoteControlSettings: remoteControlSettings, streamer: streamer)
                         .contextMenuDeleteButton {
-                            remoteControlSettings.streamers.removeAll { $0.id == streamer.id }
-                            guard remoteControlSettings.selectedStreamer != nil else {
-                                return
+                            if let index = remoteControlSettings.streamers
+                                .firstIndex(where: { $0.id == streamer.id })
+                            {
+                                deleteStreamer(at: IndexSet(integer: index))
                             }
-                            guard !remoteControlSettings.streamers
-                                .contains(where: { $0.id == remoteControlSettings.selectedStreamer })
-                            else {
-                                return
-                            }
-                            remoteControlSettings.selectedStreamer = nil
-                            onStreamerChanged()
                         }
                 }
-                .onDelete {
-                    remoteControlSettings.streamers.remove(atOffsets: $0)
-                    guard remoteControlSettings.selectedStreamer != nil else {
-                        return
-                    }
-                    guard !remoteControlSettings.streamers
-                        .contains(where: { $0.id == remoteControlSettings.selectedStreamer })
-                    else {
-                        return
-                    }
-                    remoteControlSettings.selectedStreamer = nil
-                    onStreamerChanged()
-                }
+                .onDelete(perform: deleteStreamer)
                 .onMove { froms, to in
                     remoteControlSettings.streamers.move(fromOffsets: froms, toOffset: to)
                 }

@@ -27,6 +27,11 @@ struct LocationSettingsView: View {
     @ObservedObject var location: SettingsLocation
     @Binding var stream: SettingsStream
 
+    private func deletePrivacyRegion(at offsets: IndexSet) {
+        location.privacyRegions.remove(atOffsets: offsets)
+        model.reloadLocation()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -93,14 +98,14 @@ struct LocationSettingsView: View {
                             )
                         ))
                         .contextMenuDeleteButton {
-                            location.privacyRegions.removeAll { $0.id == region.id }
-                            model.reloadLocation()
+                            if let index = location.privacyRegions
+                                .firstIndex(where: { $0.id == region.id })
+                            {
+                                deletePrivacyRegion(at: IndexSet(integer: index))
+                            }
                         }
                     }
-                    .onDelete { indexes in
-                        location.privacyRegions.remove(atOffsets: indexes)
-                        model.reloadLocation()
-                    }
+                    .onDelete(perform: deletePrivacyRegion)
                 }
                 CreateButtonView {
                     let privacyRegion = SettingsPrivacyRegion()

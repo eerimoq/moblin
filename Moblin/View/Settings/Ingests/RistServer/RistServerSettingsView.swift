@@ -20,6 +20,12 @@ struct RistServerSettingsView: View {
         }
     }
 
+    private func deleteStream(at indexes: IndexSet) {
+        ristServer.streams.remove(atOffsets: indexes)
+        model.reloadRistServer()
+        model.updateMicsListAsync()
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -56,17 +62,15 @@ struct RistServerSettingsView: View {
                                 stream: stream
                             )
                             .contextMenuDeleteButton(disabled: ristServer.enabled) {
-                                ristServer.streams.removeAll { $0.id == stream.id }
-                                model.reloadRistServer()
-                                model.updateMicsListAsync()
+                                if let index = ristServer.streams
+                                    .firstIndex(where: { $0.id == stream.id })
+                                {
+                                    deleteStream(at: IndexSet(integer: index))
+                                }
                             }
                         }
                         if !ristServer.enabled {
-                            list.onDelete { indexes in
-                                ristServer.streams.remove(atOffsets: indexes)
-                                model.reloadRistServer()
-                                model.updateMicsListAsync()
-                            }
+                            list.onDelete(perform: deleteStream)
                         } else {
                             list
                         }

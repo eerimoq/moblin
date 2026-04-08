@@ -259,6 +259,11 @@ private struct TwitchCheerBitsView: View {
     @EnvironmentObject var model: Model
     let twitch: SettingsWidgetAlertsTwitch
 
+    private func deleteCheerBit(at offsets: IndexSet) {
+        twitch.cheerBits.remove(atOffsets: offsets)
+        model.updateAlertsSettings()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -266,18 +271,18 @@ private struct TwitchCheerBitsView: View {
                     ForEach(twitch.cheerBits) { cheerBit in
                         TwitchCheerBitsItemView(alert: cheerBit.alert, cheerBit: cheerBit)
                             .contextMenuDeleteButton {
-                                twitch.cheerBits.removeAll { $0.id == cheerBit.id }
-                                model.updateAlertsSettings()
+                                if let index = twitch.cheerBits
+                                    .firstIndex(where: { $0.id == cheerBit.id })
+                                {
+                                    deleteCheerBit(at: IndexSet(integer: index))
+                                }
                             }
                     }
                     .onMove { froms, to in
                         twitch.cheerBits.move(fromOffsets: froms, toOffset: to)
                         model.updateAlertsSettings()
                     }
-                    .onDelete { offsets in
-                        twitch.cheerBits.remove(atOffsets: offsets)
-                        model.updateAlertsSettings()
-                    }
+                    .onDelete(perform: deleteCheerBit)
                 }
                 CreateButtonView {
                     let cheerBits = SettingsWidgetAlertsCheerBitsAlert()

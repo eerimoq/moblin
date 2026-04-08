@@ -81,6 +81,12 @@ private struct ImageGalleryView: View {
     let alert: SettingsWidgetAlertsAlert
     @Binding var imageId: UUID
 
+    private func deleteImage(at offsets: IndexSet) {
+        model.database.alertsMediaGallery.customImages.remove(atOffsets: offsets)
+        model.fixAlertMedias()
+        imageId = alert.imageId
+    }
+
     var body: some View {
         Form {
             Section {
@@ -95,17 +101,14 @@ private struct ImageGalleryView: View {
                             Text(image.name)
                         }
                         .contextMenuDeleteButton {
-                            model.database.alertsMediaGallery.customImages
-                                .removeAll { $0.id == image.id }
-                            model.fixAlertMedias()
-                            imageId = alert.imageId
+                            if let index = model.database.alertsMediaGallery.customImages
+                                .firstIndex(where: { $0.id == image.id })
+                            {
+                                deleteImage(at: IndexSet(integer: index))
+                            }
                         }
                     }
-                    .onDelete { offsets in
-                        model.database.alertsMediaGallery.customImages.remove(atOffsets: offsets)
-                        model.fixAlertMedias()
-                        imageId = alert.imageId
-                    }
+                    .onDelete(perform: deleteImage)
                 }
                 TextButtonView("Add") {
                     let image = SettingsAlertsMediaGalleryItem(name: "My image")

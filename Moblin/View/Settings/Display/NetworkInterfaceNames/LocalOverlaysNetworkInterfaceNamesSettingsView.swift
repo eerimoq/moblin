@@ -4,6 +4,11 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
 
+    private func deleteNetworkInterface(at offsets: IndexSet) {
+        database.networkInterfaceNames.remove(atOffsets: offsets)
+        model.networkInterfaceNamesUpdated()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -21,14 +26,14 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                                 capitalize: true
                             )
                             .contextMenuDeleteButton {
-                                database.networkInterfaceNames.removeAll { $0.id == interface.id }
-                                model.networkInterfaceNamesUpdated()
+                                if let index = database.networkInterfaceNames
+                                    .firstIndex(where: { $0.id == interface.id })
+                                {
+                                    deleteNetworkInterface(at: IndexSet(integer: index))
+                                }
                             }
                         }
-                        .onDelete { indexes in
-                            database.networkInterfaceNames.remove(atOffsets: indexes)
-                            model.networkInterfaceNamesUpdated()
-                        }
+                        .onDelete(perform: deleteNetworkInterface)
                     }
                 }
             }

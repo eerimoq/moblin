@@ -83,23 +83,26 @@ struct WidgetEffectsView: View {
     let model: Model
     @ObservedObject var widget: SettingsWidget
 
+    private func deleteEffect(at offsets: IndexSet) {
+        widget.effects.remove(atOffsets: offsets)
+        model.resetSelectedScene(changeScene: false)
+    }
+
     var body: some View {
         Section {
             ForEach(widget.effects) { effect in
                 EffectView(widget: widget, effect: effect)
                     .contextMenuDeleteButton {
-                        widget.effects.removeAll { $0.id == effect.id }
-                        model.resetSelectedScene(changeScene: false)
+                        if let index = widget.effects.firstIndex(where: { $0.id == effect.id }) {
+                            deleteEffect(at: IndexSet(integer: index))
+                        }
                     }
             }
             .onMove { froms, to in
                 widget.effects.move(fromOffsets: froms, toOffset: to)
                 model.resetSelectedScene(changeScene: false)
             }
-            .onDelete { offsets in
-                widget.effects.remove(atOffsets: offsets)
-                model.resetSelectedScene(changeScene: false)
-            }
+            .onDelete(perform: deleteEffect)
             AddButtonView {
                 widget.effects.append(SettingsVideoEffect())
                 model.resetSelectedScene(changeScene: false)

@@ -67,6 +67,11 @@ struct WidgetAlertsChatBotSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var chatBot: SettingsWidgetAlertsChatBot
 
+    private func deleteCommand(at indexes: IndexSet) {
+        chatBot.commands.remove(atOffsets: indexes)
+        model.updateAlertsSettings()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -78,14 +83,14 @@ struct WidgetAlertsChatBotSettingsView: View {
                             name: command.name
                         )
                         .contextMenuDeleteButton {
-                            chatBot.commands.removeAll { $0.id == command.id }
-                            model.updateAlertsSettings()
+                            if let index = chatBot.commands
+                                .firstIndex(where: { $0.id == command.id })
+                            {
+                                deleteCommand(at: IndexSet(integer: index))
+                            }
                         }
                     }
-                    .onDelete { indexes in
-                        chatBot.commands.remove(atOffsets: indexes)
-                        model.updateAlertsSettings()
-                    }
+                    .onDelete(perform: deleteCommand)
                 }
                 CreateButtonView {
                     let command = SettingsWidgetAlertsChatBotCommand()

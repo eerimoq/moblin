@@ -113,16 +113,24 @@ struct WidgetWheelOfLuckSettingsView: View {
         model.getWheelOfLuckEffect(id: widget.id)?.setSettings(settings: wheelOfLuck)
     }
 
+    private func deleteOption(at offsets: IndexSet) {
+        wheelOfLuck.options.remove(atOffsets: offsets)
+        wheelOfLuck.updateText()
+        wheelOfLuck.updateTotalWeight()
+        updateEffect()
+    }
+
     var body: some View {
         if wheelOfLuck.advanced {
             Section {
                 ForEach(wheelOfLuck.options) { option in
                     OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: option)
                         .contextMenuDeleteButton(disabled: wheelOfLuck.options.count < 2) {
-                            wheelOfLuck.options.removeAll { $0.id == option.id }
-                            wheelOfLuck.updateText()
-                            wheelOfLuck.updateTotalWeight()
-                            updateEffect()
+                            if let index = wheelOfLuck.options
+                                .firstIndex(where: { $0.id == option.id })
+                            {
+                                deleteOption(at: IndexSet(integer: index))
+                            }
                         }
                 }
                 .onMove { froms, to in
@@ -130,12 +138,7 @@ struct WidgetWheelOfLuckSettingsView: View {
                     wheelOfLuck.updateText()
                     updateEffect()
                 }
-                .onDelete { offsets in
-                    wheelOfLuck.options.remove(atOffsets: offsets)
-                    wheelOfLuck.updateText()
-                    wheelOfLuck.updateTotalWeight()
-                    updateEffect()
-                }
+                .onDelete(perform: deleteOption)
                 .deleteDisabled(wheelOfLuck.options.count < 2)
                 CreateButtonView {
                     wheelOfLuck.options.append(SettingsWidgetWheelOfLuckOption())

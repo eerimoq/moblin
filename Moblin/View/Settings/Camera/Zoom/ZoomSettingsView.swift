@@ -4,6 +4,16 @@ struct ZoomSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var zoom: SettingsZoom
 
+    private func deleteBackZoomPreset(at offsets: IndexSet) {
+        zoom.back.remove(atOffsets: offsets)
+        model.backZoomPresetSettingsUpdated()
+    }
+
+    private func deleteFrontZoomPreset(at offsets: IndexSet) {
+        zoom.front.remove(atOffsets: offsets)
+        model.frontZoomPresetSettingUpdated()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -28,18 +38,16 @@ struct ZoomSettingsView: View {
                         )
                         .deleteDisabled(zoom.back.count == 1)
                         .contextMenuDeleteButton(disabled: zoom.back.count == 1) {
-                            zoom.back.removeAll { $0.id == preset.id }
-                            model.backZoomPresetSettingsUpdated()
+                            if let index = zoom.back.firstIndex(where: { $0.id == preset.id }) {
+                                deleteBackZoomPreset(at: IndexSet(integer: index))
+                            }
                         }
                     }
                     .onMove { froms, to in
                         zoom.back.move(fromOffsets: froms, toOffset: to)
                         model.backZoomPresetSettingsUpdated()
                     }
-                    .onDelete { offsets in
-                        zoom.back.remove(atOffsets: offsets)
-                        model.backZoomPresetSettingsUpdated()
-                    }
+                    .onDelete(perform: deleteBackZoomPreset)
                 }
                 CreateButtonView {
                     zoom.back.append(SettingsZoomPreset(
@@ -64,18 +72,16 @@ struct ZoomSettingsView: View {
                         )
                         .deleteDisabled(zoom.front.count == 1)
                         .contextMenuDeleteButton(disabled: zoom.front.count == 1) {
-                            zoom.front.removeAll { $0.id == preset.id }
-                            model.frontZoomPresetSettingUpdated()
+                            if let index = zoom.front.firstIndex(where: { $0.id == preset.id }) {
+                                deleteFrontZoomPreset(at: IndexSet(integer: index))
+                            }
                         }
                     }
                     .onMove { froms, to in
                         zoom.front.move(fromOffsets: froms, toOffset: to)
                         model.frontZoomPresetSettingUpdated()
                     }
-                    .onDelete { offsets in
-                        zoom.front.remove(atOffsets: offsets)
-                        model.frontZoomPresetSettingUpdated()
-                    }
+                    .onDelete(perform: deleteFrontZoomPreset)
                 }
                 CreateButtonView {
                     zoom.front.append(SettingsZoomPreset(

@@ -32,6 +32,11 @@ struct MediaPlayerSettingsView: View {
         model.updateMediaPlayerSettings(playerId: player.id, settings: player)
     }
 
+    private func deletePlaylistFile(at offsets: IndexSet) {
+        player.playlist.remove(atOffsets: offsets)
+        model.updateMediaPlayerSettings(playerId: player.id, settings: player)
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -51,18 +56,18 @@ struct MediaPlayerSettingsView: View {
                         ForEach(player.playlist) { file in
                             MediaPlayerFileSettingsView(player: player, file: file)
                                 .contextMenuDeleteButton {
-                                    player.playlist.removeAll { $0.id == file.id }
-                                    model.updateMediaPlayerSettings(playerId: player.id, settings: player)
+                                    if let index = player.playlist
+                                        .firstIndex(where: { $0.id == file.id })
+                                    {
+                                        deletePlaylistFile(at: IndexSet(integer: index))
+                                    }
                                 }
                         }
                         .onMove { froms, to in
                             player.playlist.move(fromOffsets: froms, toOffset: to)
                             model.updateMediaPlayerSettings(playerId: player.id, settings: player)
                         }
-                        .onDelete { indexes in
-                            player.playlist.remove(atOffsets: indexes)
-                            model.updateMediaPlayerSettings(playerId: player.id, settings: player)
-                        }
+                        .onDelete(perform: deletePlaylistFile)
                     }
                     PhotosPicker(selection: $selectedVideoItem, matching: .videos) {
                         HCenter {

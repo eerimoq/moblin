@@ -74,23 +74,26 @@ private struct SlidesView: View {
     let model: Model
     @ObservedObject var slideshow: SettingsWidgetSlideshow
 
+    private func deleteSlide(at offsets: IndexSet) {
+        slideshow.slides.remove(atOffsets: offsets)
+        model.resetSelectedScene(changeScene: false, attachCamera: false)
+    }
+
     var body: some View {
         Section {
             ForEach(slideshow.slides) { slide in
                 SlideView(model: model, database: model.database, slide: slide)
                     .contextMenuDeleteButton {
-                        slideshow.slides.removeAll { $0.id == slide.id }
-                        model.resetSelectedScene(changeScene: false, attachCamera: false)
+                        if let index = slideshow.slides.firstIndex(where: { $0.id == slide.id }) {
+                            deleteSlide(at: IndexSet(integer: index))
+                        }
                     }
             }
             .onMove { froms, to in
                 slideshow.slides.move(fromOffsets: froms, toOffset: to)
                 model.resetSelectedScene(changeScene: false, attachCamera: false)
             }
-            .onDelete { offsets in
-                slideshow.slides.remove(atOffsets: offsets)
-                model.resetSelectedScene(changeScene: false, attachCamera: false)
-            }
+            .onDelete(perform: deleteSlide)
             AddButtonView {
                 slideshow.slides.append(SettingsWidgetSlideshowSlide())
                 model.resetSelectedScene(changeScene: false, attachCamera: false)

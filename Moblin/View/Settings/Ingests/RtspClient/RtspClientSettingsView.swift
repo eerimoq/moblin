@@ -9,6 +9,11 @@ struct RtspClientSettingsView: View {
         return String(numberOfEnabledStreams)
     }
 
+    private func deleteStream(at indexes: IndexSet) {
+        rtspClient.streams.remove(atOffsets: indexes)
+        model.reloadRtspClient()
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -17,14 +22,14 @@ struct RtspClientSettingsView: View {
                         ForEach(rtspClient.streams) { stream in
                             RtspClientStreamSettingsView(rtspClient: rtspClient, stream: stream)
                                 .contextMenuDeleteButton {
-                                    rtspClient.streams.removeAll { $0.id == stream.id }
-                                    model.reloadRtspClient()
+                                    if let index = rtspClient.streams
+                                        .firstIndex(where: { $0.id == stream.id })
+                                    {
+                                        deleteStream(at: IndexSet(integer: index))
+                                    }
                                 }
                         }
-                        .onDelete { indexes in
-                            rtspClient.streams.remove(atOffsets: indexes)
-                            model.reloadRtspClient()
-                        }
+                        .onDelete(perform: deleteStream)
                     }
                     CreateButtonView {
                         let stream = SettingsRtspClientStream()

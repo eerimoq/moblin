@@ -51,6 +51,11 @@ struct WidgetAlertsSpeechToTextSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var speechToText: SettingsWidgetAlertsSpeechToText
 
+    private func deleteString(at indexes: IndexSet) {
+        speechToText.strings.remove(atOffsets: indexes)
+        model.updateAlertsSettings()
+    }
+
     var body: some View {
         Form {
             Section {
@@ -58,14 +63,14 @@ struct WidgetAlertsSpeechToTextSettingsView: View {
                     ForEach(speechToText.strings) { string in
                         SpeechToTextStringView(alert: string.alert, string: string, text: string.string)
                             .contextMenuDeleteButton {
-                                speechToText.strings.removeAll { $0.id == string.id }
-                                model.updateAlertsSettings()
+                                if let index = speechToText.strings
+                                    .firstIndex(where: { $0.id == string.id })
+                                {
+                                    deleteString(at: IndexSet(integer: index))
+                                }
                             }
                     }
-                    .onDelete { indexes in
-                        speechToText.strings.remove(atOffsets: indexes)
-                        model.updateAlertsSettings()
-                    }
+                    .onDelete(perform: deleteString)
                 }
                 CreateButtonView {
                     let string = SettingsWidgetAlertsSpeechToTextString()

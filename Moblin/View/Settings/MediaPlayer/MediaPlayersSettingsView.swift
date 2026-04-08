@@ -4,6 +4,13 @@ struct MediaPlayersSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var mediaPlayers: SettingsMediaPlayers
 
+    private func deletePlayer(at offsets: IndexSet) {
+        for index in offsets {
+            model.deleteMediaPlayer(playerId: mediaPlayers.players[index].id)
+        }
+        mediaPlayers.players.remove(atOffsets: offsets)
+    }
+
     var body: some View {
         Form {
             Section {
@@ -20,16 +27,14 @@ struct MediaPlayersSettingsView: View {
                     ForEach(mediaPlayers.players) { player in
                         MediaPlayerSettingsView(mediaPlayers: mediaPlayers, player: player)
                             .contextMenuDeleteButton {
-                                model.deleteMediaPlayer(playerId: player.id)
-                                mediaPlayers.players.removeAll { $0.id == player.id }
+                                if let index = mediaPlayers.players
+                                    .firstIndex(where: { $0.id == player.id })
+                                {
+                                    deletePlayer(at: IndexSet(integer: index))
+                                }
                             }
                     }
-                    .onDelete { indexes in
-                        for index in indexes {
-                            model.deleteMediaPlayer(playerId: mediaPlayers.players[index].id)
-                        }
-                        mediaPlayers.players.remove(atOffsets: indexes)
-                    }
+                    .onDelete(perform: deletePlayer)
                 }
                 CreateButtonView {
                     let mediaPlayer = SettingsMediaPlayer()

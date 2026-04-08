@@ -20,6 +20,12 @@ struct WhipServerSettingsView: View {
         }
     }
 
+    private func deleteStream(at indexes: IndexSet) {
+        whipServer.streams.remove(atOffsets: indexes)
+        model.reloadWhipServer()
+        model.updateMicsListAsync()
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -56,17 +62,15 @@ struct WhipServerSettingsView: View {
                                 stream: stream
                             )
                             .contextMenuDeleteButton(disabled: whipServer.enabled) {
-                                whipServer.streams.removeAll { $0.id == stream.id }
-                                model.reloadWhipServer()
-                                model.updateMicsListAsync()
+                                if let index = whipServer.streams
+                                    .firstIndex(where: { $0.id == stream.id })
+                                {
+                                    deleteStream(at: IndexSet(integer: index))
+                                }
                             }
                         }
                         if !whipServer.enabled {
-                            list.onDelete { indexes in
-                                whipServer.streams.remove(atOffsets: indexes)
-                                model.reloadWhipServer()
-                                model.updateMicsListAsync()
-                            }
+                            list.onDelete(perform: deleteStream)
                         } else {
                             list
                         }

@@ -50,6 +50,10 @@ private struct CameraSettingsCubeLutsView: View {
         model.addLutCube(url: url)
     }
 
+    private func deleteLutCube(at offsets: IndexSet) {
+        model.removeLutCube(offsets: offsets)
+    }
+
     var body: some View {
         Section {
             List {
@@ -58,13 +62,11 @@ private struct CameraSettingsCubeLutsView: View {
                         .tag(lut.id)
                         .contextMenuDeleteButton {
                             if let index = color.diskLutsCube.firstIndex(where: { $0.id == lut.id }) {
-                                model.removeLutCube(offsets: IndexSet(integer: index))
+                                deleteLutCube(at: IndexSet(integer: index))
                             }
                         }
                 }
-                .onDelete { offsets in
-                    model.removeLutCube(offsets: offsets)
-                }
+                .onDelete(perform: deleteLutCube)
             }
             TextButtonView("Add") {
                 showPicker = true
@@ -84,6 +86,10 @@ private struct CameraSettingsPngLutsView: View {
     @ObservedObject var color: SettingsColor
     @State var selectedImageItem: PhotosPickerItem?
 
+    private func deleteLutPng(at offsets: IndexSet) {
+        model.removeLutPng(offsets: offsets)
+    }
+
     var body: some View {
         Section {
             List {
@@ -92,13 +98,11 @@ private struct CameraSettingsPngLutsView: View {
                         .tag(lut.id)
                         .contextMenuDeleteButton {
                             if let index = color.diskLutsPng.firstIndex(where: { $0.id == lut.id }) {
-                                model.removeLutPng(offsets: IndexSet(integer: index))
+                                deleteLutPng(at: IndexSet(integer: index))
                             }
                         }
                 }
-                .onDelete { offsets in
-                    model.removeLutPng(offsets: offsets)
-                }
+                .onDelete(perform: deleteLutPng)
             }
             PhotosPicker(selection: $selectedImageItem, matching: .images) {
                 HCenter {

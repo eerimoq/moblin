@@ -255,21 +255,31 @@ private struct WidgetsView: View {
         database.widgets
     }
 
+    private func deleteSceneWidget(at offsets: IndexSet) {
+        var attachCamera = false
+        if scene.id == model.getSelectedScene()?.id {
+            for offset in offsets {
+                if let widget = model.findWidget(id: scene.widgets[offset].widgetId) {
+                    attachCamera = model.isCaptureDeviceWidget(widget: widget)
+                }
+            }
+        }
+        scene.widgets.remove(atOffsets: offsets)
+        model.sceneUpdated(attachCamera: attachCamera)
+        model.sceneSettingsPanelSceneId += 1
+    }
+
     var body: some View {
         Section {
             List {
                 ForEach(scene.widgets) { sceneWidget in
                     SceneWidgetView(database: database, sceneWidget: sceneWidget)
                         .contextMenuDeleteButton {
-                            var attachCamera = false
-                            if scene.id == model.getSelectedScene()?.id {
-                                if let widget = model.findWidget(id: sceneWidget.widgetId) {
-                                    attachCamera = model.isCaptureDeviceWidget(widget: widget)
-                                }
+                            if let index = scene.widgets
+                                .firstIndex(where: { $0.id == sceneWidget.id })
+                            {
+                                deleteSceneWidget(at: IndexSet(integer: index))
                             }
-                            scene.widgets.removeAll { $0.id == sceneWidget.id }
-                            model.sceneUpdated(attachCamera: attachCamera)
-                            model.sceneSettingsPanelSceneId += 1
                         }
                 }
                 .onMove { froms, to in
@@ -277,19 +287,7 @@ private struct WidgetsView: View {
                     model.sceneUpdated()
                     model.sceneSettingsPanelSceneId += 1
                 }
-                .onDelete { offsets in
-                    var attachCamera = false
-                    if scene.id == model.getSelectedScene()?.id {
-                        for offset in offsets {
-                            if let widget = model.findWidget(id: scene.widgets[offset].widgetId) {
-                                attachCamera = model.isCaptureDeviceWidget(widget: widget)
-                            }
-                        }
-                    }
-                    scene.widgets.remove(atOffsets: offsets)
-                    model.sceneUpdated(attachCamera: attachCamera)
-                    model.sceneSettingsPanelSceneId += 1
-                }
+                .onDelete(perform: deleteSceneWidget)
             }
             AddButtonView {
                 presentingAddWidget = true
