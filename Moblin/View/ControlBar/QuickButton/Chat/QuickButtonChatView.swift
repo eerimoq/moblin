@@ -698,10 +698,8 @@ struct PredefinedMessagesView: View {
                                                   showingPredefinedMessages: $presentingPredefinedMessages)
                                 .contextMenu {
                                     if !filter.isEnabled() {
-                                        Button(role: .destructive) {
+                                        ContextMenuDeleteButtonView {
                                             chat.predefinedMessages.removeAll { $0.id == predefinedMessage.id }
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
                                         }
                                     }
                                 }

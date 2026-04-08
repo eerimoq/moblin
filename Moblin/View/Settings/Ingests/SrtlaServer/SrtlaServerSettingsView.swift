@@ -78,12 +78,10 @@ struct SrtlaServerSettingsView: View {
                             )
                             .contextMenu {
                                 if !model.srtlaServerEnabled() {
-                                    Button(role: .destructive) {
+                                    ContextMenuDeleteButtonView {
                                         srtlaServer.streams.removeAll { $0.id == stream.id }
                                         model.reloadSrtlaServer()
                                         model.updateMicsListAsync()
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
                             }

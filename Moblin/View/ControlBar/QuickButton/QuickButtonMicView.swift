@@ -42,10 +42,8 @@ struct QuickButtonMicView: View {
                             .deleteDisabled(mic == modelMic.current)
                             .contextMenu {
                                 if mic != modelMic.current {
-                                    Button(role: .destructive) {
+                                    ContextMenuDeleteButtonView {
                                         mics.mics.removeAll { $0.id == mic.id }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
                             }

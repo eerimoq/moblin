@@ -57,12 +57,10 @@ struct RistServerSettingsView: View {
                             )
                             .contextMenu {
                                 if !ristServer.enabled {
-                                    Button(role: .destructive) {
+                                    ContextMenuDeleteButtonView {
                                         ristServer.streams.removeAll { $0.id == stream.id }
                                         model.reloadRistServer()
                                         model.updateMicsListAsync()
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
                             }

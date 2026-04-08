@@ -14,10 +14,8 @@ struct KeyboardSettingsView: View {
                     ForEach(keyboard.keys) { key in
                         KeyboardKeySettingsView(model: model, key: key)
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     keyboard.keys.removeAll { $0.id == key.id }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                     }

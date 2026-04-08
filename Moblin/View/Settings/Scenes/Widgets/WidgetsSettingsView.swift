@@ -32,12 +32,10 @@ private struct WidgetsSettingsItemView: View {
             }
         }
         .contextMenu {
-            Button(role: .destructive) {
+            ContextMenuDeleteButtonView {
                 database.widgets.removeAll(where: { $0 === widget })
                 model.removeDeadWidgetsFromScenes()
                 model.resetSelectedScene()
-            } label: {
-                Label("Delete", systemImage: "trash")
             }
         }
     }

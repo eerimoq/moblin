@@ -485,10 +485,8 @@ private struct ChatBotAliasesSettingsView: View {
                     ForEach(chat.aliases) { alias in
                         ChatBotAliasSettingsView(alias: alias)
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     chat.aliases.removeAll { $0.id == alias.id }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                     }

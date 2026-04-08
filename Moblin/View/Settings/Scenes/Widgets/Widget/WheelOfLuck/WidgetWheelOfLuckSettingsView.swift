@@ -120,13 +120,11 @@ struct WidgetWheelOfLuckSettingsView: View {
                     OptionView(model: model, widget: widget, wheelOfLuck: wheelOfLuck, options: option)
                         .contextMenu {
                             if wheelOfLuck.options.count >= 2 {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     wheelOfLuck.options.removeAll { $0.id == option.id }
                                     wheelOfLuck.updateText()
                                     wheelOfLuck.updateTotalWeight()
                                     updateEffect()
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                         }

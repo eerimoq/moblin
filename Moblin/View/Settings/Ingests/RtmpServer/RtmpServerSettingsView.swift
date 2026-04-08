@@ -60,12 +60,10 @@ struct RtmpServerSettingsView: View {
                             )
                             .contextMenu {
                                 if !rtmpServer.enabled {
-                                    Button(role: .destructive) {
+                                    ContextMenuDeleteButtonView {
                                         rtmpServer.streams.removeAll { $0.id == stream.id }
                                         model.reloadRtmpServer()
                                         model.updateMicsListAsync()
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
                             }

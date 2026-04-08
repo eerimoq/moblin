@@ -53,10 +53,8 @@ struct CatPrintersSettingsView: View {
                                                       device: device,
                                                       status: model.statusTopRight)
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     catPrinters.devices.removeAll { $0.id == device.id }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                     }

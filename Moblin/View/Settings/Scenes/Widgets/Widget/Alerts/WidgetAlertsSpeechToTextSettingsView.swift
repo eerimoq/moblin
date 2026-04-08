@@ -58,11 +58,9 @@ struct WidgetAlertsSpeechToTextSettingsView: View {
                     ForEach(speechToText.strings) { string in
                         SpeechToTextStringView(alert: string.alert, string: string, text: string.string)
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     speechToText.strings.removeAll { $0.id == string.id }
                                     model.updateAlertsSettings()
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                     }

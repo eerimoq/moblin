@@ -29,11 +29,9 @@ struct ZoomSettingsView: View {
                         .deleteDisabled(zoom.back.count == 1)
                         .contextMenu {
                             if zoom.back.count > 1 {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     zoom.back.removeAll { $0.id == preset.id }
                                     model.backZoomPresetSettingsUpdated()
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                         }
@@ -71,11 +69,9 @@ struct ZoomSettingsView: View {
                         .deleteDisabled(zoom.front.count == 1)
                         .contextMenu {
                             if zoom.front.count > 1 {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     zoom.front.removeAll { $0.id == preset.id }
                                     model.frontZoomPresetSettingUpdated()
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                         }

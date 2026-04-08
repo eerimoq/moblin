@@ -17,11 +17,9 @@ struct RtspClientSettingsView: View {
                         ForEach(rtspClient.streams) { stream in
                             RtspClientStreamSettingsView(rtspClient: rtspClient, stream: stream)
                                 .contextMenu {
-                                    Button(role: .destructive) {
+                                    ContextMenuDeleteButtonView {
                                         rtspClient.streams.removeAll { $0.id == stream.id }
                                         model.reloadRtspClient()
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
                         }

@@ -79,11 +79,9 @@ private struct SlidesView: View {
             ForEach(slideshow.slides) { slide in
                 SlideView(model: model, database: model.database, slide: slide)
                     .contextMenu {
-                        Button(role: .destructive) {
+                        ContextMenuDeleteButtonView {
                             slideshow.slides.removeAll { $0.id == slide.id }
                             model.resetSelectedScene(changeScene: false, attachCamera: false)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
                         }
                     }
             }

@@ -54,11 +54,9 @@ private struct StreamingHistorySettingsStreamsView: View {
                             }
                         }
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 database.streams.removeAll { $0.id == stream.id }
                                 model.streamingHistory.store()
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }

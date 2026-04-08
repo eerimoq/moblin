@@ -93,11 +93,9 @@ struct LocationSettingsView: View {
                             )
                         ))
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 location.privacyRegions.removeAll { $0.id == region.id }
                                 model.reloadLocation()
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }

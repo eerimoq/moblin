@@ -20,11 +20,9 @@ struct MediaPlayersSettingsView: View {
                     ForEach(mediaPlayers.players) { player in
                         MediaPlayerSettingsView(mediaPlayers: mediaPlayers, player: player)
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     model.deleteMediaPlayer(playerId: player.id)
                                     mediaPlayers.players.removeAll { $0.id == player.id }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                     }

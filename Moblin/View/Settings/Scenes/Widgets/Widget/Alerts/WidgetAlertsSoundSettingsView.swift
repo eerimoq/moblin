@@ -86,13 +86,11 @@ private struct SoundGalleryView: View {
                             Text(sound.name)
                         }
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 model.database.alertsMediaGallery.customSounds
                                     .removeAll { $0.id == sound.id }
                                 model.fixAlertMedias()
                                 soundId = alert.soundId
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }

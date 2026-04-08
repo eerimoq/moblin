@@ -101,10 +101,8 @@ struct ChatFiltersSettingsView: View {
                         ForEach(chat.filters) { filter in
                             ChatFilterSettingsView(filter: filter)
                                 .contextMenu {
-                                    Button(role: .destructive) {
+                                    ContextMenuDeleteButtonView {
                                         chat.filters.removeAll { $0.id == filter.id }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
                         }

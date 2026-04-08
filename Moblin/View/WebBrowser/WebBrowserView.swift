@@ -103,10 +103,8 @@ private struct BookmarksView: View {
                                 }
                             }
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     webBrowser.bookmarks.removeAll { $0.id == bookmark.id }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                         }

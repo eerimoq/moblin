@@ -88,11 +88,9 @@ struct WidgetEffectsView: View {
             ForEach(widget.effects) { effect in
                 EffectView(widget: widget, effect: effect)
                     .contextMenu {
-                        Button(role: .destructive) {
+                        ContextMenuDeleteButtonView {
                             widget.effects.removeAll { $0.id == effect.id }
                             model.resetSelectedScene(changeScene: false)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
                         }
                     }
             }

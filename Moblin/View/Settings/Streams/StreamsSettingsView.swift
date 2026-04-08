@@ -31,16 +31,12 @@ private struct StreamItemView: View {
             }
         }
         .contextMenu {
-            Button {
+            ContextMenuDuplicateButtonView {
                 database.streams.append(stream.clone())
-            } label: {
-                Label("Duplicate", systemImage: "plus.square.on.square")
             }
             if !stream.enabled {
-                Button(role: .destructive) {
+                ContextMenuDeleteButtonView {
                     database.streams.removeAll { $0 === stream }
-                } label: {
-                    Label("Delete", systemImage: "trash")
                 }
             }
         }

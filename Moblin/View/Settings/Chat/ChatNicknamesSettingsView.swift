@@ -55,11 +55,9 @@ struct ChatNicknamesSettingsView: View {
                         ForEach(nicknames.nicknames) { nickname in
                             NicknameView(model: model, nickname: nickname)
                                 .contextMenu {
-                                    Button(role: .destructive) {
+                                    ContextMenuDeleteButtonView {
                                         nicknames.nicknames.removeAll { $0.id == nickname.id }
                                         model.reloadChatMessages()
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
                         }

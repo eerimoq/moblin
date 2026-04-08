@@ -25,12 +25,10 @@ private struct PlayersView: View {
                 ForEach(database.scoreboardPlayers) { player in
                     PlayersPlayerView(model: model, database: database, player: player)
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 database.scoreboardPlayers.removeAll { $0.id == player.id }
                                 updated()
                                 model.sendScoreboardPlayersToWatch()
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                 }

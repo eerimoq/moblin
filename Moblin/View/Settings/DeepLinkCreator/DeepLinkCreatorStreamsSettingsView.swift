@@ -10,10 +10,8 @@ struct DeepLinkCreatorStreamsSettingsView: View {
                     ForEach(deepLinkCreator.streams) { stream in
                         DeepLinkCreatorStreamSettingsView(deepLinkCreator: deepLinkCreator, stream: stream)
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     deepLinkCreator.streams.removeAll { $0.id == stream.id }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                     }

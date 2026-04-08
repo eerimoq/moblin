@@ -333,10 +333,8 @@ private struct CreatePollView: View {
                         .deleteDisabled(options.count <= 2)
                         .contextMenu {
                             if options.count > 2 {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     options.removeAll { $0.id == option.id }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                         }

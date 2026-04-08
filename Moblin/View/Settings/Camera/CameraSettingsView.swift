@@ -57,12 +57,10 @@ private struct CameraSettingsCubeLutsView: View {
                     CustomLutView(lut: lut, name: lut.name)
                         .tag(lut.id)
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 if let index = color.diskLutsCube.firstIndex(where: { $0.id == lut.id }) {
                                     model.removeLutCube(offsets: IndexSet(integer: index))
                                 }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                 }
@@ -95,12 +93,10 @@ private struct CameraSettingsPngLutsView: View {
                     CustomLutView(lut: lut, name: lut.name)
                         .tag(lut.id)
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 if let index = color.diskLutsPng.firstIndex(where: { $0.id == lut.id }) {
                                     model.removeLutPng(offsets: IndexSet(integer: index))
                                 }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                 }

@@ -320,7 +320,7 @@ private struct GoProLaunchLiveStream: View {
                 ForEach(goPro.launchLiveStream) { launchLiveStream in
                     GoProLaunchLiveStreamSettingsEntryView(goPro: goPro, launchLiveStream: launchLiveStream)
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 goPro.launchLiveStream.removeAll { $0.id == launchLiveStream.id }
                                 if !goPro.launchLiveStream
                                     .contains(where: { $0.id == goPro.selectedLaunchLiveStream })
@@ -328,8 +328,6 @@ private struct GoProLaunchLiveStream: View {
                                     goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
                                     goProState.launchLiveStreamSelection = goPro.selectedLaunchLiveStream
                                 }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                 }
@@ -372,7 +370,7 @@ private struct GoProWifiCredentials: View {
                 ForEach(goPro.wifiCredentials) { wifiCredentials in
                     GoProWifiCredentialsSettingsEntryView(goPro: goPro, wifiCredentials: wifiCredentials)
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 goPro.wifiCredentials.removeAll { $0.id == wifiCredentials.id }
                                 if !goPro.wifiCredentials
                                     .contains(where: { $0.id == goPro.selectedWifiCredentials })
@@ -380,8 +378,6 @@ private struct GoProWifiCredentials: View {
                                     goPro.selectedWifiCredentials = goPro.wifiCredentials.first?.id
                                     goProState.wifiCredentialsSelection = goPro.selectedWifiCredentials
                                 }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                 }
@@ -425,7 +421,7 @@ private struct GoProRtmpUrls: View {
                 ForEach(goPro.rtmpUrls) { rtmpUrl in
                     GoProRtmpUrlSettingsEntryView(goPro: goPro, status: status, rtmpUrl: rtmpUrl)
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 goPro.rtmpUrls.removeAll { $0.id == rtmpUrl.id }
                                 if !goPro.rtmpUrls
                                     .contains(where: { $0.id == goPro.selectedRtmpUrl })
@@ -433,8 +429,6 @@ private struct GoProRtmpUrls: View {
                                     goPro.selectedRtmpUrl = goPro.rtmpUrls.first?.id
                                     goProState.rtmpUrlSelection = goPro.selectedRtmpUrl
                                 }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                 }

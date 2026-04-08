@@ -95,13 +95,11 @@ private struct ImageGalleryView: View {
                             Text(image.name)
                         }
                         .contextMenu {
-                            Button(role: .destructive) {
+                            ContextMenuDeleteButtonView {
                                 model.database.alertsMediaGallery.customImages
                                     .removeAll { $0.id == image.id }
                                 model.fixAlertMedias()
                                 imageId = alert.imageId
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }

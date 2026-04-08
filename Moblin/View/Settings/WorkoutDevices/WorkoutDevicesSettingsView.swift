@@ -23,10 +23,8 @@ struct WorkoutDevicesSettingsView: View {
                                                   device: device,
                                                   status: model.statusTopRight)
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     workoutDevices.devices.removeAll { $0.id == device.id }
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                     }

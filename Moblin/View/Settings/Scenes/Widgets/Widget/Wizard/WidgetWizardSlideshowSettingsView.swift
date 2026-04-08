@@ -34,10 +34,8 @@ private struct SlidesView: View {
                           slide: slide,
                           presentingCreateWizard: $presentingCreateWizard)
                     .contextMenu {
-                        Button(role: .destructive) {
+                        ContextMenuDeleteButtonView {
                             slideshow.slides.removeAll { $0.id == slide.id }
-                        } label: {
-                            Label("Delete", systemImage: "trash")
                         }
                     }
             }

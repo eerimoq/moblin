@@ -59,11 +59,9 @@ struct StreamMultiStreamingSettingsView: View {
                             DestinationView(stream: stream, destination: destination)
                                 .contextMenu {
                                     if !(stream.enabled && (model.isLive || model.isRecording)) {
-                                        Button(role: .destructive) {
+                                        ContextMenuDeleteButtonView {
                                             multiStreaming.destinations
                                                 .removeAll { $0.id == destination.id }
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
                                         }
                                     }
                                 }

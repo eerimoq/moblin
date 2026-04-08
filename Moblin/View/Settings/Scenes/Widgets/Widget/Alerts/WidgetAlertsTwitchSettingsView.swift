@@ -266,11 +266,9 @@ private struct TwitchCheerBitsView: View {
                     ForEach(twitch.cheerBits) { cheerBit in
                         TwitchCheerBitsItemView(alert: cheerBit.alert, cheerBit: cheerBit)
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     twitch.cheerBits.removeAll { $0.id == cheerBit.id }
                                     model.updateAlertsSettings()
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                     }

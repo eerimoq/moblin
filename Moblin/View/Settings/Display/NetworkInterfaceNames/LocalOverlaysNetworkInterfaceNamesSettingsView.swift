@@ -21,11 +21,9 @@ struct LocalOverlaysNetworkInterfaceNamesSettingsView: View {
                                 capitalize: true
                             )
                             .contextMenu {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     database.networkInterfaceNames.removeAll { $0.id == interface.id }
                                     model.networkInterfaceNamesUpdated()
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                         }

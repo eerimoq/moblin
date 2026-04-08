@@ -94,13 +94,11 @@ private struct SrtlaConnectionPriorityView: View {
                         .deleteDisabled(["Cellular", "WiFi"].contains(priority.name))
                         .contextMenu {
                             if !["Cellular", "WiFi"].contains(priority.name) {
-                                Button(role: .destructive) {
+                                ContextMenuDeleteButtonView {
                                     stream.srt.connectionPriorities.priorities
                                         .removeAll { $0.id == priority.id }
                                     model.updateSrtlaPriorities()
                                     model.objectWillChange.send()
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
                                 }
                             }
                         }

@@ -12,10 +12,8 @@ struct BitratePresetsSettingsView: View {
                             .deleteDisabled(database.bitratePresets.count == 1)
                             .contextMenu {
                                 if database.bitratePresets.count > 1 {
-                                    Button(role: .destructive) {
+                                    ContextMenuDeleteButtonView {
                                         database.bitratePresets.removeAll { $0.id == preset.id }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
                                     }
                                 }
                             }
