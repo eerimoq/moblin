@@ -763,12 +763,11 @@ struct SettingsStreamReplayStinger: Codable {
 
 class SettingsStreamReplay: Codable, ObservableObject {
     @Published var enabled: Bool = false
-    @Published var instantReplayDelay: Int = 5
+    @Published var postTriggerDuration: Int = 2
     @Published var transitionType: SettingsStreamReplayTransitionType = .fade
     @Published var inStinger: SettingsStreamReplayStinger = .init()
     @Published var outStinger: SettingsStreamReplayStinger = .init()
     var enterForegroundCountAtLatestUsage: Int?
-    
 
     init() {}
 
@@ -776,7 +775,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         case enabled,
              fade,
              transitionType,
-             instantReplayDelay,
+             postTriggerDuration,
              inStinger,
              outStinger,
              enterForegroundCountAtLatestUsage
@@ -786,7 +785,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.transitionType, transitionType)
-        try container.encode(.instantReplayDelay, instantReplayDelay)
+        try container.encode(.postTriggerDuration, postTriggerDuration)
         try container.encode(.inStinger, inStinger)
         try container.encode(.outStinger, outStinger)
         try container.encode(.enterForegroundCountAtLatestUsage, enterForegroundCountAtLatestUsage)
@@ -795,7 +794,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
-        instantReplayDelay = container.decode(.instantReplayDelay, Int.self, 5)
+        postTriggerDuration = container.decode(.postTriggerDuration, Int.self, 2)
         if let fade = try? container.decode(Bool.self, forKey: .fade) {
             if fade {
                 transitionType = .fade
@@ -815,7 +814,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
     func clone() -> SettingsStreamReplay {
         let new = SettingsStreamReplay()
         new.enabled = enabled
-        new.instantReplayDelay = instantReplayDelay
+        new.postTriggerDuration = postTriggerDuration
         new.transitionType = transitionType
         new.inStinger = inStinger
         new.outStinger = outStinger

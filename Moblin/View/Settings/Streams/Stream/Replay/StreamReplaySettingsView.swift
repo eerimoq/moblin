@@ -106,6 +106,14 @@ struct StreamReplaySettingsView: View {
     let stream: SettingsStream
     @ObservedObject var replay: SettingsStreamReplay
 
+    private func submitInstantReplayDelay(value: Float) {
+        model.replayDelay(delay: Int(value))
+    }
+
+    private func formatInstantReplayDelay(value: Float) -> String {
+        return String(Int(value)) + " s"
+    }
+
     var body: some View {
         Form {
             Section {
@@ -137,23 +145,19 @@ struct StreamReplaySettingsView: View {
                 case .none:
                     EmptyView()
                 }
-                NavigationLink {
-                    TextEditView(
-                        title: String(localized: "Instant replay delay"),
-                        value: String($replay.instantReplayDelay.wrappedValue),
-                        footers: [
-                            String(
-                                localized: "Seconds to record after the Instant replay button is pressed"
-                            ),
-                        ],
-                        keyboardType: .numbersAndPunctuation
-                    ) {
-                       model.replayDelay(delay: Int($0) ?? 5)
-                    }
-                } label: {
-                    TextItemView(name: "Instant replay delay", value: "\(String($replay.instantReplayDelay.wrappedValue)) s")
+                Section {
+                    SliderView(value: Float($replay.postTriggerDuration.wrappedValue),
+                               minimum: 0,
+                               maximum: 5,
+                               step: 1,
+                               onSubmit: submitInstantReplayDelay,
+                               width: 70,
+                               format: formatInstantReplayDelay)
+                } header: {
+                    Text("Instant replay delay")
+                } footer: {
+                    Text("Seconds to record after the Instant replay button is pressed")
                 }
-                
             }
         }
         .navigationTitle("Replay")
