@@ -69,7 +69,6 @@ extension Model {
             return
         }
         let actualDelay = delay ?? stream.replay.postTriggerDuration
-
         let savingStarted = saveReplay(start: start, delay: actualDelay) { video in
             self.loadReplay(video: video) {
                 self.replay.isPlaying = true
@@ -172,10 +171,6 @@ extension Model {
     func replayCancel() {
         replayEffect?.cancel()
         replayEffect = nil
-    }
-
-    func replayDelay(delay: Int) {
-        stream.replay.postTriggerDuration = delay
     }
 
     func streamReplayEnabledUpdated() {

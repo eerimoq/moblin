@@ -107,11 +107,11 @@ struct StreamReplaySettingsView: View {
     @ObservedObject var replay: SettingsStreamReplay
 
     private func submitInstantReplayDelay(value: Float) {
-        model.replayDelay(delay: Int(value))
+        model.stream.replay.postTriggerDuration = Int(value)
     }
 
     private func formatInstantReplayDelay(value: Float) -> String {
-        return String(Int(value)) + " s"
+        return "\(Int(value)) s"
     }
 
     var body: some View {
@@ -154,9 +154,9 @@ struct StreamReplaySettingsView: View {
                                width: 70,
                                format: formatInstantReplayDelay)
                 } header: {
-                    Text("Instant replay delay")
+                    Text("Replay save delay")
                 } footer: {
-                    Text("Seconds to record after the Instant replay button is pressed")
+                    Text("Seconds to record after the Instant replay/Save replay button is pressed")
                 }
             }
         }
