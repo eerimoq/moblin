@@ -115,27 +115,32 @@ struct StreamReplaySettingsView: View {
                             model.streamReplayEnabledUpdated()
                         }
                     }
-                if model.database.showAllSettings {
+            }
+            if model.database.showAllSettings {
+                Section {
                     Picker("Transition", selection: $replay.transitionType) {
                         ForEach(SettingsStreamReplayTransitionType.allCases, id: \.self) { transitionType in
                             Text(transitionType.toString())
                         }
                     }
-                }
-            }
-            if model.database.showAllSettings {
-                switch replay.transitionType {
-                case .fade:
-                    EmptyView()
-                case .stingers:
-                    Section {
+                    switch replay.transitionType {
+                    case .fade:
+                        EmptyView()
+                    case .stingers:
                         StingerView(model: model, title: "In video", stinger: $replay.inStinger)
                         StingerView(model: model, title: "Out video", stinger: $replay.outStinger)
-                    } header: {
-                        Text("Stingers")
+                    case .none:
+                        EmptyView()
                     }
-                case .none:
-                    EmptyView()
+                }
+                Section {
+                    Picker("Post trigger delay", selection: $replay.postTriggerDelay) {
+                        ForEach([2, 3, 4, 5], id: \.self) { delay in
+                            Text("\(delay) s")
+                        }
+                    }
+                } footer: {
+                    Text("Seconds to record after the Instant replay/Save replay button is pressed.")
                 }
             }
         }

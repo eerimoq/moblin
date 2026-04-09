@@ -20,7 +20,8 @@ extension Model {
             return false
         }
         replay.isSaving = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delay ?? 5)) {
+        let delay = delay ?? stream.replay.postTriggerDelay
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delay)) {
             self.replayBuffer.createFile { file in
                 DispatchQueue.main.async {
                     self.replay.isSaving = false
@@ -67,6 +68,7 @@ extension Model {
         guard replay.instantReplayCountdown == 0 else {
             return
         }
+        let delay = delay ?? stream.replay.postTriggerDelay
         let savingStarted = saveReplay(start: start, delay: delay) { video in
             self.loadReplay(video: video) {
                 self.replay.isPlaying = true
@@ -76,7 +78,7 @@ extension Model {
             }
         }
         if savingStarted {
-            replay.instantReplayCountdown = delay ?? 6
+            replay.instantReplayCountdown = delay + 1
             instantReplayCountdownTick()
         }
     }

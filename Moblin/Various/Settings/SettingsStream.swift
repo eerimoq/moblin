@@ -766,6 +766,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
     @Published var transitionType: SettingsStreamReplayTransitionType = .fade
     @Published var inStinger: SettingsStreamReplayStinger = .init()
     @Published var outStinger: SettingsStreamReplayStinger = .init()
+    @Published var postTriggerDelay: Int = 3
     var enterForegroundCountAtLatestUsage: Int?
 
     init() {}
@@ -776,6 +777,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
              transitionType,
              inStinger,
              outStinger,
+             postTriggerDelay,
              enterForegroundCountAtLatestUsage
     }
 
@@ -785,6 +787,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         try container.encode(.transitionType, transitionType)
         try container.encode(.inStinger, inStinger)
         try container.encode(.outStinger, outStinger)
+        try container.encode(.postTriggerDelay, postTriggerDelay)
         try container.encode(.enterForegroundCountAtLatestUsage, enterForegroundCountAtLatestUsage)
     }
 
@@ -802,6 +805,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         }
         inStinger = container.decode(.inStinger, SettingsStreamReplayStinger.self, .init())
         outStinger = container.decode(.outStinger, SettingsStreamReplayStinger.self, .init())
+        postTriggerDelay = container.decode(.postTriggerDelay, Int.self, 3)
         enterForegroundCountAtLatestUsage = container.decode(.enterForegroundCountAtLatestUsage,
                                                              Int?.self,
                                                              nil)
@@ -813,6 +817,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         new.transitionType = transitionType
         new.inStinger = inStinger
         new.outStinger = outStinger
+        new.postTriggerDelay = postTriggerDelay
         new.enterForegroundCountAtLatestUsage = enterForegroundCountAtLatestUsage
         return new
     }
