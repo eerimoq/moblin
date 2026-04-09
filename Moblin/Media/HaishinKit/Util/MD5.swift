@@ -93,7 +93,7 @@ enum MD5 {
         var context = Context()
         let count: Data = UInt64(data.count * 8).bigEndian.data
         let message = ByteWriter(data: data + [0x80])
-        message.length += 64 - (message.length % 64)
+        message.length += (56 - message.length % 64 + 64) % 64 + 8
         message[message.length - 8] = count[7]
         message[message.length - 7] = count[6]
         message[message.length - 6] = count[5]
