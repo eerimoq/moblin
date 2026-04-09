@@ -716,7 +716,7 @@ class RtspClient {
         let cSeq = getNextCSeq()
         requests[cSeq] = request
         if let authorization = createDigestHeader(request: request) {
-            request.headers["authorization"] = authorization
+            request.headers["Authorization"] = authorization
         }
         send(data: request.pack(cSeq: cSeq))
     }
@@ -895,8 +895,9 @@ class RtspClient {
             throw "Missing authenticate field when authentication failed."
         }
         guard wwwAuthenticate.starts(with: "Digest ") else {
-            delegate?
-                .rtspClientErrorToast(title: String(localized: "RTSP only supports Digest authentication"))
+            delegate?.rtspClientErrorToast(
+                title: String(localized: "RTSP only supports Digest authentication")
+            )
             throw "Only Digest authentication is supported."
         }
         let index = wwwAuthenticate.index(wwwAuthenticate.startIndex, offsetBy: 7)
@@ -907,6 +908,13 @@ class RtspClient {
                 realm = value.trimmingCharacters(in: ["\""])
             case "nonce":
                 nonce = value.trimmingCharacters(in: ["\""])
+            case "algorithm":
+                if value.trimmingCharacters(in: ["\""]) != "MD5" {
+                    delegate?.rtspClientErrorToast(
+                        title: String(localized: "RTSP only supports MD5 algorithm in authentication")
+                    )
+                    throw "Only authentication using MD5 algorithm is supported."
+                }
             default:
                 break
             }
