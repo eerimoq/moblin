@@ -20,7 +20,7 @@ extension Model {
             return false
         }
         replay.isSaving = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delay ?? 5)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(delay ?? stream.replay.instantReplayDelay)) {
             self.replayBuffer.createFile { file in
                 DispatchQueue.main.async {
                     self.replay.isSaving = false
@@ -67,7 +67,9 @@ extension Model {
         guard replay.instantReplayCountdown == 0 else {
             return
         }
-        let savingStarted = saveReplay(start: start, delay: delay) { video in
+        let actualDelay = delay ??  stream.replay.instantReplayDelay
+        
+        let savingStarted = saveReplay(start: start, delay: actualDelay) { video in
             self.loadReplay(video: video) {
                 self.replay.isPlaying = true
                 if !self.replayPlay() {
@@ -76,7 +78,7 @@ extension Model {
             }
         }
         if savingStarted {
-            replay.instantReplayCountdown = delay ?? 6
+            replay.instantReplayCountdown = actualDelay + 1;
             instantReplayCountdownTick()
         }
     }
@@ -170,7 +172,11 @@ extension Model {
         replayEffect?.cancel()
         replayEffect = nil
     }
-
+    
+    func replayDelay(delay: Int) {
+        stream.replay.instantReplayDelay = delay
+    }
+    
     func streamReplayEnabledUpdated() {
         replayBuffer = ReplayBuffer()
         media.setReplayBuffering(enabled: stream.replay.enabled)

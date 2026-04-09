@@ -137,6 +137,23 @@ struct StreamReplaySettingsView: View {
                 case .none:
                     EmptyView()
                 }
+                NavigationLink {
+                    TextEditView(
+                        title: String(localized: "Instant replay delay"),
+                        value: String($replay.instantReplayDelay.wrappedValue),
+                        footers: [
+                            String(
+                                localized: "Seconds to record after the Instant replay button is pressed"
+                            ),
+                        ],
+                        keyboardType: .numbersAndPunctuation
+                    ) {
+                       model.replayDelay(delay: Int($0) ?? 5)
+                    }
+                } label: {
+                    TextItemView(name: "Instant replay delay", value: "\(String($replay.instantReplayDelay.wrappedValue)) s")
+                }
+                
             }
         }
         .navigationTitle("Replay")
