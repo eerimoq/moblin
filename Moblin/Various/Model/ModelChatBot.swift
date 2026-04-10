@@ -88,6 +88,12 @@ private func getAnswer(_ language: String) -> String {
     return answerByLanguage[language] ?? ""
 }
 
+enum ChatBotResponseText {
+    static func zoomValueMustBeNumber() -> String {
+        return String(localized: "Sorry, zoom value must be a number.")
+    }
+}
+
 extension Model {
     func executeChatBotMessage() {
         guard let message = chatBotMessages.popFirst() else {
@@ -127,6 +133,8 @@ extension Model {
                 handleChatBotMessageFax(command: command)
             case "filter":
                 handleChatBotMessageFilter(command: command)
+            case "zoom":
+                handleChatBotMessageZoom(command: command)
             case "say":
                 handleChatBotMessageTtsSay(command: command)
             case "tesla":
@@ -636,6 +644,36 @@ extension Model {
                 break
             }
         }
+    }
+
+    private func handleChatBotMessageZoom(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.zoom
+        executeIfUserAllowedToUseChatBot(
+            permissions: permissions,
+            command: command
+        ) {
+            let value = command.rest()
+            guard !value.isEmpty, let x = Float(value) else {
+                self.sendChatBotZoomErrorIfEnabled(
+                    permissions: permissions,
+                    command: command,
+                    message: ChatBotResponseText.zoomValueMustBeNumber()
+                )
+                return
+            }
+            self.setZoomX(x: x, rate: self.database.zoom.speed)
+        }
+    }
+
+    private func sendChatBotZoomErrorIfEnabled(
+        permissions: SettingsChatBotPermissionsCommand,
+        command: ChatBotCommand,
+        message: String
+    ) {
+        guard permissions.sendChatMessages else {
+            return
+        }
+        sendChatBotReply(message: message, platform: command.message.platform)
     }
 
     private func handleChatBotMessageTesla(command: ChatBotCommand) {

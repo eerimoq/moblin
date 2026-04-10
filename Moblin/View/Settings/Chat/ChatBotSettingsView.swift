@@ -155,6 +155,25 @@ private struct FilterPermissionsSettingsView: View {
     }
 }
 
+private struct ZoomPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin zoom <value>",
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("Set zoom for the current camera.")
+                Text("")
+                Text("Examples: !moblin zoom 0.5, !moblin zoom 1 and !moblin zoom 8.")
+            }
+        }
+    }
+}
+
 private struct ScenePermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
@@ -396,6 +415,7 @@ private struct ChatBotCommandsSettingsView: View {
             TtsSayPermissionsSettingsView(permissions: permissions.tts)
             WidgetPermissionsSettingsView(permissions: permissions.widget)
             TwitchPermissionsSettingsView(permissions: permissions.twitch)
+            ZoomPermissionsSettingsView(permissions: permissions.zoom)
         }
         .navigationTitle("Commands")
     }

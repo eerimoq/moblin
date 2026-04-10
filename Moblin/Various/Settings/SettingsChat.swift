@@ -150,6 +150,7 @@ class SettingsChatBotPermissions: Codable {
     var fax: SettingsChatBotPermissionsCommand = .init()
     var snapshot: SettingsChatBotPermissionsCommand = .init()
     var filter: SettingsChatBotPermissionsCommand = .init()
+    var zoom: SettingsChatBotPermissionsCommand = .init()
     var tesla: SettingsChatBotPermissionsCommand = .init()
     var audio: SettingsChatBotPermissionsCommand = .init()
     var reaction: SettingsChatBotPermissionsCommand = .init()
@@ -169,6 +170,7 @@ class SettingsChatBotPermissions: Codable {
              fax,
              snapshot,
              filter,
+             zoom,
              tesla,
              audio,
              reaction,
@@ -190,6 +192,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.fax, fax)
         try container.encode(.snapshot, snapshot)
         try container.encode(.filter, filter)
+        try container.encode(.zoom, zoom)
         try container.encode(.tesla, tesla)
         try container.encode(.audio, audio)
         try container.encode(.reaction, reaction)
@@ -213,6 +216,7 @@ class SettingsChatBotPermissions: Codable {
         fax = container.decode(.fax, SettingsChatBotPermissionsCommand.self, .init())
         snapshot = container.decode(.snapshot, SettingsChatBotPermissionsCommand.self, .init())
         filter = container.decode(.filter, SettingsChatBotPermissionsCommand.self, .init())
+        zoom = container.decode(.zoom, SettingsChatBotPermissionsCommand.self, .init())
         tesla = container.decode(.tesla, SettingsChatBotPermissionsCommand.self, .init())
         audio = container.decode(.audio, SettingsChatBotPermissionsCommand.self, .init())
         reaction = container.decode(.reaction, SettingsChatBotPermissionsCommand.self, .init())

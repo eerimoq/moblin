@@ -54,6 +54,16 @@ struct ChatBotCommandSuite {
         #expect(command.rest() == "")
     }
 
+    @Test
+    func zoomCommand() throws {
+        let message = createMessage(text: "!moblin zoom 0.5")
+        let command = try #require(ChatBotCommand(message: message, aliases: []))
+        #expect(command.popFirst() == "zoom")
+        #expect(command.rest() == "0.5")
+        #expect(command.popFirst() == "0.5")
+        #expect(command.popFirst() == nil)
+    }
+
     private func createMessage(text: String) -> ChatBotMessage {
         return ChatBotMessage(platform: .twitch,
                               user: "erik",
