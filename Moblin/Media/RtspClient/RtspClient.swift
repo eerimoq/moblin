@@ -307,7 +307,7 @@ private enum State {
 }
 
 private func md5String(data: String) -> String {
-    return MD5.calculate(data).hexString()
+    return calculateMd5(data).hexString()
 }
 
 extension URL {

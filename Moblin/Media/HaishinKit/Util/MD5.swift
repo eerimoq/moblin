@@ -1,20 +1,16 @@
 import CryptoKit
 import Foundation
 
-enum MD5 {
-    static func base64(_ message: String) -> String {
-        calculate(message).base64EncodedString(options: .lineLength64Characters)
-    }
+func calculateMd5Base64(_ message: String) -> String {
+    calculateMd5(message).base64EncodedString(options: .lineLength64Characters)
+}
 
-    static func calculate(_ message: String) -> Data {
-        let writer = ByteWriter()
-        writer.writeUTF8Bytes(message)
-        return calculate(writer.data)
-    }
+func calculateMd5(_ message: String) -> Data {
+    return calculateMd5(message.utf8Data)
+}
 
-    static func calculate(_ data: Data) -> Data {
-        var md5 = Insecure.MD5()
-        md5.update(data: data)
-        return Data(md5.finalize())
-    }
+func calculateMd5(_ data: Data) -> Data {
+    var md5 = Insecure.MD5()
+    md5.update(data: data)
+    return Data(md5.finalize())
 }

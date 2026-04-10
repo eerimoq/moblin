@@ -33,14 +33,14 @@ private func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
     let query = String(description[description.index(index, offsetBy: 1)...])
     let challenge = String(format: "%08x", UInt32.random(in: 0 ... UInt32.max))
     let dictionary = URL(string: "http://localhost?" + query)!.dictionaryFromQuery()
-    var response = MD5.base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
+    var response = calculateMd5Base64("\(url.user!)\(dictionary["salt"]!)\(url.password!)")
     if let opaque = dictionary["opaque"] {
         command += "&opaque=\(opaque)"
         response += opaque
     } else if let challenge: String = dictionary["challenge"] {
         response += challenge
     }
-    response = MD5.base64("\(response)\(challenge)")
+    response = calculateMd5Base64("\(response)\(challenge)")
     command += "&challenge=\(challenge)&response=\(response)"
     return command
 }
