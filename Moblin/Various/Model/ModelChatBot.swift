@@ -127,6 +127,8 @@ extension Model {
                 handleChatBotMessageFax(command: command)
             case "filter":
                 handleChatBotMessageFilter(command: command)
+            case "zoom":
+                handleChatBotMessageZoom(command: command)
             case "say":
                 handleChatBotMessageTtsSay(command: command)
             case "tesla":
@@ -635,6 +637,26 @@ extension Model {
             default:
                 break
             }
+        }
+    }
+
+    private func handleChatBotMessageZoom(command: ChatBotCommand) {
+        let permissions = database.chat.botCommandPermissions.zoom
+        executeIfUserAllowedToUseChatBot(
+            permissions: permissions,
+            command: command
+        ) {
+            guard let x = Float(command.rest()) else {
+                guard permissions.sendChatMessages else {
+                    return
+                }
+                self.sendChatBotReply(
+                    message: String(localized: "Sorry, zoom x must be a number."),
+                    platform: command.message.platform
+                )
+                return
+            }
+            self.setZoomX(x: x, rate: self.database.zoom.speed)
         }
     }
 

@@ -11,6 +11,7 @@
 | !moblin tts on | Turn on chat text to speech. |
 | !moblin tts off | Turn off chat text to speech. |
 | !moblin say \<message> | Say given message. |
+| !moblin zoom \<x> | Set zoom for the current camera. |
 | !moblin scene \<name> | Change scene. |
 | !moblin stream title \<title> | Set stream title. |
 | !moblin widget \<name> timer \<number> add \<seconds> | Add time to a timer. |
