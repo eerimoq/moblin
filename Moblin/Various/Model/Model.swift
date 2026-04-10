@@ -400,6 +400,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var activeBufferedVideoIds: Set<UUID> = []
     var wiFiAwareSenderTask: Task<Void, Error>?
     var wiFiAwareReceiverTask: Task<Void, Error>?
+    var dockKitTask: Task<Void, Never>?
+    var dockKitAccessoryTask: Task<Void, Never>?
+    var dockKitLastShutterTime: ContinuousClock.Instant?
     let youTube = YouTube()
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
@@ -1174,6 +1177,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             #endif
         }
         updateTalkback()
+        if #available(iOS 17.4, *) {
+            setupDockKit()
+        }
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
