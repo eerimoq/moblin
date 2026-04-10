@@ -7,18 +7,7 @@ extension Model {
         dockKitTask = Task { @MainActor [weak self] in
             do {
                 for await stateChange in try DockAccessoryManager.shared.accessoryStateChanges {
-                    guard let self else { return }
-                    switch stateChange.state {
-                    case .docked:
-                        if let accessory = stateChange.accessory {
-                            self.startDockKitEvents(accessory: accessory)
-                        }
-                    case .undocked:
-                        self.dockKitAccessoryTask?.cancel()
-                        self.dockKitAccessoryTask = nil
-                    @unknown default:
-                        break
-                    }
+                    try self?.handleStateChange(stateChange: stateChange)
                 }
             } catch {
                 logger.info("dockkit: State changes error: \(error)")
@@ -26,12 +15,25 @@ extension Model {
         }
     }
 
-    private func startDockKitEvents(accessory: DockAccessory) {
-        dockKitAccessoryTask?.cancel()
+    private func handleStateChange(stateChange: DockAccessory.StateChange) throws {
+        switch stateChange.state {
+        case .docked:
+            if let accessory = stateChange.accessory {
+                startDockKitAccessoryEventsHandler(accessory: accessory)
+            }
+        case .undocked:
+            stopDockKitAccessoryEventsHandler()
+        default:
+            break
+        }
+    }
+
+    private func startDockKitAccessoryEventsHandler(accessory: DockAccessory) {
+        stopDockKitAccessoryEventsHandler()
         dockKitAccessoryTask = Task { @MainActor [weak self] in
             do {
                 for await event in try accessory.accessoryEvents {
-                    self?.handleDockKitEvent(event)
+                    self?.handleDockKitAccessoryEvent(event)
                 }
             } catch {
                 logger.info("dockkit: Accessory events error: \(error)")
@@ -39,37 +41,45 @@ extension Model {
         }
     }
 
-    private func handleDockKitEvent(_ event: DockAccessory.AccessoryEvent) {
+    private func stopDockKitAccessoryEventsHandler() {
+        dockKitAccessoryTask?.cancel()
+        dockKitAccessoryTask = nil
+    }
+
+    private func handleDockKitAccessoryEvent(_ event: DockAccessory.AccessoryEvent) {
         switch event {
         case .cameraShutter:
-            let now = ContinuousClock.now
-            guard dockKitLastShutterTime.map({ now - $0 > .milliseconds(500) }) ?? true else {
-                break
-            }
-            dockKitLastShutterTime = now
-            toggleRecording()
-            updateQuickButtonStates()
+            handleDockKitAccessoryEventCameraShutter()
         case .cameraFlip:
-            switchToNextSceneRoundRobin()
+            handleDockKitAccessoryEventCameraFlip()
         case let .cameraZoom(factor):
-            let step = Float(database.debug.dockKitZoomStep)
-            let newX = zoom.x * (factor > 0 ? step : 1.0 / step)
-            setZoomX(x: newX)
-            let presets = cameraPosition == .back ? zoom.backZoomPresets : zoom.frontZoomPresets
-            if let nearest = presets.min(by: { abs($0.x - newX) < abs($1.x - newX) }),
-               abs(nearest.x - newX) / nearest.x < 0.05
-            {
-                switch cameraPosition {
-                case .back:
-                    zoom.backPresetId = nearest.id
-                case .front:
-                    zoom.frontPresetId = nearest.id
-                default:
-                    break
-                }
-            }
+            handleDockKitAccessoryEventCameraZoom(factor: factor)
         default:
             break
+        }
+    }
+
+    private func handleDockKitAccessoryEventCameraShutter() {
+        let now = ContinuousClock.now
+        if let dockKitLastShutterTime,
+           dockKitLastShutterTime.duration(to: now) < .milliseconds(500)
+        {
+            return
+        }
+        dockKitLastShutterTime = now
+        toggleRecording()
+        updateQuickButtonStates()
+    }
+
+    private func handleDockKitAccessoryEventCameraFlip() {
+        switchToNextSceneRoundRobin()
+    }
+
+    private func handleDockKitAccessoryEventCameraZoom(factor: Double) {
+        if factor > 0 {
+            setZoomX(x: zoom.x * database.debug.dockKitZoomStep)
+        } else {
+            setZoomX(x: zoom.x / database.debug.dockKitZoomStep)
         }
     }
 }
