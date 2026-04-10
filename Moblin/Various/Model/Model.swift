@@ -2794,6 +2794,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             macScreenCapture: sceneNeedsMacScreenCapture(scene: scene)
         )
         media.usePendingAfterAttachEffects()
+        updateVideoPreviews()
     }
 
     func attachExternalCamera(scene: SettingsScene) {
