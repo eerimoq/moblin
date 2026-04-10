@@ -110,18 +110,6 @@ struct DebugSettingsView: View {
                     }
                 }
                 Toggle(String("Enhanced Moblin SRT"), isOn: $debug.enhancedMoblinSrt)
-                VStack(alignment: .leading) {
-                    Text("DockKit zoom step")
-                    HStack {
-                        Slider(
-                            value: $debug.dockKitZoomStep,
-                            in: 1.001 ... 1.099,
-                            step: 0.001
-                        )
-                        Text(String(format: "%02d", Int(round((debug.dockKitZoomStep - 1.0) * 1000))))
-                            .frame(width: 30)
-                    }
-                }
             } header: {
                 Text("Experimental")
             }
