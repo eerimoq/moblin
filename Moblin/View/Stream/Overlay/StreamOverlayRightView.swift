@@ -778,7 +778,7 @@ private struct RightOverlayBottomVerticalView: View {
                 }
                 if show.zoomPresets && zoom.hasZoom {
                     StreamOverlayRightZoomPresetVSelctorView(model: model,
-                                                             zoom: model.zoom,
+                                                             zoom: zoom,
                                                              width: width)
                 }
             }
@@ -818,7 +818,7 @@ private struct RightOverlayBottomHorizontalView: View {
             }
             if show.zoomPresets && zoom.hasZoom {
                 StreamOverlayRightZoomPresetSelctorView(model: model,
-                                                        zoom: model.zoom,
+                                                        zoom: zoom,
                                                         width: width)
             }
         }
@@ -831,7 +831,9 @@ private struct RightOverlayBottomHorizontalView: View {
 struct RightOverlayBottomView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var database: Database
+    @ObservedObject var show: SettingsShow
     @ObservedObject var streamOverlay: StreamOverlay
+    @ObservedObject var zoom: Zoom
     let width: CGFloat
 
     var body: some View {
@@ -845,6 +847,15 @@ struct RightOverlayBottomView: View {
                 } else if streamOverlay.showingBeauty {
                     StreamOverlayRightBeautyView(model: model, beauty: database.beauty)
                 } else if streamOverlay.showingVideoPreview {
+                    if show.zoomPresets && zoom.hasZoom {
+                        StreamOverlayRightZoomPresetSelctorView(model: model,
+                                                                zoom: zoom,
+                                                                width: width)
+                    }
+                    StreamOverlayRightSceneSelectorView(database: database,
+                                                        sceneSelector: model.sceneSelector,
+                                                        width: width)
+                        .padding(.bottom, 5)
                     StreamOverlayRightVideoPreviewView(model: model,
                                                        orientation: model.orientation,
                                                        videoPreview: model.videoPreview)
@@ -852,16 +863,16 @@ struct RightOverlayBottomView: View {
                     if database.verticalButtons {
                         RightOverlayBottomVerticalView(model: model,
                                                        database: database,
-                                                       show: database.show,
+                                                       show: show,
                                                        streamOverlay: streamOverlay,
-                                                       zoom: model.zoom,
+                                                       zoom: zoom,
                                                        width: width)
                     } else {
                         RightOverlayBottomHorizontalView(model: model,
                                                          database: database,
-                                                         show: database.show,
+                                                         show: show,
                                                          streamOverlay: streamOverlay,
-                                                         zoom: model.zoom,
+                                                         zoom: zoom,
                                                          width: width)
                     }
                 }
