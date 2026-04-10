@@ -31,12 +31,13 @@ extension Model {
                 return
             }
             let devices = getBuiltinCameraDevices(scene: scene, sceneDevice: cameraDevice)
-            for device in devices.devices {
-                appendVideoPreviewIfNeeded(cameraId: device.id,
-                                           name: device.device.name(),
-                                           oldFeeds: oldFeeds)
-            }
-            for camera in listCameras(excludeBuiltin: true) {
+            for camera in listCameras() {
+                if let device = devices.devices.first(where: { $0.device.uniqueID == camera.id }) {
+                    appendVideoPreviewIfNeeded(cameraId: device.id,
+                                               name: device.device.name(),
+                                               oldFeeds: oldFeeds)
+                    continue
+                }
                 guard let cameraId = UUID(uuidString: camera.id) else {
                     continue
                 }
