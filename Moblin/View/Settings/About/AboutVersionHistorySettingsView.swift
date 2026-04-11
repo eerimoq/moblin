@@ -8,6 +8,33 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.2.0", date: "2026-04-11", changes: [
+        "• Set preferred audio input sample rate to 48 kHz. 💡 KristofferLislegaard",
+        "• Video preview quick button. 💡 JohannesLiv",
+        "  • Preview ingested streams and change scene video source to one of them.",
+        "• Actually delete temporary files. 🐛 Jeffro1265",
+        "  • Cleanup is performed on app restart.",
+        "• Make screen capture sharper on Mac. 🐛 xcopy94",
+        "• Prohibit importing settings when live or recording.",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Korean translation updated. ✍️ Winter1l",
+        "• Remove number of chat messages and number of FFFFF from stream history.",
+        "• Update deleted chat messages quicker.",
+        "• Hide deleted messages in quick button chat alerts view.",
+        "• YouTube stream configuration confirmation.",
+        "  • YouTube needs more improvements.",
+        "• Chat refactoring.",
+        "• Chinese Taiwan translation updated. ✍️ ИƎØ_ΙΙØZ",
+        "• Background streaming setting in moblin://. 💡 Sylver",
+        "• Right-click menu to make it easier delete streams/scenes/... on Mac with normal mouse. 💡 xcopy94",
+        "• Make replay work when recording resolution is overridden. 🐛 jeromecornet",
+        "• Post trigger delay replay setting. 🧑‍🏭 jeromecornet",
+        "  • To optionally record less than 5 seconds after pressing Instant replay/Save replay.",
+        "• Apple DockKit for gimbal controls. 🧑‍🏭 hilxen",
+        "  • Zoom wheel and configurable shutter and flip buttons.",
+        "• Chat bot command to set zoom. 🧑‍🏭 S1nGeN0r",
+        "• Show scene and zoom preset buttons when video preview is active. 💡 고블린",
+    ]),
     Version(version: "33.1.0", date: "2026-04-03", changes: [
         "• CRT TV filter quick button.",
         "• Do not show iOS Accessibility button shapes in control bar. 💡 Gohgo",
