@@ -44,9 +44,6 @@ extension Model {
                 guard activeBufferedVideoIds.contains(cameraId) else {
                     continue
                 }
-                guard isIngestVideoSource(cameraId: cameraId) else {
-                    continue
-                }
                 appendVideoPreviewIfNeeded(cameraId: cameraId, name: camera.name, oldFeeds: oldFeeds)
             }
         } else {
@@ -61,24 +58,6 @@ extension Model {
             let feed = VideoPreviewFeed(cameraId: cameraId, name: name)
             videoPreview.feeds.append(feed)
             media.setVideoPreview(cameraId: cameraId, drawable: feed.previewView)
-        }
-    }
-
-    private func isIngestVideoSource(cameraId: UUID) -> Bool {
-        if getRtmpStream(id: cameraId) != nil {
-            return true
-        } else if getSrtlaStream(id: cameraId) != nil {
-            return true
-        } else if getRistStream(id: cameraId) != nil {
-            return true
-        } else if getRtspStream(id: cameraId) != nil {
-            return true
-        } else if getWhipStream(id: cameraId) != nil {
-            return true
-        } else if getWhepStream(id: cameraId) != nil {
-            return true
-        } else {
-            return false
         }
     }
 }
