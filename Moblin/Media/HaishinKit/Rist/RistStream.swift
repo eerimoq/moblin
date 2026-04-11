@@ -238,10 +238,10 @@ class RistStream {
             self.writer.stopRunning()
             self.processor.stopEncoding(self.writer)
         }
-        peers.removeAll()
         context?.delegate = nil
         context?.stop()
         context = nil
+        peers.removeAll()
     }
 
     private func addMoblinkInternal(endpoint: NWEndpoint, moblinkId _: UUID, name: String) {
