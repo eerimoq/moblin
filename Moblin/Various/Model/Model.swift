@@ -400,9 +400,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var activeBufferedVideoIds: Set<UUID> = []
     var wiFiAwareSenderTask: Task<Void, Error>?
     var wiFiAwareReceiverTask: Task<Void, Error>?
-    var dockKitTask: Task<Void, Never>?
-    var dockKitAccessoryTask: Task<Void, Never>?
-    var dockKitLastShutterTime: ContinuousClock.Instant?
+    var gimbalTask: Task<Void, Never>?
+    var gimbalAccessoryTask: Task<Void, Never>?
+    var gimbalShutterCount: Int = 0
     let youTube = YouTube()
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()

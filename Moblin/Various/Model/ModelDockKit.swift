@@ -4,7 +4,7 @@ import Foundation
 @available(iOS 17.4, *)
 extension Model {
     func setupDockKit() {
-        dockKitTask = Task { @MainActor [weak self] in
+        gimbalTask = Task { @MainActor [weak self] in
             do {
                 for await stateChange in try DockAccessoryManager.shared.accessoryStateChanges {
                     try self?.handleStateChange(stateChange: stateChange)
@@ -30,7 +30,8 @@ extension Model {
 
     private func startDockKitAccessoryEventsHandler(accessory: DockAccessory) {
         stopDockKitAccessoryEventsHandler()
-        dockKitAccessoryTask = Task { @MainActor [weak self] in
+        gimbalShutterCount = 0
+        gimbalAccessoryTask = Task { @MainActor [weak self] in
             do {
                 for await event in try accessory.accessoryEvents {
                     self?.handleDockKitAccessoryEvent(event)
@@ -42,8 +43,8 @@ extension Model {
     }
 
     private func stopDockKitAccessoryEventsHandler() {
-        dockKitAccessoryTask?.cancel()
-        dockKitAccessoryTask = nil
+        gimbalAccessoryTask?.cancel()
+        gimbalAccessoryTask = nil
     }
 
     private func handleDockKitAccessoryEvent(_ event: DockAccessory.AccessoryEvent) {
@@ -60,13 +61,10 @@ extension Model {
     }
 
     private func handleDockKitAccessoryEventCameraShutter() {
-        let now = ContinuousClock.now
-        if let dockKitLastShutterTime,
-           dockKitLastShutterTime.duration(to: now) < .milliseconds(500)
-        {
+        gimbalShutterCount += 1
+        guard (gimbalShutterCount % 2) == 0 else {
             return
         }
-        dockKitLastShutterTime = now
         let gimbal = database.gimbal
         handleControllerFunction(function: gimbal.functionShutter,
                                  sceneId: gimbal.shutterSceneId,
@@ -84,14 +82,10 @@ extension Model {
 
     private func handleDockKitAccessoryEventCameraZoom(factor: Double) {
         let gimbal = database.gimbal
-        if gimbal.zoomSpeedEnabled {
-            if factor > 0 {
-                setZoomX(x: zoom.x * database.gimbal.zoomSpeed)
-            } else {
-                setZoomX(x: zoom.x / database.gimbal.zoomSpeed)
-            }
+        if factor > 0 {
+            setZoomX(x: zoom.x * gimbal.zoomSpeed)
         } else {
-            setZoomX(x: zoom.x * Float(factor))
+            setZoomX(x: zoom.x / gimbal.zoomSpeed)
         }
     }
 }

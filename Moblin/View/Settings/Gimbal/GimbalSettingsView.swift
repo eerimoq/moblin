@@ -16,6 +16,15 @@ struct GimbalSettingsView: View {
                 Text("Control Moblin with Gimbals that supports DockKit.")
             }
             Section {
+                HStack {
+                    Slider(value: $gimbal.zoomSpeed, in: 1.001 ... 1.099, step: 0.001)
+                    Text(String(format: "%02d", Int(round((gimbal.zoomSpeed - 1.0) * 1000))))
+                        .frame(width: 30)
+                }
+            } header: {
+                Text("Zoom speed")
+            }
+            Section {
                 ControllerButtonView(model: model,
                                      functions: functions(),
                                      function: $gimbal.functionShutter,
@@ -32,18 +41,6 @@ struct GimbalSettingsView: View {
                                      widgetId: $gimbal.flipWidgetId)
             } header: {
                 Text("Flip button")
-            }
-            Section {
-                Toggle("Enabled", isOn: $gimbal.zoomSpeedEnabled)
-                HStack {
-                    Slider(value: $gimbal.zoomSpeed, in: 1.001 ... 1.099, step: 0.001)
-                    Text(String(format: "%02d", Int(round((gimbal.zoomSpeed - 1.0) * 1000))))
-                        .frame(width: 30)
-                }
-            } header: {
-                Text("Zoom speed")
-            } footer: {
-                Text("Enable for seemingly bugged DJI gimbals.")
             }
         }
         .navigationTitle("Gimbal")
