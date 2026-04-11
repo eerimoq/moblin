@@ -1178,7 +1178,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         updateTalkback()
         if #available(iOS 17.4, *) {
-            setupDockKit()
+            setupGimbal()
         }
     }
 

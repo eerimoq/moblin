@@ -3,14 +3,14 @@ import Foundation
 
 @available(iOS 17.4, *)
 extension Model {
-    func setupDockKit() {
+    func setupGimbal() {
         gimbalTask = Task { @MainActor [weak self] in
             do {
                 for await stateChange in try DockAccessoryManager.shared.accessoryStateChanges {
                     try self?.handleStateChange(stateChange: stateChange)
                 }
             } catch {
-                logger.info("dockkit: State changes error: \(error)")
+                logger.info("gimbal: State changes error: \(error)")
             }
         }
     }
@@ -19,48 +19,48 @@ extension Model {
         switch stateChange.state {
         case .docked:
             if let accessory = stateChange.accessory {
-                startDockKitAccessoryEventsHandler(accessory: accessory)
+                startAccessoryEventsHandler(accessory: accessory)
             }
         case .undocked:
-            stopDockKitAccessoryEventsHandler()
+            stopAccessoryEventsHandler()
         default:
             break
         }
     }
 
-    private func startDockKitAccessoryEventsHandler(accessory: DockAccessory) {
-        stopDockKitAccessoryEventsHandler()
+    private func startAccessoryEventsHandler(accessory: DockAccessory) {
+        stopAccessoryEventsHandler()
         gimbalShutterCount = 0
         gimbalAccessoryTask = Task { @MainActor [weak self] in
             do {
                 for await event in try accessory.accessoryEvents {
-                    self?.handleDockKitAccessoryEvent(event)
+                    self?.handleAccessoryEvent(event)
                 }
             } catch {
-                logger.info("dockkit: Accessory events error: \(error)")
+                logger.info("gimbal: Accessory events error: \(error)")
             }
         }
     }
 
-    private func stopDockKitAccessoryEventsHandler() {
+    private func stopAccessoryEventsHandler() {
         gimbalAccessoryTask?.cancel()
         gimbalAccessoryTask = nil
     }
 
-    private func handleDockKitAccessoryEvent(_ event: DockAccessory.AccessoryEvent) {
+    private func handleAccessoryEvent(_ event: DockAccessory.AccessoryEvent) {
         switch event {
         case .cameraShutter:
-            handleDockKitAccessoryEventCameraShutter()
+            handleAccessoryEventCameraShutter()
         case .cameraFlip:
-            handleDockKitAccessoryEventCameraFlip()
+            handleAccessoryEventCameraFlip()
         case let .cameraZoom(factor):
-            handleDockKitAccessoryEventCameraZoom(factor: factor)
+            handleAccessoryEventCameraZoom(factor: factor)
         default:
             break
         }
     }
 
-    private func handleDockKitAccessoryEventCameraShutter() {
+    private func handleAccessoryEventCameraShutter() {
         gimbalShutterCount += 1
         guard (gimbalShutterCount % 2) == 0 else {
             return
@@ -72,7 +72,7 @@ extension Model {
                                  pressed: false)
     }
 
-    private func handleDockKitAccessoryEventCameraFlip() {
+    private func handleAccessoryEventCameraFlip() {
         let gimbal = database.gimbal
         handleControllerFunction(function: gimbal.functionFlip,
                                  sceneId: gimbal.flipSceneId,
@@ -80,7 +80,7 @@ extension Model {
                                  pressed: false)
     }
 
-    private func handleDockKitAccessoryEventCameraZoom(factor: Double) {
+    private func handleAccessoryEventCameraZoom(factor: Double) {
         let gimbal = database.gimbal
         if factor > 0 {
             setZoomX(x: zoom.x * gimbal.zoomSpeed)
