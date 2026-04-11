@@ -82,7 +82,11 @@ extension Model {
 
     private func handleAccessoryEventCameraZoom(factor: Double) {
         let gimbal = database.gimbal
-        if factor > 0 {
+        var zoomIn = factor <= 0
+        if !gimbal.naturalZoom {
+            zoomIn = !zoomIn
+        }
+        if zoomIn {
             setZoomX(x: zoom.x * gimbal.zoomSpeed)
         } else {
             setZoomX(x: zoom.x / gimbal.zoomSpeed)
