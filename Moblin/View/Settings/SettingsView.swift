@@ -100,7 +100,7 @@ struct SettingsView: View {
             if database.showAllSettings {
                 Section {
                     NavigationLink {
-                        GimbalSettingsView(debug: database.debug)
+                        GimbalSettingsView(model: model, gimbal: database.gimbal)
                     } label: {
                         Label("Gimbal", systemImage: "appletvremote.gen2")
                     }

@@ -67,19 +67,31 @@ extension Model {
             return
         }
         dockKitLastShutterTime = now
-        toggleRecording()
-        updateQuickButtonStates()
+        let gimbal = database.gimbal
+        handleControllerFunction(function: gimbal.functionShutter,
+                                 sceneId: gimbal.shutterSceneId,
+                                 widgetId: gimbal.shutterWidgetId,
+                                 pressed: false)
     }
 
     private func handleDockKitAccessoryEventCameraFlip() {
-        switchToNextSceneRoundRobin()
+        let gimbal = database.gimbal
+        handleControllerFunction(function: gimbal.functionFlip,
+                                 sceneId: gimbal.flipSceneId,
+                                 widgetId: gimbal.flipWidgetId,
+                                 pressed: false)
     }
 
     private func handleDockKitAccessoryEventCameraZoom(factor: Double) {
-        if factor > 0 {
-            setZoomX(x: zoom.x * database.debug.dockKitZoomStep)
+        let gimbal = database.gimbal
+        if gimbal.zoomSpeedEnabled {
+            if factor > 0 {
+                setZoomX(x: zoom.x * database.gimbal.zoomSpeed)
+            } else {
+                setZoomX(x: zoom.x / database.gimbal.zoomSpeed)
+            }
         } else {
-            setZoomX(x: zoom.x / database.debug.dockKitZoomStep)
+            setZoomX(x: zoom.x * Float(factor))
         }
     }
 }

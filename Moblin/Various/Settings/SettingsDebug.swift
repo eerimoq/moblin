@@ -16,7 +16,6 @@ let pixelFormatTypes = [
 
 class SettingsDebug: Codable, ObservableObject {
     static let builtinAudioAndVideoDelayDefault: Double = 0.07
-    static let dockKitZoomStepDefault: Float = 1.020
     var logLevel: SettingsLogLevel = .error
     @Published var logFilter: String = ""
     @Published var debugLogging: Bool = false
@@ -49,7 +48,6 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraManSpeed: Double = 1.0
     @Published var cameraManAlwaysMove: Bool = false
     @Published var enhancedMoblinSrt: Bool = false
-    @Published var dockKitZoomStep: Float = dockKitZoomStepDefault
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -89,8 +87,7 @@ class SettingsDebug: Codable, ObservableObject {
              cameraManMoveVertically,
              cameraManSpeed,
              cameraManAlwaysMove,
-             enhancedMoblinSrt,
-             dockKitZoomStep
+             enhancedMoblinSrt
     }
 
     func encode(to encoder: Encoder) throws {
@@ -126,7 +123,6 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.cameraManSpeed, cameraManSpeed)
         try container.encode(.cameraManAlwaysMove, cameraManAlwaysMove)
         try container.encode(.enhancedMoblinSrt, enhancedMoblinSrt)
-        try container.encode(.dockKitZoomStep, dockKitZoomStep)
     }
 
     init() {}
@@ -176,6 +172,5 @@ class SettingsDebug: Codable, ObservableObject {
         cameraManSpeed = container.decode(.cameraManSpeed, Double.self, 1.0)
         cameraManAlwaysMove = container.decode(.cameraManAlwaysMove, Bool.self, false)
         enhancedMoblinSrt = container.decode(.enhancedMoblinSrt, Bool.self, false)
-        dockKitZoomStep = container.decode(.dockKitZoomStep, Float.self, Self.dockKitZoomStepDefault)
     }
 }
