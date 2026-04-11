@@ -18,8 +18,8 @@ struct GimbalSettingsView: View {
             Section {
                 HStack {
                     Text("Speed")
-                    Slider(value: $gimbal.zoomSpeed, in: 1.001 ... 1.099, step: 0.001)
-                    Text(String(format: "%02d", Int(round((gimbal.zoomSpeed - 1.0) * 1000))))
+                    Slider(value: $gimbal.zoomSpeed, in: 1 ... 100, step: 1)
+                    Text(String(Int(gimbal.zoomSpeed)))
                         .frame(width: 30)
                 }
                 Toggle("Natural", isOn: $gimbal.naturalZoom)

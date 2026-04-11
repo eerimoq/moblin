@@ -1,7 +1,7 @@
 import Foundation
 
 class SettingsGimbal: Codable, ObservableObject {
-    static let zoomSpeedDefault: Float = 1.05
+    static let zoomSpeedDefault: Float = 50
     @Published var zoomSpeed: Float = zoomSpeedDefault
     @Published var naturalZoom: Bool = true
     @Published var functionShutter: SettingsControllerFunction = .record

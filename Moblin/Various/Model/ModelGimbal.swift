@@ -86,10 +86,12 @@ extension Model {
         if !gimbal.naturalZoom {
             zoomIn = !zoomIn
         }
+        let zoomSpeed = 1 + gimbal.zoomSpeed / 1000
+        let rate = 2 * (1 + gimbal.zoomSpeed / 100)
         if zoomIn {
-            setZoomX(x: zoom.x * gimbal.zoomSpeed)
+            setZoomX(x: zoom.x * zoomSpeed, rate: rate)
         } else {
-            setZoomX(x: zoom.x / gimbal.zoomSpeed)
+            setZoomX(x: zoom.x / zoomSpeed, rate: rate)
         }
     }
 }
