@@ -228,6 +228,7 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - And optionally automatically upload to your Discord server.
 - Save and play replays.
 - Tesla vehicle status and control.
+- Support for DockKit gimbals.
 - Cycling power monitor.
 - Heart rate monitor.
 - Show video on external dispaly. Aka clean HDMI out.
