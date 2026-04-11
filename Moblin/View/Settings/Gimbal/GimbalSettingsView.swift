@@ -18,7 +18,7 @@ struct GimbalSettingsView: View {
             Section {
                 HStack {
                     Text("Speed")
-                    Slider(value: $gimbal.zoomSpeed, in: 1 ... 100, step: 1)
+                    Slider(value: $gimbal.zoomSpeed, in: 10 ... 100, step: 1)
                     Text(String(Int(gimbal.zoomSpeed)))
                         .frame(width: 30)
                 }

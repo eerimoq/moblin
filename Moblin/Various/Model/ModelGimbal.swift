@@ -87,7 +87,7 @@ extension Model {
             zoomIn = !zoomIn
         }
         let zoomSpeed = 1 + gimbal.zoomSpeed / 1000
-        let rate = 2 * (1 + gimbal.zoomSpeed / 100)
+        let rate = 1 + 2 * Float(pow(Double(gimbal.zoomSpeed) / 50.0, 1.3))
         if zoomIn {
             setZoomX(x: zoom.x * zoomSpeed, rate: rate)
         } else {
