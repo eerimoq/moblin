@@ -375,6 +375,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showDrawOnStream = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
+    @Published var showInteractiveBrowserWidgets = false
+    @Published var interactiveBrowserWidgetSelectedId: UUID?
     @Published var showNavigation = false
     @Published var webBrowserUrl: String = ""
     @Published var quickButtonSettingsButton: SettingsQuickButton?
@@ -2342,6 +2344,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func toggleBrowser() {
         showBrowser.toggle()
+    }
+
+    func toggleInteractiveBrowserWidgets() {
+        showInteractiveBrowserWidgets.toggle()
+        if showInteractiveBrowserWidgets {
+            if let first = browsers.first {
+                interactiveBrowserWidgetSelectedId = first.id
+            }
+        }
     }
 
     func toggleNavigation() {

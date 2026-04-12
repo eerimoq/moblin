@@ -278,6 +278,13 @@ struct QuickButtonsInnerView: View {
         model.toggleBrowser()
     }
 
+    private func interactiveBrowserWidgetsAction() {
+        state.button.isOn.toggle()
+        model.setQuickButton(type: .interactiveBrowserWidgets, isOn: state.button.isOn)
+        model.updateQuickButtonStates()
+        model.toggleInteractiveBrowserWidgets()
+    }
+
     private func navigationAction() {
         state.button.isOn.toggle()
         model.setQuickButton(type: .navigation, isOn: state.button.isOn)
@@ -970,6 +977,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             videoPreviewAction(state: state)
+                        }
+                    case .interactiveBrowserWidgets:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            interactiveBrowserWidgetsAction()
                         }
                     }
                 }

@@ -433,6 +433,9 @@ struct MainView: View {
                                    orientation: orientation,
                                    webBrowserState: model.webBrowserState)
                 }
+                if model.showInteractiveBrowserWidgets {
+                    InteractiveBrowserWidgetsView()
+                }
                 if model.showNavigation {
                     if #available(iOS 26, *) {
                         StreamOverlayNavigationView(model: model,
@@ -507,6 +510,9 @@ struct MainView: View {
                                    database: model.database,
                                    orientation: orientation,
                                    webBrowserState: model.webBrowserState)
+                }
+                if model.showInteractiveBrowserWidgets {
+                    InteractiveBrowserWidgetsView()
                 }
                 if model.showNavigation {
                     if #available(iOS 26, *) {
@@ -636,6 +642,9 @@ struct MainView: View {
                         focused = model.isKeyboardActive()
                     }
                     .onChange(of: model.showBrowser) { _ in
+                        focused = model.isKeyboardActive()
+                    }
+                    .onChange(of: model.showInteractiveBrowserWidgets) { _ in
                         focused = model.isKeyboardActive()
                     }
                     .onChange(of: model.showTwitchAuth) { _ in

@@ -8,6 +8,9 @@ extension Model {
         if showBrowser {
             return false
         }
+        if showInteractiveBrowserWidgets {
+            return false
+        }
         if showTwitchAuth {
             return false
         }
