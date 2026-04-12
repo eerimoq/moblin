@@ -918,6 +918,8 @@ extension Model {
         for effect in browserEffects.values where !effects.contains(effect) {
             effect.setSceneWidget(sceneWidget: nil, crops: [])
         }
+        // Trigger SwiftUI re-render so browserWidgets() filter picks up isLoaded changes.
+        objectWillChange.send()
         for effect in mapEffects.values where !effects.contains(effect) {
             effect.setSceneWidget(sceneWidget: nil)
         }

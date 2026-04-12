@@ -362,7 +362,7 @@ struct MainView: View {
     }
 
     private func browserWidgets() -> some View {
-        ForEach(model.browsers) { browser in
+        ForEach(model.browsers.filter { $0.browserEffect.isLoaded }) { browser in
             ScrollView([.vertical, .horizontal]) {
                 BrowserWidgetView(browser: browser)
                     .frame(
