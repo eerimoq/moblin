@@ -62,24 +62,8 @@ struct InteractiveBrowserWidgetsView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button {
-                    model.closeInteractiveBrowserWidgets()
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.title2)
-                        .padding(10)
-                }
-                Spacer()
-                Text("Browser widgets")
-                    .font(.headline)
-                Spacer()
-                Color.clear
-                    .frame(width: 44, height: 44)
-            }
-            .padding(.horizontal, 4)
-            if model.browsers.count > 1 {
+        ZStack {
+            VStack(spacing: 0) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(model.browsers) { browser in
@@ -105,22 +89,25 @@ struct InteractiveBrowserWidgetsView: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                 }
-            }
-            if let browser = selectedBrowser() {
-                BrowserWidgetWebView(
-                    webView: browser.browserEffect.webView,
-                    originalWidth: browser.browserEffect.width,
-                    originalHeight: browser.browserEffect.height
-                )
-            } else {
-                VStack {
-                    Spacer()
-                    Text("No browser widgets available")
-                        .foregroundStyle(.secondary)
-                    Spacer()
+                if let browser = selectedBrowser() {
+                    BrowserWidgetWebView(
+                        webView: browser.browserEffect.webView,
+                        originalWidth: browser.browserEffect.width,
+                        originalHeight: browser.browserEffect.height
+                    )
+                } else {
+                    VStack {
+                        Spacer()
+                        Text("No browser widgets available")
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                    }
                 }
             }
+            .background(.black.opacity(0.9))
+            CloseButtonTopRightView {
+                model.closeInteractiveBrowserWidgets()
+            }
         }
-        .background(.black.opacity(0.9))
     }
 }
