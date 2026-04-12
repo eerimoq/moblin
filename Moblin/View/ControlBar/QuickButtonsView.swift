@@ -420,6 +420,11 @@ struct QuickButtonsInnerView: View {
         model.updateQuickButtonStates()
     }
 
+    private func interactiveBrowserWidgetsAction() {
+        state.button.isOn.toggle()
+        model.interactiveBrowsers = state.button.isOn
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -970,6 +975,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             videoPreviewAction(state: state)
+                        }
+                    case .interactiveBrowserWidgets:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            interactiveBrowserWidgetsAction()
                         }
                     }
                 }

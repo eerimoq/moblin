@@ -57,9 +57,11 @@ enum ShowingPanel {
 
 class Browser: Identifiable {
     var id: UUID = .init()
+    var name: String
     var browserEffect: BrowserEffect
 
-    init(browserEffect: BrowserEffect) {
+    init(name: String, browserEffect: BrowserEffect) {
+        self.name = name
         self.browserEffect = browserEffect
     }
 }
@@ -361,6 +363,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isLive = false
     @Published var isRecording = false
     @Published var browsers: [Browser] = []
+    @Published var interactiveBrowsers: Bool = false
     @Published var showingGrid = false
     @Published var showingCameraLevel = false
     @Published var showingRemoteControl = false

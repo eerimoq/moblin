@@ -657,9 +657,10 @@ extension Model {
         resetSlideshowVideoEffects(widgets: widgets)
         resetWheelOfLuckEffects(widgets: widgets)
         resetBingoCardEffects(widgets: widgets)
-        browsers = browserEffects.map { _, browser in
-            Browser(browserEffect: browser)
-        }
+        browsers = browserEffects.map { widgetId, browser in
+            let name = getWidgetName(id: widgetId) ?? "Unknown"
+            return Browser(name: name, browserEffect: browser)
+        }.sorted(by: { a, b in a.name < b.name })
     }
 
     private func createImageEffect(widget: SettingsWidget) -> ImageEffect {

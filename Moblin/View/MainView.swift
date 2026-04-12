@@ -362,18 +362,37 @@ struct MainView: View {
     }
 
     private func browserWidgets() -> some View {
-        ForEach(model.browsers) { browser in
+        ZStack {
             ScrollView([.vertical, .horizontal]) {
-                BrowserWidgetView(browser: browser)
-                    .frame(
-                        width: browser.browserEffect.width,
-                        height: browser.browserEffect.height
-                    )
-                    .opacity(0)
+                HStack {
+                    ForEach(model.browsers) { browser in
+                        VStack {
+                            Text(browser.name)
+                                .font(.title)
+                                .foregroundStyle(.white)
+                            ScrollView([.vertical, .horizontal]) {
+                                BrowserWidgetView(browser: browser)
+                                    .frame(
+                                        width: browser.browserEffect.width,
+                                        height: browser.browserEffect.height
+                                    )
+                            }
+                            .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
+                            .border(.yellow, width: 2)
+                            Spacer()
+                        }
+                    }
+                }
             }
-            .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
-            .allowsHitTesting(false)
+            CloseButtonTopRightView {
+                model.interactiveBrowsers = false
+                model.getQuickButtonState(type: .interactiveBrowserWidgets)?.button.isOn = false
+                model.updateQuickButtonStates()
+            }
         }
+        .background(.black)
+        .opacity(model.interactiveBrowsers ? 1 : 0)
+        .allowsHitTesting(model.interactiveBrowsers)
     }
 
     private func streamAspectRatio() -> CGFloat {

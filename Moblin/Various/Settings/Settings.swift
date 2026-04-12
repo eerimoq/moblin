@@ -1924,6 +1924,12 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOff: "person.2.crop.square.stack",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Interactive browser widgets"),
+                                 type: .interactiveBrowserWidgets,
+                                 imageOn: "hand.tap.fill",
+                                 imageOff: "hand.tap",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
 }
 
 private func addMissingQuickButtons(database: Database) {
