@@ -2355,6 +2355,16 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func closeInteractiveBrowserWidgets() {
+        showInteractiveBrowserWidgets = false
+        setQuickButton(type: .interactiveBrowserWidgets, isOn: false)
+        if let state = getQuickButtonState(type: .interactiveBrowserWidgets) {
+            state.isOn = false
+            state.button.isOn = false
+        }
+        updateQuickButtonStates()
+    }
+
     func toggleNavigation() {
         showNavigation.toggle()
     }

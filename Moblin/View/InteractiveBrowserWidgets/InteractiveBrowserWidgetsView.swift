@@ -61,7 +61,7 @@ struct InteractiveBrowserWidgetsView: View {
         return model.browsers.first
     }
 
-    private func widgetName(for browser: Browser) -> String {
+    private func widgetHost(for browser: Browser) -> String {
         return browser.browserEffect.host
     }
 
@@ -69,15 +69,7 @@ struct InteractiveBrowserWidgetsView: View {
         VStack(spacing: 0) {
             HStack {
                 Button {
-                    model.showInteractiveBrowserWidgets = false
-                    if let state = model.getQuickButtonState(
-                        type: .interactiveBrowserWidgets)
-                    {
-                        state.isOn = false
-                        state.button.isOn = false
-                    }
-                    model.setQuickButton(type: .interactiveBrowserWidgets, isOn: false)
-                    model.updateQuickButtonStates()
+                    model.closeInteractiveBrowserWidgets()
                 } label: {
                     Image(systemName: "xmark")
                         .font(.title2)
@@ -98,7 +90,7 @@ struct InteractiveBrowserWidgetsView: View {
                             Button {
                                 model.interactiveBrowserWidgetSelectedId = browser.id
                             } label: {
-                                Text(widgetName(for: browser))
+                                Text(widgetHost(for: browser))
                                     .lineLimit(1)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
