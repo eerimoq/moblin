@@ -80,17 +80,31 @@ struct InteractiveBrowserWidgetsView: View {
             }
             .padding(.horizontal, 4)
             if model.browsers.count > 1 {
-                Picker("", selection: Binding(
-                    get: { model.interactiveBrowserWidgetSelectedId ?? model.browsers.first?.id ?? UUID() },
-                    set: { model.interactiveBrowserWidgetSelectedId = $0 }
-                )) {
-                    ForEach(model.browsers) { browser in
-                        Text(browser.name).tag(browser.id)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(model.browsers) { browser in
+                            Button {
+                                model.interactiveBrowserWidgetSelectedId = browser.id
+                            } label: {
+                                Text(browser.name)
+                                    .lineLimit(1)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        browser.id == model.interactiveBrowserWidgetSelectedId
+                                            ? Color.accentColor : Color.gray.opacity(0.3)
+                                    )
+                                    .foregroundStyle(
+                                        browser.id == model.interactiveBrowserWidgetSelectedId
+                                            ? .white : .primary
+                                    )
+                                    .cornerRadius(8)
+                            }
+                        }
                     }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
                 }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
             }
             if let browser = selectedBrowser() {
                 BrowserWidgetWebView(
