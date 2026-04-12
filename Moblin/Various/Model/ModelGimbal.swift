@@ -24,6 +24,10 @@ class Gimbal {
         }
     }
 
+    func isConnected() -> Bool {
+        return accessory != nil
+    }
+
     func setGimbalOrientation(angles: Vector3D) {
         Task { @MainActor [weak self] in
             _ = try await self?.accessory?.setOrientation(angles)
@@ -94,7 +98,7 @@ class Gimbal {
         model.handleControllerFunction(function: gimbal.functionShutter,
                                        sceneId: gimbal.shutterSceneId,
                                        widgetId: gimbal.shutterWidgetId,
-                                       gimbalOrientationId: nil,
+                                       gimbalPresetId: nil,
                                        pressed: false)
     }
 
@@ -103,7 +107,7 @@ class Gimbal {
         model.handleControllerFunction(function: gimbal.functionFlip,
                                        sceneId: gimbal.flipSceneId,
                                        widgetId: gimbal.flipWidgetId,
-                                       gimbalOrientationId: nil,
+                                       gimbalPresetId: nil,
                                        pressed: false)
     }
 

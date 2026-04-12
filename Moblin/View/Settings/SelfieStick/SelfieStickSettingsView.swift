@@ -30,7 +30,7 @@ struct SelfieStickSettingsView: View {
                                      function: $selfieStick.function,
                                      sceneId: $selfieStick.sceneId,
                                      widgetId: $selfieStick.widgetId,
-                                     gimbalOrientationId: $selfieStick.gimbalOrientationId)
+                                     gimbalPresetId: $selfieStick.gimbalPresetId)
                 SelfieStickDoesNotWorkView(database: model.database, selfieStick: selfieStick)
             } header: {
                 Text("Button")

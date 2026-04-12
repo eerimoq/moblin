@@ -37,7 +37,7 @@ extension Model {
             self.handleControllerFunction(function: key.function,
                                           sceneId: key.sceneId,
                                           widgetId: key.widgetId,
-                                          gimbalOrientationId: nil,
+                                          gimbalPresetId: nil,
                                           pressed: false)
         }
         return true

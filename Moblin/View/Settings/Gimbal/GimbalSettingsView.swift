@@ -27,22 +27,22 @@ private struct ValueView: View {
     }
 }
 
-private struct GimbalOrientationView: View {
+private struct GimbalPresetView: View {
     @ObservedObject var gimbal: SettingsGimbal
-    @ObservedObject var orientation: SettingsGimbalOrientation
+    @ObservedObject var orientation: SettingsGimbalPreset
 
     var body: some View {
         NavigationLink {
             Form {
                 Section {
-                    NameEditView(name: $orientation.name, existingNames: gimbal.orientations)
+                    NameEditView(name: $orientation.name, existingNames: gimbal.presets)
                 }
                 Section {
                     ValueView(name: "X", value: $orientation.x)
                     ValueView(name: "Y", value: $orientation.y)
                 }
             }
-            .navigationTitle("Orientation")
+            .navigationTitle("Preset")
         } label: {
             Text(orientation.name)
         }
@@ -81,7 +81,7 @@ struct GimbalSettingsView: View {
                                      function: $gimbal.functionShutter,
                                      sceneId: $gimbal.shutterSceneId,
                                      widgetId: $gimbal.shutterWidgetId,
-                                     gimbalOrientationId: $gimbal.shutterGimbalOrientationId)
+                                     gimbalPresetId: $gimbal.shutterGimbalPresetId)
             } header: {
                 Text("Shutter button")
             }
@@ -91,37 +91,38 @@ struct GimbalSettingsView: View {
                                      function: $gimbal.functionFlip,
                                      sceneId: $gimbal.flipSceneId,
                                      widgetId: $gimbal.flipWidgetId,
-                                     gimbalOrientationId: $gimbal.flipGimbalOrientationId)
+                                     gimbalPresetId: $gimbal.flipGimbalPresetId)
             } header: {
                 Text("Flip button")
             }
             Section {
                 List {
-                    ForEach(gimbal.orientations) {
-                        GimbalOrientationView(gimbal: gimbal, orientation: $0)
+                    ForEach(gimbal.presets) {
+                        GimbalPresetView(gimbal: gimbal, orientation: $0)
                     }
                     .onDelete { offsets in
-                        gimbal.orientations.remove(atOffsets: offsets)
+                        gimbal.presets.remove(atOffsets: offsets)
                     }
                 }
-                TextButtonView("Save current") {
-                    if #available(iOS 18, *) {
+                if #available(iOS 18, *) {
+                    TextButtonView("Save current") {
                         Task { @MainActor in
                             if let angles = await Gimbal.shared?.getCurrentOrientation() {
-                                let orientation = SettingsGimbalOrientation()
-                                orientation.name = makeUniqueName(name: SettingsGimbalOrientation.baseName,
-                                                                  existingNames: gimbal.orientations)
-                                orientation.x = Float(angles.x)
-                                orientation.y = Float(angles.y)
-                                gimbal.orientations.append(orientation)
+                                let preset = SettingsGimbalPreset()
+                                preset.name = makeUniqueName(name: SettingsGimbalPreset.baseName,
+                                                             existingNames: gimbal.presets)
+                                preset.x = Float(angles.x)
+                                preset.y = Float(angles.y)
+                                gimbal.presets.append(preset)
                             }
                         }
                     }
+                    .disabled(Gimbal.shared?.isConnected() != true)
                 }
             } header: {
-                Text("Orientations")
+                Text("Presets")
             } footer: {
-                SwipeLeftToDeleteHelpView(kind: String(localized: "orientation"))
+                SwipeLeftToDeleteHelpView(kind: String(localized: "preset"))
             }
         }
         .navigationTitle("Gimbal")

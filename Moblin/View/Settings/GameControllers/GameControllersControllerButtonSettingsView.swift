@@ -6,7 +6,7 @@ struct ControllerButtonView: View {
     @Binding var function: SettingsControllerFunction
     @Binding var sceneId: UUID?
     @Binding var widgetId: UUID?
-    @Binding var gimbalOrientationId: UUID?
+    @Binding var gimbalPresetId: UUID?
 
     var body: some View {
         Picker("Function", selection: $function) {
@@ -41,10 +41,10 @@ struct ControllerButtonView: View {
                 }
             }
         case .setGimbalOrienation:
-            Picker("Orientation", selection: $gimbalOrientationId) {
+            Picker("Orientation", selection: $gimbalPresetId) {
                 Text("-- None --")
                     .tag(nil as UUID?)
-                ForEach(model.database.gimbal.orientations) {
+                ForEach(model.database.gimbal.presets) {
                     Text($0.name)
                         .tag($0.id as UUID?)
                 }
@@ -72,7 +72,7 @@ struct GameControllersControllerButtonSettingsView: View {
                                          function: $button.function,
                                          sceneId: $button.sceneId,
                                          widgetId: $button.widgetId,
-                                         gimbalOrientationId: $button.gimbalOrientationId)
+                                         gimbalPresetId: $button.gimbalPresetId)
                 }
             }
             .navigationTitle("Game controller button")

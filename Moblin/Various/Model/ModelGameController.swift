@@ -35,14 +35,14 @@ extension Model {
         handleControllerFunction(function: button.function,
                                  sceneId: button.sceneId,
                                  widgetId: button.widgetId,
-                                 gimbalOrientationId: button.gimbalOrientationId,
+                                 gimbalPresetId: button.gimbalPresetId,
                                  pressed: pressed)
     }
 
     func handleControllerFunction(function: SettingsControllerFunction,
                                   sceneId: UUID?,
                                   widgetId: UUID?,
-                                  gimbalOrientationId: UUID?,
+                                  gimbalPresetId: UUID?,
                                   pressed: Bool)
     {
         switch function {
@@ -65,8 +65,7 @@ extension Model {
         case .setGimbalOrienation:
             if !pressed {
                 if #available(iOS 18.0, *),
-                   let orientation = database.gimbal.orientations
-                   .first(where: { $0.id == gimbalOrientationId })
+                   let orientation = database.gimbal.presets.first(where: { $0.id == gimbalPresetId })
                 {
                     Gimbal.shared?.setGimbalOrientation(angles: .init(x: orientation.x,
                                                                       y: orientation.y,
