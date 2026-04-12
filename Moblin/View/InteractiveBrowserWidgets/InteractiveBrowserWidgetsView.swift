@@ -5,6 +5,8 @@ private class BrowserWidgetContainerView: UIView {
     weak var currentWebView: UIView?
     var originalWidth: Double = 0
     var originalHeight: Double = 0
+    fileprivate var appliedScale: Double = 0
+    fileprivate var appliedCenter: CGPoint = .zero
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -19,10 +21,16 @@ private class BrowserWidgetContainerView: UIView {
         let scaleX = containerWidth / originalWidth
         let scaleY = containerHeight / originalHeight
         let scale = min(scaleX, scaleY)
+        let center = CGPoint(x: containerWidth / 2, y: containerHeight / 2)
+        guard scale != appliedScale || center != appliedCenter else {
+            return
+        }
+        appliedScale = scale
+        appliedCenter = center
         webView.transform = .identity
         webView.frame = CGRect(x: 0, y: 0, width: originalWidth, height: originalHeight)
         webView.transform = CGAffineTransform(scaleX: scale, y: scale)
-        webView.center = CGPoint(x: containerWidth / 2, y: containerHeight / 2)
+        webView.center = center
     }
 }
 
@@ -53,10 +61,14 @@ private struct BrowserWidgetWebView: UIViewRepresentable {
             uiView.addSubview(webView)
             context.coordinator.currentWebView = webView
             uiView.currentWebView = webView
+            uiView.appliedScale = 0
+            uiView.appliedCenter = .zero
         }
-        uiView.originalWidth = originalWidth
-        uiView.originalHeight = originalHeight
-        uiView.setNeedsLayout()
+        if uiView.originalWidth != originalWidth || uiView.originalHeight != originalHeight {
+            uiView.originalWidth = originalWidth
+            uiView.originalHeight = originalHeight
+            uiView.setNeedsLayout()
+        }
     }
 
     static func dismantleUIView(_: BrowserWidgetContainerView, coordinator: Coordinator) {
