@@ -102,7 +102,7 @@ struct SettingsView: View {
                     NavigationLink {
                         GimbalSettingsView(model: model, gimbal: database.gimbal)
                     } label: {
-                        Label("Gimbal", systemImage: "appletvremote.gen2")
+                        Label("Gimbal", systemImage: "iphone.dock.motorized.viewfinder")
                     }
                     NavigationLink {
                         SelfieStickSettingsView(model: model, selfieStick: database.selfieStick)
