@@ -1,5 +1,54 @@
 import SwiftUI
 
+private struct ValueView: View {
+    let name: LocalizedStringKey
+    @Binding var value: Float
+
+    var body: some View {
+        HStack {
+            Text(name)
+            Spacer()
+            Text("\(formatOneDecimal(value.toDegrees()))°")
+            Button {
+                value -= Float(0.1).toRadians()
+            } label: {
+                Image(systemName: "minus.circle")
+                    .font(.title)
+            }
+            .buttonStyle(.borderless)
+            Button {
+                value += Float(0.1).toRadians()
+            } label: {
+                Image(systemName: "plus.circle")
+                    .font(.title)
+            }
+            .buttonStyle(.borderless)
+        }
+    }
+}
+
+private struct GimbalOrientationView: View {
+    @ObservedObject var gimbal: SettingsGimbal
+    @ObservedObject var orientation: SettingsGimbalOrientation
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    NameEditView(name: $orientation.name, existingNames: gimbal.orientations)
+                }
+                Section {
+                    ValueView(name: "X", value: $orientation.x)
+                    ValueView(name: "Y", value: $orientation.y)
+                }
+            }
+            .navigationTitle("Orientation")
+        } label: {
+            Text(orientation.name)
+        }
+    }
+}
+
 struct GimbalSettingsView: View {
     let model: Model
     @ObservedObject var gimbal: SettingsGimbal
@@ -49,7 +98,7 @@ struct GimbalSettingsView: View {
             Section {
                 List {
                     ForEach(gimbal.orientations) {
-                        Text($0.name)
+                        GimbalOrientationView(gimbal: gimbal, orientation: $0)
                     }
                     .onDelete { offsets in
                         gimbal.orientations.remove(atOffsets: offsets)
