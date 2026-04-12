@@ -657,8 +657,9 @@ extension Model {
         resetSlideshowVideoEffects(widgets: widgets)
         resetWheelOfLuckEffects(widgets: widgets)
         resetBingoCardEffects(widgets: widgets)
-        browsers = browserEffects.map { _, browser in
-            Browser(browserEffect: browser)
+        browsers = browserEffects.map { widgetId, browser in
+            let name = widgets.first { $0.id == widgetId }?.name ?? browser.host
+            return Browser(browserEffect: browser, name: name)
         }
     }
 

@@ -58,9 +58,11 @@ enum ShowingPanel {
 class Browser: Identifiable {
     var id: UUID = .init()
     var browserEffect: BrowserEffect
+    var name: String
 
-    init(browserEffect: BrowserEffect) {
+    init(browserEffect: BrowserEffect, name: String) {
         self.browserEffect = browserEffect
+        self.name = name
     }
 }
 

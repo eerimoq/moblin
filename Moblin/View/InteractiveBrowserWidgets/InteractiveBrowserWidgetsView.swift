@@ -61,10 +61,6 @@ struct InteractiveBrowserWidgetsView: View {
         return model.browsers.first
     }
 
-    private func widgetHost(for browser: Browser) -> String {
-        return browser.browserEffect.host
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -90,7 +86,7 @@ struct InteractiveBrowserWidgetsView: View {
                             Button {
                                 model.interactiveBrowserWidgetSelectedId = browser.id
                             } label: {
-                                Text(widgetHost(for: browser))
+                                Text(browser.name)
                                     .lineLimit(1)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
