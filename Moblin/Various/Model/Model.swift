@@ -403,9 +403,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var activeBufferedVideoIds: Set<UUID> = []
     var wiFiAwareSenderTask: Task<Void, Error>?
     var wiFiAwareReceiverTask: Task<Void, Error>?
-    var gimbalTask: Task<Void, Never>?
-    var gimbalAccessoryTask: Task<Void, Never>?
-    var gimbalShutterCount: Int = 0
     let youTube = YouTube()
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
@@ -1180,8 +1177,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             #endif
         }
         updateTalkback()
-        if #available(iOS 17.4, *) {
-            setupGimbal()
+        if #available(iOS 18.0, *) {
+            Gimbal.shared = Gimbal(model: self)
         }
     }
 

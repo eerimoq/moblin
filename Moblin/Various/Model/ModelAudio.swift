@@ -332,6 +332,7 @@ extension Model {
         handleControllerFunction(function: database.selfieStick.function,
                                  sceneId: database.selfieStick.sceneId,
                                  widgetId: database.selfieStick.widgetId,
+                                 gimbalOrientationId: database.selfieStick.gimbalOrientationId,
                                  pressed: false)
     }
 

@@ -35,12 +35,14 @@ extension Model {
         handleControllerFunction(function: button.function,
                                  sceneId: button.sceneId,
                                  widgetId: button.widgetId,
+                                 gimbalOrientationId: button.gimbalOrientationId,
                                  pressed: pressed)
     }
 
     func handleControllerFunction(function: SettingsControllerFunction,
                                   sceneId: UUID?,
                                   widgetId: UUID?,
+                                  gimbalOrientationId: UUID?,
                                   pressed: Bool)
     {
         switch function {
@@ -60,6 +62,17 @@ extension Model {
             handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
         case .zoomOut:
             handleGameControllerButtonZoom(pressed: pressed, x: 0)
+        case .setGimbalOrienation:
+            if !pressed {
+                if #available(iOS 18.0, *),
+                   let orientation = database.gimbal.orientations
+                   .first(where: { $0.id == gimbalOrientationId })
+                {
+                    Gimbal.shared?.setGimbalOrientation(angles: .init(x: orientation.x,
+                                                                      y: orientation.y,
+                                                                      z: 0))
+                }
+            }
         case .torch:
             if !pressed {
                 toggleTorch()

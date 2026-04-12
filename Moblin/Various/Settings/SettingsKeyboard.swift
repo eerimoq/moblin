@@ -6,6 +6,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
     @Published var function: SettingsControllerFunction = .unused
     @Published var sceneId: UUID?
     @Published var widgetId: UUID?
+    @Published var gimbalOrientationId: UUID?
 
     init() {}
 
@@ -14,7 +15,8 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
              key,
              function,
              sceneId,
-             widgetId
+             widgetId,
+             gimbalOrientationId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -24,6 +26,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         try container.encode(.function, function)
         try container.encode(.sceneId, sceneId)
         try container.encode(.widgetId, widgetId)
+        try container.encode(.gimbalOrientationId, gimbalOrientationId)
     }
 
     required init(from decoder: Decoder) throws {
@@ -33,6 +36,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         function = container.decode(.function, SettingsControllerFunction.self, .unused)
         sceneId = container.decode(.sceneId, UUID?.self, nil)
         widgetId = container.decode(.widgetId, UUID?.self, nil)
+        gimbalOrientationId = container.decode(.gimbalOrientationId, UUID?.self, nil)
     }
 }
 

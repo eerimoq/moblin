@@ -1,10 +1,19 @@
 import DockKit
 import Foundation
+import Spatial
 
-@available(iOS 17.4, *)
-extension Model {
-    func setupGimbal() {
-        gimbalTask = Task { @MainActor [weak self] in
+@available(iOS 18.0, *)
+class Gimbal {
+    private let model: Model
+    private var task: Task<Void, Never>?
+    private var accessoryTask: Task<Void, Never>?
+    private var accessory: DockAccessory?
+    private var shutterCount: Int = 0
+    static var shared: Gimbal?
+
+    init(model: Model) {
+        self.model = model
+        task = Task { @MainActor [weak self] in
             do {
                 for await stateChange in try DockAccessoryManager.shared.accessoryStateChanges {
                     try self?.handleStateChange(stateChange: stateChange)
@@ -13,6 +22,19 @@ extension Model {
                 logger.info("gimbal: State changes error: \(error)")
             }
         }
+    }
+
+    func setGimbalOrientation(angles: Vector3D) {
+        Task { @MainActor [weak self] in
+            _ = try await self?.accessory?.setOrientation(angles)
+        }
+    }
+
+    func getCurrentOrientation() async -> Vector3D? {
+        guard var iterator = try? accessory?.motionStates.makeAsyncIterator() else {
+            return nil
+        }
+        return await iterator.next()?.angularPositions
     }
 
     private func handleStateChange(stateChange: DockAccessory.StateChange) throws {
@@ -30,9 +52,11 @@ extension Model {
 
     private func startAccessoryEventsHandler(accessory: DockAccessory) {
         stopAccessoryEventsHandler()
-        gimbalShutterCount = 0
-        gimbalAccessoryTask = Task { @MainActor [weak self] in
+        self.accessory = accessory
+        shutterCount = 0
+        accessoryTask = Task { @MainActor [weak self] in
             do {
+                try await DockAccessoryManager.shared.setSystemTrackingEnabled(false)
                 for await event in try accessory.accessoryEvents {
                     self?.handleAccessoryEvent(event)
                 }
@@ -43,8 +67,9 @@ extension Model {
     }
 
     private func stopAccessoryEventsHandler() {
-        gimbalAccessoryTask?.cancel()
-        gimbalAccessoryTask = nil
+        accessoryTask?.cancel()
+        accessoryTask = nil
+        accessory = nil
     }
 
     private func handleAccessoryEvent(_ event: DockAccessory.AccessoryEvent) {
@@ -61,27 +86,29 @@ extension Model {
     }
 
     private func handleAccessoryEventCameraShutter() {
-        gimbalShutterCount += 1
-        guard (gimbalShutterCount % 2) == 0 else {
+        shutterCount += 1
+        guard (shutterCount % 2) == 0 else {
             return
         }
-        let gimbal = database.gimbal
-        handleControllerFunction(function: gimbal.functionShutter,
-                                 sceneId: gimbal.shutterSceneId,
-                                 widgetId: gimbal.shutterWidgetId,
-                                 pressed: false)
+        let gimbal = model.database.gimbal
+        model.handleControllerFunction(function: gimbal.functionShutter,
+                                       sceneId: gimbal.shutterSceneId,
+                                       widgetId: gimbal.shutterWidgetId,
+                                       gimbalOrientationId: nil,
+                                       pressed: false)
     }
 
     private func handleAccessoryEventCameraFlip() {
-        let gimbal = database.gimbal
-        handleControllerFunction(function: gimbal.functionFlip,
-                                 sceneId: gimbal.flipSceneId,
-                                 widgetId: gimbal.flipWidgetId,
-                                 pressed: false)
+        let gimbal = model.database.gimbal
+        model.handleControllerFunction(function: gimbal.functionFlip,
+                                       sceneId: gimbal.flipSceneId,
+                                       widgetId: gimbal.flipWidgetId,
+                                       gimbalOrientationId: nil,
+                                       pressed: false)
     }
 
     private func handleAccessoryEventCameraZoom(factor: Double) {
-        let gimbal = database.gimbal
+        let gimbal = model.database.gimbal
         var zoomIn = factor <= 0
         if !gimbal.naturalZoom {
             zoomIn = !zoomIn
@@ -89,9 +116,9 @@ extension Model {
         let zoomSpeed = 1 + gimbal.zoomSpeed / 1000
         let rate = 1 + 2 * Float(pow(Double(gimbal.zoomSpeed) / 50.0, 1.3))
         if zoomIn {
-            setZoomX(x: zoom.x * zoomSpeed, rate: rate)
+            model.setZoomX(x: model.zoom.x * zoomSpeed, rate: rate)
         } else {
-            setZoomX(x: zoom.x / zoomSpeed, rate: rate)
+            model.setZoomX(x: model.zoom.x / zoomSpeed, rate: rate)
         }
     }
 }

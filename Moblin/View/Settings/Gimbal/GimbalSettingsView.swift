@@ -31,7 +31,8 @@ struct GimbalSettingsView: View {
                                      functions: functions(),
                                      function: $gimbal.functionShutter,
                                      sceneId: $gimbal.shutterSceneId,
-                                     widgetId: $gimbal.shutterWidgetId)
+                                     widgetId: $gimbal.shutterWidgetId,
+                                     gimbalOrientationId: $gimbal.shutterGimbalOrientationId)
             } header: {
                 Text("Shutter button")
             }
@@ -40,9 +41,38 @@ struct GimbalSettingsView: View {
                                      functions: functions(),
                                      function: $gimbal.functionFlip,
                                      sceneId: $gimbal.flipSceneId,
-                                     widgetId: $gimbal.flipWidgetId)
+                                     widgetId: $gimbal.flipWidgetId,
+                                     gimbalOrientationId: $gimbal.flipGimbalOrientationId)
             } header: {
                 Text("Flip button")
+            }
+            Section {
+                List {
+                    ForEach(gimbal.orientations) {
+                        Text($0.name)
+                    }
+                    .onDelete { offsets in
+                        gimbal.orientations.remove(atOffsets: offsets)
+                    }
+                }
+                TextButtonView("Save current") {
+                    if #available(iOS 18, *) {
+                        Task { @MainActor in
+                            if let angles = await Gimbal.shared?.getCurrentOrientation() {
+                                let orientation = SettingsGimbalOrientation()
+                                orientation.name = makeUniqueName(name: SettingsGimbalOrientation.baseName,
+                                                                  existingNames: gimbal.orientations)
+                                orientation.x = Float(angles.x)
+                                orientation.y = Float(angles.y)
+                                gimbal.orientations.append(orientation)
+                            }
+                        }
+                    }
+                }
+            } header: {
+                Text("Orientations")
+            } footer: {
+                SwipeLeftToDeleteHelpView(kind: String(localized: "orientation"))
             }
         }
         .navigationTitle("Gimbal")

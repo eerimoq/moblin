@@ -12,6 +12,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case stream = "Stream"
     case zoomIn = "Zoom in"
     case zoomOut = "Zoom out"
+    case setGimbalOrienation = "Gimbal orientation"
     case mute = "Mute"
     case torch = "Torch"
     case blackScreen = "Black screen"
@@ -49,6 +50,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Zoom in")
         case .zoomOut:
             return String(localized: "Zoom out")
+        case .setGimbalOrienation:
+            return String(localized: "Gimbal orientation")
         case .mute:
             return String(localized: "Mute")
         case .torch:
@@ -140,6 +143,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return .general
         case .zoomOut:
             return .general
+        case .setGimbalOrienation:
+            return .general
         case .mute:
             return .general
         case .torch:
@@ -199,6 +204,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     @Published var function: SettingsControllerFunction = .unused
     @Published var sceneId: UUID?
     @Published var widgetId: UUID?
+    @Published var gimbalOrientationId: UUID?
 
     init() {}
 
@@ -208,7 +214,8 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
              text,
              function,
              sceneId,
-             widgetId
+             widgetId,
+             gimbalOrientationId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -219,6 +226,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         try container.encode(.function, function)
         try container.encode(.sceneId, sceneId)
         try container.encode(.widgetId, widgetId)
+        try container.encode(.gimbalOrientationId, gimbalOrientationId)
     }
 
     required init(from decoder: Decoder) throws {
@@ -229,6 +237,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         function = container.decode(.function, SettingsControllerFunction.self, .unused)
         sceneId = container.decode(.sceneId, UUID?.self, nil)
         widgetId = container.decode(.widgetId, UUID?.self, nil)
+        gimbalOrientationId = container.decode(.gimbalOrientationId, UUID?.self, nil)
     }
 }
 
