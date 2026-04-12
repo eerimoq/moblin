@@ -1,6 +1,31 @@
 import SwiftUI
 import WebKit
 
+private class BrowserWidgetContainerView: UIView {
+    weak var currentWebView: UIView?
+    var originalWidth: Double = 0
+    var originalHeight: Double = 0
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        guard let webView = currentWebView else {
+            return
+        }
+        let containerWidth = bounds.width
+        let containerHeight = bounds.height
+        guard containerWidth > 0, containerHeight > 0, originalWidth > 0, originalHeight > 0 else {
+            return
+        }
+        let scaleX = containerWidth / originalWidth
+        let scaleY = containerHeight / originalHeight
+        let scale = min(scaleX, scaleY)
+        webView.transform = .identity
+        webView.frame = CGRect(x: 0, y: 0, width: originalWidth, height: originalHeight)
+        webView.transform = CGAffineTransform(scaleX: scale, y: scale)
+        webView.center = CGPoint(x: containerWidth / 2, y: containerHeight / 2)
+    }
+}
+
 private struct BrowserWidgetWebView: UIViewRepresentable {
     let webView: WKWebView
     let originalWidth: Double
@@ -14,35 +39,27 @@ private struct BrowserWidgetWebView: UIViewRepresentable {
         Coordinator()
     }
 
-    func makeUIView(context _: Context) -> UIView {
-        let container = UIView()
+    func makeUIView(context _: Context) -> BrowserWidgetContainerView {
+        let container = BrowserWidgetContainerView()
         container.clipsToBounds = true
         return container
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {
+    func updateUIView(_ uiView: BrowserWidgetContainerView, context: Context) {
         if context.coordinator.currentWebView !== webView {
             context.coordinator.currentWebView?.removeFromSuperview()
             context.coordinator.currentWebView?.transform = .identity
             webView.removeFromSuperview()
             uiView.addSubview(webView)
             context.coordinator.currentWebView = webView
+            uiView.currentWebView = webView
         }
-        let containerWidth = uiView.bounds.width
-        let containerHeight = uiView.bounds.height
-        guard containerWidth > 0, containerHeight > 0 else {
-            return
-        }
-        let scaleX = containerWidth / originalWidth
-        let scaleY = containerHeight / originalHeight
-        let scale = min(scaleX, scaleY)
-        webView.transform = .identity
-        webView.frame = CGRect(x: 0, y: 0, width: originalWidth, height: originalHeight)
-        webView.transform = CGAffineTransform(scaleX: scale, y: scale)
-        webView.center = CGPoint(x: containerWidth / 2, y: containerHeight / 2)
+        uiView.originalWidth = originalWidth
+        uiView.originalHeight = originalHeight
+        uiView.setNeedsLayout()
     }
 
-    static func dismantleUIView(_: UIView, coordinator: Coordinator) {
+    static func dismantleUIView(_: BrowserWidgetContainerView, coordinator: Coordinator) {
         coordinator.currentWebView?.removeFromSuperview()
         coordinator.currentWebView?.transform = .identity
         coordinator.currentWebView = nil
