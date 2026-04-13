@@ -62,13 +62,13 @@ extension Model {
             handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
         case .zoomOut:
             handleGameControllerButtonZoom(pressed: pressed, x: 0)
-        case .setGimbalOrienation:
+        case .gimbalPreset:
             if !pressed {
                 if #available(iOS 18.0, *),
-                   let orientation = database.gimbal.presets.first(where: { $0.id == gimbalPresetId })
+                   let preset = database.gimbal.presets.first(where: { $0.id == gimbalPresetId })
                 {
-                    Gimbal.shared?.setGimbalOrientation(angles: .init(x: orientation.x,
-                                                                      y: orientation.y,
+                    Gimbal.shared?.setGimbalOrientation(angles: .init(x: preset.x,
+                                                                      y: preset.y,
                                                                       z: 0))
                 }
             }

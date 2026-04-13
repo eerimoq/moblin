@@ -40,7 +40,7 @@ struct ControllerButtonView: View {
                         .tag($0.id as UUID?)
                 }
             }
-        case .setGimbalOrienation:
+        case .gimbalPreset:
             Picker("Orientation", selection: $gimbalPresetId) {
                 Text("-- None --")
                     .tag(nil as UUID?)
