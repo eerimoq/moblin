@@ -12,6 +12,10 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case stream = "Stream"
     case zoomIn = "Zoom in"
     case zoomOut = "Zoom out"
+    case gimbalUp = "Gimbal up"
+    case gimbalDown = "Gimbal down"
+    case gimbalLeft = "Gimbal left"
+    case gimbalRight = "Gimbal right"
     case gimbalPreset = "Gimbal preset"
     case mute = "Mute"
     case torch = "Torch"
@@ -50,6 +54,14 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Zoom in")
         case .zoomOut:
             return String(localized: "Zoom out")
+        case .gimbalUp:
+            return String(localized: "Gimbal up")
+        case .gimbalDown:
+            return String(localized: "Gimbal down")
+        case .gimbalLeft:
+            return String(localized: "Gimbal left")
+        case .gimbalRight:
+            return String(localized: "Gimbal right")
         case .gimbalPreset:
             return String(localized: "Gimbal preset")
         case .mute:
@@ -142,6 +154,14 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
         case .zoomIn:
             return .general
         case .zoomOut:
+            return .general
+        case .gimbalUp:
+            return .general
+        case .gimbalDown:
+            return .general
+        case .gimbalLeft:
+            return .general
+        case .gimbalRight:
             return .general
         case .gimbalPreset:
             return .general

@@ -1,4 +1,7 @@
 import GameController
+import Spatial
+
+private let gimbalAngularVelocity: Double = 0.3
 
 extension Model {
     func moveToGimbalPreset(id: UUID) {
@@ -146,6 +149,26 @@ extension Model {
             if !pressed {
                 toggleBeautyQuickButton()
             }
+        case .gimbalUp:
+            handleGameControllerButtonGimbal(
+                pressed: pressed,
+                velocity: .init(x: gimbalAngularVelocity, y: 0, z: 0)
+            )
+        case .gimbalDown:
+            handleGameControllerButtonGimbal(
+                pressed: pressed,
+                velocity: .init(x: -gimbalAngularVelocity, y: 0, z: 0)
+            )
+        case .gimbalLeft:
+            handleGameControllerButtonGimbal(
+                pressed: pressed,
+                velocity: .init(x: 0, y: gimbalAngularVelocity, z: 0)
+            )
+        case .gimbalRight:
+            handleGameControllerButtonGimbal(
+                pressed: pressed,
+                velocity: .init(x: 0, y: -gimbalAngularVelocity, z: 0)
+            )
         }
     }
 
@@ -159,6 +182,16 @@ extension Model {
         } else {
             if let x = stopCameraZoom() {
                 setZoomXWhenInRange(x: x)
+            }
+        }
+    }
+
+    private func handleGameControllerButtonGimbal(pressed: Bool, velocity: Vector3D) {
+        if #available(iOS 18.0, *) {
+            if pressed {
+                Gimbal.shared?.setGimbalAngularVelocity(velocity: velocity)
+            } else {
+                Gimbal.shared?.stopGimbalMovement()
             }
         }
     }
