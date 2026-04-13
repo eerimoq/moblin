@@ -1,42 +1,14 @@
 import GameController
 
 extension Model {
-    private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
-        if pressed {
-            setZoomX(x: x, rate: database.zoom.speed)
-        } else {
-            if let x = stopCameraZoom() {
-                setZoomXWhenInRange(x: x)
-            }
-        }
-    }
-
-    private func handleGameControllerButton(
-        _ gameController: GCController,
-        _ button: GCControllerButtonInput,
-        _: Float,
-        _ pressed: Bool
-    ) {
-        guard let gameControllerIndex = gameControllers.firstIndex(of: gameController) else {
+    func moveToGimbalPreset(id: UUID) {
+        guard #available(iOS 18.0, *) else {
             return
         }
-        guard gameControllerIndex < database.gameControllers.count else {
+        guard let preset = database.gimbal.presets.first(where: { $0.id == id }) else {
             return
         }
-        guard let name = button.sfSymbolsName else {
-            return
-        }
-        let button = database.gameControllers[gameControllerIndex].buttons.first(where: { button in
-            button.name == name
-        })
-        guard let button else {
-            return
-        }
-        handleControllerFunction(function: button.function,
-                                 sceneId: button.sceneId,
-                                 widgetId: button.widgetId,
-                                 gimbalPresetId: button.gimbalPresetId,
-                                 pressed: pressed)
+        Gimbal.shared?.setGimbalOrientation(angles: .init(x: preset.x, y: preset.y, z: 0))
     }
 
     func handleControllerFunction(function: SettingsControllerFunction,
@@ -177,12 +149,50 @@ extension Model {
         }
     }
 
-    private func numberOfGameControllers() -> Int {
-        return gameControllers.filter { $0 != nil }.count
-    }
-
     func isGameControllerConnected() -> Bool {
         return numberOfGameControllers() > 0
+    }
+
+    private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
+        if pressed {
+            setZoomX(x: x, rate: database.zoom.speed)
+        } else {
+            if let x = stopCameraZoom() {
+                setZoomXWhenInRange(x: x)
+            }
+        }
+    }
+
+    private func handleGameControllerButton(
+        _ gameController: GCController,
+        _ button: GCControllerButtonInput,
+        _: Float,
+        _ pressed: Bool
+    ) {
+        guard let gameControllerIndex = gameControllers.firstIndex(of: gameController) else {
+            return
+        }
+        guard gameControllerIndex < database.gameControllers.count else {
+            return
+        }
+        guard let name = button.sfSymbolsName else {
+            return
+        }
+        let button = database.gameControllers[gameControllerIndex].buttons.first(where: { button in
+            button.name == name
+        })
+        guard let button else {
+            return
+        }
+        handleControllerFunction(function: button.function,
+                                 sceneId: button.sceneId,
+                                 widgetId: button.widgetId,
+                                 gimbalPresetId: button.gimbalPresetId,
+                                 pressed: pressed)
+    }
+
+    private func numberOfGameControllers() -> Int {
+        return gameControllers.filter { $0 != nil }.count
     }
 
     private func updateGameControllers() {

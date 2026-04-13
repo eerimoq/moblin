@@ -46,6 +46,7 @@ enum RemoteControlRequest: Codable {
     case whip(url: String, method: String, headers: [SettingsHttpHeader], body: Data)
     case setFilter(filter: RemoteControlFilter, on: Bool)
     case triggerReaction(reaction: RemoteControlReaction)
+    case moveToGimbalPreset(id: UUID)
 }
 
 enum RemoteControlResponse: Codable {
@@ -760,12 +761,18 @@ struct RemoteControlSettingsSrt: Codable {
     var connectionPriorities: [RemoteControlSettingsSrtConnectionPriority]
 }
 
+struct RemoteControlSettingsGimbalPreset: Codable {
+    var id: UUID
+    var name: String
+}
+
 struct RemoteControlSettings: Codable {
     var scenes: [RemoteControlSettingsScene]
     var autoSceneSwitchers: [RemoteControlSettingsAutoSceneSwitcher]?
     var bitratePresets: [RemoteControlSettingsBitratePreset]
     var mics: [RemoteControlSettingsMic]
     var srt: RemoteControlSettingsSrt
+    var gimbalPresets: [RemoteControlSettingsGimbalPreset]
 }
 
 struct RemoteControlStateAutoSceneSwitcher: Codable {

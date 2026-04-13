@@ -608,6 +608,9 @@ extension Model {
                 )
             }
         let connectionPrioritiesEnabled = stream.srt.connectionPriorities.enabled
+        let gimbalPresets = database.gimbal.presets.map {
+            RemoteControlSettingsGimbalPreset(id: $0.id, name: $0.name)
+        }
         return RemoteControlSettings(
             scenes: scenes,
             autoSceneSwitchers: autoSceneSwitchers,
@@ -616,7 +619,8 @@ extension Model {
             srt: RemoteControlSettingsSrt(
                 connectionPrioritiesEnabled: connectionPrioritiesEnabled,
                 connectionPriorities: connectionPriorities
-            )
+            ),
+            gimbalPresets: gimbalPresets
         )
     }
 }
@@ -904,6 +908,10 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerTriggerReaction(reaction: RemoteControlReaction) {
         handleRemoteControlTriggerReaction(reaction: reaction)
+    }
+
+    func remoteControlStreamerMoveToGimbalPreset(id: UUID) {
+        moveToGimbalPreset(id: id)
     }
 }
 

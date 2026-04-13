@@ -29,22 +29,22 @@ private struct ValueView: View {
 
 private struct GimbalPresetView: View {
     @ObservedObject var gimbal: SettingsGimbal
-    @ObservedObject var orientation: SettingsGimbalPreset
+    @ObservedObject var preset: SettingsGimbalPreset
 
     var body: some View {
         NavigationLink {
             Form {
                 Section {
-                    NameEditView(name: $orientation.name, existingNames: gimbal.presets)
+                    NameEditView(name: $preset.name, existingNames: gimbal.presets)
                 }
                 Section {
-                    ValueView(name: "X", value: $orientation.x)
-                    ValueView(name: "Y", value: $orientation.y)
+                    ValueView(name: "X", value: $preset.x)
+                    ValueView(name: "Y", value: $preset.y)
                 }
             }
             .navigationTitle("Preset")
         } label: {
-            Text(orientation.name)
+            Text(preset.name)
         }
     }
 }
@@ -57,6 +57,10 @@ struct GimbalSettingsView: View {
         return SettingsControllerFunction.allCases.filter {
             ![.unused, .zoomIn, .zoomOut].contains($0)
         }
+    }
+
+    private func deletePreset(at offsets: IndexSet) {
+        gimbal.presets.remove(atOffsets: offsets)
     }
 
     var body: some View {
@@ -97,12 +101,15 @@ struct GimbalSettingsView: View {
             }
             Section {
                 List {
-                    ForEach(gimbal.presets) {
-                        GimbalPresetView(gimbal: gimbal, orientation: $0)
+                    ForEach(gimbal.presets) { preset in
+                        GimbalPresetView(gimbal: gimbal, preset: preset)
+                            .contextMenuDeleteButton {
+                                if let offsets = makeOffsets(gimbal.presets, preset.id) {
+                                    deletePreset(at: offsets)
+                                }
+                            }
                     }
-                    .onDelete { offsets in
-                        gimbal.presets.remove(atOffsets: offsets)
-                    }
+                    .onDelete(perform: deletePreset)
                 }
                 if #available(iOS 18, *) {
                     TextButtonView("Save current") {
