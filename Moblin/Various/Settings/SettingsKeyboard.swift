@@ -7,6 +7,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
     @Published var sceneId: UUID?
     @Published var widgetId: UUID?
     @Published var gimbalPresetId: UUID?
+    @Published var gimbalMotion: SettingsGimbalMotion = .kapow
 
     init() {}
 
@@ -16,7 +17,8 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
              function,
              sceneId,
              widgetId,
-             gimbalPresetId
+             gimbalPresetId,
+             gimbalMotion
     }
 
     func encode(to encoder: Encoder) throws {
@@ -27,6 +29,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         try container.encode(.sceneId, sceneId)
         try container.encode(.widgetId, widgetId)
         try container.encode(.gimbalPresetId, gimbalPresetId)
+        try container.encode(.gimbalMotion, gimbalMotion)
     }
 
     required init(from decoder: Decoder) throws {
@@ -37,6 +40,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         sceneId = container.decode(.sceneId, UUID?.self, nil)
         widgetId = container.decode(.widgetId, UUID?.self, nil)
         gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
+        gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
     }
 }
 

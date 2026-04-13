@@ -333,6 +333,7 @@ extension Model {
                                  sceneId: database.selfieStick.sceneId,
                                  widgetId: database.selfieStick.widgetId,
                                  gimbalPresetId: database.selfieStick.gimbalPresetId,
+                                 gimbalMotion: database.selfieStick.gimbalMotion,
                                  pressed: false)
     }
 

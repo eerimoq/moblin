@@ -81,7 +81,8 @@ struct KeyboardKeySettingsView: View {
                                          function: $key.function,
                                          sceneId: $key.sceneId,
                                          widgetId: $key.widgetId,
-                                         gimbalPresetId: $key.gimbalPresetId)
+                                         gimbalPresetId: $key.gimbalPresetId,
+                                         gimbalMotion: $key.gimbalMotion)
                 }
             }
             .navigationTitle("Keyboard key")

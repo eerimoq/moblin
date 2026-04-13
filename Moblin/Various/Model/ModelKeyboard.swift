@@ -38,6 +38,7 @@ extension Model {
                                           sceneId: key.sceneId,
                                           widgetId: key.widgetId,
                                           gimbalPresetId: nil,
+                                          gimbalMotion: key.gimbalMotion,
                                           pressed: false)
         }
         return true

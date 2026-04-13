@@ -7,6 +7,7 @@ struct ControllerButtonView: View {
     @Binding var sceneId: UUID?
     @Binding var widgetId: UUID?
     @Binding var gimbalPresetId: UUID?
+    @Binding var gimbalMotion: SettingsGimbalMotion
 
     var body: some View {
         Picker("Function", selection: $function) {
@@ -49,6 +50,12 @@ struct ControllerButtonView: View {
                         .tag($0.id as UUID?)
                 }
             }
+        case .gimbalAnimate:
+            Picker("Motion", selection: $gimbalMotion) {
+                ForEach(SettingsGimbalMotion.allCases, id: \.self) {
+                    Text($0.toString())
+                }
+            }
         default:
             EmptyView()
         }
@@ -72,7 +79,8 @@ struct GameControllersControllerButtonSettingsView: View {
                                          function: $button.function,
                                          sceneId: $button.sceneId,
                                          widgetId: $button.widgetId,
-                                         gimbalPresetId: $button.gimbalPresetId)
+                                         gimbalPresetId: $button.gimbalPresetId,
+                                         gimbalMotion: $button.gimbalMotion)
                 }
             }
             .navigationTitle("Game controller button")

@@ -18,6 +18,7 @@ extension Model {
                                   sceneId: UUID?,
                                   widgetId: UUID?,
                                   gimbalPresetId: UUID?,
+                                  gimbalMotion: SettingsGimbalMotion,
                                   pressed: Bool)
     {
         switch function {
@@ -37,6 +38,26 @@ extension Model {
             handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
         case .zoomOut:
             handleGameControllerButtonZoom(pressed: pressed, x: 0)
+        case .gimbalUp:
+            handleGameControllerButtonGimbal(
+                pressed: pressed,
+                velocity: .init(x: gimbalAngularVelocity, y: 0, z: 0)
+            )
+        case .gimbalDown:
+            handleGameControllerButtonGimbal(
+                pressed: pressed,
+                velocity: .init(x: -gimbalAngularVelocity, y: 0, z: 0)
+            )
+        case .gimbalLeft:
+            handleGameControllerButtonGimbal(
+                pressed: pressed,
+                velocity: .init(x: 0, y: gimbalAngularVelocity, z: 0)
+            )
+        case .gimbalRight:
+            handleGameControllerButtonGimbal(
+                pressed: pressed,
+                velocity: .init(x: 0, y: -gimbalAngularVelocity, z: 0)
+            )
         case .gimbalPreset:
             if !pressed {
                 if #available(iOS 18.0, *),
@@ -45,6 +66,12 @@ extension Model {
                     Gimbal.shared?.setOrientation(angles: .init(x: preset.x,
                                                                 y: preset.y,
                                                                 z: 0))
+                }
+            }
+        case .gimbalAnimate:
+            if !pressed {
+                if #available(iOS 18.0, *) {
+                    Gimbal.shared?.animate(motion: gimbalMotion.toSystem())
                 }
             }
         case .torch:
@@ -149,26 +176,6 @@ extension Model {
             if !pressed {
                 toggleBeautyQuickButton()
             }
-        case .gimbalUp:
-            handleGameControllerButtonGimbal(
-                pressed: pressed,
-                velocity: .init(x: gimbalAngularVelocity, y: 0, z: 0)
-            )
-        case .gimbalDown:
-            handleGameControllerButtonGimbal(
-                pressed: pressed,
-                velocity: .init(x: -gimbalAngularVelocity, y: 0, z: 0)
-            )
-        case .gimbalLeft:
-            handleGameControllerButtonGimbal(
-                pressed: pressed,
-                velocity: .init(x: 0, y: gimbalAngularVelocity, z: 0)
-            )
-        case .gimbalRight:
-            handleGameControllerButtonGimbal(
-                pressed: pressed,
-                velocity: .init(x: 0, y: -gimbalAngularVelocity, z: 0)
-            )
         }
     }
 
@@ -221,6 +228,7 @@ extension Model {
                                  sceneId: button.sceneId,
                                  widgetId: button.widgetId,
                                  gimbalPresetId: button.gimbalPresetId,
+                                 gimbalMotion: button.gimbalMotion,
                                  pressed: pressed)
     }
 

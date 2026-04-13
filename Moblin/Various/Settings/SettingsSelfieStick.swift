@@ -6,13 +6,15 @@ class SettingsSelfieStick: Codable, ObservableObject {
     @Published var sceneId: UUID?
     @Published var widgetId: UUID?
     @Published var gimbalPresetId: UUID?
+    @Published var gimbalMotion: SettingsGimbalMotion = .kapow
 
     enum CodingKeys: CodingKey {
         case enabled,
              function,
              sceneId,
              widgetId,
-             gimbalPresetId
+             gimbalPresetId,
+             gimbalMotion
     }
 
     func encode(to encoder: Encoder) throws {
@@ -22,6 +24,7 @@ class SettingsSelfieStick: Codable, ObservableObject {
         try container.encode(.sceneId, sceneId)
         try container.encode(.widgetId, widgetId)
         try container.encode(.gimbalPresetId, gimbalPresetId)
+        try container.encode(.gimbalMotion, gimbalMotion)
     }
 
     init() {}
@@ -33,5 +36,6 @@ class SettingsSelfieStick: Codable, ObservableObject {
         sceneId = container.decode(.sceneId, UUID?.self, nil)
         widgetId = container.decode(.widgetId, UUID?.self, nil)
         gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
+        gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
     }
 }

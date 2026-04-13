@@ -34,6 +34,12 @@ class Gimbal {
         }
     }
 
+    func animate(motion: DockAccessory.Animation) {
+        Task { @MainActor [weak self] in
+            _ = try await self?.accessory?.animate(motion: motion)
+        }
+    }
+
     func setMovement(velocity: Vector3D) {
         Task { @MainActor [weak self] in
             _ = try await self?.accessory?.setAngularVelocity(velocity)
@@ -109,6 +115,7 @@ class Gimbal {
                                        sceneId: gimbal.shutterSceneId,
                                        widgetId: gimbal.shutterWidgetId,
                                        gimbalPresetId: nil,
+                                       gimbalMotion: gimbal.motion,
                                        pressed: false)
     }
 
@@ -118,6 +125,7 @@ class Gimbal {
                                        sceneId: gimbal.flipSceneId,
                                        widgetId: gimbal.flipWidgetId,
                                        gimbalPresetId: nil,
+                                       gimbalMotion: gimbal.motion,
                                        pressed: false)
     }
 

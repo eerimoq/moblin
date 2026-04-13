@@ -1,9 +1,44 @@
+import DockKit
 import Foundation
 import SwiftUI
 
 enum SettingsControllerFunctionSection {
     case general
     case filters
+}
+
+enum SettingsGimbalMotion: Codable, CaseIterable {
+    case kapow
+    case yes
+    case no
+    case wakeup
+
+    func toString() -> String {
+        switch self {
+        case .kapow:
+            return String(localized: "Kapow")
+        case .yes:
+            return String(localized: "Yes")
+        case .no:
+            return String(localized: "No")
+        case .wakeup:
+            return String(localized: "Wakeup")
+        }
+    }
+
+    @available(iOS 18, *)
+    func toSystem() -> DockAccessory.Animation {
+        switch self {
+        case .kapow:
+            return .kapow
+        case .yes:
+            return .yes
+        case .no:
+            return .no
+        case .wakeup:
+            return .wakeup
+        }
+    }
 }
 
 enum SettingsControllerFunction: String, Codable, CaseIterable {
@@ -17,6 +52,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case gimbalLeft = "Gimbal left"
     case gimbalRight = "Gimbal right"
     case gimbalPreset = "Gimbal preset"
+    case gimbalAnimate = "Gimbal animate"
     case mute = "Mute"
     case torch = "Torch"
     case blackScreen = "Black screen"
@@ -64,6 +100,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Gimbal right")
         case .gimbalPreset:
             return String(localized: "Gimbal preset")
+        case .gimbalAnimate:
+            return String(localized: "Gimbal animate")
         case .mute:
             return String(localized: "Mute")
         case .torch:
@@ -165,6 +203,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return .general
         case .gimbalPreset:
             return .general
+        case .gimbalAnimate:
+            return .general
         case .mute:
             return .general
         case .torch:
@@ -225,6 +265,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     @Published var sceneId: UUID?
     @Published var widgetId: UUID?
     @Published var gimbalPresetId: UUID?
+    @Published var gimbalMotion: SettingsGimbalMotion = .kapow
 
     init() {}
 
@@ -235,7 +276,8 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
              function,
              sceneId,
              widgetId,
-             gimbalPresetId
+             gimbalPresetId,
+             gimbalMotion
     }
 
     func encode(to encoder: Encoder) throws {
@@ -247,6 +289,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         try container.encode(.sceneId, sceneId)
         try container.encode(.widgetId, widgetId)
         try container.encode(.gimbalPresetId, gimbalPresetId)
+        try container.encode(.gimbalMotion, gimbalMotion)
     }
 
     required init(from decoder: Decoder) throws {
@@ -258,6 +301,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         sceneId = container.decode(.sceneId, UUID?.self, nil)
         widgetId = container.decode(.widgetId, UUID?.self, nil)
         gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
+        gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
     }
 }
 
