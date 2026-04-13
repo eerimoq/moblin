@@ -1076,12 +1076,32 @@ extension Model: RemoteControlWebDelegate {
         selectScene(id: id)
     }
 
+    func remoteControlWebSetAutoSceneSwitcher(id: UUID?) {
+        remoteControlStreamerSetAutoSceneSwitcher(id: id)
+    }
+
+    func remoteControlWebSetMic(id: String) {
+        remoteControlStreamerSetMic(id: id)
+    }
+
+    func remoteControlWebSetBitratePreset(id: UUID) {
+        remoteControlStreamerSetBitratePreset(id: id)
+    }
+
     func remoteControlWebSetRecord(on: Bool) {
         remoteControlStreamerSetRecord(on: on)
     }
 
     func remoteControlWebSetStream(on: Bool) {
         remoteControlStreamerSetStream(on: on)
+    }
+
+    func remoteControlWebSetZoom(x: Float) {
+        remoteControlStreamerSetZoom(x: x)
+    }
+
+    func remoteControlWebSetZoomPreset(id: UUID) {
+        remoteControlStreamerSetZoomPreset(id: id)
     }
 
     func remoteControlWebSetDebugLogging(on: Bool) {
@@ -1094,6 +1114,22 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetTorch(on: Bool) {
         remoteControlStreamerSetTorch(on: on)
+    }
+
+    func remoteControlWebReloadBrowserWidgets() {
+        reloadBrowserWidgets()
+    }
+
+    func remoteControlWebSetSrtConnectionPrioritiesEnabled(enabled: Bool) {
+        remoteControlStreamerSetSrtConnectionPrioritiesEnabled(enabled: enabled)
+    }
+
+    func remoteControlWebSetSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool) {
+        remoteControlStreamerSetSrtConnectionPriority(id: id, priority: priority, enabled: enabled)
+    }
+
+    func remoteControlWebMoveToGimbalPreset(id: UUID) {
+        remoteControlStreamerMoveToGimbalPreset(id: id)
     }
 
     func remoteControlWebGetScoreboardSports() -> [String] {

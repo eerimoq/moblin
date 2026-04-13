@@ -7,11 +7,20 @@ protocol RemoteControlWebDelegate: AnyObject {
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     func remoteControlWebGetSettings() -> RemoteControlSettings
     func remoteControlWebSetScene(id: UUID)
+    func remoteControlWebSetAutoSceneSwitcher(id: UUID?)
+    func remoteControlWebSetMic(id: String)
+    func remoteControlWebSetBitratePreset(id: UUID)
     func remoteControlWebSetRecord(on: Bool)
     func remoteControlWebSetStream(on: Bool)
+    func remoteControlWebSetZoom(x: Float)
+    func remoteControlWebSetZoomPreset(id: UUID)
     func remoteControlWebSetDebugLogging(on: Bool)
     func remoteControlWebSetMute(on: Bool)
     func remoteControlWebSetTorch(on: Bool)
+    func remoteControlWebReloadBrowserWidgets()
+    func remoteControlWebSetSrtConnectionPrioritiesEnabled(enabled: Bool)
+    func remoteControlWebSetSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
+    func remoteControlWebMoveToGimbalPreset(id: UUID)
     func remoteControlWebGetScoreboardSports() -> [String]
     func remoteControlWebSetScoreboardSport(sportId: String)
     func remoteControlWebUpdateScoreboard(config: RemoteControlScoreboardMatchConfig)
@@ -320,11 +329,26 @@ class RemoteControlWeb {
         case let .setScene(id: sceneId):
             delegate.remoteControlWebSetScene(id: sceneId)
             sendEmptyOkResponse(connection: connection, id: id)
+        case let .setAutoSceneSwitcher(id: autoSceneSwitcherId):
+            delegate.remoteControlWebSetAutoSceneSwitcher(id: autoSceneSwitcherId)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setMic(id: micId):
+            delegate.remoteControlWebSetMic(id: micId)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setBitratePreset(id: bitratePresetId):
+            delegate.remoteControlWebSetBitratePreset(id: bitratePresetId)
+            sendEmptyOkResponse(connection: connection, id: id)
         case let .setRecord(on: on):
             delegate.remoteControlWebSetRecord(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setStream(on: on):
             delegate.remoteControlWebSetStream(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setZoom(x: x):
+            delegate.remoteControlWebSetZoom(x: x)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setZoomPreset(id: presetId):
+            delegate.remoteControlWebSetZoomPreset(id: presetId)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setMute(on: on):
             delegate.remoteControlWebSetMute(on: on)
@@ -334,6 +358,22 @@ class RemoteControlWeb {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setDebugLogging(on: on):
             delegate.remoteControlWebSetDebugLogging(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .reloadBrowserWidgets:
+            delegate.remoteControlWebReloadBrowserWidgets()
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setSrtConnectionPrioritiesEnabled(enabled: enabled):
+            delegate.remoteControlWebSetSrtConnectionPrioritiesEnabled(enabled: enabled)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setSrtConnectionPriority(id: priorityId, priority: priority, enabled: enabled):
+            delegate.remoteControlWebSetSrtConnectionPriority(
+                id: priorityId,
+                priority: priority,
+                enabled: enabled
+            )
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .moveToGimbalPreset(id: presetId):
+            delegate.remoteControlWebMoveToGimbalPreset(id: presetId)
             sendEmptyOkResponse(connection: connection, id: id)
         case .getScoreboardSports:
             let sports = delegate.remoteControlWebGetScoreboardSports()
