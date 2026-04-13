@@ -165,6 +165,10 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setDebugLogging(on: on), onSuccess: onSuccess)
     }
 
+    func moveToGimbalPreset(id: UUID, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .moveToGimbalPreset(id: id), onSuccess: onSuccess)
+    }
+
     func setRemoteSceneSettings(data: RemoteControlRemoteSceneSettings, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setRemoteSceneSettings(data: data), onSuccess: onSuccess)
     }

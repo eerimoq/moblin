@@ -761,7 +761,7 @@ struct RemoteControlSettingsSrt: Codable {
     var connectionPriorities: [RemoteControlSettingsSrtConnectionPriority]
 }
 
-struct RemoteControlSettingsGimbalPreset: Codable {
+struct RemoteControlSettingsGimbalPreset: Codable, Identifiable {
     var id: UUID
     var name: String
 }

@@ -288,6 +288,10 @@ extension Model {
         ) {}
     }
 
+    func remoteControlAssistantMoveToGimbalPreset(id: UUID) {
+        remoteControlAssistant?.moveToGimbalPreset(id: id) {}
+    }
+
     func remoteControlAssistantSetFilter(filter: RemoteControlFilter, on: Bool) {
         remoteControlAssistant?.setFilter(filter: filter, on: on)
     }

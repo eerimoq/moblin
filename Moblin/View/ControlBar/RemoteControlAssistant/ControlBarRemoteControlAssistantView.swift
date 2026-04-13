@@ -532,6 +532,34 @@ private struct BitrateView: View {
     }
 }
 
+private struct GimbalPresetView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    if let presets = remoteControl.settings?.gimbalPresets, !presets.isEmpty {
+                        ForEach(presets) { preset in
+                            TextButtonView(title: preset.name) {
+                                model.remoteControlAssistantMoveToGimbalPreset(id: preset.id)
+                            }
+                        }
+                    } else {
+                        HCenter {
+                            Text("No gimbal presets configured in streamer")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Gimbal presets")
+        } label: {
+            Text("Gimbal presets")
+        }
+    }
+}
+
 private struct SrtConnectionPrioritiesView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -641,6 +669,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 MicView(model: model, remoteControl: remoteControl)
                 BitrateView(model: model, remoteControl: remoteControl)
                 SrtConnectionPrioritiesView(model: model, remoteControl: remoteControl)
+                GimbalPresetView(model: model, remoteControl: remoteControl)
                 FiltersView(model: model, remoteControl: remoteControl)
                 DebugLoggingView(model: model, remoteControl: remoteControl)
             } else {
