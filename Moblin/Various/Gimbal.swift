@@ -28,20 +28,20 @@ class Gimbal {
         return accessory != nil
     }
 
-    func setGimbalOrientation(angles: Vector3D) {
+    func setOrientation(angles: Vector3D) {
         Task { @MainActor [weak self] in
             _ = try await self?.accessory?.setOrientation(angles)
         }
     }
 
-    func setGimbalAngularVelocity(velocity: Vector3D) {
+    func setMovement(velocity: Vector3D) {
         Task { @MainActor [weak self] in
             _ = try await self?.accessory?.setAngularVelocity(velocity)
         }
     }
 
-    func stopGimbalMovement() {
-        setGimbalAngularVelocity(velocity: .init(x: 0, y: 0, z: 0))
+    func cancelMovement() {
+        setMovement(velocity: .init(x: 0, y: 0, z: 0))
     }
 
     func getCurrentOrientation() async -> Vector3D? {

@@ -11,7 +11,7 @@ extension Model {
         guard let preset = database.gimbal.presets.first(where: { $0.id == id }) else {
             return
         }
-        Gimbal.shared?.setGimbalOrientation(angles: .init(x: preset.x, y: preset.y, z: 0))
+        Gimbal.shared?.setOrientation(angles: .init(x: preset.x, y: preset.y, z: 0))
     }
 
     func handleControllerFunction(function: SettingsControllerFunction,
@@ -42,9 +42,9 @@ extension Model {
                 if #available(iOS 18.0, *),
                    let preset = database.gimbal.presets.first(where: { $0.id == gimbalPresetId })
                 {
-                    Gimbal.shared?.setGimbalOrientation(angles: .init(x: preset.x,
-                                                                      y: preset.y,
-                                                                      z: 0))
+                    Gimbal.shared?.setOrientation(angles: .init(x: preset.x,
+                                                                y: preset.y,
+                                                                z: 0))
                 }
             }
         case .torch:
@@ -189,9 +189,9 @@ extension Model {
     private func handleGameControllerButtonGimbal(pressed: Bool, velocity: Vector3D) {
         if #available(iOS 18.0, *) {
             if pressed {
-                Gimbal.shared?.setGimbalAngularVelocity(velocity: velocity)
+                Gimbal.shared?.setMovement(velocity: velocity)
             } else {
-                Gimbal.shared?.stopGimbalMovement()
+                Gimbal.shared?.cancelMovement()
             }
         }
     }
