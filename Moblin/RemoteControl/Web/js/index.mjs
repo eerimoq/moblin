@@ -440,10 +440,7 @@ function updateConnectionStatus() {
 }
 
 function populateSettings(settingsData) {
-  document.getElementById("controlLoading").classList.add("hidden");
   document.getElementById("controlSection").classList.remove("hidden");
-
-  // Scenes
   let sceneSelect = document.getElementById("controlScene");
   sceneSelect.innerHTML = "";
   for (const scene of settingsData.scenes) {
@@ -452,8 +449,6 @@ function populateSettings(settingsData) {
     option.textContent = scene.name;
     sceneSelect.appendChild(option);
   }
-
-  // Auto scene switchers
   let autoSceneSelect = document.getElementById("controlAutoSceneSwitcher");
   autoSceneSelect.innerHTML = "";
   let noneOption = document.createElement("option");
@@ -468,8 +463,6 @@ function populateSettings(settingsData) {
       autoSceneSelect.appendChild(option);
     }
   }
-
-  // Mics
   let micSelect = document.getElementById("controlMic");
   micSelect.innerHTML = "";
   for (const mic of settingsData.mics) {
@@ -478,8 +471,6 @@ function populateSettings(settingsData) {
     option.textContent = mic.name;
     micSelect.appendChild(option);
   }
-
-  // Bitrate presets
   let bitrateSelect = document.getElementById("controlBitrate");
   bitrateSelect.innerHTML = "";
   for (const preset of settingsData.bitratePresets) {
@@ -488,8 +479,6 @@ function populateSettings(settingsData) {
     option.textContent = preset.bitrate > 0 ? formatBytesPerSecond(preset.bitrate) : "Unknown";
     bitrateSelect.appendChild(option);
   }
-
-  // Re-apply last-known picker selections (state may arrive before settings)
   if (lastKnownSceneId !== null) {
     document.getElementById("controlScene").value = lastKnownSceneId;
   }
@@ -502,8 +491,6 @@ function populateSettings(settingsData) {
   if (lastKnownBitrateId !== null) {
     document.getElementById("controlBitrate").value = lastKnownBitrateId;
   }
-
-  // SRT connection priorities
   if (
     settingsData.srt &&
     settingsData.srt.connectionPriorities &&
@@ -514,14 +501,10 @@ function populateSettings(settingsData) {
       settingsData.srt.connectionPrioritiesEnabled;
     populateSrtPriorities(settingsData.srt.connectionPriorities);
   }
-
-  // Gimbal presets
   if (settingsData.gimbalPresets && settingsData.gimbalPresets.length > 0) {
     document.getElementById("gimbalSection").classList.remove("hidden");
     populateGimbalPresets(settingsData.gimbalPresets);
   }
-
-  // Filters
   populateFilters();
 }
 

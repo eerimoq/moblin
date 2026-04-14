@@ -7,7 +7,6 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="stylesheet" href="css/app.css" />
   </head>
-
   <body class="bg-zinc-950 text-zinc-100 font-sans p-4">
     <div class="max-w-3xl mx-auto space-y-4">
       <h1 class="text-2xl font-bold text-center">Moblin Remote Control</h1>
@@ -30,11 +29,9 @@
           Github
         </a>
       </div>
-
       <div class="pb-1 text-center">
         <span id="status" class="text-sm"></span>
       </div>
-
       <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
         <h2 class="text-xl font-semibold mb-3">Status</h2>
         <h3 class="text-base font-medium text-zinc-300 mb-1">General</h3>
@@ -59,9 +56,6 @@
 
       <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
         <h2 class="text-xl font-semibold mb-3">Control</h2>
-        <div id="controlLoading" class="text-center text-zinc-400 text-sm py-4">
-          Loading settings...
-        </div>
         <div id="controlSection" class="space-y-3 hidden">
           <label class="flex items-center cursor-pointer">
             <div class="relative flex items-center">
@@ -114,7 +108,6 @@
               <span class="ml-3 text-sm text-zinc-200">Muted</span>
             </div>
           </label>
-
           <div class="flex items-center space-x-4">
             <label for="controlZoom" class="text-sm text-zinc-200 w-24 shrink-0">Zoom</label>
             <input
@@ -127,7 +120,6 @@
           <div id="zoomPresetsContainer" class="hidden">
             <div id="zoomPresets" class="flex flex-wrap gap-2"></div>
           </div>
-
           <div class="flex items-center space-x-4">
             <label for="controlScene" class="text-sm text-zinc-200 w-24 shrink-0">Scene</label>
             <select
@@ -135,7 +127,6 @@
               class="bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 flex-1"
             ></select>
           </div>
-
           <div class="flex items-center space-x-4">
             <label for="controlAutoSceneSwitcher" class="text-sm text-zinc-200 w-24 shrink-0"
               >Auto scene</label
@@ -145,7 +136,6 @@
               class="bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 flex-1"
             ></select>
           </div>
-
           <div class="flex items-center space-x-4">
             <label for="controlMic" class="text-sm text-zinc-200 w-24 shrink-0">Mic</label>
             <select
@@ -153,7 +143,6 @@
               class="bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 flex-1"
             ></select>
           </div>
-
           <div class="flex items-center space-x-4">
             <label for="controlBitrate" class="text-sm text-zinc-200 w-24 shrink-0">Bitrate</label>
             <select
@@ -161,7 +150,6 @@
               class="bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 flex-1"
             ></select>
           </div>
-
           <label class="flex items-center cursor-pointer">
             <div class="relative flex items-center">
               <input
@@ -179,9 +167,16 @@
               <span class="ml-3 text-sm text-zinc-200">Debug logging</span>
             </div>
           </label>
+          <div class="flex flex-wrap gap-2">
+            <button
+              id="reloadBrowserWidgets"
+              class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-sm px-3 py-1 rounded transition-colors"
+            >
+              Reload browser widgets
+            </button>
+          </div>
         </div>
       </div>
-
       <div id="srtSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-4 hidden">
         <h2 class="text-xl font-semibold mb-3">SRT Connection Priorities</h2>
         <label class="flex items-center cursor-pointer mb-3">
@@ -202,35 +197,19 @@
         </label>
         <div id="srtPriorities" class="space-y-2"></div>
       </div>
-
       <div id="gimbalSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-4 hidden">
         <h2 class="text-xl font-semibold mb-3">Gimbal Presets</h2>
         <div id="gimbalPresets" class="flex flex-wrap gap-2"></div>
       </div>
-
       <div id="filtersSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-4 hidden">
         <h2 class="text-xl font-semibold mb-3">Filters</h2>
         <div id="filterToggles" class="space-y-3"></div>
       </div>
-
-      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
-        <h2 class="text-xl font-semibold mb-3">Actions</h2>
-        <div class="flex flex-wrap gap-2">
-          <button
-            id="reloadBrowserWidgets"
-            class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-sm px-4 py-2 rounded transition-colors"
-          >
-            Reload browser widgets
-          </button>
-        </div>
-      </div>
-
       <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
         <h2 class="text-xl font-semibold mb-3">Log</h2>
         <div id="log" class="overflow-y-auto h-96 text-sm text-zinc-300"></div>
       </div>
     </div>
-
     <script src="js/index.mjs" type="module"></script>
   </body>
 </html>
