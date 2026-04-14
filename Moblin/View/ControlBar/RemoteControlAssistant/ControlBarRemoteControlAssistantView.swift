@@ -893,12 +893,10 @@ struct ControlBarRemoteControlAssistantView: View {
             ControlBarRemoteControlAssistantInnerView(remoteControlSettings: model.database.remoteControl,
                                                       remoteControl: model.remoteControl,
                                                       orientation: model.orientation)
-            VStack {
-                HCenter {
-                    Text(title())
-                        .font(.title3)
-                        .padding(5)
-                }
+            VStack(alignment: .center) {
+                Text(title())
+                    .font(.title3)
+                    .padding(5)
                 Spacer()
             }
             ButtonsView()
