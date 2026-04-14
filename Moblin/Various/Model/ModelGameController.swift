@@ -36,7 +36,7 @@ extension Model {
                 updateQuickButtonStates()
             }
         case .zoomIn:
-            handleGameControllerButtonZoom(pressed: pressed, x: Float.infinity)
+            handleGameControllerButtonZoom(pressed: pressed, x: .infinity)
         case .zoomOut:
             handleGameControllerButtonZoom(pressed: pressed, x: 0)
         case .gimbalUp:
