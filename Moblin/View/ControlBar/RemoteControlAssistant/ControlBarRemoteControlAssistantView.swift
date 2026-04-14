@@ -903,6 +903,6 @@ struct ControlBarRemoteControlAssistantView: View {
             }
             ButtonsView()
         }
-        .background(.black)
+        .background(Color(.systemGroupedBackground))
     }
 }
