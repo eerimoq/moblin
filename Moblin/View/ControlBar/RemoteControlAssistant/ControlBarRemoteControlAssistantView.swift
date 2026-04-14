@@ -37,34 +37,33 @@ private struct RemoteControlSrtConnectionPriorityView: View {
     }
 
     var body: some View {
-        Toggle(isOn: Binding(get: {
-            enabled
-        }, set: {
-            var priority = priority
-            priority.enabled = $0
-            enabled = $0
-            model.remoteControlAssistantSetSrtConnectionPriority(priority: priority)
-        })) {
-            HStack {
+        VStack {
+            Toggle(isOn: Binding(get: {
+                enabled
+            }, set: {
+                var priority = priority
+                priority.enabled = $0
+                enabled = $0
+                model.remoteControlAssistantSetSrtConnectionPriority(priority: priority)
+            })) {
                 Text(makeName())
-                    .frame(width: 90)
-                Slider(
-                    value: $prio,
-                    in: Float(minimumSrtConnectionPriority) ... Float(maximumSrtConnectionPriority),
-                    step: 1,
-                    label: {
-                        EmptyView()
-                    },
-                    onEditingChanged: { begin in
-                        guard !begin else {
-                            return
-                        }
-                        var priority = priority
-                        priority.priority = clampConnectionPriority(value: Int(prio))
-                        model.remoteControlAssistantSetSrtConnectionPriority(priority: priority)
-                    }
-                )
             }
+            Slider(
+                value: $prio,
+                in: Float(minimumSrtConnectionPriority) ... Float(maximumSrtConnectionPriority),
+                step: 1,
+                label: {
+                    EmptyView()
+                },
+                onEditingChanged: { begin in
+                    guard !begin else {
+                        return
+                    }
+                    var priority = priority
+                    priority.priority = clampConnectionPriority(value: Int(prio))
+                    model.remoteControlAssistantSetSrtConnectionPriority(priority: priority)
+                }
+            )
         }
     }
 }
