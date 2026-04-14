@@ -194,6 +194,7 @@ private struct RemoteControlAudioLevelView: View {
 private struct ControlBarRemoteControlAssistantStatusView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
+    var title: LocalizedStringKey = ""
 
     private func batteryStatus(status: RemoteControlStatusGeneral) -> RemoteControlStatusItem? {
         guard let charging = status.batteryCharging, let level = status.batteryLevel else {
@@ -248,7 +249,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                 }
             }
         } header: {
-            Text("Preview")
+            Text(title)
         } footer: {
             if remoteControl.presentingPreview {
                 Text("Tap the preview to hide it. Double tap to toggle full screen.")
@@ -650,6 +651,7 @@ private struct DebugLoggingView: View {
 private struct ControlBarRemoteControlAssistantControlView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var remoteControl: RemoteControl
+    var title: LocalizedStringKey = ""
     @State var presentingLog: Bool = false
     @State var log: Deque<LogEntry> = []
 
@@ -678,7 +680,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 }
             }
         } header: {
-            Text("Control")
+            Text(title)
         }
         Section {
             TextButtonView("Reload browser widgets") {
@@ -756,13 +758,21 @@ private struct ButtonsView: View {
 
 private struct StreamerNotConfiguredView: View {
     var body: some View {
-        Text("No streamer selected.")
+        VStack(alignment: .center) {
+            Spacer()
+            Text("No streamer selected.")
+            Spacer()
+        }
     }
 }
 
 private struct WaitingForStreamerView: View {
     var body: some View {
-        Text("Waiting for the remote control streamer to connect...")
+        VStack(alignment: .center) {
+            Spacer()
+            Text("Waiting for the remote control streamer to connect...")
+            Spacer()
+        }
     }
 }
 
@@ -772,14 +782,6 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
     @ObservedObject var remoteControl: RemoteControl
     @ObservedObject var orientation: Orientation
     @State var didDetachCamera = false
-
-    private func title() -> String {
-        if let streamerName = remoteControlSettings.getSelectedStreamerName() {
-            return String(localized: "Remote control assistant") + " (\(streamerName))"
-        } else {
-            return String(localized: "Remote control assistant")
-        }
-    }
 
     var body: some View {
         ZStack {
@@ -804,24 +806,34 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
             } else {
                 HStack(spacing: 0) {
                     if !model.isRemoteControlAssistantConfigured() {
-                        Form {
-                            StreamerNotConfiguredView()
-                        }
+                        StreamerNotConfiguredView()
                     } else if !model.isRemoteControlAssistantConnected() {
-                        Form {
-                            WaitingForStreamerView()
-                        }
+                        WaitingForStreamerView()
                     } else if orientation.isPortrait {
-                        Form {
-                            ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl)
-                            ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl)
+                        NavigationStack {
+                            Form {
+                                ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl,
+                                                                           title: "Preview")
+                                ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl,
+                                                                            title: "Control")
+                            }
+                            .navigationTitle(" ")
+                            .navigationBarTitleDisplayMode(.inline)
                         }
                     } else {
-                        Form {
-                            ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl)
+                        NavigationStack {
+                            Form {
+                                ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl)
+                            }
+                            .navigationTitle("Status")
+                            .navigationBarTitleDisplayMode(.inline)
                         }
-                        Form {
-                            ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl)
+                        NavigationStack {
+                            Form {
+                                ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl)
+                            }
+                            .navigationTitle("Control")
+                            .navigationBarTitleDisplayMode(.inline)
                         }
                     }
                 }
@@ -862,22 +874,36 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                 }
             }
         }
-        .navigationTitle(title())
     }
 }
 
 struct ControlBarRemoteControlAssistantView: View {
     let model: Model
+    @ObservedObject var remoteControlSettings: SettingsRemoteControl
+
+    private func title() -> String {
+        if let streamerName = remoteControlSettings.getSelectedStreamerName() {
+            return String(localized: "Remote control assistant") + " (\(streamerName))"
+        } else {
+            return String(localized: "Remote control assistant")
+        }
+    }
 
     var body: some View {
         ZStack {
-            NavigationStack {
-                ControlBarRemoteControlAssistantInnerView(remoteControlSettings: model.database.remoteControl,
-                                                          remoteControl: model.remoteControl,
-                                                          orientation: model.orientation)
-                    .navigationBarTitleDisplayMode(.inline)
+            ControlBarRemoteControlAssistantInnerView(remoteControlSettings: model.database.remoteControl,
+                                                      remoteControl: model.remoteControl,
+                                                      orientation: model.orientation)
+            VStack {
+                HCenter {
+                    Text(title())
+                        .font(.title3)
+                        .padding(5)
+                }
+                Spacer()
             }
             ButtonsView()
         }
+        .background(.black)
     }
 }

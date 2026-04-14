@@ -460,7 +460,8 @@ struct MainView: View {
                     }
                 }
                 if model.showingRemoteControl {
-                    ControlBarRemoteControlAssistantView(model: model)
+                    ControlBarRemoteControlAssistantView(model: model,
+                                                         remoteControlSettings: model.database.remoteControl)
                 }
                 if model.showingPanel != .none {
                     MenuView()
@@ -535,7 +536,8 @@ struct MainView: View {
                     }
                 }
                 if model.showingRemoteControl {
-                    ControlBarRemoteControlAssistantView(model: model)
+                    ControlBarRemoteControlAssistantView(model: model,
+                                                         remoteControlSettings: model.database.remoteControl)
                 }
                 if model.showingPanel != .none, model.panelHidden {
                     PanelButtonsView(backgroundColor: model.showingPanel.buttonsBackgroundColor())
