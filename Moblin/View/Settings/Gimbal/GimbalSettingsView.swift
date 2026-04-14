@@ -27,6 +27,32 @@ private struct ValueView: View {
     }
 }
 
+private struct ZoomValueView: View {
+    @ObservedObject var preset: SettingsGimbalPreset
+
+    var body: some View {
+        HStack {
+            Text("Zoom")
+            Spacer()
+            Text(formatOneDecimal(preset.zoomX))
+            Button {
+                preset.zoomX = max(0.5, preset.zoomX - 0.1)
+            } label: {
+                Image(systemName: "minus.circle")
+                    .font(.title)
+            }
+            .buttonStyle(.borderless)
+            Button {
+                preset.zoomX = min(15, preset.zoomX + 0.1)
+            } label: {
+                Image(systemName: "plus.circle")
+                    .font(.title)
+            }
+            .buttonStyle(.borderless)
+        }
+    }
+}
+
 private struct GimbalPresetView: View {
     @ObservedObject var gimbal: SettingsGimbal
     @ObservedObject var preset: SettingsGimbalPreset
@@ -40,6 +66,7 @@ private struct GimbalPresetView: View {
                 Section {
                     ValueView(name: "X", value: $preset.x)
                     ValueView(name: "Y", value: $preset.y)
+                    ZoomValueView(preset: preset)
                 }
             }
             .navigationTitle("Preset")
@@ -122,6 +149,7 @@ struct GimbalSettingsView: View {
                                                              existingNames: gimbal.presets)
                                 preset.x = Float(angles.x)
                                 preset.y = Float(angles.y)
+                                preset.zoomX = model.zoom.x
                                 gimbal.presets.append(preset)
                             }
                         }

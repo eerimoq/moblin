@@ -12,6 +12,7 @@ extension Model {
             return
         }
         Gimbal.shared?.setOrientation(angles: .init(x: preset.x, y: preset.y, z: 0))
+        setZoomX(x: preset.zoomX, rate: database.zoom.speed)
     }
 
     func handleControllerFunction(function: SettingsControllerFunction,
@@ -60,12 +61,8 @@ extension Model {
             )
         case .gimbalPreset:
             if !pressed {
-                if #available(iOS 18.0, *),
-                   let preset = database.gimbal.presets.first(where: { $0.id == gimbalPresetId })
-                {
-                    Gimbal.shared?.setOrientation(angles: .init(x: preset.x,
-                                                                y: preset.y,
-                                                                z: 0))
+                if let gimbalPresetId {
+                    moveToGimbalPreset(id: gimbalPresetId)
                 }
             }
         case .gimbalAnimate:

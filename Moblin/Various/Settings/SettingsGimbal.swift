@@ -6,12 +6,14 @@ class SettingsGimbalPreset: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var x: Float = 0
     @Published var y: Float = 0
+    @Published var zoomX: Float = 1
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              x,
-             y
+             y,
+             zoomX
     }
 
     func encode(to encoder: Encoder) throws {
@@ -20,6 +22,7 @@ class SettingsGimbalPreset: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.x, x)
         try container.encode(.y, y)
+        try container.encode(.zoomX, zoomX)
     }
 
     init() {}
@@ -30,6 +33,7 @@ class SettingsGimbalPreset: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, SettingsGimbalPreset.baseName)
         x = container.decode(.x, Float.self, 0.0)
         y = container.decode(.y, Float.self, 0.0)
+        zoomX = container.decode(.zoomX, Float.self, 1)
     }
 }
 
