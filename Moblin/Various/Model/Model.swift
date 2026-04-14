@@ -2795,6 +2795,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         )
         media.usePendingAfterAttachEffects()
         updateVideoPreviews()
+        zoomPresetsMayHaveChanged()
     }
 
     func attachExternalCamera(scene: SettingsScene) {

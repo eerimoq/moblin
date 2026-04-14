@@ -32,7 +32,7 @@ extension Model {
             sendRemoteControlAssistantStatusToWatch()
         } else {
             sendZoomToWatch(x: zoom.x)
-            sendZoomPresetsToWatch()
+            zoomPresetsMayHaveChanged()
             sendZoomPresetToWatch()
             sendScenesToWatchLocal()
             sendSceneToWatch(id: sceneSelector.selectedSceneId)
@@ -243,19 +243,11 @@ extension Model {
         sendMessageToWatch(type: .zoom, data: x)
     }
 
-    func sendZoomPresetsToWatch() {
+    func sendZoomPresetsToWatch(presets: [SettingsZoomPreset]) {
         guard isWatchReachable() else {
             return
         }
-        let zoomPresets: [WatchProtocolZoomPreset]
-        switch cameraPosition {
-        case .front:
-            zoomPresets = zoom.frontZoomPresets.map { .init(id: $0.id, name: $0.name) }
-        case .back:
-            zoomPresets = zoom.backZoomPresets.map { .init(id: $0.id, name: $0.name) }
-        default:
-            zoomPresets = []
-        }
+        let zoomPresets = presets.map { WatchProtocolZoomPreset(id: $0.id, name: $0.name) }
         do {
             let zoomPresets = try JSONEncoder().encode(zoomPresets)
             sendMessageToWatch(type: .zoomPresets, data: zoomPresets)

@@ -150,22 +150,31 @@ extension Model {
     func updateFrontZoomPresets() {
         zoom.frontZoomPresets = database.zoom.front.filter { showPreset(preset: $0) }
         if cameraPosition == .front {
-            let presets = zoom.frontZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: presets))
-            if isWatchLocal() {
-                sendZoomPresetsToWatch()
-            }
+            zoomPresetsMayHaveChanged()
         }
     }
 
     func updateBackZoomPresets() {
         zoom.backZoomPresets = database.zoom.back.filter { showPreset(preset: $0) }
         if cameraPosition == .back {
-            let presets = zoom.backZoomPresets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
-            remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: presets))
-            if isWatchLocal() {
-                sendZoomPresetsToWatch()
-            }
+            zoomPresetsMayHaveChanged()
+        }
+    }
+
+    func zoomPresetsMayHaveChanged() {
+        let presets: [SettingsZoomPreset]
+        switch cameraPosition {
+        case .back:
+            presets = zoom.backZoomPresets
+        case .front:
+            presets = zoom.frontZoomPresets
+        default:
+            presets = []
+        }
+        let zoomPresets = presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
+        remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: zoomPresets))
+        if isWatchLocal() {
+            sendZoomPresetsToWatch(presets: presets)
         }
     }
 
