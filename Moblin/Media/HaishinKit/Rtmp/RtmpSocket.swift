@@ -99,8 +99,8 @@ final class RtmpSocket {
                 return
             }
             totalBytesSent += size
-            delegate?.socketUpdateStats(totalBytesSent: totalBytesSent)
         })
+        delegate?.socketUpdateStats(totalBytesSent: totalBytesSending)
         if hasTooMuchDataBuffered() {
             logger.info("rtmp: \(name): Too much data buffered. Disconnecting.")
             queue.async {
