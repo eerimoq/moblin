@@ -530,7 +530,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
 }
 
 class SettingsStreamRtmp: Codable {
-    var adaptiveBitrateEnabled: Bool = false
+    var adaptiveBitrateEnabled: Bool = true
 
     func clone() -> SettingsStreamRtmp {
         let new = SettingsStreamRtmp()
@@ -540,8 +540,8 @@ class SettingsStreamRtmp: Codable {
 }
 
 class SettingsStreamRist: Codable {
-    var adaptiveBitrateEnabled: Bool = false
-    var bonding: Bool = false
+    var adaptiveBitrateEnabled: Bool = true
+    var bonding: Bool = true
 
     func clone() -> SettingsStreamRist {
         let new = SettingsStreamRist()
