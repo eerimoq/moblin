@@ -14,8 +14,6 @@ private struct StatusItemView: View {
                 Text(status.message)
             }
             .font(smallFont)
-        } else {
-            EmptyView()
         }
     }
 }

@@ -78,8 +78,6 @@ struct CacheImage<Content: View>: View {
             content(image)
         } else if let image {
             image
-        } else {
-            EmptyView()
         }
     }
 }

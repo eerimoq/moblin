@@ -68,8 +68,6 @@ private struct QuickButtonsView: View {
                             nameWidth: buttonSize()
                         )
                         .frame(height: height - 10)
-                    } else {
-                        EmptyView()
                     }
                     QuickButtonsInnerView(
                         quickButtons: quickButtons,

@@ -1,5 +1,5 @@
-import Foundation
 import Collections
+import Foundation
 
 private struct SendTiming {
     var timestamp: ContinuousClock.Instant
