@@ -1,22 +1,19 @@
-import Foundation
+import os
 
-/// Atomic<T> class
-/// - seealso: https://www.objc.io/blog/2018/12/18/atomic-variables/
-struct Atomic<A> {
-    private let queue = DispatchQueue(label: "com.haishinkit.HaishinKit.Atomic")
-    private var _value: A
+struct Atomic<A: Sendable> {
+    private let lock: OSAllocatedUnfairLock<A>
 
     var value: A {
-        queue.sync { self._value }
+        lock.withLock { $0 }
     }
 
     init(_ value: A) {
-        _value = value
+        lock = OSAllocatedUnfairLock(initialState: value)
     }
 
-    mutating func mutate(_ transform: (inout A) -> Void) {
-        queue.sync {
-            transform(&self._value)
+    func mutate(_ transform: (inout A) -> Void) {
+        lock.withLock { state in
+            transform(&state)
         }
     }
 }
