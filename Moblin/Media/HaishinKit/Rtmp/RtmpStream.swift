@@ -215,7 +215,7 @@ class RtmpStream {
         )
         let length = connection.socket.write(chunk: chunk)
         dataTimeStamps[handlerName] = .init()
-        info.byteCount.mutate { $0 += Int64(length) }
+        info.bytesSent.mutate { $0 += Int64(length) }
     }
 
     private func createOnMetaData() -> AsObject {
@@ -332,7 +332,7 @@ class RtmpStream {
             message: RtmpAudioMessage(streamId: streamId, timestamp: timestamp, payload: buffer)
         ))
         audioChunkType = .one
-        info.byteCount.mutate { $0 += Int64(length) }
+        info.bytesSent.mutate { $0 += Int64(length) }
     }
 
     private func handleEncodedVideoBuffer(_ buffer: Data, _ timestamp: UInt32) {
@@ -345,7 +345,7 @@ class RtmpStream {
             message: RtmpVideoMessage(streamId: streamId, timestamp: timestamp, payload: buffer)
         ))
         videoChunkType = .one
-        info.byteCount.mutate { $0 += Int64(length) }
+        info.bytesSent.mutate { $0 += Int64(length) }
     }
 
     private func audioEncoderOutputFormatInternal(_ format: AVAudioFormat) {

@@ -278,7 +278,7 @@ class RtmpConnection {
     }
 
     private func processMessageData(message: RtmpDataMessage) {
-        stream?.info.byteCount.mutate { $0 += Int64(message.encoded.count) }
+        stream?.info.bytesSent.mutate { $0 += Int64(message.encoded.count) }
     }
 }
 

@@ -535,7 +535,7 @@ final class Media: NSObject {
     func streamTotal() -> Int64 {
         var total: Int64 = 0
         for stream in rtmpStreams {
-            total += stream.info.byteCount.value
+            total += stream.info.bytesSent.value
         }
         if isSrtStreamActive() {
             return srtTotalByteCount
