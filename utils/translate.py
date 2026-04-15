@@ -81,6 +81,7 @@ def main():
         localizable_xcstrings_path.write_text(
             json.dumps(localizable,
                        indent=2,
+                       ensure_ascii=False,
                        separators=(',', ' : ')))
 
 
