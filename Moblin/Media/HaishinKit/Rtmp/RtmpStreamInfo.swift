@@ -1,4 +1,5 @@
 import Foundation
+import Collections
 
 private struct SendTiming {
     var timestamp: ContinuousClock.Instant
@@ -15,7 +16,7 @@ class RtmpStreamInfo {
     private(set) var currentBytesPerSecond: Atomic<Int64> = .init(0)
     private(set) var stats: Atomic<RtmpStreamStats> = .init(RtmpStreamStats())
     private var previousBytesSent: Int64 = 0
-    private var sendTimings: [SendTiming] = []
+    private var sendTimings: Deque<SendTiming> = []
     private var latestWrittenSequence: Int64 = 0
     private var latestAckedSequenceLow: UInt32 = 0
     private var latestAckedSequenceHigh: Int64 = 0
@@ -64,7 +65,7 @@ class RtmpStreamInfo {
         while let sendTiming = sendTimings.first {
             if latestAckedSequence() > sendTiming.sequence {
                 ackedSendTiming = sendTiming
-                sendTimings.remove(at: 0)
+                sendTimings.removeFirst()
             } else {
                 break
             }
