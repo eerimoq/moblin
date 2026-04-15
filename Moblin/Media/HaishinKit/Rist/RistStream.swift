@@ -108,6 +108,7 @@ class RistStream {
     private var state: RistStreamState = .connecting
     private weak var ristDelegate: (any RistStreamDelegate)?
     private let processor: Processor
+    private var totalByteCount = Atomic<Int64>(0)
 
     init(processor: Processor, timecodesEnabled: Bool, delegate: RistStreamDelegate) {
         self.processor = processor
@@ -150,6 +151,10 @@ class RistStream {
             }
         }
         return totalBandwidth
+    }
+
+    func getTotalByteCount() -> Int64 {
+        return totalByteCount.value
     }
 
     func connectionStatistics() -> [BondingConnection] {
@@ -340,10 +345,12 @@ class RistStream {
     }
 
     private func send(data: Data) {
+        totalByteCount.mutate { $0 += Int64(data.count) }
         _ = context?.send(data: data)
     }
 
     private func send(dataPointer: UnsafeRawBufferPointer, count: Int) {
+        totalByteCount.mutate { $0 += Int64(count) }
         _ = context?.send(dataPointer: dataPointer, count: count)
     }
 }

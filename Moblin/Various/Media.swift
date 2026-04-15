@@ -540,6 +540,9 @@ final class Media: NSObject {
         if isSrtStreamActive() {
             return srtTotalByteCount
         }
+        if let ristStream {
+            return ristStream.getTotalByteCount()
+        }
         if let whipStream {
             return whipStream.getTotalByteCount()
         }
