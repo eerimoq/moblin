@@ -21,7 +21,7 @@ private struct StatusItemView: View {
 }
 
 private struct RemoteControlSrtConnectionPriorityView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let priority: RemoteControlSettingsSrtConnectionPriority
     @State var enabled: Bool
     @State var prio: Float
@@ -86,6 +86,7 @@ private struct RemoteControlSrtConnectionPrioritiesView: View {
             Section {
                 ForEach(srt.connectionPriorities) { priority in
                     RemoteControlSrtConnectionPriorityView(
+                        model: model,
                         priority: priority,
                         enabled: priority.enabled,
                         prio: Float(priority.priority)
@@ -191,7 +192,7 @@ private struct RemoteControlAudioLevelView: View {
 }
 
 private struct ControlBarRemoteControlAssistantStatusView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
     var title: LocalizedStringKey = ""
 
@@ -648,11 +649,11 @@ private struct DebugLoggingView: View {
 }
 
 private struct ControlBarRemoteControlAssistantControlView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var remoteControl: RemoteControl
     var title: LocalizedStringKey = ""
-    @State var presentingLog: Bool = false
-    @State var log: Deque<LogEntry> = []
+    @State private var presentingLog: Bool = false
+    @State private var log: Deque<LogEntry> = []
 
     private func reloadLog() {
         log = model.remoteControlAssistantLog
@@ -735,7 +736,7 @@ private struct StreamerSelectionButtonView: View {
 }
 
 private struct ButtonsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
 
     var body: some View {
         HStack {
@@ -811,9 +812,11 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                     } else if orientation.isPortrait {
                         NavigationStack {
                             Form {
-                                ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl,
+                                ControlBarRemoteControlAssistantStatusView(model: model,
+                                                                           remoteControl: remoteControl,
                                                                            title: "Preview")
-                                ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl,
+                                ControlBarRemoteControlAssistantControlView(model: model,
+                                                                            remoteControl: remoteControl,
                                                                             title: "Control")
                             }
                             .navigationTitle(" ")
@@ -822,14 +825,16 @@ private struct ControlBarRemoteControlAssistantInnerView: View {
                     } else {
                         NavigationStack {
                             Form {
-                                ControlBarRemoteControlAssistantStatusView(remoteControl: remoteControl)
+                                ControlBarRemoteControlAssistantStatusView(model: model,
+                                                                           remoteControl: remoteControl)
                             }
                             .navigationTitle("Status")
                             .navigationBarTitleDisplayMode(.inline)
                         }
                         NavigationStack {
                             Form {
-                                ControlBarRemoteControlAssistantControlView(remoteControl: remoteControl)
+                                ControlBarRemoteControlAssistantControlView(model: model,
+                                                                            remoteControl: remoteControl)
                             }
                             .navigationTitle("Control")
                             .navigationBarTitleDisplayMode(.inline)
@@ -899,7 +904,7 @@ struct ControlBarRemoteControlAssistantView: View {
                     .padding(5)
                 Spacer()
             }
-            ButtonsView()
+            ButtonsView(model: model)
         }
         .background(Color(.systemGroupedBackground))
     }
