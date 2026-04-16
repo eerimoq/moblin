@@ -106,7 +106,6 @@ extension Model {
     func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
-        reloadDLiveChat()
         reloadYouTubeLiveChat()
         reloadSoopChat()
         reloadOpenStreamingPlatformChat()
@@ -154,9 +153,6 @@ extension Model {
         if isKickPusherConfigured() {
             numberOfChats += 1
         }
-        if isDLiveChatConfigured() {
-            numberOfChats += 1
-        }
         if isYouTubeLiveChatConfigured() {
             numberOfChats += 1
         }
@@ -172,7 +168,7 @@ extension Model {
     func isChatConfigured() -> Bool {
         return isTwitchChatConfigured() || isKickPusherConfigured() ||
             isYouTubeLiveChatConfigured() || isSoopChatConfigured() ||
-            isDLiveChatConfigured() || isOpenStreamingPlatformChatConfigured()
+            isOpenStreamingPlatformChatConfigured()
     }
 
     func isRemoteControlChatAndEvents(platform: Platform?) -> Bool {
@@ -201,9 +197,6 @@ extension Model {
         if isOpenStreamingPlatformChatConfigured() && !isOpenStreamingPlatformChatConnected() {
             return false
         }
-        if isDLiveChatConfigured() && !isDLiveChatConnected() {
-            return false
-        }
         return true
     }
 
@@ -213,7 +206,6 @@ extension Model {
             || hasYouTubeLiveChatEmotes()
             || hasSoopChatEmotes()
             || hasOpenStreamingPlatformChatEmotes()
-            || hasDLiveChatEmotes()
     }
 
     func resetChat() {
@@ -408,9 +400,6 @@ extension Model {
             if isOpenStreamingPlatformChatConfigured() {
                 statuses.append(ChatPlatformStatus(platform: .openStreamingPlatform,
                                                    connected: isOpenStreamingPlatformChatConnected()))
-            }
-            if isDLiveChatConfigured() {
-                statuses.append(ChatPlatformStatus(platform: .dlive, connected: isDLiveChatConnected()))
             }
             if statuses.allSatisfy({ $0.connected }) {
                 status = String(localized: "Connected")

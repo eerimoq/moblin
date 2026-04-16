@@ -44,14 +44,6 @@ struct YouTubeLogoAndNameView: View {
     }
 }
 
-struct DLiveLogoAndNameView: View {
-    var username: String = ""
-
-    var body: some View {
-        PlatformLogoAndNameView(logo: "DLiveLogo", name: String(localized: "DLive"), channel: username)
-    }
-}
-
 struct OpenStreamingPlatformLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(
@@ -136,15 +128,6 @@ struct StreamPlatformsSettingsView: View {
                 YouTubeLogoAndNameView()
                 Spacer()
                 GrayTextView(text: stream.youTubeHandle)
-            }
-        }
-        NavigationLink {
-            StreamDLiveSettingsView(stream: stream)
-        } label: {
-            HStack {
-                DLiveLogoAndNameView()
-                Spacer()
-                GrayTextView(text: stream.dLiveUsername)
             }
         }
         NavigationLink {
