@@ -20,7 +20,7 @@ enum RtmpChunkType: UInt8 {
     }
 
     func areBasicAndMessageHeadersAvailable(_ data: Data) -> Bool {
-        return basicHeaderSize(data[0]) + messageHeaderSize() < data.count
+        return basicHeaderSize(data[0]) + messageHeaderSize() <= data.count
     }
 
     func toBasicHeader(_ chunkStreamId: UInt16) -> Data {

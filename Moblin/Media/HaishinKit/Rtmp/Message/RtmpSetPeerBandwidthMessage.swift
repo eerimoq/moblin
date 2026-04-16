@@ -36,8 +36,10 @@ final class RtmpSetPeerBandwidthMessage: RtmpMessage {
             if super.encoded == newValue {
                 return
             }
-            size = UInt32(data: newValue[0 ..< 4]).bigEndian
-            limit = Limit(rawValue: newValue[4]) ?? .unknown
+            if newValue.count >= 5 {
+                size = UInt32(data: newValue[0 ..< 4]).bigEndian
+                limit = Limit(rawValue: newValue[4]) ?? .unknown
+            }
             super.encoded = newValue
         }
     }

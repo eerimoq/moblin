@@ -47,9 +47,9 @@ class RtmpStreamInfo {
         if sequence < latestAckedSequenceLow {
             // Twitch rolls over at Int32.max. Bug?
             if latestAckedSequenceLow <= Int32.max {
-                latestAckedSequenceHigh += Int64(Int32.max)
+                latestAckedSequenceHigh += Int64(Int32.max) + 1
             } else {
-                latestAckedSequenceHigh += Int64(UInt32.max)
+                latestAckedSequenceHigh += Int64(UInt32.max) + 1
             }
         }
         latestAckedSequenceLow = sequence

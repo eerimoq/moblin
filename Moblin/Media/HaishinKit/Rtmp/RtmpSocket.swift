@@ -59,10 +59,11 @@ final class RtmpSocket {
                 connection.cancel()
             }
         }
+        let wasHandshakeDone = readyState == .handshakeDone
         setReadyState(state: .closed)
         if isDisconnected {
             let data: AsObject
-            if readyState == .handshakeDone {
+            if wasHandshakeDone {
                 data = RtmpConnectionCode.connectClosed.eventData()
             } else {
                 data = RtmpConnectionCode.connectFailed.eventData()
