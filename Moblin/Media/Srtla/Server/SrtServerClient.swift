@@ -31,7 +31,7 @@ class SrtServerClient {
             }
             packet.count = Int(count)
             server?.srtlaServer?.bitrateStats.mutate {
-                $0.add(bytesTransferred: 1)
+                $0.add(bytesTransferred: packet.count)
             }
             do {
                 try reader.handlePacketFromClient(packet: packet)
