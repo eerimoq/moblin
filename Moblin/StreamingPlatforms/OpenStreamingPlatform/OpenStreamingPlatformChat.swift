@@ -144,6 +144,7 @@ class OpenStreamingPlatformChat {
 
     func stop() {
         logger.debug("open-streaming-platform: stop")
+        webSocket.cancel()
         task?.cancel()
         task = nil
     }

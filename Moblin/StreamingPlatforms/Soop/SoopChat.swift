@@ -180,15 +180,13 @@ final class SoopChat: NSObject {
             throw "Failed to create URL"
         }
         logger.debug("soop: URL \(url)")
-        webSocket = URLSession.shared.webSocketTask(
-            with: url,
-            protocols: ["chat"]
-        )
+        webSocket = URLSession.shared.webSocketTask(with: url, protocols: ["chat"])
         webSocket.resume()
         try await sendOne()
     }
 
     private func setupKeepAlive() {
+        keepAliveTask?.cancel()
         keepAliveTask = Task {
             let message = packMessage(kind: .null, parts: [])
             while !Task.isCancelled {

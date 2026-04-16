@@ -66,7 +66,7 @@ private enum TwitchEmote {
 }
 
 private func tagNameAndValue(from specifier: Substring) -> (String, String)? {
-    let parts = specifier.split(separator: "=")
+    let parts = specifier.split(separator: "=", maxSplits: 1)
     guard parts.count == 2, let name = parts.first, let value = parts.last else {
         return nil
     }
