@@ -550,11 +550,6 @@ private class Rtp {
     }
 }
 
-struct RtspClientStats {
-    var total: UInt64
-    var speed: UInt64
-}
-
 class RtspClient {
     private var state: State
     private var connection: NWConnection?
@@ -579,8 +574,7 @@ class RtspClient {
     private var reconnectTimer = SimpleTimer(queue: rtspClientQueue)
     private var started = false
     private var isAlive = true
-    private var totalBytesReceived: UInt64 = 0
-    private var prevTotalBytesReceived: UInt64 = 0
+    private var bitrateStats = BitrateStats()
 
     init(cameraId: UUID, url: URL, latency: Double) {
         self.cameraId = cameraId
@@ -608,11 +602,9 @@ class RtspClient {
         }
     }
 
-    func updateStats() -> RtspClientStats {
+    func updateStats() -> BitrateStatsInstant {
         return rtspClientQueue.sync {
-            let speed = totalBytesReceived - prevTotalBytesReceived
-            prevTotalBytesReceived = totalBytesReceived
-            return RtspClientStats(total: totalBytesReceived, speed: speed)
+            bitrateStats.update()
         }
     }
 
@@ -800,7 +792,7 @@ class RtspClient {
             guard let data else {
                 return
             }
-            self.totalBytesReceived += UInt64(data.count)
+            self.bitrateStats.add(bytesTransferred: data.count)
             do {
                 try onComplete(data)
             } catch {

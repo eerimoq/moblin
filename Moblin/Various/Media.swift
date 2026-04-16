@@ -520,7 +520,7 @@ final class Media: NSObject {
 
     func streamTransportBitrate() -> Int64 {
         if let rtmpStream {
-            return Int64(8 * rtmpStream.info.currentBytesPerSecond.value)
+            return Int64(8 * rtmpStream.info.bitrateStats.value.latestSpeed)
         } else if isSrtStreamActive() {
             return 8 * srtTransportBitrate
         } else if ristStream != nil {
@@ -535,7 +535,7 @@ final class Media: NSObject {
     func streamTotal() -> Int64 {
         var total: Int64 = 0
         for stream in rtmpStreams {
-            total += stream.info.bytesSent.value
+            total += Int64(stream.info.bitrateStats.value.totalBytes)
         }
         if isSrtStreamActive() {
             return srtTotalByteCount

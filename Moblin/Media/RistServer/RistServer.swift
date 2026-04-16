@@ -2,11 +2,6 @@ import AVFoundation
 import Foundation
 import Rist
 
-struct RistServerStats {
-    var total: UInt64
-    var speed: UInt64
-}
-
 protocol RistServerDelegate: AnyObject {
     func ristServerOnConnected(port: UInt16)
     func ristServerOnDisconnected(port: UInt16, reason: String)
@@ -27,8 +22,7 @@ class RistServer {
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
     weak var delegate: (any RistServerDelegate)?
     private let streams: [SettingsRistServerStream]
-    var totalBytesReceived: UInt64 = 0
-    private var prevTotalBytesReceived: UInt64 = 0
+    private var bitrateStats = BitrateStats()
 
     init?(port: UInt16, streams: [SettingsRistServerStream]) {
         self.port = port
@@ -47,11 +41,9 @@ class RistServer {
         }
     }
 
-    func updateStats() -> RistServerStats {
+    func updateStats() -> BitrateStatsInstant {
         return ristServerQueue.sync {
-            let speed = totalBytesReceived - prevTotalBytesReceived
-            prevTotalBytesReceived = totalBytesReceived
-            return RistServerStats(total: totalBytesReceived, speed: speed)
+            bitrateStats.update()
         }
     }
 
@@ -104,7 +96,7 @@ class RistServer {
             return
         }
         for packet in packets {
-            totalBytesReceived += UInt64(packet.count)
+            bitrateStats.add(bytesTransferred: packet.count)
             client.handlePacketFromClient(packet: packet)
         }
     }

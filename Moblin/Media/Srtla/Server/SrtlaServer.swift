@@ -7,11 +7,6 @@ import Foundation
 import libsrt
 import Network
 
-struct SrtlaServerStats {
-    var total: UInt64
-    var speed: UInt64
-}
-
 let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server", qos: .userInitiated)
 private let periodicTimerTimeout = 3.0
 
@@ -35,8 +30,7 @@ class SrtlaServer {
     private let srtServerNoSrtlaPatches: SrtServer
     weak var delegate: (any SrtlaServerDelegate)?
     private let periodicTimer = SimpleTimer(queue: srtlaServerQueue)
-    private var prevTotalBytesReceived: UInt64 = 0
-    var totalBytesReceived: Atomic<UInt64> = .init(0)
+    let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
     private var numberOfClients: Atomic<Int> = .init(0)
     var connectedStreamIds: Atomic<[String]> = .init(.init())
 
@@ -78,11 +72,12 @@ class SrtlaServer {
         return connectedStreamIds.value.contains(streamId)
     }
 
-    func updateStats() -> SrtlaServerStats {
-        let totalBytesReceived = totalBytesReceived.value
-        let speed = totalBytesReceived - prevTotalBytesReceived
-        prevTotalBytesReceived = totalBytesReceived
-        return SrtlaServerStats(total: totalBytesReceived, speed: speed)
+    func updateStats() -> BitrateStatsInstant {
+        var result: BitrateStatsInstant?
+        bitrateStats.mutate {
+            result = $0.update()
+        }
+        return result!
     }
 
     func getNumberOfClients() -> Int {

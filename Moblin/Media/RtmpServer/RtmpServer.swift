@@ -29,8 +29,7 @@ class RtmpServer {
     weak var delegate: (any RtmpServerDelegate)?
     var settings: SettingsRtmpServer
     private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
-    var totalBytesReceived: UInt64 = 0
-    private var prevTotalBytesReceived: UInt64 = 0
+    var bitrateStats = BitrateStats()
 
     init(settings: SettingsRtmpServer) {
         self.settings = settings
@@ -66,11 +65,9 @@ class RtmpServer {
         }
     }
 
-    func updateStats() -> RtmpServerStats {
+    func updateStats() -> BitrateStatsInstant {
         return rtmpServerDispatchQueue.sync {
-            let speed = totalBytesReceived - prevTotalBytesReceived
-            prevTotalBytesReceived = totalBytesReceived
-            return RtmpServerStats(total: totalBytesReceived, speed: speed)
+            bitrateStats.update()
         }
     }
 

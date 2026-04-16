@@ -12,20 +12,15 @@ struct RtmpStreamStats {
 }
 
 class RtmpStreamInfo {
-    var bytesSent: Atomic<Int64> = .init(0)
-    private(set) var currentBytesPerSecond: Atomic<Int64> = .init(0)
+    var bitrateStats: Atomic<BitrateStats> = .init(BitrateStats(speedChangeRate: 30))
     private(set) var stats: Atomic<RtmpStreamStats> = .init(RtmpStreamStats())
-    private var previousBytesSent: Int64 = 0
     private var sendTimings: Deque<SendTiming> = []
     private var latestWrittenSequence: Int64 = 0
     private var latestAckedSequenceLow: UInt32 = 0
     private var latestAckedSequenceHigh: Int64 = 0
 
     func clear() {
-        bytesSent.mutate { $0 = 0 }
-        currentBytesPerSecond.mutate { $0 = 0 }
         stats.mutate { $0 = RtmpStreamStats() }
-        previousBytesSent = 0
         sendTimings.removeAll()
         latestWrittenSequence = 0
         latestAckedSequenceLow = 0
@@ -33,10 +28,7 @@ class RtmpStreamInfo {
     }
 
     func onTimeout() {
-        let byteCount = bytesSent.value
-        let speed = byteCount - previousBytesSent
-        currentBytesPerSecond.mutate { $0 = Int64(Double($0) * 0.7 + Double(speed) * 0.3) }
-        previousBytesSent = byteCount
+        bitrateStats.mutate { _ = $0.update() }
     }
 
     func onWritten(sequence: Int64) {

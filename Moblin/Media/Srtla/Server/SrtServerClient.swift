@@ -30,7 +30,9 @@ class SrtServerClient {
                 break
             }
             packet.count = Int(count)
-            server?.srtlaServer?.totalBytesReceived.mutate { $0 += UInt64(count) }
+            server?.srtlaServer?.bitrateStats.mutate {
+                $0.add(bytesTransferred: 1)
+            }
             do {
                 try reader.handlePacketFromClient(packet: packet)
             } catch {
