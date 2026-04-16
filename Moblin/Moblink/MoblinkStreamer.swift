@@ -182,7 +182,7 @@ private class Relay {
 
     private func handleResponse(id: Int, result: MoblinkResult, data: MoblinkResponse?) throws {
         guard identified else {
-            throw "Streamer not identified"
+            throw "Relay not identified"
         }
         guard let request = requests[id] else {
             logger.info("moblink-streamer: \(name): Unexpected id in response")

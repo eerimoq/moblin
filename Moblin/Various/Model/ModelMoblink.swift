@@ -56,7 +56,7 @@ extension Model {
     private func startMoblinkRelayAutomatic() {
         for streamer in moblink.scannerDiscoveredStreamers {
             guard let url = streamer.urls.first, let streamerUrl = URL(string: url) else {
-                return
+                continue
             }
             addMoblinkRelay(streamerUrl: streamerUrl)
         }

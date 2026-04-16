@@ -50,10 +50,10 @@ class MoblinkScanner: NSObject {
             }
             let metadata = NetService.dictionary(fromTXTRecord: data)
             guard let nameData = metadata["name"] else {
-                return
+                continue
             }
             guard let name = String(bytes: nameData, encoding: .utf8) else {
-                return
+                continue
             }
             streamers.append(.init(name: name, urls: service.urls))
         }
