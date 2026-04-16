@@ -147,6 +147,8 @@ extension Model {
                 handleChatBotMessageAi(command: command)
             case "twitch":
                 handleChatBotMessageTwitch(command: command)
+            case "gimbal":
+                handleChatBotMessageGimbal(command: command)
             default:
                 break
             }
@@ -406,6 +408,32 @@ extension Model {
                 }
             }
         }
+    }
+
+    private func handleChatBotMessageGimbal(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.gimbal,
+            command: command
+        ) {
+            switch command.popFirst() {
+            case "preset":
+                self.handleChatBotMessageGimbalPreset(command: command)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageGimbalPreset(command: ChatBotCommand) {
+        guard let presetName = command.popFirst() else {
+            return
+        }
+        guard let preset = database.gimbal.presets.first(where: {
+            $0.name.lowercased() == presetName.lowercased()
+        }) else {
+            return
+        }
+        moveToGimbalPreset(id: preset.id)
     }
 
     private func handleChatBotMessageReaction(command: ChatBotCommand) {

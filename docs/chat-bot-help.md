@@ -13,6 +13,7 @@
 | !moblin say \<message> | Say given message. |
 | !moblin zoom \<x> | Set zoom for the current camera. |
 | !moblin scene \<name> | Change scene. |
+| !moblin gimbal preset \<name> | Move to given gimbal preset. |
 | !moblin stream title \<title> | Set stream title. |
 | !moblin widget \<name> timer \<number> add \<seconds> | Add time to a timer. |
 | !moblin ai ask \<question> | Ask AI a question. |

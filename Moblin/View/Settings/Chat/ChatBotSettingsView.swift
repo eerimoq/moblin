@@ -70,6 +70,21 @@ private struct FixPermissionsSettingsView: View {
     }
 }
 
+private struct GimbalPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: String(localized: "!moblin gimbal preset <name>"),
+                permissions: permissions
+            )
+        } footer: {
+            Text("Move to given gimbal preset.")
+        }
+    }
+}
+
 private struct AlertPermissionsSettingsView: View {
     let permissions: SettingsChatBotPermissionsCommand
 
@@ -400,6 +415,7 @@ private struct ChatBotCommandsSettingsView: View {
             FaxPermissionsSettingsView(permissions: permissions.fax)
             FilterPermissionsSettingsView(permissions: permissions.filter)
             FixPermissionsSettingsView(permissions: permissions.fix)
+            GimbalPermissionsSettingsView(permissions: permissions.gimbal)
             LocationPermissionsSettingsView(permissions: permissions.location)
             MapPermissionsSettingsView(permissions: permissions.map)
             MuteUnmutePermissionsSettingsView(permissions: permissions.audio)
