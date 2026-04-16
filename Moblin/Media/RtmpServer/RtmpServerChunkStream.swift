@@ -586,7 +586,7 @@ class RtmpServerChunkStream {
         if videoTimestamp == -1 {
             duration = 0
         } else {
-            duration = Int64(mediaTimestamp - videoTimestamp)
+            duration = Int64((mediaTimestamp - mediaTimestampZero) - videoTimestamp)
         }
         videoTimestamp = mediaTimestamp - mediaTimestampZero
         let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp(client)) +
