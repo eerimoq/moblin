@@ -43,15 +43,6 @@ class SrtServerClient {
     }
 }
 
-extension SrtServerClient: VideoDecoderDelegate {
-    func videoDecoderOutputSampleBuffer(_: VideoDecoder, _ sampleBuffer: CMSampleBuffer) {
-        server?.srtlaServer?.delegate?.srtlaServerOnVideoBuffer(
-            streamId: streamId,
-            sampleBuffer: sampleBuffer
-        )
-    }
-}
-
 extension SrtServerClient: MpegTsReaderDelegate {
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
         server?.srtlaServer?.delegate?.srtlaServerOnAudioBuffer(

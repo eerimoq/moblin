@@ -79,7 +79,7 @@ class RistServer {
         }
         let client = RistServerClient(virtualDestinationPort: virtualDestinationPort,
                                       latency: stream.latencySeconds())
-        client?.server = self
+        client.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
         delegate?.ristServerOnConnected(port: virtualDestinationPort)
     }
