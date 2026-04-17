@@ -51,7 +51,11 @@ struct StreamWizardSettingsView: View {
                     KickLogoAndNameView()
                 }
                 NavigationLink {
-                    StreamWizardYouTubeSettingsView(model: model, createStreamWizard: createStreamWizard)
+                    StreamWizardYouTubeSettingsView(
+                        model: model,
+                        createStreamWizard: createStreamWizard,
+                        youTubeStream: createStreamWizard.youTubeStream
+                    )
                 } label: {
                     YouTubeLogoAndNameView()
                 }

@@ -162,6 +162,7 @@ extension Model {
             stream.kickChatroomChannelId = createStreamWizard.kickChatroomChannelId
         case .youTube:
             stream.youTubeHandle = createStreamWizard.youTubeHandle.trim()
+            stream.youTubeAuthState = createStreamWizard.youTubeStream.youTubeAuthState
         case .soop:
             if !createStreamWizard.soopChannelName.isEmpty, !createStreamWizard.soopStreamId.isEmpty {
                 stream.soopChannelName = createStreamWizard.soopChannelName.trim()
@@ -213,6 +214,7 @@ extension Model {
         createStreamWizard.kickSlug = nil
         createStreamWizard.kickChatroomChannelId = nil
         createStreamWizard.youTubeHandle = ""
+        createStreamWizard.youTubeStream.youTubeAuthState = nil
         createStreamWizard.soopChannelName = ""
         createStreamWizard.soopStreamId = ""
         createStreamWizard.obsAddress = ""
