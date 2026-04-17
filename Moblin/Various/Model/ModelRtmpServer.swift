@@ -28,18 +28,6 @@ extension Model {
         return ingests.rtmp?.isStreamConnected(streamKey: streamKey) ?? false
     }
 
-    func reloadRtmpStreams() {
-        for stream in database.rtmpServer.streams where isRtmpStreamConnected(streamKey: stream.streamKey) {
-            let micId = "\(stream.id.uuidString) 0"
-            let isLastMic = (mic.current.id == micId)
-            handleRtmpServerPublishStop(streamKey: stream.streamKey, reason: nil)
-            handleRtmpServerPublishStart(streamKey: stream.streamKey)
-            if mic.current.id != micId, isLastMic {
-                selectMicById(id: micId)
-            }
-        }
-    }
-
     func handleRtmpServerPublishStart(streamKey: String) {
         DispatchQueue.main.async {
             guard let stream = self.getRtmpStream(streamKey: streamKey) else {

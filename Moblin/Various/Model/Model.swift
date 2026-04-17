@@ -1079,12 +1079,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                                name: UIApplication.willTerminateNotification,
                                                object: nil)
         updateOrientation()
-        reloadRtmpServer()
-        reloadSrtlaServer()
-        reloadRistServer()
-        reloadRtspClient()
-        reloadWhipServer()
-        reloadWhepClient()
+        reloadIngests()
         setupPictureInPicture()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate
         ipMonitor.start()
@@ -1180,6 +1175,15 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 18.0, *) {
             Gimbal.shared = Gimbal(model: self)
         }
+    }
+
+    func reloadIngests() {
+        reloadRtmpServer()
+        reloadSrtlaServer()
+        reloadRistServer()
+        reloadRtspClient()
+        reloadWhipServer()
+        reloadWhepClient()
     }
 
     @objc func applicationDidChangeActive(notification: NSNotification) {
@@ -1433,13 +1437,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadStream()
             sceneUpdated(attachCamera: true, updateRemoteScene: false)
             reloadAudioSession()
-            reloadRtmpServer()
+            reloadIngests()
             reloadDjiDevices()
-            reloadSrtlaServer()
-            reloadRistServer()
-            reloadRtspClient()
-            reloadWhipServer()
-            reloadWhepClient()
             chatTextToSpeech.reset(running: true)
             startWeatherManager()
             startGeographyManager()

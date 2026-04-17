@@ -309,7 +309,7 @@ extension Model {
         reloadConnections()
         resetChat()
         reloadLocation()
-        reloadRtmpStreams()
+        reloadIngests()
         updateStatusStreamText()
         updateKickChannelInfoIfNeeded()
         updatePictureInPicture()

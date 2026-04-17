@@ -281,7 +281,7 @@ private struct StreamTimecodesSettingsView: View {
                                 stream.ntpPoolAddress = $0
                                 if stream.enabled {
                                     model.reloadNtpClient()
-                                    model.reloadSrtlaServer()
+                                    model.reloadIngests()
                                 }
                             }
                         } label: {
@@ -296,7 +296,7 @@ private struct StreamTimecodesSettingsView: View {
                     .onChange(of: stream.timecodesEnabled) { _ in
                         if stream.enabled {
                             model.reloadNtpClient()
-                            model.reloadSrtlaServer()
+                            model.reloadIngests()
                         }
                     }
                     .disabled(areTimecodesDisabled())
