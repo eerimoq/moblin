@@ -178,7 +178,7 @@ final class VideoUnit: NSObject {
     private var fillFrame = true
     let session = makeCaptureSession()
     let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
-    weak var processor: Processor?
+    unowned var processor: Processor?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
     private var pendingAfterAttachRotation: Double?

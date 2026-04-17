@@ -95,7 +95,7 @@ final class AudioUnit: NSObject {
     private var output: AVCaptureAudioDataOutput?
     var muted = false
     var gain: Float = 1.0
-    weak var processor: Processor?
+    unowned var processor: Processor?
     private var selectedBufferedAudioId: UUID?
     private var bufferedAudios: [UUID: BufferedAudio] = [:]
     let session = AVCaptureSession()

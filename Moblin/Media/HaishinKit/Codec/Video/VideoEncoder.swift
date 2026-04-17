@@ -30,8 +30,8 @@ class VideoEncoder {
     private let lockQueue: DispatchQueue
     private var formatDescription: CMFormatDescription?
 
-    weak var delegate: (any VideoEncoderDelegate)?
-    weak var controlDelegate: (any VideoEncoderControlDelegate)?
+    unowned var delegate: (any VideoEncoderDelegate)?
+    unowned var controlDelegate: (any VideoEncoderControlDelegate)?
     private var session: VTCompressionSession? {
         didSet {
             oldValue?.invalidate()
