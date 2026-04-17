@@ -27,6 +27,7 @@ class WhepClient {
     private var started = false
     private var reconnectTimer = SimpleTimer(queue: dispatchQueue)
     private var connected: Bool = false
+    private var bitrateStats = BitrateStats()
 
     init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool) {
         self.streamId = streamId
@@ -54,6 +55,12 @@ class WhepClient {
     func isConnected() -> Bool {
         return dispatchQueue.sync {
             ingestClient != nil
+        }
+    }
+
+    func updateStats() -> BitrateStatsInstant {
+        return dispatchQueue.sync {
+            bitrateStats.update()
         }
     }
 
@@ -199,5 +206,9 @@ extension WhepClient: WebrtcIngestClientDelegate {
 
     func webrtcIngestClientOnGatheringComplete(streamId _: UUID, localDescription: String) {
         sendOffer(localDescription)
+    }
+
+    func webrtcIngestClientOnDataReceived(streamId _: UUID, count: Int) {
+        bitrateStats.add(bytesTransferred: count)
     }
 }

@@ -20,6 +20,7 @@ class WhipServer {
     private var clients: [UUID: WhipServerClient] = [:]
     weak var delegate: (any WhipServerDelegate)?
     var settings: SettingsWhipServer
+    private var bitrateStats = BitrateStats()
 
     init(settings: SettingsWhipServer) {
         self.settings = settings
@@ -40,6 +41,12 @@ class WhipServer {
     func getNumberOfClients() -> Int {
         return whipServerDispatchQueue.sync {
             clients.count
+        }
+    }
+
+    func updateStats() -> BitrateStatsInstant {
+        return whipServerDispatchQueue.sync {
+            bitrateStats.update()
         }
     }
 
@@ -178,5 +185,9 @@ extension WhipServer: WhipServerClientDelegate {
         _ audioTargetLatency: Double
     ) {
         delegate?.whipServerSetTargetLatencies(streamId: streamId, videoTargetLatency, audioTargetLatency)
+    }
+
+    func whipServerClientOnDataReceived(streamId _: UUID, count: Int) {
+        bitrateStats.add(bytesTransferred: count)
     }
 }

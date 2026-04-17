@@ -2407,7 +2407,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateSrtlaIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRistIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRtspIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
-        updateWhipIngestsSpeed(&anyServerEnabled, &numberOfClients)
+        updateWhipIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateWhepIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         let message: String
         if anyServerEnabled {
             if numberOfClients > 0 {
@@ -2494,13 +2495,36 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    private func updateWhipIngestsSpeed(_ anyServerEnabled: inout Bool, _ numberOfClients: inout Int) {
+    private func updateWhipIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                        _ speed: inout UInt64,
+                                        _ total: inout UInt64,
+                                        _ numberOfClients: inout Int)
+    {
         guard let whipServer = ingests.whip else {
             return
         }
-        let numberOfRistClients = whipServer.getNumberOfClients()
-        numberOfClients += numberOfRistClients
+        let stats = whipServer.updateStats()
+        let numberOfWhipClients = whipServer.getNumberOfClients()
+        numberOfClients += numberOfWhipClients
+        if numberOfWhipClients > 0 {
+            total += stats.total
+            speed += stats.speed
+        }
         anyServerEnabled = true
+    }
+
+    private func updateWhepIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                        _ speed: inout UInt64,
+                                        _ total: inout UInt64,
+                                        _ numberOfClients: inout Int)
+    {
+        for client in ingests.whep {
+            let stats = client.updateStats()
+            total += stats.total
+            speed += stats.speed
+            numberOfClients += 1
+            anyServerEnabled = true
+        }
     }
 
     func checkPhotoLibraryAuthorization() {

@@ -14,6 +14,7 @@ protocol WebrtcIngestClientDelegate: AnyObject {
         _ audioTargetLatency: Double
     )
     func webrtcIngestClientOnGatheringComplete(streamId: UUID, localDescription: String)
+    func webrtcIngestClientOnDataReceived(streamId: UUID, count: Int)
 }
 
 private func decodeNtpTimestamp(v: UInt64) -> Double? {
@@ -298,6 +299,7 @@ final class WebrtcIngestClient {
     }
 
     private func handleVideoMessageInternal(data: Data, timestampSeconds: Double) {
+        delegate?.webrtcIngestClientOnDataReceived(streamId: streamId, count: data.count)
         guard let timestampSeconds = syncTimestampIfEnabled(videoTrackId,
                                                             timestampSeconds,
                                                             &videoTimestampOffset,
@@ -374,6 +376,7 @@ final class WebrtcIngestClient {
     }
 
     private func handleAudioMessageInternal(data: Data, timestampSeconds: Double) {
+        delegate?.webrtcIngestClientOnDataReceived(streamId: streamId, count: data.count)
         guard let timestampSeconds = syncTimestampIfEnabled(audioTrackId,
                                                             timestampSeconds,
                                                             &audioTimestampOffset,

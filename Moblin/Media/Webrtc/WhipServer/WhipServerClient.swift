@@ -11,6 +11,7 @@ protocol WhipServerClientDelegate: AnyObject {
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     )
+    func whipServerClientOnDataReceived(streamId: UUID, count: Int)
 }
 
 final class WhipServerClient {
@@ -91,5 +92,9 @@ extension WhipServerClient: WebrtcIngestClientDelegate {
     func webrtcIngestClientOnGatheringComplete(streamId _: UUID, localDescription: String) {
         answerCompletion?(localDescription)
         answerCompletion = nil
+    }
+
+    func webrtcIngestClientOnDataReceived(streamId: UUID, count: Int) {
+        delegate?.whipServerClientOnDataReceived(streamId: streamId, count: count)
     }
 }
