@@ -500,7 +500,7 @@ final class WebrtcIngestClient {
         if timestampOffset == nil {
             var rtpTimestamp: UInt64 = 0
             var ntpTimestamp: UInt64 = 0
-            rtcGetTrackSyncTimestamps(trackId, &rtpTimestamp, &ntpTimestamp)
+            rtcGetTrackRtcpSyncTimestamps(trackId, &rtpTimestamp, &ntpTimestamp)
             guard let ntpTimestamp = decodeNtpTimestamp(v: ntpTimestamp) else {
                 return nil
             }
