@@ -263,7 +263,7 @@ private struct LocationPermissionsSettingsView: View {
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "moblin location data reset",
+                title: "!moblin location data reset",
                 permissions: permissions
             )
         } footer: {
@@ -278,7 +278,7 @@ private struct MapPermissionsSettingsView: View {
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "moblin map zoom out",
+                title: "!moblin map zoom out",
                 permissions: permissions
             )
         } footer: {
