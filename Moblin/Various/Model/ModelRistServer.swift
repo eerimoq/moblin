@@ -11,8 +11,8 @@ extension Model {
         stopRistServer()
         if database.ristServer.enabled {
             ingests.rist = RistServer(port: database.ristServer.port,
-                                      streams: database.ristServer.streams.map { $0.clone() })
-            ingests.rist?.delegate = self
+                                      streams: database.ristServer.streams.map { $0.clone() },
+                                      delegate: self)
             ingests.rist?.start()
         }
     }

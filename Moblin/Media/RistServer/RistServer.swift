@@ -20,13 +20,14 @@ class RistServer {
     private var port: UInt16
     private var context: RistReceiverContext?
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
-    weak var delegate: (any RistServerDelegate)?
+    unowned let delegate: RistServerDelegate
     private let streams: [SettingsRistServerStream]
     private var bitrateStats = BitrateStats()
 
-    init?(port: UInt16, streams: [SettingsRistServerStream]) {
+    init?(port: UInt16, streams: [SettingsRistServerStream], delegate: RistServerDelegate) {
         self.port = port
         self.streams = streams
+        self.delegate = delegate
     }
 
     func start() {
@@ -65,7 +66,7 @@ class RistServer {
         context?.stop()
         context = nil
         for virtualDestinationPort in clientsByVirtualDestinationPort.keys {
-            delegate?.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
+            delegate.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
         }
         clientsByVirtualDestinationPort.removeAll()
     }
@@ -81,13 +82,13 @@ class RistServer {
                                       latency: stream.latencySeconds())
         client.server = self
         clientsByVirtualDestinationPort[virtualDestinationPort] = client
-        delegate?.ristServerOnConnected(port: virtualDestinationPort)
+        delegate.ristServerOnConnected(port: virtualDestinationPort)
     }
 
     private func peerDisconnected(_ virtualDestinationPort: UInt16) {
         logger.info("rist-server: Disconnected virtual destination port \(virtualDestinationPort)")
         if clientsByVirtualDestinationPort.removeValue(forKey: virtualDestinationPort) != nil {
-            delegate?.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
+            delegate.ristServerOnDisconnected(port: virtualDestinationPort, reason: "")
         }
     }
 
