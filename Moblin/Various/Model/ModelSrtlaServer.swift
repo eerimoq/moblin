@@ -12,9 +12,9 @@ extension Model {
         if database.srtlaServer.enabled {
             ingests.srtla = SrtlaServer(
                 settings: database.srtlaServer,
+                delegate: self,
                 timecodesEnabled: isTimecodesEnabled()
             )
-            ingests.srtla?.delegate = self
             ingests.srtla?.start()
         }
     }

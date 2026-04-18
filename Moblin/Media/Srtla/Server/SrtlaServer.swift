@@ -28,14 +28,18 @@ class SrtlaServer {
     let settings: SettingsSrtlaServer
     private let srtServer: SrtServer
     private let srtServerNoSrtlaPatches: SrtServer
-    weak var delegate: (any SrtlaServerDelegate)?
+    unowned let delegate: SrtlaServerDelegate
     private let periodicTimer = SimpleTimer(queue: srtlaServerQueue)
     let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
     private var numberOfClients: Atomic<Int> = .init(0)
     var connectedStreamIds: Atomic<[String]> = .init(.init())
 
-    init(settings: SettingsSrtlaServer, timecodesEnabled: Bool) {
+    init(settings: SettingsSrtlaServer,
+         delegate: SrtlaServerDelegate,
+         timecodesEnabled: Bool)
+    {
         self.settings = settings.clone()
+        self.delegate = delegate
         srtServer = SrtServer(
             timecodesEnabled: timecodesEnabled,
             port: settings.srtlaSrtPort(),
@@ -86,11 +90,11 @@ class SrtlaServer {
 
     func clientConnected(streamId: String) {
         numberOfClients.mutate { $0 += 1 }
-        delegate?.srtlaServerOnClientStart(streamId: streamId, latency: srtServerClientLatency)
+        delegate.srtlaServerOnClientStart(streamId: streamId, latency: srtServerClientLatency)
     }
 
     func clientDisconnected(streamId: String) {
-        delegate?.srtlaServerOnClientStop(streamId: streamId)
+        delegate.srtlaServerOnClientStop(streamId: streamId)
         numberOfClients.mutate { $0 -= 1 }
     }
 
