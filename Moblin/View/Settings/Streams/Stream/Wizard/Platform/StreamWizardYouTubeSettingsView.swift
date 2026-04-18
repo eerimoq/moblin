@@ -5,6 +5,23 @@ struct StreamWizardYouTubeSettingsView: View {
     @ObservedObject var createStreamWizard: CreateStreamWizard
     @ObservedObject var youTubeStream: SettingsStream
 
+    private func fetchLiveStreams() {
+        model.getYouTubeApi(stream: youTubeStream) { youTubeApi in
+            youTubeApi?.listLiveStreams {
+                switch $0 {
+                case let .success(response):
+                    if let liveStream = response.items.first {
+                        let ingestionInfo = liveStream.cdn.ingestionInfo
+                        createStreamWizard.directIngest = ingestionInfo.ingestionAddress
+                        createStreamWizard.directStreamKey = ingestionInfo.streamName
+                    }
+                case .authError, .error:
+                    break
+                }
+            }
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -47,6 +64,11 @@ struct StreamWizardYouTubeSettingsView: View {
                                                      existingNames: model.database.streams)
             createStreamWizard.directIngest = "rtmp://a.rtmp.youtube.com/live2"
             youTubeStream.youTubeAuthState = nil
+        }
+        .onChange(of: youTubeStream.youTubeAuthState) { authState in
+            if authState != nil {
+                fetchLiveStreams()
+            }
         }
         .navigationTitle("YouTube")
         .toolbar {
