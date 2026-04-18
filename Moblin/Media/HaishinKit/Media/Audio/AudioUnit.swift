@@ -270,7 +270,7 @@ final class AudioUnit: NSObject {
                              numberOfAudioChannels: numberOfAudioChannels)
         }
         if speechToTextEnabled {
-            processor.delegate.streamAudio(sampleBuffer: sampleBuffer)
+            processor.delegate?.streamAudio(sampleBuffer: sampleBuffer)
         }
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
@@ -313,9 +313,9 @@ final class AudioUnit: NSObject {
         numberOfAudioChannels: Int
     ) {
         let sampleRate = sampleBuffer.formatDescription?.audioStreamBasicDescription?.mSampleRate ?? 0
-        processor?.delegate.stream(audioLevel: audioLevel,
-                                   numberOfAudioChannels: numberOfAudioChannels,
-                                   sampleRate: sampleRate)
+        processor?.delegate?.stream(audioLevel: audioLevel,
+                                    numberOfAudioChannels: numberOfAudioChannels,
+                                    sampleRate: sampleRate)
     }
 
     private func appendTalkback(sampleBuffer: CMSampleBuffer) {

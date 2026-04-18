@@ -39,13 +39,16 @@ final class Processor {
     let video = VideoUnit()
     let recorder = Recorder()
     private var streams: [Stream] = []
-    unowned let delegate: ProcessorDelegate
+    unowned var delegate: (any ProcessorDelegate)?
 
-    init(delegate: ProcessorDelegate) {
-        self.delegate = delegate
+    init() {
         audio.processor = self
         video.processor = self
         recorder.delegate = self
+    }
+
+    func setDelegate(delegate: ProcessorDelegate) {
+        self.delegate = delegate
     }
 
     func setTorch(value: Bool) {
@@ -365,14 +368,14 @@ extension Processor: VideoEncoderDelegate {
 
 extension Processor: RecorderDelegate {
     func recorderInitSegment(data: Data) {
-        delegate.streamRecorderInitSegment(data: data)
+        delegate?.streamRecorderInitSegment(data: data)
     }
 
     func recorderDataSegment(segment: RecorderDataSegment) {
-        delegate.streamRecorderDataSegment(segment: segment)
+        delegate?.streamRecorderDataSegment(segment: segment)
     }
 
     func recorderFinished() {
-        delegate.streamRecorderFinished()
+        delegate?.streamRecorderFinished()
     }
 }

@@ -24,7 +24,7 @@ class BufferedVideo {
     }
 
     deinit {
-        processor?.delegate.streamVideoBufferedVideoRemoved(cameraId: cameraId)
+        processor?.delegate?.streamVideoBufferedVideoRemoved(cameraId: cameraId)
     }
 
     func setTargetLatency(latency: Double) {
@@ -132,7 +132,7 @@ class BufferedVideo {
 
     private func markInitialBufferingComplete() {
         if isInitialBuffering {
-            processor?.delegate.streamVideoBufferedVideoReady(cameraId: cameraId)
+            processor?.delegate?.streamVideoBufferedVideoReady(cameraId: cameraId)
         }
         isInitialBuffering = false
     }
