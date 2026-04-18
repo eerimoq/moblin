@@ -10,7 +10,7 @@ protocol BufferedAudioSampleBufferDelegate: AnyObject {
 class BufferedAudio {
     private var cameraId: UUID
     private let name: String
-    private unowned var processor: Processor?
+    private weak var processor: Processor?
     private var sampleRate: Double = 0.0
     private var frameLength: Double = 0.0
     private var sampleBuffers: Deque<CMSampleBuffer> = []
@@ -23,7 +23,7 @@ class BufferedAudio {
     private let driftTracker: DriftTracker
     private var isInitialBuffering = true
     private var isSyncingWithOutput = true
-    unowned var delegate: BufferedAudioSampleBufferDelegate?
+    weak var delegate: BufferedAudioSampleBufferDelegate?
     private var hasBufferBeenAppended = false
     let latency: Double
     private var stats = BufferedStats()
