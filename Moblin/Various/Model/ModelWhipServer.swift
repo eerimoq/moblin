@@ -95,8 +95,7 @@ extension Model {
     func reloadWhipServer() {
         stopWhipServer()
         if database.whipServer.enabled {
-            ingests.whip = WhipServer(settings: database.whipServer.clone())
-            ingests.whip?.delegate = self
+            ingests.whip = WhipServer(settings: database.whipServer.clone(), delegate: self)
             ingests.whip?.start()
         }
     }

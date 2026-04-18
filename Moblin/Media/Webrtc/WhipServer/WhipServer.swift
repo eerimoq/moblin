@@ -18,12 +18,13 @@ protocol WhipServerDelegate: AnyObject {
 class WhipServer {
     private var server: HttpServer?
     private var clients: [UUID: WhipServerClient] = [:]
-    weak var delegate: (any WhipServerDelegate)?
+    unowned var delegate: WhipServerDelegate
     var settings: SettingsWhipServer
     private var bitrateStats = BitrateStats()
 
-    init(settings: SettingsWhipServer) {
+    init(settings: SettingsWhipServer, delegate: WhipServerDelegate) {
         self.settings = settings
+        self.delegate = delegate
     }
 
     func start() {
@@ -155,7 +156,7 @@ class WhipServer {
         }
         if let client = clients.removeValue(forKey: streamId) {
             client.stop()
-            delegate?.whipServerOnPublishStop(streamId: streamId, reason: "Client disconnect")
+            delegate.whipServerOnPublishStop(streamId: streamId, reason: "Client disconnect")
         }
         response.send(status: .ok)
     }
@@ -163,20 +164,20 @@ class WhipServer {
 
 extension WhipServer: WhipServerClientDelegate {
     func whipServerClientOnConnected(streamId: UUID) {
-        delegate?.whipServerOnPublishStart(streamId: streamId)
+        delegate.whipServerOnPublishStart(streamId: streamId)
     }
 
     func whipServerClientOnDisconnected(streamId: UUID, reason: String) {
         clients.removeValue(forKey: streamId)
-        delegate?.whipServerOnPublishStop(streamId: streamId, reason: reason)
+        delegate.whipServerOnPublishStop(streamId: streamId, reason: reason)
     }
 
     func whipServerClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whipServerOnVideoBuffer(streamId: streamId, sampleBuffer)
+        delegate.whipServerOnVideoBuffer(streamId: streamId, sampleBuffer)
     }
 
     func whipServerClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whipServerOnAudioBuffer(streamId: streamId, sampleBuffer)
+        delegate.whipServerOnAudioBuffer(streamId: streamId, sampleBuffer)
     }
 
     func whipServerClientSetTargetLatencies(
@@ -184,7 +185,7 @@ extension WhipServer: WhipServerClientDelegate {
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
-        delegate?.whipServerSetTargetLatencies(streamId: streamId, videoTargetLatency, audioTargetLatency)
+        delegate.whipServerSetTargetLatencies(streamId: streamId, videoTargetLatency, audioTargetLatency)
     }
 
     func whipServerClientOnDataReceived(streamId _: UUID, count: Int) {
