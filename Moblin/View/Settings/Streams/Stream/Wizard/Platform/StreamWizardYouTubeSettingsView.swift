@@ -22,6 +22,21 @@ struct StreamWizardYouTubeSettingsView: View {
         }
     }
 
+    private func fetchChannelHandle() {
+        model.getYouTubeApi(stream: youTubeStream) { youTubeApi in
+            youTubeApi?.listChannels {
+                switch $0 {
+                case let .success(response):
+                    if let handle = response.items.first?.snippet.customUrl {
+                        createStreamWizard.youTubeHandle = handle
+                    }
+                case .authError, .error:
+                    break
+                }
+            }
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -68,6 +83,7 @@ struct StreamWizardYouTubeSettingsView: View {
         .onChange(of: youTubeStream.youTubeAuthState) { authState in
             if authState != nil {
                 fetchLiveStreams()
+                fetchChannelHandle()
             }
         }
         .navigationTitle("YouTube")

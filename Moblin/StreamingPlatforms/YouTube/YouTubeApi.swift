@@ -96,6 +96,18 @@ struct YouTubeApiLiveBroadcastListResponse: Codable {
     let items: [YouTubeApiLiveBroadcast]
 }
 
+struct YouTubeApiChannelSnippet: Codable {
+    let customUrl: String?
+}
+
+struct YouTubeApiChannel: Codable {
+    let snippet: YouTubeApiChannelSnippet
+}
+
+struct YouTubeApiChannelListResponse: Codable {
+    let items: [YouTubeApiChannel]
+}
+
 class YouTubeApi {
     private let accessToken: String
 
@@ -249,6 +261,30 @@ class YouTubeApi {
             case let .success(data):
                 if let response = try? JSONDecoder().decode(
                     YouTubeApiLiveStreamsListResponse.self,
+                    from: data
+                ) {
+                    onCompleted(.success(response))
+                } else {
+                    onCompleted(.error)
+                }
+            case .authError:
+                onCompleted(.authError)
+            case .error:
+                onCompleted(.error)
+            }
+        }
+    }
+
+    func listChannels(onCompleted: @escaping (NetworkResponse<YouTubeApiChannelListResponse>) -> Void) {
+        let subPath = makeUrl("channels", [
+            ("part", "snippet"),
+            ("mine", "true"),
+        ])
+        doGet(subPath: subPath) {
+            switch $0 {
+            case let .success(data):
+                if let response = try? JSONDecoder().decode(
+                    YouTubeApiChannelListResponse.self,
                     from: data
                 ) {
                     onCompleted(.success(response))
