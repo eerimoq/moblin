@@ -598,7 +598,10 @@ final class Media: NSObject {
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
     {
         if adaptiveBitrateEnabled {
-            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate, delegate: self)
+            adaptiveBitrate = AdaptiveBitrateSrtFight(targetBitrate: targetBitrate,
+                                                      delegate: self,
+                                                      rttMax: 500,
+                                                      pifMax: 100)
         } else {
             adaptiveBitrate = nil
         }

@@ -29,9 +29,17 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
     private var smoothPif: Double = 0
     private var fastPif: Double = 0
     private var settings = adaptiveBitrateFastSettings
+    private let rttMax: Double
+    private let pifMax: Double
 
-    init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
+    init(targetBitrate: UInt32,
+         delegate: AdaptiveBitrateDelegate,
+         rttMax: Double = 250,
+         pifMax: Double = 100)
+    {
         self.targetBitrate = Int64(targetBitrate)
+        self.rttMax = rttMax
+        self.pifMax = pifMax
         currentBitrate = adaptiveBitrateStart
         previousBitrate = adaptiveBitrateStart
         currentMaximumBitrate = adaptiveBitrateStart
@@ -80,8 +88,8 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
         calcRtts(stats)
         increaseCurrentMaxBitrate(stats: stats, allowedRttJitter: 15, allowedPifJitter: 10)
         // slow decreases if needed
-        decreaseMaxRateIfPifIsHigh(factor: 0.9, pifMax: 100, minimumDecrease: 250_000)
-        decreaseMaxRateIfRttIsHigh(factor: 0.9, rttMax: 250, minimumDecrease: 250_000)
+        decreaseMaxRateIfPifIsHigh(factor: 0.9, minimumDecrease: 250_000)
+        decreaseMaxRateIfRttIsHigh(factor: 0.9, minimumDecrease: 250_000)
         decreaseMaxRateIfRttDiffIsHigh(
             stats,
             factor: settings.rttDiffHighFactor,
@@ -159,7 +167,7 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
         }
     }
 
-    private func decreaseMaxRateIfPifIsHigh(factor: Double, pifMax: Double, minimumDecrease: Int64) {
+    private func decreaseMaxRateIfPifIsHigh(factor: Double, minimumDecrease: Int64) {
         guard smoothPif > pifMax else {
             return
         }
@@ -173,7 +181,7 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
         )
     }
 
-    private func decreaseMaxRateIfRttIsHigh(factor: Double, rttMax: Double, minimumDecrease: Int64) {
+    private func decreaseMaxRateIfRttIsHigh(factor: Double, minimumDecrease: Int64) {
         guard avgRtt > rttMax else {
             return
         }
