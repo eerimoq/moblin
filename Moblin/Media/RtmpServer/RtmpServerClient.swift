@@ -96,18 +96,18 @@ class RtmpServerClient {
     }
 
     func handleFrame(sampleBuffer: CMSampleBuffer) {
-        server?.delegate?.rtmpServerOnVideoBuffer(cameraId: cameraId, sampleBuffer)
+        server?.delegate.rtmpServerOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func handleAudioBuffer(sampleBuffer: CMSampleBuffer) {
-        server?.delegate?.rtmpServerOnAudioBuffer(cameraId: cameraId, sampleBuffer)
+        server?.delegate.rtmpServerOnAudioBuffer(cameraId: cameraId, sampleBuffer)
     }
 
     func updateTargetLatencies() {
         guard let (audioTargetLatency, videoTargetLatency) = targetLatenciesSynchronizer.update() else {
             return
         }
-        server?.delegate?.rtmpServerSetTargetLatencies(
+        server?.delegate.rtmpServerSetTargetLatencies(
             cameraId: cameraId,
             videoTargetLatency,
             audioTargetLatency

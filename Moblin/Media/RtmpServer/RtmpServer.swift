@@ -26,13 +26,14 @@ protocol RtmpServerDelegate: AnyObject {
 class RtmpServer {
     private var listener: NWListener?
     private var clients: [RtmpServerClient]
-    weak var delegate: (any RtmpServerDelegate)?
+    unowned let delegate: RtmpServerDelegate
     var settings: SettingsRtmpServer
     private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
     var bitrateStats = BitrateStats()
 
-    init(settings: SettingsRtmpServer) {
+    init(settings: SettingsRtmpServer, delegate: RtmpServerDelegate) {
         self.settings = settings
+        self.delegate = delegate
         clients = []
     }
 
@@ -143,14 +144,14 @@ class RtmpServer {
         for aClient in clients {
             if aClient !== client, aClient.streamKey == client.streamKey {
                 let reason = "Same stream key"
-                delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
+                delegate.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
                 aClient.stop(reason: reason)
             } else {
                 newClients.append(aClient)
             }
         }
         clients = newClients
-        delegate?.rtmpServerOnPublishStart(streamKey: client.streamKey)
+        delegate.rtmpServerOnPublishStart(streamKey: client.streamKey)
         logNumberOfClients()
     }
 
@@ -161,7 +162,7 @@ class RtmpServer {
         }
         logNumberOfClients()
         if !client.streamKey.isEmpty {
-            delegate?.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
+            delegate.rtmpServerOnPublishStop(streamKey: client.streamKey, reason: reason)
         }
     }
 
