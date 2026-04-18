@@ -26,8 +26,10 @@ extension Model {
             guard let url = URL(string: stream.url) else {
                 continue
             }
-            let client = RtspClient(cameraId: stream.id, url: url, latency: stream.latencySeconds())
-            client.delegate = self
+            let client = RtspClient(cameraId: stream.id,
+                                    url: url,
+                                    latency: stream.latencySeconds(),
+                                    delegate: self)
             client.start()
             ingests.rtsp.append(client)
         }

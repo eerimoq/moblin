@@ -568,7 +568,7 @@ class RtspClient {
     private var rtpVideo = Rtp()
     private var rtpVideoChannel: UInt8?
     private var rtcpVideoChannel: UInt8?
-    weak var delegate: RtspClientDelegate?
+    unowned let delegate: RtspClientDelegate
     private var connectTimer = SimpleTimer(queue: rtspClientQueue)
     private var keepAliveTimer = SimpleTimer(queue: rtspClientQueue)
     private var reconnectTimer = SimpleTimer(queue: rtspClientQueue)
@@ -576,9 +576,10 @@ class RtspClient {
     private var isAlive = true
     private var bitrateStats = BitrateStats()
 
-    init(cameraId: UUID, url: URL, latency: Double) {
+    init(cameraId: UUID, url: URL, latency: Double, delegate: RtspClientDelegate) {
         self.cameraId = cameraId
         self.latency = latency
+        self.delegate = delegate
         username = url.user()
         password = url.password()
         port = url.port ?? 554
@@ -616,10 +617,10 @@ class RtspClient {
         switch newState {
         case .disconnected:
             if state == .streaming {
-                delegate?.rtspClientDisconnected(cameraId: cameraId)
+                delegate.rtspClientDisconnected(cameraId: cameraId)
             }
         case .streaming:
-            delegate?.rtspClientConnected(cameraId: cameraId)
+            delegate.rtspClientConnected(cameraId: cameraId)
         default:
             break
         }
@@ -876,18 +877,18 @@ class RtspClient {
 
     private func handleUnauthorizedResponse(request: Request, response: Response) throws {
         guard !request.dueToAuthenticationFailure else {
-            delegate?.rtspClientErrorToast(title: String(localized: "Wrong RTSP username or password"))
+            delegate.rtspClientErrorToast(title: String(localized: "Wrong RTSP username or password"))
             throw "Wrong username or password"
         }
         guard username != nil, password != nil else {
-            delegate?.rtspClientErrorToast(title: String(localized: "RTSP username or password missing"))
+            delegate.rtspClientErrorToast(title: String(localized: "RTSP username or password missing"))
             throw "Username or password missing."
         }
         guard let wwwAuthenticate = response.headers["www-authenticate"] else {
             throw "Missing authenticate field when authentication failed."
         }
         guard wwwAuthenticate.starts(with: "Digest ") else {
-            delegate?.rtspClientErrorToast(
+            delegate.rtspClientErrorToast(
                 title: String(localized: "RTSP only supports Digest authentication")
             )
             throw "Only Digest authentication is supported."
@@ -902,7 +903,7 @@ class RtspClient {
                 nonce = value.trimmingCharacters(in: ["\""])
             case "algorithm":
                 if value.trimmingCharacters(in: ["\""]) != "MD5" {
-                    delegate?.rtspClientErrorToast(
+                    delegate.rtspClientErrorToast(
                         title: String(localized: "RTSP only supports MD5 algorithm in authentication")
                     )
                     throw "Only authentication using MD5 algorithm is supported."
@@ -1038,6 +1039,6 @@ class RtspClient {
     }
 
     func videoOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        delegate?.rtspClientOnVideoBuffer(cameraId: cameraId, sampleBuffer)
+        delegate.rtspClientOnVideoBuffer(cameraId: cameraId, sampleBuffer)
     }
 }
