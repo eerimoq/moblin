@@ -27,7 +27,7 @@ let processorPipelineQueue = DispatchQueue(
 )
 
 private class Stream {
-    unowned var delegate: (AudioEncoderDelegate & VideoEncoderDelegate)?
+    unowned var delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)?
 
     init(delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
         self.delegate = delegate
