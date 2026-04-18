@@ -33,8 +33,8 @@ extension Model {
             let client = WhepClient(streamId: stream.id,
                                     url: url,
                                     latency: stream.latencySeconds(),
-                                    syncTimestamps: stream.syncTimestamps)
-            client.delegate = self
+                                    syncTimestamps: stream.syncTimestamps,
+                                    delegate: self)
             client.start()
             ingests.whep.append(client)
         }

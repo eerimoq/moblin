@@ -21,7 +21,7 @@ class WhepClient {
     private let url: URL
     private let latency: Double
     private let syncTimestamps: Bool
-    weak var delegate: (any WhepClientDelegate)?
+    unowned let delegate: WhepClientDelegate
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
     private var started = false
@@ -29,11 +29,12 @@ class WhepClient {
     private var connected: Bool = false
     private var bitrateStats = BitrateStats()
 
-    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool) {
+    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool, delegate: WhepClientDelegate) {
         self.streamId = streamId
         self.url = url
         self.latency = latency
         self.syncTimestamps = syncTimestamps
+        self.delegate = delegate
     }
 
     func start() {
@@ -173,23 +174,23 @@ class WhepClient {
 extension WhepClient: WebrtcIngestClientDelegate {
     func webrtcIngestClientOnConnected(streamId: UUID) {
         connected = true
-        delegate?.whepClientOnPublishStart(streamId: streamId)
+        delegate.whepClientOnPublishStart(streamId: streamId)
     }
 
     func webrtcIngestClientOnDisconnected(streamId: UUID, reason: String) {
         if connected {
-            delegate?.whepClientOnPublishStop(streamId: streamId, reason: reason)
+            delegate.whepClientOnPublishStop(streamId: streamId, reason: reason)
             connected = false
         }
         reconnectSoon()
     }
 
     func webrtcIngestClientOnVideoBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whepClientOnVideoBuffer(streamId: streamId, sampleBuffer)
+        delegate.whepClientOnVideoBuffer(streamId: streamId, sampleBuffer)
     }
 
     func webrtcIngestClientOnAudioBuffer(streamId: UUID, _ sampleBuffer: CMSampleBuffer) {
-        delegate?.whepClientOnAudioBuffer(streamId: streamId, sampleBuffer)
+        delegate.whepClientOnAudioBuffer(streamId: streamId, sampleBuffer)
     }
 
     func webrtcIngestClientSetTargetLatencies(
@@ -197,7 +198,7 @@ extension WhepClient: WebrtcIngestClientDelegate {
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     ) {
-        delegate?.whepClientSetTargetLatencies(
+        delegate.whepClientSetTargetLatencies(
             streamId: streamId,
             videoTargetLatency,
             audioTargetLatency
