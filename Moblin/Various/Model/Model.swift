@@ -611,6 +611,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var sceneSettingsPanelScene = SettingsScene(name: "")
     var snapshotJobs: Deque<SnapshotJob> = []
     var gameControllers: [GCController?] = []
+    var moveToGimbalPresetQueue: Deque<UUID> = []
+    var moveToGimbalPresetQueueRunning = false
     var latestKnownLocation: CLLocation?
     var slopePercent = 0.0
     var previousSlopeAltitude: Double? = 0.0

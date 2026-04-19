@@ -30,8 +30,12 @@ class Gimbal {
 
     func setOrientation(angles: Vector3D) {
         Task { @MainActor [weak self] in
-            _ = try await self?.accessory?.setOrientation(angles)
+            await self?.setOrientation(angles: angles)
         }
+    }
+
+    func setOrientation(angles: Vector3D) async {
+        _ = try? await accessory?.setOrientation(angles)
     }
 
     func animate(motion: DockAccessory.Animation) {
