@@ -436,7 +436,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let zoom = Zoom()
     let camera = CameraState()
     let mediaPlayerPlayer = MediaPlayerPlayer()
-    let media = Media()
+    var media: Media!
     let hypeTrain = HypeTrain()
     let raid = Raid()
     let moblink = Moblink()
@@ -980,7 +980,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bluetoothCentralManger = CBCentralManager(delegate: self, queue: .main)
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
-        media.delegate = self
+        media = Media(delegate: self)
         setupAppIntents()
         faxReceiver.delegate = self
         fixAlertMedias()

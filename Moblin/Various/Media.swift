@@ -71,7 +71,7 @@ final class Media: NSObject {
     private var experimental: Bool = false
     private var overheadBandwidth: Int32 = 25
     private var maximumBandwidthFollowInput: Bool = false
-    weak var delegate: MediaDelegate?
+    private unowned let delegate: MediaDelegate
     private var adaptiveBitrate: AdaptiveBitrate?
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoEncoderSettings()
@@ -82,6 +82,10 @@ final class Media: NSObject {
     private var srtConnected = false
     private var srtImplementation: SettingsStreamSrtImplementation = .moblin
     private var canvasSize: CGSize = .init(width: 1920, height: 1080)
+
+    init(delegate: MediaDelegate) {
+        self.delegate = delegate
+    }
 
     func logStatistics() {
         srtlaClient?.logStatistics()
@@ -881,7 +885,7 @@ final class Media: NSObject {
         processor?.attachCamera(
             params: params,
             onError: {
-                self.delegate?.mediaError(error: $0)
+                self.delegate.mediaError(error: $0)
             },
             onSuccess: {
                 DispatchQueue.main.async {
@@ -965,7 +969,7 @@ final class Media: NSObject {
             bufferedAudio: nil
         )
         processor?.attachAudio(params: params) {
-            self.delegate?.mediaError(error: $0)
+            self.delegate.mediaError(error: $0)
         }
     }
 
@@ -1052,7 +1056,7 @@ extension Media: ProcessorDelegate {
                 new: audioLevel
             ) {
                 self.currentAudioLevel = audioLevel
-                self.delegate?.mediaOnAudioMuteChange()
+                self.delegate.mediaOnAudioMuteChange()
             } else {
                 self.currentAudioLevel = audioLevel
             }
@@ -1062,63 +1066,63 @@ extension Media: ProcessorDelegate {
     }
 
     func streamVideo(lowFpsImage: Data?, frameNumber: UInt64) {
-        delegate?.mediaOnLowFpsImage(lowFpsImage, frameNumber)
+        delegate.mediaOnLowFpsImage(lowFpsImage, frameNumber)
     }
 
     func streamVideoAttachCameraError() {
-        delegate?.mediaOnAttachCameraError()
+        delegate.mediaOnAttachCameraError()
     }
 
     func streamVideoCaptureSessionError(_ message: String) {
-        delegate?.mediaOnCaptureSessionError(message)
+        delegate.mediaOnCaptureSessionError(message)
     }
 
     func streamVideoBufferedVideoReady(cameraId: UUID) {
-        delegate?.mediaOnBufferedVideoReady(cameraId: cameraId)
+        delegate.mediaOnBufferedVideoReady(cameraId: cameraId)
     }
 
     func streamVideoBufferedVideoRemoved(cameraId: UUID) {
-        delegate?.mediaOnBufferedVideoRemoved(cameraId: cameraId)
+        delegate.mediaOnBufferedVideoRemoved(cameraId: cameraId)
     }
 
     func streamVideoEncoderResolution(resolution: CGSize) {
-        delegate?.mediaOnEncoderResolutionChanged(resolution: resolution)
+        delegate.mediaOnEncoderResolutionChanged(resolution: resolution)
     }
 
     func streamAudio(sampleBuffer: CMSampleBuffer) {
-        delegate?.mediaOnAudioBuffer(sampleBuffer)
+        delegate.mediaOnAudioBuffer(sampleBuffer)
     }
 
     func streamRecorderInitSegment(data: Data) {
-        delegate?.mediaOnRecorderInitSegment(data: data)
+        delegate.mediaOnRecorderInitSegment(data: data)
     }
 
     func streamRecorderDataSegment(segment: RecorderDataSegment) {
-        delegate?.mediaOnRecorderDataSegment(segment: segment)
+        delegate.mediaOnRecorderDataSegment(segment: segment)
     }
 
     func streamRecorderFinished() {
-        delegate?.mediaOnRecorderFinished()
+        delegate.mediaOnRecorderFinished()
     }
 
     func streamNoTorch() {
-        delegate?.mediaOnNoTorch()
+        delegate.mediaOnNoTorch()
     }
 
     func streamVideoFps(fps: Int) {
-        delegate?.mediaOnFps(fps: fps)
+        delegate.mediaOnFps(fps: fps)
     }
 
     func streamSetZoomX(x: Float) {
-        delegate?.mediaSetZoomX(x: x)
+        delegate.mediaSetZoomX(x: x)
     }
 
     func streamSetExposureBias(bias: Float) {
-        delegate?.mediaSetExposureBias(bias: bias)
+        delegate.mediaSetExposureBias(bias: bias)
     }
 
     func streamSelectedFps(auto: Bool) {
-        delegate?.mediaSelectedFps(auto: auto)
+        delegate.mediaSelectedFps(auto: auto)
     }
 }
 
@@ -1146,13 +1150,13 @@ extension Media: SrtlaDelegate {
                     }
                     DispatchQueue.main.async {
                         self.srtConnected = true
-                        self.delegate?.mediaOnSrtConnected()
+                        self.delegate.mediaOnSrtConnected()
                     }
                 } catch {
                     let error = "\(error)"
                     let message = String(localized: "SRT connect failed with: \(error)")
                     DispatchQueue.main.async {
-                        self.delegate?.mediaOnSrtDisconnected(message)
+                        self.delegate.mediaOnSrtDisconnected(message)
                     }
                 }
             } else {
@@ -1166,13 +1170,13 @@ extension Media: SrtlaDelegate {
     func srtlaError(message: String) {
         DispatchQueue.main.async {
             logger.info("stream: SRT error: \(message)")
-            self.delegate?.mediaOnSrtDisconnected(String(localized: "SRT error: \(message)"))
+            self.delegate.mediaOnSrtDisconnected(String(localized: "SRT error: \(message)"))
         }
     }
 
     func moblinkStreamerDestinationAddress(address: String, port: UInt16) {
         DispatchQueue.main.async {
-            self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
+            self.delegate.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }
     }
 
@@ -1190,16 +1194,16 @@ extension Media: AdaptiveBitrateDelegate {
 
 extension Media: RistStreamDelegate {
     func ristStreamOnConnected() {
-        delegate?.mediaOnRistConnected()
+        delegate.mediaOnRistConnected()
     }
 
     func ristStreamOnDisconnected() {
-        delegate?.mediaOnRistDisconnected()
+        delegate.mediaOnRistDisconnected()
     }
 
     func ristStreamRelayDestinationAddress(address: String, port: UInt16) {
         DispatchQueue.main.async {
-            self.delegate?.mediaStrlaRelayDestinationAddress(address: address, port: port)
+            self.delegate.mediaStrlaRelayDestinationAddress(address: address, port: port)
         }
     }
 }
@@ -1208,7 +1212,7 @@ extension Media: SrtStreamMoblinDelegate {
     func srtStreamMoblinConnected() {
         DispatchQueue.main.async {
             self.srtConnected = true
-            self.delegate?.mediaOnSrtConnected()
+            self.delegate.mediaOnSrtConnected()
         }
     }
 
@@ -1239,9 +1243,9 @@ extension Media: RtmpStreamDelegate {
             switch RtmpConnectionCode(rawValue: code) {
             case .connectFailed, .connectClosed:
                 if rtmpStream === self.rtmpStream {
-                    self.delegate?.mediaOnRtmpDisconnected("\(code)")
+                    self.delegate.mediaOnRtmpDisconnected("\(code)")
                 } else {
-                    self.delegate?.mediaOnRtmpDestinationDisconnected(rtmpStream.name)
+                    self.delegate.mediaOnRtmpDestinationDisconnected(rtmpStream.name)
                     rtmpStream.reconnectSoon()
                 }
             default:
@@ -1253,9 +1257,9 @@ extension Media: RtmpStreamDelegate {
     func rtmpStreamConnected(_ rtmpStream: RtmpStream) {
         DispatchQueue.main.async {
             if rtmpStream === self.rtmpStream {
-                self.delegate?.mediaOnRtmpConnected()
+                self.delegate.mediaOnRtmpConnected()
             } else {
-                self.delegate?.mediaOnRtmpDestinationConnected(rtmpStream.name)
+                self.delegate.mediaOnRtmpDestinationConnected(rtmpStream.name)
             }
         }
     }
@@ -1263,17 +1267,17 @@ extension Media: RtmpStreamDelegate {
 
 extension Media: WhipStreamDelegate {
     func whipStreamOnConnected() {
-        delegate?.mediaOnWhipConnected()
+        delegate.mediaOnWhipConnected()
     }
 
     func whipStreamOnDisconnected(reason: String) {
-        delegate?.mediaOnWhipDisconnected(reason)
+        delegate.mediaOnWhipDisconnected(reason)
     }
 
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
                            completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
     {
-        delegate?.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
+        delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
     }
 }
