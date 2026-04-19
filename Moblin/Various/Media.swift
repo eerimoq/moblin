@@ -129,7 +129,7 @@ final class Media: NSObject {
         rtmpStopStream()
         ristStopStream()
         whipStopStream()
-        let processor = Processor()
+        let processor = Processor(delegate: self)
         switch proto {
         case .rtmp:
             rtmpStreams = [RtmpStream(name: "Main",
@@ -182,7 +182,6 @@ final class Media: NSObject {
             rtmpStreams.removeAll()
         }
         self.processor = processor
-        processor.setDelegate(delegate: self)
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
         attachDefaultAudioDevice(builtinDelay: builtinAudioDelay)
     }

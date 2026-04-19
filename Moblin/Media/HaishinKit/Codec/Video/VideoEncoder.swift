@@ -29,7 +29,6 @@ class VideoEncoder {
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var formatDescription: CMFormatDescription?
-
     weak var delegate: VideoEncoderDelegate?
     weak var controlDelegate: VideoEncoderControlDelegate?
     private var session: VTCompressionSession? {

@@ -259,7 +259,7 @@ final class VideoUnit: NSObject {
         didSet {
             guard let device else {
                 if torch {
-                    processor?.delegate?.streamNoTorch()
+                    processor?.delegate.streamNoTorch()
                 }
                 return
             }
@@ -475,7 +475,7 @@ final class VideoUnit: NSObject {
 
     func stopEncoding() {
         encoder.stopRunning()
-        processor?.delegate?.streamVideoEncoderResolution(resolution: canvasSize)
+        processor?.delegate.streamVideoEncoderResolution(resolution: canvasSize)
     }
 
     func setSize(capture: CGSize, canvas: CGSize) {
@@ -487,7 +487,7 @@ final class VideoUnit: NSObject {
             self.pool = nil
             self.bufferedPool = nil
         }
-        processor?.delegate?.streamVideoEncoderResolution(resolution: canvasSize)
+        processor?.delegate.streamVideoEncoderResolution(resolution: canvasSize)
     }
 
     func getCiImage(_ videoSourceId: UUID, _ presentationTimeStamp: CMTime) -> CIImage? {
@@ -640,7 +640,7 @@ final class VideoUnit: NSObject {
             return
         }
         let message = error._nsError.localizedFailureReason ?? "\(error.code)"
-        processor?.delegate?.streamVideoCaptureSessionError(message)
+        processor?.delegate.streamVideoCaptureSessionError(message)
         processorControlQueue.asyncAfter(deadline: .now() + .milliseconds(500)) {
             if self.isRunning {
                 self.session.startRunning()
@@ -1338,7 +1338,7 @@ final class VideoUnit: NSObject {
 
     private func reportAndResetFps(fps: Int, _ presentationTimeStamp: Double) {
         if fps != latestReportedFps {
-            processor?.delegate?.streamVideoFps(fps: fps)
+            processor?.delegate.streamVideoFps(fps: fps)
             latestReportedFps = fps
         }
         framesCounter = 0
@@ -1496,7 +1496,7 @@ final class VideoUnit: NSObject {
         ciImage = ciImage.scaled(x: scale, y: scale)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)
-        processor?.delegate?.streamVideo(
+        processor?.delegate.streamVideo(
             lowFpsImage: image.jpegData(compressionQuality: 0.3),
             frameNumber: lowFpsImageFrameNumber
         )
@@ -1855,10 +1855,10 @@ final class VideoUnit: NSObject {
             device.activeColorSpace = colorSpace
             if useAutoFrameRate {
                 device.setAutoFps()
-                processor?.delegate?.streamSelectedFps(auto: true)
+                processor?.delegate.streamSelectedFps(auto: true)
             } else {
                 device.setFps(frameRate: fps)
-                processor?.delegate?.streamSelectedFps(auto: false)
+                processor?.delegate.streamSelectedFps(auto: false)
             }
             if #available(iOS 26, *), useLandscapeInPortrait {
                 #if !targetEnvironment(macCatalyst)
@@ -1900,7 +1900,7 @@ final class VideoUnit: NSObject {
             failed = true
         }
         if failed {
-            processor?.delegate?.streamVideoAttachCameraError()
+            processor?.delegate.streamVideoAttachCameraError()
         } else {
             captureSessionDevices.append(CaptureSessionDevice(
                 device: device,
@@ -1941,7 +1941,7 @@ final class VideoUnit: NSObject {
     private func setTorchMode(_ device: AVCaptureDevice, _ torchMode: AVCaptureDevice.TorchMode) {
         guard device.isTorchModeSupported(torchMode) else {
             if torchMode == .on {
-                processor?.delegate?.streamNoTorch()
+                processor?.delegate.streamNoTorch()
             }
             return
         }
@@ -2009,14 +2009,14 @@ final class VideoUnit: NSObject {
         }
         let zoomSlider = AVCaptureSystemZoomSlider(device: device) { [weak self] zoomFactor in
             let x = Float(device.displayVideoZoomFactorMultiplier * zoomFactor)
-            self?.processor?.delegate?.streamSetZoomX(x: x)
+            self?.processor?.delegate.streamSetZoomX(x: x)
         }
         if session.canAddControl(zoomSlider) {
             session.addControl(zoomSlider)
         }
         let exposureBiasSlider =
             AVCaptureSystemExposureBiasSlider(device: device) { [weak self] exposureBias in
-                self?.processor?.delegate?.streamSetExposureBias(bias: exposureBias)
+                self?.processor?.delegate.streamSetExposureBias(bias: exposureBias)
             }
         if session.canAddControl(exposureBiasSlider) {
             session.addControl(exposureBiasSlider)
@@ -2129,7 +2129,7 @@ extension VideoUnit: AVCaptureSessionControlsDelegate {
 
 extension VideoUnit: VideoEncoderControlDelegate {
     func videoEncoderControlResolutionChanged(_: VideoEncoder, resolution: CGSize) {
-        processor?.delegate?.streamVideoEncoderResolution(resolution: resolution)
+        processor?.delegate.streamVideoEncoderResolution(resolution: resolution)
     }
 }
 
