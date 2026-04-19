@@ -82,6 +82,7 @@ final class Media: NSObject {
     private var srtConnected = false
     private var srtImplementation: SettingsStreamSrtImplementation = .moblin
     private var canvasSize: CGSize = .init(width: 1920, height: 1080)
+    private var limitAdaptiveBitrateByTransportBitrate: Bool = true
 
     init(delegate: MediaDelegate) {
         self.delegate = delegate
@@ -125,9 +126,11 @@ final class Media: NSObject {
                       timecodesEnabled: Bool,
                       builtinAudioDelay: Double,
                       destinations: [SettingsStreamMultiStreamingDestination],
-                      srtImplementation: SettingsStreamSrtImplementation)
+                      srtImplementation: SettingsStreamSrtImplementation,
+                      limitAdaptiveBitrateByTransportBitrate: Bool)
     {
         self.srtImplementation = srtImplementation
+        self.limitAdaptiveBitrateByTransportBitrate = limitAdaptiveBitrateByTransportBitrate
         processor?.stop()
         srtStopStream()
         rtmpStopStream()
@@ -521,8 +524,10 @@ final class Media: NSObject {
         srtPreviousTotalByteCount = srtTotalByteCount
     }
 
-    func streamTransportBitrate() -> Int64 {
-        if let rtmpStream {
+    func streamTransportBitrate() -> Int64? {
+        if !limitAdaptiveBitrateByTransportBitrate {
+            return nil
+        } else if let rtmpStream {
             return Int64(8 * rtmpStream.info.bitrateStats.value.latestSpeed)
         } else if isSrtStreamActive() {
             return 8 * srtTransportBitrate
@@ -795,6 +800,18 @@ final class Media: NSObject {
             videoEncoderSettings.bitrate = bitrate
             commitVideoEncoderSettings()
         }
+    }
+
+    func setVideoStreamBitrateRateControl(bitrateRateControl: SettingsStreamBitrateRateControl) {
+        switch bitrateRateControl {
+        case .abr:
+            videoEncoderSettings.bitrateRateControl = .abr
+        case .cbr:
+            videoEncoderSettings.bitrateRateControl = .cbr
+        case .vbr:
+            videoEncoderSettings.bitrateRateControl = .vbr
+        }
+        commitVideoEncoderSettings()
     }
 
     func setVideoProfile(profile: CFString) {

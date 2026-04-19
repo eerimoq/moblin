@@ -299,6 +299,7 @@ extension Model {
         setStreamAdaptiveResolution()
         setStreamKeyFrameInterval()
         setStreamBitrate(stream: stream)
+        setStreamBitrateRateControl(stream: stream)
         setAudioStreamBitrate(stream: stream)
         setAudioStreamFormat(format: stream.audioCodec.toEncoder())
         setAudioChannelsMap(channelsMap: [
@@ -332,7 +333,8 @@ extension Model {
             timecodesEnabled: isTimecodesEnabled(),
             builtinAudioDelay: database.debug.builtinAudioAndVideoDelay,
             destinations: stream.multiStreaming.destinations,
-            srtImplementation: stream.srt.implementation
+            srtImplementation: stream.srt.implementation,
+            limitAdaptiveBitrateByTransportBitrate: stream.bitrateRateControl != .cbr
         )
         updateTorch()
         updateMute()
@@ -776,6 +778,10 @@ extension Model {
     func setStreamBitrate(stream: SettingsStream) {
         media.setVideoStreamBitrate(bitrate: stream.bitrate)
         updateStatusStreamText()
+    }
+
+    func setStreamBitrateRateControl(stream: SettingsStream) {
+        media.setVideoStreamBitrateRateControl(bitrateRateControl: stream.bitrateRateControl)
     }
 
     func getBitratePresetByBitrate(bitrate: UInt32) -> SettingsBitratePreset? {

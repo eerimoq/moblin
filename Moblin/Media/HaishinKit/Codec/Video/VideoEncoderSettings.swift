@@ -30,8 +30,15 @@ struct VideoEncoderSettings {
         }
     }
 
+    enum BitrateRateControl: Equatable {
+        case abr
+        case cbr
+        case vbr
+    }
+
     var videoSize: CMVideoDimensions
     var bitrate: UInt32
+    var bitrateRateControl: BitrateRateControl = .abr
     var maxKeyFrameIntervalDuration: Int32
     var allowFrameReordering: Bool
     var profileLevel: String {
@@ -74,7 +81,8 @@ struct VideoEncoderSettings {
         return !(videoSize == other.videoSize &&
             maxKeyFrameIntervalDuration == other.maxKeyFrameIntervalDuration &&
             allowFrameReordering == other.allowFrameReordering &&
-            profileLevel == other.profileLevel)
+            profileLevel == other.profileLevel &&
+            bitrateRateControl == other.bitrateRateControl)
     }
 
     func properties() -> [VTSessionProperty] {
@@ -82,13 +90,22 @@ struct VideoEncoderSettings {
         var properties: [VTSessionProperty] = [
             .init(key: .realTime, value: kCFBooleanTrue),
             .init(key: .profileLevel, value: profileLevel as NSObject),
-            .init(key: .averageBitRate, value: bitrate as CFNumber),
-            .init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitrate)),
             .init(key: .expectedFrameRate, value: VideoUnit.defaultFrameRate as CFNumber),
             .init(key: .maxKeyFrameIntervalDuration, value: maxKeyFrameIntervalDuration as CFNumber),
             .init(key: .allowFrameReordering, value: allowFrameReordering as NSObject),
             .init(key: .pixelTransferProperties, value: ["ScalingMode": "Trim"] as NSObject),
         ]
+        switch bitrateRateControl {
+        case .abr:
+            properties.append(.init(key: .averageBitRate, value: bitrate as CFNumber))
+            properties.append(.init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitrate)))
+        case .cbr:
+            properties.append(.init(key: .constantBitRate, value: bitrate as CFNumber))
+        case .vbr:
+            if #available(iOS 26, *) {
+                properties.append(.init(key: .variableBitRate, value: bitrate as CFNumber))
+            }
+        }
         if profileLevel.contains("Main10") {
             properties += [
                 .init(key: .hdrMetadataInsertionMode, value: kVTHDRMetadataInsertionMode_Auto),

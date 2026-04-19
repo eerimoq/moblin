@@ -140,16 +140,31 @@ class VideoEncoder {
         }
         currentBitrate = settings.bitrate
         let bitrate = currentBitrate
-        let option = VTSessionProperty(key: .averageBitRate, value: NSNumber(value: bitrate))
-        if let status = session?.setProperty(option), status != noErr {
-            logger.info("video-encoder: Failed to set option \(status) \(option)")
-        }
-        let optionLimit = VTSessionProperty(
-            key: .dataRateLimits,
-            value: createDataRateLimits(bitRate: bitrate)
-        )
-        if let status = session?.setProperty(optionLimit), status != noErr {
-            logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
+        switch settings.bitrateRateControl {
+        case .abr:
+            let option = VTSessionProperty(key: .averageBitRate, value: NSNumber(value: bitrate))
+            if let status = session?.setProperty(option), status != noErr {
+                logger.info("video-encoder: Failed to set option \(status) \(option)")
+            }
+            let optionLimit = VTSessionProperty(
+                key: .dataRateLimits,
+                value: createDataRateLimits(bitRate: bitrate)
+            )
+            if let status = session?.setProperty(optionLimit), status != noErr {
+                logger.info("video-encoder: Failed to set option \(status) \(optionLimit)")
+            }
+        case .cbr:
+            let option = VTSessionProperty(key: .constantBitRate, value: NSNumber(value: bitrate))
+            if let status = session?.setProperty(option), status != noErr {
+                logger.info("video-encoder: Failed to set option \(status) \(option)")
+            }
+        case .vbr:
+            if #available(iOS 26, *) {
+                let option = VTSessionProperty(key: .variableBitRate, value: NSNumber(value: bitrate))
+                if let status = session?.setProperty(option), status != noErr {
+                    logger.info("video-encoder: Failed to set option \(status) \(option)")
+                }
+            }
         }
     }
 

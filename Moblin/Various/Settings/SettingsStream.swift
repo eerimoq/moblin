@@ -26,6 +26,47 @@ enum SettingsStreamH264Profile: String, Codable, CaseIterable {
     case high = "High"
 }
 
+enum SettingsStreamBitrateRateControl: String, Codable, CaseIterable {
+    case abr = "ABR"
+    case cbr = "CBR"
+    case vbr = "VBR"
+
+    func toString() -> String {
+        switch self {
+        case .abr:
+            return String(localized: "ABR (Average)")
+        case .cbr:
+            return String(localized: "CBR (Constant)")
+        case .vbr:
+            return String(localized: "VBR (Variable)")
+        }
+    }
+
+    static func cases() -> [SettingsStreamBitrateRateControl] {
+        var cases: [SettingsStreamBitrateRateControl] = [
+            .abr,
+            .cbr,
+        ]
+        if #available(iOS 26, *) {
+            cases.append(.vbr)
+        }
+        return cases
+    }
+
+    static func makeValid(value: SettingsStreamBitrateRateControl) -> SettingsStreamBitrateRateControl {
+        if #available(iOS 26, *) {
+            return value
+        } else {
+            switch value {
+            case .vbr:
+                return .abr
+            default:
+                return value
+            }
+        }
+    }
+}
+
 enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r4032x3024 = "4032x3024"
     case r3840x2160 = "3840x2160"
@@ -1078,6 +1119,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     @Published var fps: Int = SettingsStream.defaultFps
     @Published var lowLightBoost: Bool = false
     @Published var bitrate: UInt32 = 5_000_000
+    @Published var bitrateRateControl: SettingsStreamBitrateRateControl = .abr
     @Published var codec: SettingsStreamCodec = .h265hevc
     @Published var h264Profile: SettingsStreamH264Profile = .main
     @Published var bFrames: Bool = false
@@ -1166,6 +1208,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              fps,
              autoFps,
              bitrate,
+             bitrateRateControl,
              codec,
              h264Profile,
              bFrames,
@@ -1253,6 +1296,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.fps, fps)
         try container.encode(.autoFps, lowLightBoost)
         try container.encode(.bitrate, bitrate)
+        try container.encode(.bitrateRateControl, bitrateRateControl)
         try container.encode(.codec, codec)
         try container.encode(.h264Profile, h264Profile)
         try container.encode(.bFrames, bFrames)
@@ -1349,6 +1393,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         fps = container.decode(.fps, Int.self, Self.defaultFps)
         lowLightBoost = container.decode(.autoFps, Bool.self, false)
         bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
+        bitrateRateControl = SettingsStreamBitrateRateControl.makeValid(
+            value: container.decode(.bitrateRateControl, SettingsStreamBitrateRateControl.self, .abr)
+        )
         codec = container.decode(.codec, SettingsStreamCodec.self, .h265hevc)
         h264Profile = container.decode(.h264Profile, SettingsStreamH264Profile.self, .main)
         bFrames = container.decode(.bFrames, Bool.self, false)
@@ -1438,6 +1485,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         new.fps = fps
         new.lowLightBoost = lowLightBoost
         new.bitrate = bitrate
+        new.bitrateRateControl = bitrateRateControl
         new.codec = codec
         new.h264Profile = h264Profile
         new.bFrames = bFrames

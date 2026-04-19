@@ -20,6 +20,9 @@ struct VTSessionPropertyKey {
     static let pixelTransferProperties =
         VTSessionPropertyKey(value: kVTCompressionPropertyKey_PixelTransferProperties)
     static let averageBitRate = VTSessionPropertyKey(value: kVTCompressionPropertyKey_AverageBitRate)
+    static let constantBitRate = VTSessionPropertyKey(value: kVTCompressionPropertyKey_ConstantBitRate)
+    @available(iOS 26, *)
+    static let variableBitRate = VTSessionPropertyKey(value: kVTCompressionPropertyKey_VariableBitRate)
     static let dataRateLimits = VTSessionPropertyKey(value: kVTCompressionPropertyKey_DataRateLimits)
     static let realTime = VTSessionPropertyKey(value: kVTCompressionPropertyKey_RealTime)
     static let hdrMetadataInsertionMode =
