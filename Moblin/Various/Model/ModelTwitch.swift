@@ -560,6 +560,7 @@ extension Model: TwitchEventSubDelegate {
                 kind: .newFollower
             )
         }
+        printEventCatPrinters(event: .twitchFollow, username: event.user_name, message: text)
     }
 
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
