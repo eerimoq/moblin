@@ -9,7 +9,10 @@ struct ResetSettingsView: View {
             Button("Reset settings", role: .destructive) {
                 presentingResetConfirm = true
             }
-            .confirmationDialog("Are you sure?", isPresented: $presentingResetConfirm) {
+            .confirmationDialog("Are you sure?",
+                                isPresented: $presentingResetConfirm,
+                                titleVisibility: .visible)
+            {
                 Button("Reset settings", role: .destructive) {
                     model.settings.reset()
                     model.setCurrentStream()

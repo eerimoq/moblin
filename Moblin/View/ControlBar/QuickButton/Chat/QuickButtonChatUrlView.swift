@@ -13,12 +13,13 @@ struct QuickButtonChatUrlView: View {
         .foregroundStyle(deleted ? .gray : .blue)
         .strikethrough(deleted)
         .disabled(deleted)
-        .confirmationDialog("", isPresented: $presentingConfirmation) {
+        .confirmationDialog(url.absoluteString,
+                            isPresented: $presentingConfirmation,
+                            titleVisibility: .visible)
+        {
             Button("Open link") {
                 UIApplication.shared.open(url)
             }
-        } message: {
-            Text(url.absoluteString)
         }
     }
 }

@@ -629,13 +629,15 @@ struct MainView: View {
                                        filter: model.database.chat.predefinedMessagesFilter,
                                        presentingPredefinedMessages: $model.presentingPredefinedMessages)
             }
-            .confirmationDialog("", isPresented: $model.presentingSettingsImportConfirmation) {
+            .confirmationDialog(
+                "Are you sure you want to import settings? This will replace your current settings.",
+                isPresented: $model.presentingSettingsImportConfirmation,
+                titleVisibility: .visible
+            ) {
                 Button("Import settings", role: .destructive) {
                     model.pendingSettingsImportAction?()
                     model.pendingSettingsImportAction = nil
                 }
-            } message: {
-                Text("Are you sure you want to import settings? This will replace your current settings.")
             }
             .toast(isPresenting: $toast.showingToast, duration: 5) {
                 toast.toast

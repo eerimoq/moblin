@@ -72,15 +72,16 @@ private struct GoLiveButtonView: View {
             .onLongPressGesture {
                 model.toggleShowingPanel(type: nil, panel: .streamingButtonSettings)
             }
-            .confirmationDialog("", isPresented: $presentingGoLiveConfirm) {
+            .confirmationDialog("You are about to go live to '\(model.stream.name)'!",
+                                isPresented: $presentingGoLiveConfirm,
+                                titleVisibility: .visible)
+            {
                 Button("Go Live") {
                     model.startStream()
                     if model.isGoLiveNotificationConfigured() {
                         presentingGoLiveNotificationConfirm = true
                     }
                 }
-            } message: {
-                Text("You are about to go live to '\(model.stream.name)'!")
             }
     }
 }

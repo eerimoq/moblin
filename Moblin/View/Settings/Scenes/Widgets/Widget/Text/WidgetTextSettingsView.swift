@@ -81,12 +81,13 @@ private struct SuggestionView: View {
                 Text(suggestion.name)
                     .font(.title3)
             }
-            .confirmationDialog("", isPresented: $presentingConfirmation) {
+            .confirmationDialog("Are you sure you want to replace the content of the current text widget?",
+                                isPresented: $presentingConfirmation,
+                                titleVisibility: .visible)
+            {
                 Button("Yes", role: .destructive) {
                     submit()
                 }
-            } message: {
-                Text("Are you sure you want to replace the content of the current text widget?")
             }
             Text(suggestion.text)
         }
