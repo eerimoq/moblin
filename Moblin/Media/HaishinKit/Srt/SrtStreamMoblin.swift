@@ -9,14 +9,14 @@ protocol SrtStreamMoblinDelegate: AnyObject {
 
 class SrtStreamMoblin {
     private let writer: MpegTsWriter
-    weak var srtStreamDelegate: SrtStreamMoblinDelegate?
+    private let delegate: SrtStreamMoblinDelegate
     private let processor: Processor
     private var srtSender: SrtSender?
 
     init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamMoblinDelegate) {
         self.processor = processor
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: true)
-        srtStreamDelegate = delegate
+        self.delegate = delegate
         writer.delegate = self
     }
 
@@ -76,7 +76,7 @@ extension SrtStreamMoblin: SrtSenderDelegate {
         processorControlQueue.async {
             self.processor.startEncoding(self.writer)
             self.writer.startRunning()
-            self.srtStreamDelegate?.srtStreamMoblinConnected()
+            self.delegate.srtStreamMoblinConnected()
         }
     }
 
@@ -84,11 +84,11 @@ extension SrtStreamMoblin: SrtSenderDelegate {
         processorControlQueue.async {
             self.writer.stopRunning()
             self.processor.stopEncoding(self.writer)
-            self.srtStreamDelegate?.srtStreamMoblinDisconnected()
+            self.delegate.srtStreamMoblinDisconnected()
         }
     }
 
     func srtSenderOutput(packet: Data) {
-        srtStreamDelegate?.srtStreamMoblinOutput(packet: packet)
+        delegate.srtStreamMoblinOutput(packet: packet)
     }
 }

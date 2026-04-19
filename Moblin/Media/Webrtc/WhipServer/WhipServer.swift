@@ -18,7 +18,7 @@ protocol WhipServerDelegate: AnyObject {
 class WhipServer {
     private var server: HttpServer?
     private var clients: [UUID: WhipServerClient] = [:]
-    unowned var delegate: WhipServerDelegate
+    private let delegate: WhipServerDelegate
     var settings: SettingsWhipServer
     private var bitrateStats = BitrateStats()
 

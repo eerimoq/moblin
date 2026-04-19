@@ -28,7 +28,7 @@ class SrtlaServer {
     let settings: SettingsSrtlaServer
     private let srtServer: SrtServer
     private let srtServerNoSrtlaPatches: SrtServer
-    unowned let delegate: SrtlaServerDelegate
+    let delegate: SrtlaServerDelegate
     private let periodicTimer = SimpleTimer(queue: srtlaServerQueue)
     let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
     private var numberOfClients: Atomic<Int> = .init(0)

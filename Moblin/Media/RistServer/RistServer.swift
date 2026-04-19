@@ -20,7 +20,7 @@ class RistServer {
     private var port: UInt16
     private var context: RistReceiverContext?
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
-    unowned let delegate: RistServerDelegate
+    let delegate: RistServerDelegate
     private let streams: [SettingsRistServerStream]
     private var bitrateStats = BitrateStats()
 

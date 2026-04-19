@@ -568,7 +568,7 @@ class RtspClient {
     private var rtpVideo = Rtp()
     private var rtpVideoChannel: UInt8?
     private var rtcpVideoChannel: UInt8?
-    unowned let delegate: RtspClientDelegate
+    private let delegate: RtspClientDelegate
     private var connectTimer = SimpleTimer(queue: rtspClientQueue)
     private var keepAliveTimer = SimpleTimer(queue: rtspClientQueue)
     private var reconnectTimer = SimpleTimer(queue: rtspClientQueue)

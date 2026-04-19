@@ -39,7 +39,7 @@ final class Processor {
     let video = VideoUnit()
     let recorder = Recorder()
     private var streams: [Stream] = []
-    unowned var delegate: ProcessorDelegate
+    let delegate: ProcessorDelegate
 
     init(delegate: ProcessorDelegate) {
         self.delegate = delegate

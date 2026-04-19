@@ -26,7 +26,7 @@ protocol RtmpServerDelegate: AnyObject {
 class RtmpServer {
     private var listener: NWListener?
     private var clients: [RtmpServerClient]
-    unowned let delegate: RtmpServerDelegate
+    let delegate: RtmpServerDelegate
     var settings: SettingsRtmpServer
     private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
     var bitrateStats = BitrateStats()

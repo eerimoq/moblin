@@ -21,7 +21,7 @@ class WhepClient {
     private let url: URL
     private let latency: Double
     private let syncTimestamps: Bool
-    unowned let delegate: WhepClientDelegate
+    private let delegate: WhepClientDelegate
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
     private var started = false
