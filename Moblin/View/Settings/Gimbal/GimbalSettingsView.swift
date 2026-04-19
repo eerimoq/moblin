@@ -1,32 +1,5 @@
 import SwiftUI
 
-private struct ValueView: View {
-    let name: LocalizedStringKey
-    @Binding var value: Float
-
-    var body: some View {
-        HStack {
-            Text(name)
-            Spacer()
-            Text("\(formatOneDecimal(value.toDegrees()))°")
-            Button {
-                value -= Float(0.1).toRadians()
-            } label: {
-                Image(systemName: "minus.circle")
-                    .font(.title)
-            }
-            .buttonStyle(.borderless)
-            Button {
-                value += Float(0.1).toRadians()
-            } label: {
-                Image(systemName: "plus.circle")
-                    .font(.title)
-            }
-            .buttonStyle(.borderless)
-        }
-    }
-}
-
 private struct ZoomValueView: View {
     @ObservedObject var preset: SettingsGimbalPreset
 
@@ -54,8 +27,38 @@ private struct ZoomValueView: View {
 }
 
 private struct GimbalPresetView: View {
+    let model: Model
     @ObservedObject var gimbal: SettingsGimbal
     @ObservedObject var preset: SettingsGimbalPreset
+    @State var presentingConfirm: Bool = false
+    @State var moveAllowed: Bool = false
+
+    private func position() -> some View {
+        Group {
+            PositionButtonView(image: "arrow.up.circle") {
+                preset.x += Float(0.1).toRadians()
+            }
+            HStack {
+                PositionButtonView(image: "arrow.left.circle") {
+                    preset.y += Float(0.1).toRadians()
+                }
+                PositionButtonView(image: "arrow.down.circle") {
+                    preset.x -= Float(0.1).toRadians()
+                }
+                PositionButtonView(image: "arrow.right.circle") {
+                    preset.y -= Float(0.1).toRadians()
+                }
+            }
+        }
+    }
+
+    private func settingChanged() {
+        if moveAllowed {
+            model.moveToGimbalPreset(id: preset.id)
+        } else {
+            presentingConfirm = true
+        }
+    }
 
     var body: some View {
         NavigationLink {
@@ -64,9 +67,39 @@ private struct GimbalPresetView: View {
                     NameEditView(name: $preset.name, existingNames: gimbal.presets)
                 }
                 Section {
-                    ValueView(name: "X", value: $preset.x)
-                    ValueView(name: "Y", value: $preset.y)
+                    HStack {
+                        Text("Position")
+                        Spacer()
+                        VStack(alignment: .center, spacing: 7) {
+                            position()
+                        }
+                        .font(.title)
+                    }
+                    .buttonStyle(.borderless)
+                }
+                .onChange(of: preset.x) { _ in
+                    settingChanged()
+                }
+                .onChange(of: preset.y) { _ in
+                    settingChanged()
+                }
+                Section {
                     ZoomValueView(preset: preset)
+                }
+                .onChange(of: preset.zoomX) { _ in
+                    settingChanged()
+                }
+                .confirmationDialog("Beware, changing settings will move the Gimbal to the new position.",
+                                    isPresented: $presentingConfirm,
+                                    titleVisibility: .visible)
+                {
+                    Button("Ok", role: .destructive) {
+                        moveAllowed = true
+                        model.moveToGimbalPreset(id: preset.id)
+                    }
+                }
+                .onAppear {
+                    moveAllowed = false
                 }
             }
             .navigationTitle("Preset")
@@ -131,7 +164,7 @@ struct GimbalSettingsView: View {
             Section {
                 List {
                     ForEach(gimbal.presets) { preset in
-                        GimbalPresetView(gimbal: gimbal, preset: preset)
+                        GimbalPresetView(model: model, gimbal: gimbal, preset: preset)
                             .contextMenuDeleteButton {
                                 if let offsets = makeOffsets(gimbal.presets, preset.id) {
                                     deletePreset(at: offsets)

@@ -50,7 +50,7 @@ private struct QuickButtonStealthModeView: View {
     }
 }
 
-private struct PositionButtonView: View {
+struct PositionButtonView: View {
     let image: String
     let action: () -> Void
 
