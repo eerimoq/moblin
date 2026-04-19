@@ -6,7 +6,7 @@ protocol AudioEncoderDelegate: AnyObject {
 }
 
 class AudioEncoder {
-    weak var delegate: (any AudioEncoderDelegate)?
+    weak var delegate: AudioEncoderDelegate?
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var ringBuffer: AudioEncoderRingBuffer?

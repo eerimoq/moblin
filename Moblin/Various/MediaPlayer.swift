@@ -29,7 +29,7 @@ class MediaPlayer {
     private var outputTimer = SimpleTimer(queue: mediaPlayerQueue)
     private var active = false
     private var filename = ""
-    var delegate: (any MediaPlayerDelegate)?
+    var delegate: MediaPlayerDelegate?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaPlayerStorage) {
         self.settings = settings.clone()
@@ -185,7 +185,7 @@ class MediaPlayer {
         }
     }
 
-    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
+    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
         guard error == nil, let videoTrack = tracks?.first, let asset, let reader else {
             return
         }
@@ -204,7 +204,7 @@ class MediaPlayer {
         }
     }
 
-    private func loadAudioTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
+    private func loadAudioTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
         guard let audioTrack = tracks?.first else {
             logger.info("media-player: No audio in file.")
             startReading()

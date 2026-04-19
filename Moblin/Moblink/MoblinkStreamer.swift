@@ -232,7 +232,7 @@ class MoblinkStreamer: NSObject {
     private var server: NWListener?
     var connectionErrorMessage = ""
     private var retryStartTimer = SimpleTimer(queue: .main)
-    fileprivate weak var delegate: (any MoblinkStreamerDelegate)?
+    fileprivate weak var delegate: MoblinkStreamerDelegate?
     private var relays: [Relay] = []
     private var destinationAddress: String?
     private var destinationPort: UInt16?

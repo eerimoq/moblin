@@ -98,7 +98,7 @@ class CatPrinter: NSObject {
     private var currentJob: CurrentJob?
     private var deviceId: UUID?
     private let ditheringAlgorithm: DitheringAlgorithm = .atkinson
-    weak var delegate: (any CatPrinterDelegate)?
+    weak var delegate: CatPrinterDelegate?
     private var tryWriteNextChunkTimer = SimpleTimer(queue: catPrinterDispatchQueue)
     private var jobCompleteTimer = SimpleTimer(queue: catPrinterDispatchQueue)
     private var feedPaperTimer = SimpleTimer(queue: catPrinterDispatchQueue)

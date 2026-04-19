@@ -31,7 +31,7 @@ class WorkoutDevice: NSObject {
     private let cyclingPower = WorkoutDeviceCyclingPower()
     private let running = WorkoutDeviceRunning()
     private var deviceId: UUID?
-    weak var delegate: (any WorkoutDeviceDelegate)?
+    weak var delegate: WorkoutDeviceDelegate?
 
     func start(deviceId: UUID?) {
         dispatchQueue.async {

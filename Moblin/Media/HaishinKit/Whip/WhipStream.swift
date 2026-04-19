@@ -590,7 +590,7 @@ final class WhipStream {
         offerSent = true
     }
 
-    private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
+    private func handleOfferResponse(data: Data?, response: URLResponse?, error: Error?) {
         if let error {
             stopInternal(reason: "Sending WHIP offer failed: \(error.localizedDescription)")
             return

@@ -62,7 +62,7 @@ class ReplayEffectReplayReader {
         return ReplayImage(image: nil, offset: nil, isLast: false)
     }
 
-    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
+    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
         guard error == nil, let track = tracks?.first else {
             markCompleted()
             return

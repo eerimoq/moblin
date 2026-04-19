@@ -38,7 +38,7 @@ class BlackSharkCoolerDevice: NSObject {
     private var coolingStatsTimer = SimpleTimer(queue: blackSharkCoolerDeviceDispatchQueue)
     private var coolingPower: Int? // 0-100% How much the cooler should cool.
     private var fanSpeed: Int? // 0-100% How much the fan should spin.
-    weak var delegate: (any BlackSharkCoolerDeviceDelegate)?
+    weak var delegate: BlackSharkCoolerDeviceDelegate?
 
     func start(deviceId: UUID?) {
         blackSharkCoolerDeviceDispatchQueue.async {

@@ -22,7 +22,7 @@ class MpegTsWriter {
     private static let audioStreamId: UInt8 = 192
     private static let videoStreamId: UInt8 = 224
     private static let segmentDuration = CMTime(seconds: 2)
-    weak var delegate: (any MpegTsWriterDelegate)?
+    weak var delegate: MpegTsWriterDelegate?
     private var isRunning = false
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0

@@ -359,7 +359,7 @@ final class TwitchChat {
     private var badges: Badges
     private var cheermotes: Cheermotes
     private var channelName: String
-    private weak var delegate: (any TwitchChatDelegate)?
+    private weak var delegate: TwitchChatDelegate?
     private var sourceRoomIcons: [String: URL?] = [:]
     private var accessToken: String = ""
 

@@ -27,9 +27,9 @@ let processorPipelineQueue = DispatchQueue(
 )
 
 private class Stream {
-    weak var delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)?
+    weak var delegate: (AudioEncoderDelegate & VideoEncoderDelegate)?
 
-    init(delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
+    init(delegate: (AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
         self.delegate = delegate
     }
 }
@@ -39,7 +39,7 @@ final class Processor {
     let video = VideoUnit()
     let recorder = Recorder()
     private var streams: [Stream] = []
-    weak var delegate: (any ProcessorDelegate)?
+    weak var delegate: ProcessorDelegate?
 
     init() {
         audio.processor = self

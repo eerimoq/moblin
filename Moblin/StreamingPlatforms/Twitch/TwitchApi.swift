@@ -181,7 +181,7 @@ func fetchTwitchProfilePicture(username: String) async -> UIImage? {
 class TwitchApi {
     private let clientId: String
     private let accessToken: String
-    weak var delegate: (any TwitchApiDelegate)?
+    weak var delegate: TwitchApiDelegate?
 
     init(_ accessToken: String) {
         clientId = twitchMoblinAppClientId

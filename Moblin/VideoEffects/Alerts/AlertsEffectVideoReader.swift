@@ -79,7 +79,7 @@ class AlertsEffectVideoReader {
         }
     }
 
-    private func loadVideoTrackCompletion(track: AVAssetTrack?, error: (any Error)?) {
+    private func loadVideoTrackCompletion(track: AVAssetTrack?, error: Error?) {
         guard error == nil, let track else {
             markFillEnded()
             return

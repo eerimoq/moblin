@@ -61,7 +61,7 @@ class DjiDevice: NSObject {
     private var cameraPeripheral: CBPeripheral?
     private var fff5Characteristic: CBCharacteristic?
     private var state: DjiDeviceState = .idle
-    weak var delegate: (any DjiDeviceDelegate)?
+    weak var delegate: DjiDeviceDelegate?
     private let startStreamingTimer = SimpleTimer(queue: .main)
     private let stopStreamingTimer = SimpleTimer(queue: .main)
     private var model: SettingsDjiDeviceModel = .unknown

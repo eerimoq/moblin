@@ -51,7 +51,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
 class RemoteControlStreamer {
     private var clientUrl: URL
     private var password: String
-    private weak var delegate: (any RemoteControlStreamerDelegate)?
+    private weak var delegate: RemoteControlStreamerDelegate?
     private var webSocket: WebSocketClient
     var connectionErrorMessage: String = ""
     private var connected = false

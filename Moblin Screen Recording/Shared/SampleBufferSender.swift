@@ -151,7 +151,7 @@ protocol VideoEncoderDelegate: AnyObject {
 }
 
 class VideoEncoder {
-    weak var delegate: (any VideoEncoderDelegate)?
+    weak var delegate: VideoEncoderDelegate?
     private var session: VTCompressionSession?
     private var formatDescription: CMFormatDescription? {
         didSet {

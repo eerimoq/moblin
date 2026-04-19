@@ -138,7 +138,7 @@ class TeslaVehicle: NSObject {
     private var responseHandlers: [Data: (UniversalMessage_RoutableMessage) throws -> Void] = [:]
     private var receiveBuffer = Data()
     private var vehicleDomains: [UniversalMessage_Domain: VehicleDomain] = [:]
-    weak var delegate: (any TeslaVehicleDelegate)?
+    weak var delegate: TeslaVehicleDelegate?
     private let vehicleSecurityHandshakeTimer = SimpleTimer(queue: .main)
     private let infotainmentHandshakeTimer = SimpleTimer(queue: .main)
 

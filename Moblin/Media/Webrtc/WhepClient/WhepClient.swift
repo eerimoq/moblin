@@ -141,7 +141,7 @@ class WhepClient {
         }.resume()
     }
 
-    private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
+    private func handleOfferResponse(data: Data?, response: URLResponse?, error: Error?) {
         guard error == nil,
               let response = response?.http,
               response.isSuccessful,

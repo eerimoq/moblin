@@ -71,7 +71,7 @@ final class Media: NSObject {
     private var experimental: Bool = false
     private var overheadBandwidth: Int32 = 25
     private var maximumBandwidthFollowInput: Bool = false
-    weak var delegate: (any MediaDelegate)?
+    weak var delegate: MediaDelegate?
     private var adaptiveBitrate: AdaptiveBitrate?
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoEncoderSettings()

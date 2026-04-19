@@ -492,7 +492,7 @@ class ObsWebSocket {
     private var batchRequests: [String: BatchRequest] = [:]
     var connectionErrorMessage: String = ""
     private var connected = false
-    weak var delegate: (any ObsWebsocketDelegate)?
+    weak var delegate: ObsWebsocketDelegate?
 
     init(url: URL, password: String, delegate: ObsWebsocketDelegate) {
         self.url = url

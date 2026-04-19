@@ -59,7 +59,7 @@ private class FrameExtractorJob {
         }
     }
 
-    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
+    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
         if let error {
             logger.info("replay: Failed to get video track with error: \(error)")
             delegate?.jobCompleted(image: nil, video: video, offset: offset)

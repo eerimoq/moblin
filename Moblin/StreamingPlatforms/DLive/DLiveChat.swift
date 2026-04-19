@@ -98,7 +98,7 @@ private let customEmoteBaseUrl = "https://images.prd.dlivecdn.com/emote/"
 final class DLiveChat {
     private var webSocket: WebSocketClient
     private var streamerRoomId: String
-    private weak var delegate: (any DLiveChatDelegate)?
+    private weak var delegate: DLiveChatDelegate?
 
     init(delegate: DLiveChatDelegate) {
         self.delegate = delegate

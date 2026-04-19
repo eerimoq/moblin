@@ -583,7 +583,7 @@ extension WatchModel: WCSessionDelegate {
     func session(
         _: WCSession,
         didFinish _: WCSessionUserInfoTransfer,
-        error _: (any Error)?
+        error _: Error?
     ) {}
 }
 

@@ -53,7 +53,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var volume: Float = 1.0
     private var synthesizer = createSpeechSynthesizer()
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
-    private weak var delegate: (any AlertsEffectDelegate)?
+    private weak var delegate: AlertsEffectDelegate?
     private var isPlaying: Bool = false
     private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts

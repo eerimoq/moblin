@@ -106,7 +106,7 @@ class RistStream {
     private var bonding: Bool = false
     private var url: String = ""
     private var state: RistStreamState = .connecting
-    private weak var ristDelegate: (any RistStreamDelegate)?
+    private weak var ristDelegate: RistStreamDelegate?
     private let processor: Processor
     private var totalByteCount = Atomic<Int64>(0)
 
