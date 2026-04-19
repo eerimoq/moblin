@@ -2,6 +2,7 @@ import SwiftUI
 
 private struct ZoomValueView: View {
     @ObservedObject var preset: SettingsGimbalPreset
+    @Binding var zoomX: Float
 
     var body: some View {
         HStack {
@@ -9,14 +10,14 @@ private struct ZoomValueView: View {
             Spacer()
             Text(formatOneDecimal(preset.zoomX))
             Button {
-                preset.zoomX = max(0.5, preset.zoomX - 0.1)
+                zoomX = max(0.5, zoomX - 0.1)
             } label: {
                 Image(systemName: "minus.circle")
                     .font(.title)
             }
             .buttonStyle(.borderless)
             Button {
-                preset.zoomX = min(15, preset.zoomX + 0.1)
+                zoomX = min(15, zoomX + 0.1)
             } label: {
                 Image(systemName: "plus.circle")
                     .font(.title)
@@ -30,34 +31,53 @@ private struct GimbalPresetView: View {
     let model: Model
     @ObservedObject var gimbal: SettingsGimbal
     @ObservedObject var preset: SettingsGimbalPreset
-    @State var presentingConfirm: Bool = false
-    @State var moveAllowed: Bool = false
+    @State private var presentingConfirm: Bool = false
+    @State private var moveAllowed: Bool = false
+    @State private var x: Float = 0
+    @State private var y: Float = 0
+    @State private var zoomX: Float = 1
 
     private func position() -> some View {
         Group {
             PositionButtonView(image: "arrow.up.circle") {
-                preset.x += Float(0.1).toRadians()
+                x += Float(0.1).toRadians()
             }
             HStack {
                 PositionButtonView(image: "arrow.left.circle") {
-                    preset.y += Float(0.1).toRadians()
+                    y += Float(0.1).toRadians()
                 }
                 PositionButtonView(image: "arrow.down.circle") {
-                    preset.x -= Float(0.1).toRadians()
+                    x -= Float(0.1).toRadians()
                 }
                 PositionButtonView(image: "arrow.right.circle") {
-                    preset.y -= Float(0.1).toRadians()
+                    y -= Float(0.1).toRadians()
                 }
             }
         }
     }
 
     private func settingChanged() {
+        guard x != preset.x || y != preset.y || zoomX != preset.zoomX else {
+            return
+        }
         if moveAllowed {
+            localToSettings()
             model.moveToGimbalPreset(id: preset.id)
         } else {
             presentingConfirm = true
         }
+    }
+
+    private func localFromSettings() {
+        x = preset.x
+        y = preset.y
+        zoomX = preset.zoomX
+    }
+
+    private func localToSettings() {
+        preset.x = x
+        preset.y = y
+        preset.zoomX = zoomX
     }
 
     var body: some View {
@@ -77,16 +97,16 @@ private struct GimbalPresetView: View {
                     }
                     .buttonStyle(.borderless)
                 }
-                .onChange(of: preset.x) { _ in
+                .onChange(of: x) { _ in
                     settingChanged()
                 }
-                .onChange(of: preset.y) { _ in
+                .onChange(of: y) { _ in
                     settingChanged()
                 }
                 Section {
-                    ZoomValueView(preset: preset)
+                    ZoomValueView(preset: preset, zoomX: $zoomX)
                 }
-                .onChange(of: preset.zoomX) { _ in
+                .onChange(of: zoomX) { _ in
                     settingChanged()
                 }
                 .confirmationDialog("Beware, changing settings will move the Gimbal to the new position.",
@@ -95,11 +115,18 @@ private struct GimbalPresetView: View {
                 {
                     Button("Ok", role: .destructive) {
                         moveAllowed = true
-                        model.moveToGimbalPreset(id: preset.id)
+                        settingChanged()
                     }
+                }
+                .onChange(of: presentingConfirm) { _ in
+                    guard !presentingConfirm, !moveAllowed else {
+                        return
+                    }
+                    localFromSettings()
                 }
                 .onAppear {
                     moveAllowed = false
+                    localFromSettings()
                 }
             }
             .navigationTitle("Preset")
