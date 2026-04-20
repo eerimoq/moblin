@@ -3,7 +3,8 @@ import SwiftUI
 private let sliderValuePercentageWidth = 60.0
 
 struct ChatSettingsLayoutView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var database: Database
     @ObservedObject var chat: SettingsChat
 
     var body: some View {
@@ -58,7 +59,7 @@ struct ChatSettingsLayoutView: View {
                         Text("\(Int(chat.bottomPoints)) pts")
                             .frame(width: sliderValuePercentageWidth)
                     }
-                    if model.database.showAllSettings {
+                    if database.showAllSettings {
                         Toggle("New messages at top", isOn: $chat.newMessagesAtTop)
                         Toggle("Mirrored", isOn: $chat.mirrored)
                     }

@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct ChatSettingsAppearanceView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var database: Database
     @ObservedObject var chat: SettingsChat
 
     var body: some View {
@@ -30,7 +31,7 @@ struct ChatSettingsAppearanceView: View {
                         Text(String(Int(chat.fontSize)))
                             .frame(width: 25)
                     }
-                    if model.database.showAllSettings {
+                    if database.showAllSettings {
                         Picker("Display style", selection: $chat.displayStyle) {
                             ForEach(SettingsChatDisplayStyle.allCases, id: \.self) { displayStyle in
                                 Text(displayStyle.toString())
@@ -62,12 +63,12 @@ struct ChatSettingsAppearanceView: View {
                             }
                     }
                 } footer: {
-                    if model.database.showAllSettings {
+                    if database.showAllSettings {
                         Text("Animated emotes are fairly CPU intensive. Disable for less power usage.")
                     }
                 }
                 Section {
-                    if model.database.showAllSettings {
+                    if database.showAllSettings {
                         ColorPicker("Timestamp", selection: $chat.timestampColorColor, supportsOpacity: false)
                             .onChange(of: chat.timestampColorColor) { _ in
                                 guard let color = chat.timestampColorColor.toRgb() else {
@@ -123,7 +124,7 @@ struct ChatSettingsAppearanceView: View {
                     .onChange(of: chat.shadowColorEnabled) { _ in
                         model.reloadChatMessages()
                     }
-                    if model.database.showAllSettings {
+                    if database.showAllSettings {
                         Toggle("Me in name color", isOn: $chat.meInUsernameColor)
                     }
                 } header: {

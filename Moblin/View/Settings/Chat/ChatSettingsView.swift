@@ -1,7 +1,8 @@
 import SwiftUI
 
 private struct ChatSettingsGeneralView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var database: Database
     @ObservedObject var chat: SettingsChat
 
     func submitMaximumAge(value: String) {
@@ -36,7 +37,7 @@ private struct ChatSettingsGeneralView: View {
                 Text("Text to speech")
             }
         }
-        if model.database.showAllSettings {
+        if database.showAllSettings {
             ChatFiltersSettingsView(chat: chat)
             ChatNicknamesSettingsView(model: model, nicknames: chat.nicknames)
             NavigationLink {
@@ -56,13 +57,13 @@ private struct ChatSettingsGeneralView: View {
                 .onChange(of: chat.showDeletedMessages) { _ in
                     model.reloadChatMessages()
                 }
-            Toggle("Background chat", isOn: $chat.background)
         }
     }
 }
 
 struct ChatSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @ObservedObject var database: Database
     @ObservedObject var chat: SettingsChat
     @ObservedObject var stream: SettingsStream
 
@@ -75,9 +76,9 @@ struct ChatSettingsView: View {
                     }
             }
             Section {
-                ChatSettingsAppearanceView(chat: chat)
-                ChatSettingsLayoutView(chat: chat)
-                ChatSettingsGeneralView(chat: chat)
+                ChatSettingsAppearanceView(model: model, database: database, chat: chat)
+                ChatSettingsLayoutView(model: model, database: database, chat: chat)
+                ChatSettingsGeneralView(model: model, database: database, chat: chat)
             }
             if stream !== fallbackStream {
                 ShortcutSectionView {
