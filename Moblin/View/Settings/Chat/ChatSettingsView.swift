@@ -80,6 +80,16 @@ struct ChatSettingsView: View {
                 ChatSettingsLayoutView(model: model, database: database, chat: chat)
                 ChatSettingsGeneralView(model: model, database: database, chat: chat)
             }
+            if database.showAllSettings {
+                Section {
+                    Toggle("Background chat", isOn: $chat.background)
+                } footer: {
+                    Text("""
+                    Enable to keep chat alive when the app is in background mode, even if not \
+                    streaming.
+                    """)
+                }
+            }
             if stream !== fallbackStream {
                 ShortcutSectionView {
                     StreamingPlatformsShortcutView(model: model, stream: stream)
