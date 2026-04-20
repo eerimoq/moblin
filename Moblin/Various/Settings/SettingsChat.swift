@@ -94,7 +94,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
-        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
+        enabled = container.decode(.enabled, Bool.self, true)
         user = container.decode(.value, String.self, "")
         messageStartWords = container.decode(.messageWords, [String].self, [])
         messageStart = messageStartWords.joined(separator: " ")
