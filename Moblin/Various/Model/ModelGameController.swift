@@ -189,7 +189,9 @@ extension Model {
             return
         }
         moveToGimbalPresetQueueRunning = true
-        setZoomX(x: preset.zoomX, rate: database.zoom.speed)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.setZoomX(x: preset.zoomX, rate: 5)
+        }
         Task { @MainActor [weak self] in
             defer {
                 self?.moveToGimbalPresetQueueRunning = false
