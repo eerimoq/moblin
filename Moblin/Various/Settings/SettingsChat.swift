@@ -3,6 +3,7 @@ import SwiftUI
 
 class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     var id = UUID()
+    @Published var enabled: Bool = false
     @Published var user: String = ""
     @Published var messageStart: String = ""
     var messageStartWords: [String] = []
@@ -13,6 +14,9 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     @Published var print: Bool = false
 
     func isMatching(user: String?, segments: [ChatPostSegment]) -> Bool {
+        guard enabled else {
+            return false
+        }
         if self.user.count > 0, user != self.user {
             return false
         }
@@ -62,6 +66,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case id,
+             enabled,
              value,
              messageWords,
              showOnScreen,
@@ -74,6 +79,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
+        try container.encode(.enabled, enabled)
         try container.encode(.value, user)
         try container.encode(.messageWords, messageStartWords)
         try container.encode(.showOnScreen, showOnScreen)
@@ -88,6 +94,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
+        enabled = (try? container.decode(Bool.self, forKey: .enabled)) ?? true
         user = container.decode(.value, String.self, "")
         messageStartWords = container.decode(.messageWords, [String].self, [])
         messageStart = messageStartWords.joined(separator: " ")

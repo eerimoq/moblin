@@ -40,6 +40,11 @@ private struct ChatFilterFilterSettingsView: View {
             chat message.
             """)
         }
+        if filter.user.isEmpty, filter.messageStart.isEmpty {
+            Section {
+                Text("⚠️ This filter matches all messages, check if this is the desired behaviour.")
+            }
+        }
     }
 }
 
@@ -77,6 +82,9 @@ private struct ChatFilterSettingsView: View {
     var body: some View {
         NavigationLink {
             Form {
+                Section {
+                    Toggle("Enabled", isOn: $filter.enabled)
+                }
                 ChatFilterFilterSettingsView(filter: filter)
                 ChatFilterActionsSettingsView(filter: filter)
             }
