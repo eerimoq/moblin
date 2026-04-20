@@ -5,7 +5,6 @@ from deep_translator import GoogleTranslator
 
 LANGUAGES = [
     ("sv", "sv"),
-    ("da", "da"),
     ("es", "es"),
     ("de", "de"),
     ("fi", "fi"),
@@ -16,7 +15,6 @@ LANGUAGES = [
     # ("zh-HK", "zh-HK"),
     ("zh-Hans", "zh-CN"),
     (["zh-Hant", "zh-Hant-TW"], "zh-TW"),
-    ("el", "el"),
     ("tr", "tr"),
     ("pt-BR", "pt"),
     ("pt-PT", "pt"),
