@@ -113,6 +113,15 @@ struct ChatHighlight {
                              titleSegments: makeChatPostTextSegments(text: String(localized: "Member")))
     }
 
+    static func makeGiftedMemberships() -> ChatHighlight {
+        return ChatHighlight(
+            kind: .other,
+            barColor: .blue,
+            image: "gift",
+            titleSegments: makeChatPostTextSegments(text: String(localized: "Gifted Memberships"))
+        )
+    }
+
     func toWatchProtocol() -> WatchProtocolChatHighlight {
         let watchProtocolKind: WatchProtocolChatHighlightKind
         switch kind {

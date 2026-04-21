@@ -109,12 +109,27 @@ private struct ChatDescription: Codable {
     let authorBadges: [AuthorBadge]?
 }
 
+private struct SponsorshipsHeaderRenderer: Codable {
+    let authorName: Author
+    let primaryText: Message?
+    let authorBadges: [AuthorBadge]?
+}
+
+private struct SponsorshipsHeader: Codable {
+    let liveChatSponsorshipsHeaderRenderer: SponsorshipsHeaderRenderer?
+}
+
+private struct GiftPurchaseAnnouncementDescription: Codable {
+    let header: SponsorshipsHeader?
+}
+
 private struct AddChatItemActionItem: Codable {
     let liveChatTextMessageRenderer: ChatDescription?
     let liveChatPaidMessageRenderer: ChatDescription?
     let liveChatPaidStickerRenderer: ChatDescription?
     let liveChatMembershipItemRenderer: ChatDescription?
-    // let liveChatSponsorshipsGiftPurchaseAnnouncementRenderer: ?
+    let liveChatSponsorshipsGiftPurchaseAnnouncementRenderer: GiftPurchaseAnnouncementDescription?
+    let liveChatSponsorshipsGiftRedemptionAnnouncementRenderer: ChatDescription?
 }
 
 private struct AddChatItemAction: Codable {
@@ -272,6 +287,19 @@ final class YouTubeLiveChat: NSObject {
                             highlight: createMemberHighlight()
                         )
                     }
+                    if let giftPurchase = item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer,
+                       let headerRenderer = giftPurchase.header?.liveChatSponsorshipsHeaderRenderer
+                    {
+                        numberOfMessages += await handleGiftPurchaseDescription(
+                            headerRenderer: headerRenderer
+                        )
+                    }
+                    if let chatDescription = item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer {
+                        numberOfMessages += await handleChatDescription(
+                            chatDescription: chatDescription,
+                            highlight: ChatHighlight.makeGiftedMemberships()
+                        )
+                    }
                 }
             }
             try updateContinuation(getLiveChat: getLiveChat)
@@ -345,7 +373,46 @@ final class YouTubeLiveChat: NSObject {
                                     isModerator: false,
                                     isOwner: isOwner,
                                     bits: nil,
-                                    highlight: highlight, live: true)
+                                    highlight: highlight,
+                                    live: true)
+        }
+        return 1
+    }
+
+    private func handleGiftPurchaseDescription(headerRenderer: SponsorshipsHeaderRenderer) async -> Int {
+        var id = 0
+        var segments: [ChatPostSegment] = []
+        if let primaryText = headerRenderer.primaryText {
+            for run in primaryText.runs {
+                if let text = run.text {
+                    segments += createSegments(message: text, id: &id)
+                }
+            }
+        }
+        guard !segments.isEmpty else {
+            return 0
+        }
+        let nonMutSegments = segments
+        let isOwner = headerRenderer.authorBadges?
+            .first(where: { $0.liveChatAuthorBadgeRenderer?.icon?.iconType == "OWNER" }) != nil
+        await MainActor.run {
+            model.appendChatMessage(platform: .youTube,
+                                    messageId: nil,
+                                    displayName: headerRenderer.authorName.simpleText,
+                                    user: headerRenderer.authorName.simpleText,
+                                    userId: nil,
+                                    userColor: nil,
+                                    userBadges: [],
+                                    segments: nonMutSegments,
+                                    timestamp: model.statusOther.digitalClock,
+                                    timestampTime: .now,
+                                    isAction: false,
+                                    isSubscriber: false,
+                                    isModerator: false,
+                                    isOwner: isOwner,
+                                    bits: nil,
+                                    highlight: ChatHighlight.makeGiftedMemberships(),
+                                    live: true)
         }
         return 1
     }
