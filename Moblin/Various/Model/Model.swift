@@ -1701,7 +1701,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media.logStatistics()
         updateObsStatus()
         updateRemoteControlStatus()
-        if stream.enabled {
+        if stream.enabled, database.debug.videoBitrateChange {
             media.updateVideoStreamBitrate(bitrate: stream.bitrate)
         }
         updateViewers()

@@ -31,6 +31,9 @@ struct DebugVideoSettingsView: View {
             } footer: {
                 Text("Change camera and restart stream for these to work properly.")
             }
+            Section {
+                Toggle("Periodic video bitrate change", isOn: $debug.videoBitrateChange)
+            }
         }
         .navigationTitle("Video")
     }
