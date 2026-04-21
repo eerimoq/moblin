@@ -3030,7 +3030,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isIngestsConfigured() -> Bool {
-        return rtmpServerEnabled() || srtlaServerEnabled() || ristServerEnabled() || !ingests.rtsp.isEmpty
+        return rtmpServerEnabled()
+            || srtlaServerEnabled()
+            || ristServerEnabled()
+            || !ingests.rtsp.isEmpty
+            || database.whipServer.enabled
+            || !ingests.whep.isEmpty
     }
 
     func isShowingStatusMoblink() -> Bool {
