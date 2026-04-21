@@ -2,6 +2,10 @@ import CoreMedia
 import Foundation
 
 extension Model {
+    func whipServerEnabled() -> Bool {
+        return database.srtlaServer.enabled
+    }
+
     func whipCameras() -> [Camera] {
         return database.whipServer.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())

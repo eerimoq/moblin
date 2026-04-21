@@ -3026,7 +3026,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusIngests() -> Bool {
-        return database.show.rtmpSpeed && isIngestsConfigured()
+        return database.show.ingests && isIngestsConfigured()
     }
 
     func isIngestsConfigured() -> Bool {
@@ -3034,7 +3034,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             || srtlaServerEnabled()
             || ristServerEnabled()
             || !ingests.rtsp.isEmpty
-            || database.whipServer.enabled
+            || whipServerEnabled()
             || !ingests.whep.isEmpty
     }
 

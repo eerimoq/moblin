@@ -144,7 +144,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var audioBar: Bool = true
     @Published var cameras: Bool = false
     @Published var obsStatus: Bool = true
-    @Published var rtmpSpeed: Bool = true
+    @Published var ingests: Bool = true
     @Published var gameController: Bool = true
     @Published var location: Bool = false
     @Published var remoteControl: Bool = true
@@ -202,7 +202,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.audioBar, audioBar)
         try container.encode(.cameras, cameras)
         try container.encode(.obsStatus, obsStatus)
-        try container.encode(.rtmpSpeed, rtmpSpeed)
+        try container.encode(.rtmpSpeed, ingests)
         try container.encode(.gameController, gameController)
         try container.encode(.location, location)
         try container.encode(.remoteControl, remoteControl)
@@ -231,7 +231,7 @@ class SettingsShow: Codable, ObservableObject {
         audioBar = container.decode(.audioBar, Bool.self, true)
         cameras = container.decode(.cameras, Bool.self, false)
         obsStatus = container.decode(.obsStatus, Bool.self, true)
-        rtmpSpeed = container.decode(.rtmpSpeed, Bool.self, true)
+        ingests = container.decode(.rtmpSpeed, Bool.self, true)
         gameController = container.decode(.gameController, Bool.self, true)
         location = container.decode(.location, Bool.self, false)
         remoteControl = container.decode(.remoteControl, Bool.self, true)
