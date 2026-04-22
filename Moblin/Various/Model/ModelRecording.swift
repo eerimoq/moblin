@@ -104,6 +104,7 @@ extension Model {
 
     func setIsRecording(value: Bool) {
         isRecording = value
+        updateLiveActivity()
         setQuickButton(type: .record, isOn: value)
         updateQuickButtonStates()
         updatePictureInPicture()

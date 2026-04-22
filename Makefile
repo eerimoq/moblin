@@ -19,6 +19,7 @@ CODE_FOLDERS += "Common"
 CODE_FOLDERS += "Moblin"
 CODE_FOLDERS += "Moblin Watch"
 CODE_FOLDERS += "Moblin Widget"
+CODE_FOLDERS += "Moblin Live Activity"
 CODE_FOLDERS += "Moblin Screen Recording"
 CODE_FOLDERS += "MoblinTests"
 

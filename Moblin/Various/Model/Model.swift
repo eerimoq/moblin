@@ -1,3 +1,4 @@
+import ActivityKit
 import AlertToast
 import AVKit
 import Collections
@@ -450,6 +451,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var manualFocusMotionAttitude: CMAttitude?
     var streaming = false
     var inServiceBackground = false
+    #if !targetEnvironment(macCatalyst)
+    var liveActivity: Activity<LiveActivityAttributes>?
+    #endif
     var streamStartTime: ContinuousClock.Instant?
     var isRecorderRecording = false
     var currentRecording: Recording?
@@ -1407,11 +1411,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if !pictureInPictureEnabled() {
                 disableScreenPreview()
             }
+            startLiveActivity()
         case let .service(keepChatRunning, keepBatteryLevelRunning):
             inServiceBackground = true
             disableScreenPreview()
             stopPeriodicTimers(keepChatRunning: keepChatRunning,
                                keepBatteryLevelRunning: keepBatteryLevelRunning)
+            startLiveActivity()
         case .off:
             storeSettings()
             replaysStorage.store()
@@ -1420,6 +1426,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @objc func handleWillEnterForegroundNotification() {
+        stopLiveActivity()
         guard !isMac() else {
             return
         }
@@ -1480,6 +1487,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isMac() {
             stopAll()
         }
+        stopLiveActivity()
     }
 
     private func stopAll() {

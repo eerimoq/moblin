@@ -764,6 +764,7 @@ extension Model {
 
     func setIsLive(value: Bool) {
         isLive = value
+        updateLiveActivity()
         updatePictureInPicture()
         if isWatchLocal() {
             sendIsLiveToWatch(isLive: isLive)

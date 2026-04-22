@@ -29,6 +29,7 @@
 		03A08B7C2AC295620018BA95 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 03A08B7B2AC295620018BA95 /* AlertToast */; };
 		03A707B12B8EBE4D003BB7BE /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A707B02B8EBE4D003BB7BE /* Collections */; };
 		03A974282AC137A000610E21 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 03A974272AC137A000610E21 /* Collections */; };
+		03AA0007000000000000AA02 /* MoblinLiveActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 03AA0006000000000000AA02 /* MoblinLiveActivity.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		03AC6B952D17786700832A7E /* TrueTime in Frameworks */ = {isa = PBXBuildFile; productRef = 03AC6B942D17786700832A7E /* TrueTime */; };
 		03B279832D45EB9C007DEDB2 /* SwiftCube in Frameworks */ = {isa = PBXBuildFile; productRef = 03B279822D45EB9C007DEDB2 /* SwiftCube */; };
 		03B7DAB52BA640C100CEFC1B /* XMLCoder in Frameworks */ = {isa = PBXBuildFile; productRef = 03B7DAB42BA640C100CEFC1B /* XMLCoder */; };
@@ -57,6 +58,13 @@
 			remoteGlobalIDString = 0376F6F62B9511030056B3D2;
 			remoteInfo = "Moblin Widget App Extension";
 		};
+		03AA0008000000000000AA02 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 03AA0002000000000000AA02;
+			remoteInfo = MoblinLiveActivity;
+		};
 		03E649472E634D2800728501 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 035E9E2B2A9A02D6009D4F5A /* Project object */;
@@ -81,6 +89,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				0312E4372C00F24E00C6F878 /* Moblin Screen Recording.appex in Embed Foundation Extensions */,
+				03AA0007000000000000AA02 /* MoblinLiveActivity.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -116,6 +125,7 @@
 		0376F6F72B9511030056B3D2 /* MoblinWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0376F6F82B9511030056B3D2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		0376F6FA2B9511030056B3D2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		03AA0006000000000000AA02 /* MoblinLiveActivity.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoblinLiveActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		03DC6B162F8A1D6700E12FAB /* DockKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DockKit.framework; path = System/Library/Frameworks/DockKit.framework; sourceTree = SDKROOT; };
 		03E649432E634D2800728501 /* MoblinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MoblinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03ECDF462B8E4E5E00BD920E /* Moblin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moblin.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -127,6 +137,7 @@
 			membershipExceptions = (
 				Base.xcconfig,
 				Moblin.xcconfig,
+				MoblinLiveActivity.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -140,6 +151,7 @@
 			membershipExceptions = (
 				Base.xcconfig,
 				Moblin.xcconfig,
+				MoblinLiveActivity.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -153,6 +165,7 @@
 			membershipExceptions = (
 				Base.xcconfig,
 				Moblin.xcconfig,
+				MoblinLiveActivity.xcconfig,
 				MoblinScreenRecording.xcconfig,
 				MoblinTests.xcconfig,
 				MoblinWatch.xcconfig,
@@ -160,6 +173,13 @@
 				User.xcconfig,
 			);
 			target = 0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */;
+		};
+		03298F0B2F991AD6009E4D0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Localizable.xcstrings,
+			);
+			target = 03AA0002000000000000AA02 /* MoblinLiveActivity */;
 		};
 		037D9E9F2E38AC1600C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -223,6 +243,20 @@
 			);
 			target = 0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */;
 		};
+		03A0001F2E00000000000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Shared/MoblinLiveActivity.swift,
+			);
+			target = 035E9E322A9A02D6009D4F5A /* Moblin */;
+		};
+		03AA000B000000000000AA02 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 03AA0002000000000000AA02 /* MoblinLiveActivity */;
+		};
 		03CBFBF12F0063CF0001864A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -235,10 +269,11 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		030AC5AF2F4988A000496F6F /* Config */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (030AC5B02F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 030AC5B12F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 030AC5B22F4988A600496F6F /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Config; sourceTree = "<group>"; };
 		037D9C902E38AC1600C0AF9A /* Moblin */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9E9F2E38AC1600C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Moblin; sourceTree = "<group>"; };
-		037D9EAC2E38AC1B00C0AF9A /* Common */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9ECB2E38AC1B00C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 03CBFBF12F0063CF0001864A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 037D9ECC2E38AC1B00C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Common; sourceTree = "<group>"; };
+		037D9EAC2E38AC1B00C0AF9A /* Common */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9ECB2E38AC1B00C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 03CBFBF12F0063CF0001864A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 03298F0B2F991AD6009E4D0C /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 037D9ECC2E38AC1B00C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Common; sourceTree = "<group>"; };
 		037D9EE42E38AC2000C0AF9A /* Moblin Watch */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9EF52E38AC2000C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 037D9EF62E38AC2000C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Watch"; sourceTree = "<group>"; };
 		037D9EFC2E38AC2300C0AF9A /* Moblin Widget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9F022E38AC2300C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Widget"; sourceTree = "<group>"; };
 		037D9F0C2E38AC2600C0AF9A /* Moblin Screen Recording */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (037D9F162E38AC2700C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 037D9F172E38AC2700C0AF9A /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Screen Recording"; sourceTree = "<group>"; };
+		03AA000A000000000000AA02 /* Moblin Live Activity */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (03A0001F2E00000000000001 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 03AA000B000000000000AA02 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Moblin Live Activity"; sourceTree = "<group>"; };
 		03E649442E634D2800728501 /* MoblinTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MoblinTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -292,6 +327,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		03AA0004000000000000AA02 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03E649402E634D2800728501 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -330,6 +372,7 @@
 				037D9C902E38AC1600C0AF9A /* Moblin */,
 				037D9EE42E38AC2000C0AF9A /* Moblin Watch */,
 				037D9EFC2E38AC2300C0AF9A /* Moblin Widget */,
+				03AA000A000000000000AA02 /* Moblin Live Activity */,
 				037D9F0C2E38AC2600C0AF9A /* Moblin Screen Recording */,
 				03E649442E634D2800728501 /* MoblinTests */,
 				035E9E342A9A02D6009D4F5A /* Products */,
@@ -345,6 +388,7 @@
 				0376F6F72B9511030056B3D2 /* MoblinWidget.appex */,
 				0312E42E2C00F24E00C6F878 /* Moblin Screen Recording.appex */,
 				03E649432E634D2800728501 /* MoblinTests.xctest */,
+				03AA0006000000000000AA02 /* MoblinLiveActivity.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -389,6 +433,7 @@
 			dependencies = (
 				03ECDF522B8E4E6000BD920E /* PBXTargetDependency */,
 				0312E4362C00F24E00C6F878 /* PBXTargetDependency */,
+				03AA0009000000000000AA02 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				030AC5AF2F4988A000496F6F /* Config */,
@@ -443,6 +488,26 @@
 			name = MoblinWidget;
 			productName = "Moblin Widget App";
 			productReference = 0376F6F72B9511030056B3D2 /* MoblinWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		03AA0002000000000000AA02 /* MoblinLiveActivity */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03AA000F000000000000AA02 /* Build configuration list for PBXNativeTarget "MoblinLiveActivity" */;
+			buildPhases = (
+				03AA0003000000000000AA02 /* Sources */,
+				03AA0004000000000000AA02 /* Frameworks */,
+				03AA0005000000000000AA02 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				03AA000A000000000000AA02 /* Moblin Live Activity */,
+			);
+			name = MoblinLiveActivity;
+			productName = "Moblin Live Activity";
+			productReference = 03AA0006000000000000AA02 /* MoblinLiveActivity.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		03E649422E634D2800728501 /* MoblinTests */ = {
@@ -515,6 +580,9 @@
 					0376F6F62B9511030056B3D2 = {
 						CreatedOnToolsVersion = 15.2;
 					};
+					03AA0002000000000000AA02 = {
+						CreatedOnToolsVersion = 16.4;
+					};
 					03E649422E634D2800728501 = {
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = 035E9E322A9A02D6009D4F5A;
@@ -585,6 +653,7 @@
 				035E9E322A9A02D6009D4F5A /* Moblin */,
 				03ECDF452B8E4E5E00BD920E /* MoblinWatch */,
 				0376F6F62B9511030056B3D2 /* MoblinWidget */,
+				03AA0002000000000000AA02 /* MoblinLiveActivity */,
 				0312E42D2C00F24E00C6F878 /* Moblin Screen Recording */,
 				03E649422E634D2800728501 /* MoblinTests */,
 			);
@@ -607,6 +676,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		0376F6F52B9511030056B3D2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		03AA0005000000000000AA02 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -651,6 +727,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		03AA0003000000000000AA02 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03E6493F2E634D2800728501 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -678,6 +761,12 @@
 			isa = PBXTargetDependency;
 			target = 0376F6F62B9511030056B3D2 /* MoblinWidget */;
 			targetProxy = 0376F7022B9511040056B3D2 /* PBXContainerItemProxy */;
+		};
+		03AA0009000000000000AA02 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = 03AA0002000000000000AA02 /* MoblinLiveActivity */;
+			targetProxy = 03AA0008000000000000AA02 /* PBXContainerItemProxy */;
 		};
 		03E649482E634D2800728501 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1101,6 +1190,69 @@
 			};
 			name = Release;
 		};
+		03AA000D000000000000AA02 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinLiveActivity.xcconfig;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moblin Live Activity/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Live Activity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		03AA000E000000000000AA02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
+			baseConfigurationReferenceRelativePath = MoblinLiveActivity.xcconfig;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Moblin Live Activity/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Moblin Live Activity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		03E6494A2E634D2800728501 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 030AC5AF2F4988A000496F6F /* Config */;
@@ -1254,6 +1406,15 @@
 			buildConfigurations = (
 				0376F7062B9511040056B3D2 /* Debug */,
 				0376F7072B9511040056B3D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		03AA000F000000000000AA02 /* Build configuration list for PBXNativeTarget "MoblinLiveActivity" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				03AA000D000000000000AA02 /* Debug */,
+				03AA000E000000000000AA02 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
