@@ -26,6 +26,18 @@ struct RtspClientStreamSettingsView: View {
                                            placeholder: "rtsp://foo:bar@1.2.3.4/stream")
                 }
                 Section {
+                    Picker("Transport", selection: $stream.transport) {
+                        ForEach([SettingsRtspTransport.rtpRtspTcp, SettingsRtspTransport.rtpUdp],
+                                id: \.self)
+                        { t in
+                            Text(t.toString()).tag(t)
+                        }
+                    }
+                    .onChange(of: stream.transport) { _ in
+                        model.reloadRtspClient()
+                    }
+                }
+                Section {
                     TextEditNavigationView(
                         title: String(localized: "Latency"),
                         value: String(stream.latency),

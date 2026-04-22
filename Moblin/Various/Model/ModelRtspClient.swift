@@ -29,6 +29,7 @@ extension Model {
             let client = RtspClient(cameraId: stream.id,
                                     url: url,
                                     latency: stream.latencySeconds(),
+                                    transport: stream.transport,
                                     delegate: self)
             client.start()
             ingests.rtsp.append(client)

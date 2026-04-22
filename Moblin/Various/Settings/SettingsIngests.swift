@@ -263,6 +263,20 @@ class SettingsRistServer: Codable, ObservableObject {
     }
 }
 
+enum SettingsRtspTransport: String, Codable {
+    case rtpRtspTcp
+    case rtpUdp
+
+    func toString() -> String {
+        switch self {
+        case .rtpRtspTcp:
+            return "RTP/RTSP/TCP"
+        case .rtpUdp:
+            return "RTP/UDP"
+        }
+    }
+}
+
 class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My stream")
     var id: UUID = .init()
@@ -270,13 +284,15 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     @Published var url: String = ""
     @Published var enabled: Bool = false
     @Published var latency: Int32 = 2000
+    @Published var transport: SettingsRtspTransport = .rtpRtspTcp
 
     enum CodingKeys: CodingKey {
         case id,
              name,
              url,
              enabled,
-             latency
+             latency,
+             transport
     }
 
     func latencySeconds() -> Double {
@@ -290,6 +306,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.url, url)
         try container.encode(.enabled, enabled)
         try container.encode(.latency, latency)
+        try container.encode(.transport, transport)
     }
 
     init() {}
@@ -301,6 +318,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
         url = container.decode(.url, String.self, "")
         enabled = container.decode(.enabled, Bool.self, false)
         latency = container.decode(.latency, Int32.self, 2000)
+        transport = container.decode(.transport, SettingsRtspTransport.self, .rtpRtspTcp)
     }
 
     func camera() -> String {

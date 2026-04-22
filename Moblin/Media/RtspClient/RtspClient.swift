@@ -1,11 +1,8 @@
 import CoreMedia
 import Foundation
-import Network
 
-private let rtspClientQueue = DispatchQueue(label: "com.eerimoq.moblin.rtsp")
-private let channelStart = "$".first!.asciiValue!
-private let rtspEndOfHeaders = Data([0xD, 0xA, 0xD, 0xA])
-let rtpH264PacketTypeFuA: UInt8 = 28
+private let rtpH264PacketTypeFuA: UInt8 = 28
+let rtspClientQueue = DispatchQueue(label: "com.eerimoq.moblin.rtsp")
 
 protocol RtspClientDelegate: AnyObject {
     func rtspClientErrorToast(title: String)
@@ -506,7 +503,6 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
 private class Rtp {
     private var nextExpectedSequenceNumber: UInt16?
     var processor: RtpProcessor?
-    // periphery:ignore
     weak var client: RtspClient?
     private let wrappingTimestamp = WrappingTimestamp(
         name: "RTP",
@@ -539,6 +535,7 @@ private class Rtp {
             nextExpectedSequenceNumber = sequenceNumber
         }
         guard sequenceNumber == nextExpectedSequenceNumber else {
+            nextExpectedSequenceNumber = nil
             throw "Wrong sequence number"
         }
         try processor?.process(packet: packet, timestamp: updateTimestamp(timestamp: timestamp))
@@ -552,7 +549,7 @@ private class Rtp {
 
 class RtspClient {
     private var state: State
-    private var connection: NWConnection?
+    private var transport: RtspTransport?
     private let cameraId: UUID
     private let url: URL
     fileprivate let latency: Double
@@ -561,13 +558,10 @@ class RtspClient {
     private let port: Int
     private var realm: String?
     private var nonce: String?
-    private var header = Data()
     private var nextCSeq = 0
     private var requests: [Int: Request] = [:]
     private var videoSession: String?
     private var rtpVideo = Rtp()
-    private var rtpVideoChannel: UInt8?
-    private var rtcpVideoChannel: UInt8?
     private let delegate: RtspClientDelegate
     private var connectTimer = SimpleTimer(queue: rtspClientQueue)
     private var keepAliveTimer = SimpleTimer(queue: rtspClientQueue)
@@ -575,11 +569,18 @@ class RtspClient {
     private var started = false
     private var isAlive = true
     private var bitrateStats = BitrateStats()
+    private let transportType: SettingsRtspTransport
 
-    init(cameraId: UUID, url: URL, latency: Double, delegate: RtspClientDelegate) {
+    init(cameraId: UUID,
+         url: URL,
+         latency: Double,
+         transport: SettingsRtspTransport,
+         delegate: RtspClientDelegate)
+    {
         self.cameraId = cameraId
         self.latency = latency
         self.delegate = delegate
+        transportType = transport
         username = url.user()
         password = url.password()
         port = url.port ?? 554
@@ -635,14 +636,12 @@ class RtspClient {
         guard let host = url.host() else {
             return
         }
-        logger.debug("rtsp-client: Connecting to \(host):\(port)")
-        connection = NWConnection(
-            to: .hostPort(host: .init(host), port: .init(integer: port)),
-            using: .init(tls: nil)
-        )
-        connection?.stateUpdateHandler = rtspConnectionStateDidChange
-        connection?.start(queue: rtspClientQueue)
-        receiveMessage()
+        logger.info("""
+        rtsp-debug: Connecting to \(host):\(port) with transport \(transportType.toString())
+        """)
+        transport = createTransport()
+        transport?.delegate = self
+        transport?.start(host: host, port: port)
         rtpVideo = Rtp()
         rtpVideo.client = self
         setState(newState: .connecting)
@@ -652,7 +651,6 @@ class RtspClient {
         isAlive = true
         realm = nil
         nonce = nil
-        header = Data()
         nextCSeq = 0
         requests = [:]
         videoSession = nil
@@ -662,8 +660,8 @@ class RtspClient {
         connectTimer.stop()
         keepAliveTimer.stop()
         reconnectTimer.stop()
-        connection?.cancel()
-        connection = nil
+        transport?.stop()
+        transport = nil
         setState(newState: .disconnected)
     }
 
@@ -671,16 +669,6 @@ class RtspClient {
         stopInternal()
         reconnectTimer.startSingleShot(timeout: 5) { [weak self] in
             self?.startInternal()
-        }
-    }
-
-    private func rtspConnectionStateDidChange(to state: NWConnection.State) {
-        switch state {
-        case .ready:
-            setState(newState: .setup)
-            performOptions()
-        default:
-            break
         }
     }
 
@@ -735,99 +723,14 @@ class RtspClient {
     }
 
     private func sendRtcp(data: Data) {
-        guard let rtcpVideoChannel else {
-            return
-        }
-        sendChannel(channel: rtcpVideoChannel, data: data)
-    }
-
-    private func sendChannel(channel: UInt8, data: Data) {
-        guard let size = UInt16(exactly: data.count) else {
-            return
-        }
-        let writer = ByteWriter()
-        writer.writeUInt8(channelStart)
-        writer.writeUInt8(channel)
-        writer.writeUInt16(size)
-        writer.writeBytes(data)
-        send(data: writer.data)
+        transport?.sendRtcp(data)
     }
 
     private func send(data: Data) {
-        connection?.send(content: data, completion: .idempotent)
+        transport?.sendRtsp(data)
     }
 
-    private func receiveMessage() {
-        receive(size: 1) { data in
-            if data[0] == channelStart {
-                self.receiveChannelHeader()
-            } else {
-                self.receiveNewRtspHeader(data: data)
-            }
-        }
-    }
-
-    private func receiveChannelHeader() {
-        receive(size: 3) { data in
-            let channel = data[0]
-            let size = data.withUnsafeBytes { pointer in
-                pointer.readUInt16(offset: 1)
-            }
-            self.receiveChannelData(channel: channel, size: Int(size))
-        }
-    }
-
-    private func receiveChannelData(channel: UInt8, size: Int) {
-        receive(size: size) { data in
-            if channel == self.rtpVideoChannel {
-                try self.rtpVideo.handlePacket(packet: data)
-            } else if channel == self.rtcpVideoChannel {
-                self.handleRtcpVideoPacket(packet: data)
-            }
-            self.receiveMessage()
-        }
-    }
-
-    private func receive(size: Int, onComplete: @escaping (Data) throws -> Void) {
-        connection?.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
-            guard let data else {
-                return
-            }
-            self.bitrateStats.add(bytesTransferred: data.count)
-            do {
-                try onComplete(data)
-            } catch {
-                logger.debug("rtsp-client: Error: \(error)")
-            }
-        }
-    }
-
-    private func receiveNewRtspHeader(data: Data) {
-        header.removeAll(keepingCapacity: true)
-        header += data
-        receiveRtspHeader()
-    }
-
-    private func receiveRtspHeader() {
-        receive(size: 1) { data in
-            self.header += data
-            if self.header.suffix(4) == rtspEndOfHeaders {
-                try self.handleRtspHeader()
-            } else {
-                self.receiveRtspHeader()
-            }
-        }
-    }
-
-    private func receiveRtspContent(response: Response, size: Int) {
-        receive(size: size) { data in
-            response.content = data
-            try self.handleResponse(response: response)
-            self.receiveMessage()
-        }
-    }
-
-    private func handleRtspHeader() throws {
+    private func handleRtspMessage(header: Data, content: Data?) throws {
         guard let header = String(bytes: header, encoding: .utf8) else {
             throw "Header is not text."
         }
@@ -848,15 +751,8 @@ class RtspClient {
             headers[name.lowercased()] = value
         }
         let response = Response(statusCode: statusCode, headers: headers)
-        if let contentLength = headers["content-length"],
-           let contentLength = Int(contentLength),
-           contentLength > 0
-        {
-            receiveRtspContent(response: response, size: contentLength)
-        } else {
-            try handleResponse(response: response)
-            receiveMessage()
-        }
+        response.content = content
+        try handleResponse(response: response)
     }
 
     private func handleResponse(response: Response) throws {
@@ -993,8 +889,11 @@ class RtspClient {
     }
 
     private func performSetup(url: URL) {
+        guard let transport else {
+            return
+        }
         let headers = [
-            "Transport": "RTP/AVP/TCP;unicast;interleaved=0-1",
+            "Transport": transport.setupTransportHeader(),
         ]
         perform(request: Request(method: "SETUP", url: url, headers: headers) { response in
             try self.handleSetupResponse(response: response)
@@ -1005,15 +904,11 @@ class RtspClient {
         guard let session = response.headers["session"] else {
             throw "Session header missing."
         }
-        guard let transport = response.headers["transport"] else {
+        guard let transportHeader = response.headers["transport"] else {
             throw "Transport header missing."
         }
         (videoSession, _) = try partition(text: session, optionalSeparator: ";")
-        guard let match = transport.firstMatch(of: /interleaved=(\d+)-(\d+)/) else {
-            throw "Invalid interleaving in \(transport)."
-        }
-        rtpVideoChannel = UInt8(match.output.1)
-        rtcpVideoChannel = UInt8(match.output.2)
+        try transport?.handleSetupTransportResponse(transportHeader)
         try performPlay()
     }
 
@@ -1040,5 +935,49 @@ class RtspClient {
 
     func videoOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         delegate.rtspClientOnVideoBuffer(cameraId: cameraId, sampleBuffer)
+    }
+
+    private func createTransport() -> RtspTransport {
+        switch transportType {
+        case .rtpRtspTcp:
+            return RtspTransportRtpRtspTcp()
+        case .rtpUdp:
+            return RtspTransportRtpUdp()
+        }
+    }
+}
+
+extension RtspClient: RtspTransportDelegate {
+    func rtspTransportConnected() {
+        setState(newState: .setup)
+        performOptions()
+    }
+
+    func rtspTransportDisconnected() {}
+
+    func rtspTransportReceivedRtspMessage(header: Data, content: Data?) {
+        do {
+            try handleRtspMessage(header: header, content: content)
+        } catch {
+            logger.debug("rtsp-client: Error handling RTSP message: \(error)")
+        }
+    }
+
+    func rtspTransportReceivedRtpPacket(_ packet: Data) {
+        bitrateStats.add(bytesTransferred: packet.count)
+        do {
+            try rtpVideo.handlePacket(packet: packet)
+        } catch {
+            logger.debug("rtsp-client: Error handling RTP packet: \(error)")
+        }
+    }
+
+    func rtspTransportReceivedRtcpPacket(_ packet: Data) {
+        bitrateStats.add(bytesTransferred: packet.count)
+        handleRtcpVideoPacket(packet: packet)
+    }
+
+    func rtspTransportBytesReceived(count: Int) {
+        bitrateStats.add(bytesTransferred: count)
     }
 }
