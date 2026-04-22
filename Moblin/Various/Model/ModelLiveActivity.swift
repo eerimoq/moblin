@@ -70,7 +70,7 @@ extension Model {
 #else
 
 extension Model {
-    func startLiveActivityIfNeeded() {}
+    func startLiveActivity() {}
 
     func stopLiveActivity() {}
 
