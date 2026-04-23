@@ -27,10 +27,8 @@ struct RtspClientStreamSettingsView: View {
                 }
                 Section {
                     Picker("Transport", selection: $stream.transport) {
-                        ForEach([SettingsRtspTransport.rtpRtspTcp, SettingsRtspTransport.rtpUdp],
-                                id: \.self)
-                        { t in
-                            Text(t.toString()).tag(t)
+                        ForEach(SettingsRtspTransport.allCases, id: \.self) {
+                            Text($0.toString())
                         }
                     }
                     .onChange(of: stream.transport) { _ in

@@ -502,6 +502,8 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
 
 private class Rtp {
     private var nextExpectedSequenceNumber: UInt16?
+    private var reorderBuffer: [UInt16: Data] = [:]
+    private let reorderBufferMaxSize = 64
     var processor: RtpProcessor?
     weak var client: RtspClient?
     private let wrappingTimestamp = WrappingTimestamp(
@@ -513,15 +515,11 @@ private class Rtp {
         guard packet.count >= 12 else {
             throw "Packet shorter than 12 bytes: \(packet)"
         }
-        var value = packet[0]
+        let value = packet[0]
         let version = value >> 6
         let x = (value >> 4) & 0x1
         let cc = value & 0xF
-        value = packet[1]
         let sequenceNumber = UInt16(packet[2]) << 8 | UInt16(packet[3])
-        let timestamp = packet.withUnsafeBytes { pointer in
-            pointer.readUInt32(offset: 4)
-        }
         guard version == 2 else {
             throw "Unsupported version \(version)"
         }
@@ -534,12 +532,34 @@ private class Rtp {
         if nextExpectedSequenceNumber == nil {
             nextExpectedSequenceNumber = sequenceNumber
         }
-        guard sequenceNumber == nextExpectedSequenceNumber else {
-            nextExpectedSequenceNumber = nil
-            throw "Wrong sequence number"
+        let sequenceDelta = sequenceNumber &- nextExpectedSequenceNumber!
+        if sequenceDelta == 0 {
+            try processPacket(packet: packet)
+            nextExpectedSequenceNumber! &+= 1
+            try drainReorderBuffer()
+        } else if sequenceDelta < 0x8000 {
+            if reorderBuffer.count < reorderBufferMaxSize {
+                reorderBuffer[sequenceNumber] = packet
+            } else {
+                reorderBuffer.removeAll(keepingCapacity: true)
+                try processPacket(packet: packet)
+                nextExpectedSequenceNumber = sequenceNumber &+ 1
+            }
+        }
+    }
+
+    private func drainReorderBuffer() throws {
+        while let packet = reorderBuffer.removeValue(forKey: nextExpectedSequenceNumber!) {
+            try processPacket(packet: packet)
+            nextExpectedSequenceNumber! &+= 1
+        }
+    }
+
+    private func processPacket(packet: Data) throws {
+        let timestamp = packet.withUnsafeBytes { pointer in
+            pointer.readUInt32(offset: 4)
         }
         try processor?.process(packet: packet, timestamp: updateTimestamp(timestamp: timestamp))
-        nextExpectedSequenceNumber! &+= 1
     }
 
     private func updateTimestamp(timestamp: UInt32) -> Int64 {

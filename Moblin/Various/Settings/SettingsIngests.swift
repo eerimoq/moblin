@@ -263,7 +263,7 @@ class SettingsRistServer: Codable, ObservableObject {
     }
 }
 
-enum SettingsRtspTransport: String, Codable {
+enum SettingsRtspTransport: String, Codable, CaseIterable {
     case rtpRtspTcp
     case rtpUdp
 
