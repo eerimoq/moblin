@@ -5,8 +5,8 @@ struct RtmpStreamInfoSuite {
     @Test
     func initialState() {
         let info = RtmpStreamInfo()
-        #expect(info.bytesSent.value == 0)
-        #expect(info.currentBytesPerSecond.value == 0)
+        #expect(info.bitrateStats.value.totalBytes == 0)
+        #expect(info.bitrateStats.value.latestSpeed == 0)
         #expect(info.stats.value.rttMs == 0)
         #expect(info.stats.value.packetsInFlight == 0)
     }
@@ -14,12 +14,12 @@ struct RtmpStreamInfoSuite {
     @Test
     func clearResetsState() {
         let info = RtmpStreamInfo()
-        info.bytesSent.mutate { $0 = 5000 }
+        info.bitrateStats.mutate { $0.add(bytesTransferred: 5000) }
         info.onTimeout()
         info.onWritten(sequence: 1400)
         info.clear()
-        #expect(info.bytesSent.value == 0)
-        #expect(info.currentBytesPerSecond.value == 0)
+        #expect(info.bitrateStats.value.totalBytes == 5000)
+        #expect(info.bitrateStats.value.latestSpeed == 1500)
         #expect(info.stats.value.rttMs == 0)
         #expect(info.stats.value.packetsInFlight == 0)
     }
@@ -27,32 +27,31 @@ struct RtmpStreamInfoSuite {
     @Test
     func onTimeoutCalculatesBytesPerSecond() {
         let info = RtmpStreamInfo()
-        info.bytesSent.mutate { $0 = 1000 }
+        info.bitrateStats.mutate { $0.add(bytesTransferred: 1000) }
         info.onTimeout()
-        #expect(info.currentBytesPerSecond.value == 300)
+        #expect(info.bitrateStats.value.latestSpeed == 300)
     }
 
     @Test
     func onTimeoutExponentialSmoothing() {
         let info = RtmpStreamInfo()
-        info.bytesSent.mutate { $0 = 1000 }
+        info.bitrateStats.mutate { $0.add(bytesTransferred: 1000) }
         info.onTimeout()
-        #expect(info.currentBytesPerSecond.value == 300)
-        info.bytesSent.mutate { $0 = 2000 }
+        #expect(info.bitrateStats.value.latestSpeed == 300)
+        info.bitrateStats.mutate { $0.add(bytesTransferred: 1000) }
         info.onTimeout()
-        #expect(info.currentBytesPerSecond.value == 510)
-        info.bytesSent.mutate { $0 = 2000 }
+        #expect(info.bitrateStats.value.latestSpeed == 510)
         info.onTimeout()
-        #expect(info.currentBytesPerSecond.value == 357)
+        #expect(info.bitrateStats.value.latestSpeed == 357)
     }
 
     @Test
     func onTimeoutNoNewBytes() {
         let info = RtmpStreamInfo()
         info.onTimeout()
-        #expect(info.currentBytesPerSecond.value == 0)
+        #expect(info.bitrateStats.value.latestSpeed == 0)
         info.onTimeout()
-        #expect(info.currentBytesPerSecond.value == 0)
+        #expect(info.bitrateStats.value.latestSpeed == 0)
     }
 
     @Test

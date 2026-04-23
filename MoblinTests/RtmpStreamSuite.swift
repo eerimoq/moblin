@@ -29,6 +29,40 @@ extension ModelMock: RtmpStreamDelegate {
     }
 }
 
+extension ModelMock: ProcessorDelegate {
+    func stream(audioLevel _: Float, numberOfAudioChannels _: Int, sampleRate _: Double) {}
+
+    func streamVideo(lowFpsImage _: Data?, frameNumber _: UInt64) {}
+
+    func streamVideoAttachCameraError() {}
+
+    func streamVideoCaptureSessionError(_: String) {}
+
+    func streamVideoBufferedVideoReady(cameraId _: UUID) {}
+
+    func streamVideoBufferedVideoRemoved(cameraId _: UUID) {}
+
+    func streamVideoFps(fps _: Int) {}
+
+    func streamVideoEncoderResolution(resolution _: CGSize) {}
+
+    func streamRecorderInitSegment(data _: Data) {}
+
+    func streamRecorderDataSegment(segment _: Moblin.RecorderDataSegment) {}
+
+    func streamRecorderFinished() {}
+
+    func streamAudio(sampleBuffer _: CMSampleBuffer) {}
+
+    func streamNoTorch() {}
+
+    func streamSetZoomX(x _: Float) {}
+
+    func streamSetExposureBias(bias _: Float) {}
+
+    func streamSelectedFps(auto _: Bool) {}
+}
+
 private actor RtmpServerMock {
     private let listener: NWListener
     private var client: NWConnection?
@@ -118,8 +152,8 @@ struct RtmpStreamSuite {
     @Test
     func basic() async throws {
         let streamKey = "5"
-        let processor = Processor()
         let modelMock = ModelMock()
+        let processor = Processor(delegate: modelMock)
         let server = try RtmpServerMock()
         let rtmpStream = RtmpStream(name: "test",
                                     processor: processor,
@@ -225,8 +259,8 @@ struct RtmpStreamSuite {
     @Test
     func youTube() async throws {
         let streamKey = "5"
-        let processor = Processor()
         let modelMock = ModelMock()
+        let processor = Processor(delegate: modelMock)
         let server = try RtmpServerMock()
         let rtmpStream = RtmpStream(name: "test",
                                     processor: processor,

@@ -5,6 +5,7 @@ struct SettingsSuite {
     @Test
     func chatFilter() {
         let filter = SettingsChatFilter()
+        filter.enabled = true
         filter.user = ""
         filter.messageStartWords = ["!"]
         #expect(filter.isMatching(user: "erik", segments: [.init(id: 0, text: "!moblin")]))
