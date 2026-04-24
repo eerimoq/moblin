@@ -2,43 +2,46 @@ import SwiftUI
 
 private let barWidthPerDb: Float = 1.0
 private let barHeight: CGFloat = 5
+private let bigBarScale: CGFloat = 2.5
 
 private struct AudioBarView: View {
     @ObservedObject var level: AudioLevel
+    var big: Bool = false
 
-    private func clippingBar() -> CGFloat? {
+    private func clippingBar(scale: CGFloat) -> CGFloat? {
         guard level.level > clippingThresholdDb else {
             return nil
         }
         let db = -zeroThresholdDb
-        return CGFloat(db * barWidthPerDb)
+        return CGFloat(db * barWidthPerDb) * scale
     }
 
-    private func redBar() -> CGFloat? {
+    private func redBar(scale: CGFloat) -> CGFloat? {
         guard level.level > redThresholdDb else {
             return nil
         }
         let db = level.level - redThresholdDb
-        return CGFloat(db * barWidthPerDb)
+        return CGFloat(db * barWidthPerDb) * scale
     }
 
-    private func yellowBar() -> CGFloat? {
+    private func yellowBar(scale: CGFloat) -> CGFloat? {
         guard level.level > yellowThresholdDb else {
             return nil
         }
         let db = min(level.level - yellowThresholdDb, redThresholdDb - yellowThresholdDb)
-        return CGFloat(db * barWidthPerDb)
+        return CGFloat(db * barWidthPerDb) * scale
     }
 
-    private func greenBar() -> CGFloat? {
+    private func greenBar(scale: CGFloat) -> CGFloat? {
         guard level.level > zeroThresholdDb else {
             return nil
         }
         let db = min(level.level - zeroThresholdDb, yellowThresholdDb - zeroThresholdDb)
-        return CGFloat(db * barWidthPerDb)
+        return CGFloat(db * barWidthPerDb) * scale
     }
 
     var body: some View {
+        let scale = big ? bigBarScale : 1.0
         if level.isMuted() {
             Text("Muted")
                 .foregroundStyle(.white)
@@ -47,24 +50,24 @@ private struct AudioBarView: View {
                 .foregroundStyle(.white)
         } else {
             HStack(spacing: 0) {
-                if let width = clippingBar() {
+                if let width = clippingBar(scale: scale) {
                     Rectangle()
-                        .frame(width: width, height: barHeight)
+                        .frame(width: width, height: barHeight * scale)
                         .foregroundStyle(.red)
                 } else {
-                    if let width = redBar() {
+                    if let width = redBar(scale: scale) {
                         Rectangle()
-                            .frame(width: width, height: barHeight)
+                            .frame(width: width, height: barHeight * scale)
                             .foregroundStyle(.red)
                     }
-                    if let width = yellowBar() {
+                    if let width = yellowBar(scale: scale) {
                         Rectangle()
-                            .frame(width: width, height: barHeight)
+                            .frame(width: width, height: barHeight * scale)
                             .foregroundStyle(.yellow)
                     }
-                    if let width = greenBar() {
+                    if let width = greenBar(scale: scale) {
                         Rectangle()
-                            .frame(width: width, height: barHeight)
+                            .frame(width: width, height: barHeight * scale)
                             .foregroundStyle(.green)
                     }
                 }
@@ -98,11 +101,12 @@ private struct SampleRateView: View {
 
 struct AudioLevelView: View {
     let model: Model
+    var big: Bool = false
 
     var body: some View {
         HStack(spacing: 1) {
             HStack(spacing: 1) {
-                AudioBarView(level: model.audio.level)
+                AudioBarView(level: model.audio.level, big: big)
                 ChannelsView(audio: model.audio)
                 SampleRateView(audio: model.audio)
             }

@@ -704,11 +704,12 @@ private struct StatusesView: View {
 
 private struct AudioView: View {
     let model: Model
+    @ObservedObject var database: Database
     @ObservedObject var show: SettingsShow
 
     var body: some View {
         if show.audioLevel {
-            AudioLevelView(model: model)
+            AudioLevelView(model: model, big: database.bigAudioLevelMeter)
                 .padding(20)
                 .contentShape(Rectangle())
                 .padding(-20)
@@ -724,7 +725,7 @@ struct RightOverlayTopView: View {
         VStack(alignment: .trailing, spacing: 1) {
             VStack(alignment: .trailing, spacing: 1) {
                 if database.verboseStatuses {
-                    AudioView(model: model, show: database.show)
+                    AudioView(model: model, database: database, show: database.show)
                     StatusesView(
                         show: database.show,
                         status: model.statusTopRight,
