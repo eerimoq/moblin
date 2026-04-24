@@ -644,6 +644,25 @@ struct MainView: View {
                     model.pendingSettingsImportAction = nil
                 }
             }
+            .confirmationDialog(
+                model.pendingStreamImportCollisionTitle,
+                isPresented: $model.presentingStreamImportCollisionConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Replace existing", role: .destructive) {
+                    model.pendingStreamImportCollisionAction?(true)
+                    model.pendingStreamImportCollisionAction = nil
+                }
+                Button("Create new") {
+                    model.pendingStreamImportCollisionAction?(false)
+                    model.pendingStreamImportCollisionAction = nil
+                }
+            }
+            .onChange(of: model.presentingStreamImportCollisionConfirmation) { isPresenting in
+                if !isPresenting {
+                    model.pendingStreamImportCollisionAction = nil
+                }
+            }
             .toast(isPresenting: $toast.showingToast, duration: 5) {
                 toast.toast
             } onTap: {

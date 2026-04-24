@@ -1,71 +1,93 @@
 import SwiftUI
 
+private func streamImportCollisionTitle(names: [String]) -> String {
+    if names.count <= 1 {
+        return String(
+            format: String(localized: "A stream named ‘%@’ already exists. Replace it or create a new one?"),
+            names.first ?? ""
+        )
+    }
+    let joined = names.map { "‘\($0)’" }.joined(separator: ", ")
+    return String(
+        format: String(localized: "Streams named %@ already exist. Replace them or create new ones?"),
+        joined
+    )
+}
+
 extension Model {
-    private func handleSettingsUrlsDefaultStreams(settings: MoblinSettingsUrl) {
+    private func handleSettingsUrlsDefaultStreams(settings: MoblinSettingsUrl, replaceCollisions: Bool) {
         var newSelectedStream: SettingsStream?
         for stream in settings.streams ?? [] {
-            let newStream = SettingsStream(name: stream.name)
-            newStream.url = stream.url.trim()
+            let existingMatches = database.streams.filter { $0.name == stream.name }
+            let targetStream: SettingsStream
+            if replaceCollisions, let firstExisting = existingMatches.first {
+                targetStream = firstExisting
+                let extraIds = Set(existingMatches.dropFirst().map(\.id))
+                database.streams.removeAll { extraIds.contains($0.id) }
+            } else {
+                targetStream = SettingsStream(name: stream.name)
+                database.streams.append(targetStream)
+            }
+            targetStream.url = stream.url.trim()
             if stream.selected == true {
-                newSelectedStream = newStream
+                newSelectedStream = targetStream
             }
             if let backgroundStreaming = stream.backgroundStreaming {
-                newStream.backgroundStreaming = backgroundStreaming
+                targetStream.backgroundStreaming = backgroundStreaming
             }
             if let backgroundStreamingPiP = stream.backgroundStreamingPiP {
-                newStream.backgroundStreamingPiP = backgroundStreamingPiP
+                targetStream.backgroundStreamingPiP = backgroundStreamingPiP
             }
             if let video = stream.video {
                 if let resolution = video.resolution {
-                    newStream.resolution = resolution
+                    targetStream.resolution = resolution
                 }
                 if let fps = video.fps, fpss.contains(fps) {
-                    newStream.fps = fps
+                    targetStream.fps = fps
                 }
                 if let bitrate = video.bitrate, bitrate >= 50000, bitrate <= 50_000_000 {
-                    newStream.bitrate = bitrate
+                    targetStream.bitrate = bitrate
                 }
                 if let codec = video.codec {
-                    newStream.codec = codec
+                    targetStream.codec = codec
                 }
                 if let bFrames = video.bFrames {
-                    newStream.bFrames = bFrames
+                    targetStream.bFrames = bFrames
                 }
                 if let maxKeyFrameInterval = video.maxKeyFrameInterval, maxKeyFrameInterval >= 0,
                    maxKeyFrameInterval <= 10
                 {
-                    newStream.maxKeyFrameInterval = maxKeyFrameInterval
+                    targetStream.maxKeyFrameInterval = maxKeyFrameInterval
                 }
             }
             if let audio = stream.audio {
                 if let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
-                    newStream.audioBitrate = bitrate
+                    targetStream.audioBitrate = bitrate
                 }
             }
             if let srt = stream.srt {
                 if let latency = srt.latency {
-                    newStream.srt.latency = latency
+                    targetStream.srt.latency = latency
                 }
                 if let adaptiveBitrateEnabled = srt.adaptiveBitrateEnabled {
-                    newStream.srt.adaptiveBitrateEnabled = adaptiveBitrateEnabled
+                    targetStream.srt.adaptiveBitrateEnabled = adaptiveBitrateEnabled
                 }
                 if let dnsLookupStrategy = srt.dnsLookupStrategy {
-                    newStream.srt.dnsLookupStrategy = dnsLookupStrategy
+                    targetStream.srt.dnsLookupStrategy = dnsLookupStrategy
                 }
             }
             if let obs = stream.obs {
-                newStream.obsWebSocketEnabled = true
-                newStream.obsWebSocketUrl = obs.webSocketUrl.trim()
-                newStream.obsWebSocketPassword = obs.webSocketPassword.trim()
+                targetStream.obsWebSocketEnabled = true
+                targetStream.obsWebSocketUrl = obs.webSocketUrl.trim()
+                targetStream.obsWebSocketPassword = obs.webSocketPassword.trim()
             }
             if let twitch = stream.twitch {
-                newStream.twitchChannelName = twitch.channelName.trim()
-                newStream.twitchChannelId = twitch.channelId.trim()
+                targetStream.twitchChannelName = twitch.channelName.trim()
+                targetStream.twitchChannelId = twitch.channelId.trim()
             }
             if let kick = stream.kick {
-                newStream.kickChannelName = kick.channelName.trim()
+                targetStream.kickChannelName = kick.channelName.trim()
             }
-            database.streams.append(newStream)
         }
         if let newSelectedStream {
             setCurrentStream(stream: newSelectedStream)
@@ -136,12 +158,34 @@ extension Model {
     }
 
     private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
-        handleSettingsUrlsDefaultStreams(settings: settings)
+        let collisions = collidingStreamNames(in: settings)
+        if collisions.isEmpty {
+            applyDefaultImport(settings: settings, replaceCollisions: false)
+        } else {
+            pendingStreamImportCollisionTitle = streamImportCollisionTitle(names: collisions)
+            pendingStreamImportCollisionAction = { [weak self] replace in
+                self?.applyDefaultImport(settings: settings, replaceCollisions: replace)
+            }
+            presentingStreamImportCollisionConfirmation = true
+        }
+    }
+
+    private func applyDefaultImport(settings: MoblinSettingsUrl, replaceCollisions: Bool) {
+        handleSettingsUrlsDefaultStreams(settings: settings, replaceCollisions: replaceCollisions)
         handleSettingsUrlsDefaultQuickButtons(settings: settings)
         handleSettingsUrlsDefaultWebBrowser(settings: settings)
         handleSettingsUrlsDefaultRemoteControl(settings: settings)
         makeToast(title: String(localized: "URL import successful"))
         updateQuickButtonStates()
+    }
+
+    private func collidingStreamNames(in settings: MoblinSettingsUrl) -> [String] {
+        let existing = Set(database.streams.map(\.name))
+        var seen: Set<String> = []
+        return (settings.streams ?? []).compactMap { stream in
+            guard existing.contains(stream.name), seen.insert(stream.name).inserted else { return nil }
+            return stream.name
+        }
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {
