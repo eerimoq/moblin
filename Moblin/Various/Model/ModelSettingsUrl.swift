@@ -4,68 +4,71 @@ extension Model {
     private func handleSettingsUrlsDefaultStreams(settings: MoblinSettingsUrl) {
         var newSelectedStream: SettingsStream?
         for stream in settings.streams ?? [] {
-            let newStream = SettingsStream(name: stream.name)
-            newStream.url = stream.url.trim()
+            let existingStream = database.streams.first(where: { $0.name == stream.name })
+            let targetStream = existingStream ?? SettingsStream(name: stream.name)
+            targetStream.url = stream.url.trim()
             if stream.selected == true {
-                newSelectedStream = newStream
+                newSelectedStream = targetStream
             }
             if let backgroundStreaming = stream.backgroundStreaming {
-                newStream.backgroundStreaming = backgroundStreaming
+                targetStream.backgroundStreaming = backgroundStreaming
             }
             if let backgroundStreamingPiP = stream.backgroundStreamingPiP {
-                newStream.backgroundStreamingPiP = backgroundStreamingPiP
+                targetStream.backgroundStreamingPiP = backgroundStreamingPiP
             }
             if let video = stream.video {
                 if let resolution = video.resolution {
-                    newStream.resolution = resolution
+                    targetStream.resolution = resolution
                 }
                 if let fps = video.fps, fpss.contains(fps) {
-                    newStream.fps = fps
+                    targetStream.fps = fps
                 }
                 if let bitrate = video.bitrate, bitrate >= 50000, bitrate <= 50_000_000 {
-                    newStream.bitrate = bitrate
+                    targetStream.bitrate = bitrate
                 }
                 if let codec = video.codec {
-                    newStream.codec = codec
+                    targetStream.codec = codec
                 }
                 if let bFrames = video.bFrames {
-                    newStream.bFrames = bFrames
+                    targetStream.bFrames = bFrames
                 }
                 if let maxKeyFrameInterval = video.maxKeyFrameInterval, maxKeyFrameInterval >= 0,
                    maxKeyFrameInterval <= 10
                 {
-                    newStream.maxKeyFrameInterval = maxKeyFrameInterval
+                    targetStream.maxKeyFrameInterval = maxKeyFrameInterval
                 }
             }
             if let audio = stream.audio {
                 if let bitrate = audio.bitrate, isValidAudioBitrate(bitrate: bitrate) {
-                    newStream.audioBitrate = bitrate
+                    targetStream.audioBitrate = bitrate
                 }
             }
             if let srt = stream.srt {
                 if let latency = srt.latency {
-                    newStream.srt.latency = latency
+                    targetStream.srt.latency = latency
                 }
                 if let adaptiveBitrateEnabled = srt.adaptiveBitrateEnabled {
-                    newStream.srt.adaptiveBitrateEnabled = adaptiveBitrateEnabled
+                    targetStream.srt.adaptiveBitrateEnabled = adaptiveBitrateEnabled
                 }
                 if let dnsLookupStrategy = srt.dnsLookupStrategy {
-                    newStream.srt.dnsLookupStrategy = dnsLookupStrategy
+                    targetStream.srt.dnsLookupStrategy = dnsLookupStrategy
                 }
             }
             if let obs = stream.obs {
-                newStream.obsWebSocketEnabled = true
-                newStream.obsWebSocketUrl = obs.webSocketUrl.trim()
-                newStream.obsWebSocketPassword = obs.webSocketPassword.trim()
+                targetStream.obsWebSocketEnabled = true
+                targetStream.obsWebSocketUrl = obs.webSocketUrl.trim()
+                targetStream.obsWebSocketPassword = obs.webSocketPassword.trim()
             }
             if let twitch = stream.twitch {
-                newStream.twitchChannelName = twitch.channelName.trim()
-                newStream.twitchChannelId = twitch.channelId.trim()
+                targetStream.twitchChannelName = twitch.channelName.trim()
+                targetStream.twitchChannelId = twitch.channelId.trim()
             }
             if let kick = stream.kick {
-                newStream.kickChannelName = kick.channelName.trim()
+                targetStream.kickChannelName = kick.channelName.trim()
             }
-            database.streams.append(newStream)
+            if existingStream == nil {
+                database.streams.append(targetStream)
+            }
         }
         if let newSelectedStream, !isLive, !isRecording {
             setCurrentStream(stream: newSelectedStream)
