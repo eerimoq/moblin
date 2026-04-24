@@ -201,7 +201,7 @@ struct GimbalSettingsView: View {
                     .onDelete(perform: deletePreset)
                 }
                 if #available(iOS 18, *) {
-                    TextButtonView("Save current") {
+                    TextButtonView("Save current position") {
                         Task { @MainActor in
                             if let angles = await Gimbal.shared?.getCurrentOrientation() {
                                 let preset = SettingsGimbalPreset()
