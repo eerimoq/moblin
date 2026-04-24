@@ -157,6 +157,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var catPrinter: Bool = true
     @Published var workoutDevice: Bool = true
     @Published var systemMonitor: Bool = false
+    @Published var bigAudioLevelMeter: Bool = false
 
     init() {}
 
@@ -185,7 +186,8 @@ class SettingsShow: Codable, ObservableObject {
              moblink,
              catPrinter,
              heartRateDevice,
-             cpu
+             cpu,
+             bigAudioLevelMeter
     }
 
     func encode(to encoder: Encoder) throws {
@@ -215,6 +217,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.catPrinter, catPrinter)
         try container.encode(.heartRateDevice, workoutDevice)
         try container.encode(.cpu, systemMonitor)
+        try container.encode(.bigAudioLevelMeter, bigAudioLevelMeter)
     }
 
     required init(from decoder: Decoder) throws {
@@ -244,6 +247,7 @@ class SettingsShow: Codable, ObservableObject {
         catPrinter = container.decode(.catPrinter, Bool.self, true)
         workoutDevice = container.decode(.heartRateDevice, Bool.self, true)
         systemMonitor = container.decode(.cpu, Bool.self, false)
+        bigAudioLevelMeter = container.decode(.bigAudioLevelMeter, Bool.self, false)
     }
 }
 

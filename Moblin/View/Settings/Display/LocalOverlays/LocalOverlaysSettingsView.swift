@@ -54,6 +54,11 @@ struct LocalOverlaysSettingsView: View {
                     Image(systemName: "waveform")
                 }
                 Label {
+                    Toggle("Big audio level meter", isOn: $show.bigAudioLevelMeter)
+                } icon: {
+                    Image(systemName: "waveform")
+                }
+                Label {
                     Toggle("System monitor", isOn: $show.systemMonitor)
                 } icon: {
                     Image(systemName: "cpu")

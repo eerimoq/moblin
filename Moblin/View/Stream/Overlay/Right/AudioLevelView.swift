@@ -2,16 +2,22 @@ import SwiftUI
 
 private let barWidthPerDb: Float = 1.0
 private let barHeight: CGFloat = 5
+private let bigBarScale: CGFloat = 2.5
 
 private struct AudioBarView: View {
     @ObservedObject var level: AudioLevel
+    var big: Bool = false
+
+    private func barScale() -> CGFloat {
+        return big ? bigBarScale : 1.0
+    }
 
     private func clippingBar() -> CGFloat? {
         guard level.level > clippingThresholdDb else {
             return nil
         }
         let db = -zeroThresholdDb
-        return CGFloat(db * barWidthPerDb)
+        return CGFloat(db * barWidthPerDb) * barScale()
     }
 
     private func redBar() -> CGFloat? {
@@ -19,7 +25,7 @@ private struct AudioBarView: View {
             return nil
         }
         let db = level.level - redThresholdDb
-        return CGFloat(db * barWidthPerDb)
+        return CGFloat(db * barWidthPerDb) * barScale()
     }
 
     private func yellowBar() -> CGFloat? {
@@ -27,7 +33,7 @@ private struct AudioBarView: View {
             return nil
         }
         let db = min(level.level - yellowThresholdDb, redThresholdDb - yellowThresholdDb)
-        return CGFloat(db * barWidthPerDb)
+        return CGFloat(db * barWidthPerDb) * barScale()
     }
 
     private func greenBar() -> CGFloat? {
@@ -35,7 +41,7 @@ private struct AudioBarView: View {
             return nil
         }
         let db = min(level.level - zeroThresholdDb, yellowThresholdDb - zeroThresholdDb)
-        return CGFloat(db * barWidthPerDb)
+        return CGFloat(db * barWidthPerDb) * barScale()
     }
 
     var body: some View {
@@ -49,22 +55,22 @@ private struct AudioBarView: View {
             HStack(spacing: 0) {
                 if let width = clippingBar() {
                     Rectangle()
-                        .frame(width: width, height: barHeight)
+                        .frame(width: width, height: barHeight * barScale())
                         .foregroundStyle(.red)
                 } else {
                     if let width = redBar() {
                         Rectangle()
-                            .frame(width: width, height: barHeight)
+                            .frame(width: width, height: barHeight * barScale())
                             .foregroundStyle(.red)
                     }
                     if let width = yellowBar() {
                         Rectangle()
-                            .frame(width: width, height: barHeight)
+                            .frame(width: width, height: barHeight * barScale())
                             .foregroundStyle(.yellow)
                     }
                     if let width = greenBar() {
                         Rectangle()
-                            .frame(width: width, height: barHeight)
+                            .frame(width: width, height: barHeight * barScale())
                             .foregroundStyle(.green)
                     }
                 }
@@ -98,21 +104,25 @@ private struct SampleRateView: View {
 
 struct AudioLevelView: View {
     let model: Model
+    var big: Bool = false
 
     var body: some View {
+        let scale: CGFloat = big ? bigBarScale : 1.0
+        let iconSize: CGFloat = 17 * scale
+        let font: Font = big ? .system(size: 13 * scale) : smallFont
         HStack(spacing: 1) {
             HStack(spacing: 1) {
-                AudioBarView(level: model.audio.level)
+                AudioBarView(level: model.audio.level, big: big)
                 ChannelsView(audio: model.audio)
                 SampleRateView(audio: model.audio)
             }
             .padding(.horizontal, 2)
             .background(backgroundColor)
             .cornerRadius(5)
-            .font(smallFont)
+            .font(font)
             Image(systemName: "waveform")
-                .frame(width: 17, height: 17)
-                .font(smallFont)
+                .frame(width: iconSize, height: iconSize)
+                .font(font)
                 .padding(.horizontal, 2)
                 .foregroundStyle(.white)
                 .background(backgroundColor)

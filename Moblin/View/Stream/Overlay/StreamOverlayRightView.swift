@@ -708,7 +708,7 @@ private struct AudioView: View {
 
     var body: some View {
         if show.audioLevel {
-            AudioLevelView(model: model)
+            AudioLevelView(model: model, big: show.bigAudioLevelMeter)
                 .padding(20)
                 .contentShape(Rectangle())
                 .padding(-20)
