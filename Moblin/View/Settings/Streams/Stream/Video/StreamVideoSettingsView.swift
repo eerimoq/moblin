@@ -96,18 +96,18 @@ private struct CodecSettingsView: View {
     }
 }
 
-private struct BitrateRateControlView: View {
+private struct RateControlView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stream: SettingsStream
 
     var body: some View {
         Section {
-            Picker("Rate control", selection: $stream.bitrateRateControl) {
-                ForEach(SettingsStreamBitrateRateControl.cases(), id: \.self) {
+            Picker("Rate control", selection: $stream.rateControl) {
+                ForEach(SettingsStreamRateControl.cases(), id: \.self) {
                     Text($0.toString())
                 }
             }
-            .onChange(of: stream.bitrateRateControl) { _ in
+            .onChange(of: stream.rateControl) { _ in
                 model.reloadStreamIfEnabled(stream: stream)
             }
             .disabled(stream.enabled && model.isLive)
@@ -341,7 +341,7 @@ struct StreamVideoSettingsView: View {
             LowLightBoostSettingsView(stream: stream)
             CodecSettingsView(stream: stream)
             if database.showAllSettings {
-                BitrateRateControlView(stream: stream)
+                RateControlView(stream: stream)
                 BitrateSettingsView(database: database, stream: stream)
                 KeyFrameIntervalSettingsView(stream: stream)
                 BFramesSettingsView(stream: stream)

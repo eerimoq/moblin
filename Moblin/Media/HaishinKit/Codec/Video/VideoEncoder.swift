@@ -140,7 +140,7 @@ class VideoEncoder {
         }
         currentBitrate = settings.bitrate
         let bitrate = currentBitrate
-        switch settings.bitrateRateControl {
+        switch settings.rateControl {
         case .abr:
             let option = VTSessionProperty(key: .averageBitRate, value: NSNumber(value: bitrate))
             if let status = session?.setProperty(option), status != noErr {

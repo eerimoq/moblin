@@ -30,7 +30,7 @@ struct VideoEncoderSettings {
         }
     }
 
-    enum BitrateRateControl: Equatable {
+    enum RateControl: Equatable {
         case abr
         case cbr
         case vbr
@@ -38,7 +38,7 @@ struct VideoEncoderSettings {
 
     var videoSize: CMVideoDimensions
     var bitrate: UInt32
-    var bitrateRateControl: BitrateRateControl = .abr
+    var rateControl: RateControl = .abr
     var maxKeyFrameIntervalDuration: Int32
     var allowFrameReordering: Bool
     var profileLevel: String {
@@ -82,7 +82,7 @@ struct VideoEncoderSettings {
             maxKeyFrameIntervalDuration == other.maxKeyFrameIntervalDuration &&
             allowFrameReordering == other.allowFrameReordering &&
             profileLevel == other.profileLevel &&
-            bitrateRateControl == other.bitrateRateControl)
+            rateControl == other.rateControl)
     }
 
     func properties() -> [VTSessionProperty] {
@@ -95,7 +95,7 @@ struct VideoEncoderSettings {
             .init(key: .allowFrameReordering, value: allowFrameReordering as NSObject),
             .init(key: .pixelTransferProperties, value: ["ScalingMode": "Trim"] as NSObject),
         ]
-        switch bitrateRateControl {
+        switch rateControl {
         case .abr:
             properties.append(.init(key: .averageBitRate, value: bitrate as CFNumber))
             properties.append(.init(key: .dataRateLimits, value: createDataRateLimits(bitRate: bitrate)))

@@ -178,9 +178,9 @@ extension Model {
         stream.chat.seventvEmotes = false
         stream.url = createStreamFromWizardUrl()
         if stream.url.starts(with: "rtmp") {
-            stream.bitrateRateControl = .cbr
+            stream.rateControl = .cbr
         } else {
-            stream.bitrateRateControl = .abr
+            stream.rateControl = .abr
         }
         switch createStreamWizard.networkSetup {
         case .none:

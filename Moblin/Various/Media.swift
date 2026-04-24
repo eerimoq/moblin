@@ -805,14 +805,14 @@ final class Media: NSObject {
         }
     }
 
-    func setVideoStreamBitrateRateControl(bitrateRateControl: SettingsStreamBitrateRateControl) {
-        switch bitrateRateControl {
+    func setVideoStreamRateControl(rateControl: SettingsStreamRateControl) {
+        switch rateControl {
         case .abr:
-            videoEncoderSettings.bitrateRateControl = .abr
+            videoEncoderSettings.rateControl = .abr
         case .cbr:
-            videoEncoderSettings.bitrateRateControl = .cbr
+            videoEncoderSettings.rateControl = .cbr
         case .vbr:
-            videoEncoderSettings.bitrateRateControl = .vbr
+            videoEncoderSettings.rateControl = .vbr
         }
         commitVideoEncoderSettings()
     }
