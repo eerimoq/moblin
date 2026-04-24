@@ -989,7 +989,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         media = Media(delegate: self)
         setupAppIntents()
         faxReceiver.delegate = self
-        fixAlertMedias()
+        fixAlertMediasNoUpdate()
         setAllowVideoRangePixelFormat()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
@@ -1864,6 +1864,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func fixAlertMedias() {
+        fixAlertMediasNoUpdate()
+        updateAlertsSettings()
+    }
+
+    private func fixAlertMediasNoUpdate() {
         for widget in database.widgets {
             fixAlert(alert: widget.alerts.twitch.follows)
             fixAlert(alert: widget.alerts.twitch.subscriptions)
@@ -1871,7 +1876,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 fixAlert(alert: command.alert)
             }
         }
-        updateAlertsSettings()
     }
 
     private func removeUnusedAlertMedias() {
