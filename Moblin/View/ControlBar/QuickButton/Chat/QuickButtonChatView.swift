@@ -53,7 +53,7 @@ private struct HighlightMessageView: View {
             }
         }
         .foregroundStyle(highlight.messageColor())
-        .padding([.leading], 5)
+        .padding(.leading, 5)
     }
 }
 
@@ -115,7 +115,7 @@ private struct LineView: View {
                 .foregroundStyle(deleted ? .gray : usernameColor)
                 .strikethrough(deleted)
                 .lineLimit(1)
-                .padding([.trailing], 0)
+                .padding(.trailing, 0)
                 .bold()
             if post.isRedemption() {
                 Text(" ")
@@ -155,7 +155,7 @@ private struct LineView: View {
                 }
             }
         }
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .onTapGesture {
             selectedPost = post
         }
@@ -199,7 +199,7 @@ private struct PostView: View {
                              chat: chatSettings,
                              platform: moreThanOneStreamingPlatform,
                              selectedPost: $selectedPost)
-                        .padding([.leading], 3)
+                        .padding(.leading, 3)
                         .rotationEffect(Angle(degrees: rotation))
                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 }
@@ -266,7 +266,7 @@ private struct ProgressBarView: View {
             .accentColor(.white)
             .scaleEffect(x: 1, y: 4, anchor: .center)
             .padding([.top, .leading, .trailing], 10)
-            .padding([.bottom], 20)
+            .padding(.bottom, 20)
     }
 }
 
@@ -453,7 +453,7 @@ private struct AlertsPostView: View {
                              chat: chatSettings,
                              platform: moreThanOneStreamingPlatform,
                              selectedPost: $selectedPost)
-                        .padding([.leading], 3)
+                        .padding(.leading, 3)
                         .rotationEffect(Angle(degrees: rotation))
                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 }
@@ -745,7 +745,7 @@ private struct SendMessagesToView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
             Text(platform.name())
-                .padding([.leading], 6)
+                .padding(.leading, 6)
                 .foregroundStyle(.primary)
             Button {
                 enabled.toggle()
@@ -837,7 +837,7 @@ private struct ControlMenuButtonView: View {
             Image(systemName: "ellipsis")
                 .font(.title)
                 .rotationEffect(.degrees(90))
-                .padding([.trailing], 13)
+                .padding(.trailing, 13)
         }
         .popover(isPresented: $presentingMenu) {
             VStack(alignment: .leading, spacing: 0) {
@@ -1075,7 +1075,7 @@ private struct ActionButtonsView: View {
                     presenting: $showingChatterInfo
                 )
                 .border(.gray)
-                .padding([.horizontal], 5)
+                .padding(.horizontal, 5)
             } else {
                 VStack {
                     Spacer()
@@ -1094,7 +1094,7 @@ private struct ActionButtonsView: View {
                                 .foregroundStyle(.white)
                         }
                         .frame(height: 100)
-                        .padding([.vertical], 5)
+                        .padding(.vertical, 5)
                         HStack {
                             Spacer(minLength: 0)
                             banButton(selectedPost: selectedPost)
@@ -1111,10 +1111,10 @@ private struct ActionButtonsView: View {
                                 .disabled(selectedPost.platform != .kick)
                             Spacer(minLength: 0)
                         }
-                        .padding([.bottom], 5)
+                        .padding(.bottom, 5)
                     }
                     .border(.gray)
-                    .padding([.horizontal], 5)
+                    .padding(.horizontal, 5)
                     .background(.black)
                 }
             }
@@ -1149,7 +1149,7 @@ struct QuickButtonChatView: View {
                 }
                 .frame(height: 50)
                 .border(.gray)
-                .padding([.leading, .trailing], 5)
+                .padding(.horizontal, 5)
             }
             ActionButtonsView(model: model, selectedPost: $selectedPost)
         }

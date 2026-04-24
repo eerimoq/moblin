@@ -162,7 +162,7 @@ private struct WebBrowserSmallView: View {
                             .frame(maxWidth: mapSide(maximum: metrics.size.width),
                                    maxHeight: mapSide(maximum: metrics.size.height))
                             .clipShape(RoundedRectangle(cornerRadius: 7))
-                            .padding([.trailing], 3)
+                            .padding(.trailing, 3)
                     }
                 }
                 VStack {

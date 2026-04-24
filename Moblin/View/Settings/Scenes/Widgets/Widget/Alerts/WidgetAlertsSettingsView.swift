@@ -267,7 +267,7 @@ private struct AlertPositionFaceView: View {
                         lineWidth: 1.5
                     )
                 }
-                .padding([.top, .bottom], 6)
+                .padding(.vertical, 6)
                 .gesture(
                     DragGesture()
                         .onChanged { value in

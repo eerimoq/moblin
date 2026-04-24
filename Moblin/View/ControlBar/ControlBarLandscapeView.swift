@@ -121,7 +121,7 @@ private struct StatusView: View {
             }
         }
         .padding([.leading, .bottom], 0)
-        .padding([.trailing], 5)
+        .padding(.trailing, 5)
         .sheet(isPresented: $presentingThermalState) {
             ThermalStateSheetView(presenting: $presentingThermalState)
         }
@@ -177,7 +177,7 @@ private struct PageView: View {
         }
         .scrollDisabled(!quickButtonsSettings.enableScroll)
         .rotationEffect(.degrees(180))
-        .padding([.leading, .trailing], 0)
+        .padding(.horizontal, 0)
     }
 }
 
@@ -199,7 +199,7 @@ private struct MainPageView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             IconAndSettingsView(model: model, store: store)
-                .padding([.top, .bottom], 2)
+                .padding(.vertical, 2)
                 .frame(width: buttonsWidth())
             PageView(model: model,
                      quickButtons: quickButtons,
@@ -209,7 +209,7 @@ private struct MainPageView: View {
             HStack {
                 Spacer(minLength: 0)
                 StreamButton()
-                    .padding([.top], 5)
+                    .padding(.top, 5)
                 Spacer(minLength: 0)
             }
             .frame(width: buttonsWidth())
@@ -238,7 +238,7 @@ private struct PageIndicatorView: View {
             ForEach(1 ... controlBarPages, id: \.self) { page in
                 Image(systemName: quickButtons.activePage == page ? "circle.fill" : "circle")
                     .font(.system(size: 5))
-                    .padding([.bottom], 0)
+                    .padding(.bottom, 0)
                     .foregroundStyle(.white)
             }
         }
@@ -282,7 +282,7 @@ private struct PagesView: View {
                                 }
                             }
                         }
-                        .padding([.leading], 5)
+                        .padding(.leading, 5)
                         .containerRelativeFrame(.horizontal, count: 1, spacing: 0, alignment: .leading)
                     }
                     .scrollTargetLayout()
@@ -299,7 +299,7 @@ private struct PagesView: View {
                 }
                 if isMac() {
                     PageIndicatorView(quickButtons: quickButtons)
-                        .padding([.top], 1)
+                        .padding(.top, 1)
                 }
             }
         } else {
@@ -309,7 +309,7 @@ private struct PagesView: View {
                              quickButtonsSettings: quickButtonsSettings,
                              store: model.store,
                              width: width)
-                    .padding([.leading], 5)
+                    .padding(.leading, 5)
             }
             .scrollIndicators(.never)
             .ignoresSafeArea(.all, edges: edgesToIgnore())
@@ -336,7 +336,7 @@ struct ControlBarLandscapeView: View {
                       quickButtonsSettings: quickButtons,
                       width: controlBarWidth(quickButtons: quickButtons))
         }
-        .padding([.top, .bottom], 0)
+        .padding(.vertical, 0)
         .frame(width: controlBarWidth(quickButtons: quickButtons))
         .background(.black)
         .ignoresSafeArea(.all, edges: edgesToIgnore())

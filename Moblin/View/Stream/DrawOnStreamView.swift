@@ -118,7 +118,7 @@ private struct DrawOnStreamControlsView: View {
                 .background(backgroundColor)
                 .cornerRadius(5)
             }
-            .padding([.trailing], 15)
+            .padding(.trailing, 15)
         }
     }
 }

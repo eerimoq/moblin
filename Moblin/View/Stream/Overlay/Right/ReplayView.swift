@@ -168,7 +168,7 @@ private struct ControlRowView<Content: View>: View {
             content()
         }
         .padding(4)
-        .padding([.trailing], 4)
+        .padding(.trailing, 4)
         .font(.title)
         .frame(height: 45)
         .background(backgroundColor)
@@ -271,7 +271,7 @@ private struct ReplayHistory: View {
             LazyHStack {
                 if replayDatabase.replays.isEmpty {
                     Text("No replays saved")
-                        .padding([.leading], 30)
+                        .padding(.leading, 30)
                         .foregroundStyle(.white)
                 }
                 ForEach(replayDatabase.replays) {

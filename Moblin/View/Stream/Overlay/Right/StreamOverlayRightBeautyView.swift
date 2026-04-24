@@ -76,7 +76,7 @@ struct StreamOverlayRightBeautyView: View {
                 )
             }
         }
-        .padding([.trailing], 10)
+        .padding(.trailing, 10)
         .fixedSize()
         .frame(height: segmentHeight)
         .background(pickerBackgroundColor)

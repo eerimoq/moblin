@@ -98,7 +98,7 @@ private struct ToggleActionView: View {
             Spacer()
             ExecutorView(executor: executor) {
                 button(text: "On", on: true)
-                    .padding([.trailing], 15)
+                    .padding(.trailing, 15)
                 button(text: "Off", on: false)
             }
         }
@@ -126,7 +126,7 @@ private struct DurationActionView: View {
                             .tag($0 as Int?)
                     }
                 }
-                .padding([.trailing], 15)
+                .padding(.trailing, 15)
                 BorderlessButtonView(text: "Send") {
                     executor.startProgress()
                     action(duration, executor.completed)

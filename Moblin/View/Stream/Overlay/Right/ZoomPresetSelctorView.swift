@@ -54,7 +54,7 @@ private struct ZoomPresetView: View {
             RoundedRectangle(cornerRadius: 7)
                 .stroke(pickerBorderColor)
         )
-        .padding([.bottom], 5)
+        .padding(.bottom, 5)
     }
 }
 
@@ -103,7 +103,7 @@ private struct ZoomPresetVView: View {
             RoundedRectangle(cornerRadius: 7)
                 .stroke(pickerBorderColor)
         )
-        .padding([.bottom], 5)
+        .padding(.bottom, 5)
     }
 }
 

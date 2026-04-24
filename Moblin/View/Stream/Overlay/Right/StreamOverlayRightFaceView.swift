@@ -11,16 +11,16 @@ struct EffectSlider: View {
             Text(title)
                 .font(.footnote)
                 .foregroundStyle(.white)
-                .padding([.trailing], 7)
+                .padding(.trailing, 7)
             HStack {
                 Slider(value: $value, in: range, step: 0.01)
             }
-            .padding([.top, .bottom], 5)
-            .padding([.leading, .trailing], 7)
+            .padding(.vertical, 5)
+            .padding(.horizontal, 7)
             .frame(width: sliderWidth, height: sliderHeight)
             .background(backgroundColor)
             .cornerRadius(7)
-            .padding([.bottom], 5)
+            .padding(.bottom, 5)
         }
     }
 }
@@ -55,8 +55,8 @@ struct StreamOverlayRightFaceView: View {
                         PhotosPicker(selection: $selectedImageItem, matching: .images) {
                             Text("Select image")
                                 .foregroundStyle(.white)
-                                .padding([.top, .bottom], 5)
-                                .padding([.leading, .trailing], 7)
+                                .padding(.vertical, 5)
+                                .padding(.horizontal, 7)
                                 .frame(height: sliderHeight)
                                 .background(backgroundColor)
                                 .cornerRadius(7)
@@ -64,7 +64,7 @@ struct StreamOverlayRightFaceView: View {
                                     RoundedRectangle(cornerRadius: 7)
                                         .stroke(pickerBorderColor, lineWidth: 1)
                                 )
-                                .padding([.bottom], 5)
+                                .padding(.bottom, 5)
                         }
                         .onChange(of: selectedImageItem) { imageItem in
                             selectedImageItem = nil
@@ -102,7 +102,7 @@ struct StreamOverlayRightFaceView: View {
                     )
                 }
             }
-            .padding([.bottom], 5)
+            .padding(.bottom, 5)
         }
     }
 }

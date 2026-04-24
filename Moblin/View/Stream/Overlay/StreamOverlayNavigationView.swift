@@ -107,7 +107,7 @@ private struct ControlsView: View {
                 Spacer()
                 if shouldStackVertically() {
                     ControlSearchView(navigation: navigation)
-                        .padding([.trailing], 10)
+                        .padding(.trailing, 10)
                 }
             }
             HStack {
@@ -150,10 +150,10 @@ private struct ControlsView: View {
                         .frame(width: 12, height: 12)
                         .padding()
                         .glassEffect()
-                        .padding([.trailing], 10)
+                        .padding(.trailing, 10)
                 }
             }
-            .padding([.bottom], 7)
+            .padding(.bottom, 7)
         }
     }
 }
@@ -230,7 +230,7 @@ private struct MapView: View {
             .frame(maxWidth: mapSide(maximum: metrics.size.width),
                    maxHeight: mapSide(maximum: metrics.size.height))
             .clipShape(RoundedRectangle(cornerRadius: 7))
-            .padding([.trailing], 3)
+            .padding(.trailing, 3)
             .gesture(
                 LongPressGesture(minimumDuration: 0.5)
                     .sequenced(before: DragGesture(minimumDistance: 0))

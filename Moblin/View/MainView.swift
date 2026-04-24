@@ -469,8 +469,8 @@ struct MainView: View {
                     let backgroundColor = model.panelHidden ? model.showingPanel
                         .buttonsBackgroundColor() : .clear
                     PanelButtonsView(backgroundColor: backgroundColor)
-                        .padding([.trailing], 10)
-                        .padding([.top], -7)
+                        .padding(.trailing, 10)
+                        .padding(.top, -7)
                 }
             }
             .gesture(
@@ -541,7 +541,7 @@ struct MainView: View {
                 }
                 if model.showingPanel != .none, model.panelHidden {
                     PanelButtonsView(backgroundColor: model.showingPanel.buttonsBackgroundColor())
-                        .padding([.trailing], -1)
+                        .padding(.trailing, -1)
                 }
             }
             .gesture(

@@ -438,7 +438,7 @@ extension Model {
                     let chat = self.database.chat
                     Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
                         .lineLimit(1)
-                        .padding([.trailing], 0)
+                        .padding(.trailing, 0)
                     if post.isRedemption() {
                         Text(" ")
                     } else {

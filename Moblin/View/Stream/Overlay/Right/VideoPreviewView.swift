@@ -64,7 +64,7 @@ struct StreamOverlayRightVideoPreviewView: View {
             LazyHStack {
                 if videoPreview.feeds.isEmpty {
                     Text("No built-in cameras or ingests connected")
-                        .padding([.leading], 30)
+                        .padding(.leading, 30)
                         .foregroundStyle(.white)
                 }
                 ForEach(videoPreview.feeds) { feed in

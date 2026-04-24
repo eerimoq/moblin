@@ -1376,7 +1376,7 @@ struct WidgetTextSettingsView: View {
                     Text("Minimum width")
                     Spacer(minLength: 0)
                     Toggle(isOn: $text.widthEnabled) {}
-                        .padding([.trailing], 2)
+                        .padding(.trailing, 2)
                     GrayTextView(text: String(text.width))
                 }
                 .onChange(of: text.widthEnabled) { _ in

@@ -127,7 +127,7 @@ private struct TextView: View {
                         }
                     }
                     .padding(
-                        [.leading, .trailing],
+                        .horizontal,
                         7 * fontSize / 30 + min(CGFloat(state.cornerRadius / 5), fontSize / 7.5)
                     )
                     .frame(minWidth: state.minWidth)

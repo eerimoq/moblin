@@ -9,7 +9,7 @@ private struct StealthButtonView: View {
         VStack {
             Image(systemName: image)
                 .font(.system(size: 20))
-                .padding([.bottom], 2)
+                .padding(.bottom, 2)
             Text(text)
                 .font(.body)
         }
@@ -130,7 +130,7 @@ struct StealthModeView: View {
                         Spacer()
                         returnButton()
                     }
-                    .padding([.horizontal], 30)
+                    .padding(.horizontal, 30)
                     .frame(height: controlBarWidthDefault)
                 }
             } else {
@@ -142,8 +142,8 @@ struct StealthModeView: View {
                         Spacer()
                         returnButton()
                     }
-                    .padding([.top], 30)
-                    .padding([.bottom], 5)
+                    .padding(.top, 30)
+                    .padding(.bottom, 5)
                     .frame(width: controlBarWidth(quickButtons: quickButtons))
                 }
             }

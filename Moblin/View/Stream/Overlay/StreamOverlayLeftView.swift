@@ -8,11 +8,11 @@ private struct CollapsedViewersView: View {
         HStack(spacing: 1) {
             Image(systemName: "eye")
                 .frame(width: 17, height: 17)
-                .padding([.leading], 2)
+                .padding(.leading, 2)
                 .foregroundStyle(status.numberOfViewersIconColor)
             Text(status.numberOfViewersCompact)
                 .foregroundStyle(.white)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
         }
         .font(smallFont)
         .background(backgroundColor)
@@ -30,7 +30,7 @@ private struct ViewersLogoView: View {
         Image(platform.imageName())
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .padding([.top, .bottom], 2)
+            .padding(.vertical, 2)
             .frame(height: 18)
     }
 }
@@ -42,7 +42,7 @@ private struct ViewersView: View {
         HStack(spacing: 1) {
             Image(systemName: "eye")
                 .frame(width: 17, height: 17)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(status.numberOfViewersIconColor)
                 .background(backgroundColor)
                 .cornerRadius(5)
@@ -62,7 +62,7 @@ private struct ViewersView: View {
                     }
                 }
             }
-            .padding([.leading, .trailing], 2)
+            .padding(.horizontal, 2)
             .background(backgroundColor)
             .cornerRadius(5)
         }
@@ -81,7 +81,7 @@ private struct ChatStatusView: View {
         HStack(spacing: 1) {
             Image(systemName: "message")
                 .frame(width: 17, height: 17)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(foregroundColor)
                 .background(backgroundColor)
                 .cornerRadius(5)
@@ -101,7 +101,7 @@ private struct ChatStatusView: View {
                     }
                 }
             }
-            .padding([.leading, .trailing], 2)
+            .padding(.horizontal, 2)
             .background(backgroundColor)
             .cornerRadius(5)
         }

@@ -18,8 +18,8 @@ struct MultiLineTextFieldView: View {
                         .foregroundStyle(Color(uiColor: .gray))
                         .opacity(0.5)
                 }
-                .padding([.top], 1)
-                .padding([.trailing], 5)
+                .padding(.top, 1)
+                .padding(.trailing, 5)
                 .buttonStyle(.plain)
             }
         }

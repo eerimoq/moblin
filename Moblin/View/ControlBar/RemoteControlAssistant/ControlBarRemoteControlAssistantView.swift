@@ -177,7 +177,7 @@ private struct RemoteControlAudioLevelView: View {
                                 .foregroundStyle(.green)
                         }
                     }
-                    .padding([.bottom], 3)
+                    .padding(.bottom, 3)
                     .bold()
                 }
                 if let channels {
@@ -229,7 +229,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
-                        .padding([.bottom], 3)
+                        .padding(.bottom, 3)
                         .onTapGesture(count: 2) { _ in
                             remoteControl.presentingPreviewFullScreen = true
                         }

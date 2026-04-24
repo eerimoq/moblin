@@ -22,7 +22,7 @@ private struct PollView: View {
             Image(systemName: "chart.bar.xaxis")
             Text(state.text)
         }
-        .padding([.trailing], 7)
+        .padding(.trailing, 7)
         .background(.black.opacity(0.75))
         .foregroundStyle(.white)
         .font(.system(size: scaledFontSize(size: state.size)))

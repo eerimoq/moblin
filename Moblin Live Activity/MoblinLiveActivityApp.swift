@@ -57,7 +57,7 @@ struct MoblinLiveActivityApp: Widget {
                 }
                 Divider()
                 MoblinLiveActivityStatusLabel(state: context.state)
-                    .padding([.leading], 10)
+                    .padding(.leading, 10)
             }
             .padding()
             .activityBackgroundTint(Color.black.opacity(0.8))

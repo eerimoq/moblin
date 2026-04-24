@@ -118,7 +118,7 @@ private struct IconAndSettingsView: View {
                     .interpolation(.high)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .padding([.bottom], 4)
+                    .padding(.bottom, 4)
                     .offset(x: 2)
                     .frame(width: controlBarButtonSize, height: controlBarButtonSize)
             }
@@ -135,9 +135,9 @@ private struct IconAndSettingsView: View {
                     .foregroundStyle(.white)
             }
             .buttonStyle(.plain)
-            .padding([.leading], 10)
+            .padding(.leading, 10)
         }
-        .padding([.leading, .trailing], 10)
+        .padding(.horizontal, 10)
     }
 }
 
@@ -157,7 +157,7 @@ private struct MainPageView: View {
                      page: 0,
                      height: height)
                 .padding([.top, .leading], 5)
-                .padding([.trailing], 0)
+                .padding(.trailing, 0)
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
@@ -169,15 +169,15 @@ private struct MainPageView: View {
                     .buttonStyle(.plain)
                     Spacer(minLength: 0)
                 }
-                .padding([.top], 3)
-                .padding([.trailing], 5)
-                .padding([.leading], 0)
+                .padding(.top, 3)
+                .padding(.trailing, 5)
+                .padding(.leading, 0)
                 IconAndSettingsView(store: model.store)
                 StreamButton()
-                    .padding([.top], 10)
-                    .padding([.leading, .trailing], 5)
+                    .padding(.top, 10)
+                    .padding(.horizontal, 5)
             }
-            .padding([.leading], 0)
+            .padding(.leading, 0)
             .frame(width: controlBarWidthDefault)
             .sheet(isPresented: $presentingThermalState) {
                 ThermalStateSheetView(presenting: $presentingThermalState)

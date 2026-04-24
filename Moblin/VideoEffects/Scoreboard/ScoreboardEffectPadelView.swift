@@ -100,9 +100,9 @@ struct ScoreboardEffectPadelView: View {
                     .font(.system(size: scoreFontSize()))
                 }
             }
-            .padding([.leading], 3)
-            .padding([.trailing], 18)
-            .padding([.top], 3)
+            .padding(.leading, 3)
+            .padding(.trailing, 18)
+            .padding(.top, 3)
             .background(primaryBackgroundColor)
             PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }

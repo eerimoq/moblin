@@ -144,7 +144,7 @@ private struct YouTubeStreamView: View {
                 }
                 .frame(width: 50)
             }
-            .padding([.trailing], 5)
+            .padding(.trailing, 5)
         }
     }
 }

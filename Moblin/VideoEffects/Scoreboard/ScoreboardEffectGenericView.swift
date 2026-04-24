@@ -39,7 +39,7 @@ struct ScoreboardEffectGenericView: View {
                 .font(.system(size: scoreboardScoreFontSize))
                 .frame(width: scoreboardScoreFontSize * 1.33)
             }
-            .padding([.horizontal], 5)
+            .padding(.horizontal, 5)
             .background(primaryBackgroundColor)
             PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }

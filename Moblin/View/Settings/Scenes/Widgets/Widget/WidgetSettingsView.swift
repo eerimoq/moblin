@@ -137,7 +137,7 @@ struct WidgetLayoutView: View {
                     mirror: layout.alignment.mirrorPositionHorizontally(),
                     increment: horizontalIncrement()
                 )
-                .padding([.bottom], 10)
+                .padding(.bottom, 10)
                 PositionEditView(
                     number: $layout.y,
                     value: $layout.yString,

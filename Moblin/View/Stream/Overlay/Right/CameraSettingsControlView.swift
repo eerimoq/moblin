@@ -18,7 +18,7 @@ private struct CameraSettingButtonView: View {
                 }
             }
             .font(.footnote)
-            .padding([.trailing], 7)
+            .padding(.trailing, 7)
         }
         .frame(maxWidth: cameraButtonWidth, maxHeight: height)
         .background(pickerBackgroundColor)
@@ -35,12 +35,12 @@ private struct NotSupportedForThisCameraView: View {
     var body: some View {
         Text("Not supported for this camera")
             .foregroundStyle(.white)
-            .padding([.top, .bottom], 5)
-            .padding([.leading, .trailing], 7)
+            .padding(.vertical, 5)
+            .padding(.horizontal, 7)
             .frame(height: sliderHeight)
             .background(backgroundColor)
             .cornerRadius(7)
-            .padding([.bottom], 5)
+            .padding(.bottom, 5)
     }
 }
 
@@ -51,7 +51,7 @@ private struct TitleView: View {
         Text(title)
             .font(.footnote)
             .foregroundStyle(.white)
-            .padding([.trailing], 7)
+            .padding(.trailing, 7)
     }
 }
 
@@ -91,12 +91,12 @@ private struct SliderAndLockView: View {
                     .foregroundStyle(.white)
             }
         }
-        .padding([.top, .bottom], 5)
-        .padding([.leading, .trailing], 7)
+        .padding(.vertical, 5)
+        .padding(.horizontal, 7)
         .frame(width: sliderWidth, height: sliderHeight)
         .background(backgroundColor)
         .cornerRadius(7)
-        .padding([.bottom], 5)
+        .padding(.bottom, 5)
     }
 }
 
@@ -123,12 +123,12 @@ private struct ExposureBiasView: View {
             model.setExposureBias(bias: camera.bias)
             model.updateImageButtonState()
         }
-        .padding([.top, .bottom], 5)
-        .padding([.leading, .trailing], 7)
+        .padding(.vertical, 5)
+        .padding(.horizontal, 7)
         .frame(width: sliderWidth, height: sliderHeight)
         .background(backgroundColor)
         .cornerRadius(7)
-        .padding([.bottom], 5)
+        .padding(.bottom, 5)
     }
 }
 
@@ -378,7 +378,7 @@ struct StreamOverlayRightCameraSettingsControlView: View {
                     model.stopObservingExposure()
                     model.stopObservingWhiteBalance()
                 }
-                .padding([.bottom], 5)
+                .padding(.bottom, 5)
         }
     }
 }

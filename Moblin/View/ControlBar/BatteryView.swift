@@ -40,6 +40,6 @@ struct BatteryView: View {
             }
             .frame(width: 28, height: 13)
         }
-        .padding([.top], 1)
+        .padding(.top, 1)
     }
 }

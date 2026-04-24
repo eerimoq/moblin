@@ -26,8 +26,8 @@ struct PoweredByMoblinView: View {
                 .bold()
             Spacer()
         }
-        .padding([.leading, .trailing], 3)
-        .padding([.bottom], 3)
+        .padding(.horizontal, 3)
+        .padding(.bottom, 3)
         .background(backgroundColor)
     }
 }

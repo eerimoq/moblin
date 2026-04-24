@@ -10,7 +10,7 @@ private struct CollapsedBondingView: View {
             Image(systemName: "phone.connection")
                 .frame(width: 17, height: 17)
                 .font(smallFont)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(color)
             if #available(iOS 17.0, *) {
                 if !bonding.pieChartPercentages.isEmpty {
@@ -21,7 +21,7 @@ private struct CollapsedBondingView: View {
                     .chartLegend(.hidden)
                     .scaledToFit()
                     .frame(width: 14, height: 14)
-                    .padding([.trailing], 2)
+                    .padding(.trailing, 2)
                 }
             }
         }
@@ -94,7 +94,7 @@ private struct CollapsedHypeTrainView: View {
         HStack(spacing: 1) {
             let train = Image(systemName: "train.side.front.car")
                 .frame(width: 17, height: 17)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(color)
             if #available(iOS 18.0, *) {
                 train
@@ -107,7 +107,7 @@ private struct CollapsedHypeTrainView: View {
             }
             Text(status)
                 .foregroundStyle(.white)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
         }
         .font(smallFont)
         .background(backgroundColor)
@@ -125,11 +125,11 @@ private struct CollapsedAdsRemainingTimerView: View {
         HStack(spacing: 1) {
             Image(systemName: "cup.and.saucer")
                 .frame(width: 17, height: 17)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(.white)
             Text(status.adsRemainingTimerStatus)
                 .foregroundStyle(.white)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
         }
         .font(smallFont)
         .background(backgroundColor)
@@ -167,13 +167,13 @@ private struct CollapsedBitrateView: View {
         HStack(spacing: 1) {
             Image(systemName: "speedometer")
                 .frame(width: 17, height: 17)
-                .padding([.leading], 2)
+                .padding(.leading, 2)
                 .foregroundStyle(bitrate.statusColor)
                 .background(bitrate.statusIconColor ?? .clear)
             if !bitrate.speedMbpsOneDecimal.isEmpty {
                 Text(bitrate.speedMbpsOneDecimal)
                     .foregroundStyle(.white)
-                    .padding([.trailing], 2)
+                    .padding(.trailing, 2)
             }
         }
         .font(smallFont)
@@ -256,11 +256,11 @@ private struct CpuStatusView: View {
                 HStack(spacing: 1) {
                     Image(systemName: "cpu")
                         .frame(width: 17, height: 17)
-                        .padding([.leading], 2)
+                        .padding(.leading, 2)
                         .foregroundStyle(.white)
                     Text(systemMonitor.formatShort())
                         .foregroundStyle(.white)
-                        .padding([.trailing], 2)
+                        .padding(.trailing, 2)
                 }
                 .font(smallFont)
                 .background(backgroundColor)

@@ -88,7 +88,7 @@ private struct ScoreboardScoreboardView: View {
                 TeamPlayersView(model: model, players: $scoreboard.home.players)
                 TeamPlayersView(model: model, players: $scoreboard.away.players)
             }
-            .padding([.bottom], 2)
+            .padding(.bottom, 2)
             ForEach(scoreboard.score) { score in
                 VStack {
                     TeamScoreView(score: score.home)
@@ -97,12 +97,12 @@ private struct ScoreboardScoreboardView: View {
                         .bold(score.isAwayWin())
                 }
                 .frame(width: 17)
-                .padding([.bottom], 2)
+                .padding(.bottom, 2)
             }
             Spacer()
         }
-        .padding([.leading, .trailing], 2)
-        .padding([.top], 2)
+        .padding(.horizontal, 2)
+        .padding(.top, 2)
         .background(scoreboardBlueColor)
         .foregroundStyle(.white)
     }

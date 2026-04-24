@@ -53,7 +53,7 @@ private struct HighlightMessageView: View {
                         WebImage(url: url)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                            .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
                             .frame(height: frameHeightEmotes())
                             .opacity(imageOpacity())
                     } else {
@@ -64,7 +64,7 @@ private struct HighlightMessageView: View {
                         } placeholder: {
                             EmptyView()
                         }
-                        .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                        .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
                         .frame(height: frameHeightEmotes())
                         .opacity(imageOpacity())
                     }
@@ -72,7 +72,7 @@ private struct HighlightMessageView: View {
             }
         }
         .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
         .foregroundStyle(.white)
@@ -175,7 +175,7 @@ private struct LineView: View {
                 .foregroundStyle(deleted ? .gray : usernameColor)
                 .strikethrough(deleted)
                 .lineLimit(1)
-                .padding([.trailing], 0)
+                .padding(.trailing, 0)
                 .bold(chat.boldUsername)
             if post.isRedemption() {
                 Text(" ")
@@ -195,7 +195,7 @@ private struct LineView: View {
                         WebImage(url: url)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                            .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
                             .frame(height: frameHeightEmotes())
                             .opacity(imageOpacity())
                     } else {
@@ -206,7 +206,7 @@ private struct LineView: View {
                         } placeholder: {
                             EmptyView()
                         }
-                        .padding([.top, .bottom], chat.shadowColorEnabled ? 1.5 : 0)
+                        .padding(.vertical, chat.shadowColorEnabled ? 1.5 : 0)
                         .frame(height: frameHeightEmotes())
                         .opacity(imageOpacity())
                     }
@@ -215,7 +215,7 @@ private struct LineView: View {
             }
         }
         .stroke(color: shadowColor(), width: chat.shadowColorEnabled ? borderWidth : 0)
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .font(.system(size: CGFloat(chat.fontSize)))
         .background(backgroundColor())
         .foregroundStyle(.white)
@@ -255,7 +255,7 @@ private struct PostView: View {
                              post: post,
                              chat: chatSettings,
                              platform: moreThanOneStreamingPlatform)
-                        .padding([.leading], 3)
+                        .padding(.leading, 3)
                 }
             }
         } else {

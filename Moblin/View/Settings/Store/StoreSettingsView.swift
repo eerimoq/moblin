@@ -60,11 +60,12 @@ private struct StoreSettingsIconsToBuyView: View {
                             } label: {
                                 Text(icon.price)
                             }
-                            .padding([.leading], 10)
+                            .padding(.leading, 10)
                             .disabled(disabledPurchaseButtons.contains(icon.id))
                             .opacity(disabledPurchaseButtons.contains(icon.id) ? 0.0 : 1.0)
                             if disabledPurchaseButtons.contains(icon.id) {
-                                ProgressView().padding([.leading], 10)
+                                ProgressView()
+                                    .padding(.leading, 10)
                             }
                         }
                     }

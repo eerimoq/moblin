@@ -51,13 +51,13 @@ private struct HighlightMessageView: View {
                     } placeholder: {
                         EmptyView()
                     }
-                    .padding([.top, .bottom], settings.shadowColorEnabled ? 1.5 : 0)
+                    .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
                     .frame(height: frameHeightEmotes())
                 }
             }
         }
         .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .font(.system(size: CGFloat(settings.fontSize)))
         .background(backgroundColor())
         .foregroundStyle(.white)
@@ -143,7 +143,7 @@ private struct LineView: View {
             Text(post.displayName(nicknames: settings.nicknames, displayStyle: settings.displayStyle))
                 .foregroundStyle(usernameColor)
                 .lineLimit(1)
-                .padding([.trailing], 0)
+                .padding(.trailing, 0)
                 .bold(settings.boldUsername)
             if post.isRedemption() {
                 Text(" ")
@@ -165,14 +165,14 @@ private struct LineView: View {
                     } placeholder: {
                         EmptyView()
                     }
-                    .padding([.top, .bottom], settings.shadowColorEnabled ? 1.5 : 0)
+                    .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
                     .frame(height: frameHeightEmotes())
                     Text(" ")
                 }
             }
         }
         .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .font(.system(size: CGFloat(settings.fontSize)))
         .background(backgroundColor())
         .foregroundStyle(.white)
@@ -200,7 +200,7 @@ private struct PostView: View {
                 }
             } else {
                 LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
-                    .padding([.leading], 3)
+                    .padding(.leading, 3)
             }
         }
     }

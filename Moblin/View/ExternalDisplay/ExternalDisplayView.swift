@@ -22,7 +22,7 @@ private struct HighlightMessageView: View {
             Text(highlight.titleNoEmotes())
         }
         .foregroundStyle(highlight.messageColor())
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
     }
 }
@@ -78,7 +78,7 @@ private struct LineView: View {
                 .foregroundStyle(deleted ? .gray : usernameColor)
                 .strikethrough(deleted)
                 .lineLimit(1)
-                .padding([.trailing], 0)
+                .padding(.trailing, 0)
                 .bold()
             if post.isRedemption() {
                 Text(" ")
@@ -114,7 +114,7 @@ private struct LineView: View {
                 }
             }
         }
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .font(.system(size: fontSizeScaleFactor * CGFloat(chat.fontSize)))
     }
 }
@@ -151,7 +151,7 @@ private struct PostView: View {
                              post: post,
                              chat: chatSettings,
                              platform: moreThanOneStreamingPlatform)
-                        .padding([.leading], 3)
+                        .padding(.leading, 3)
                         .rotationEffect(Angle(degrees: rotation))
                         .scaleEffect(x: scaleX, y: 1.0, anchor: .center)
                 }

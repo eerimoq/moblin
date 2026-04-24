@@ -69,7 +69,7 @@ private struct AudioBarView: View {
                     }
                 }
             }
-            .padding([.vertical], 2)
+            .padding(.vertical, 2)
         }
     }
 }
@@ -106,14 +106,14 @@ struct AudioLevelView: View {
                 ChannelsView(audio: model.audio)
                 SampleRateView(audio: model.audio)
             }
-            .padding([.leading, .trailing], 2)
+            .padding(.horizontal, 2)
             .background(backgroundColor)
             .cornerRadius(5)
             .font(smallFont)
             Image(systemName: "waveform")
                 .frame(width: 17, height: 17)
                 .font(smallFont)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(.white)
                 .background(backgroundColor)
                 .cornerRadius(5)
