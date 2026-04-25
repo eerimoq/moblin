@@ -471,7 +471,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var soopChat: SoopChat?
     var soopPlatformStatus: SoopPlatformStatus?
     private var openStreamingPlatformChat: OpenStreamingPlatformChat!
-    var dliveChat: DLiveChat?
     var youTubeFetchVideoIdStartTime: ContinuousClock.Instant?
     var youTubePlatformStatus: PlatformStatus = .unknown
     var youTubeStreamUpdateTimePollDelta: ContinuousClock.Duration = .seconds(15)
