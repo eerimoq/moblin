@@ -28,6 +28,8 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
                     .disableAutocorrection(true)
                     .onChange(of: createStreamWizard.customSrtUrl) { _ in
                         updateUrlError()
+                        createStreamWizard
+                            .customSrtStreamId = extractSrtStreamId(url: createStreamWizard.customSrtUrl) ?? ""
                     }
             } header: {
                 Text("URL")

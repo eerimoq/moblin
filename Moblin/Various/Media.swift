@@ -601,10 +601,6 @@ final class Media: NSObject {
         return urlComponents.url
     }
 
-    private func makeStreamId(url: String) -> String? {
-        return URL(string: url)?.dictionaryFromQuery()["streamid"]
-    }
-
     func rtmpStartStream(url: String,
                          targetBitrate: UInt32,
                          adaptiveBitrate adaptiveBitrateEnabled: Bool)
@@ -1180,7 +1176,7 @@ extension Media: SrtlaDelegate {
                     }
                 }
             } else {
-                self.srtStreamNew?.open(streamId: self.makeStreamId(url: self.srtUrl),
+                self.srtStreamNew?.open(streamId: extractSrtStreamId(url: self.srtUrl),
                                         latency: UInt16(self.latency),
                                         experimental: self.experimental)
             }

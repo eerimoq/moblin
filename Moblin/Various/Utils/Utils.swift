@@ -405,3 +405,7 @@ private let filenameDateFormatter: DateFormatter = {
 func formatFilenameDateAndTime(date: Date? = nil) -> String {
     return filenameDateFormatter.string(from: date ?? Date()).replacing(/\s+/, with: "_")
 }
+
+func extractSrtStreamId(url: String) -> String? {
+    return URL(string: url)?.dictionaryFromQuery()["streamid"]
+}
