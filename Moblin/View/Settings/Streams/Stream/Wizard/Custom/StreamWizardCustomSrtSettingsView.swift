@@ -8,9 +8,9 @@ struct StreamWizardCustomSrtSettingsView: View {
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.customSrtUrl.isEmpty || createStreamWizard.customSrtStreamId
-            .isEmpty || !urlError
-            .isEmpty
+        return createStreamWizard.customSrtUrl.isEmpty
+            || createStreamWizard.customSrtStreamId.isEmpty
+            || !urlError.isEmpty
     }
 
     private func updateUrlError() {
