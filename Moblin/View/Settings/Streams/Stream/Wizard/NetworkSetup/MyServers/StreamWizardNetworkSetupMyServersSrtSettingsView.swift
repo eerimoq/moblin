@@ -45,6 +45,8 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
                 .disableAutocorrection(true)
             } header: {
                 Text("Stream id")
+            } footer: {
+                Text(srtStreamIdHelp)
             }
             Section {
                 NavigationLink {

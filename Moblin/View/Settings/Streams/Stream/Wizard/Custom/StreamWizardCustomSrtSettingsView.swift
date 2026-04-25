@@ -1,5 +1,7 @@
 import SwiftUI
 
+let srtStreamIdHelp = String(localized: "Replaces or adds the stream id to the URL.")
+
 struct StreamWizardCustomSrtSettingsView: View {
     let model: Model
     @ObservedObject var createStreamWizard: CreateStreamWizard
@@ -45,6 +47,8 @@ struct StreamWizardCustomSrtSettingsView: View {
                 .disableAutocorrection(true)
             } header: {
                 Text("Stream id")
+            } footer: {
+                Text(srtStreamIdHelp)
             }
             Section {
                 NavigationLink {
