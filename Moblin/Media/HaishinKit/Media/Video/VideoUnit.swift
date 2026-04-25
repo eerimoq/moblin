@@ -2149,6 +2149,9 @@ extension VideoUnit: MacScreenCaptureDelegate {
     }
 
     func macScreenCaptureDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        guard sampleBuffer.imageBuffer != nil else {
+            return
+        }
         appendBufferedVideoSampleBufferInternal(cameraId: screenCaptureCameraId, sampleBuffer)
     }
 }
