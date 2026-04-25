@@ -430,7 +430,8 @@ enum SrtSocketOption: String {
         }
     }
 
-    static func configure(_ socket: SRTSOCKET, binding: Binding,
+    static func configure(_ socket: SRTSOCKET,
+                          binding: Binding,
                           options: [SrtSocketOption: String]) -> [String]
     {
         var failures: [String] = []
