@@ -34,6 +34,15 @@ struct WidgetChatSettingsView: View {
                 Text(String(Int(chat.fontSize)))
                     .frame(width: 25)
             }
+            HStack {
+                Text("Height")
+                Slider(value: $chat.height, in: 0.1 ... 1, step: 0.01)
+                    .onChange(of: chat.height) { _ in
+                        setEffectSettings()
+                    }
+                Text(String("\(Int(100 * chat.height))%"))
+                    .frame(width: sliderValuePercentageWidth)
+            }
             if database.showAllSettings {
                 Picker("Display style", selection: $chat.displayStyle) {
                     ForEach(SettingsChatDisplayStyle.allCases, id: \.self) { displayStyle in

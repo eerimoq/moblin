@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let sliderValuePercentageWidth = 60.0
+let sliderValuePercentageWidth = 60.0
 
 struct ChatSettingsLayoutView: View {
     let model: Model
