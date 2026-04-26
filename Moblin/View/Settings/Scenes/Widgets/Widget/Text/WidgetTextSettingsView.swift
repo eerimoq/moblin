@@ -999,7 +999,7 @@ struct TextWidgetTextView: View {
 
     var body: some View {
         Section {
-            MultiLineTextFieldView(value: $value)
+            MultiLineTextFieldView(value: $value, placeholder: String(localized: "My text"))
                 .keyboardType(.default)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()

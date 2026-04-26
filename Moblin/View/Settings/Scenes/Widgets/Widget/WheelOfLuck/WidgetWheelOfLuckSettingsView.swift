@@ -94,7 +94,7 @@ struct WheelOfLuckWidgetOptionsView: View {
 
     var body: some View {
         Section {
-            MultiLineTextFieldView(value: $value)
+            MultiLineTextFieldView(value: $value, placeholder: String(localized: "My text"))
                 .focused($editingText)
         } header: {
             Text("Options")

@@ -64,6 +64,7 @@ struct WidgetBrowserSettingsView: View {
                                    onSubmit: submitUrl)
             MultiLineTextFieldNavigationView(
                 title: String(localized: "Style sheet"),
+                placeholder: "body {}",
                 value: browser.styleSheet,
                 onSubmit: submitStyleSheet,
                 footers: [

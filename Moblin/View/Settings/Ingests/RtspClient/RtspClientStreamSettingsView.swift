@@ -1,13 +1,16 @@
 import Network
 import SwiftUI
 
-private struct UrlSettingsView: View {
+struct UrlSettingsView: View {
     let model: Model
-    @Environment(\.dismiss) var dismiss
-    @ObservedObject var stream: SettingsRtspClientStream
+    let disabled: Bool
     @Binding var url: String
     @State var value: String
+    let placeholder: String
     let allowedSchemes: [String]?
+    let examples: [(LocalizedStringKey, String)]
+    let onSubmitted: () -> Void
+    @Environment(\.dismiss) var dismiss
     @State private var changed: Bool = false
     @State private var submitted: Bool = false
     @State private var error: String?
@@ -24,14 +27,14 @@ private struct UrlSettingsView: View {
         }
         submitted = true
         url = value
-        model.reloadRtspClient()
+        onSubmitted()
         dismiss()
     }
 
     var body: some View {
         Form {
             Section {
-                MultiLineTextFieldView(value: $value)
+                MultiLineTextFieldView(value: $value, placeholder: placeholder)
                     .textInputAutocapitalization(.never)
                     .onSubmit {
                         submitUrl()
@@ -46,6 +49,7 @@ private struct UrlSettingsView: View {
                         }
                     }
                     .disableAutocorrection(true)
+                    .disabled(disabled)
             } footer: {
                 if let error {
                     FormFieldError(error: error)
@@ -58,8 +62,10 @@ private struct UrlSettingsView: View {
                 .sheet(isPresented: $presentingHelp) {
                     NavigationView {
                         Form {
-                            Section("TP-Link") {
-                                UrlCopyView("rtsp://username:password@192.168.1.83/stream1")
+                            ForEach(examples, id: \.1) { title, url in
+                                Section(title) {
+                                    UrlCopyView(url)
+                                }
                             }
                         }
                         .navigationTitle("Examples")
@@ -93,10 +99,15 @@ struct RtspClientStreamSettingsView: View {
                 Section {
                     NavigationLink {
                         UrlSettingsView(model: model,
-                                        stream: stream,
+                                        disabled: false,
                                         url: $stream.url,
                                         value: stream.url,
-                                        allowedSchemes: ["rtsp"])
+                                        placeholder: "rtsp://192.168.1.83/stream1",
+                                        allowedSchemes: ["rtsp"],
+                                        examples: [
+                                            ("TP-Link", "rtsp://username:password@192.168.1.83/stream1"),
+                                        ],
+                                        onSubmitted: model.reloadRtspClient)
                     } label: {
                         TextItemLocalizedView(name: "URL", value: stream.url, sensitive: true)
                     }

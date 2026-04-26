@@ -13,17 +13,18 @@ struct WhepClientStreamSettingsView: View {
                         .disabled(stream.enabled)
                 }
                 Section {
-                    TextEditNavigationView(title: String(localized: "URL"),
-                                           value: stream.url,
-                                           onSubmit: {
-                                               stream.url = $0
-                                               model.reloadWhepClient()
-                                           },
-                                           footers: [
-                                               "https://example.com/whep/stream",
-                                           ],
-                                           placeholder: "https://example.com/whep/stream")
-                        .disabled(stream.enabled)
+                    NavigationLink {
+                        UrlSettingsView(model: model,
+                                        disabled: stream.enabled,
+                                        url: $stream.url,
+                                        value: stream.url,
+                                        placeholder: "http://foo.com/whep",
+                                        allowedSchemes: ["http", "https"],
+                                        examples: [],
+                                        onSubmitted: model.reloadWhepClient)
+                    } label: {
+                        TextItemLocalizedView(name: "URL", value: stream.url, sensitive: true)
+                    }
                 }
                 Section {
                     TextEditNavigationView(

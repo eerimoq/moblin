@@ -2,11 +2,12 @@ import SwiftUI
 
 struct MultiLineTextFieldView: View {
     @Binding var value: String
-    @FocusState var focusedField: Bool?
+    let placeholder: String
+    @FocusState private var focusedField: Bool?
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            TextField("My text", text: $value, axis: .vertical)
+            TextField(placeholder, text: $value, axis: .vertical)
                 .padding(.trailing, 30)
                 .focused($focusedField, equals: true)
             if !value.isEmpty {
@@ -27,9 +28,10 @@ struct MultiLineTextFieldView: View {
 }
 
 struct MultiLineTextFieldNavigationView: View {
-    var title: String
+    let title: String
+    let placeholder: String
     @State var value: String
-    var onSubmit: (String) -> Void
+    let onSubmit: (String) -> Void
     var footers: [String] = []
     var color: Color = .gray
 
@@ -37,6 +39,7 @@ struct MultiLineTextFieldNavigationView: View {
         NavigationLink {
             MultiLineTextFieldBindingView(
                 title: title,
+                placeholder: placeholder,
                 value: $value,
                 footers: footers,
                 onSubmit: onSubmit
@@ -49,16 +52,17 @@ struct MultiLineTextFieldNavigationView: View {
 
 private struct MultiLineTextFieldBindingView: View {
     @Environment(\.dismiss) var dismiss
-    var title: String
+    let title: String
+    let placeholder: String
     @Binding var value: String
     var footers: [String] = []
-    var onSubmit: (String) -> Void
+    let onSubmit: (String) -> Void
     @State private var changed = false
 
     var body: some View {
         Form {
             Section {
-                MultiLineTextFieldView(value: $value)
+                MultiLineTextFieldView(value: $value, placeholder: placeholder)
                     .disableAutocorrection(true)
                     .onChange(of: value) { _ in
                         changed = true
