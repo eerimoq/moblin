@@ -808,6 +808,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
     @Published var inStinger: SettingsStreamReplayStinger = .init()
     @Published var outStinger: SettingsStreamReplayStinger = .init()
     @Published var postTriggerDelay: Int = 3
+    @Published var layout: SettingsWidgetLayout = .init()
     var enterForegroundCountAtLatestUsage: Int?
 
     init() {}
@@ -819,6 +820,11 @@ class SettingsStreamReplay: Codable, ObservableObject {
              inStinger,
              outStinger,
              postTriggerDelay,
+             layoutX,
+             layoutY,
+             layoutSize,
+             layoutAlignment,
+             layoutPositioningLock,
              enterForegroundCountAtLatestUsage
     }
 
@@ -829,6 +835,11 @@ class SettingsStreamReplay: Codable, ObservableObject {
         try container.encode(.inStinger, inStinger)
         try container.encode(.outStinger, outStinger)
         try container.encode(.postTriggerDelay, postTriggerDelay)
+        try container.encode(.layoutX, layout.x)
+        try container.encode(.layoutY, layout.y)
+        try container.encode(.layoutSize, layout.size)
+        try container.encode(.layoutAlignment, layout.alignment)
+        try container.encode(.layoutPositioningLock, layout.positioningLock)
         try container.encode(.enterForegroundCountAtLatestUsage, enterForegroundCountAtLatestUsage)
     }
 
@@ -847,6 +858,14 @@ class SettingsStreamReplay: Codable, ObservableObject {
         inStinger = container.decode(.inStinger, SettingsStreamReplayStinger.self, .init())
         outStinger = container.decode(.outStinger, SettingsStreamReplayStinger.self, .init())
         postTriggerDelay = container.decode(.postTriggerDelay, Int.self, 3)
+        layout.x = container.decode(.layoutX, Double.self, 0.0)
+        layout.updateXString()
+        layout.y = container.decode(.layoutY, Double.self, 0.0)
+        layout.updateYString()
+        layout.size = container.decode(.layoutSize, Double.self, 100.0)
+        layout.updateSizeString()
+        layout.alignment = container.decode(.layoutAlignment, SettingsAlignment.self, .topLeft)
+        layout.positioningLock = container.decode(.layoutPositioningLock, Bool.self, false)
         enterForegroundCountAtLatestUsage = container.decode(.enterForegroundCountAtLatestUsage,
                                                              Int?.self,
                                                              nil)
@@ -859,6 +878,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         new.inStinger = inStinger
         new.outStinger = outStinger
         new.postTriggerDelay = postTriggerDelay
+        new.layout = layout
         new.enterForegroundCountAtLatestUsage = enterForegroundCountAtLatestUsage
         return new
     }

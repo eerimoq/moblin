@@ -39,6 +39,7 @@ final class ReplayEffect: VideoEffect {
     private var cancelledOffset: Double?
     private let transitionMode: ReplayEffectTransitionMode
     private let duration: Double
+    private let layout: SettingsWidgetLayout
     private var latestTimeLeft = Int.max
     private var stingersState: StingersState = .setup
     private var stingersInReader: ReplayEffectStingerReader?
@@ -55,10 +56,12 @@ final class ReplayEffect: VideoEffect {
         stop: Double,
         speed: Double,
         size: CMVideoDimensions,
+        layout: SettingsWidgetLayout,
         transitionMode: ReplayEffectTransitionMode,
         delegate: ReplayEffectDelegate
     ) {
         self.speed = speed
+        self.layout = layout
         self.transitionMode = transitionMode
         self.delegate = delegate
         duration = stop - start
@@ -264,10 +267,12 @@ extension ReplayEffect {
     }
 
     private func scaleReplay(_ replayImage: CIImage?, _ image: CIImage) -> CIImage? {
-        if replayImage?.extent != image.extent {
-            return replayImage?.scaledTo(size: image.extent.size)
-        } else {
-            return replayImage
+        guard let replayImage else {
+            return nil
         }
+        return replayImage
+            .resizeMirror(layout, image.extent.size, false)
+            .move(layout, image.extent.size)
+            .composited(over: image)
     }
 }

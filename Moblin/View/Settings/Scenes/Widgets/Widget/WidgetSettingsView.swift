@@ -1,7 +1,7 @@
 import CoreMedia
 import SwiftUI
 
-private struct AlignmentOptionView: View {
+struct AlignmentOptionView: View {
     @Binding var layout: SettingsWidgetLayout
     let alignment: SettingsAlignment
 
