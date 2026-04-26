@@ -63,13 +63,6 @@ func isValidWhipUrl(url: String) -> String? {
     return nil
 }
 
-private func isValidIrlUrl(url: String) -> String? {
-    guard URL(string: url) != nil else {
-        return String(localized: "Malformed IRL URL")
-    }
-    return nil
-}
-
 private func isValidRtspUrl(url: String) -> String? {
     guard URL(string: url) != nil else {
         return String(localized: "Malformed RTSP URL")
@@ -129,8 +122,12 @@ func isValidUrl(url value: String,
         if let message = isValidWhipUrl(url: value) {
             return message
         }
-    case "irl":
-        if let message = isValidIrlUrl(url: value) {
+    case "http":
+        if let message = isValidHttpUrl(url: value) {
+            return message
+        }
+    case "https":
+        if let message = isValidHttpUrl(url: value) {
             return message
         }
     case "rtsp":
