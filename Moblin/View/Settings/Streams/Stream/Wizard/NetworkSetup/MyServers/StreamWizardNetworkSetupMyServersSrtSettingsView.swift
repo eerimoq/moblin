@@ -11,46 +11,10 @@ struct StreamWizardNetworkSetupMyServersSrtSettingsView: View {
             || !urlError.isEmpty
     }
 
-    private func updateUrlError() {
-        let url = cleanUrl(url: createStreamWizard.customSrtUrl)
-        if url.isEmpty {
-            urlError = ""
-        } else {
-            urlError = isValidUrl(url: url, allowedSchemes: ["srt", "srtla"]) ?? ""
-        }
-    }
-
     var body: some View {
         Form {
-            Section {
-                TextField(
-                    String("srt://107.32.12.132:5000?streamid=1234"),
-                    text: $createStreamWizard.customSrtUrl
-                )
-                .textInputAutocapitalization(.never)
-                .disableAutocorrection(true)
-                .onChange(of: createStreamWizard.customSrtUrl) { _ in
-                    updateUrlError()
-                    createStreamWizard
-                        .customSrtStreamId = extractSrtStreamId(url: createStreamWizard.customSrtUrl) ?? ""
-                }
-            } header: {
-                Text("URL")
-            } footer: {
-                FormFieldError(error: urlError)
-            }
-            Section {
-                TextField(
-                    String("#!::r=stream/-NDZ1WPA4zjMBTJTyNwU,m=publish,..."),
-                    text: $createStreamWizard.customSrtStreamId
-                )
-                .textInputAutocapitalization(.never)
-                .disableAutocorrection(true)
-            } header: {
-                Text("Stream id")
-            } footer: {
-                Text(srtStreamIdHelp)
-            }
+            StreamWizardSrtUrlSettingsView(createStreamWizard: createStreamWizard,
+                                           urlError: $urlError)
             Section {
                 NavigationLink {
                     StreamWizardObsRemoteControlSettingsView(
