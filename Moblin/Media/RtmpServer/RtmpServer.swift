@@ -6,11 +6,6 @@ import Network
 let rtmpServerDispatchQueue = DispatchQueue(label: "com.eerimoq.rtmp-server")
 let rtmpServerApp = "/live"
 
-struct RtmpServerStats {
-    var total: UInt64
-    var speed: UInt64
-}
-
 protocol RtmpServerDelegate: AnyObject {
     func rtmpServerOnPublishStart(streamKey: String)
     func rtmpServerOnPublishStop(streamKey: String, reason: String)

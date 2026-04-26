@@ -116,7 +116,6 @@ struct Detections {
 }
 
 private class DetectionsCompletion {
-    // periphery:ignore
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
@@ -385,12 +384,6 @@ final class VideoUnit: NSObject {
     func setVideoPreview(cameraId: UUID, drawable: PreviewView) {
         processorPipelineQueue.async {
             self.videoPreviews[cameraId] = drawable
-        }
-    }
-
-    func removeVideoPreview(cameraId: UUID) {
-        processorPipelineQueue.async {
-            self.videoPreviews.removeValue(forKey: cameraId)
         }
     }
 

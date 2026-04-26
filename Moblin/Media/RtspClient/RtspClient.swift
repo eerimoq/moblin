@@ -996,8 +996,4 @@ extension RtspClient: RtspTransportDelegate {
         bitrateStats.add(bytesTransferred: packet.count)
         handleRtcpVideoPacket(packet: packet)
     }
-
-    func rtspTransportBytesReceived(count: Int) {
-        bitrateStats.add(bytesTransferred: count)
-    }
 }

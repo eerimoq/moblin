@@ -202,10 +202,6 @@ final class Processor {
         video.setVideoPreview(cameraId: cameraId, drawable: drawable)
     }
 
-    func removeVideoPreview(cameraId: UUID) {
-        video.removeVideoPreview(cameraId: cameraId)
-    }
-
     func removeAllVideoPreviews() {
         video.removeAllVideoPreviews()
     }

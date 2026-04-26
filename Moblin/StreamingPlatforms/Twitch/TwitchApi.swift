@@ -131,7 +131,6 @@ struct TwitchApiGetCheermotesDataTier: Decodable {
 }
 
 struct TwitchApiGetCheermotesData: Decodable {
-    // periphery: ignore
     let prefix: String
     let tiers: [TwitchApiGetCheermotesDataTier]
 }
@@ -141,13 +140,11 @@ struct TwitchApiGetCheermotes: Decodable {
 }
 
 struct TwitchApiChatBadgesVersion: Decodable {
-    // periphery: ignore
     let id: String
     let image_url_2x: String
 }
 
 struct TwitchApiChatBadgesData: Decodable {
-    // periphery: ignore
     let set_id: String
     let versions: [TwitchApiChatBadgesVersion]
 }

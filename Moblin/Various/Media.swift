@@ -714,10 +714,6 @@ final class Media: NSObject {
         processor?.setVideoPreview(cameraId: cameraId, drawable: drawable)
     }
 
-    func removeVideoPreview(cameraId: UUID) {
-        processor?.removeVideoPreview(cameraId: cameraId)
-    }
-
     func removeAllVideoPreviews() {
         processor?.removeAllVideoPreviews()
     }
