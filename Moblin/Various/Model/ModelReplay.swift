@@ -161,6 +161,7 @@ extension Model {
             stop: replaySettings.stopFromVideoStart(),
             speed: database.replay.speed.toNumber(),
             size: stream.dimensions(),
+            layout: replay.layout,
             transitionMode: transitionMode,
             delegate: self
         )

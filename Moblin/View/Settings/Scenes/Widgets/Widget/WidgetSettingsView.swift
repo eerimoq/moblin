@@ -1,7 +1,7 @@
 import CoreMedia
 import SwiftUI
 
-private struct AlignmentOptionView: View {
+struct AlignmentOptionView: View {
     @Binding var layout: SettingsWidgetLayout
     let alignment: SettingsAlignment
 
@@ -16,10 +16,9 @@ private struct AlignmentOptionView: View {
     }
 }
 
-private struct SaveLoadLayoutView: View {
+struct SaveLoadLayoutView: View {
     @EnvironmentObject private var model: Model
     @Binding var layout: SettingsWidgetLayout
-    @ObservedObject var widget: SettingsWidget
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -92,7 +91,7 @@ struct WidgetLayoutView: View {
     private func generalAndAlignmentPicker() -> some View {
         HStack {
             HStack {
-                SaveLoadLayoutView(layout: $layout, widget: widget)
+                SaveLoadLayoutView(layout: $layout)
                 Spacer()
             }
             if widget.hasAlignment() {

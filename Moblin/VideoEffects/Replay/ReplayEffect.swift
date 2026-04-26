@@ -39,6 +39,7 @@ final class ReplayEffect: VideoEffect {
     private var cancelledOffset: Double?
     private let transitionMode: ReplayEffectTransitionMode
     private let duration: Double
+    private let layout: SettingsWidgetLayout
     private var latestTimeLeft = Int.max
     private var stingersState: StingersState = .setup
     private var stingersInReader: ReplayEffectStingerReader?
@@ -55,10 +56,12 @@ final class ReplayEffect: VideoEffect {
         stop: Double,
         speed: Double,
         size: CMVideoDimensions,
+        layout: SettingsWidgetLayout,
         transitionMode: ReplayEffectTransitionMode,
         delegate: ReplayEffectDelegate
     ) {
         self.speed = speed
+        self.layout = layout
         self.transitionMode = transitionMode
         self.delegate = delegate
         duration = stop - start
@@ -132,7 +135,7 @@ extension ReplayEffect {
 
     private func executeBeginAndMiddleNoneAndFade(_ image: CIImage, _ offset: Double) -> CIImage? {
         let replayImage = reader.getImage(offset: offset * speed)
-        let replayImageImage = scaleReplay(replayImage.image, image)
+        let replayImageImage = applyLayoutToReplay(replayImage.image, image)
         latestImage = replayImageImage ?? latestImage
         if replayImage.isLast {
             lastImageOffset = offset
@@ -246,7 +249,7 @@ extension ReplayEffect {
     private func getReplayImage(_ presentationTimeStamp: Double, _ image: CIImage) -> CIImage? {
         let offset = presentationTimeStamp - stingersInTransitionPointPresentationTimeStamp
         updateStatus(offset: offset)
-        return scaleReplay(reader.getImage(offset: offset * speed).image, image)
+        return applyLayoutToReplay(reader.getImage(offset: offset * speed).image, image)
     }
 
     private func updateCancelled(_ presentationTimeStamp: Double) {
@@ -263,11 +266,14 @@ extension ReplayEffect {
         delegate?.replayEffectError(message: String(localized: "Bad replay stinger video"))
     }
 
-    private func scaleReplay(_ replayImage: CIImage?, _ image: CIImage) -> CIImage? {
-        if replayImage?.extent != image.extent {
-            return replayImage?.scaledTo(size: image.extent.size)
-        } else {
-            return replayImage
+    private func applyLayoutToReplay(_ replayImage: CIImage?, _ image: CIImage) -> CIImage? {
+        guard let replayImage else {
+            return nil
         }
+        return replayImage
+            .resizeMirror(layout, image.extent.size, false)
+            .move(layout, image.extent.size)
+            .cropped(to: image.extent)
+            .composited(over: image)
     }
 }
