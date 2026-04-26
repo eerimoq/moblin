@@ -135,7 +135,7 @@ extension ReplayEffect {
 
     private func executeBeginAndMiddleNoneAndFade(_ image: CIImage, _ offset: Double) -> CIImage? {
         let replayImage = reader.getImage(offset: offset * speed)
-        let replayImageImage = scaleReplay(replayImage.image, image)
+        let replayImageImage = applyLayoutToReplay(replayImage.image, image)
         latestImage = replayImageImage ?? latestImage
         if replayImage.isLast {
             lastImageOffset = offset
@@ -249,7 +249,7 @@ extension ReplayEffect {
     private func getReplayImage(_ presentationTimeStamp: Double, _ image: CIImage) -> CIImage? {
         let offset = presentationTimeStamp - stingersInTransitionPointPresentationTimeStamp
         updateStatus(offset: offset)
-        return scaleReplay(reader.getImage(offset: offset * speed).image, image)
+        return applyLayoutToReplay(reader.getImage(offset: offset * speed).image, image)
     }
 
     private func updateCancelled(_ presentationTimeStamp: Double) {
@@ -266,7 +266,7 @@ extension ReplayEffect {
         delegate?.replayEffectError(message: String(localized: "Bad replay stinger video"))
     }
 
-    private func scaleReplay(_ replayImage: CIImage?, _ image: CIImage) -> CIImage? {
+    private func applyLayoutToReplay(_ replayImage: CIImage?, _ image: CIImage) -> CIImage? {
         guard let replayImage else {
             return nil
         }
