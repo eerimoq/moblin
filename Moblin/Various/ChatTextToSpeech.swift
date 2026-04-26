@@ -205,7 +205,7 @@ class ChatTextToSpeech: NSObject {
     func reset(running: Bool) {
         textToSpeechDispatchQueue.async {
             self.running = running
-            self.synthesizer.stopSpeaking(at: .word)
+            self.synthesizer.stopSpeaking(at: .immediate)
             self.audioPlayer?.stop()
             self.isSpeaking = false
             self.currentlyPlayingMessage = nil
@@ -237,7 +237,7 @@ class ChatTextToSpeech: NSObject {
     }
 
     private func skipCurrentMessageInternal() {
-        synthesizer.stopSpeaking(at: .word)
+        synthesizer.stopSpeaking(at: .immediate)
         synthesizer = createSpeechSynthesizer()
         synthesizer.delegate = self
         audioPlayer?.stop()
