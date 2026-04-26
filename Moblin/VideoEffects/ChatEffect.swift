@@ -237,6 +237,7 @@ final class ChatEffect: VideoEffect {
     private var chatImage: CIImage?
     private var renderer: ImageRenderer<ChatView>?
     private var settings = SettingsWidgetChat()
+    private var maximumHeight: Float = 100
     private let chat: ChatProvider
     private var cancellable: AnyCancellable?
     private var started: Bool = false
@@ -273,6 +274,10 @@ final class ChatEffect: VideoEffect {
 
     func setSettings(settings: SettingsWidgetChat) {
         self.settings.update(other: settings)
+        let maximumHeight = settings.maximumHeight
+        processorPipelineQueue.async {
+            self.maximumHeight = maximumHeight
+        }
     }
 
     @MainActor
@@ -299,9 +304,21 @@ final class ChatEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        return chatImage?
+        guard var chatImage else {
+            return image
+        }
+        let maxHeight = Double(image.extent.height) * Double(maximumHeight) / 100.0
+        if chatImage.extent.height > maxHeight {
+            chatImage = chatImage.cropped(to: CGRect(
+                x: chatImage.extent.minX,
+                y: chatImage.extent.minY,
+                width: chatImage.extent.width,
+                height: maxHeight
+            ))
+        }
+        return chatImage
             .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
-            .composited(over: image) ?? image
+            .composited(over: image)
     }
 }

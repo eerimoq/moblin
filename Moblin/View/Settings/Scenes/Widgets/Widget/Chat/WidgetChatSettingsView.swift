@@ -34,6 +34,28 @@ struct WidgetChatSettingsView: View {
                 Text(String(Int(chat.fontSize)))
                     .frame(width: 25)
             }
+            HStack {
+                Text("Maximum height")
+                Slider(
+                    value: $chat.maximumHeight,
+                    in: 10 ... 100,
+                    step: 1,
+                    label: {
+                        EmptyView()
+                    },
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        setEffectSettings()
+                    }
+                )
+                .onChange(of: chat.maximumHeight) { _ in
+                    setEffectSettings()
+                }
+                Text("\(Int(chat.maximumHeight))%")
+                    .frame(width: 40)
+            }
             if database.showAllSettings {
                 Picker("Display style", selection: $chat.displayStyle) {
                     ForEach(SettingsChatDisplayStyle.allCases, id: \.self) { displayStyle in
