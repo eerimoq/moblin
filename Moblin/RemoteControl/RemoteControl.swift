@@ -860,6 +860,7 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     var showTitle: Bool?
     var showStats: Bool?
     var showMoreStats: Bool?
+    var showClock: Bool?
 
     func minutesAndSeconds() -> (Int, Int) {
         return clockAsMinutesAndSeconds(clock: timer)
@@ -885,8 +886,12 @@ struct RemoteControlScoreboardMatchConfig: Codable {
         return "\(global.periodLabel) \(global.period)".trim()
     }
 
-    func infoBoxStats() -> [String] {
-        return [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+    func infoBoxStats(showClock: Bool) -> [String] {
+        if showClock {
+            return [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+        } else {
+            return [periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+        }
     }
 }
 

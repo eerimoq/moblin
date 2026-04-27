@@ -156,10 +156,12 @@ struct ScoreboardEffectModularView: View {
                                 .font(.system(size: fontSize() * 0.6))
                                 .minimumScaleFactor(0.1)
                         }
-                        Text(config.global.timer)
-                            .font(.system(size: fontSize() * 0.9))
-                            .monospacedDigit()
-                            .minimumScaleFactor(0.1)
+                        if modular.showClock {
+                            Text(config.global.timer)
+                                .font(.system(size: fontSize() * 0.9))
+                                .monospacedDigit()
+                                .minimumScaleFactor(0.1)
+                        }
                     }
                     .frame(width: fontSize() * 3.5, height: teamRowFullHeight)
                 } else {
@@ -376,7 +378,7 @@ struct ScoreboardEffectModularView: View {
     @ViewBuilder
     private func infoBox() -> some View {
         if modular.showGlobalStatsBlock {
-            let stats = config.infoBoxStats()
+            let stats = config.infoBoxStats(showClock: modular.showClock)
             if !stats.isEmpty {
                 let rowHeight = CGFloat(modular.rowHeight)
                 let fullHeight = rowHeight + (modular.showMoreStats ? rowHeight * 0.6 : 0)
