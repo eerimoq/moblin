@@ -203,7 +203,10 @@ struct GimbalSettingsView: View {
                 if #available(iOS 18, *) {
                     TextButtonView("Save current position") {
                         Task { @MainActor in
-                            if let angles = await Gimbal.shared?.getCurrentOrientation() {
+                            do {
+                                guard let angles = try await Gimbal.shared?.getCurrentOrientation() else {
+                                    return
+                                }
                                 let preset = SettingsGimbalPreset()
                                 preset.name = makeUniqueName(name: SettingsGimbalPreset.baseName,
                                                              existingNames: gimbal.presets)
@@ -211,6 +214,11 @@ struct GimbalSettingsView: View {
                                 preset.y = Float(angles.y)
                                 preset.zoomX = model.zoom.x
                                 gimbal.presets.append(preset)
+                            } catch {
+                                model.makeErrorToast(
+                                    title: String(localized: "Failed to get gimbal orientation"),
+                                    subTitle: error.localizedDescription
+                                )
                             }
                         }
                     }

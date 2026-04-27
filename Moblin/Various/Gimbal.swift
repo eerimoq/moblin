@@ -48,11 +48,9 @@ class Gimbal {
         setMovement(velocity: .init(x: 0, y: 0, z: 0))
     }
 
-    func getCurrentOrientation() async -> Vector3D? {
-        guard var iterator = try? accessory?.motionStates.makeAsyncIterator() else {
-            return nil
-        }
-        return await iterator.next()?.angularPositions
+    func getCurrentOrientation() async throws -> Vector3D? {
+        var iterator = try accessory?.motionStates.makeAsyncIterator()
+        return await iterator?.next()?.angularPositions
     }
 
     private func handleStateChange(stateChange: DockAccessory.StateChange) throws {
