@@ -2212,7 +2212,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 }
 
-struct SettingsWidgetLayout {
+struct SettingsWidgetLayout: Equatable {
     var x: Double = 0.0
     var xString: String = "0.0"
     var y: Double = 0.0

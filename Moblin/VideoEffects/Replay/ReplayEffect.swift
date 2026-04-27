@@ -39,7 +39,7 @@ final class ReplayEffect: VideoEffect {
     private var cancelledOffset: Double?
     private let transitionMode: ReplayEffectTransitionMode
     private let duration: Double
-    private let layout: SettingsWidgetLayout
+    private var layout: SettingsWidgetLayout
     private var latestTimeLeft = Int.max
     private var stingersState: StingersState = .setup
     private var stingersInReader: ReplayEffectStingerReader?
@@ -74,6 +74,12 @@ final class ReplayEffect: VideoEffect {
             stingersOutTransitionPoint = outTransitionPoint
         }
         updateStatus(offset: 0)
+    }
+
+    func setLayout(layout: SettingsWidgetLayout) {
+        processorPipelineQueue.async {
+            self.layout = layout
+        }
     }
 
     func cancel() {
