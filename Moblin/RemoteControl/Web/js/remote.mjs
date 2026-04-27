@@ -481,6 +481,8 @@ function updateGlobalToggles() {
   toggleButtonStyle("btn-show-title", state.global.showTitle);
   toggleButtonStyle("btn-info-box", state.global.showStats);
   toggleButtonStyle("btn-more-stats", state.global.showMoreStats);
+  toggleButtonStyle("btn-show-clock", state.global.showClock);
+  document.getElementById("clock-details").open = state.global.showClock;
 }
 
 function setTextColor(teamNumber, value) {
@@ -848,6 +850,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
   addOnClick("btn-more-stats", () => {
     toggleButtonState("showMoreStats");
+  });
+  addOnClick("btn-show-clock", () => {
+    toggleButtonState("showClock");
   });
   addOnClick("btn-info-box", () => {
     toggleButtonState("showStats");

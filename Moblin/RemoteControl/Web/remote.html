@@ -19,22 +19,27 @@
       </div>
 
       <!-- Persistent Controls (Clock & Info) -->
-      <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
-        <button id="toggle-clock" class="btn btn-top bg-indigo-600 text-white border-none">
-          Clock
-        </button>
-        <input
-          type="text"
-          id="clock"
-          placeholder="0:00"
-          class="btn-top font-mono text-lg text-indigo-400 bg-black rounded"
-        />
-        <select id="clock-maximum" class="btn-top bg-black rounded"></select>
-        <select id="clock-direction" class="btn-top bg-black rounded">
-          <option value="up">Up</option>
-          <option value="down">Down</option>
-        </select>
-      </div>
+      <details id="clock-details">
+        <summary>
+          <button id="btn-show-clock" class="btn h-9 text-[10px]">Show/Hide Clock</button>
+        </summary>
+        <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
+          <button id="toggle-clock" class="btn btn-top bg-indigo-600 text-white border-none">
+            Clock
+          </button>
+          <input
+            type="text"
+            id="clock"
+            placeholder="0:00"
+            class="btn-top font-mono text-lg text-indigo-400 bg-black rounded"
+          />
+          <select id="clock-maximum" class="btn-top bg-black rounded"></select>
+          <select id="clock-direction" class="btn-top bg-black rounded">
+            <option value="up">Up</option>
+            <option value="down">Down</option>
+          </select>
+        </div>
+      </details>
 
       <details>
         <summary>HISTORICAL SCORES</summary>

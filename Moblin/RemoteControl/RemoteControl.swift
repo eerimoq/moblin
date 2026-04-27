@@ -860,6 +860,7 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     var showTitle: Bool?
     var showStats: Bool?
     var showMoreStats: Bool?
+    var showClock: Bool?
 
     func minutesAndSeconds() -> (Int, Int) {
         return clockAsMinutesAndSeconds(clock: timer)

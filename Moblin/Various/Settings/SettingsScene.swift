@@ -2966,6 +2966,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     @Published var showTitle: Bool = false
     @Published var showMoreStats: Bool = false
     @Published var showGlobalStatsBlock: Bool = false
+    @Published var showClock: Bool = true
 
     enum CodingKeys: CodingKey {
         case home,
@@ -2981,7 +2982,8 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
              showTitle,
              stacked,
              showMoreStats,
-             showGlobalStatsBlock
+             showGlobalStatsBlock,
+             showClock
     }
 
     init() {}
@@ -3001,6 +3003,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.showTitle, showTitle)
         try container.encode(.showMoreStats, showMoreStats)
         try container.encode(.showGlobalStatsBlock, showGlobalStatsBlock)
+        try container.encode(.showClock, showClock)
     }
 
     required init(from decoder: Decoder) throws {
@@ -3018,6 +3021,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         showTitle = container.decode(.showTitle, Bool.self, false)
         showMoreStats = container.decode(.showMoreStats, Bool.self, false)
         showGlobalStatsBlock = container.decode(.showGlobalStatsBlock, Bool.self, false)
+        showClock = container.decode(.showClock, Bool.self, true)
     }
 
     private static func createHomeTeam() -> SettingsWidgetModularScoreboardTeam {

@@ -110,7 +110,8 @@ private let genericSetsConfig = RemoteControlScoreboardMatchConfig(
         changePossessionOnScore: false,
         showTitle: false,
         showStats: false,
-        showMoreStats: false
+        showMoreStats: false,
+        showClock: true
     ),
     controls: [
         "primaryScore": .init(type: "counter", label: "Pt", periodReset: true),
@@ -455,6 +456,7 @@ extension Model {
             config.global.showTitle = modular.showTitle
             config.global.showStats = modular.showGlobalStatsBlock
             config.global.showMoreStats = modular.showMoreStats
+            config.global.showClock = modular.showClock
             config.global.title = modular.title
             config.global.timer = modular.clock.format()
             switch modular.clock.direction {
@@ -550,6 +552,9 @@ extension Model {
         }
         if let show2nd = config.global.showMoreStats {
             modular.showMoreStats = show2nd
+        }
+        if let showClock = config.global.showClock {
+            modular.showClock = showClock
         }
         modular.home.name = config.team1.name
         modular.away.name = config.team2.name

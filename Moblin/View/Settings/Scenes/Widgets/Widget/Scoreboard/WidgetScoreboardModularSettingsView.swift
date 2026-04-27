@@ -155,6 +155,10 @@ struct WidgetScoreboardModularGeneralSettingsView: View {
                         .onChange(of: modular.showGlobalStatsBlock) { _ in
                             updated()
                         }
+                    Toggle("Show clock", isOn: $modular.showClock)
+                        .onChange(of: modular.showClock) { _ in
+                            updated()
+                        }
                     Toggle("Bold", isOn: $modular.isBold)
                         .onChange(of: modular.isBold) { _ in
                             updated()
