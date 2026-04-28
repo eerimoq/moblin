@@ -54,6 +54,7 @@ class Gimbal {
     }
 
     private func handleStateChange(stateChange: DockAccessory.StateChange) throws {
+        logger.info("gimbal: State changed to \(stateChange.state)")
         switch stateChange.state {
         case .docked:
             if let accessory = stateChange.accessory {
