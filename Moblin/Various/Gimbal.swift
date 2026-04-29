@@ -50,7 +50,13 @@ class Gimbal {
 
     func getCurrentOrientation() async throws -> Vector3D? {
         var iterator = try accessory?.motionStates.makeAsyncIterator()
-        return await iterator?.next()?.angularPositions
+        logger.info("gimbal: Iterator created \(iterator != nil)")
+        guard let item = await iterator?.next() else {
+            logger.info("gimbal: Failed to get item")
+            return nil
+        }
+        logger.info("gimbal: Got angles \(item.angularPositions)")
+        return item.angularPositions
     }
 
     private func handleStateChange(stateChange: DockAccessory.StateChange) throws {
