@@ -111,7 +111,7 @@ class Gimbal {
         model.handleControllerFunction(function: gimbal.functionShutter,
                                        sceneId: gimbal.shutterSceneId,
                                        widgetId: gimbal.shutterWidgetId,
-                                       gimbalPresetId: nil,
+                                       gimbalPresetId: gimbal.shutterGimbalPresetId,
                                        gimbalMotion: gimbal.motion,
                                        pressed: false)
     }
@@ -121,7 +121,7 @@ class Gimbal {
         model.handleControllerFunction(function: gimbal.functionFlip,
                                        sceneId: gimbal.flipSceneId,
                                        widgetId: gimbal.flipWidgetId,
-                                       gimbalPresetId: nil,
+                                       gimbalPresetId: gimbal.flipGimbalPresetId,
                                        gimbalMotion: gimbal.motion,
                                        pressed: false)
     }

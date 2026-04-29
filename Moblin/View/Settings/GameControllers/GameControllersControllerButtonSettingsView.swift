@@ -42,7 +42,7 @@ struct ControllerButtonView: View {
                 }
             }
         case .gimbalPreset:
-            Picker("Orientation", selection: $gimbalPresetId) {
+            Picker("Preset", selection: $gimbalPresetId) {
                 Text("-- None --")
                     .tag(nil as UUID?)
                 ForEach(model.database.gimbal.presets) {
