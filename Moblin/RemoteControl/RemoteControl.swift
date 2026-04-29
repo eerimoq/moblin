@@ -886,8 +886,12 @@ struct RemoteControlScoreboardMatchConfig: Codable {
         return "\(global.periodLabel) \(global.period)".trim()
     }
 
-    func infoBoxStats() -> [String] {
-        return [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+    func infoBoxStats(showClock: Bool = true) -> [String] {
+        if showClock {
+            return [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+        } else {
+            return [periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+        }
     }
 }
 

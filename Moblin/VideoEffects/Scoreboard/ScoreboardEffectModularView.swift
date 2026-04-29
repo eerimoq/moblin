@@ -378,7 +378,7 @@ struct ScoreboardEffectModularView: View {
     @ViewBuilder
     private func infoBox() -> some View {
         if modular.showGlobalStatsBlock {
-            let stats = config.infoBoxStats()
+            let stats = config.infoBoxStats(showClock: modular.showClock)
             if !stats.isEmpty {
                 let rowHeight = CGFloat(modular.rowHeight)
                 let fullHeight = rowHeight + (modular.showMoreStats ? rowHeight * 0.6 : 0)
