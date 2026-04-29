@@ -11,12 +11,12 @@ let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server", qos: .us
 private let periodicTimerTimeout = 3.0
 
 protocol SrtlaServerDelegate: AnyObject {
-    func srtlaServerOnClientStart(streamId: String, latency: Double)
-    func srtlaServerOnClientStop(streamId: String)
-    func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
-    func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
+    func srtlaServerOnClientStart(cameraId: UUID, name: String)
+    func srtlaServerOnClientStop(cameraId: UUID, name: String)
+    func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
+    func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
     func srtlaServerSetTargetLatencies(
-        streamId: String,
+        cameraId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     )
@@ -88,13 +88,13 @@ class SrtlaServer {
         return numberOfClients.value
     }
 
-    func clientConnected(streamId: String) {
+    func clientConnected(cameraId: UUID, name: String) {
         numberOfClients.mutate { $0 += 1 }
-        delegate.srtlaServerOnClientStart(streamId: streamId, latency: srtServerClientLatency)
+        delegate.srtlaServerOnClientStart(cameraId: cameraId, name: name)
     }
 
-    func clientDisconnected(streamId: String) {
-        delegate.srtlaServerOnClientStop(streamId: streamId)
+    func clientDisconnected(cameraId: UUID, name: String) {
+        delegate.srtlaServerOnClientStop(cameraId: cameraId, name: name)
         numberOfClients.mutate { $0 -= 1 }
     }
 

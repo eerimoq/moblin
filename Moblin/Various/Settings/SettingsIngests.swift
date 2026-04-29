@@ -124,6 +124,7 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
 
     func clone() -> SettingsSrtlaServerStream {
         let new = SettingsSrtlaServerStream()
+        new.id = id
         new.name = name
         new.streamId = streamId
         return new
