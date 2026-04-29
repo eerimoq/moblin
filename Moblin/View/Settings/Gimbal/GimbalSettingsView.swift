@@ -204,12 +204,9 @@ struct GimbalSettingsView: View {
                     TextButtonView("Save current position") {
                         Task { @MainActor in
                             do {
-                                logger.info("gimbal: Trying to get current orentation")
                                 guard let angles = try await Gimbal.shared?.getCurrentOrientation() else {
-                                    logger.info("gimbal: Didn't get angles")
                                     return
                                 }
-                                logger.info("gimbal: Got current orentation")
                                 let preset = SettingsGimbalPreset()
                                 preset.name = makeUniqueName(name: SettingsGimbalPreset.baseName,
                                                              existingNames: gimbal.presets)
@@ -217,9 +214,7 @@ struct GimbalSettingsView: View {
                                 preset.y = Float(angles.y)
                                 preset.zoomX = model.zoom.x
                                 gimbal.presets.append(preset)
-                                logger.info("gimbal: preset appended")
                             } catch {
-                                logger.info("gimbal: Get failed")
                                 model.makeErrorToast(
                                     title: String(localized: "Failed to get gimbal orientation"),
                                     subTitle: error.localizedDescription
