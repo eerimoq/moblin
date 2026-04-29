@@ -83,7 +83,7 @@ struct GameControllersControllerButtonSettingsView: View {
                                          gimbalMotion: $button.gimbalMotion)
                 }
             }
-            .navigationTitle("Game controller button")
+            .navigationTitle("Button")
         } label: {
             Label {
                 HStack {

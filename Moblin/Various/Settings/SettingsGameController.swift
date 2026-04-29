@@ -41,6 +41,29 @@ enum SettingsGimbalMotion: Codable, CaseIterable {
     }
 }
 
+enum SettingsControllerThumbStickFunction: String, Codable, CaseIterable {
+    case unused = "Unused"
+    case gimbalPanTilt = "Gimbal pan and tilt"
+
+    func toString() -> String {
+        switch self {
+        case .unused:
+            return String(localized: "Unused")
+        case .gimbalPanTilt:
+            return String(localized: "Gimbal pan and tilt")
+        }
+    }
+
+    func color() -> Color {
+        switch self {
+        case .unused:
+            return .gray
+        default:
+            return .primary
+        }
+    }
+}
+
 enum SettingsControllerFunction: String, Codable, CaseIterable {
     case unused = "Unused"
     case record = "Record"
@@ -308,6 +331,8 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
 class SettingsGameController: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var buttons: [SettingsGameControllerButton] = []
+    @Published var leftThumbStickFunction: SettingsControllerThumbStickFunction = .unused
+    @Published var rightThumbStickFunction: SettingsControllerThumbStickFunction = .unused
 
     init() {
         var button = SettingsGameControllerButton()
@@ -410,18 +435,32 @@ class SettingsGameController: Codable, Identifiable, ObservableObject {
 
     enum CodingKeys: CodingKey {
         case id,
-             buttons
+             buttons,
+             leftThumbStickFunction,
+             rightThumbStickFunction
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.buttons, buttons)
+        try container.encode(.leftThumbStickFunction, leftThumbStickFunction)
+        try container.encode(.rightThumbStickFunction, rightThumbStickFunction)
     }
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         buttons = container.decode(.buttons, [SettingsGameControllerButton].self, [])
+        leftThumbStickFunction = container.decode(
+            .leftThumbStickFunction,
+            SettingsControllerThumbStickFunction.self,
+            .unused
+        )
+        rightThumbStickFunction = container.decode(
+            .rightThumbStickFunction,
+            SettingsControllerThumbStickFunction.self,
+            .unused
+        )
     }
 }

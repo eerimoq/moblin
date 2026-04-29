@@ -2,6 +2,7 @@ import GameController
 import Spatial
 
 private let gimbalAngularVelocity: Double = 0.3
+private let thumbStickDeadZone: Float = 0.1
 
 extension Model {
     func handleControllerFunction(function: SettingsControllerFunction,
@@ -189,6 +190,34 @@ extension Model {
         }
     }
 
+    private func handleGameControllerThumbStick(
+        function: SettingsControllerThumbStickFunction,
+        xValue: Float,
+        yValue: Float
+    ) {
+        guard function != .unused else {
+            return
+        }
+        switch function {
+        case .unused:
+            break
+        case .gimbalPanTilt:
+            if #available(iOS 18.0, *) {
+                let x = abs(xValue) > thumbStickDeadZone ? xValue : 0
+                let y = abs(yValue) > thumbStickDeadZone ? yValue : 0
+                if x == 0, y == 0 {
+                    Gimbal.shared?.cancelMovement()
+                } else {
+                    Gimbal.shared?.setMovement(velocity: .init(
+                        x: Double(y) * gimbalAngularVelocity,
+                        y: Double(-x) * gimbalAngularVelocity,
+                        z: 0
+                    ))
+                }
+            }
+        }
+    }
+
     private func handleGameControllerButton(
         _ gameController: GCController,
         _ button: GCControllerButtonInput,
@@ -278,6 +307,24 @@ extension Model {
         }
         gamepad.rightTrigger.pressedChangedHandler = { button, value, pressed in
             self.handleGameControllerButton(gameController, button, value, pressed)
+        }
+        gamepad.leftThumbstick.valueChangedHandler = { _, xValue, yValue in
+            guard let index = self.gameControllers.firstIndex(of: gameController),
+                  index < self.database.gameControllers.count
+            else {
+                return
+            }
+            let function = self.database.gameControllers[index].leftThumbStickFunction
+            self.handleGameControllerThumbStick(function: function, xValue: xValue, yValue: yValue)
+        }
+        gamepad.rightThumbstick.valueChangedHandler = { _, xValue, yValue in
+            guard let index = self.gameControllers.firstIndex(of: gameController),
+                  index < self.database.gameControllers.count
+            else {
+                return
+            }
+            let function = self.database.gameControllers[index].rightThumbStickFunction
+            self.handleGameControllerThumbStick(function: function, xValue: xValue, yValue: yValue)
         }
         if let index = gameControllers.firstIndex(of: nil) {
             gameControllers[index] = gameController
