@@ -203,28 +203,23 @@ struct GimbalSettingsView: View {
                 if #available(iOS 18, *) {
                     TextButtonView("Save current position") {
                         Task { @MainActor in
-                            do {
-                                logger.info("gimbal: Trying to get current orentation")
-                                guard let angles = try await Gimbal.shared?.getCurrentOrientation() else {
-                                    logger.info("gimbal: Didn't get angles")
-                                    return
-                                }
-                                logger.info("gimbal: Got current orentation")
-                                let preset = SettingsGimbalPreset()
-                                preset.name = makeUniqueName(name: SettingsGimbalPreset.baseName,
-                                                             existingNames: gimbal.presets)
-                                preset.x = Float(angles.x)
-                                preset.y = Float(angles.y)
-                                preset.zoomX = model.zoom.x
-                                gimbal.presets.append(preset)
-                                logger.info("gimbal: preset appended")
-                            } catch {
-                                logger.info("gimbal: Get failed")
+                            logger.info("gimbal: Trying to get current orentation")
+                            guard let angles = Gimbal.shared?.getCurrentOrientation() else {
+                                logger.info("gimbal: Didn't get angles")
                                 model.makeErrorToast(
-                                    title: String(localized: "Failed to get gimbal orientation"),
-                                    subTitle: error.localizedDescription
+                                    title: String(localized: "Failed to get gimbal orientation")
                                 )
+                                return
                             }
+                            logger.info("gimbal: Got current orentation")
+                            let preset = SettingsGimbalPreset()
+                            preset.name = makeUniqueName(name: SettingsGimbalPreset.baseName,
+                                                         existingNames: gimbal.presets)
+                            preset.x = Float(angles.x)
+                            preset.y = Float(angles.y)
+                            preset.zoomX = model.zoom.x
+                            gimbal.presets.append(preset)
+                            logger.info("gimbal: preset appended")
                         }
                     }
                     .disabled(Gimbal.shared?.isConnected() != true)

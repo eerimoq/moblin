@@ -8,7 +8,9 @@ class Gimbal {
     private var task: Task<Void, Never>?
     private var accessoryTask: Task<Void, Never>?
     private var accessory: DockAccessory?
+    private var motionTask: Task<Void, Never>?
     private var shutterCount: Int = 0
+    private var currentAngularPositions: Vector3D?
     static var shared: Gimbal?
 
     init(model: Model) {
@@ -48,15 +50,8 @@ class Gimbal {
         setMovement(velocity: .init(x: 0, y: 0, z: 0))
     }
 
-    func getCurrentOrientation() async throws -> Vector3D? {
-        var iterator = try accessory?.motionStates.makeAsyncIterator()
-        logger.info("gimbal: Iterator created \(iterator != nil)")
-        guard let item = await iterator?.next() else {
-            logger.info("gimbal: Failed to get item")
-            return nil
-        }
-        logger.info("gimbal: Got angles \(item.angularPositions)")
-        return item.angularPositions
+    func getCurrentOrientation() -> Vector3D? {
+        return currentAngularPositions
     }
 
     private func handleStateChange(stateChange: DockAccessory.StateChange) throws {
@@ -87,12 +82,25 @@ class Gimbal {
                 logger.info("gimbal: Accessory events error: \(error)")
             }
         }
+        motionTask = Task { @MainActor [weak self] in
+            do {
+                for await state in try accessory.motionStates {
+                    logger.info("gimbal: state \(state.angularPositions)")
+                    self?.currentAngularPositions = state.angularPositions
+                }
+            } catch {
+                logger.info("gimbal: Motion states error: \(error)")
+            }
+        }
     }
 
     private func stopAccessoryEventsHandler() {
         accessoryTask?.cancel()
         accessoryTask = nil
+        motionTask?.cancel()
+        motionTask = nil
         accessory = nil
+        currentAngularPositions = nil
     }
 
     private func handleAccessoryEvent(_ event: DockAccessory.AccessoryEvent) {
