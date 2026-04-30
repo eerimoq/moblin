@@ -417,8 +417,8 @@ class SettingsStreamSrtAdaptiveBitrateBelaboxSettings: Codable {
     }
 }
 
-class SettingsStreamSrtAdaptiveBitrate: Codable {
-    var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .belabox
+class SettingsStreamSrtAdaptiveBitrate: Codable, ObservableObject {
+    @Published var algorithm: SettingsStreamSrtAdaptiveBitrateAlgorithm = .belabox
     var fastIrlSettings: SettingsStreamSrtAdaptiveBitrateFastIrlSettings = .init()
     var customSettings: SettingsStreamSrtAdaptiveBitrateCustomSettings = .init()
     var belaboxSettings: SettingsStreamSrtAdaptiveBitrateBelaboxSettings = .init()

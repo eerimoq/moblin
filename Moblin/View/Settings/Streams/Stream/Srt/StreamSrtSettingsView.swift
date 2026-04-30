@@ -62,7 +62,10 @@ struct StreamSrtSettingsView: View {
                     """)
                 }
                 NavigationLink {
-                    StreamSrtAdaptiveBitrateSettingsView(stream: stream, srt: srt)
+                    StreamSrtAdaptiveBitrateSettingsView(model: model,
+                                                         stream: stream,
+                                                         srt: srt,
+                                                         adaptiveBitrate: srt.adaptiveBitrate)
                 } label: {
                     Toggle("Adaptive bitrate", isOn: $srt.adaptiveBitrateEnabled)
                         .onChange(of: srt.adaptiveBitrateEnabled) { _ in
