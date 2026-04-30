@@ -50,7 +50,9 @@ func performDnsLookup(host: String, family: DnsLookupFamily) -> String? {
                 0,
                 NI_NUMERICHOST
             ) == 0 {
-                addresses.append(String(cString: hostname))
+                hostname.withUnsafeBufferPointer {
+                    addresses.append(String(cString: $0.baseAddress!))
+                }
             }
         }
         pointer = pointer?.pointee.ai_next

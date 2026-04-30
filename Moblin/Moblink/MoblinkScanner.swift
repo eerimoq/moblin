@@ -109,7 +109,9 @@ extension MoblinkScanner: NetServiceDelegate {
             }
             ipv6 = unsafePtr.pointee.sa_family == AF_INET6
         }
-        return (String(cString: hostname), ipv6)
+        return hostname.withUnsafeBufferPointer {
+            (String(cString: $0.baseAddress!), ipv6)
+        }
     }
 
     private func formatWebsocketUrl(address: String, ipv6: Bool, port: Int) -> String? {

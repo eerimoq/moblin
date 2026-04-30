@@ -75,7 +75,9 @@ class IPMonitor {
                             socklen_t(0),
                             NI_NUMERICHOST
                         )
-                        let hostnameString = String(cString: hostname)
+                        let hostnameString = hostname.withUnsafeBufferPointer {
+                            String(cString: $0.baseAddress!)
+                        }
                         let type: IPMonitor.IPType = addrFamily == UInt8(AF_INET) ? .ipv4 : .ipv6
                         let address = (hostnameString, type)
                         if !addresses.contains(where: { $0 == address }) {
