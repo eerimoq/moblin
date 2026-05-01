@@ -777,6 +777,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             .connectionPriorities,
             .autoSceneSwitcher,
             .live,
+            .macros,
         ].contains(type)
     }
 
