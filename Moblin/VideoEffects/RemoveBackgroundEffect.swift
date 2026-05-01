@@ -6,13 +6,19 @@ private struct HsvColor {
     let brightness: CGFloat
 }
 
+private struct FilterSettings {
+    let fromHue: Double
+    let toHue: Double
+    let minimumSaturation: Double
+    let minimumBrightness: Double
+}
+
 private let minimumSaturationFloor: Double = 0.15
 private let minimumBrightnessFloor: Double = 0.10
 private let adaptiveThresholdMultiplier: Double = 0.5
 private let hueSectorCount: CGFloat = 6
 private let greenHueSectorOffset: CGFloat = 2
 private let blueHueSectorOffset: CGFloat = 4
-private let filterUpdateDebounceInterval: TimeInterval = 0.25
 
 private func rgbToHsv(red: Float, green: Float, blue: Float) -> HsvColor {
     let redCG = CGFloat(red)
@@ -48,12 +54,7 @@ private func isHueInRange(hue: CGFloat, fromHue: CGFloat, toHue: CGFloat) -> Boo
     }
 }
 
-private func makeFilter(
-    fromHue: CGFloat,
-    toHue: CGFloat,
-    minimumSaturation: CGFloat,
-    minimumBrightness: CGFloat
-) -> CIColorCubeWithColorSpace {
+private func makeFilter(settings: FilterSettings) -> CIColorCubeWithColorSpace {
     let size = 64
     var cube = [Float]()
     cube.reserveCapacity(size * size * size * 4)
@@ -67,9 +68,11 @@ private func makeFilter(
                 cube.append(red)
                 cube.append(green)
                 cube.append(blue)
-                let matchesGreenScreen = isHueInRange(hue: hsv.hue, fromHue: fromHue, toHue: toHue) &&
-                    hsv.saturation >= minimumSaturation &&
-                    hsv.brightness >= minimumBrightness
+                let matchesGreenScreen = isHueInRange(hue: hsv.hue,
+                                                      fromHue: settings.fromHue,
+                                                      toHue: settings.toHue) &&
+                    hsv.saturation >= settings.minimumSaturation &&
+                    hsv.brightness >= settings.minimumBrightness
                 cube.append(matchesGreenScreen ? 0 : 1)
             }
         }
@@ -83,15 +86,10 @@ private func makeFilter(
 
 final class RemoveBackgroundEffect: VideoEffect {
     private var filter: CIColorCubeWithColorSpace?
-    private var pendingFrom: Double?
-    private var pendingTo: Double?
-    private var pendingMinSaturation: Double?
-    private var pendingMinBrightness: Double?
+    private var pendingSettings: FilterSettings?
     private var updating = false
 
     func setColorRange(from: RgbColor, to: RgbColor) {
-        pendingFrom = from.hue()
-        pendingTo = to.hue()
         let fromHsv = rgbToHsv(
             red: Float(from.red) / 255,
             green: Float(from.green) / 255,
@@ -102,43 +100,33 @@ final class RemoveBackgroundEffect: VideoEffect {
             green: Float(to.green) / 255,
             blue: Float(to.blue) / 255
         )
-        pendingMinSaturation = max(
+        let minimumSaturation = max(
             minimumSaturationFloor,
             Double(min(fromHsv.saturation, toHsv.saturation)) * adaptiveThresholdMultiplier
         )
-        pendingMinBrightness = max(
+        let minimumBrightness = max(
             minimumBrightnessFloor,
             Double(min(fromHsv.brightness, toHsv.brightness)) * adaptiveThresholdMultiplier
         )
+        pendingSettings = FilterSettings(fromHue: from.hue(),
+                                         toHue: to.hue(),
+                                         minimumSaturation: minimumSaturation,
+                                         minimumBrightness: minimumBrightness)
         tryUpdateFilter()
     }
 
     private func tryUpdateFilter() {
         DispatchQueue.main.async {
-            guard
-                !self.updating,
-                let fromHue = self.pendingFrom,
-                let toHue = self.pendingTo,
-                let minSaturation = self.pendingMinSaturation,
-                let minBrightness = self.pendingMinBrightness
-            else {
+            guard !self.updating, let settings = self.pendingSettings else {
                 return
             }
-            self.pendingFrom = nil
-            self.pendingTo = nil
-            self.pendingMinSaturation = nil
-            self.pendingMinBrightness = nil
+            self.pendingSettings = nil
             self.updating = true
             DispatchQueue.global().async {
-                let filter = makeFilter(
-                    fromHue: fromHue,
-                    toHue: toHue,
-                    minimumSaturation: minSaturation,
-                    minimumBrightness: minBrightness
-                )
+                let filter = makeFilter(settings: settings)
                 processorPipelineQueue.async {
                     self.filter = filter
-                    DispatchQueue.main.asyncAfter(deadline: .now() + filterUpdateDebounceInterval) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                         self.updating = false
                         self.tryUpdateFilter()
                     }
