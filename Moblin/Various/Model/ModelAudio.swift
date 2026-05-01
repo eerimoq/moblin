@@ -334,6 +334,7 @@ extension Model {
                                  widgetId: database.selfieStick.widgetId,
                                  gimbalPresetId: database.selfieStick.gimbalPresetId,
                                  gimbalMotion: database.selfieStick.gimbalMotion,
+                                 macroId: database.selfieStick.macroId,
                                  pressed: false)
     }
 

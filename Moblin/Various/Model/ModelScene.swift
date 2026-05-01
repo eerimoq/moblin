@@ -231,6 +231,10 @@ extension Model {
         return database.scenes.first { $0.id == id }?.name
     }
 
+    func getScene(id: UUID?) -> SettingsScene? {
+        return database.scenes.first(where: { $0.id == id })
+    }
+
     func getWidgetName(id: UUID?) -> String? {
         return database.widgets.first { $0.id == id }?.name
     }

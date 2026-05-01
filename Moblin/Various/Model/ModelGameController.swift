@@ -10,6 +10,7 @@ extension Model {
                                   widgetId: UUID?,
                                   gimbalPresetId: UUID?,
                                   gimbalMotion: SettingsGimbalMotion,
+                                  macroId: UUID?,
                                   pressed: Bool)
     {
         switch function {
@@ -89,6 +90,10 @@ extension Model {
         case .widget:
             if let widgetId, !pressed {
                 toggleWidgetOnOff(id: widgetId)
+            }
+        case .macro:
+            if let macroId, !pressed {
+                toggleMacroStartStop(id: macroId)
             }
         case .instantReplay:
             if !pressed {
@@ -245,6 +250,7 @@ extension Model {
                                  widgetId: button.widgetId,
                                  gimbalPresetId: button.gimbalPresetId,
                                  gimbalMotion: button.gimbalMotion,
+                                 macroId: button.macroId,
                                  pressed: pressed)
     }
 

@@ -39,6 +39,7 @@ extension Model {
                                           widgetId: key.widgetId,
                                           gimbalPresetId: nil,
                                           gimbalMotion: key.gimbalMotion,
+                                          macroId: key.macroId,
                                           pressed: false)
         }
         return true

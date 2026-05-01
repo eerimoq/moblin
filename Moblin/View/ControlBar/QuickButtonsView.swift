@@ -425,6 +425,10 @@ struct QuickButtonsInnerView: View {
         model.interactiveBrowsers = state.button.isOn
     }
 
+    private func macrosAction() {
+        model.toggleShowingPanel(type: .macros, panel: .macros)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -983,6 +987,14 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             interactiveBrowserWidgetsAction()
+                        }
+                    case .macros:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            macrosAction()
                         }
                     }
                 }

@@ -173,7 +173,8 @@ struct GimbalSettingsView: View {
                                      sceneId: $gimbal.shutterSceneId,
                                      widgetId: $gimbal.shutterWidgetId,
                                      gimbalPresetId: $gimbal.shutterGimbalPresetId,
-                                     gimbalMotion: $gimbal.motion)
+                                     gimbalMotion: $gimbal.motion,
+                                     macroId: $gimbal.macroId)
             } header: {
                 Text("Shutter button")
             }
@@ -184,7 +185,8 @@ struct GimbalSettingsView: View {
                                      sceneId: $gimbal.flipSceneId,
                                      widgetId: $gimbal.flipWidgetId,
                                      gimbalPresetId: $gimbal.flipGimbalPresetId,
-                                     gimbalMotion: $gimbal.motion)
+                                     gimbalMotion: $gimbal.motion,
+                                     macroId: $gimbal.macroId)
             } header: {
                 Text("Flip button")
             }

@@ -113,6 +113,7 @@ class Gimbal {
                                        widgetId: gimbal.shutterWidgetId,
                                        gimbalPresetId: gimbal.shutterGimbalPresetId,
                                        gimbalMotion: gimbal.motion,
+                                       macroId: gimbal.macroId,
                                        pressed: false)
     }
 
@@ -123,6 +124,7 @@ class Gimbal {
                                        widgetId: gimbal.flipWidgetId,
                                        gimbalPresetId: gimbal.flipGimbalPresetId,
                                        gimbalMotion: gimbal.motion,
+                                       macroId: gimbal.macroId,
                                        pressed: false)
     }
 

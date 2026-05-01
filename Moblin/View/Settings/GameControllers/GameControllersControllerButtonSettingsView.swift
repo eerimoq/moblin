@@ -8,6 +8,7 @@ struct ControllerButtonView: View {
     @Binding var widgetId: UUID?
     @Binding var gimbalPresetId: UUID?
     @Binding var gimbalMotion: SettingsGimbalMotion
+    @Binding var macroId: UUID?
 
     var body: some View {
         Picker("Function", selection: $function) {
@@ -56,6 +57,15 @@ struct ControllerButtonView: View {
                     Text($0.toString())
                 }
             }
+        case .macro:
+            Picker("Macro", selection: $macroId) {
+                Text("-- None --")
+                    .tag(nil as UUID?)
+                ForEach(model.database.macros.macros) {
+                    Text($0.name)
+                        .tag($0.id as UUID?)
+                }
+            }
         default:
             EmptyView()
         }
@@ -80,7 +90,8 @@ struct GameControllersControllerButtonSettingsView: View {
                                          sceneId: $button.sceneId,
                                          widgetId: $button.widgetId,
                                          gimbalPresetId: $button.gimbalPresetId,
-                                         gimbalMotion: $button.gimbalMotion)
+                                         gimbalMotion: $button.gimbalMotion,
+                                         macroId: $button.macroId)
                 }
             }
             .navigationTitle("Button")

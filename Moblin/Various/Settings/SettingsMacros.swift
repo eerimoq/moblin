@@ -1,0 +1,105 @@
+import Foundation
+
+enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
+    case enableScene = "Enable scene"
+    case disableScene = "Disable scene"
+    case scene = "Scene"
+    case delay = "Delay"
+
+    func toString() -> String {
+        switch self {
+        case .enableScene:
+            return String(localized: "Enable scene")
+        case .disableScene:
+            return String(localized: "Disable scene")
+        case .scene:
+            return String(localized: "Scene")
+        case .delay:
+            return String(localized: "Delay")
+        }
+    }
+}
+
+class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
+    var id: UUID = .init()
+    @Published var function: SettingsMacrosActionFunction?
+    @Published var sceneId: UUID?
+    @Published var delay: Double = 3
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             function,
+             sceneId,
+             delay
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.function, function)
+        try container.encode(.sceneId, sceneId)
+        try container.encode(.delay, delay)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        function = container.decode(.function, SettingsMacrosActionFunction?.self, nil)
+        sceneId = container.decode(.sceneId, UUID?.self, nil)
+        delay = container.decode(.delay, Double.self, 3)
+    }
+}
+
+class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
+    static let baseName = String(localized: "My macro")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var actions: [SettingsMacrosAction] = []
+    @Published var running: Bool = false
+    var nextActionIndex: Int = 0
+    let timer = SimpleTimer(queue: .main)
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             actions
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.actions, actions)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        actions = container.decode(.actions, [SettingsMacrosAction].self, [])
+    }
+}
+
+class SettingsMacros: Codable, ObservableObject {
+    @Published var macros: [SettingsMacrosMacro] = []
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case macros
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.macros, macros)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        macros = container.decode(.macros, [SettingsMacrosMacro].self, [])
+    }
+}

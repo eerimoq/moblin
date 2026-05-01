@@ -217,6 +217,11 @@ private struct MenuView: View {
                 QuickButtonLiveView(model: model, database: model.database, stream: model.stream)
                     .navigationBarTitleDisplayMode(.inline)
             }
+        case .macros:
+            NavigationStack {
+                QuickButtonMacrosView(model: model, macros: model.database.macros)
+                    .navigationBarTitleDisplayMode(.inline)
+            }
         case .none:
             EmptyView()
         }

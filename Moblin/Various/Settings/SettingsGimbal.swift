@@ -51,6 +51,7 @@ class SettingsGimbal: Codable, ObservableObject {
     @Published var flipGimbalPresetId: UUID?
     @Published var presets: [SettingsGimbalPreset] = []
     @Published var motion: SettingsGimbalMotion = .kapow
+    @Published var macroId: UUID?
 
     enum CodingKeys: CodingKey {
         case zoomSpeed,
@@ -64,7 +65,8 @@ class SettingsGimbal: Codable, ObservableObject {
              flipWidgetId,
              flipGimbalPresetId,
              presets,
-             motion
+             motion,
+             macroId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -81,6 +83,7 @@ class SettingsGimbal: Codable, ObservableObject {
         try container.encode(.flipGimbalPresetId, flipGimbalPresetId)
         try container.encode(.presets, presets)
         try container.encode(.motion, motion)
+        try container.encode(.macroId, macroId)
     }
 
     init() {}
@@ -99,5 +102,6 @@ class SettingsGimbal: Codable, ObservableObject {
         flipGimbalPresetId = container.decode(.flipGimbalPresetId, UUID?.self, nil)
         presets = container.decode(.presets, [SettingsGimbalPreset].self, [])
         motion = container.decode(.motion, SettingsGimbalMotion.self, .kapow)
+        macroId = container.decode(.macroId, UUID?.self, nil)
     }
 }

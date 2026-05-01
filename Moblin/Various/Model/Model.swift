@@ -46,6 +46,7 @@ enum ShowingPanel {
     case quickButtonSettings
     case streamingButtonSettings
     case live
+    case macros
 
     func buttonsBackgroundColor() -> Color {
         if self == .chat {

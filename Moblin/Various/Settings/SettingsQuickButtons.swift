@@ -65,6 +65,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case cameraMan = "Camera man"
     case videoPreview = "Video preview"
     case interactiveBrowserWidgets = "Interactive browser widgets"
+    case macros = "Macros"
 
     init(from decoder: Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)

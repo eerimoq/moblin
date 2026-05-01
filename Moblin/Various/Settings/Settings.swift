@@ -1092,6 +1092,7 @@ class Database: Codable, ObservableObject {
     var location: SettingsLocation = .init()
     var watch: WatchSettings = .init()
     var audio: SettingsAudio = .init()
+    var macros: SettingsMacros = .init()
     var webBrowser: WebBrowserSettings = .init()
     var deepLinkCreator: DeepLinkCreator = .init()
     var srtlaServer: SettingsSrtlaServer = .init()
@@ -1201,6 +1202,7 @@ class Database: Codable, ObservableObject {
              location,
              watch,
              audio,
+             macros,
              webBrowser,
              deepLinkCreator,
              srtlaServer,
@@ -1281,6 +1283,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.location, location)
         try container.encode(.watch, watch)
         try container.encode(.audio, audio)
+        try container.encode(.macros, macros)
         try container.encode(.webBrowser, webBrowser)
         try container.encode(.deepLinkCreator, deepLinkCreator)
         try container.encode(.srtlaServer, srtlaServer)
@@ -1372,6 +1375,7 @@ class Database: Codable, ObservableObject {
         location = container.decode(.location, SettingsLocation.self, .init())
         watch = container.decode(.watch, WatchSettings.self, .init())
         audio = container.decode(.audio, SettingsAudio.self, .init())
+        macros = container.decode(.macros, SettingsMacros.self, .init())
         webBrowser = container.decode(.webBrowser, WebBrowserSettings.self, .init())
         deepLinkCreator = container.decode(.deepLinkCreator, DeepLinkCreator.self, .init())
         srtlaServer = container.decode(.srtlaServer, SettingsSrtlaServer.self, .init())
@@ -1932,6 +1936,12 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  type: .interactiveBrowserWidgets,
                                  imageOn: "hand.tap.fill",
                                  imageOff: "hand.tap",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Macros"),
+                                 type: .macros,
+                                 imageOn: "increase.indent",
+                                 imageOff: "increase.indent",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }

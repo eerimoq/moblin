@@ -82,6 +82,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case scene = "Scene"
     case switchScene = "Switch scene"
     case widget = "Widget"
+    case macro = "Macro"
     case instantReplay = "Instant replay"
     case stopReplay = "Stop replay"
     case snapshot = "Snapshot"
@@ -137,6 +138,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Switch scene")
         case .widget:
             return String(localized: "Widget")
+        case .macro:
+            return String(localized: "Macro")
         case .instantReplay:
             return String(localized: "Instant replay")
         case .stopReplay:
@@ -240,6 +243,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return .general
         case .widget:
             return .general
+        case .macro:
+            return .general
         case .instantReplay:
             return .general
         case .stopReplay:
@@ -289,6 +294,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     @Published var widgetId: UUID?
     @Published var gimbalPresetId: UUID?
     @Published var gimbalMotion: SettingsGimbalMotion = .kapow
+    @Published var macroId: UUID?
 
     init() {}
 
@@ -300,7 +306,8 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
              sceneId,
              widgetId,
              gimbalPresetId,
-             gimbalMotion
+             gimbalMotion,
+             macroId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -313,6 +320,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         try container.encode(.widgetId, widgetId)
         try container.encode(.gimbalPresetId, gimbalPresetId)
         try container.encode(.gimbalMotion, gimbalMotion)
+        try container.encode(.macroId, macroId)
     }
 
     required init(from decoder: Decoder) throws {
@@ -325,6 +333,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         widgetId = container.decode(.widgetId, UUID?.self, nil)
         gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
         gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
+        macroId = container.decode(.macroId, UUID?.self, nil)
     }
 }
 
