@@ -409,3 +409,11 @@ func formatFilenameDateAndTime(date: Date? = nil) -> String {
 func extractSrtStreamId(url: String) -> String? {
     return URL(string: url)?.dictionaryFromQuery()["streamid"]
 }
+
+extension String {
+    init(cArray: [CChar]) {
+        self = cArray.withUnsafeBufferPointer {
+            String(cString: $0.baseAddress!)
+        }
+    }
+}

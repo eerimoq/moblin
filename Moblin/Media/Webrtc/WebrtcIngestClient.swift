@@ -131,9 +131,7 @@ final class WebrtcIngestClient {
         guard result >= 0 else {
             throw "Failed to get local description"
         }
-        return buffer.withUnsafeBufferPointer {
-            String(cString: $0.baseAddress!)
-        }
+        return String(cArray: buffer)
     }
 
     func addRecvOnlyTrack(codec: rtcCodec,
@@ -290,14 +288,7 @@ final class WebrtcIngestClient {
     private func handleTrackInternal(trackId: Int32) {
         var descBuffer = [CChar](repeating: 0, count: 4096)
         let descSize = rtcGetTrackDescription(trackId, &descBuffer, Int32(descBuffer.count))
-        let description: String
-        if descSize > 0 {
-            description = descBuffer.withUnsafeBufferPointer {
-                String(cString: $0.baseAddress!)
-            }
-        } else {
-            description = ""
-        }
+        let description = descSize > 0 ? String(cArray: descBuffer) : ""
         setTrackCodec(trackId: trackId, description: description)
     }
 

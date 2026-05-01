@@ -361,9 +361,7 @@ private final class PeerConnection {
         let size = try checkOkReturnResult(rtcGetLocalDescription(peerConnectionId, nil, 0))
         var buffer = [CChar](repeating: 0, count: Int(size))
         try checkOk(rtcGetLocalDescription(peerConnectionId, &buffer, Int32(size)))
-        return buffer.withUnsafeBufferPointer {
-            String(cString: $0.baseAddress!)
-        }
+        return String(cArray: buffer)
     }
 
     func setRemoteAnswer(_ sdp: String) throws {
