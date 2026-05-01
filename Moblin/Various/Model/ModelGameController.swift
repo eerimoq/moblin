@@ -218,25 +218,26 @@ extension Model {
         }
     }
 
+    private func getGameControllerIndex(_ gameController: GCController) -> Int? {
+        guard let index = gameControllers.firstIndex(of: gameController) else {
+            return nil
+        }
+        guard index < database.gameControllers.count else {
+            return nil
+        }
+        return index
+    }
+
     private func handleGameControllerButton(
         _ gameController: GCController,
         _ button: GCControllerButtonInput,
         _: Float,
         _ pressed: Bool
     ) {
-        guard let gameControllerIndex = gameControllers.firstIndex(of: gameController) else {
-            return
-        }
-        guard gameControllerIndex < database.gameControllers.count else {
-            return
-        }
-        guard let name = button.sfSymbolsName else {
-            return
-        }
-        let button = database.gameControllers[gameControllerIndex].buttons.first(where: { button in
-            button.name == name
-        })
-        guard let button else {
+        guard let index = getGameControllerIndex(gameController),
+              let name = button.sfSymbolsName,
+              let button = database.gameControllers[index].buttons.first(where: { $0.name == name })
+        else {
             return
         }
         handleControllerFunction(function: button.function,
@@ -309,18 +310,14 @@ extension Model {
             self.handleGameControllerButton(gameController, button, value, pressed)
         }
         gamepad.leftThumbstick.valueChangedHandler = { _, xValue, yValue in
-            guard let index = self.gameControllers.firstIndex(of: gameController),
-                  index < self.database.gameControllers.count
-            else {
+            guard let index = self.getGameControllerIndex(gameController) else {
                 return
             }
             let function = self.database.gameControllers[index].leftThumbStickFunction
             self.handleGameControllerThumbStick(function: function, xValue: xValue, yValue: yValue)
         }
         gamepad.rightThumbstick.valueChangedHandler = { _, xValue, yValue in
-            guard let index = self.gameControllers.firstIndex(of: gameController),
-                  index < self.database.gameControllers.count
-            else {
+            guard let index = self.getGameControllerIndex(gameController) else {
                 return
             }
             let function = self.database.gameControllers[index].rightThumbStickFunction
