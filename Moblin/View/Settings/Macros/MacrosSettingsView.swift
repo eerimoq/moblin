@@ -3,6 +3,7 @@ import SwiftUI
 private struct ActionView: View {
     let model: Model
     @ObservedObject var database: Database
+    @ObservedObject var macros: SettingsMacros
     @ObservedObject var action: SettingsMacrosAction
 
     var body: some View {
@@ -33,6 +34,15 @@ private struct ActionView: View {
                             Slider(value: $action.delay, in: 1 ... 60)
                             Text("\(Int(action.delay))s")
                         }
+                    case .macro:
+                        Picker("Macro", selection: $action.macroId) {
+                            Text("-- None --")
+                                .tag(nil as UUID?)
+                            ForEach(macros.macros) {
+                                Text($0.name)
+                                    .tag($0.id as UUID?)
+                            }
+                        }
                     case nil:
                         EmptyView()
                     }
@@ -52,6 +62,11 @@ private struct ActionView: View {
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")
+                case .macro:
+                    if let macroName = macros.macros.first(where: { $0.id == action.macroId })?.name {
+                        Spacer()
+                        GrayTextView(text: macroName)
+                    }
                 case nil:
                     EmptyView()
                 }
@@ -75,7 +90,7 @@ private struct MacroView: View {
                 Section {
                     List {
                         ForEach(macro.actions) {
-                            ActionView(model: model, database: database, action: $0)
+                            ActionView(model: model, database: database, macros: macros, action: $0)
                         }
                         .onMove { froms, to in
                             macro.actions.move(fromOffsets: froms, toOffset: to)
@@ -94,11 +109,12 @@ private struct MacroView: View {
                 }
                 Section {
                     if macro.running {
-                        TextButtonView("Stop") {
+                        TextButtonView("Cancel") {
                             model.stopMacro(macro: macro)
                         }
+                        .tint(.red)
                     } else {
-                        TextButtonView("Start") {
+                        TextButtonView("Run") {
                             model.startMacro(macro: macro)
                         }
                     }

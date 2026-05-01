@@ -5,6 +5,7 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case disableScene = "Disable scene"
     case scene = "Scene"
     case delay = "Delay"
+    case macro = "Macro"
 
     func toString() -> String {
         switch self {
@@ -16,6 +17,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             return String(localized: "Scene")
         case .delay:
             return String(localized: "Delay")
+        case .macro:
+            return String(localized: "Run macro")
         }
     }
 }
@@ -25,6 +28,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var function: SettingsMacrosActionFunction?
     @Published var sceneId: UUID?
     @Published var delay: Double = 3
+    @Published var macroId: UUID?
 
     init() {}
 
@@ -32,7 +36,8 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         case id,
              function,
              sceneId,
-             delay
+             delay,
+             macroId
     }
 
     func encode(to encoder: Encoder) throws {
@@ -41,6 +46,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.function, function)
         try container.encode(.sceneId, sceneId)
         try container.encode(.delay, delay)
+        try container.encode(.macroId, macroId)
     }
 
     required init(from decoder: Decoder) throws {
@@ -49,6 +55,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         function = container.decode(.function, SettingsMacrosActionFunction?.self, nil)
         sceneId = container.decode(.sceneId, UUID?.self, nil)
         delay = container.decode(.delay, Double.self, 3)
+        macroId = container.decode(.macroId, UUID?.self, nil)
     }
 }
 
@@ -60,6 +67,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     @Published var running: Bool = false
     var nextActionIndex: Int = 0
     let timer = SimpleTimer(queue: .main)
+    var stack: [SettingsMacrosMacro] = []
 
     init() {}
 
@@ -81,6 +89,14 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
         actions = container.decode(.actions, [SettingsMacrosAction].self, [])
+    }
+
+    func copy() -> SettingsMacrosMacro {
+        let new = SettingsMacrosMacro()
+        new.id = id
+        new.name = name
+        new.actions = actions
+        return new
     }
 }
 

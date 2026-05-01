@@ -12,14 +12,15 @@ private struct MacroView: View {
                 Button {
                     model.stopMacro(macro: macro)
                 } label: {
-                    Text("Stop")
+                    Text("Cancel")
                 }
+                .tint(.red)
                 .buttonStyle(.borderless)
             } else {
                 Button {
                     model.startMacro(macro: macro)
                 } label: {
-                    Text("Start")
+                    Text("Run")
                 }
                 .buttonStyle(.borderless)
             }

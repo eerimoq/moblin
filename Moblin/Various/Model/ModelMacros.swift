@@ -7,6 +7,7 @@ extension Model {
         }
         macro.running = true
         macro.nextActionIndex = 0
+        macro.stack = [macro]
         executeNextAction(macro: macro)
     }
 
@@ -15,7 +16,10 @@ extension Model {
             return
         }
         macro.running = false
-        macro.timer.stop()
+        for macro in macro.stack {
+            macro.timer.stop()
+        }
+        macro.stack.removeAll()
     }
 
     func toggleMacroStartStop(id: UUID) {
@@ -30,12 +34,17 @@ extension Model {
     }
 
     private func executeNextAction(macro: SettingsMacrosMacro) {
-        guard macro.nextActionIndex < macro.actions.count else {
-            macro.running = false
+        guard let currentMacro = macro.stack.last else {
             return
         }
-        let action = macro.actions[macro.nextActionIndex]
-        macro.nextActionIndex += 1
+        guard currentMacro.nextActionIndex < currentMacro.actions.count else {
+            currentMacro.running = false
+            macro.stack.removeLast()
+            executeNextAction(macro: macro)
+            return
+        }
+        let action = currentMacro.actions[currentMacro.nextActionIndex]
+        currentMacro.nextActionIndex += 1
         let executeNext: Bool
         switch action.function {
         case .enableScene:
@@ -45,7 +54,11 @@ extension Model {
         case .scene:
             executeNext = executeScene(action: action)
         case .delay:
-            executeNext = executeDelay(macro: macro, action: action)
+            executeNext = executeDelay(currentMacro: currentMacro,
+                                       action: action,
+                                       macro: macro)
+        case .macro:
+            executeNext = executeMacro(action: action, macro: macro)
         case nil:
             executeNext = true
         }
@@ -71,11 +84,24 @@ extension Model {
         return true
     }
 
-    private func executeDelay(macro: SettingsMacrosMacro, action: SettingsMacrosAction) -> Bool {
+    private func executeDelay(currentMacro _: SettingsMacrosMacro,
+                              action: SettingsMacrosAction,
+                              macro: SettingsMacrosMacro) -> Bool
+    {
         macro.timer.startSingleShot(timeout: action.delay) {
             self.executeNextAction(macro: macro)
         }
         return false
+    }
+
+    private func executeMacro(action: SettingsMacrosAction, macro: SettingsMacrosMacro) -> Bool {
+        guard let subMacro = database.macros.macros.first(where: { $0.id == action.macroId }),
+              !macro.stack.contains(where: { $0.id == subMacro.id })
+        else {
+            return true
+        }
+        macro.stack.append(subMacro.copy())
+        return true
     }
 
     private func executeEnableDisableScene(action: SettingsMacrosAction, enabled: Bool) {
