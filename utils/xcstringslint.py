@@ -34,6 +34,17 @@ def check_format_specifiers(string_in_code, localized_string, language_code):
                 f'  [{language_code}] Missing positional prefixes in: '
                 f'{localized_string}'
             )
+        else:
+            n = len(code_specs)
+            positions = [int(pos.rstrip('$')) for pos, _ in loc_specs]
+            expected = set(range(1, n + 1))
+            actual = set(positions)
+            if actual != expected:
+                errors.append(
+                    f'  [{language_code}] Invalid positional prefix numbers '
+                    f'(expected 1..{n}, got {sorted(actual)}): '
+                    f'{localized_string}'
+                )
 
     return errors
 
