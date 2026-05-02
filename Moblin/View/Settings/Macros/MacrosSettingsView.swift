@@ -76,6 +76,15 @@ private struct ActionView: View {
                             },
                             keyboardType: .numbersAndPunctuation
                         )
+                    case .gimbalPreset:
+                        Picker("Preset", selection: $action.gimbalPresetId) {
+                            Text("-- None --")
+                                .tag(nil as UUID?)
+                            ForEach(database.gimbal.presets) {
+                                Text($0.name)
+                                    .tag($0.id as UUID?)
+                            }
+                        }
                     case .delay:
                         HStack {
                             Text("Delay")
@@ -117,13 +126,18 @@ private struct ActionView: View {
                     {
                         Spacer()
                         GrayTextView(text: switcherName)
-                    } else if action.autoSceneSwitcherId == nil {
-                        Spacer()
-                        GrayTextView(text: String(localized: "-- None --"))
                     }
                 case .zoom:
                     Spacer()
                     GrayTextView(text: formatOneDecimal(action.zoomX))
+                case .gimbalPreset:
+                    if let presetName = database.gimbal.presets
+                        .first(where: { $0.id == action.gimbalPresetId })?
+                        .name
+                    {
+                        Spacer()
+                        GrayTextView(text: presetName)
+                    }
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")

@@ -7,6 +7,7 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case scene = "Scene"
     case autoSceneSwitcher = "Auto scene switcher"
     case zoom = "Zoom"
+    case gimbalPreset = "Move to gimbal preset"
     case delay = "Delay"
     case macro = "Macro"
 
@@ -24,6 +25,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             return String(localized: "Auto scene switcher")
         case .zoom:
             return String(localized: "Zoom")
+        case .gimbalPreset:
+            return String(localized: "Move to gimbal preset")
         case .delay:
             return String(localized: "Delay")
         case .macro:
@@ -39,6 +42,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var sceneIds: Set<UUID> = []
     @Published var autoSceneSwitcherId: UUID?
     @Published var zoomX: Float = 1
+    @Published var gimbalPresetId: UUID?
     @Published var delay: Double = 3
     @Published var macroId: UUID?
 
@@ -51,6 +55,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
              sceneIds,
              autoSceneSwitcherId,
              zoomX,
+             gimbalPresetId,
              delay,
              macroId
     }
@@ -63,6 +68,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.sceneIds, sceneIds)
         try container.encode(.autoSceneSwitcherId, autoSceneSwitcherId)
         try container.encode(.zoomX, zoomX)
+        try container.encode(.gimbalPresetId, gimbalPresetId)
         try container.encode(.delay, delay)
         try container.encode(.macroId, macroId)
     }
@@ -75,6 +81,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         sceneIds = container.decode(.sceneIds, Set<UUID>.self, [])
         autoSceneSwitcherId = container.decode(.autoSceneSwitcherId, UUID?.self, nil)
         zoomX = container.decode(.zoomX, Float.self, 1)
+        gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
         delay = container.decode(.delay, Double.self, 3)
         macroId = container.decode(.macroId, UUID?.self, nil)
     }

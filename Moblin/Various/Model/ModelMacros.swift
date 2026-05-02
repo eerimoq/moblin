@@ -59,6 +59,8 @@ extension Model {
             executeNext = executeAutoSceneSwitcher(action: action)
         case .zoom:
             executeNext = executeZoom(action: action)
+        case .gimbalPreset:
+            executeNext = executeGimbalPreset(action: action)
         case .delay:
             executeNext = executeDelay(currentMacro: currentMacro,
                                        action: action,
@@ -103,6 +105,13 @@ extension Model {
 
     private func executeZoom(action: SettingsMacrosAction) -> Bool {
         setZoomX(x: action.zoomX, rate: database.zoom.speed)
+        return true
+    }
+
+    private func executeGimbalPreset(action: SettingsMacrosAction) -> Bool {
+        if let gimbalPresetId = action.gimbalPresetId {
+            moveToGimbalPreset(id: gimbalPresetId)
+        }
         return true
     }
 
