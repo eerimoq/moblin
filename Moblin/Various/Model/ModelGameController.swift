@@ -56,6 +56,10 @@ extension Model {
                     moveToGimbalPreset(id: gimbalPresetId)
                 }
             }
+        case .saveGimbalPreset:
+            if !pressed {
+                saveGimbalPreset()
+            }
         case .gimbalAnimate:
             if !pressed {
                 if #available(iOS 18.0, *) {
