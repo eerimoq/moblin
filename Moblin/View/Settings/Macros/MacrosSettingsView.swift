@@ -184,7 +184,7 @@ private struct MacroView: View {
                 } header: {
                     Text("Actions")
                 } footer: {
-                    SwipeLeftToDeleteHelpView(kind: String(localized: "a action"))
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "an action"))
                 }
                 Section {
                     if macro.running {
