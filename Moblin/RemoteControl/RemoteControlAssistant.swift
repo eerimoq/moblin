@@ -470,6 +470,8 @@ class RemoteControlAssistant: NSObject {
             handleStatusEvent(general: general, topLeft: topLeft, topRight: topRight)
         case .scoreboard:
             break
+        case .golfScoreboard:
+            break
         }
     }
 

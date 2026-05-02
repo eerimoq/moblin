@@ -1057,6 +1057,7 @@ extension Model: RemoteControlAssistantDelegate {
 extension Model: RemoteControlWebDelegate {
     func remoteControlWebConnected() {
         remoteControlWeb?.stateChanged(state: createRemoteControlStateChanged())
+        remoteControlWeb?.sendGolfScoreboardUpdate(data: getGolfScoreboardForRemoteControl())
         let scoreboard = getEnabledScoreboardWidgetsInSelectedScene().first?.scoreboard
         remoteControlWeb?.sendScoreboardUpdate(config: getModularScoreboardConfig(scoreboard: scoreboard))
     }
@@ -1153,6 +1154,14 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetScoreboardClock(time: String) {
         handleScoreboardSetClockManual(time: time)
+    }
+
+    func remoteControlWebGetGolfScoreboard() -> RemoteControlGolfScoreboard {
+        return getGolfScoreboardForRemoteControl()
+    }
+
+    func remoteControlWebUpdateGolfScoreboard(data: RemoteControlGolfScoreboard) {
+        handleExternalGolfScoreboardUpdate(remoteScorecard: data)
     }
 
     func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool) {

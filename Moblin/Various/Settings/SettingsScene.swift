@@ -2623,6 +2623,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
 enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
     case generic
     case padel
+    case golf
     case basketball
     case generic2
     case genericSets
@@ -2637,6 +2638,8 @@ enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
             return String(localized: "Generic")
         case .padel:
             return String(localized: "Padel")
+        case .golf:
+            return String(localized: "Golf")
         case .basketball:
             return String(localized: "Basketball")
         case .generic2:
@@ -2762,6 +2765,101 @@ class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
         awayPlayer1 = container.decode(.awayPlayer1, UUID.self, .init())
         awayPlayer2 = container.decode(.awayPlayer2, UUID.self, .init())
         score = container.decode(.score, [SettingsWidgetScoreboardScore].self, [.init()])
+    }
+}
+
+class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObject {
+    static let defaultScores = Array(repeating: -1, count: 18)
+    var id: UUID = .init()
+    @Published var name: String = "Player"
+    var scores: [Int] = defaultScores
+
+    enum CodingKeys: CodingKey {
+        case id,
+             name,
+             scores
+    }
+
+    init(name: String = "Player") {
+        self.name = name
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.scores, scores)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, "Player")
+        scores = container.decode(.scores, [Int].self, Self.defaultScores)
+    }
+
+    func totalRelativeToPar(pars: [Int], numberOfHoles: Int) -> Int {
+        var total = 0
+        for holeIndex in 0 ..< min(numberOfHoles, min(pars.count, scores.count)) {
+            let score = scores[holeIndex]
+            if score != -1 {
+                total += score - pars[holeIndex]
+            }
+        }
+        return total
+    }
+
+    func holesPlayed(numHoles: Int) -> Int {
+        return scores.prefix(numHoles).filter { $0 != -1 }.count
+    }
+}
+
+class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
+    static let defaultTitle = "⛳ Masters 2026"
+    static let defaultPars = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5]
+    static let defaultPlayers = [
+        SettingsWidgetGolfScoreboardPlayer(name: "Player 1"),
+        SettingsWidgetGolfScoreboardPlayer(name: "Player 2"),
+    ]
+    @Published var title: String = defaultTitle
+    @Published var numberOfHoles: Int = 18
+    @Published var currentHole: Int = 0
+    @Published var pars: [Int] = defaultPars
+    @Published var players: [SettingsWidgetGolfScoreboardPlayer] = defaultPlayers
+
+    enum CodingKeys: CodingKey {
+        case eventName,
+             numberOfHoles,
+             currentHole,
+             pars,
+             players
+    }
+
+    init() {}
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.eventName, title)
+        try container.encode(.numberOfHoles, numberOfHoles)
+        try container.encode(.currentHole, currentHole)
+        try container.encode(.pars, pars)
+        try container.encode(.players, players)
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        title = container.decode(.eventName, String.self, Self.defaultTitle)
+        numberOfHoles = container.decode(.numberOfHoles, Int.self, 18)
+        currentHole = container.decode(.currentHole, Int.self, 0)
+        setPars(container.decode(.pars, [Int].self, Self.defaultPars))
+        players = container.decode(.players, [SettingsWidgetGolfScoreboardPlayer].self, Self.defaultPlayers)
+    }
+
+    func setPars(_ pars: [Int]) {
+        self.pars = pars
+        while self.pars.count < 18 {
+            self.pars.append(Self.defaultPars[self.pars.count])
+        }
     }
 }
 
@@ -3066,6 +3164,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
     var secondaryBackgroundColor = baseSecondaryBackgroundColor
     @Published var secondaryBackgroundColorColor: Color = .clear
     var padel: SettingsWidgetPadelScoreboard = .init()
+    var golf: SettingsWidgetGolfScoreboard = .init()
     var generic: SettingsWidgetGenericScoreboard = .init()
     var modular: SettingsWidgetModularScoreboard = .init()
 
@@ -3075,6 +3174,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
              primaryBackgroundColor,
              secondaryBackgroundColor,
              padel,
+             golf,
              generic,
              modular
     }
@@ -3090,6 +3190,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
         try container.encode(.primaryBackgroundColor, primaryBackgroundColor)
         try container.encode(.secondaryBackgroundColor, secondaryBackgroundColor)
         try container.encode(.padel, padel)
+        try container.encode(.golf, golf)
         try container.encode(.generic, generic)
         try container.encode(.modular, modular)
     }
@@ -3105,6 +3206,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
                                                     RgbColor.self,
                                                     Self.baseSecondaryBackgroundColor)
         padel = container.decode(.padel, SettingsWidgetPadelScoreboard.self, .init())
+        golf = container.decode(.golf, SettingsWidgetGolfScoreboard.self, .init())
         generic = container.decode(.generic, SettingsWidgetGenericScoreboard.self, .init())
         modular = container.decode(.modular, SettingsWidgetModularScoreboard.self, .init())
         loadColors()

@@ -1,0 +1,127 @@
+.golf-title {
+  color: #4ade80;
+}
+
+.btn-xs {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.hole-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.25rem;
+  border: 1px solid #3f3f46;
+  background: #27272a;
+  color: #a1a1aa;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hole-btn.active {
+  background: #166534;
+  border-color: #4ade80;
+  color: #fff;
+  font-weight: 700;
+}
+
+.hole-btn.played {
+  border-color: #52525b;
+  color: #d4d4d8;
+}
+
+.score-display {
+  font-weight: 700;
+  font-size: 1.1rem;
+  min-width: 3rem;
+  text-align: center;
+}
+
+.score-under {
+  color: #4ade80;
+}
+
+.score-over {
+  color: #f87171;
+}
+
+.score-even {
+  color: #e4e4e7;
+}
+
+.scorecard-table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+.scorecard-table th,
+.scorecard-table td {
+  border: 1px solid #3f3f46;
+  padding: 2px 5px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.scorecard-table thead th {
+  background: #18181b;
+  color: #a1a1aa;
+}
+
+.scorecard-table .player-name-cell {
+  text-align: left;
+  font-weight: 600;
+  background: #18181b;
+  color: #e4e4e7;
+  max-width: 7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scorecard-table .total-cell {
+  font-weight: 700;
+  background: #18181b;
+}
+
+.scorecard-table .birdie {
+  background: #14532d;
+  color: #4ade80;
+}
+
+.scorecard-table .eagle {
+  background: #052e16;
+  color: #86efac;
+}
+
+.scorecard-table .bogey {
+  background: #450a0a;
+  color: #fca5a5;
+}
+
+.scorecard-table .double-bogey {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+.scorecard-table .par-cell {
+  color: #d4d4d8;
+}
+
+.scorecard-table .empty-cell {
+  color: #52525b;
+}
+
+.ldr-total {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}

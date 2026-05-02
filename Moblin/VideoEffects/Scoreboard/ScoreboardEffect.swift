@@ -59,6 +59,11 @@ final class ScoreboardEffect: VideoEffect {
                         secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
                         padel: scoreboard.padel,
                         players: players)
+        case .golf:
+            updateGolf(textColor: scoreboard.textColorColor,
+                       primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
+                       secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
+                       golf: scoreboard.golf)
         default:
             updateModular(modular: scoreboard.modular, config: config)
         }
@@ -116,6 +121,19 @@ final class ScoreboardEffect: VideoEffect {
         config: RemoteControlScoreboardMatchConfig
     ) {
         let content = ScoreboardEffectModularView(modular: modular, config: config)
+        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+    }
+
+    @MainActor
+    private func updateGolf(textColor: Color,
+                            primaryBackgroundColor: Color,
+                            secondaryBackgroundColor: Color,
+                            golf: SettingsWidgetGolfScoreboard)
+    {
+        let content = ScoreboardEffectGolfView(textColor: textColor,
+                                               primaryBackgroundColor: primaryBackgroundColor,
+                                               secondaryBackgroundColor: secondaryBackgroundColor,
+                                               golf: golf)
         setScoreboardImage(image: ImageRenderer(content: content).ciImage())
     }
 }

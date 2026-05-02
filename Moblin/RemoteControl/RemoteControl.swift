@@ -47,6 +47,8 @@ enum RemoteControlRequest: Codable {
     case setFilter(filter: RemoteControlFilter, on: Bool)
     case triggerReaction(reaction: RemoteControlReaction)
     case moveToGimbalPreset(id: UUID)
+    case getGolfScoreboard
+    case updateGolfScoreboard(data: RemoteControlGolfScoreboard)
 }
 
 enum RemoteControlResponse: Codable {
@@ -58,6 +60,7 @@ enum RemoteControlResponse: Codable {
     case getSettings(data: RemoteControlSettings)
     case getScoreboardSports(names: [String])
     case whip(status: Int, headers: [SettingsHttpHeader], body: Data)
+    case getGolfScoreboard(data: RemoteControlGolfScoreboard)
 }
 
 enum RemoteControlEvent: Codable {
@@ -67,6 +70,7 @@ enum RemoteControlEvent: Codable {
                 topLeft: RemoteControlStatusTopLeft?,
                 topRight: RemoteControlStatusTopRight?)
     case scoreboard(config: RemoteControlScoreboardMatchConfig)
+    case golfScoreboard(data: RemoteControlGolfScoreboard)
 }
 
 struct RemoteControlChatMessage: Codable {
@@ -893,6 +897,19 @@ struct RemoteControlScoreboardMatchConfig: Codable {
             return [periodFull(), global.infoBoxText].filter { !$0.isEmpty }
         }
     }
+}
+
+struct RemoteControlGolfPlayer: Codable {
+    var name: String
+    var scores: [Int]
+}
+
+struct RemoteControlGolfScoreboard: Codable {
+    var title: String
+    var numberOfHoles: Int
+    var pars: [Int]
+    var currentHole: Int
+    var players: [RemoteControlGolfPlayer]
 }
 
 struct RemoteControlAuthentication: Codable {

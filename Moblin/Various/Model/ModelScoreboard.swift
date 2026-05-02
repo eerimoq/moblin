@@ -353,6 +353,8 @@ extension Model {
             switch scoreboard.sport {
             case .padel:
                 break
+            case .golf:
+                break
             case .generic:
                 guard !scoreboard.generic.clock.isStopped else {
                     continue
@@ -499,6 +501,56 @@ extension Model {
                         config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
                         players: self.database.scoreboardPlayers)
         }
+    }
+
+    private func updateGolfScoreboardEffect(widget: SettingsWidget) {
+        DispatchQueue.main.async {
+            self.getScoreboardEffect(id: widget.id)?
+                .update(scoreboard: widget.scoreboard,
+                        config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
+                        players: self.database.scoreboardPlayers)
+        }
+    }
+
+    func getGolfScoreboardForRemoteControl() -> RemoteControlGolfScoreboard {
+        let golf = getEnabledScoreboardWidgetsInSelectedScene().first?.scoreboard.golf
+            ?? SettingsWidgetGolfScoreboard()
+        let players = golf.players.map {
+            RemoteControlGolfPlayer(name: $0.name, scores: $0.scores)
+        }
+        return RemoteControlGolfScoreboard(
+            title: golf.title,
+            numberOfHoles: golf.numberOfHoles,
+            pars: golf.pars,
+            currentHole: golf.currentHole,
+            players: players
+        )
+    }
+
+    func handleExternalGolfScoreboardUpdate(remoteScorecard: RemoteControlGolfScoreboard) {
+        guard let widget = getEnabledScoreboardWidgetsInSelectedScene().first else {
+            return
+        }
+        let golf = widget.scoreboard.golf
+        golf.title = remoteScorecard.title
+        golf.numberOfHoles = remoteScorecard.numberOfHoles
+        golf.currentHole = remoteScorecard.currentHole
+        golf.setPars(remoteScorecard.pars)
+        for (index, remotePlayer) in remoteScorecard.players.enumerated() {
+            if index < golf.players.count {
+                golf.players[index].name = remotePlayer.name
+                golf.players[index].scores = remotePlayer.scores
+            } else {
+                let player = SettingsWidgetGolfScoreboardPlayer(name: remotePlayer.name)
+                player.scores = remotePlayer.scores
+                golf.players.append(player)
+            }
+        }
+        while golf.players.count > remoteScorecard.players.count {
+            golf.players.removeLast()
+        }
+        updateGolfScoreboardEffect(widget: widget)
+        remoteControlWeb?.sendGolfScoreboardUpdate(data: remoteScorecard)
     }
 
     func handleScoreboardToggleClock() {

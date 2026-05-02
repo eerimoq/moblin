@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Moblin Golf Scoreboard</title>
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/golf.css" />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 font-sans p-2">
+    <div class="max-w-3xl mx-auto space-y-2">
+      <h1 class="text-xl font-bold text-center golf-title">⛳ Golf Scoreboard</h1>
+
+      <div class="text-center text-sm">
+        <span id="status" class="text-zinc-500">Connecting…</span>
+      </div>
+      <div class="card">
+        <div class="text-xs text-zinc-500 mb-2">Event</div>
+        <div class="grid grid-cols-2 gap-2">
+          <input
+            type="text"
+            id="title"
+            placeholder="Event name"
+            value=""
+            class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
+          />
+          <select
+            id="number-of-holes"
+            class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
+          >
+            <option value="9">9 Holes</option>
+            <option value="18" selected>18 Holes</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-xs text-zinc-500">Players</div>
+          <div class="flex gap-1">
+            <button id="btn-remove-player" class="btn-xs border-zinc-700 text-zinc-400">
+              − Player
+            </button>
+            <button id="btn-add-player" class="btn-xs border-zinc-600 text-zinc-300">
+              + Player
+            </button>
+          </div>
+        </div>
+        <div id="player-list" class="space-y-1"></div>
+      </div>
+
+      <div class="card">
+        <div class="text-xs text-zinc-500 mb-2">Current Hole</div>
+        <div class="flex gap-2 items-center flex-wrap">
+          <div id="hole-buttons" class="flex flex-wrap gap-1 flex-1"></div>
+          <div class="flex items-center gap-1 shrink-0">
+            <span class="text-xs text-zinc-500">Par</span>
+            <input
+              type="number"
+              id="current-par"
+              min="3"
+              max="5"
+              value="4"
+              class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm w-14 text-center"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="text-xs text-zinc-500 mb-2">
+          Scores — Hole <span id="entry-hole-num">1</span>
+        </div>
+        <div id="player-score-inputs" class="space-y-2"></div>
+      </div>
+
+      <div class="card">
+        <div class="text-xs text-zinc-500 mb-2">Leaderboard</div>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-xs text-zinc-500">
+              <th class="text-left pb-1">Player</th>
+              <th class="text-right pb-1">Score</th>
+              <th class="text-right pb-1">Thru</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+        </table>
+      </div>
+
+      <details>
+        <summary class="text-sm text-zinc-400 cursor-pointer py-1">Full Scorecard ▾</summary>
+        <div class="overflow-x-auto mt-2">
+          <table id="scorecard" class="scorecard-table text-xs"></table>
+        </div>
+      </details>
+
+      <div class="grid grid-cols-2 gap-2 pb-4">
+        <button id="btn-new-round" class="btn btn-ctrl border-red-900 text-red-400">
+          New Round
+        </button>
+        <a href="./index.html" class="btn btn-ctrl border-zinc-700 text-zinc-400 text-center">
+          ← Back
+        </a>
+      </div>
+    </div>
+    <script src="js/golf.mjs" type="module"></script>
+  </body>
+</html>

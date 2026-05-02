@@ -111,6 +111,10 @@ struct WidgetScoreboardSettingsView: View {
                                                            scoreboard: scoreboard,
                                                            generic: scoreboard.generic,
                                                            updated: updated)
+            case .golf:
+                WidgetScoreboardGolfGeneralSettingsView(scoreboard: scoreboard,
+                                                        golf: scoreboard.golf,
+                                                        updated: updated)
             default:
                 WidgetScoreboardModularGeneralSettingsView(modular: scoreboard.modular,
                                                            updated: updated)
@@ -120,6 +124,17 @@ struct WidgetScoreboardSettingsView: View {
             switch scoreboard.sport {
             case .padel, .generic:
                 Text("Use your Apple Watch to update the scoreboard.")
+            case .golf:
+                Text("Use the web based remote control on another device to update the scoreboard.")
+                if web.enabled {
+                    RemoteControlWebDefaultUrlView(web: web,
+                                                   status: model.statusOther,
+                                                   path: "/golf.html")
+                }
+                RemoteControlWebShortcutView(model: model)
+                if !web.enabled {
+                    Text("⚠️ The web based remote control is not enabled.")
+                }
             default:
                 Text("Use the web based remote control on another device to update the scoreboard.")
                 if web.enabled {
@@ -142,6 +157,8 @@ struct WidgetScoreboardSettingsView: View {
             WidgetScoreboardGenericSettingsView(generic: scoreboard.generic,
                                                 clock: scoreboard.generic.clock,
                                                 updated: updated)
+        case .golf:
+            WidgetScoreboardGolfSettingsView(golf: scoreboard.golf, updated: updated)
         default:
             WidgetScoreboardModularSettingsView(modular: scoreboard.modular,
                                                 clock: scoreboard.modular.clock,

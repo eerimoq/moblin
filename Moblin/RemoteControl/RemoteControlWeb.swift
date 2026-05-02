@@ -27,6 +27,8 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebToggleScoreboardClock()
     func remoteControlWebSetScoreboardDuration(minutes: Int)
     func remoteControlWebSetScoreboardClock(time: String)
+    func remoteControlWebGetGolfScoreboard() -> RemoteControlGolfScoreboard
+    func remoteControlWebUpdateGolfScoreboard(data: RemoteControlGolfScoreboard)
     func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool)
     func remoteControlWebTriggerReaction(reaction: RemoteControlReaction)
     func remoteControlWebGetRecordings() -> [[String: String]]
@@ -55,17 +57,20 @@ private let staticFiles: [StaticFile] = [
     StaticFile("/", "index", "html"),
     StaticFile("/", "remote", "html"),
     StaticFile("/", "scoreboard", "html"),
+    StaticFile("/", "golf", "html"),
     StaticFile("/", "recordings", "html"),
     StaticFile("/", "volleyball", "png"),
     StaticFile("/", "favicon", "ico"),
     StaticFile("/css/", "app", "css"),
     StaticFile("/css/", "remote", "css"),
     StaticFile("/css/", "scoreboard", "css"),
+    StaticFile("/css/", "golf", "css"),
     StaticFile("/css/", "recordings", "css"),
     StaticFile("/js/", "index", "mjs"),
     StaticFile("/js/", "utils", "mjs"),
     StaticFile("/js/", "remote", "mjs"),
     StaticFile("/js/", "scoreboard", "mjs"),
+    StaticFile("/js/", "golf", "mjs"),
     StaticFile("/js/", "recordings", "mjs"),
 ]
 
@@ -112,6 +117,12 @@ class RemoteControlWeb {
     func sendScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
         for connection in connections {
             send(connection: connection, message: .event(data: .scoreboard(config: config)))
+        }
+    }
+
+    func sendGolfScoreboardUpdate(data: RemoteControlGolfScoreboard) {
+        for connection in connections {
+            send(connection: connection, message: .event(data: .golfScoreboard(data: data)))
         }
     }
 
@@ -395,6 +406,13 @@ class RemoteControlWeb {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setScoreboardClock(time):
             delegate.remoteControlWebSetScoreboardClock(time: time)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .getGolfScoreboard:
+            let data = delegate.remoteControlWebGetGolfScoreboard()
+            send(connection: connection,
+                 message: .response(id: id, result: .ok, data: .getGolfScoreboard(data: data)))
+        case let .updateGolfScoreboard(data):
+            delegate.remoteControlWebUpdateGolfScoreboard(data: data)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setFilter(filter: filter, on: on):
             delegate.remoteControlWebSetFilter(filter: filter, on: on)

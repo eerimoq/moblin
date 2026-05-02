@@ -340,6 +340,10 @@ class RemoteControlStreamer {
         case let .moveToGimbalPreset(id: presetId):
             delegate.remoteControlStreamerMoveToGimbalPreset(id: presetId)
             sendEmptyOkResponse(id: id)
+        case .getGolfScoreboard:
+            sendEmptyOkResponse(id: id)
+        case .updateGolfScoreboard:
+            sendEmptyOkResponse(id: id)
         }
     }
 
