@@ -80,6 +80,7 @@ def main():
 
     for string_in_code, value in localizable['strings'].items():
         localizations = value.get('localizations')
+
         if not localizations:
             continue
 
@@ -87,11 +88,13 @@ def main():
 
         for language_code, lval in localizations.items():
             string_unit = lval.get('stringUnit')
+
             if not string_unit:
                 continue
 
             localized_string = string_unit.get('value', '')
-            errors = check_format_specifiers(string_in_code, localized_string,
+            errors = check_format_specifiers(string_in_code,
+                                             localized_string,
                                              language_code)
 
             if errors:
@@ -106,12 +109,15 @@ def main():
         if string_errors:
             errors_found = True
             print(f'Error in {repr(string_in_code)}:')
+
             for error in string_errors:
                 print(error)
 
     if args.fix and modified:
         xcstrings_path.write_text(
-            json.dumps(localizable, indent=2, ensure_ascii=False,
+            json.dumps(localizable,
+                       indent=2,
+                       ensure_ascii=False,
                        separators=(',', ' : '))
         )
 
