@@ -6,6 +6,18 @@ private struct ActionView: View {
     @ObservedObject var macros: SettingsMacros
     @ObservedObject var action: SettingsMacrosAction
 
+    private func isSceneSelected(id: UUID) -> Bool {
+        action.sceneIds.contains(id)
+    }
+
+    private func setSceneSelected(id: UUID, selected: Bool) {
+        if selected {
+            action.sceneIds.insert(id)
+        } else {
+            action.sceneIds.remove(id)
+        }
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -27,6 +39,17 @@ private struct ActionView: View {
                                 SceneNameView(scene: $0)
                                     .tag($0.id as UUID?)
                             }
+                        }
+                    case .enableDisableScenes:
+                        ForEach(database.scenes) { scene in
+                            Toggle(scene.name, isOn: Binding(
+                                get: {
+                                    isSceneSelected(id: scene.id)
+                                },
+                                set: {
+                                    setSceneSelected(id: scene.id, selected: $0)
+                                }
+                            ))
                         }
                     case .autoSceneSwitcher:
                         Picker("Auto scene switcher", selection: $action.autoSceneSwitcherId) {
@@ -68,6 +91,9 @@ private struct ActionView: View {
                         Spacer()
                         GrayTextView(text: sceneName)
                     }
+                case .enableDisableScenes:
+                    Spacer()
+                    GrayTextView(text: String(action.sceneIds.count))
                 case .autoSceneSwitcher:
                     if let switcherName = database.autoSceneSwitchers.switchers
                         .first(where: { $0.id == action.autoSceneSwitcherId })?

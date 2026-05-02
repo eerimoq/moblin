@@ -53,6 +53,8 @@ extension Model {
             executeNext = executeDisableScene(action: action)
         case .scene:
             executeNext = executeScene(action: action)
+        case .enableDisableScenes:
+            executeNext = executeEnableDisableScenes(action: action)
         case .autoSceneSwitcher:
             executeNext = executeAutoSceneSwitcher(action: action)
         case .delay:
@@ -83,6 +85,14 @@ extension Model {
         if let sceneId = action.sceneId {
             selectScene(id: sceneId)
         }
+        return true
+    }
+
+    private func executeEnableDisableScenes(action: SettingsMacrosAction) -> Bool {
+        for scene in database.scenes {
+            scene.enabled = action.sceneIds.contains(scene.id)
+        }
+        resetSelectedScene()
         return true
     }
 
