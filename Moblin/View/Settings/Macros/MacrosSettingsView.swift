@@ -18,6 +18,13 @@ private struct ActionView: View {
         }
     }
 
+    private func submitZoomX(zoomX: String) {
+        guard let zoomX = Float(zoomX) else {
+            return
+        }
+        action.zoomX = max(zoomX, minZoomX)
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -60,6 +67,15 @@ private struct ActionView: View {
                                     .tag($0.id as UUID?)
                             }
                         }
+                    case .zoom:
+                        TextEditNavigationView(
+                            title: String(localized: "X"),
+                            value: String(action.zoomX),
+                            onSubmit: {
+                                submitZoomX(zoomX: $0)
+                            },
+                            keyboardType: .numbersAndPunctuation
+                        )
                     case .delay:
                         HStack {
                             Text("Delay")
@@ -105,6 +121,9 @@ private struct ActionView: View {
                         Spacer()
                         GrayTextView(text: String(localized: "-- None --"))
                     }
+                case .zoom:
+                    Spacer()
+                    GrayTextView(text: formatOneDecimal(action.zoomX))
                 case .delay:
                     Spacer()
                     GrayTextView(text: "\(Int(action.delay))s")

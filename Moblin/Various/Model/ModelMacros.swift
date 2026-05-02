@@ -57,6 +57,8 @@ extension Model {
             executeNext = executeEnableDisableScenes(action: action)
         case .autoSceneSwitcher:
             executeNext = executeAutoSceneSwitcher(action: action)
+        case .zoom:
+            executeNext = executeZoom(action: action)
         case .delay:
             executeNext = executeDelay(currentMacro: currentMacro,
                                        action: action,
@@ -72,13 +74,11 @@ extension Model {
     }
 
     private func executeEnableScene(action: SettingsMacrosAction) -> Bool {
-        executeEnableDisableScene(action: action, enabled: true)
-        return true
+        return executeEnableDisableScene(action: action, enabled: true)
     }
 
     private func executeDisableScene(action: SettingsMacrosAction) -> Bool {
-        executeEnableDisableScene(action: action, enabled: false)
-        return true
+        return executeEnableDisableScene(action: action, enabled: false)
     }
 
     private func executeScene(action: SettingsMacrosAction) -> Bool {
@@ -92,12 +92,17 @@ extension Model {
         for scene in database.scenes {
             scene.enabled = action.sceneIds.contains(scene.id)
         }
-        resetSelectedScene()
+        sceneSelector.trigger += 1
         return true
     }
 
     private func executeAutoSceneSwitcher(action: SettingsMacrosAction) -> Bool {
         setAutoSceneSwitcher(id: action.autoSceneSwitcherId)
+        return true
+    }
+
+    private func executeZoom(action: SettingsMacrosAction) -> Bool {
+        setZoomX(x: action.zoomX, rate: database.zoom.speed)
         return true
     }
 
@@ -121,15 +126,9 @@ extension Model {
         return true
     }
 
-    private func executeEnableDisableScene(action: SettingsMacrosAction, enabled: Bool) {
-        guard let scene = getScene(id: action.sceneId) else {
-            return
-        }
-        scene.enabled = enabled
-        if getSelectedScene() === scene {
-            resetSelectedScene()
-        } else {
-            sceneSelector.sceneIndex += 0
-        }
+    private func executeEnableDisableScene(action: SettingsMacrosAction, enabled: Bool) -> Bool {
+        getScene(id: action.sceneId)?.enabled = enabled
+        sceneSelector.trigger += 1
+        return true
     }
 }

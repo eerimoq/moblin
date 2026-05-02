@@ -260,6 +260,7 @@ class Toast: ObservableObject {
 }
 
 class SceneSelector: ObservableObject {
+    @Published var trigger = 0
     @Published var sceneIndex = 0
     var selectedSceneId = UUID()
 }
