@@ -618,6 +618,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var gameControllers: [GCController?] = []
     var moveToGimbalPresetQueue: Deque<UUID> = []
     var moveToGimbalPresetQueueRunning = false
+    var gimbalPresetLongPressTimers: [String: SimpleTimer] = [:]
     var latestKnownLocation: CLLocation?
     var slopePercent = 0.0
     var previousSlopeAltitude: Double? = 0.0

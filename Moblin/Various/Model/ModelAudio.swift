@@ -329,13 +329,14 @@ extension Model {
     }
 
     private func executeSelfieStickAction() {
-        handleControllerFunction(function: database.selfieStick.function,
+        handleControllerFunction(buttonId: "s:button",
+                                 function: database.selfieStick.function,
+                                 pressed: false,
                                  sceneId: database.selfieStick.sceneId,
                                  widgetId: database.selfieStick.widgetId,
                                  gimbalPresetId: database.selfieStick.gimbalPresetId,
                                  gimbalMotion: database.selfieStick.gimbalMotion,
-                                 macroId: database.selfieStick.macroId,
-                                 pressed: false)
+                                 macroId: database.selfieStick.macroId)
     }
 
     private func isVolumeMinOrMax(_ volume: Float) -> Bool {

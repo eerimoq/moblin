@@ -1,7 +1,7 @@
 import Foundation
 
 extension Model {
-    func saveGimbalPreset() {
+    func saveGimbalPreset(id: UUID?) {
         guard #available(iOS 18.0, *) else {
             return
         }
@@ -10,13 +10,21 @@ extension Model {
                 guard let angles = try await Gimbal.shared?.getCurrentOrientation() else {
                     return
                 }
-                let preset = SettingsGimbalPreset()
-                preset.name = makeUniqueName(name: SettingsGimbalPreset.baseName,
-                                             existingNames: database.gimbal.presets)
-                preset.x = Float(angles.x)
-                preset.y = Float(angles.y)
-                preset.zoomX = zoom.x
-                database.gimbal.presets.append(preset)
+                if let id {
+                    if let preset = database.gimbal.presets.first(where: { $0.id == id }) {
+                        preset.x = Float(angles.x)
+                        preset.y = Float(angles.y)
+                        preset.zoomX = zoom.x
+                    }
+                } else {
+                    let preset = SettingsGimbalPreset()
+                    preset.name = makeUniqueName(name: SettingsGimbalPreset.baseName,
+                                                 existingNames: database.gimbal.presets)
+                    preset.x = Float(angles.x)
+                    preset.y = Float(angles.y)
+                    preset.zoomX = zoom.x
+                    database.gimbal.presets.append(preset)
+                }
             } catch {
                 makeErrorToast(
                     title: String(localized: "Failed to get gimbal orientation"),

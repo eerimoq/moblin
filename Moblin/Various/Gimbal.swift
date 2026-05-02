@@ -108,24 +108,26 @@ class Gimbal {
             return
         }
         let gimbal = model.database.gimbal
-        model.handleControllerFunction(function: gimbal.functionShutter,
+        model.handleControllerFunction(buttonId: "g:shutter",
+                                       function: gimbal.functionShutter,
+                                       pressed: false,
                                        sceneId: gimbal.shutterSceneId,
                                        widgetId: gimbal.shutterWidgetId,
                                        gimbalPresetId: gimbal.shutterGimbalPresetId,
                                        gimbalMotion: gimbal.motion,
-                                       macroId: gimbal.macroId,
-                                       pressed: false)
+                                       macroId: gimbal.macroId)
     }
 
     private func handleAccessoryEventCameraFlip() {
         let gimbal = model.database.gimbal
-        model.handleControllerFunction(function: gimbal.functionFlip,
+        model.handleControllerFunction(buttonId: "g:flip",
+                                       function: gimbal.functionFlip,
+                                       pressed: false,
                                        sceneId: gimbal.flipSceneId,
                                        widgetId: gimbal.flipWidgetId,
                                        gimbalPresetId: gimbal.flipGimbalPresetId,
                                        gimbalMotion: gimbal.motion,
-                                       macroId: gimbal.macroId,
-                                       pressed: false)
+                                       macroId: gimbal.macroId)
     }
 
     private func handleAccessoryEventCameraZoom(factor: Double) {

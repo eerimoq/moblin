@@ -4,14 +4,27 @@ import Spatial
 private let gimbalAngularVelocity: Double = 0.3
 private let thumbStickDeadZone: Float = 0.1
 
+class GimbalPresetJob {
+    let timer: SimpleTimer?
+
+    init() {
+        timer = SimpleTimer(queue: .main)
+    }
+
+    func wasLongPress() -> Bool {
+        return timer == nil
+    }
+}
+
 extension Model {
-    func handleControllerFunction(function: SettingsControllerFunction,
+    func handleControllerFunction(buttonId: String,
+                                  function: SettingsControllerFunction,
+                                  pressed: Bool,
                                   sceneId: UUID?,
                                   widgetId: UUID?,
                                   gimbalPresetId: UUID?,
                                   gimbalMotion: SettingsGimbalMotion,
-                                  macroId: UUID?,
-                                  pressed: Bool)
+                                  macroId: UUID?)
     {
         switch function {
         case .unused:
@@ -51,14 +64,19 @@ extension Model {
                 velocity: .init(x: 0, y: -gimbalAngularVelocity, z: 0)
             )
         case .gimbalPreset:
+            let timer = gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
+            timer?.stop()
             if !pressed {
-                if let gimbalPresetId {
+                if let gimbalPresetId, timer != nil {
                     moveToGimbalPreset(id: gimbalPresetId)
                 }
-            }
-        case .saveGimbalPreset:
-            if !pressed {
-                saveGimbalPreset()
+            } else if let gimbalPresetId {
+                let timer = SimpleTimer(queue: .main)
+                timer.startSingleShot(timeout: 0.5) { [weak self] in
+                    self?.gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
+                    self?.saveGimbalPreset(id: gimbalPresetId)
+                }
+                gimbalPresetLongPressTimers[buttonId] = timer
             }
         case .gimbalAnimate:
             if !pressed {
@@ -249,13 +267,14 @@ extension Model {
         else {
             return
         }
-        handleControllerFunction(function: button.function,
+        handleControllerFunction(buttonId: "gc:\(index):\(name)",
+                                 function: button.function,
+                                 pressed: pressed,
                                  sceneId: button.sceneId,
                                  widgetId: button.widgetId,
                                  gimbalPresetId: button.gimbalPresetId,
                                  gimbalMotion: button.gimbalMotion,
-                                 macroId: button.macroId,
-                                 pressed: pressed)
+                                 macroId: button.macroId)
     }
 
     private func numberOfGameControllers() -> Int {

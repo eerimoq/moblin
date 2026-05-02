@@ -34,13 +34,14 @@ extension Model {
             return false
         }
         DispatchQueue.main.async {
-            self.handleControllerFunction(function: key.function,
+            self.handleControllerFunction(buttonId: "kb:\(key.key)",
+                                          function: key.function,
+                                          pressed: false,
                                           sceneId: key.sceneId,
                                           widgetId: key.widgetId,
                                           gimbalPresetId: nil,
                                           gimbalMotion: key.gimbalMotion,
-                                          macroId: key.macroId,
-                                          pressed: false)
+                                          macroId: key.macroId)
         }
         return true
     }

@@ -204,7 +204,7 @@ struct GimbalSettingsView: View {
                 }
                 if #available(iOS 18, *) {
                     TextButtonView("Save current position") {
-                        model.saveGimbalPreset()
+                        model.saveGimbalPreset(id: nil)
                     }
                     .disabled(Gimbal.shared?.isConnected() != true)
                 }
