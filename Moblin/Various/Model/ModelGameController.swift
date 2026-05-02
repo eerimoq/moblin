@@ -75,6 +75,7 @@ extension Model {
                 timer.startSingleShot(timeout: 0.5) { [weak self] in
                     self?.gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
                     self?.saveGimbalPreset(id: gimbalPresetId)
+                    self?.makeToast(title: String(localized: "Gimbal preset updated"))
                 }
                 gimbalPresetLongPressTimers[buttonId] = timer
             }
