@@ -32,7 +32,7 @@ def check_format_specifiers(string_in_code, localized_string, language_code):
         if any(pos is None for pos, _ in loc_specs):
             errors.append(
                 f'  [{language_code}] Missing positional prefixes in: '
-                f'{repr(localized_string)}'
+                f'{localized_string}'
             )
 
     return errors
@@ -86,8 +86,8 @@ def main():
 
         string_errors = []
 
-        for language_code, lval in localizations.items():
-            string_unit = lval.get('stringUnit')
+        for language_code, localization_value in localizations.items():
+            string_unit = localization_value.get('stringUnit')
 
             if not string_unit:
                 continue
@@ -102,6 +102,7 @@ def main():
 
                 if args.fix:
                     fixed = fix_localized_string(string_in_code, localized_string)
+
                     if fixed is not None and fixed != localized_string:
                         string_unit['value'] = fixed
                         modified = True
