@@ -38,7 +38,10 @@ style-check:
 lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_FOLDERS)
 	oxlint $(OXLINT_ARGS)
-	#python3 utils/xcstringslint.py Common/Localizable.xcstrings
+	python3 utils/xcstringslint.py Common/Localizable.xcstrings
+
+lint-fix:
+	python3 utils/xcstringslint.py --fix Common/Localizable.xcstrings
 
 periphery:
 	periphery scan $(PERIPHERY_ARGS)
