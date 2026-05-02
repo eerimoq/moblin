@@ -37,7 +37,7 @@ def needs_translation(item):
 
 def main():
     localizable_xcstrings_path = Path(sys.argv[1])
-    localizable = json.loads(localizable_xcstrings_path.read_text())
+    localizable = json.loads(localizable_xcstrings_path.read_text(encoding='utf-8'))
 
     try:
         for english, value in localizable['strings'].items():
@@ -46,7 +46,7 @@ def main():
             if localizations is None:
                 localizations = {}
                 value['localizations'] = localizations
-                
+
             for xcode_languages, google_language in LANGUAGES:
                 translated = None
 
@@ -80,7 +80,8 @@ def main():
             json.dumps(localizable,
                        indent=2,
                        ensure_ascii=False,
-                       separators=(',', ' : ')))
+                       separators=(',', ' : ')),
+            encoding='utf-8')
 
 
 main()

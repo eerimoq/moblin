@@ -6,7 +6,8 @@ import argparse
 
 def analyze(video):
     pts_time_lines = subprocess.run(
-        f'ffprobe {video} -show_frames -hide_banner -loglevel warning -select_streams v:0 | grep pts_time',
+        f'ffprobe {video} -show_frames -hide_banner -loglevel warning -select_streams v:0 '
+        '| grep pts_time',
         text=True,
         shell=True,
         check=True,

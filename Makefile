@@ -14,6 +14,15 @@ PERIPHERY_ARGS = \
 CODESPELL_ARGS = \
 	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
 	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
+PYLINT_ARGS = \
+	--disable missing-function-docstring \
+	--disable missing-module-docstring \
+	--disable too-many-nested-blocks \
+	--disable broad-exception-caught \
+	--disable too-many-locals \
+	--disable duplicate-code \
+	--recursive yes \
+	.
 
 CODE_FOLDERS += "Common"
 CODE_FOLDERS += "Moblin"
@@ -39,6 +48,9 @@ lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_FOLDERS)
 	oxlint $(OXLINT_ARGS)
 	python3 utils/xcstringslint.py Common/Localizable.xcstrings
+
+pylint:
+	pylint $(PYLINT_ARGS)
 
 lint-fix:
 	python3 utils/xcstringslint.py --fix Common/Localizable.xcstrings

@@ -84,7 +84,7 @@ def main():
     args = parser.parse_args()
 
     xcstrings_path = Path(args.xcstrings_path)
-    localizable = json.loads(xcstrings_path.read_text())
+    localizable = json.loads(xcstrings_path.read_text(encoding='utf-8'))
 
     errors_found = False
     modified = False
@@ -130,8 +130,8 @@ def main():
             json.dumps(localizable,
                        indent=2,
                        ensure_ascii=False,
-                       separators=(',', ' : '))
-        )
+                       separators=(',', ' : ')),
+            encoding='utf-8')
 
     if errors_found and not args.fix:
         sys.exit(1)

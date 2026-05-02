@@ -22,7 +22,7 @@ def set_bitrate_and_loss(bitrate, loss):
         print(f" - Loss {loss} %")
         args += f' loss {loss}%'
 
-    subprocess.run(f'sudo tc qdisc replace dev eno1 root netem' + args,
+    subprocess.run('sudo tc qdisc replace dev eno1 root netem' + args,
                    shell=True,
                    check=True)
 
@@ -48,8 +48,8 @@ def do_random(args):
         time.sleep(15)
 
 
-def do_reset(args):
-    subprocess.run(f'sudo tc qdisc del dev eno1 root', shell=True, check=True)
+def do_reset(_args):
+    subprocess.run('sudo tc qdisc del dev eno1 root', shell=True, check=True)
 
 
 def main():
