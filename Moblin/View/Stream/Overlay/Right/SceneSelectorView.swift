@@ -17,7 +17,7 @@ private struct SceneItemView: View {
     var body: some View {
         ZStack {
             Text(scene.name)
-                .font(.subheadline)
+                .minimumScaleFactor(pickerLabelMinimumScaleFactor)
                 .frame(
                     width: min(sceneSegmentWidth, max((width - 20) / CGFloat(model.enabledScenes.count), 1)),
                     height: height()

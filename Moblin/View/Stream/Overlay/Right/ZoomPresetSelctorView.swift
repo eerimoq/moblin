@@ -5,7 +5,7 @@ private struct PickerItemView: View {
 
     var body: some View {
         Text(preset.name)
-            .font(.subheadline)
+            .minimumScaleFactor(pickerLabelMinimumScaleFactor)
     }
 }
 
