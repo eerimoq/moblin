@@ -9,6 +9,7 @@ class AutoSceneSwitcherProvider: ObservableObject {
 
 extension Model {
     func setAutoSceneSwitcher(id: UUID?) {
+        autoSceneSwitcher.currentSwitcherId = id
         database.autoSceneSwitchers.switcherId = id
         autoSceneSwitcher.switchTime = .now
         autoSceneSwitcher.sceneIds.removeAll()

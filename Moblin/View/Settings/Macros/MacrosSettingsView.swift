@@ -28,6 +28,15 @@ private struct ActionView: View {
                                     .tag($0.id as UUID?)
                             }
                         }
+                    case .autoSceneSwitcher:
+                        Picker("Auto scene switcher", selection: $action.autoSceneSwitcherId) {
+                            Text("-- None --")
+                                .tag(nil as UUID?)
+                            ForEach(database.autoSceneSwitchers.switchers) {
+                                Text($0.name)
+                                    .tag($0.id as UUID?)
+                            }
+                        }
                     case .delay:
                         HStack {
                             Text("Delay")
@@ -58,6 +67,17 @@ private struct ActionView: View {
                     if let sceneName = model.getSceneName(id: action.sceneId) {
                         Spacer()
                         GrayTextView(text: sceneName)
+                    }
+                case .autoSceneSwitcher:
+                    if let switcherName = database.autoSceneSwitchers.switchers
+                        .first(where: { $0.id == action.autoSceneSwitcherId })?
+                        .name
+                    {
+                        Spacer()
+                        GrayTextView(text: switcherName)
+                    } else if action.autoSceneSwitcherId == nil {
+                        Spacer()
+                        GrayTextView(text: String(localized: "-- None --"))
                     }
                 case .delay:
                     Spacer()

@@ -673,7 +673,6 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetAutoSceneSwitcher(id: UUID?) {
-        autoSceneSwitcher.currentSwitcherId = id
         setAutoSceneSwitcher(id: id)
     }
 
