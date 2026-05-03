@@ -112,6 +112,27 @@
         </button>
       </div>
     </div>
+    <dialog id="confirm" class="backdrop:bg-black/60 rounded-xl p-0">
+      <form method="dialog" class="bg-zinc-900 text-zinc-100">
+        <div class="p-4">
+          <p id="confirm-message" class="text-zinc-300">The message</p>
+        </div>
+        <div class="bg-zinc-800/60 px-4 py-3 sm:px-5 flex items-center justify-end gap-2">
+          <button
+            id="confirm-ok"
+            class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer"
+          >
+            OK
+          </button>
+          <button
+            id="confirm-cancel"
+            class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </dialog>
     <script src="js/golf.mjs" type="module"></script>
   </body>
 </html>

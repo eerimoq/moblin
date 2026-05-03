@@ -17,6 +17,8 @@ const local = {
 
 let ws = null;
 let requestId = 0;
+let confirmComplete = null;
+let confirmResult = false;
 
 function getRequestId() {
   return ++requestId;
@@ -148,6 +150,28 @@ function setStatus(text, cls) {
   const el = document.getElementById("status");
   el.textContent = text;
   el.className = `text-sm ${cls}`;
+}
+
+async function confirm(message) {
+  document.getElementById("confirm-message").textContent = message;
+  const dialog = document.getElementById("confirm");
+  dialog.showModal();
+  await new Promise((resolve) => {
+    confirmComplete = (result) => {
+      confirmResult = result;
+      resolve();
+    };
+  });
+  dialog.close();
+  return confirmResult;
+}
+
+function confirmOk() {
+  confirmComplete(true);
+}
+
+function confirmCancel() {
+  confirmComplete(false);
 }
 
 function renderAll() {
@@ -396,7 +420,7 @@ function bindEvents() {
     sendUpdateGolfScoreboard();
   });
 
-  document.getElementById("btn-add-player")?.addEventListener("click", () => {
+  document.getElementById("btn-add-player")?.addEventListener("click", async () => {
     if (local.players.length >= 4) return;
     const n = local.players.length + 1;
     local.players.push({ name: `Player ${n}`, scores: Array(MAX_HOLES).fill(-1) });
@@ -404,15 +428,16 @@ function bindEvents() {
     sendUpdateGolfScoreboard();
   });
 
-  document.getElementById("btn-remove-player")?.addEventListener("click", () => {
+  document.getElementById("btn-remove-player")?.addEventListener("click", async () => {
     if (local.players.length <= 1) return;
+    if (!(await confirm("Remove the last player?"))) return;
     local.players.pop();
     renderAll();
     sendUpdateGolfScoreboard();
   });
 
-  document.getElementById("btn-new-round")?.addEventListener("click", () => {
-    if (!confirm("Start a new round? All scores will be cleared.")) return;
+  document.getElementById("btn-new-round")?.addEventListener("click", async () => {
+    if (!(await confirm("Start a new round? All scores will be cleared."))) return;
     local.players.forEach((p) => {
       p.scores = Array(MAX_HOLES).fill(-1);
     });
@@ -420,6 +445,9 @@ function bindEvents() {
     renderAll();
     sendUpdateGolfScoreboard();
   });
+
+  document.getElementById("confirm-ok")?.addEventListener("click", confirmOk);
+  document.getElementById("confirm-cancel")?.addEventListener("click", confirmCancel);
 }
 
 window.addEventListener("DOMContentLoaded", () => {
