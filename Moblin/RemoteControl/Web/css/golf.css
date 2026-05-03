@@ -103,23 +103,28 @@
 }
 
 .scorecard-table .birdie {
-  background: #14532d;
-  color: #4ade80;
+  background: #1d7942;
+  color: #d4d4d8;
 }
 
 .scorecard-table .eagle {
-  background: #052e16;
-  color: #86efac;
+  background: #315c95;
+  color: #d4d4d8;
 }
 
 .scorecard-table .bogey {
-  background: #450a0a;
-  color: #fca5a5;
+  background: #a21010;
+  color: #d4d4d8;
 }
 
 .scorecard-table .double-bogey {
-  background: #7f1d1d;
-  color: #fca5a5;
+  background: #6b1ca9;
+  color: #d4d4d8;
+}
+
+.scorecard-table .triple-bogey {
+  background: #683915;
+  color: #d4d4d8;
 }
 
 .scorecard-table .par-cell {

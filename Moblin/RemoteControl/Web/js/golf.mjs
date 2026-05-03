@@ -128,7 +128,8 @@ function scoreClass(strokes, par) {
   if (d === -1) return "birdie";
   if (d === 0) return "par-cell";
   if (d === 1) return "bogey";
-  return "double-bogey";
+  if (d === 2) return "double-bogey";
+  return "triple-bogey";
 }
 
 function totalClass(val) {
@@ -234,9 +235,13 @@ function selectHole(h) {
 
 function scoreOptionColor(score, par) {
   if (score < 0) return "";
-  if (score < par) return "#4ade80";
-  if (score > par) return "#f87171";
-  return "#d4d4d8";
+  const d = score - par;
+  if (d <= -2) return "#60a5fa";
+  if (d === -1) return "#4ade80";
+  if (d === 0) return "";
+  if (d === 1) return "#f74e4e";
+  if (d === 2) return "#c084fc";
+  return "#8a5a2b";
 }
 
 function renderScoreInputs() {
