@@ -257,8 +257,7 @@ function renderScoreInputs() {
         const color = scoreOptionColor(score, par);
         const rel = fmtRelPar(score - par);
         return `<option value="${score}"${val === score ? " selected" : ""} style="color:${color}">${score} (${rel})</option>`;
-      }).join("") +
-      `<option value="-1"${!hasScore ? " selected" : ""}>-</option>`;
+      }).join("") + `<option value="-1"${!hasScore ? " selected" : ""}>-</option>`;
     const selColor = hasScore ? scoreOptionColor(val, par) : "";
     const selStyle = selColor ? `style="color:${selColor}"` : "";
     row.innerHTML = `
