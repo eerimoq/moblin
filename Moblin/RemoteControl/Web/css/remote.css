@@ -108,7 +108,6 @@ input[type="color"]::-webkit-color-swatch {
   width: 100%;
 }
 
-/* Configuration Styles */
 details summary {
   cursor: pointer;
   color: var(--text-dim);
