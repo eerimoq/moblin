@@ -232,12 +232,20 @@ function selectHole(h) {
   sendUpdateGolfScoreboard();
 }
 
+function scoreOptionColor(score, par) {
+  if (score < 0) return "";
+  if (score < par) return "#4ade80";
+  if (score > par) return "#f87171";
+  return "#d4d4d8";
+}
+
 function renderScoreInputs() {
   const container = document.getElementById("player-score-inputs");
   if (!container) return;
   const holeNum = document.getElementById("entry-hole-num");
   if (holeNum) holeNum.textContent = String(local.currentHole + 1);
   container.innerHTML = "";
+  const par = local.pars[local.currentHole] ?? 4;
   local.players.forEach((p, i) => {
     const val = p.scores[local.currentHole];
     const hasScore = val >= 0;
@@ -245,20 +253,25 @@ function renderScoreInputs() {
     row.className = "flex items-center gap-2";
     const options =
       `<option value="-1"${!hasScore ? " selected" : ""}>-</option>` +
-      Array.from(
-        { length: MAX_SCORE },
-        (_, k) => `<option value="${k + 1}"${val === k + 1 ? " selected" : ""}>${k + 1}</option>`,
-      ).join("");
+      Array.from({ length: MAX_SCORE }, (_, k) => {
+        const score = k + 1;
+        const color = scoreOptionColor(score, par);
+        return `<option value="${score}"${val === score ? " selected" : ""} style="color:${color}">${score}</option>`;
+      }).join("");
+    const selColor = hasScore ? scoreOptionColor(val, par) : "";
+    const selStyle = selColor ? `style="color:${selColor}"` : "";
     row.innerHTML = `
       <span class="text-sm flex-1 truncate">${esc(p.name)}</span>
-      <select id="sv-${i}" class="score-select" data-p="${i}">${options}</select>`;
+      <select id="sv-${i}" class="score-select" data-p="${i}" ${selStyle}>${options}</select>`;
     container.appendChild(row);
   });
 
   container.querySelectorAll(".score-select").forEach((sel) => {
     sel.addEventListener("change", () => {
       const pi = parseInt(sel.dataset.p);
-      local.players[pi].scores[local.currentHole] = parseInt(sel.value);
+      const score = parseInt(sel.value);
+      local.players[pi].scores[local.currentHole] = score;
+      sel.style.color = scoreOptionColor(score, par);
       renderHoleButtons();
       renderLeaderboard();
       renderScorecard();
