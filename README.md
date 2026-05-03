@@ -90,6 +90,11 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - QR code widget.
   - Scene widget.
   - Video soure widget (for multi cam).
+  - Scoreboard widget.
+    - Padel.
+    - Golf.
+    - Volleyball.
+    - ...
   - ...
 - Back, front or multi camera.
   - Front camera mirrored on screen for natural experience.
