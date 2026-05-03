@@ -31,3 +31,28 @@ export function addOnBlur(elementId, func) {
 export function websocketUrl() {
   return `ws://${window.location.hostname}:${websocketPort}`;
 }
+
+let confirmComplete = null;
+let confirmResult = false;
+
+export async function confirm(message) {
+  document.getElementById("confirm-message").textContent = message;
+  const dialog = document.getElementById("confirm");
+  dialog.showModal();
+  await new Promise((resolve) => {
+    confirmComplete = (result) => {
+      confirmResult = result;
+      resolve();
+    };
+  });
+  dialog.close();
+  return confirmResult;
+}
+
+export function confirmOk() {
+  confirmComplete(true);
+}
+
+export function confirmCancel() {
+  confirmComplete(false);
+}

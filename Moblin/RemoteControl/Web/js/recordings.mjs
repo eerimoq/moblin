@@ -1,6 +1,6 @@
+import { confirm, confirmOk, confirmCancel } from "./utils.mjs";
+
 let previewEl = null;
-let confirmComplete = null;
-let confirmResult = false;
 
 const PREVIEW_CURSOR_MARGIN = 16;
 const PREVIEW_FALLBACK_WIDTH = 320;
@@ -222,28 +222,6 @@ function downloadFile(filename) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
-
-async function confirm(message) {
-  document.getElementById("confirm-message").textContent = message;
-  const dialog = document.getElementById("confirm");
-  dialog.showModal();
-  await new Promise((resolve) => {
-    confirmComplete = (result) => {
-      confirmResult = result;
-      resolve();
-    };
-  });
-  dialog.close();
-  return confirmResult;
-}
-
-function confirmOk() {
-  confirmComplete(true);
-}
-
-function confirmCancel() {
-  confirmComplete(false);
 }
 
 async function deleteRecording(filename) {

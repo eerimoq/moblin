@@ -1,4 +1,4 @@
-import { websocketUrl } from "./utils.mjs";
+import { websocketUrl, confirm, confirmOk, confirmCancel } from "./utils.mjs";
 
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
@@ -17,8 +17,6 @@ const local = {
 
 let ws = null;
 let requestId = 0;
-let confirmComplete = null;
-let confirmResult = false;
 
 function getRequestId() {
   return ++requestId;
@@ -150,28 +148,6 @@ function setStatus(text, cls) {
   const el = document.getElementById("status");
   el.textContent = text;
   el.className = `text-sm ${cls}`;
-}
-
-async function confirm(message) {
-  document.getElementById("confirm-message").textContent = message;
-  const dialog = document.getElementById("confirm");
-  dialog.showModal();
-  await new Promise((resolve) => {
-    confirmComplete = (result) => {
-      confirmResult = result;
-      resolve();
-    };
-  });
-  dialog.close();
-  return confirmResult;
-}
-
-function confirmOk() {
-  confirmComplete(true);
-}
-
-function confirmCancel() {
-  confirmComplete(false);
 }
 
 function renderAll() {

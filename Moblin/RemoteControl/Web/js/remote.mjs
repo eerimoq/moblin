@@ -1,4 +1,12 @@
-import { addOnChange, addOnClick, addOnBlur, websocketUrl } from "./utils.mjs";
+import {
+  addOnChange,
+  addOnClick,
+  addOnBlur,
+  websocketUrl,
+  confirm,
+  confirmOk,
+  confirmCancel,
+} from "./utils.mjs";
 
 let ws = null;
 let state = null;
@@ -6,8 +14,6 @@ let activeInputId = null;
 let currentsportId = null;
 let rangeCache = { min: 0, max: 30 };
 let requestId = 0;
-let confirmComplete = null;
-let confirmResult = false;
 
 const CONTROL_ORDER = [
   "primaryScore",
@@ -653,28 +659,6 @@ function adjTennis(t, v) {
   state[tKey].primaryScore = val;
   render();
   sendUpdateScoreboard();
-}
-
-async function confirm(message) {
-  document.getElementById("confirm-message").innerHTML = message;
-  const dialog = document.getElementById("confirm");
-  dialog.showModal();
-  await new Promise((resolve) => {
-    confirmComplete = (result) => {
-      confirmResult = result;
-      resolve();
-    };
-  });
-  dialog.close();
-  return confirmResult;
-}
-
-function confirmOk() {
-  confirmComplete(true);
-}
-
-function confirmCancel() {
-  confirmComplete(false);
 }
 
 function winGame(t) {
