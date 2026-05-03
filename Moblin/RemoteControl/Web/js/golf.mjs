@@ -388,13 +388,12 @@ function bindEvents() {
 
   document.getElementById("current-par")?.addEventListener("change", (e) => {
     const p = parseInt(e.target.value);
-    if (p >= 3 && p <= 5) {
-      local.pars[local.currentHole] = p;
-      renderScoreInputs();
-      renderLeaderboard();
-      renderScorecard();
-      sendUpdateGolfScoreboard();
-    }
+    if (isNaN(p)) return;
+    local.pars[local.currentHole] = p;
+    renderScoreInputs();
+    renderLeaderboard();
+    renderScorecard();
+    sendUpdateGolfScoreboard();
   });
 
   document.getElementById("btn-add-player")?.addEventListener("click", () => {
