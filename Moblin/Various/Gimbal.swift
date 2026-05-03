@@ -9,6 +9,7 @@ class Gimbal {
     private var accessoryTask: Task<Void, Never>?
     private var accessory: DockAccessory?
     private var shutterCount: Int = 0
+    private var tracking: Bool = true
     static var shared: Gimbal?
 
     init(model: Model) {
@@ -31,20 +32,30 @@ class Gimbal {
     func setTracking(on: Bool) {
         Task { @MainActor in
             try? await DockAccessoryManager.shared.setSystemTrackingEnabled(on)
+            tracking = on
         }
     }
 
     func setOrientation(angles: Vector3D) async {
+        guard !tracking else {
+            return
+        }
         _ = try? await accessory?.setOrientation(angles)
     }
 
     func animate(motion: DockAccessory.Animation) {
+        guard !tracking else {
+            return
+        }
         Task { @MainActor [weak self] in
             _ = try await self?.accessory?.animate(motion: motion)
         }
     }
 
     func setMovement(velocity: Vector3D) {
+        guard !tracking else {
+            return
+        }
         Task { @MainActor [weak self] in
             _ = try await self?.accessory?.setAngularVelocity(velocity)
         }
@@ -55,15 +66,21 @@ class Gimbal {
     }
 
     func getCurrentOrientation() async throws -> Vector3D? {
+        guard !tracking else {
+            return nil
+        }
         var iterator = try accessory?.motionStates.makeAsyncIterator()
         return await iterator?.next()?.angularPositions
     }
 
     private func handleStateChange(stateChange: DockAccessory.StateChange) throws {
-        logger.info("gimbal: State changed to \(stateChange.state)")
+        logger.info("""
+        gimbal: State changed to \(stateChange.state) with tracking button \
+        \(stateChange.trackingButtonEnabled)
+        """)
         switch stateChange.state {
         case .docked:
-            if let accessory = stateChange.accessory {
+            if let accessory = stateChange.accessory, accessory != self.accessory {
                 startAccessoryEventsHandler(accessory: accessory)
             }
         case .undocked:
