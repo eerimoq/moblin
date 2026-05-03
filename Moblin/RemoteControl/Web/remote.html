@@ -12,13 +12,11 @@
   </head>
   <body class="p-2">
     <div class="h-full flex flex-col max-w-lg mx-auto space-y-2">
-      <!-- Teams -->
       <div id="ctrl" class="opacity-30 pointer-events-none flex gap-2">
         <div id="t1a" class="flex-1 space-y-2"></div>
         <div id="t2a" class="flex-1 space-y-2"></div>
       </div>
 
-      <!-- Persistent Controls (Clock & Info) -->
       <div id="clock-details">
         <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
           <button id="toggle-clock" class="btn btn-top bg-indigo-600 text-white border-none">
@@ -43,20 +41,17 @@
         <div class="grid grid-cols-5 gap-1 mt-1" id="history-grid"></div>
       </details>
 
-      <!-- Actions -->
       <div class="grid grid-cols-2 gap-2">
         <button id="next-set" class="btn btn-ctrl border-zinc-600">Next set/period</button>
         <button id="new-match" class="btn btn-ctrl border-red-900 text-red-400">New match</button>
       </div>
 
-      <!-- Config Menu -->
       <details open>
         <summary>
           <span>SCOREBOARD CONFIGURATION</span>
           <span id="stat" class="status-text text-red-500">Disconnected</span>
         </summary>
         <div class="card grid grid-cols-4 gap-2 mt-1">
-          <!-- Selectors Moved Here -->
           <select id="sport-selector" class="col-span-2 btn h-9 text-[10px] bg-black">
             <option value="">LOADING...</option>
           </select>
@@ -79,7 +74,6 @@
         </div>
       </details>
 
-      <!-- Footer -->
       <div
         class="btn-top border border-zinc-800 rounded font-mono text-xs flex items-center justify-center gap-4 text-zinc-500"
       >
