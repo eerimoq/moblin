@@ -1944,6 +1944,13 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  imageOff: "increase.indent",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(name: String(localized: "Gimbal tracking"),
+                                 type: .gimbalTracking,
+                                 imageOn: "figure.stand",
+                                 imageOff: "figure.stand",
+                                 isOn: true,
+                                 page: page)
+    updateQuickButton(database: database, button: button)
 }
 
 private func addMissingQuickButtons(database: Database) {

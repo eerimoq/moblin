@@ -1,6 +1,19 @@
 import Foundation
 
 extension Model {
+    func setGimbalTracking(on: Bool) {
+        database.gimbal.tracking = on
+        if #available(iOS 18.0, *) {
+            Gimbal.shared?.setTracking(on: on)
+        }
+        setQuickButton(type: .gimbalTracking, isOn: on)
+        updateQuickButtonStates()
+    }
+
+    func toggleGimbalTracking() {
+        setGimbalTracking(on: !database.gimbal.tracking)
+    }
+
     func saveGimbalPreset(id: UUID?) {
         guard #available(iOS 18.0, *) else {
             return

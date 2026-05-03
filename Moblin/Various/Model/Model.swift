@@ -1184,6 +1184,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 18.0, *) {
             Gimbal.shared = Gimbal(model: self)
         }
+        setGimbalTracking(on: database.gimbal.tracking)
     }
 
     func reloadIngests() {

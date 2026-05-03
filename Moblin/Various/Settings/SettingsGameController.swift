@@ -76,6 +76,7 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     case gimbalRight = "Gimbal right"
     case gimbalPreset = "Gimbal preset"
     case gimbalAnimate = "Gimbal animate"
+    case gimbalTracking = "Gimbal tracking"
     case mute = "Mute"
     case torch = "Torch"
     case blackScreen = "Black screen"
@@ -126,6 +127,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
             return String(localized: "Gimbal preset")
         case .gimbalAnimate:
             return String(localized: "Gimbal animate")
+        case .gimbalTracking:
+            return String(localized: "Gimbal tracking")
         case .mute:
             return String(localized: "Mute")
         case .torch:
@@ -230,6 +233,8 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
         case .gimbalPreset:
             return .general
         case .gimbalAnimate:
+            return .general
+        case .gimbalTracking:
             return .general
         case .mute:
             return .general

@@ -28,6 +28,12 @@ class Gimbal {
         return accessory != nil
     }
 
+    func setTracking(on: Bool) {
+        Task { @MainActor in
+            try? await DockAccessoryManager.shared.setSystemTrackingEnabled(on)
+        }
+    }
+
     func setOrientation(angles: Vector3D) async {
         _ = try? await accessory?.setOrientation(angles)
     }
@@ -73,7 +79,6 @@ class Gimbal {
         shutterCount = 0
         accessoryTask = Task { @MainActor [weak self] in
             do {
-                try await DockAccessoryManager.shared.setSystemTrackingEnabled(false)
                 for await event in try accessory.accessoryEvents {
                     self?.handleAccessoryEvent(event)
                 }

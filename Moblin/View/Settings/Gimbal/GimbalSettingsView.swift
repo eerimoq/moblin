@@ -167,6 +167,14 @@ struct GimbalSettingsView: View {
                 Text("Zoom")
             }
             Section {
+                Toggle("Enabled", isOn: $gimbal.tracking)
+                    .onChange(of: gimbal.tracking) {
+                        model.setGimbalTracking(on: $0)
+                    }
+            } header: {
+                Text("Tracking")
+            }
+            Section {
                 ControllerButtonView(model: model,
                                      functions: functions(),
                                      function: $gimbal.functionShutter,
