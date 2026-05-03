@@ -211,11 +211,18 @@ function renderHoleButtons() {
   container.innerHTML = "";
   for (let h = 0; h < local.numberOfHoles; h++) {
     const btn = document.createElement("button");
-    const hasScore = local.players.some((p) => p.scores[h] >= 0);
-    btn.className =
-      "hole-btn" +
-      (h === local.currentHole ? " active" : "") +
-      (hasScore && h !== local.currentHole ? " played" : "");
+    const allScored = local.players.every((p) => p.scores[h] >= 0);
+    const anyScored = local.players.some((p) => p.scores[h] >= 0);
+    const isActive = h === local.currentHole;
+    let extraClass = "";
+    if (!isActive) {
+      if (allScored) {
+        extraClass = " complete";
+      } else if (anyScored) {
+        extraClass = " played";
+      }
+    }
+    btn.className = "hole-btn" + (isActive ? " active" : "") + extraClass;
     btn.textContent = String(h + 1);
     btn.addEventListener("click", () => selectHole(h));
     container.appendChild(btn);
