@@ -47,11 +47,14 @@
   color: #d4d4d8;
 }
 
-.score-display {
-  font-weight: 700;
-  font-size: 1.1rem;
-  min-width: 3rem;
-  text-align: center;
+.score-select {
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 0.25rem;
+  color: var(--text-main);
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
 }
 
 .score-under {

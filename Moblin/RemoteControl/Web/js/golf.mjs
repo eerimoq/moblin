@@ -3,6 +3,7 @@ import { websocketUrl, confirm, confirmOk, confirmCancel } from "./utils.mjs";
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
 const MAX_HOLES = DEFAULT_PARS_18.length;
+const MAX_SCORE = 9;
 
 const local = {
   title: "",
@@ -237,72 +238,33 @@ function renderScoreInputs() {
   const holeNum = document.getElementById("entry-hole-num");
   if (holeNum) holeNum.textContent = String(local.currentHole + 1);
   container.innerHTML = "";
-  const par = local.pars[local.currentHole] ?? 4;
   local.players.forEach((p, i) => {
     const val = p.scores[local.currentHole];
     const hasScore = val >= 0;
     const row = document.createElement("div");
     row.className = "flex items-center gap-2";
-    const relColor = hasScore
-      ? val - par < 0
-        ? "score-under"
-        : val - par > 0
-          ? "score-over"
-          : "score-even"
-      : "text-zinc-600";
+    const options =
+      `<option value="-1"${!hasScore ? " selected" : ""}>-</option>` +
+      Array.from(
+        { length: MAX_SCORE },
+        (_, k) => `<option value="${k + 1}"${val === k + 1 ? " selected" : ""}>${k + 1}</option>`,
+      ).join("");
     row.innerHTML = `
       <span class="text-sm flex-1 truncate">${esc(p.name)}</span>
-      <button class="btn btn-ctrl score-adj" data-p="${i}" data-d="-1">−</button>
-      <span id="sv-${i}" class="score-display ${relColor}">${hasScore ? val : "–"}</span>
-      <button class="btn btn-ctrl score-adj" data-p="${i}" data-d="1">+</button>
-      <button class="btn-xs border-zinc-700 text-zinc-500 clear-hole" data-p="${i}">✕</button>`;
+      <select id="sv-${i}" class="score-select" data-p="${i}">${options}</select>`;
     container.appendChild(row);
   });
 
-  container.querySelectorAll(".score-adj").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const pi = parseInt(btn.dataset.p);
-      const delta = parseInt(btn.dataset.d);
-      const cur = local.players[pi].scores[local.currentHole];
-      const next = (cur < 0 ? local.pars[local.currentHole] : cur) + delta;
-      local.players[pi].scores[local.currentHole] = Math.max(1, next);
-      refreshScoreCell(pi);
+  container.querySelectorAll(".score-select").forEach((sel) => {
+    sel.addEventListener("change", () => {
+      const pi = parseInt(sel.dataset.p);
+      local.players[pi].scores[local.currentHole] = parseInt(sel.value);
       renderHoleButtons();
       renderLeaderboard();
       renderScorecard();
       sendUpdateGolfScoreboard();
     });
   });
-
-  container.querySelectorAll(".clear-hole").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const pi = parseInt(btn.dataset.p);
-      local.players[pi].scores[local.currentHole] = -1;
-      refreshScoreCell(pi);
-      renderHoleButtons();
-      renderLeaderboard();
-      renderScorecard();
-      sendUpdateGolfScoreboard();
-    });
-  });
-}
-
-function refreshScoreCell(pi) {
-  const el = document.getElementById(`sv-${pi}`);
-  if (!el) return;
-  const val = local.players[pi].scores[local.currentHole];
-  const par = local.pars[local.currentHole] ?? 4;
-  const hasScore = val >= 0;
-  el.textContent = hasScore ? String(val) : "–";
-  el.className =
-    "score-display " +
-    (hasScore
-      ? val - par < 0
-        ? "score-under"
-        : val - par > 0
-          ? "score-over"
-          : "score-even"
-      : "text-zinc-600");
 }
 
 function renderLeaderboard() {

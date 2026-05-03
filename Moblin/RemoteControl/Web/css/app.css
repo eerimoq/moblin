@@ -683,9 +683,6 @@
   .text-zinc-500 {
     color: var(--color-zinc-500);
   }
-  .text-zinc-600 {
-    color: var(--color-zinc-600);
-  }
   .accent-indigo-600 {
     accent-color: var(--color-indigo-600);
   }
