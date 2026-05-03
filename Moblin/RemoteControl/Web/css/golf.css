@@ -2,8 +2,25 @@
   color: #4ade80;
 }
 
+.card {
+  background-color: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  padding: 6px;
+}
+
 .btn-xs {
   font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.new-round-btn {
+  height: 35px;
+  font-size: 14px;
   padding: 0.15rem 0.5rem;
   border-radius: 0.25rem;
   border-width: 1px;

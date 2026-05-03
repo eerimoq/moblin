@@ -91,20 +91,19 @@
         </table>
       </div>
 
-      <details>
-        <summary class="text-sm text-zinc-400 cursor-pointer py-1">Full Scorecard ▾</summary>
-        <div class="overflow-x-auto mt-2">
-          <table id="scorecard" class="scorecard-table text-xs"></table>
-        </div>
-      </details>
+      <div class="card">
+        <details>
+          <summary class="text-sm text-zinc-400 cursor-pointer py-1">Full Scorecard</summary>
+          <div class="overflow-x-auto mt-2">
+            <table id="scorecard" class="scorecard-table text-xs"></table>
+          </div>
+        </details>
+      </div>
 
-      <div class="grid grid-cols-2 gap-2 pb-4">
-        <button id="btn-new-round" class="btn btn-ctrl border-red-900 text-red-400">
+      <div class="card">
+        <button id="btn-new-round" class="new-round-btn border-zinc-700 text-red-400">
           New Round
         </button>
-        <a href="./index.html" class="btn btn-ctrl border-zinc-700 text-zinc-400 text-center">
-          ← Back
-        </a>
       </div>
     </div>
     <script src="js/golf.mjs" type="module"></script>
