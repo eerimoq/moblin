@@ -54,24 +54,25 @@ private struct StaticFile {
 }
 
 private let staticFiles: [StaticFile] = [
+    StaticFile("/", "favicon", "ico"),
+    StaticFile("/", "golf", "html"),
     StaticFile("/", "index", "html"),
+    StaticFile("/", "recordings", "html"),
     StaticFile("/", "remote", "html"),
     StaticFile("/", "scoreboard", "html"),
-    StaticFile("/", "golf", "html"),
-    StaticFile("/", "recordings", "html"),
     StaticFile("/", "volleyball", "png"),
-    StaticFile("/", "favicon", "ico"),
     StaticFile("/css/", "app", "css"),
-    StaticFile("/css/", "remote", "css"),
-    StaticFile("/css/", "scoreboard", "css"),
+    StaticFile("/css/", "common", "css"),
     StaticFile("/css/", "golf", "css"),
     StaticFile("/css/", "recordings", "css"),
+    StaticFile("/css/", "remote", "css"),
+    StaticFile("/css/", "scoreboard", "css"),
+    StaticFile("/js/", "golf", "mjs"),
     StaticFile("/js/", "index", "mjs"),
-    StaticFile("/js/", "utils", "mjs"),
+    StaticFile("/js/", "recordings", "mjs"),
     StaticFile("/js/", "remote", "mjs"),
     StaticFile("/js/", "scoreboard", "mjs"),
-    StaticFile("/js/", "golf", "mjs"),
-    StaticFile("/js/", "recordings", "mjs"),
+    StaticFile("/js/", "utils", "mjs"),
 ]
 
 private let recordingsPrefix = "/recordings/"

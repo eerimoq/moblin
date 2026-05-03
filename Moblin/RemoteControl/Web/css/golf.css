@@ -2,13 +2,6 @@
   color: #4ade80;
 }
 
-.card {
-  background-color: #18181b;
-  border: 1px solid #3f3f46;
-  border-radius: 8px;
-  padding: 6px;
-}
-
 .btn-xs {
   font-size: 0.7rem;
   padding: 0.15rem 0.5rem;
@@ -32,9 +25,9 @@
   width: 2rem;
   height: 2rem;
   border-radius: 0.25rem;
-  border: 1px solid #3f3f46;
-  background: #27272a;
-  color: #a1a1aa;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--text-dim);
   font-size: 0.75rem;
   cursor: pointer;
   display: flex;
@@ -70,7 +63,7 @@
 }
 
 .score-even {
-  color: #e4e4e7;
+  color: var(--text-main);
 }
 
 .scorecard-table {
@@ -80,22 +73,22 @@
 
 .scorecard-table th,
 .scorecard-table td {
-  border: 1px solid #3f3f46;
+  border: 1px solid var(--btn-border);
   padding: 2px 5px;
   text-align: center;
   white-space: nowrap;
 }
 
 .scorecard-table thead th {
-  background: #18181b;
-  color: #a1a1aa;
+  background: var(--card-bg);
+  color: var(--text-dim);
 }
 
 .scorecard-table .player-name-cell {
   text-align: left;
   font-weight: 600;
-  background: #18181b;
-  color: #e4e4e7;
+  background: var(--card-bg);
+  color: var(--text-main);
   max-width: 7rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -103,7 +96,7 @@
 
 .scorecard-table .total-cell {
   font-weight: 700;
-  background: #18181b;
+  background: var(--card-bg);
 }
 
 .scorecard-table .birdie {
@@ -137,17 +130,4 @@
 .ldr-total {
   font-weight: 700;
   font-size: 1rem;
-}
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  width: min(400px, calc(100vw - 2rem));
 }

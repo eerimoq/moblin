@@ -1,13 +1,3 @@
-:root {
-  --bg-color: #09090b;
-  --card-bg: #18181b;
-  --btn-bg: #27272a;
-  --btn-border: #3f3f46;
-  --text-main: #e4e4e7;
-  --text-dim: #a1a1aa;
-  --accent: #eab308;
-}
-
 body {
   background-color: var(--bg-color);
   color: var(--text-main);
@@ -48,13 +38,6 @@ input[type="color"] {
 
 input[type="color"]::-webkit-color-swatch {
   border: none;
-}
-
-.card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--btn-border);
-  border-radius: 8px;
-  padding: 6px;
 }
 
 .btn {
@@ -174,13 +157,4 @@ details summary {
 .status-text {
   font-weight: 800;
   text-transform: uppercase;
-}
-
-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  width: min(400px, calc(100vw - 2rem));
 }
