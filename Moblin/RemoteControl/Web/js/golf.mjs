@@ -252,13 +252,13 @@ function renderScoreInputs() {
     const row = document.createElement("div");
     row.className = "flex items-center gap-2";
     const options =
-      `<option value="-1"${!hasScore ? " selected" : ""}>-</option>` +
       Array.from({ length: MAX_SCORE }, (_, k) => {
-        const score = k + 1;
+        const score = MAX_SCORE - k;
         const color = scoreOptionColor(score, par);
         const rel = fmtRelPar(score - par);
         return `<option value="${score}"${val === score ? " selected" : ""} style="color:${color}">${score} (${rel})</option>`;
-      }).join("");
+      }).join("") +
+      `<option value="-1"${!hasScore ? " selected" : ""}>-</option>`;
     const selColor = hasScore ? scoreOptionColor(val, par) : "";
     const selStyle = selColor ? `style="color:${selColor}"` : "";
     row.innerHTML = `
