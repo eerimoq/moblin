@@ -3,6 +3,16 @@ import SwiftUI
 let scoreboardScoreFontSize = 37.0
 let scoreboardScoreBigFontSize = 45.0
 
+func formatScore(_ score: Int) -> String {
+    if score == 0 {
+        return String(localized: "E")
+    }
+    if score > 0 {
+        return "+\(score)"
+    }
+    return "\(score)"
+}
+
 struct TeamScoreView: View {
     var score: Int
 
@@ -26,8 +36,8 @@ struct PoweredByMoblinView: View {
                 .bold()
             Spacer()
         }
-        .padding(.horizontal, 3)
-        .padding(.bottom, 3)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 3)
         .background(backgroundColor)
     }
 }
@@ -64,6 +74,11 @@ final class ScoreboardEffect: VideoEffect {
                        primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
                        secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
                        golf: scoreboard.golf)
+        case .golfFullScorecard:
+            updateGolfFullScorecard(textColor: scoreboard.textColorColor,
+                                    primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
+                                    secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
+                                    golf: scoreboard.golf)
         default:
             updateModular(modular: scoreboard.modular, config: config)
         }
@@ -134,6 +149,21 @@ final class ScoreboardEffect: VideoEffect {
                                                primaryBackgroundColor: primaryBackgroundColor,
                                                secondaryBackgroundColor: secondaryBackgroundColor,
                                                golf: golf)
+        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+    }
+
+    @MainActor
+    private func updateGolfFullScorecard(textColor: Color,
+                                         primaryBackgroundColor: Color,
+                                         secondaryBackgroundColor: Color,
+                                         golf: SettingsWidgetGolfScoreboard)
+    {
+        let content = ScoreboardEffectGolfFullScorecardView(
+            textColor: textColor,
+            primaryBackgroundColor: primaryBackgroundColor,
+            secondaryBackgroundColor: secondaryBackgroundColor,
+            golf: golf
+        )
         setScoreboardImage(image: ImageRenderer(content: content).ciImage())
     }
 }

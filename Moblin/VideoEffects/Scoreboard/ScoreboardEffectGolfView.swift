@@ -2,16 +2,6 @@ import SwiftUI
 
 private let playerHeight = 35.0
 
-private func formatScore(_ score: Int) -> String {
-    if score == 0 {
-        return String(localized: "E")
-    }
-    if score > 0 {
-        return "+\(score)"
-    }
-    return "\(score)"
-}
-
 private struct PlayerNameView: View {
     let player: SettingsWidgetGolfScoreboardPlayer
 

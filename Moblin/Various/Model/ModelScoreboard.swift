@@ -355,6 +355,8 @@ extension Model {
                 break
             case .golf:
                 break
+            case .golfFullScorecard:
+                break
             case .generic:
                 guard !scoreboard.generic.clock.isStopped else {
                     continue
@@ -512,8 +514,21 @@ extension Model {
         }
     }
 
+    private func updateAllGolfScoreboardEffects(golf: SettingsWidgetGolfScoreboard) {
+        for widget in getEnabledScoreboardWidgetsInSelectedScene() {
+            let sport = widget.scoreboard.sport
+            guard sport == .golf || sport == .golfFullScorecard else {
+                continue
+            }
+            widget.scoreboard.golf = golf
+            updateGolfScoreboardEffect(widget: widget)
+        }
+    }
+
     func getGolfScoreboardForRemoteControl() -> RemoteControlGolfScoreboard {
-        let golf = getEnabledScoreboardWidgetsInSelectedScene().first?.scoreboard.golf
+        let golf = getEnabledScoreboardWidgetsInSelectedScene()
+            .first(where: { $0.scoreboard.sport == .golf })?
+            .scoreboard.golf
             ?? SettingsWidgetGolfScoreboard()
         let players = golf.players.map {
             RemoteControlGolfPlayer(name: $0.name, scores: $0.scores)
@@ -528,7 +543,9 @@ extension Model {
     }
 
     func handleExternalGolfScoreboardUpdate(remoteScorecard: RemoteControlGolfScoreboard) {
-        guard let widget = getEnabledScoreboardWidgetsInSelectedScene().first else {
+        guard let widget = getEnabledScoreboardWidgetsInSelectedScene()
+            .first(where: { $0.scoreboard.sport == .golf })
+        else {
             return
         }
         let golf = widget.scoreboard.golf
@@ -549,7 +566,7 @@ extension Model {
         while golf.players.count > remoteScorecard.players.count {
             golf.players.removeLast()
         }
-        updateGolfScoreboardEffect(widget: widget)
+        updateAllGolfScoreboardEffects(golf: golf)
         remoteControlWeb?.sendGolfScoreboardUpdate(data: remoteScorecard)
     }
 

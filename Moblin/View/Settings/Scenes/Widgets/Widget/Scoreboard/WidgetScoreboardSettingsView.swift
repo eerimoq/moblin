@@ -115,6 +115,9 @@ struct WidgetScoreboardSettingsView: View {
                 WidgetScoreboardGolfGeneralSettingsView(scoreboard: scoreboard,
                                                         golf: scoreboard.golf,
                                                         updated: updated)
+            case .golfFullScorecard:
+                WidgetScoreboardGolfFullScorecardGeneralSettingsView(scoreboard: scoreboard,
+                                                                     updated: updated)
             default:
                 WidgetScoreboardModularGeneralSettingsView(modular: scoreboard.modular,
                                                            updated: updated)
@@ -135,6 +138,8 @@ struct WidgetScoreboardSettingsView: View {
                 if !web.enabled {
                     Text("⚠️ The web based remote control is not enabled.")
                 }
+            case .golfFullScorecard:
+                Text("Use a golf scoreboard widget to control this widget.")
             default:
                 Text("Use the web based remote control on another device to update the scoreboard.")
                 if web.enabled {
@@ -159,6 +164,8 @@ struct WidgetScoreboardSettingsView: View {
                                                 updated: updated)
         case .golf:
             WidgetScoreboardGolfSettingsView(golf: scoreboard.golf, updated: updated)
+        case .golfFullScorecard:
+            EmptyView()
         default:
             WidgetScoreboardModularSettingsView(modular: scoreboard.modular,
                                                 clock: scoreboard.modular.clock,
