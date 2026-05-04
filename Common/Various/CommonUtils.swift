@@ -428,7 +428,7 @@ extension Data {
     }
 
     func getInt64Be(offset: Int = 0) -> Int64 {
-        return Int64(UInt64(getFourBytesBe(offset: offset)) << 32 |
+        return Int64(bitPattern: UInt64(getFourBytesBe(offset: offset)) << 32 |
             UInt64(getFourBytesBe(offset: offset + 4)))
     }
 

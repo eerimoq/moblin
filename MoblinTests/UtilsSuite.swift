@@ -92,4 +92,10 @@ struct UtilsSuite {
             #expect(third[3] == 0x0)
         }
     }
+
+    @Test
+    func getInt64() {
+        let data = Data(repeating: 0xFF, count: 8)
+        #expect(data.getInt64Be(offset: 0) == -1)
+    }
 }
