@@ -1,11 +1,4 @@
-import {
-  websocketUrl,
-  confirm,
-  confirmOk,
-  confirmCancel,
-  connectionStatus,
-  updateConnectionStatus,
-} from "./utils.mjs";
+import { confirm, confirmOk, confirmCancel, WebSocketConnection } from "./utils.mjs";
 
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
@@ -23,67 +16,42 @@ const local = {
   ],
 };
 
-let ws = null;
-let currentStatus = connectionStatus.connecting;
-let requestId = 0;
-
-function getRequestId() {
-  return ++requestId;
-}
-
-function send(msg) {
-  if (ws && ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(msg));
+class Connection extends WebSocketConnection {
+  onConnected() {
+    this.sendGetGolfScoreboard();
   }
-}
 
-function sendRequest(data) {
-  send({ request: { id: getRequestId(), data } });
-}
-
-function sendGetGolfScoreboard() {
-  sendRequest({ getGolfScoreboard: {} });
-}
-
-function sendUpdateGolfScoreboard() {
-  sendRequest({
-    updateGolfScoreboard: {
-      data: {
-        title: local.title,
-        numberOfHoles: local.numberOfHoles,
-        pars: local.pars,
-        currentHole: local.currentHole,
-        players: local.players.map((p) => ({ name: p.name, scores: p.scores })),
+  sendUpdateGolfScoreboard() {
+    this.sendRequest({
+      updateGolfScoreboard: {
+        data: {
+          title: local.title,
+          numberOfHoles: local.numberOfHoles,
+          pars: local.pars,
+          currentHole: local.currentHole,
+          players: local.players.map((p) => ({ name: p.name, scores: p.scores })),
+        },
       },
-    },
-  });
-}
-
-function connect() {
-  ws = new WebSocket(websocketUrl());
-  ws.onopen = () => {
-    setStatus(connectionStatus.connected);
-    sendGetGolfScoreboard();
-  };
-  ws.onclose = () => {
-    setStatus(connectionStatus.connecting);
-    setTimeout(connect, 3000);
-  };
-  ws.onerror = () => {
-    setStatus(connectionStatus.connecting);
-  };
-  ws.onmessage = (e) => {
-    handleMessage(JSON.parse(e.data));
-  };
-}
-
-function handleMessage(msg) {
-  if (msg.response?.data?.getGolfScoreboard) {
-    applyRemoteState(msg.response.data.getGolfScoreboard.data);
-    return;
+    });
   }
-  if (msg.event?.data?.golfScoreboard) {
-    applyRemoteState(msg.event.data.golfScoreboard.data);
+
+  handleResponse(id, result, data) {
+    if (!result.ok) {
+      console.log("Unsuccessful request: ", result);
+      return;
+    }
+    if (!data) {
+      return;
+    }
+    if (data.getGolfScoreboard) {
+      applyRemoteState(data.getGolfScoreboard.data);
+    }
+  }
+
+  handleEvent(data) {
+    if (data.golfScoreboard) {
+      applyRemoteState(data.golfScoreboard.data);
+    }
   }
 }
 
@@ -154,14 +122,6 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
-function setStatus(newStatus) {
-  if (currentStatus == newStatus) {
-    return;
-  }
-  currentStatus = newStatus;
-  updateConnectionStatus(currentStatus);
-}
-
 function renderAll() {
   syncEventInputs();
   renderPlayerList();
@@ -201,7 +161,7 @@ function renderPlayerList() {
       local.players[i].name = input.value || `Player ${i + 1}`;
       renderLeaderboard();
       renderScorecard();
-      sendUpdateGolfScoreboard();
+      connection.sendUpdateGolfScoreboard();
     });
     if (focusedId === `player-name-${i}`) {
       requestAnimationFrame(() => {
@@ -247,7 +207,7 @@ function selectHole(h) {
   local.currentHole = h;
   renderHoleButtons();
   renderScoreInputs();
-  sendUpdateGolfScoreboard();
+  connection.sendUpdateGolfScoreboard();
 }
 
 function scoreOptionColor(score, par) {
@@ -297,7 +257,7 @@ function renderScoreInputs() {
       renderHoleButtons();
       renderLeaderboard();
       renderScorecard();
-      sendUpdateGolfScoreboard();
+      connection.sendUpdateGolfScoreboard();
     });
   });
 }
@@ -368,7 +328,7 @@ function renderScorecard() {
 function bindEvents() {
   document.getElementById("title")?.addEventListener("blur", (e) => {
     local.title = e.target.value || "";
-    sendUpdateGolfScoreboard();
+    connection.sendUpdateGolfScoreboard();
   });
 
   document.getElementById("number-of-holes")?.addEventListener("change", (e) => {
@@ -380,7 +340,7 @@ function bindEvents() {
     renderScoreInputs();
     renderLeaderboard();
     renderScorecard();
-    sendUpdateGolfScoreboard();
+    connection.sendUpdateGolfScoreboard();
   });
 
   document.getElementById("current-par")?.addEventListener("change", (e) => {
@@ -390,7 +350,7 @@ function bindEvents() {
     renderScoreInputs();
     renderLeaderboard();
     renderScorecard();
-    sendUpdateGolfScoreboard();
+    connection.sendUpdateGolfScoreboard();
   });
 
   document.getElementById("btn-add-player")?.addEventListener("click", async () => {
@@ -398,7 +358,7 @@ function bindEvents() {
     const n = local.players.length + 1;
     local.players.push({ name: `Player ${n}`, scores: Array(MAX_HOLES).fill(-1) });
     renderAll();
-    sendUpdateGolfScoreboard();
+    connection.sendUpdateGolfScoreboard();
   });
 
   document.getElementById("btn-remove-player")?.addEventListener("click", async () => {
@@ -406,7 +366,7 @@ function bindEvents() {
     if (!(await confirm("Remove the last player?"))) return;
     local.players.pop();
     renderAll();
-    sendUpdateGolfScoreboard();
+    connection.sendUpdateGolfScoreboard();
   });
 
   document.getElementById("btn-new-round")?.addEventListener("click", async () => {
@@ -416,15 +376,16 @@ function bindEvents() {
     });
     local.currentHole = 0;
     renderAll();
-    sendUpdateGolfScoreboard();
+    connection.sendUpdateGolfScoreboard();
   });
 
   document.getElementById("confirm-ok")?.addEventListener("click", confirmOk);
   document.getElementById("confirm-cancel")?.addEventListener("click", confirmCancel);
 }
 
+let connection = new Connection();
+
 window.addEventListener("DOMContentLoaded", () => {
   renderAll();
   bindEvents();
-  connect();
 });

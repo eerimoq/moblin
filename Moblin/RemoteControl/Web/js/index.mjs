@@ -3,9 +3,7 @@ import {
   getTableBodyNoHead,
   addOnChange,
   addOnClick,
-  websocketUrl,
-  connectionStatus,
-  updateConnectionStatus,
+  WebSocketConnection,
 } from "./utils.mjs";
 
 const filterNames = {
@@ -61,33 +59,16 @@ function formatBytesPerSecond(bps) {
   return bps + " bps";
 }
 
-class Connection {
+class Connection extends WebSocketConnection {
   constructor() {
+    super();
     this.statusTimerId = undefined;
-    this.connectTimerId = undefined;
-    this.nextId = 1;
-    this.status = connectionStatus.connecting;
-    this.connect();
   }
 
-  connect() {
-    this.websocket = new WebSocket(websocketUrl());
-    this.websocket.onopen = () => {
-      this.setStatus(connectionStatus.connected);
-      this.sendStartStatusRequest();
-      this.sendGetStatusRequest();
-      this.sendGetSettingsRequest();
-    };
-    this.websocket.onerror = () => {
-      this.reconnectSoon();
-    };
-    this.websocket.onclose = () => {
-      this.reconnectSoon();
-    };
-    this.websocket.onmessage = async (event) => {
-      let message = JSON.parse(event.data);
-      await this.handleMessage(message);
-    };
+  onConnected() {
+    this.sendStartStatusRequest();
+    this.sendGetStatusRequest();
+    this.sendGetSettingsRequest();
   }
 
   reconnectSoon() {
@@ -95,163 +76,7 @@ class Connection {
       clearTimeout(this.statusTimerId);
       this.statusTimerId = undefined;
     }
-    if (this.websocket != undefined) {
-      this.websocket.close();
-    }
-    if (this.connectTimerId != undefined) {
-      clearTimeout(this.connectTimerId);
-    }
-    this.setStatus(connectionStatus.connecting);
-    this.connectTimerId = setTimeout(() => {
-      this.connectTimerId = undefined;
-      this.connect();
-    }, 5000);
-  }
-
-  setStatus(newStatus) {
-    if (this.status == newStatus) {
-      return;
-    }
-    this.status = newStatus;
-    updateConnectionStatus(connection.status);
-  }
-
-  setLive(on) {
-    this.sendRequest({
-      setStream: {
-        on: on,
-      },
-    });
-  }
-
-  setRecording(on) {
-    this.sendRequest({
-      setRecord: {
-        on: on,
-      },
-    });
-  }
-
-  setMuted(on) {
-    this.sendRequest({
-      setMute: {
-        on: on,
-      },
-    });
-  }
-
-  setDebugLogging(on) {
-    this.sendRequest({
-      setDebugLogging: {
-        on: on,
-      },
-    });
-  }
-
-  setZoom(x) {
-    this.sendRequest({
-      setZoom: {
-        x: x,
-      },
-    });
-  }
-
-  setZoomPreset(id) {
-    this.sendRequest({
-      setZoomPreset: {
-        id: id,
-      },
-    });
-  }
-
-  setScene(id) {
-    this.sendRequest({
-      setScene: {
-        id: id,
-      },
-    });
-  }
-
-  setAutoSceneSwitcher(id) {
-    this.sendRequest({
-      setAutoSceneSwitcher: {
-        id: id,
-      },
-    });
-  }
-
-  setMic(id) {
-    this.sendRequest({
-      setMic: {
-        id: id,
-      },
-    });
-  }
-
-  setBitratePreset(id) {
-    this.sendRequest({
-      setBitratePreset: {
-        id: id,
-      },
-    });
-  }
-
-  reloadBrowserWidgets() {
-    this.sendRequest("reloadBrowserWidgets");
-  }
-
-  setSrtConnectionPrioritiesEnabled(enabled) {
-    this.sendRequest({
-      setSrtConnectionPrioritiesEnabled: {
-        enabled: enabled,
-      },
-    });
-  }
-
-  setSrtConnectionPriority(id, priority, enabled) {
-    this.sendRequest({
-      setSrtConnectionPriority: {
-        id: id,
-        priority: priority,
-        enabled: enabled,
-      },
-    });
-  }
-
-  moveToGimbalPreset(id) {
-    this.sendRequest({
-      moveToGimbalPreset: {
-        id: id,
-      },
-    });
-  }
-
-  setFilter(filter, on) {
-    this.sendRequest({
-      setFilter: {
-        filter: { [filter]: {} },
-        on: on,
-      },
-    });
-  }
-
-  getNextId() {
-    this.nextId += 1;
-    return this.nextId;
-  }
-
-  async handleMessage(message) {
-    if (message.ping) {
-      this.handlePing();
-    } else if (message.response) {
-      this.handleResponse(message.response.id, message.response.result, message.response.data);
-    } else if (message.event) {
-      this.handleEvent(message.event.data);
-    }
-  }
-
-  handlePing() {
-    this.send({ pong: {} });
+    super.reconnectSoon();
   }
 
   handleResponse(id, result, data) {
@@ -332,42 +157,6 @@ class Connection {
     let entry = document.createElement("div");
     entry.textContent = log.entry;
     document.getElementById("log").appendChild(entry);
-  }
-
-  sendGetStatusRequest() {
-    this.sendRequest({
-      getStatus: {},
-    });
-  }
-
-  sendGetSettingsRequest() {
-    this.sendRequest({
-      getSettings: {},
-    });
-  }
-
-  sendStartStatusRequest() {
-    this.sendRequest({
-      startStatus: {
-        interval: 1,
-        filter: {
-          topRight: true,
-        },
-      },
-    });
-  }
-
-  sendRequest(data) {
-    this.send({
-      request: {
-        id: this.getNextId(),
-        data: data,
-      },
-    });
-  }
-
-  send(message) {
-    this.websocket.send(JSON.stringify(message));
   }
 }
 
