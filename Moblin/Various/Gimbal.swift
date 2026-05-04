@@ -44,20 +44,20 @@ class Gimbal {
     }
 
     func animate(motion: DockAccessory.Animation) {
-        guard !tracking else {
-            return
-        }
         Task { @MainActor [weak self] in
-            _ = try await self?.accessory?.animate(motion: motion)
+            guard let self, !tracking else {
+                return
+            }
+            _ = try await accessory?.animate(motion: motion)
         }
     }
 
     func setMovement(velocity: Vector3D) {
-        guard !tracking else {
-            return
-        }
         Task { @MainActor [weak self] in
-            _ = try await self?.accessory?.setAngularVelocity(velocity)
+            guard let self, !tracking else {
+                return
+            }
+            _ = try await accessory?.setAngularVelocity(velocity)
         }
     }
 
