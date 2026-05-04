@@ -87,6 +87,15 @@ function totalRelativeToPar(playerIndex) {
   return total;
 }
 
+function totalStrokes(playerIndex) {
+  let total = 0;
+  for (let h = 0; h < local.numberOfHoles; h++) {
+    const s = local.players[playerIndex].scores[h];
+    if (s >= 0) total += s;
+  }
+  return total;
+}
+
 function holesPlayed(playerIndex) {
   return local.players[playerIndex].scores.slice(0, local.numberOfHoles).filter((s) => s >= 0)
     .length;
@@ -310,6 +319,7 @@ function renderScorecard() {
 
   local.players.forEach((p, i) => {
     const total = totalRelativeToPar(i);
+    const strokes = totalStrokes(i);
     const tr = document.createElement("tr");
     let cells = `<td class="player-name-cell">${esc(p.name)}</td>`;
     for (let h = 0; h < local.numberOfHoles; h++) {
@@ -317,7 +327,8 @@ function renderScorecard() {
       const cls = scoreClass(s, local.pars[h]);
       cells += `<td class="${cls}">${s >= 0 ? s : ""}</td>`;
     }
-    cells += `<td class="total-cell ${totalClass(total)}">${fmtRelPar(total)}</td>`;
+    const totalText = strokes > 0 ? `${strokes} (${fmtRelPar(total)})` : fmtRelPar(total);
+    cells += `<td class="total-cell ${totalClass(total)}">${totalText}</td>`;
     tr.innerHTML = cells;
     tbody.appendChild(tr);
   });
