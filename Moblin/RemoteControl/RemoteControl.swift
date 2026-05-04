@@ -138,7 +138,7 @@ enum RemoteControlFilter: Codable, CaseIterable {
     case moblinInMouth
     case cameraMan
 
-    init(type: SettingsQuickButtonType) {
+    init?(type: SettingsQuickButtonType) {
         switch type {
         case .pixellate:
             self = .pixellate
@@ -173,7 +173,7 @@ enum RemoteControlFilter: Codable, CaseIterable {
         case .cameraMan:
             self = .cameraMan
         default:
-            self = .pixellate
+            return nil
         }
     }
 
