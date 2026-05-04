@@ -13,11 +13,23 @@
   </head>
   <body class="bg-zinc-950 text-zinc-100 font-sans p-2">
     <div class="max-w-3xl mx-auto space-y-2">
-      <h1 class="text-xl font-bold text-center golf-title">⛳ Golf Scoreboard</h1>
+      <h1 class="text-2xl font-bold text-center">Moblin Golf Scoreboard</h1>
 
-      <div class="text-center text-sm">
-        <span id="status" class="text-zinc-500">Connecting…</span>
+      <div class="text-center space-x-4">
+        <a href="./" class="text-indigo-400 hover:text-indigo-300 text-sm">Remote Control</a>
+        <a
+          href="https://github.com/eerimoq/moblin"
+          target="_blank"
+          class="text-indigo-400 hover:text-indigo-300 text-sm"
+        >
+          Github
+        </a>
       </div>
+
+      <div class="pb-1 text-center">
+        <span id="status" class="text-sm"></span>
+      </div>
+
       <div class="card">
         <div class="text-xs text-zinc-500 mb-2">Event</div>
         <div class="grid grid-cols-2 gap-2">
@@ -115,7 +127,7 @@
     </div>
     <dialog id="confirm" class="backdrop:bg-black/60 rounded-xl p-0">
       <form method="dialog" class="bg-zinc-900 text-zinc-100">
-        <div class="p-4">
+        <div class="p-2">
           <p id="confirm-message" class="text-zinc-300">The message</p>
         </div>
         <div class="bg-zinc-800/60 px-4 py-3 sm:px-5 flex items-center justify-end gap-2">

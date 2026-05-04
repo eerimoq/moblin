@@ -4,12 +4,9 @@ import {
   addOnChange,
   addOnClick,
   websocketUrl,
+  connectionStatus,
+  updateConnectionStatus,
 } from "./utils.mjs";
-
-export const connectionStatus = {
-  connecting: "Connecting...",
-  connected: "Connected",
-};
 
 const filterNames = {
   pixellate: "Pixellate",
@@ -116,7 +113,7 @@ class Connection {
       return;
     }
     this.status = newStatus;
-    updateConnectionStatus();
+    updateConnectionStatus(connection.status);
   }
 
   setLive(on) {
@@ -427,16 +424,6 @@ function appendStatuses(body, statuses) {
     }
     appendStatusRow(body, name, statuses[key].message);
   }
-}
-
-function updateConnectionStatus() {
-  let status = '<span class="text-red-500">Unknown server status</span>';
-  if (connection.status == connectionStatus.connecting) {
-    status = '<span class="text-yellow-400">Connecting to server</span>';
-  } else if (connection.status == connectionStatus.connected) {
-    status = '<span class="text-green-500">Connected to server</span>';
-  }
-  document.getElementById("status").innerHTML = status;
 }
 
 function populateSettings(settingsData) {

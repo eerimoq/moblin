@@ -1,4 +1,11 @@
-import { websocketUrl, confirm, confirmOk, confirmCancel } from "./utils.mjs";
+import {
+  websocketUrl,
+  confirm,
+  confirmOk,
+  confirmCancel,
+  connectionStatus,
+  updateConnectionStatus,
+} from "./utils.mjs";
 
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
@@ -17,6 +24,7 @@ const local = {
 };
 
 let ws = null;
+let currentStatus = connectionStatus.connecting;
 let requestId = 0;
 
 function getRequestId() {
@@ -54,15 +62,15 @@ function sendUpdateGolfScoreboard() {
 function connect() {
   ws = new WebSocket(websocketUrl());
   ws.onopen = () => {
-    setStatus("Connected", "text-green-500");
+    setStatus(connectionStatus.connected);
     sendGetGolfScoreboard();
   };
   ws.onclose = () => {
-    setStatus("Disconnected – reconnecting…", "text-red-500");
+    setStatus(connectionStatus.connecting);
     setTimeout(connect, 3000);
   };
   ws.onerror = () => {
-    setStatus("Connection error", "text-yellow-500");
+    setStatus(connectionStatus.connecting);
   };
   ws.onmessage = (e) => {
     handleMessage(JSON.parse(e.data));
@@ -146,10 +154,12 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
-function setStatus(text, cls) {
-  const el = document.getElementById("status");
-  el.textContent = text;
-  el.className = `text-sm ${cls}`;
+function setStatus(newStatus) {
+  if (currentStatus == newStatus) {
+    return;
+  }
+  currentStatus = newStatus;
+  updateConnectionStatus(currentStatus);
 }
 
 function renderAll() {

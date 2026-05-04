@@ -7,11 +7,11 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="stylesheet" href="css/app.css" />
   </head>
-  <body class="bg-zinc-950 text-zinc-100 font-sans p-4">
-    <div class="max-w-3xl mx-auto space-y-4">
+  <body class="bg-zinc-950 text-zinc-100 font-sans p-2">
+    <div class="max-w-3xl mx-auto space-y-2">
       <h1 class="text-2xl font-bold text-center">Moblin Remote Control</h1>
 
-      <div class="pb-1 text-center space-x-4">
+      <div class="text-center space-x-4">
         <a href="./remote.html" class="text-indigo-400 hover:text-indigo-300 text-sm"
           >Scoreboard Control</a
         >
@@ -32,10 +32,12 @@
           Github
         </a>
       </div>
+
       <div class="pb-1 text-center">
         <span id="status" class="text-sm"></span>
       </div>
-      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
         <h2 class="text-xl font-semibold mb-3">Status</h2>
         <h3 class="text-base font-medium text-zinc-300 mb-1">General</h3>
         <div class="overflow-x-auto">
@@ -57,7 +59,7 @@
         </div>
       </div>
 
-      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
         <h2 class="text-xl font-semibold mb-3">Control</h2>
         <div id="controlSection" class="space-y-3 hidden">
           <label class="flex items-center cursor-pointer">
@@ -180,7 +182,7 @@
           </div>
         </div>
       </div>
-      <div id="srtSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-4 hidden">
+      <div id="srtSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-2 hidden">
         <h2 class="text-xl font-semibold mb-3">SRT Connection Priorities</h2>
         <label class="flex items-center cursor-pointer mb-3">
           <div class="relative flex items-center">
@@ -200,15 +202,15 @@
         </label>
         <div id="srtPriorities" class="space-y-2"></div>
       </div>
-      <div id="gimbalSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-4 hidden">
+      <div id="gimbalSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-2 hidden">
         <h2 class="text-xl font-semibold mb-3">Gimbal Presets</h2>
         <div id="gimbalPresets" class="flex flex-wrap gap-2"></div>
       </div>
-      <div id="filtersSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-4 hidden">
+      <div id="filtersSection" class="bg-zinc-900 border border-zinc-700 rounded-lg p-2 hidden">
         <h2 class="text-xl font-semibold mb-3">Filters</h2>
         <div id="filterToggles" class="space-y-3"></div>
       </div>
-      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
         <h2 class="text-xl font-semibold mb-3">Log</h2>
         <div id="log" class="overflow-y-auto h-96 text-sm text-zinc-300"></div>
       </div>

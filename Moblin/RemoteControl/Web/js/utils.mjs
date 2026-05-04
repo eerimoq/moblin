@@ -56,3 +56,18 @@ export function confirmOk() {
 export function confirmCancel() {
   confirmComplete(false);
 }
+
+export const connectionStatus = {
+  connecting: "Connecting...",
+  connected: "Connected",
+};
+
+export function updateConnectionStatus(currentStatus) {
+  let status = '<span class="text-red-500">Unknown server status</span>';
+  if (currentStatus == connectionStatus.connecting) {
+    status = '<span class="text-yellow-400">Connecting to server</span>';
+  } else if (currentStatus == connectionStatus.connected) {
+    status = '<span class="text-green-500">Connected to server</span>';
+  }
+  document.getElementById("status").innerHTML = status;
+}
