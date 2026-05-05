@@ -18,6 +18,18 @@ private struct ActionView: View {
         }
     }
 
+    private func isDjiDeviceSelected(id: UUID) -> Bool {
+        action.djiDevices.contains(id)
+    }
+
+    private func setDjiDeviceSelected(id: UUID, selected: Bool) {
+        if selected {
+            action.djiDevices.insert(id)
+        } else {
+            action.djiDevices.remove(id)
+        }
+    }
+
     private func submitZoomX(zoomX: String) {
         guard let zoomX = Float(zoomX) else {
             return
@@ -100,6 +112,17 @@ private struct ActionView: View {
                                     .tag($0.id as UUID?)
                             }
                         }
+                    case .djiDevices:
+                        ForEach(database.djiDevices.devices) { device in
+                            Toggle(device.name, isOn: Binding(
+                                get: {
+                                    isDjiDeviceSelected(id: device.id)
+                                },
+                                set: {
+                                    setDjiDeviceSelected(id: device.id, selected: $0)
+                                }
+                            ))
+                        }
                     case nil:
                         EmptyView()
                     }
@@ -146,6 +169,8 @@ private struct ActionView: View {
                         Spacer()
                         GrayTextView(text: macroName)
                     }
+                case .djiDevices:
+                    EmptyView()
                 case nil:
                     EmptyView()
                 }

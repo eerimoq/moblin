@@ -67,6 +67,8 @@ extension Model {
                                        macro: macro)
         case .macro:
             executeNext = executeMacro(action: action, macro: macro)
+        case .djiDevices:
+            executeNext = executeDjiDevices(action: action)
         case nil:
             executeNext = true
         }
@@ -132,6 +134,11 @@ extension Model {
             return true
         }
         macro.stack.append(subMacro.copy())
+        return true
+    }
+
+    private func executeDjiDevices(action: SettingsMacrosAction) -> Bool {
+        reloadDjiDevices(enabledDeviceIds: action.djiDevices)
         return true
     }
 

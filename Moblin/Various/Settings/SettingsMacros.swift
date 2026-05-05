@@ -10,6 +10,7 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case gimbalPreset = "Move to gimbal preset"
     case delay = "Delay"
     case macro = "Macro"
+    case djiDevices = "DJI devices"
 
     func toString() -> String {
         switch self {
@@ -31,6 +32,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             return String(localized: "Delay")
         case .macro:
             return String(localized: "Run macro")
+        case .djiDevices:
+            return String(localized: "DJI devices")
         }
     }
 }
@@ -45,6 +48,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var gimbalPresetId: UUID?
     @Published var delay: Double = 3
     @Published var macroId: UUID?
+    @Published var djiDevices: Set<UUID> = []
 
     init() {}
 
@@ -57,7 +61,8 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
              zoomX,
              gimbalPresetId,
              delay,
-             macroId
+             macroId,
+             djiDevices
     }
 
     func encode(to encoder: Encoder) throws {
@@ -71,6 +76,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.gimbalPresetId, gimbalPresetId)
         try container.encode(.delay, delay)
         try container.encode(.macroId, macroId)
+        try container.encode(.djiDevices, djiDevices)
     }
 
     required init(from decoder: Decoder) throws {
@@ -84,6 +90,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
         delay = container.decode(.delay, Double.self, 3)
         macroId = container.decode(.macroId, UUID?.self, nil)
+        djiDevices = container.decode(.djiDevices, Set<UUID>.self, [])
     }
 }
 

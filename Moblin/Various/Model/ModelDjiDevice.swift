@@ -11,6 +11,9 @@ class DjiDeviceWrapper {
 
 extension Model {
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
+        guard device.canStartLive() else {
+            return
+        }
         if !djiDeviceWrappers.keys.contains(device.id) {
             let djiDevice = DjiDevice()
             djiDevice.delegate = self
@@ -21,6 +24,116 @@ extension Model {
         }
         device.isStarted = true
         startDjiDeviceLiveStreamInternal(djiDeviceWrapper: djiDeviceWrapper, device: device)
+    }
+
+    func stopDjiDeviceLiveStream(device: SettingsDjiDevice) {
+        device.isStarted = false
+        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+            return
+        }
+        djiDeviceWrapper.device.stopLiveStream()
+        stopDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper)
+    }
+
+    func restartDjiLiveStreamIfNeededAfterDelay(device: SettingsDjiDevice) {
+        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+            return
+        }
+        djiDeviceWrapper.autoRestartStreamTimer = DispatchSource
+            .makeTimerSource(queue: DispatchQueue.main)
+        djiDeviceWrapper.autoRestartStreamTimer!.schedule(deadline: .now() + 5)
+        djiDeviceWrapper.autoRestartStreamTimer!.setEventHandler { [weak self] in
+            self?.restartDjiLiveStreamIfNeeded(device: device)
+        }
+        djiDeviceWrapper.autoRestartStreamTimer!.activate()
+    }
+
+    func markDjiIsStreamingIfNeeded(rtmpServerStreamId: UUID) {
+        for device in database.djiDevices.devices {
+            guard device.rtmpUrlType == .server, device.serverRtmpStreamId == rtmpServerStreamId else {
+                continue
+            }
+            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+                continue
+            }
+            djiDeviceWrapper.autoRestartStreamTimer?.cancel()
+            djiDeviceWrapper.autoRestartStreamTimer = nil
+        }
+    }
+
+    func setCurrentDjiDevice(device: SettingsDjiDevice) {
+        currentDjiDeviceSettings = device
+        statusTopRight.djiDeviceStreamingState = djiDeviceWrappers[device.id]?.device.getState()
+    }
+
+    func reloadDjiDevices() {
+        for deviceId in djiDeviceWrappers.keys {
+            guard let device = database.djiDevices.devices.first(where: { $0.id == deviceId }) else {
+                continue
+            }
+            guard device.isStarted else {
+                continue
+            }
+            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+                return
+            }
+            guard djiDeviceWrapper.device.getState() != .streaming else {
+                return
+            }
+            startDjiDeviceLiveStream(device: device)
+        }
+    }
+
+    func reloadDjiDevices(enabledDeviceIds: Set<UUID>) {
+        for device in database.djiDevices.devices {
+            if enabledDeviceIds.contains(device.id) {
+                if !device.isStarted {
+                    startDjiDeviceLiveStream(device: device)
+                }
+            } else {
+                stopDjiDeviceLiveStream(device: device)
+            }
+        }
+    }
+
+    func autoStartDjiDevices() {
+        for device in database.djiDevices.devices where device.isStarted {
+            startDjiDeviceLiveStream(device: device)
+        }
+    }
+
+    func removeDjiDevices(offsets: IndexSet) {
+        for offset in offsets {
+            let device = database.djiDevices.devices[offset]
+            stopDjiDeviceLiveStream(device: device)
+            djiDeviceWrappers.removeValue(forKey: device.id)
+        }
+        database.djiDevices.devices.remove(atOffsets: offsets)
+    }
+
+    func updateDjiDevicesStatus() {
+        var statuses: [String] = []
+        for device in database.djiDevices.devices {
+            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
+                continue
+            }
+            guard djiDeviceWrapper.device.getState() == .streaming else {
+                continue
+            }
+            let (status, ok) = formatDeviceStatus(
+                name: device.name,
+                batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage(),
+                thermalState: nil
+            )
+            statuses.append(status)
+            if !ok, database.chat.botEnabled, database.chat.botSendLowBatteryWarning {
+                sendChatMessage(message: "Moblin bot: \(lowBatteryMessage): \(status)")
+            }
+        }
+        let status = statuses.joined(separator: ", ")
+        if status != statusTopRight.djiDevicesStatus {
+            statusTopRight.djiDevicesStatus = status
+        }
     }
 
     private func startDjiDeviceLiveStreamInternal(
@@ -73,28 +186,6 @@ extension Model {
         djiDeviceWrapper.autoRestartStreamTimer = nil
     }
 
-    func stopDjiDeviceLiveStream(device: SettingsDjiDevice) {
-        device.isStarted = false
-        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-            return
-        }
-        djiDeviceWrapper.device.stopLiveStream()
-        stopDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper)
-    }
-
-    func restartDjiLiveStreamIfNeededAfterDelay(device: SettingsDjiDevice) {
-        guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-            return
-        }
-        djiDeviceWrapper.autoRestartStreamTimer = DispatchSource
-            .makeTimerSource(queue: DispatchQueue.main)
-        djiDeviceWrapper.autoRestartStreamTimer!.schedule(deadline: .now() + 5)
-        djiDeviceWrapper.autoRestartStreamTimer!.setEventHandler { [weak self] in
-            self?.restartDjiLiveStreamIfNeeded(device: device)
-        }
-        djiDeviceWrapper.autoRestartStreamTimer!.activate()
-    }
-
     private func restartDjiLiveStreamIfNeeded(device: SettingsDjiDevice) {
         switch device.rtmpUrlType {
         case .server:
@@ -114,84 +205,8 @@ extension Model {
         startDjiDeviceLiveStreamInternal(djiDeviceWrapper: djiDeviceWrapper, device: device)
     }
 
-    func markDjiIsStreamingIfNeeded(rtmpServerStreamId: UUID) {
-        for device in database.djiDevices.devices {
-            guard device.rtmpUrlType == .server, device.serverRtmpStreamId == rtmpServerStreamId else {
-                continue
-            }
-            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-                continue
-            }
-            djiDeviceWrapper.autoRestartStreamTimer?.cancel()
-            djiDeviceWrapper.autoRestartStreamTimer = nil
-        }
-    }
-
     private func getDjiDeviceSettings(djiDevice: DjiDevice) -> SettingsDjiDevice? {
         return database.djiDevices.devices.first(where: { djiDeviceWrappers[$0.id]?.device === djiDevice })
-    }
-
-    func setCurrentDjiDevice(device: SettingsDjiDevice) {
-        currentDjiDeviceSettings = device
-        statusTopRight.djiDeviceStreamingState = djiDeviceWrappers[device.id]?.device.getState()
-    }
-
-    func reloadDjiDevices() {
-        for deviceId in djiDeviceWrappers.keys {
-            guard let device = database.djiDevices.devices.first(where: { $0.id == deviceId }) else {
-                continue
-            }
-            guard device.isStarted else {
-                continue
-            }
-            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-                return
-            }
-            guard djiDeviceWrapper.device.getState() != .streaming else {
-                return
-            }
-            startDjiDeviceLiveStream(device: device)
-        }
-    }
-
-    func autoStartDjiDevices() {
-        for device in database.djiDevices.devices where device.isStarted {
-            startDjiDeviceLiveStream(device: device)
-        }
-    }
-
-    func removeDjiDevices(offsets: IndexSet) {
-        for offset in offsets {
-            let device = database.djiDevices.devices[offset]
-            stopDjiDeviceLiveStream(device: device)
-            djiDeviceWrappers.removeValue(forKey: device.id)
-        }
-        database.djiDevices.devices.remove(atOffsets: offsets)
-    }
-
-    func updateDjiDevicesStatus() {
-        var statuses: [String] = []
-        for device in database.djiDevices.devices {
-            guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-                continue
-            }
-            guard djiDeviceWrapper.device.getState() == .streaming else {
-                continue
-            }
-            let (status, ok) = formatDeviceStatus(
-                name: device.name,
-                batteryPercentage: djiDeviceWrapper.device.getBatteryPercentage(),
-                thermalState: nil
-            )
-            statuses.append(status)
-            if !ok, database.chat.botEnabled, database.chat.botSendLowBatteryWarning {
-                sendChatMessage(message: "Moblin bot: \(lowBatteryMessage): \(status)")
-            }
-        }
-        let status = statuses.joined(separator: ", ")
-        if status != statusTopRight.djiDevicesStatus {
-            statusTopRight.djiDevicesStatus = status
-        }
     }
 }
 
