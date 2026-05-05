@@ -82,13 +82,11 @@ struct ScoreboardEffectGolfFullScorecardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
-                HeaderCellView(text: String(localized: "Player"),
-                               width: nameCellWidth,
-                               leftAlign: true)
+                HeaderCellView(text: "", width: nameCellWidth)
                 ForEach(0 ..< golf.numberOfHoles, id: \.self) { holeIndex in
                     HeaderCellView(text: "\(holeIndex + 1)", width: numberCellWidth)
                 }
-                HeaderCellView(text: String(localized: "Total"), width: totalCellWidth)
+                HeaderCellView(text: "", width: totalCellWidth)
             }
             .background(secondaryBackgroundColor)
             ForEach(golf.players) { player in
