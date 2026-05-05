@@ -1185,6 +1185,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             Gimbal.shared = Gimbal(model: self)
         }
         setGimbalTracking(on: database.gimbal.tracking)
+        removeDeadMacrosSettings()
     }
 
     func reloadIngests() {

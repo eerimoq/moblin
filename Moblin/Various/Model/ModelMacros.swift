@@ -33,6 +33,19 @@ extension Model {
         }
     }
 
+    func removeDeadMacrosSettings() {
+        for macro in database.macros.macros {
+            for action in macro.actions {
+                action.sceneIds = action.sceneIds.filter { id in
+                    database.scenes.map { $0.id }.contains(id)
+                }
+                action.djiDevices = action.djiDevices.filter { id in
+                    database.djiDevices.devices.map { $0.id }.contains(id)
+                }
+            }
+        }
+    }
+
     private func executeNextAction(macro: SettingsMacrosMacro) {
         guard let currentMacro = macro.stack.last else {
             return
