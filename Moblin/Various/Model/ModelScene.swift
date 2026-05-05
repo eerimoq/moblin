@@ -1526,6 +1526,12 @@ extension Model {
         case .scoreboard:
             sceneWidget.layout.x = 0.78
             sceneWidget.layout.y = 1.388
+            switch widget.scoreboard.sport {
+            case .golfFullScorecard:
+                sceneWidget.layout.alignment = .bottomRight
+            default:
+                break
+            }
         case .wheelOfLuck:
             sceneWidget.layout.alignment = .topRight
             sceneWidget.layout.x = 1.3
