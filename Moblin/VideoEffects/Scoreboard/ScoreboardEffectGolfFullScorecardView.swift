@@ -1,13 +1,15 @@
 import SwiftUI
 
-private let cellWidth = 28.0
-private let nameWidth = 150.0
-private let totalWidth = 100.0
-private let rowHeight = 22.0
-private let headerHeight = 20.0
+private let nameCellWidth = 150.0
+private let numberCellWidth = 28.0
+private let totalCellWidth = 100.0
 private let fontSize = 17.0
+private let leftAlignPadding = 8.0
 
-private func scoreCellColor(strokes: Int, par: Int) -> Color? {
+private func scoreCellColor(strokes: Int, par: Int) -> Color {
+    guard strokes >= 0 else {
+        return Color.clear
+    }
     let diff = strokes - par
     if diff <= -2 {
         return Color(red: 0x31 / 255.0, green: 0x5C / 255.0, blue: 0x95 / 255.0)
@@ -24,52 +26,10 @@ private func scoreCellColor(strokes: Int, par: Int) -> Color? {
     }
 }
 
-private struct ScorecardCell: View {
-    let text: String
-    let background: Color?
-    let foreground: Color
-    let width: Double
-    let bold: Bool
-    let leftAlign: Bool
-
-    init(text: String,
-         background: Color? = nil,
-         foreground: Color = .white,
-         width: Double = cellWidth,
-         bold: Bool = false,
-         leftAlign: Bool = false)
-    {
-        self.text = text
-        self.background = background
-        self.foreground = foreground
-        self.width = width
-        self.bold = bold
-        self.leftAlign = leftAlign
-    }
-
-    var body: some View {
-        HStack {
-            Text(text)
-                .font(.system(size: fontSize))
-                .bold(bold)
-                .foregroundStyle(foreground)
-                .lineLimit(1)
-                .padding(.leading, leftAlign ? 8 : 0)
-            if leftAlign {
-                Spacer()
-            }
-        }
-        .frame(width: width, height: rowHeight)
-        .background(background ?? Color.clear)
-        .overlay(Rectangle().stroke(Color.gray.opacity(0.4), lineWidth: 0.5))
-    }
-}
-
-private struct ScorecardHeaderCell: View {
+private struct HeaderCellView: View {
     let text: String
     let width: Double
-    let primaryBackgroundColor: Color
-    let leftAlign: Bool
+    var leftAlign: Bool = false
 
     var body: some View {
         HStack {
@@ -77,14 +37,39 @@ private struct ScorecardHeaderCell: View {
                 .font(.system(size: fontSize - 1))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .padding(.leading, leftAlign ? 8 : 0)
+                .padding(.leading, leftAlign ? leftAlignPadding : 0)
             if leftAlign {
                 Spacer()
             }
         }
-        .frame(width: width, height: headerHeight)
-        .background(primaryBackgroundColor)
-        .overlay(Rectangle().stroke(Color.gray.opacity(0.4), lineWidth: 0.5))
+        .frame(width: width, height: 20)
+        .overlay(Rectangle()
+            .stroke(Color.gray.opacity(0.4), lineWidth: 0.5))
+    }
+}
+
+private struct CellView: View {
+    let text: String
+    let width: Double
+    var background: Color = .clear
+    var bold: Bool = false
+    var leftAlign: Bool = false
+
+    var body: some View {
+        HStack {
+            Text(text)
+                .font(.system(size: fontSize))
+                .bold(bold)
+                .lineLimit(1)
+                .padding(.leading, leftAlign ? leftAlignPadding : 0)
+            if leftAlign {
+                Spacer()
+            }
+        }
+        .frame(width: width, height: 22)
+        .background(background)
+        .overlay(Rectangle()
+            .stroke(Color.gray.opacity(0.4), lineWidth: 0.5))
     }
 }
 
@@ -94,100 +79,37 @@ struct ScoreboardEffectGolfFullScorecardView: View {
     let secondaryBackgroundColor: Color
     @ObservedObject var golf: SettingsWidgetGolfScoreboard
 
-    private func totalStrokes(player: SettingsWidgetGolfScoreboardPlayer) -> Int {
-        var total = 0
-        for h in 0 ..< golf.numberOfHoles {
-            let s = h < player.scores.count ? player.scores[h] : -1
-            if s >= 0 {
-                total += s
-            }
-        }
-        return total
-    }
-
     var body: some View {
-        let numberOfHoles = golf.numberOfHoles
-        let pars = golf.pars
-        let coursePar = pars.prefix(numberOfHoles).reduce(0, +)
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
-                Text(golf.title)
-                    .font(.system(size: 20))
-                    .bold()
-                    .foregroundStyle(textColor)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                HeaderCellView(text: String(localized: "Player"),
+                               width: nameCellWidth,
+                               leftAlign: true)
+                ForEach(0 ..< golf.numberOfHoles, id: \.self) { holeIndex in
+                    HeaderCellView(text: "\(holeIndex + 1)", width: numberCellWidth)
+                }
+                HeaderCellView(text: String(localized: "Total"), width: totalCellWidth)
             }
             .background(secondaryBackgroundColor)
-            VStack(spacing: 0) {
+            ForEach(golf.players) { player in
                 HStack(spacing: 0) {
-                    ScorecardHeaderCell(text: "Player",
-                                        width: nameWidth,
-                                        primaryBackgroundColor: primaryBackgroundColor,
-                                        leftAlign: true)
-                    ForEach(0 ..< numberOfHoles, id: \.self) { h in
-                        ScorecardHeaderCell(text: "\(h + 1)",
-                                            width: cellWidth,
-                                            primaryBackgroundColor: primaryBackgroundColor,
-                                            leftAlign: false)
+                    CellView(text: player.name.uppercased(), width: nameCellWidth, leftAlign: true)
+                    ForEach(0 ..< golf.numberOfHoles, id: \.self) { holeIndex in
+                        let score = holeIndex < player.scores.count ? player.scores[holeIndex] : -1
+                        let par = holeIndex < golf.pars.count ? golf.pars[holeIndex] : 4
+                        CellView(text: score >= 0 ? "\(score)" : "",
+                                 width: numberCellWidth,
+                                 background: scoreCellColor(strokes: score, par: par))
                     }
-                    ScorecardHeaderCell(text: "Total",
-                                        width: totalWidth,
-                                        primaryBackgroundColor: primaryBackgroundColor,
-                                        leftAlign: false)
-                }
-                HStack(spacing: 0) {
-                    ScorecardCell(text: "Par",
-                                  foreground: textColor,
-                                  width: nameWidth,
-                                  bold: false,
-                                  leftAlign: true)
-                    ForEach(0 ..< numberOfHoles, id: \.self) { h in
-                        let par = h < pars.count ? pars[h] : 4
-                        ScorecardCell(text: "\(par)",
-                                      foreground: textColor,
-                                      width: cellWidth)
-                    }
-                    ScorecardCell(text: "\(coursePar)",
-                                  foreground: textColor,
-                                  width: totalWidth,
-                                  bold: true)
-                }
-                ForEach(golf.players) { player in
-                    let total = player.totalRelativeToPar(pars: pars, numberOfHoles: numberOfHoles)
-                    let strokes = totalStrokes(player: player)
-                    let totalText = strokes > 0
-                        ? "\(strokes) (\(formatScore(total)))"
-                        : formatScore(total)
-                    let totalColor: Color = total < 0 ? .green : total > 0 ? .red : textColor
-                    HStack(spacing: 0) {
-                        ScorecardCell(text: player.name.uppercased(),
-                                      foreground: textColor,
-                                      width: nameWidth,
-                                      bold: false,
-                                      leftAlign: true)
-                        ForEach(0 ..< numberOfHoles, id: \.self) { h in
-                            let s = h < player.scores.count ? player.scores[h] : -1
-                            let par = h < pars.count ? pars[h] : 4
-                            let bg = s >= 0 ? scoreCellColor(strokes: s, par: par) : nil
-                            let fg: Color = s < 0 ? Color.gray.opacity(0.3) : bg != nil ? .white : textColor
-                            ScorecardCell(text: s >= 0 ? "\(s)" : "",
-                                          background: bg,
-                                          foreground: fg,
-                                          width: cellWidth)
-                        }
-                        ScorecardCell(text: totalText,
-                                      foreground: totalColor,
-                                      width: totalWidth,
-                                      bold: true)
-                    }
+                    let strokes = player.totalStrokes(numberOfHoles: golf.numberOfHoles)
+                    let relative = player.totalRelativeToPar(pars: golf.pars,
+                                                             numberOfHoles: golf.numberOfHoles)
+                    CellView(text: "\(strokes) (\(formatScore(relative)))",
+                             width: totalCellWidth,
+                             bold: true)
                 }
             }
             .background(primaryBackgroundColor)
-            PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
         }
         .clipShape(RoundedRectangle(cornerRadius: 5))
         .foregroundStyle(textColor)

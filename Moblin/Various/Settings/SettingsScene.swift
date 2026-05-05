@@ -2812,6 +2812,17 @@ class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObjec
         return total
     }
 
+    func totalStrokes(numberOfHoles: Int) -> Int {
+        var total = 0
+        for holeIndex in 0 ..< min(numberOfHoles, scores.count) {
+            let score = scores[holeIndex]
+            if score >= 0 {
+                total += score
+            }
+        }
+        return total
+    }
+
     func holesPlayed(numHoles: Int) -> Int {
         return scores.prefix(numHoles).filter { $0 != -1 }.count
     }
