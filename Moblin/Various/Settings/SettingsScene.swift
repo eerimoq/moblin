@@ -2624,6 +2624,7 @@ enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
     case generic
     case padel
     case golf
+    case golfFullScorecard
     case basketball
     case generic2
     case genericSets
@@ -2631,7 +2632,6 @@ enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
     case football
     case tennis
     case volleyball
-    case golfFullScorecard
 
     func toString() -> String {
         switch self {
@@ -2641,6 +2641,8 @@ enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
             return String(localized: "Padel")
         case .golf:
             return String(localized: "Golf")
+        case .golfFullScorecard:
+            return String(localized: "Golf full scorecard")
         case .basketball:
             return String(localized: "Basketball")
         case .generic2:
@@ -2655,8 +2657,6 @@ enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
             return String(localized: "Tennis")
         case .volleyball:
             return String(localized: "Volleyball")
-        case .golfFullScorecard:
-            return String(localized: "Golf full scorecard")
         }
     }
 }
