@@ -123,6 +123,8 @@ private struct ActionView: View {
                                 }
                             ))
                         }
+                    case .startRecording, .stopRecording:
+                        EmptyView()
                     case nil:
                         EmptyView()
                     }
@@ -170,6 +172,8 @@ private struct ActionView: View {
                         GrayTextView(text: macroName)
                     }
                 case .djiDevices:
+                    EmptyView()
+                case .startRecording, .stopRecording:
                     EmptyView()
                 case nil:
                     EmptyView()

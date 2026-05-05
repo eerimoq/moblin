@@ -11,6 +11,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case delay = "Delay"
     case macro = "Macro"
     case djiDevices = "DJI devices"
+    case startRecording = "Start recording"
+    case stopRecording = "Stop recording"
 
     func toString() -> String {
         switch self {
@@ -34,6 +36,10 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             return String(localized: "Run macro")
         case .djiDevices:
             return String(localized: "DJI devices")
+        case .startRecording:
+            return String(localized: "Start recording")
+        case .stopRecording:
+            return String(localized: "Stop recording")
         }
     }
 }

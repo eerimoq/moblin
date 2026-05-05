@@ -82,6 +82,10 @@ extension Model {
             executeNext = executeMacro(action: action, macro: macro)
         case .djiDevices:
             executeNext = executeDjiDevices(action: action)
+        case .startRecording:
+            executeNext = executeStartRecording()
+        case .stopRecording:
+            executeNext = executeStopRecording()
         case nil:
             executeNext = true
         }
@@ -152,6 +156,16 @@ extension Model {
 
     private func executeDjiDevices(action: SettingsMacrosAction) -> Bool {
         reloadDjiDevices(enabledDeviceIds: action.djiDevices)
+        return true
+    }
+
+    private func executeStartRecording() -> Bool {
+        startRecording()
+        return true
+    }
+
+    private func executeStopRecording() -> Bool {
+        stopRecording()
         return true
     }
 
