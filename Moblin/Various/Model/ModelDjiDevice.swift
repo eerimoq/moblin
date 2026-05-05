@@ -75,10 +75,10 @@ extension Model {
                 continue
             }
             guard let djiDeviceWrapper = djiDeviceWrappers[device.id] else {
-                return
+                continue
             }
             guard djiDeviceWrapper.device.getState() != .streaming else {
-                return
+                continue
             }
             startDjiDeviceLiveStream(device: device)
         }
