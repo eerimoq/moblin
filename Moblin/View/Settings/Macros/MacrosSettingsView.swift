@@ -1,46 +1,22 @@
 import SwiftUI
 
+private func isSelected<T>(_ values: Set<T>, _ type: T) -> Bool {
+    values.contains(type)
+}
+
+private func setSelected<T>(_ values: inout Set<T>, _ type: T, _ selected: Bool) {
+    if selected {
+        values.insert(type)
+    } else {
+        values.remove(type)
+    }
+}
+
 private struct ActionView: View {
     let model: Model
     @ObservedObject var database: Database
     @ObservedObject var macros: SettingsMacros
     @ObservedObject var action: SettingsMacrosAction
-
-    private func isSceneSelected(id: UUID) -> Bool {
-        action.sceneIds.contains(id)
-    }
-
-    private func setSceneSelected(id: UUID, selected: Bool) {
-        if selected {
-            action.sceneIds.insert(id)
-        } else {
-            action.sceneIds.remove(id)
-        }
-    }
-
-    private func isDjiDeviceSelected(id: UUID) -> Bool {
-        action.djiDevices.contains(id)
-    }
-
-    private func setDjiDeviceSelected(id: UUID, selected: Bool) {
-        if selected {
-            action.djiDevices.insert(id)
-        } else {
-            action.djiDevices.remove(id)
-        }
-    }
-
-    private func isFilterSelected(type: SettingsQuickButtonType) -> Bool {
-        action.filters.contains(type)
-    }
-
-    private func setFilterSelected(type: SettingsQuickButtonType, selected: Bool) {
-        if selected {
-            action.filters.insert(type)
-        } else {
-            action.filters.remove(type)
-        }
-    }
 
     private func submitZoomX(zoomX: String) {
         guard let zoomX = Float(zoomX) else {
@@ -75,10 +51,10 @@ private struct ActionView: View {
                         ForEach(database.scenes) { scene in
                             Toggle(scene.name, isOn: Binding(
                                 get: {
-                                    isSceneSelected(id: scene.id)
+                                    isSelected(action.sceneIds, scene.id)
                                 },
                                 set: {
-                                    setSceneSelected(id: scene.id, selected: $0)
+                                    setSelected(&action.sceneIds, scene.id, $0)
                                 }
                             ))
                         }
@@ -128,10 +104,10 @@ private struct ActionView: View {
                         ForEach(database.djiDevices.devices) { device in
                             Toggle(device.name, isOn: Binding(
                                 get: {
-                                    isDjiDeviceSelected(id: device.id)
+                                    isSelected(action.djiDevices, device.id)
                                 },
                                 set: {
-                                    setDjiDeviceSelected(id: device.id, selected: $0)
+                                    setSelected(&action.djiDevices, device.id, $0)
                                 }
                             ))
                         }
@@ -162,10 +138,10 @@ private struct ActionView: View {
                         ForEach(SettingsQuickButtonType.filters(), id: \.self) { filter in
                             Toggle(filter.toString(), isOn: Binding(
                                 get: {
-                                    isFilterSelected(type: filter)
+                                    isSelected(action.filters, filter)
                                 },
                                 set: {
-                                    setFilterSelected(type: filter, selected: $0)
+                                    setSelected(&action.filters, filter, $0)
                                 }
                             ))
                         }
