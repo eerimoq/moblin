@@ -18,7 +18,7 @@ extension Model {
         macro.running = false
         macro.finished = false
         for macro in macro.stack {
-            macro.timer.stop()
+            macro.delayTimer.stop()
             macro.finishedTimer.stop()
         }
         macro.stack.removeAll()
@@ -134,7 +134,7 @@ extension Model {
                               action: SettingsMacrosAction,
                               macro: SettingsMacrosMacro) -> Bool
     {
-        currentMacro.timer.startSingleShot(timeout: action.delay) {
+        currentMacro.delayTimer.startSingleShot(timeout: action.delay) {
             self.executeNextAction(macro: macro)
         }
         return false
