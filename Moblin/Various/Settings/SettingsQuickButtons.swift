@@ -204,6 +204,27 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
             return String(localized: "Gimbal tracking")
         }
     }
+
+    static func filters() -> [SettingsQuickButtonType] {
+        return [
+            .movie,
+            .fourThree,
+            .crt,
+            .grayScale,
+            .sepia,
+            .triple,
+            .twin,
+            .pixellate,
+            .whirlpool,
+            .pinch,
+            .blurFaces,
+            .privacy,
+            .moblinInMouth,
+            .beauty,
+            .cameraMan,
+            .poll,
+        ]
+    }
 }
 
 class SettingsQuickButton: Codable, Identifiable, ObservableObject {

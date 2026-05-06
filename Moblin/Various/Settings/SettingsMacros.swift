@@ -1,45 +1,42 @@
 import Foundation
 
 enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
-    case enableScene = "Enable scene"
-    case disableScene = "Disable scene"
-    case enableDisableScenes = "Enable/disable scenes"
     case scene = "Scene"
-    case autoSceneSwitcher = "Auto scene switcher"
     case zoom = "Zoom"
+    case filters = "Filters"
+    case enableDisableScenes = "Enable/disable scenes"
+    case startRecording = "Start recording"
+    case stopRecording = "Stop recording"
+    case autoSceneSwitcher = "Auto scene switcher"
+    case djiDevices = "DJI devices"
     case gimbalPreset = "Move to gimbal preset"
     case delay = "Delay"
     case macro = "Macro"
-    case djiDevices = "DJI devices"
-    case startRecording = "Start recording"
-    case stopRecording = "Stop recording"
 
     func toString() -> String {
         switch self {
-        case .enableScene:
-            return String(localized: "Enable scene")
-        case .disableScene:
-            return String(localized: "Disable scene")
-        case .enableDisableScenes:
-            return String(localized: "Enable/disable scenes")
         case .scene:
             return String(localized: "Scene")
-        case .autoSceneSwitcher:
-            return String(localized: "Auto scene switcher")
         case .zoom:
             return String(localized: "Zoom")
+        case .filters:
+            return String(localized: "Filters")
+        case .enableDisableScenes:
+            return String(localized: "Scenes")
+        case .startRecording:
+            return String(localized: "Start recording")
+        case .stopRecording:
+            return String(localized: "Stop recording")
+        case .autoSceneSwitcher:
+            return String(localized: "Auto scene switcher")
+        case .djiDevices:
+            return String(localized: "DJI devices")
         case .gimbalPreset:
             return String(localized: "Move to gimbal preset")
         case .delay:
             return String(localized: "Delay")
         case .macro:
             return String(localized: "Run macro")
-        case .djiDevices:
-            return String(localized: "DJI devices")
-        case .startRecording:
-            return String(localized: "Start recording")
-        case .stopRecording:
-            return String(localized: "Stop recording")
         }
     }
 }
@@ -55,6 +52,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var delay: Double = 3
     @Published var macroId: UUID?
     @Published var djiDevices: Set<UUID> = []
+    @Published var filters: Set<SettingsQuickButtonType> = []
 
     init() {}
 
@@ -68,7 +66,8 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
              gimbalPresetId,
              delay,
              macroId,
-             djiDevices
+             djiDevices,
+             filters
     }
 
     func encode(to encoder: Encoder) throws {
@@ -83,6 +82,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.delay, delay)
         try container.encode(.macroId, macroId)
         try container.encode(.djiDevices, djiDevices)
+        try container.encode(.filters, filters)
     }
 
     required init(from decoder: Decoder) throws {
@@ -97,6 +97,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         delay = container.decode(.delay, Double.self, 3)
         macroId = container.decode(.macroId, UUID?.self, nil)
         djiDevices = container.decode(.djiDevices, Set<UUID>.self, [])
+        filters = container.decode(.filters, Set<SettingsQuickButtonType>.self, [])
     }
 }
 

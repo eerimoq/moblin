@@ -82,6 +82,8 @@ extension Model {
             executeNext = executeStartRecording()
         case .stopRecording:
             executeNext = executeStopRecording()
+        case .filters:
+            executeNext = executeFilters(action: action)
         case nil:
             executeNext = true
         }
@@ -139,6 +141,49 @@ extension Model {
             return true
         }
         macro.stack.append(subMacro.copy())
+        return true
+    }
+
+    private func executeFilters(action: SettingsMacrosAction) -> Bool {
+        for filter in SettingsQuickButtonType.filters() {
+            let on = action.filters.contains(filter)
+            switch filter {
+            case .pixellate:
+                setPixellateQuickButton(on: on)
+            case .movie:
+                setFilterQuickButton(type: .movie, on: on)
+            case .grayScale:
+                setFilterQuickButton(type: .grayScale, on: on)
+            case .sepia:
+                setFilterQuickButton(type: .sepia, on: on)
+            case .triple:
+                setFilterQuickButton(type: .triple, on: on)
+            case .twin:
+                setFilterQuickButton(type: .twin, on: on)
+            case .fourThree:
+                setFilterQuickButton(type: .fourThree, on: on)
+            case .crt:
+                setFilterQuickButton(type: .crt, on: on)
+            case .pinch:
+                setPinchQuickButton(on: on)
+            case .whirlpool:
+                setWhirlpoolQuickButton(on: on)
+            case .poll:
+                setPollQuickButton(on: on)
+            case .blurFaces:
+                setBlurFaces(on: on)
+            case .privacy:
+                setPrivacy(on: on)
+            case .beauty:
+                setBeautyQuickButton(on: on)
+            case .moblinInMouth:
+                setMoblinInMouth(on: on)
+            case .cameraMan:
+                setCameraManQuickButton(on: on)
+            default:
+                logger.info("macro: Filter button \(filter) not supported")
+            }
+        }
         return true
     }
 

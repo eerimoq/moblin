@@ -30,6 +30,18 @@ private struct ActionView: View {
         }
     }
 
+    private func isFilterSelected(type: SettingsQuickButtonType) -> Bool {
+        action.filters.contains(type)
+    }
+
+    private func setFilterSelected(type: SettingsQuickButtonType, selected: Bool) {
+        if selected {
+            action.filters.insert(type)
+        } else {
+            action.filters.remove(type)
+        }
+    }
+
     private func submitZoomX(zoomX: String) {
         guard let zoomX = Float(zoomX) else {
             return
@@ -125,6 +137,17 @@ private struct ActionView: View {
                         }
                     case .startRecording, .stopRecording:
                         EmptyView()
+                    case .filters:
+                        ForEach(SettingsQuickButtonType.filters(), id: \.self) { filter in
+                            Toggle(filter.toString(), isOn: Binding(
+                                get: {
+                                    isFilterSelected(type: filter)
+                                },
+                                set: {
+                                    setFilterSelected(type: filter, selected: $0)
+                                }
+                            ))
+                        }
                     case nil:
                         EmptyView()
                     }
@@ -175,6 +198,11 @@ private struct ActionView: View {
                     EmptyView()
                 case .startRecording, .stopRecording:
                     EmptyView()
+                    Spacer()
+                    GrayTextView(text: String(action.djiDevices.count))
+                case .filters:
+                    Spacer()
+                    GrayTextView(text: String(action.filters.count))
                 case nil:
                     EmptyView()
                 }
