@@ -34,7 +34,7 @@ CODE_FOLDERS += "MoblinTests"
 
 SHELL = /usr/bin/env bash
 
-all:
+default:
 
 style:
 	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS)
