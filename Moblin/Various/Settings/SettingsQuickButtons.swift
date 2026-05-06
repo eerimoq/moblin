@@ -6,7 +6,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case torch = "Torch"
     case mute = "Mute"
     case bitrate = "Bitrate"
-    case widget = "Widget"
     case mic = "Mic"
     case chat = "Chat"
     case blackScreen = "Black screen"
@@ -27,7 +26,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case draw = "Draw"
     case localOverlays = "Local overlays"
     case browser = "Browser"
-    case lut = "LUT"
     case cameraPreview = "Camera preview"
     case fourThree = "4:3"
     case crt = "CRT"
@@ -134,7 +132,7 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
-        type = container.decode(.type, SettingsQuickButtonType.self, .widget)
+        type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
         imageOn = container.decode(.systemImageNameOn, String.self, "")
         imageOff = container.decode(.systemImageNameOff, String.self, "")
         isOn = container.decode(.isOn, Bool.self, false)

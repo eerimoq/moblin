@@ -1973,7 +1973,7 @@ private func addMissingQuickButtons(database: Database) {
 
 private func addMissingDeepLinkQuickButtons(database: Database) {
     let quickButtons = database.deepLinkCreator.quickButtons
-    for quickButton in database.quickButtons where quickButton.type != .lut {
+    for quickButton in database.quickButtons {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { quickButton.type == $0.type })
         if !buttonExists {
@@ -2242,7 +2242,7 @@ final class Settings {
 
     private func migrateFromOlderVersions() {
         updateBundledAlertsMediaGallery(database: realDatabase)
-        let newButtons = realDatabase.quickButtons.filter { $0.type != .lut }
+        let newButtons = realDatabase.quickButtons
         if realDatabase.quickButtons.count != newButtons.count {
             realDatabase.quickButtons = newButtons
             store()

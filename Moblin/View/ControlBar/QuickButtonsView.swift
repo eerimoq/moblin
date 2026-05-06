@@ -156,11 +156,6 @@ struct QuickButtonsInnerView: View {
         model.updateQuickButtonStates()
     }
 
-    private func widgetAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.sceneUpdated()
-    }
-
     private func stealthModeAction() {
         model.toggleStealthMode()
         model.updateQuickButtonStates()
@@ -464,14 +459,6 @@ struct QuickButtonsInnerView: View {
                         {
                             bitrateAction()
                         }
-                    case .widget:
-                        QuickButtonImage(model: model,
-                                         quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
-                                         buttonSize: size)
-                        {
-                            widgetAction(state: state)
-                        }
                     case .mic:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
@@ -689,11 +676,6 @@ struct QuickButtonsInnerView: View {
                         {
                             browserAction()
                         }
-                    case .lut:
-                        QuickButtonImage(model: model,
-                                         quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
-                                         buttonSize: size) {}
                     case .cameraPreview:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
