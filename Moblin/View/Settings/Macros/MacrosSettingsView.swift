@@ -194,10 +194,9 @@ private struct ActionView: View {
                         Spacer()
                         GrayTextView(text: macroName)
                     }
-                case .djiDevices:
-                    EmptyView()
                 case .startRecording, .stopRecording:
                     EmptyView()
+                case .djiDevices:
                     Spacer()
                     GrayTextView(text: String(action.djiDevices.count))
                 case .filters:
