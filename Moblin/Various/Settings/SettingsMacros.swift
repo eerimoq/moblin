@@ -5,8 +5,10 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case zoom = "Zoom"
     case filters = "Filters"
     case enableDisableScenes = "Enable/disable scenes"
-    case startRecording = "Start recording"
-    case stopRecording = "Stop recording"
+    case record = "Record"
+    case snapshot = "Snapshot"
+    case mute = "Mute"
+    case torch = "Torch"
     case autoSceneSwitcher = "Auto scene switcher"
     case djiDevices = "DJI devices"
     case gimbalPreset = "Move to gimbal preset"
@@ -23,10 +25,8 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             return String(localized: "Filters")
         case .enableDisableScenes:
             return String(localized: "Scenes")
-        case .startRecording:
-            return String(localized: "Start recording")
-        case .stopRecording:
-            return String(localized: "Stop recording")
+        case .record:
+            return String(localized: "Record")
         case .autoSceneSwitcher:
             return String(localized: "Auto scene switcher")
         case .djiDevices:
@@ -37,6 +37,12 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             return String(localized: "Delay")
         case .macro:
             return String(localized: "Run macro")
+        case .mute:
+            return String(localized: "Mute")
+        case .torch:
+            return String(localized: "Torch")
+        case .snapshot:
+            return String(localized: "Snapshot")
         }
     }
 }
@@ -53,6 +59,9 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var macroId: UUID?
     @Published var djiDevices: Set<UUID> = []
     @Published var filters: Set<SettingsQuickButtonType> = []
+    @Published var record: Bool = true
+    @Published var mute: Bool = true
+    @Published var torch: Bool = true
 
     init() {}
 
@@ -67,7 +76,10 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
              delay,
              macroId,
              djiDevices,
-             filters
+             filters,
+             record,
+             mute,
+             torch
     }
 
     func encode(to encoder: Encoder) throws {
@@ -83,6 +95,9 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.macroId, macroId)
         try container.encode(.djiDevices, djiDevices)
         try container.encode(.filters, filters)
+        try container.encode(.record, record)
+        try container.encode(.mute, mute)
+        try container.encode(.torch, torch)
     }
 
     required init(from decoder: Decoder) throws {
@@ -98,6 +113,9 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         macroId = container.decode(.macroId, UUID?.self, nil)
         djiDevices = container.decode(.djiDevices, Set<UUID>.self, [])
         filters = container.decode(.filters, Set<SettingsQuickButtonType>.self, [])
+        record = container.decode(.record, Bool.self, true)
+        mute = container.decode(.mute, Bool.self, true)
+        torch = container.decode(.torch, Bool.self, true)
     }
 }
 

@@ -84,10 +84,14 @@ extension Model {
             executeNext = executeMacro(action: action, macro: macro)
         case .djiDevices:
             executeNext = executeDjiDevices(action: action)
-        case .startRecording:
-            executeNext = executeStartRecording()
-        case .stopRecording:
-            executeNext = executeStopRecording()
+        case .record:
+            executeNext = executeRecord(action: action)
+        case .mute:
+            executeNext = executeMute(action: action)
+        case .torch:
+            executeNext = executeTorch(action: action)
+        case .snapshot:
+            executeNext = executeSnapshot()
         case .filters:
             executeNext = executeFilters(action: action)
         case nil:
@@ -198,13 +202,31 @@ extension Model {
         return true
     }
 
-    private func executeStartRecording() -> Bool {
-        startRecording()
+    private func executeRecord(action: SettingsMacrosAction) -> Bool {
+        if action.record {
+            startRecording()
+        } else {
+            stopRecording()
+        }
         return true
     }
 
-    private func executeStopRecording() -> Bool {
-        stopRecording()
+    private func executeMute(action: SettingsMacrosAction) -> Bool {
+        setMuted(value: action.mute)
+        setQuickButton(type: .mute, isOn: action.mute)
+        updateQuickButtonStates()
+        return true
+    }
+
+    private func executeTorch(action: SettingsMacrosAction) -> Bool {
+        setTorch(on: action.torch)
+        setQuickButton(type: .torch, isOn: action.torch)
+        updateQuickButtonStates()
+        return true
+    }
+
+    private func executeSnapshot() -> Bool {
+        takeSnapshot()
         return true
     }
 }

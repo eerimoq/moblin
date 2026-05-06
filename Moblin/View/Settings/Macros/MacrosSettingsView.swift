@@ -135,7 +135,28 @@ private struct ActionView: View {
                                 }
                             ))
                         }
-                    case .startRecording, .stopRecording:
+                    case .record:
+                        Picker("Record", selection: $action.record) {
+                            Text("Start")
+                                .tag(true)
+                            Text("Stop")
+                                .tag(false)
+                        }
+                    case .mute:
+                        Picker("Mute", selection: $action.mute) {
+                            Text("On")
+                                .tag(true)
+                            Text("Off")
+                                .tag(false)
+                        }
+                    case .torch:
+                        Picker("Torch", selection: $action.torch) {
+                            Text("On")
+                                .tag(true)
+                            Text("Off")
+                                .tag(false)
+                        }
+                    case .snapshot:
                         EmptyView()
                     case .filters:
                         ForEach(SettingsQuickButtonType.filters(), id: \.self) { filter in
@@ -194,14 +215,23 @@ private struct ActionView: View {
                         Spacer()
                         GrayTextView(text: macroName)
                     }
-                case .startRecording, .stopRecording:
-                    EmptyView()
                 case .djiDevices:
                     Spacer()
                     GrayTextView(text: String(action.djiDevices.count))
                 case .filters:
                     Spacer()
                     GrayTextView(text: String(action.filters.count))
+                case .record:
+                    Spacer()
+                    GrayTextView(text: action.record ? String(localized: "Start") : String(localized: "Stop"))
+                case .mute:
+                    Spacer()
+                    GrayTextView(text: action.mute ? String(localized: "On") : String(localized: "Off"))
+                case .torch:
+                    Spacer()
+                    GrayTextView(text: action.torch ? String(localized: "On") : String(localized: "Off"))
+                case .snapshot:
+                    EmptyView()
                 case nil:
                     EmptyView()
                 }

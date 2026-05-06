@@ -2884,6 +2884,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func setTorch(on: Bool) {
+        streamOverlay.isTorchOn = on
+        updateTorch()
+    }
+
     func toggleTorch() {
         streamOverlay.isTorchOn.toggle()
         updateTorch()
