@@ -289,7 +289,7 @@ private struct MacroView: View {
                     }
                 }
             }
-            .navigationTitle(macro.name)
+            .navigationTitle("Macro")
         } label: {
             Text(macro.name)
         }
