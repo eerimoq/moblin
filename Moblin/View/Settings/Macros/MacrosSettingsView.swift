@@ -50,7 +50,7 @@ private struct ActionView: View {
                         }
                     }
                     switch action.function {
-                    case .enableScene, .disableScene, .scene:
+                    case .scene:
                         Picker("Scene", selection: $action.sceneId) {
                             Text("-- None --")
                                 .tag(nil as UUID?)
@@ -136,7 +136,7 @@ private struct ActionView: View {
                 DraggableItemPrefixView()
                 Text(action.function?.toString() ?? String(localized: "-- None --"))
                 switch action.function {
-                case .enableScene, .disableScene, .scene:
+                case .scene:
                     if let sceneName = model.getSceneName(id: action.sceneId) {
                         Spacer()
                         GrayTextView(text: sceneName)

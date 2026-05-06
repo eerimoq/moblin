@@ -60,10 +60,6 @@ extension Model {
         currentMacro.nextActionIndex += 1
         let executeNext: Bool
         switch action.function {
-        case .enableScene:
-            executeNext = executeEnableScene(action: action)
-        case .disableScene:
-            executeNext = executeDisableScene(action: action)
         case .scene:
             executeNext = executeScene(action: action)
         case .enableDisableScenes:
@@ -92,14 +88,6 @@ extension Model {
         if executeNext {
             executeNextAction(macro: macro)
         }
-    }
-
-    private func executeEnableScene(action: SettingsMacrosAction) -> Bool {
-        return executeEnableDisableScene(action: action, enabled: true)
-    }
-
-    private func executeDisableScene(action: SettingsMacrosAction) -> Bool {
-        return executeEnableDisableScene(action: action, enabled: false)
     }
 
     private func executeScene(action: SettingsMacrosAction) -> Bool {
@@ -166,12 +154,6 @@ extension Model {
 
     private func executeStopRecording() -> Bool {
         stopRecording()
-        return true
-    }
-
-    private func executeEnableDisableScene(action: SettingsMacrosAction, enabled: Bool) -> Bool {
-        getScene(id: action.sceneId)?.enabled = enabled
-        sceneSelector.trigger += 1
         return true
     }
 }
