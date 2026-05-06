@@ -16,8 +16,10 @@ extension Model {
             return
         }
         macro.running = false
+        macro.finished = false
         for macro in macro.stack {
             macro.timer.stop()
+            macro.finishedTimer.stop()
         }
         macro.stack.removeAll()
     }
@@ -28,7 +30,7 @@ extension Model {
         }
         if macro.running {
             stopMacro(macro: macro)
-        } else {
+        } else if !macro.finished {
             startMacro(macro: macro)
         }
     }
@@ -52,6 +54,10 @@ extension Model {
         }
         guard currentMacro.nextActionIndex < currentMacro.actions.count else {
             currentMacro.running = false
+            currentMacro.finished = true
+            currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
+                currentMacro.finished = false
+            }
             macro.stack.removeLast()
             executeNextAction(macro: macro)
             return
@@ -124,11 +130,11 @@ extension Model {
         return true
     }
 
-    private func executeDelay(currentMacro _: SettingsMacrosMacro,
+    private func executeDelay(currentMacro: SettingsMacrosMacro,
                               action: SettingsMacrosAction,
                               macro: SettingsMacrosMacro) -> Bool
     {
-        macro.timer.startSingleShot(timeout: action.delay) {
+        currentMacro.timer.startSingleShot(timeout: action.delay) {
             self.executeNextAction(macro: macro)
         }
         return false

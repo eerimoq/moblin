@@ -248,6 +248,10 @@ private struct MacroView: View {
                             model.stopMacro(macro: macro)
                         }
                         .tint(.red)
+                    } else if macro.finished {
+                        Text("Finished")
+                            .hCenter(true)
+                            .foregroundStyle(.green)
                     } else {
                         TextButtonView("Run") {
                             model.startMacro(macro: macro)

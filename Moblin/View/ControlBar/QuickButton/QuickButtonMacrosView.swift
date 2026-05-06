@@ -16,6 +16,9 @@ private struct MacroView: View {
                 }
                 .tint(.red)
                 .buttonStyle(.borderless)
+            } else if macro.finished {
+                Text("Finished")
+                    .foregroundStyle(.green)
             } else {
                 Button {
                     model.startMacro(macro: macro)

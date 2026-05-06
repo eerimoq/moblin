@@ -107,8 +107,10 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var actions: [SettingsMacrosAction] = []
     @Published var running: Bool = false
+    @Published var finished: Bool = false
     var nextActionIndex: Int = 0
     let timer = SimpleTimer(queue: .main)
+    let finishedTimer = SimpleTimer(queue: .main)
     var stack: [SettingsMacrosMacro] = []
 
     init() {}
