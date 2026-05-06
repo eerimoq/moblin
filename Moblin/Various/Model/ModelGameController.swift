@@ -19,12 +19,8 @@ class GimbalPresetJob {
 extension Model {
     func handleControllerFunction(buttonId: String,
                                   function: SettingsControllerFunction,
-                                  pressed: Bool,
-                                  sceneId: UUID?,
-                                  widgetId: UUID?,
-                                  gimbalPresetId: UUID?,
-                                  gimbalMotion: SettingsGimbalMotion,
-                                  macroId: UUID?)
+                                  functionData: SettingsControllerFunctionData,
+                                  pressed: Bool)
     {
         switch function {
         case .unused:
@@ -67,10 +63,10 @@ extension Model {
             let timer = gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
             timer?.stop()
             if !pressed {
-                if let gimbalPresetId, timer != nil {
+                if let gimbalPresetId = functionData.gimbalPresetId, timer != nil {
                     moveToGimbalPreset(id: gimbalPresetId)
                 }
-            } else if let gimbalPresetId {
+            } else if let gimbalPresetId = functionData.gimbalPresetId {
                 let timer = SimpleTimer(queue: .main)
                 timer.startSingleShot(timeout: 0.5) { [weak self] in
                     self?.gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
@@ -82,7 +78,7 @@ extension Model {
         case .gimbalAnimate:
             if !pressed {
                 if #available(iOS 18.0, *) {
-                    Gimbal.shared?.animate(motion: gimbalMotion.toSystem())
+                    Gimbal.shared?.animate(motion: functionData.gimbalMotion.toSystem())
                 }
             }
         case .torch:
@@ -103,7 +99,7 @@ extension Model {
                 updateQuickButtonStates()
             }
         case .scene:
-            if let sceneId, !pressed {
+            if let sceneId = functionData.sceneId, !pressed {
                 selectScene(id: sceneId)
             }
         case .switchScene:
@@ -111,11 +107,11 @@ extension Model {
                 switchToNextSceneRoundRobin()
             }
         case .widget:
-            if let widgetId, !pressed {
+            if let widgetId = functionData.widgetId, !pressed {
                 toggleWidgetOnOff(id: widgetId)
             }
         case .macro:
-            if let macroId, !pressed {
+            if let macroId = functionData.macroId, !pressed {
                 toggleMacroStartStop(id: macroId)
             }
         case .instantReplay:
@@ -274,12 +270,8 @@ extension Model {
         }
         handleControllerFunction(buttonId: "gc:\(index):\(name)",
                                  function: button.function,
-                                 pressed: pressed,
-                                 sceneId: button.sceneId,
-                                 widgetId: button.widgetId,
-                                 gimbalPresetId: button.gimbalPresetId,
-                                 gimbalMotion: button.gimbalMotion,
-                                 macroId: button.macroId)
+                                 functionData: button.functionData,
+                                 pressed: pressed)
     }
 
     private func numberOfGameControllers() -> Int {

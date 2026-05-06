@@ -1971,11 +1971,11 @@ private func updateBundledAlertsMediaGallery(database: Database) {
 private func addScenesToGameController(database: Database) {
     var button = database.gameControllers[0].buttons[0]
     button.function = .scene
-    button.sceneId = database.scenes[0].id
+    button.functionData.sceneId = database.scenes[0].id
     if database.scenes.count > 1 {
         button = database.gameControllers[0].buttons[1]
         button.function = .scene
-        button.sceneId = database.scenes[1].id
+        button.functionData.sceneId = database.scenes[1].id
     }
 }
 

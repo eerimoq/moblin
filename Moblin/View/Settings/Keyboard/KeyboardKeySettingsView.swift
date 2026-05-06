@@ -79,11 +79,7 @@ struct KeyboardKeySettingsView: View {
                     ControllerButtonView(model: model,
                                          functions: functions(),
                                          function: $key.function,
-                                         sceneId: $key.sceneId,
-                                         widgetId: $key.widgetId,
-                                         gimbalPresetId: $key.gimbalPresetId,
-                                         gimbalMotion: $key.gimbalMotion,
-                                         macroId: $key.macroId)
+                                         functionData: $key.functionData)
                 }
             }
             .navigationTitle("Keyboard key")
@@ -92,8 +88,8 @@ struct KeyboardKeySettingsView: View {
                 SelectedKeyView(key: key)
                 Spacer()
                 Text(key.function.toString(
-                    sceneName: model.getSceneName(id: key.sceneId ?? .init()),
-                    widgetName: model.getWidgetName(id: key.widgetId ?? .init())
+                    sceneName: model.getSceneName(id: key.functionData.sceneId ?? .init()),
+                    widgetName: model.getWidgetName(id: key.functionData.widgetId ?? .init())
                 ))
                 .foregroundStyle(key.function.color())
             }

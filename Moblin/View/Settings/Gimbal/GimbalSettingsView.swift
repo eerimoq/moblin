@@ -178,11 +178,7 @@ struct GimbalSettingsView: View {
                 ControllerButtonView(model: model,
                                      functions: functions(),
                                      function: $gimbal.functionShutter,
-                                     sceneId: $gimbal.shutterSceneId,
-                                     widgetId: $gimbal.shutterWidgetId,
-                                     gimbalPresetId: $gimbal.shutterGimbalPresetId,
-                                     gimbalMotion: $gimbal.motion,
-                                     macroId: $gimbal.macroId)
+                                     functionData: $gimbal.functionDataShutter)
             } header: {
                 Text("Shutter button")
             }
@@ -190,11 +186,7 @@ struct GimbalSettingsView: View {
                 ControllerButtonView(model: model,
                                      functions: functions(),
                                      function: $gimbal.functionFlip,
-                                     sceneId: $gimbal.flipSceneId,
-                                     widgetId: $gimbal.flipWidgetId,
-                                     gimbalPresetId: $gimbal.flipGimbalPresetId,
-                                     gimbalMotion: $gimbal.motion,
-                                     macroId: $gimbal.macroId)
+                                     functionData: $gimbal.functionDataFlip)
             } header: {
                 Text("Flip button")
             }

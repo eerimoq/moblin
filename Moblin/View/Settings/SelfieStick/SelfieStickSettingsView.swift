@@ -28,11 +28,7 @@ struct SelfieStickSettingsView: View {
                 ControllerButtonView(model: model,
                                      functions: functions(),
                                      function: $selfieStick.function,
-                                     sceneId: $selfieStick.sceneId,
-                                     widgetId: $selfieStick.widgetId,
-                                     gimbalPresetId: $selfieStick.gimbalPresetId,
-                                     gimbalMotion: $selfieStick.gimbalMotion,
-                                     macroId: $selfieStick.macroId)
+                                     functionData: $selfieStick.functionData)
                 SelfieStickDoesNotWorkView(database: model.database, selfieStick: selfieStick)
             } header: {
                 Text("Button")

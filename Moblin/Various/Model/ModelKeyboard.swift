@@ -36,12 +36,8 @@ extension Model {
         DispatchQueue.main.async {
             self.handleControllerFunction(buttonId: "kb:\(key.key)",
                                           function: key.function,
-                                          pressed: false,
-                                          sceneId: key.sceneId,
-                                          widgetId: key.widgetId,
-                                          gimbalPresetId: nil,
-                                          gimbalMotion: key.gimbalMotion,
-                                          macroId: key.macroId)
+                                          functionData: key.functionData,
+                                          pressed: false)
         }
         return true
     }

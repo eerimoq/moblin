@@ -4,11 +4,7 @@ struct ControllerButtonView: View {
     let model: Model
     let functions: [SettingsControllerFunction]
     @Binding var function: SettingsControllerFunction
-    @Binding var sceneId: UUID?
-    @Binding var widgetId: UUID?
-    @Binding var gimbalPresetId: UUID?
-    @Binding var gimbalMotion: SettingsGimbalMotion
-    @Binding var macroId: UUID?
+    @Binding var functionData: SettingsControllerFunctionData
 
     var body: some View {
         Picker("Function", selection: $function) {
@@ -25,7 +21,7 @@ struct ControllerButtonView: View {
         }
         switch function {
         case .scene:
-            Picker("Scene", selection: $sceneId) {
+            Picker("Scene", selection: $functionData.sceneId) {
                 Text("-- None --")
                     .tag(nil as UUID?)
                 ForEach(model.database.scenes) {
@@ -34,7 +30,7 @@ struct ControllerButtonView: View {
                 }
             }
         case .widget:
-            Picker("Widget", selection: $widgetId) {
+            Picker("Widget", selection: $functionData.widgetId) {
                 Text("-- None --")
                     .tag(nil as UUID?)
                 ForEach(model.database.widgets) {
@@ -43,7 +39,7 @@ struct ControllerButtonView: View {
                 }
             }
         case .gimbalPreset:
-            Picker("Preset", selection: $gimbalPresetId) {
+            Picker("Preset", selection: $functionData.gimbalPresetId) {
                 Text("-- None --")
                     .tag(nil as UUID?)
                 ForEach(model.database.gimbal.presets) {
@@ -52,13 +48,13 @@ struct ControllerButtonView: View {
                 }
             }
         case .gimbalAnimate:
-            Picker("Motion", selection: $gimbalMotion) {
+            Picker("Motion", selection: $functionData.gimbalMotion) {
                 ForEach(SettingsGimbalMotion.allCases, id: \.self) {
                     Text($0.toString())
                 }
             }
         case .macro:
-            Picker("Macro", selection: $macroId) {
+            Picker("Macro", selection: $functionData.macroId) {
                 Text("-- None --")
                     .tag(nil as UUID?)
                 ForEach(model.database.macros.macros) {
@@ -87,11 +83,7 @@ struct GameControllersControllerButtonSettingsView: View {
                     ControllerButtonView(model: model,
                                          functions: functions(),
                                          function: $button.function,
-                                         sceneId: $button.sceneId,
-                                         widgetId: $button.widgetId,
-                                         gimbalPresetId: $button.gimbalPresetId,
-                                         gimbalMotion: $button.gimbalMotion,
-                                         macroId: $button.macroId)
+                                         functionData: $button.functionData)
                 }
             }
             .navigationTitle("Button")
@@ -100,9 +92,11 @@ struct GameControllersControllerButtonSettingsView: View {
                 HStack {
                     Text(button.text)
                     Spacer()
-                    Text(button.function.toString(sceneName: model.getSceneName(id: button.sceneId),
-                                                  widgetName: model.getWidgetName(id: button.widgetId)))
-                        .foregroundStyle(button.function.color())
+                    Text(button.function.toString(
+                        sceneName: model.getSceneName(id: button.functionData.sceneId),
+                        widgetName: model.getWidgetName(id: button.functionData.widgetId)
+                    ))
+                    .foregroundStyle(button.function.color())
                 }
             } icon: {
                 Image(systemName: button.name)
