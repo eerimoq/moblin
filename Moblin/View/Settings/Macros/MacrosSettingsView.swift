@@ -145,6 +145,12 @@ private struct ActionView: View {
                                 }
                             ))
                         }
+                    case .reaction:
+                        Picker("Reaction", selection: $action.reaction) {
+                            ForEach(SettingsReaction.allCases, id: \.self) {
+                                Text($0.toString())
+                            }
+                        }
                     case nil:
                         EmptyView()
                     }
@@ -208,6 +214,9 @@ private struct ActionView: View {
                     GrayTextView(text: action.torch ? String(localized: "On") : String(localized: "Off"))
                 case .snapshot:
                     EmptyView()
+                case .reaction:
+                    Spacer()
+                    GrayTextView(text: action.reaction.toString())
                 case nil:
                     EmptyView()
                 }

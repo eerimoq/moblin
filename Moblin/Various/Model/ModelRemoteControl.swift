@@ -586,7 +586,7 @@ extension Model {
         guard #available(iOS 17, *) else {
             return
         }
-        triggerReaction(reaction: reaction.toSystem())
+        triggerReaction(reaction: reaction.toSettings())
     }
 
     private func handleGetSettings() -> RemoteControlSettings {

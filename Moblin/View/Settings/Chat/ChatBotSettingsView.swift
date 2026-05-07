@@ -141,9 +141,9 @@ private struct ReactionPermissionsSettingsView: View {
             )
         } footer: {
             VStack(alignment: .leading) {
-                Text("Perform Apple reaction.")
+                Text("Perform reaction.")
                 Text("")
-                Text("<reaction> is hearts, fireworks, balloons, confetti or lasers.")
+                Text("<reaction> is hearts, fireworks, balloons, confetti, lasers, glasses or sparkle.")
             }
         }
     }

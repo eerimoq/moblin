@@ -1,9 +1,87 @@
+import AVFoundation
 import Foundation
+
+enum SettingsReaction: Codable, CaseIterable {
+    case fireworks
+    case balloons
+    case hearts
+    case confetti
+    case lasers
+    case rain
+    case glasses
+    case sparkle
+
+    @available(iOS 17, *)
+    init?(value: String?) {
+        switch value {
+        case "fireworks":
+            self = .fireworks
+        case "balloons":
+            self = .balloons
+        case "hearts":
+            self = .hearts
+        case "confetti":
+            self = .confetti
+        case "lasers":
+            self = .lasers
+        case "rain":
+            self = .rain
+        case "glasses":
+            self = .glasses
+        case "sparkle":
+            self = .sparkle
+        default:
+            return nil
+        }
+    }
+
+    @available(iOS 17, *)
+    func toSystem() -> AVCaptureReactionType? {
+        switch self {
+        case .fireworks:
+            return .fireworks
+        case .balloons:
+            return .balloons
+        case .hearts:
+            return .heart
+        case .confetti:
+            return .confetti
+        case .lasers:
+            return .lasers
+        case .rain:
+            return .rain
+        default:
+            return nil
+        }
+    }
+
+    func toString() -> String {
+        switch self {
+        case .fireworks:
+            return String(localized: "Fireworks")
+        case .balloons:
+            return String(localized: "Balloons")
+        case .hearts:
+            return String(localized: "Hearts")
+        case .confetti:
+            return String(localized: "Confetti")
+        case .lasers:
+            return String(localized: "Lasers")
+        case .rain:
+            return String(localized: "Rain")
+        case .glasses:
+            return String(localized: "Glasses")
+        case .sparkle:
+            return String(localized: "Sparkle")
+        }
+    }
+}
 
 enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     case scene = "Scene"
     case zoom = "Zoom"
     case filters = "Filters"
+    case reaction = "Reaction"
     case enableDisableScenes = "Enable/disable scenes"
     case record = "Record"
     case snapshot = "Snapshot"
@@ -23,10 +101,18 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             return String(localized: "Zoom")
         case .filters:
             return String(localized: "Filters")
+        case .reaction:
+            return String(localized: "Reaction")
         case .enableDisableScenes:
             return String(localized: "Scenes")
         case .record:
             return String(localized: "Record")
+        case .snapshot:
+            return String(localized: "Snapshot")
+        case .mute:
+            return String(localized: "Mute")
+        case .torch:
+            return String(localized: "Torch")
         case .autoSceneSwitcher:
             return String(localized: "Auto scene switcher")
         case .djiDevices:
@@ -37,12 +123,6 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
             return String(localized: "Delay")
         case .macro:
             return String(localized: "Run macro")
-        case .mute:
-            return String(localized: "Mute")
-        case .torch:
-            return String(localized: "Torch")
-        case .snapshot:
-            return String(localized: "Snapshot")
         }
     }
 }
@@ -62,6 +142,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     @Published var record: Bool = true
     @Published var mute: Bool = true
     @Published var torch: Bool = true
+    @Published var reaction: SettingsReaction = .fireworks
 
     init() {}
 
@@ -79,7 +160,8 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
              filters,
              record,
              mute,
-             torch
+             torch,
+             reaction
     }
 
     func encode(to encoder: Encoder) throws {
@@ -98,6 +180,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.record, record)
         try container.encode(.mute, mute)
         try container.encode(.torch, torch)
+        try container.encode(.reaction, reaction)
     }
 
     required init(from decoder: Decoder) throws {
@@ -116,6 +199,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         record = container.decode(.record, Bool.self, true)
         mute = container.decode(.mute, Bool.self, true)
         torch = container.decode(.torch, Bool.self, true)
+        reaction = container.decode(.reaction, SettingsReaction.self, .fireworks)
     }
 }
 

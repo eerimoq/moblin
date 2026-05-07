@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 
 extension Model {
@@ -94,6 +95,8 @@ extension Model {
             executeNext = executeSnapshot()
         case .filters:
             executeNext = executeFilters(action: action)
+        case .reaction:
+            executeNext = executeReaction(action: action)
         case nil:
             executeNext = true
         }
@@ -227,6 +230,14 @@ extension Model {
 
     private func executeSnapshot() -> Bool {
         takeSnapshot()
+        return true
+    }
+
+    private func executeReaction(action: SettingsMacrosAction) -> Bool {
+        guard #available(iOS 17, *) else {
+            return true
+        }
+        triggerReaction(reaction: action.reaction)
         return true
     }
 }

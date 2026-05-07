@@ -444,21 +444,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.reaction,
             command: command
         ) {
-            let reaction: AVCaptureReactionType
-            switch command.popFirst() {
-            case "fireworks":
-                reaction = .fireworks
-            case "balloons":
-                reaction = .balloons
-            case "hearts":
-                reaction = .heart
-            case "confetti":
-                reaction = .confetti
-            case "lasers":
-                reaction = .lasers
-            case "rain":
-                reaction = .rain
-            default:
+            guard let reaction = SettingsReaction(value: command.popFirst()) else {
                 return
             }
             self.triggerReaction(reaction: reaction)
@@ -466,7 +452,23 @@ extension Model {
     }
 
     @available(iOS 17, *)
-    func triggerReaction(reaction: AVCaptureReactionType) {
+    func triggerReaction(reaction: SettingsReaction) {
+        if let reaction = reaction.toSystem() {
+            triggerAppleReaction(reaction: reaction)
+        } else {
+            switch reaction {
+            case .glasses:
+                triggerGlasses()
+            case .sparkle:
+                triggerSparkle()
+            default:
+                break
+            }
+        }
+    }
+
+    @available(iOS 17, *)
+    private func triggerAppleReaction(reaction: AVCaptureReactionType) {
         guard let scene = getSelectedScene() else {
             return
         }

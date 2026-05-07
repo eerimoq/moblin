@@ -98,25 +98,28 @@ enum RemoteControlReaction: Codable, CaseIterable {
     case confetti
     case lasers
     case rain
+    case glasses
+    case sparkle
 
-    @available(iOS 17, *)
-    func toSystem() -> AVCaptureReactionType {
-        let reaction: AVCaptureReactionType
+    func toSettings() -> SettingsReaction {
         switch self {
         case .fireworks:
-            reaction = .fireworks
+            return .fireworks
         case .balloons:
-            reaction = .balloons
+            return .balloons
         case .hearts:
-            reaction = .heart
+            return .hearts
         case .confetti:
-            reaction = .confetti
+            return .confetti
         case .lasers:
-            reaction = .lasers
+            return .lasers
         case .rain:
-            reaction = .rain
+            return .rain
+        case .glasses:
+            return .glasses
+        case .sparkle:
+            return .sparkle
         }
-        return reaction
     }
 }
 
