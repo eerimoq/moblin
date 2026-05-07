@@ -2016,18 +2016,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func updateOrientationLock() {
-        if stream.portrait {
+        if stream.portrait || database.portrait {
             AppDelegate.orientationLock = .portrait
-            streamPreviewView.isPortrait = true
-            externalDisplayStreamPreviewView.isPortrait = true
-        } else if database.portrait {
-            AppDelegate.orientationLock = .portrait
-            streamPreviewView.isPortrait = false
-            externalDisplayStreamPreviewView.isPortrait = false
         } else {
             AppDelegate.orientationLock = .landscape
-            streamPreviewView.isPortrait = false
-            externalDisplayStreamPreviewView.isPortrait = false
         }
         updateCameraPreviewRotation()
     }

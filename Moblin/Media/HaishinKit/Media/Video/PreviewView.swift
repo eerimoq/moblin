@@ -3,8 +3,6 @@ import Foundation
 import SwiftUI
 
 class PreviewView: UIView {
-    private static let defaultBackgroundColor: UIColor = .black
-
     override class var layerClass: AnyClass {
         AVSampleBufferDisplayLayer.self
     }
@@ -25,31 +23,25 @@ class PreviewView: UIView {
         }
     }
 
-    var isPortrait = false {
-        didSet {
-            applyIsMirrored()
-        }
-    }
-
     var isMirrored = false
 
     private func applyIsMirrored() {
         layer.setAffineTransform(CGAffineTransformMakeScale(isMirrored ? -1.0 : 1.0, 1.0))
     }
 
-    init() {
-        super.init(frame: .zero)
-        awakeFromNib()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        setup()
     }
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        backgroundColor = Self.defaultBackgroundColor
-        layer.backgroundColor = Self.defaultBackgroundColor.cgColor
+    private func setup() {
+        backgroundColor = .black
+        layer.backgroundColor = UIColor.black.cgColor
         layer.videoGravity = videoGravity
     }
 
