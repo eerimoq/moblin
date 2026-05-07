@@ -1,5 +1,18 @@
 import Foundation
 
+func isValidIngestLatency(value: String) -> String? {
+    guard let latency = Int32(value) else {
+        return String(localized: "Not a number")
+    }
+    guard latency >= 5 else {
+        return String(localized: "Too small")
+    }
+    guard latency <= 10000 else {
+        return String(localized: "Too big")
+    }
+    return nil
+}
+
 func isValidPort(value: String) -> String? {
     guard let port = UInt(value) else {
         return String(localized: "Not a number")

@@ -44,19 +44,6 @@ struct RtmpServerStreamSettingsView: View {
         stream.streamKey = streamKey
     }
 
-    private func changeLatency(value: String) -> String? {
-        guard let latency = Int32(value) else {
-            return String(localized: "Not a number")
-        }
-        guard latency >= 5 else {
-            return String(localized: "Too small")
-        }
-        guard latency <= 10000 else {
-            return String(localized: "Too big")
-        }
-        return nil
-    }
-
     private func submitLatency(value: String) {
         guard let latency = Int32(value) else {
             return
@@ -84,7 +71,7 @@ struct RtmpServerStreamSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Latency"),
                         value: String(stream.latency),
-                        onChange: changeLatency,
+                        onChange: isValidIngestLatency,
                         onSubmit: submitLatency,
                         footers: [String(localized: "5 or more milliseconds. 2000 ms by default.")],
                         keyboardType: .numbersAndPunctuation,

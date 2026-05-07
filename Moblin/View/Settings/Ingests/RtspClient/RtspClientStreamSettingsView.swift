@@ -126,18 +126,7 @@ struct RtspClientStreamSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Latency"),
                         value: String(stream.latency),
-                        onChange: {
-                            guard let latency = Int32($0) else {
-                                return String(localized: "Not a number")
-                            }
-                            guard latency >= 5 else {
-                                return String(localized: "Too small")
-                            }
-                            guard latency <= 10000 else {
-                                return String(localized: "Too big")
-                            }
-                            return nil
-                        },
+                        onChange: isValidIngestLatency,
                         onSubmit: {
                             guard let latency = Int32($0) else {
                                 return
