@@ -1,37 +1,6 @@
 import Network
 import SwiftUI
 
-private struct UrlsView: View {
-    @ObservedObject var status: StatusOther
-    let proto: String
-    let port: UInt16
-    let streamId: String
-
-    private func title() -> String {
-        return String(localized: "\(proto.uppercased()) URLs")
-    }
-
-    private func formatUrl(ip: String) -> String {
-        var url = "\(proto)://\(ip):\(port)"
-        if !streamId.isEmpty {
-            url += "?streamid=\(streamId)"
-        }
-        return url
-    }
-
-    var body: some View {
-        NavigationLink {
-            Form {
-                UrlsIpv4View(status: status, formatUrl: formatUrl)
-                UrlsIpv6View(status: status, formatUrl: formatUrl)
-            }
-            .navigationTitle(title())
-        } label: {
-            Text(title())
-        }
-    }
-}
-
 struct SrtlaServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
@@ -60,6 +29,14 @@ struct SrtlaServerStreamSettingsView: View {
         stream.streamId = streamId
     }
 
+    private func formatUrl(proto: String, ip: String, port: UInt16) -> String {
+        var url = "\(proto)://\(ip):\(port)"
+        if !stream.streamId.isEmpty {
+            url += "?streamid=\(stream.streamId)"
+        }
+        return url
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -80,15 +57,13 @@ struct SrtlaServerStreamSettingsView: View {
                 Section {
                     UrlsView(
                         status: status,
-                        proto: "srt",
-                        port: srtlaServer.srtPort,
-                        streamId: stream.streamId
+                        title: String(localized: "SRT URLs"),
+                        formatUrl: { formatUrl(proto: "srt", ip: $0, port: srtlaServer.srtPort) }
                     )
                     UrlsView(
                         status: status,
-                        proto: "srtla",
-                        port: srtlaServer.srtlaPort,
-                        streamId: stream.streamId
+                        title: String(localized: "SRTLA URLs"),
+                        formatUrl: { formatUrl(proto: "srtla", ip: $0, port: srtlaServer.srtlaPort) }
                     )
                 } header: {
                     Text("Publish URLs")

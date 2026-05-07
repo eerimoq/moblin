@@ -1,28 +1,6 @@
 import Network
 import SwiftUI
 
-private struct UrlsView: View {
-    @ObservedObject var status: StatusOther
-    let port: UInt16
-    let streamKey: String
-
-    private func formatUrl(ip: String) -> String {
-        return "rtmp://\(ip):\(port)\(rtmpServerApp)/\(streamKey)"
-    }
-
-    var body: some View {
-        NavigationLink {
-            Form {
-                UrlsIpv4View(status: status, formatUrl: formatUrl)
-                UrlsIpv6View(status: status, formatUrl: formatUrl)
-            }
-            .navigationTitle("URLs")
-        } label: {
-            Text("URLs")
-        }
-    }
-}
-
 struct RtmpServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
@@ -82,7 +60,10 @@ struct RtmpServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
-                    UrlsView(status: status, port: rtmpServer.port, streamKey: stream.streamKey)
+                    UrlsView(
+                        status: status,
+                        formatUrl: { "rtmp://\($0):\(rtmpServer.port)\(rtmpServerApp)/\(stream.streamKey)" }
+                    )
                 } header: {
                     Text("Publish URLs")
                 } footer: {

@@ -120,7 +120,7 @@ private struct RemoteControlSettingsStreamerView: View {
     }
 }
 
-private struct UrlsView: View {
+private struct RemoteControlUrlsView: View {
     @ObservedObject var relay: SettingsRemoteControlServerRelay
     @Binding var port: UInt16
     let status: StatusOther
@@ -248,9 +248,9 @@ private struct StreamerView: View {
                     Text("Use a relay server when the assistant is behind CGNAT or similar.")
                 }
                 if streamer.enabled {
-                    UrlsView(relay: streamer.relay,
-                             port: $streamer.port,
-                             status: model.statusOther)
+                    RemoteControlUrlsView(relay: streamer.relay,
+                                          port: $streamer.port,
+                                          status: model.statusOther)
                 }
             }
             .navigationTitle("Streamer")

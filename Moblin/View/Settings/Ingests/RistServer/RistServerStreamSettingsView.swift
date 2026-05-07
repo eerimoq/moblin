@@ -1,27 +1,6 @@
 import Network
 import SwiftUI
 
-private struct UrlsView: View {
-    @ObservedObject var status: StatusOther
-    let port: UInt16
-    let virtualDestinationPort: UInt16
-
-    private func formatUrl(ip: String) -> String {
-        return "rist://\(ip):\(port)?virt-dst-port=\(virtualDestinationPort)"
-    }
-
-    var body: some View {
-        NavigationLink {
-            Form {
-                UrlsIpv4View(status: status, formatUrl: formatUrl)
-            }
-            .navigationTitle("URLs")
-        } label: {
-            Text("URLs")
-        }
-    }
-}
-
 struct RistServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
@@ -79,9 +58,13 @@ struct RistServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
-                    UrlsView(status: status,
-                             port: ristServer.port,
-                             virtualDestinationPort: stream.virtualDestinationPort)
+                    UrlsView(
+                        status: status,
+                        showIPv6: false,
+                        formatUrl: {
+                            "rist://\($0):\(ristServer.port)?virt-dst-port=\(stream.virtualDestinationPort)"
+                        }
+                    )
                 } header: {
                     Text("Publish URLs")
                 } footer: {
