@@ -44,7 +44,9 @@
 | !moblin filter pinch off | Turn off the pinch filter. |
 | !moblin reaction fireworks | Trigger Apple fireworks reaction. |
 | !moblin reaction balloons | Trigger Apple balloons reaction. |
-| !moblin reaction heart | Trigger Apple heart reaction. |
+| !moblin reaction hearts | Trigger Apple hearts reaction. |
 | !moblin reaction confetti | Trigger Apple confetti reaction. |
 | !moblin reaction lasers | Trigger Apple lasers reaction. |
 | !moblin reaction rain | Trigger Apple rain reaction. |
+| !moblin reaction glasses | Trigger glasses reaction. |
+| !moblin reaction sparkle | Trigger sparkle reaction. |
