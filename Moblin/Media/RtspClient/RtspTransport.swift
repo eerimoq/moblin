@@ -139,12 +139,11 @@ class RtspTransportRtpRtspTcp: RtspTransport {
             }
             header += data
             if header.suffix(4) == rtspEndOfHeaders {
-                let headerCopy = header
-                let contentLength = parseContentLength(from: headerCopy)
+                let contentLength = parseContentLength(from: header)
                 if contentLength > 0 {
-                    receiveRtspContent(header: headerCopy, size: contentLength)
+                    receiveRtspContent(header: header, size: contentLength)
                 } else {
-                    delegate?.rtspTransportReceivedRtspMessage(header: headerCopy, content: nil)
+                    delegate?.rtspTransportReceivedRtspMessage(header: header, content: nil)
                     receiveMessage()
                 }
             } else {
@@ -356,12 +355,11 @@ class RtspTransportRtpUdp: RtspTransport {
             }
             header += data
             if header.suffix(4) == rtspEndOfHeaders {
-                let headerCopy = header
-                let contentLength = parseContentLength(from: headerCopy)
+                let contentLength = parseContentLength(from: header)
                 if contentLength > 0 {
-                    receiveRtspContent(header: headerCopy, size: contentLength)
+                    receiveRtspContent(header: header, size: contentLength)
                 } else {
-                    delegate?.rtspTransportReceivedRtspMessage(header: headerCopy, content: nil)
+                    delegate?.rtspTransportReceivedRtspMessage(header: header, content: nil)
                     receiveRtspMessage()
                 }
             } else {
