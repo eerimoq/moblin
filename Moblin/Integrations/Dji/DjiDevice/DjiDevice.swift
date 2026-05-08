@@ -451,7 +451,11 @@ extension SettingsDjiDevice {
         }
         switch rtmpUrlType {
         case .server:
-            if serverRtmpUrl.isEmpty {
+            if let serverRtmpUrl {
+                if serverRtmpUrl.isEmpty {
+                    return false
+                }
+            } else {
                 return false
             }
         case .custom:

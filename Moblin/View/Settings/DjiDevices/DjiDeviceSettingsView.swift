@@ -99,6 +99,9 @@ private struct DjiDeviceWiFiSettingsView: View {
                 TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
             }
             .disabled(device.isStarted)
+            if device.wifiSsid.isEmpty {
+                Text("⚠️ Enter the SSID of the network the DJI device should connect to.")
+            }
         } header: {
             Text("WiFi")
         } footer: {
@@ -144,6 +147,9 @@ private struct DjiDeviceRtmpSettingsView: View {
                 streamKey: stream.streamKey
             ))
         }
+        if let serverRtmpUrl = device.serverRtmpUrl, !serverUrls.contains(serverRtmpUrl) {
+            serverUrls.insert(serverRtmpUrl, at: 0)
+        }
         return serverUrls
     }
 
@@ -166,16 +172,21 @@ private struct DjiDeviceRtmpSettingsView: View {
                         }
                     }
                     .onChange(of: device.serverRtmpStreamId) { _ in
-                        device.serverRtmpUrl = serverUrls().first ?? ""
+                        device.serverRtmpUrl = nil
                     }
                     .disabled(device.isStarted)
                     Picker("URL", selection: $device.serverRtmpUrl) {
-                        ForEach(serverUrls(), id: \.self) { serverUrl in
-                            Text(serverUrl)
-                                .tag(serverUrl)
+                        Text("-- None --")
+                            .tag(nil as String?)
+                        ForEach(serverUrls(), id: \.self) {
+                            Text($0)
+                                .tag($0 as String?)
                         }
                     }
                     .disabled(device.isStarted)
+                    if device.serverRtmpUrl == nil {
+                        Text("⚠️ Select the URL the DJI device should stream to.")
+                    }
                     if !rtmpServer.enabled {
                         Text("⚠️ The RTMP server is not enabled")
                     }
@@ -189,6 +200,9 @@ private struct DjiDeviceRtmpSettingsView: View {
                     }
                 )
                 .disabled(device.isStarted)
+                if device.customRtmpUrl.isEmpty {
+                    Text("⚠️ Enter the URL the DJI device should stream to.")
+                }
             }
         } header: {
             Text("RTMP")
@@ -204,9 +218,6 @@ private struct DjiDeviceRtmpSettingsView: View {
             if !streams.isEmpty {
                 if !streams.contains(where: { $0.id == device.serverRtmpStreamId }) {
                     device.serverRtmpStreamId = streams.first!.id
-                }
-                if !serverUrls().contains(where: { $0 == device.serverRtmpUrl }) {
-                    device.serverRtmpUrl = serverUrls().first ?? ""
                 }
             }
         }

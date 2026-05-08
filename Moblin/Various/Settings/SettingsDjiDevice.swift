@@ -119,7 +119,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var wifiPassword: String = ""
     @Published var rtmpUrlType: SettingsDjiDeviceUrlType = .server
     @Published var serverRtmpStreamId: UUID = .init()
-    @Published var serverRtmpUrl: String = ""
+    @Published var serverRtmpUrl: String?
     @Published var customRtmpUrl: String = ""
     @Published var autoRestartStream: Bool = false
     @Published var imageStabilization: SettingsDjiDeviceImageStabilization = .off
@@ -186,7 +186,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
         wifiPassword = container.decode(.wifiPassword, String.self, "")
         rtmpUrlType = container.decode(.rtmpUrlType, SettingsDjiDeviceUrlType.self, .server)
         serverRtmpStreamId = container.decode(.serverRtmpStreamId, UUID.self, .init())
-        serverRtmpUrl = container.decode(.serverRtmpUrl, String.self, "")
+        serverRtmpUrl = container.decode(.serverRtmpUrl, String?.self, nil)
         customRtmpUrl = container.decode(.customRtmpUrl, String.self, "")
         autoRestartStream = container.decode(.autoRestartStream, Bool.self, false)
         imageStabilization = container.decode(
