@@ -291,11 +291,7 @@ struct DeepLinkCreatorStreamSettingsView: View {
             }
             .navigationTitle("Stream")
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(stream.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: stream.name)
         }
     }
 }

@@ -255,11 +255,7 @@ private struct StreamerView: View {
             }
             .navigationTitle("Streamer")
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(streamer.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: streamer.name)
         }
     }
 }

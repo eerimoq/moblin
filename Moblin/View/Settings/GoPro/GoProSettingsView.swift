@@ -59,11 +59,7 @@ private struct GoProLaunchLiveStreamSettingsEntryView: View {
         NavigationLink {
             GoProLaunchLiveStreamSettingsView(goPro: goPro, launchLiveStream: launchLiveStream)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(launchLiveStream.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: launchLiveStream.name)
         }
     }
 }
@@ -146,11 +142,7 @@ private struct GoProWifiCredentialsSettingsEntryView: View {
         NavigationLink {
             GoProWifiCredentialsSettingsView(goPro: goPro, wifiCredentials: wifiCredentials)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(wifiCredentials.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: wifiCredentials.name)
         }
     }
 }
@@ -301,11 +293,7 @@ private struct GoProRtmpUrlSettingsEntryView: View {
         NavigationLink {
             GoProRtmpUrlSettingsView(goPro: goPro, status: status, rtmpUrl: rtmpUrl)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(rtmpUrl.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: rtmpUrl.name)
         }
     }
 }
