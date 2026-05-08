@@ -1,6 +1,23 @@
 import Network
 import SwiftUI
 
+struct IngestStreamItemView: View {
+    let name: String
+    let connected: Bool
+
+    var body: some View {
+        HStack {
+            if connected {
+                Image(systemName: "cable.connector")
+            } else {
+                Image(systemName: "cable.connector.slash")
+            }
+            Text(name)
+            Spacer()
+        }
+    }
+}
+
 struct RtmpServerStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
@@ -77,15 +94,8 @@ struct RtmpServerStreamSettingsView: View {
             }
             .navigationTitle("Stream")
         } label: {
-            HStack {
-                if model.isRtmpStreamConnected(streamKey: stream.streamKey) {
-                    Image(systemName: "cable.connector")
-                } else {
-                    Image(systemName: "cable.connector.slash")
-                }
-                Text(stream.name)
-                Spacer()
-            }
+            IngestStreamItemView(name: stream.name,
+                                 connected: model.isRtmpStreamConnected(streamKey: stream.streamKey))
         }
     }
 }

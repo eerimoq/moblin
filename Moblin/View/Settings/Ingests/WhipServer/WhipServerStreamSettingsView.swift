@@ -81,15 +81,8 @@ struct WhipServerStreamSettingsView: View {
             }
             .navigationTitle("Stream")
         } label: {
-            HStack {
-                if model.isWhipStreamConnected(streamId: stream.id) {
-                    Image(systemName: "cable.connector")
-                } else {
-                    Image(systemName: "cable.connector.slash")
-                }
-                Text(stream.name)
-                Spacer()
-            }
+            IngestStreamItemView(name: stream.name,
+                                 connected: model.isWhipStreamConnected(streamId: stream.id))
         }
     }
 }

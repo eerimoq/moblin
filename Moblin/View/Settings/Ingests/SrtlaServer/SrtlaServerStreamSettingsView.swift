@@ -78,15 +78,8 @@ struct SrtlaServerStreamSettingsView: View {
             }
             .navigationTitle("Stream")
         } label: {
-            HStack {
-                if model.isSrtlaStreamConnected(streamId: stream.streamId) {
-                    Image(systemName: "cable.connector")
-                } else {
-                    Image(systemName: "cable.connector.slash")
-                }
-                Text(stream.name)
-                Spacer()
-            }
+            IngestStreamItemView(name: stream.name,
+                                 connected: model.isSrtlaStreamConnected(streamId: stream.streamId))
         }
     }
 }

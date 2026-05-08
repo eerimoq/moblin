@@ -78,15 +78,8 @@ struct RistServerStreamSettingsView: View {
             }
             .navigationTitle("Stream")
         } label: {
-            HStack {
-                if model.isRistStreamConnected(port: stream.virtualDestinationPort) {
-                    Image(systemName: "cable.connector")
-                } else {
-                    Image(systemName: "cable.connector.slash")
-                }
-                Text(stream.name)
-                Spacer()
-            }
+            IngestStreamItemView(name: stream.name,
+                                 connected: model.isRistStreamConnected(port: stream.virtualDestinationPort))
         }
     }
 }
