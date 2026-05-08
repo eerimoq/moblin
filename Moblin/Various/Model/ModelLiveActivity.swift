@@ -19,9 +19,13 @@ extension Model {
 
     func stopLiveActivity() {
         let semaphore = DispatchSemaphore(value: 0)
-        Task {
-            await liveActivity?.end(nil, dismissalPolicy: .immediate)
-            semaphore.signal()
+        DispatchQueue.global().async {
+            Task {
+                for activity in Activity<LiveActivityAttributes>.activities {
+                    await activity.end(nil, dismissalPolicy: .immediate)
+                }
+                semaphore.signal()
+            }
         }
         semaphore.wait()
         liveActivity = nil
