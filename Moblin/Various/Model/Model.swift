@@ -2983,6 +2983,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let proto = stream.protocolString()
         let resolution = currentResolution ?? stream.resolutionString()
         let codec = stream.codecString()
+        let rateControl = stream.rateControlString()
         let bitrate = stream.bitrateString()
         let audioCodec = stream.audioCodecString()
         let audioBitrate = stream.audioBitrateString()
@@ -2993,7 +2994,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             fps = String(currentFps ?? stream.fps)
         }
         return """
-        \(stream.name) (\(resolution), \(fps), \(proto), \(codec) \(bitrate), \
+        \(stream.name) (\(resolution), \(fps), \(proto), \(codec) \(rateControl) \(bitrate), \
         \(audioCodec) \(audioBitrate))
         """
     }

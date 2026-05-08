@@ -42,6 +42,17 @@ enum SettingsStreamRateControl: String, Codable, CaseIterable {
         }
     }
 
+    func shortString() -> String {
+        switch self {
+        case .abr:
+            return String(localized: "ABR")
+        case .cbr:
+            return String(localized: "CBR")
+        case .vbr:
+            return String(localized: "VBR")
+        }
+    }
+
     static func cases() -> [SettingsStreamRateControl] {
         var cases: [SettingsStreamRateControl] = [
             .abr,
@@ -1618,6 +1629,10 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
 
     func codecString() -> String {
         return codec.shortString()
+    }
+
+    func rateControlString() -> String {
+        return rateControl.shortString()
     }
 
     func bitrateString() -> String {
