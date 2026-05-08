@@ -289,6 +289,12 @@ struct MacrosSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Text("""
+                Macros are sequences of actions that can change settings, filters, etc. with a \
+                single button tap.
+                """)
+            }
+            Section {
                 List {
                     ForEach(macros.macros) {
                         MacroView(model: model, database: database, macros: macros, macro: $0)
