@@ -50,3 +50,5 @@
 | !moblin reaction rain | Trigger Apple rain reaction. |
 | !moblin reaction glasses | Trigger glasses reaction. |
 | !moblin reaction sparkle | Trigger sparkle reaction. |
+| !moblin macro run \<name> | Run given macro. |
+| !moblin macro cancel \<name> | Cancel given macro. |

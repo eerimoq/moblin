@@ -149,6 +149,8 @@ extension Model {
                 handleChatBotMessageTwitch(command: command)
             case "gimbal":
                 handleChatBotMessageGimbal(command: command)
+            case "macro":
+                handleChatBotMessageMacro(command: command)
             default:
                 break
             }
@@ -434,6 +436,38 @@ extension Model {
             return
         }
         moveToGimbalPreset(id: preset.id)
+    }
+
+    private func handleChatBotMessageMacro(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.macro,
+            command: command
+        ) {
+            guard let subcommand = command.popFirst(),
+                  let macroName = command.popFirst(),
+                  let macro = self.database.macros.macros.first(where: {
+                      $0.name.lowercased() == macroName.lowercased()
+                  })
+            else {
+                return
+            }
+            switch subcommand {
+            case "run":
+                self.handleChatBotMessageMacroRun(macro: macro)
+            case "cancel":
+                self.handleChatBotMessageMacroCancel(macro: macro)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageMacroRun(macro: SettingsMacrosMacro) {
+        startMacro(macro: macro)
+    }
+
+    private func handleChatBotMessageMacroCancel(macro: SettingsMacrosMacro) {
+        stopMacro(macro: macro)
     }
 
     private func handleChatBotMessageReaction(command: ChatBotCommand) {

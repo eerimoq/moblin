@@ -401,6 +401,27 @@ private struct TeslaPermissionsSettingsView: View {
     }
 }
 
+private struct MacroPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: String(localized: "!moblin macro <run/cancel> <name>"),
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("!moblin macro run <name>")
+                Text("Run given macro.")
+                Text("")
+                Text("!moblin macro cancel <name>")
+                Text("Cancel given macro.")
+            }
+        }
+    }
+}
+
 private struct ChatBotCommandsSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -417,6 +438,7 @@ private struct ChatBotCommandsSettingsView: View {
             FixPermissionsSettingsView(permissions: permissions.fix)
             GimbalPermissionsSettingsView(permissions: permissions.gimbal)
             LocationPermissionsSettingsView(permissions: permissions.location)
+            MacroPermissionsSettingsView(permissions: permissions.macro)
             MapPermissionsSettingsView(permissions: permissions.map)
             MuteUnmutePermissionsSettingsView(permissions: permissions.audio)
             ReactionPermissionsSettingsView(permissions: permissions.reaction)
