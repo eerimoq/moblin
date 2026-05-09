@@ -67,12 +67,6 @@ private let staticFiles: [StaticFile] = [
     StaticFile("/css/", "recordings", "css"),
     StaticFile("/css/", "remote", "css"),
     StaticFile("/css/", "scoreboard", "css"),
-    StaticFile("/js/", "golf", "mjs"),
-    StaticFile("/js/", "index", "mjs"),
-    StaticFile("/js/", "recordings", "mjs"),
-    StaticFile("/js/", "remote", "mjs"),
-    StaticFile("/js/", "scoreboard", "mjs"),
-    StaticFile("/js/", "utils", "mjs"),
 ]
 
 private let recordingsPrefix = "/recordings/"
@@ -133,6 +127,11 @@ class RemoteControlWeb {
         }
         routes.append(HttpServerRoute(path: "/", handler: handleRoot))
         routes.append(HttpServerRoute(path: "/js/config.mjs", handler: handleConfigMjs))
+        routes.append(HttpServerRoute(
+            path: "/js/",
+            prefixMatch: true,
+            handler: handleJsFile
+        ))
         routes.append(HttpServerRoute(path: "/recordings.json", handler: handleRecordingsJson))
         routes.append(HttpServerRoute(
             path: recordingsPrefix,
@@ -197,6 +196,33 @@ class RemoteControlWeb {
             return
         }
         response.send(data: loadResource(name: staticPath.name, ext: staticPath.ext))
+    }
+
+    private func handleJsFile(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "GET" else {
+            return
+        }
+        let filename = String(request.path.dropFirst("/js/".count))
+        guard !filename.contains(".."), !filename.contains("/"), !filename.isEmpty else {
+            response.send(status: .notFound)
+            return
+        }
+        let parts = filename.split(separator: ".", maxSplits: 1)
+        guard parts.count == 2 else {
+            response.send(status: .notFound)
+            return
+        }
+        let name = String(parts[0])
+        let ext = String(parts[1])
+        guard let url = Bundle.main.url(forResource: name, withExtension: ext) else {
+            response.send(status: .notFound)
+            return
+        }
+        guard let data = try? Data(contentsOf: url) else {
+            response.send(status: .notFound)
+            return
+        }
+        response.send(data: data)
     }
 
     private func handleConfigMjs(request: HttpServerRequest, response: HttpServerResponse) {

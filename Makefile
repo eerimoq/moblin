@@ -5,8 +5,8 @@ SWIFTFORMAT_ARGS = \
 	--disable docComments \
 	--ifdef no-indent
 SWIFTLINT_ARGS = --strict --quiet
-OXFMT_ARGS = "Moblin/RemoteControl/Web"
-OXLINT_ARGS = "Moblin/RemoteControl/Web"
+OXFMT_ARGS = "WebSrc"
+OXLINT_ARGS = "WebSrc"
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 	--index-exclude "**/PrepareLicenseList/**" \
@@ -75,3 +75,6 @@ pack-exported-localizations:
 generate-web-remote-control-css:
 	cd Moblin/RemoteControl/Web/ && \
 	tailwindcss -i <(echo '@import "tailwindcss";') -o css/app.css
+
+build-web-remote-control:
+	cd WebSrc && npm install && npm run build

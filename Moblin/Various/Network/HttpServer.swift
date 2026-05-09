@@ -81,7 +81,7 @@ class HttpServerRequest {
         switch path.split(separator: ".").last {
         case "html":
             return "text/html"
-        case "mjs":
+        case "js", "mjs":
             return "text/javascript"
         case "css":
             return "text/css"
