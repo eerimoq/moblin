@@ -132,10 +132,7 @@ final class Media: NSObject {
         self.srtImplementation = srtImplementation
         self.limitAdaptiveBitrateByTransportBitrate = limitAdaptiveBitrateByTransportBitrate
         processor?.stop()
-        srtStopStream()
-        rtmpStopStream()
-        ristStopStream()
-        whipStopStream()
+        stopAllNetStreams()
         let processor = Processor(delegate: self)
         switch proto {
         case .rtmp:
@@ -151,10 +148,6 @@ final class Media: NSObject {
                 rtmpStream.setUrl(destination.url)
                 rtmpStreams.append(rtmpStream)
             }
-            srtStreamNew = nil
-            srtStreamOld = nil
-            ristStream = nil
-            whipStream = nil
         case .srt:
             switch srtImplementation {
             case .moblin:
@@ -163,30 +156,17 @@ final class Media: NSObject {
                     timecodesEnabled: timecodesEnabled,
                     delegate: self
                 )
-                srtStreamOld = nil
             case .official:
-                srtStreamNew = nil
                 srtStreamOld = SrtStreamOfficial(
                     processor: processor,
                     timecodesEnabled: timecodesEnabled,
                     delegate: self
                 )
             }
-            rtmpStreams.removeAll()
-            ristStream = nil
-            whipStream = nil
         case .rist:
             ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
-            srtStreamNew = nil
-            srtStreamOld = nil
-            rtmpStreams.removeAll()
-            whipStream = nil
         case .whip:
             whipStream = WhipStream(processor: processor, delegate: self)
-            srtStreamNew = nil
-            srtStreamOld = nil
-            ristStream = nil
-            rtmpStreams.removeAll()
         }
         self.processor = processor
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
