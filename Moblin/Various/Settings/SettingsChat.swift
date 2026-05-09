@@ -582,7 +582,6 @@ class SettingsChat: Codable, ObservableObject {
     @Published var badges: Bool = true
     var showFirstTimeChatterMessage: Bool = true
     var showNewFollowerMessage: Bool = true
-    @Published var bottom: Double = 0.0
     @Published var bottomPoints: Double = 80
     @Published var newMessagesAtTop: Bool = false
     @Published var textToSpeechPauseBetweenMessages: Double = 1.0
@@ -634,7 +633,6 @@ class SettingsChat: Codable, ObservableObject {
              badges,
              showFirstTimeChatterMessage,
              showNewFollowerMessage,
-             bottom,
              bottomPoints,
              newMessagesAtTop,
              textToSpeechPauseBetweenMessages,
@@ -689,7 +687,6 @@ class SettingsChat: Codable, ObservableObject {
         try container.encode(.badges, badges)
         try container.encode(.showFirstTimeChatterMessage, showFirstTimeChatterMessage)
         try container.encode(.showNewFollowerMessage, showNewFollowerMessage)
-        try container.encode(.bottom, bottom)
         try container.encode(.bottomPoints, bottomPoints)
         try container.encode(.newMessagesAtTop, newMessagesAtTop)
         try container.encode(.textToSpeechPauseBetweenMessages, textToSpeechPauseBetweenMessages)
@@ -773,11 +770,7 @@ class SettingsChat: Codable, ObservableObject {
         badges = container.decode(.badges, Bool.self, true)
         showFirstTimeChatterMessage = container.decode(.showFirstTimeChatterMessage, Bool.self, true)
         showNewFollowerMessage = container.decode(.showNewFollowerMessage, Bool.self, true)
-        bottom = container.decode(.bottom, Double.self, 0.0)
-        bottomPoints = (try? container.decode(Double.self, forKey: .bottomPoints)) ?? min(
-            mainScreenBounds * bottom,
-            200
-        )
+        bottomPoints = container.decode(.bottomPoints, Double.self, 80)
         newMessagesAtTop = container.decode(.newMessagesAtTop, Bool.self, false)
         textToSpeechPauseBetweenMessages = container.decode(
             .textToSpeechPauseBetweenMessages,

@@ -2026,7 +2026,6 @@ private let exportFiles = [
     URL.documentsDirectory.appending(component: "stealthModeImage.img"),
     URL.documentsDirectory.appending(component: "faceBackgroundImage.img"),
 ]
-nonisolated(unsafe) var mainScreenBounds: CGFloat = 1
 
 final class Settings {
     private var realDatabase = Database()
@@ -2037,7 +2036,6 @@ final class Settings {
     @AppStorage("settings") var storage = ""
 
     func load() {
-        mainScreenBounds = UIScreen.main.bounds.width
         do {
             try tryLoadAndMigrate(settings: storage)
         } catch {
