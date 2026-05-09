@@ -290,7 +290,7 @@ struct MacrosSettingsView: View {
         Form {
             Section {
                 Text("""
-                Macros are sequences of actions that can change settings, filters, etc. with a \
+                A macro is a sequence of actions that can change settings, filters, etc. with a \
                 single button tap.
                 """)
             }
