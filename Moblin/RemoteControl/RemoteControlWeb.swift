@@ -69,10 +69,12 @@ private let staticFiles: [StaticFile] = [
     StaticFile("/css/", "scoreboard", "css"),
     StaticFile("/js/", "golf", "mjs"),
     StaticFile("/js/", "index", "mjs"),
+    StaticFile("/js/", "modulepreload-polyfill", "mjs"),
     StaticFile("/js/", "recordings", "mjs"),
     StaticFile("/js/", "remote", "mjs"),
     StaticFile("/js/", "scoreboard", "mjs"),
     StaticFile("/js/", "utils", "mjs"),
+    StaticFile("/js/", "vendor", "mjs"),
 ]
 
 private let recordingsPrefix = "/recordings/"
