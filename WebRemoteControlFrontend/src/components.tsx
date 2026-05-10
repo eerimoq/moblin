@@ -156,7 +156,7 @@ export interface ToggleProps {
 
 export function Toggle(props: ToggleProps) {
   return (
-    <label class="flex items-center cursor-pointer">
+    <div class="flex items-center">
       <div class="relative flex items-center">
         <input
           id={props.id}
@@ -170,8 +170,10 @@ export function Toggle(props: ToggleProps) {
           for={props.id}
           class="absolute top-0 left-0 w-5 h-5 bg-white rounded-full border border-indigo-300 shadow-sm transition-transform duration-300 peer-checked:translate-x-6 peer-checked:border-slate-800 cursor-pointer"
         />
-        <span class="ml-3 text-sm text-zinc-200">{props.label}</span>
       </div>
-    </label>
+      <label for={props.id} class="ml-3 text-sm text-zinc-200 cursor-pointer">
+        {props.label}
+      </label>
+    </div>
   );
 }
