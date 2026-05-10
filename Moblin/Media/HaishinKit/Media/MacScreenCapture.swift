@@ -13,6 +13,7 @@ class MacScreenCapture: NSObject, @unchecked Sendable {
     static let shared = MacScreenCapture()
     weak var delegate: (any MacScreenCaptureDelegate)?
     private var stream: SCStream?
+    private var latestSampleBufferWithImageBuffer: CMSampleBuffer?
 
     func start(fps: Float64) {
         Task { @MainActor in
@@ -87,6 +88,14 @@ class MacScreenCapture: NSObject, @unchecked Sendable {
 extension MacScreenCapture: SCStreamOutput {
     func stream(_: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of _: SCStreamOutputType) {
         let presentationTimeStamp = sampleBuffer.presentationTimeStamp + CMTime(seconds: 0.1)
+        var sampleBuffer = sampleBuffer
+        if sampleBuffer.imageBuffer != nil {
+            latestSampleBufferWithImageBuffer = sampleBuffer
+        } else if let latestSampleBufferWithImageBuffer {
+            sampleBuffer = latestSampleBufferWithImageBuffer
+        } else {
+            return
+        }
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
             return
         }
