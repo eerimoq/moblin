@@ -24,6 +24,11 @@ jobs:
         run: |
           brew install codespell
           make spell-check
+      - name: Web remote control frontend
+        run: |
+          make web-remote-control-frontend-prepare
+          make web-remote-control-frontend-build
+          git diff --exit-code
       - name: Build
         run: |
           xcodebuild \
