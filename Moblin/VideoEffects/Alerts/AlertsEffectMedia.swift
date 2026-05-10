@@ -70,10 +70,8 @@ class AlertsEffectMedia: @unchecked Sendable {
         guard let videoUrl else {
             return
         }
-        loadVideoSound(path: videoUrl) { soundUrl in
-            DispatchQueue.main.async {
-                self.soundUrl = soundUrl
-            }
+        loadVideoSound(path: videoUrl) {
+            self.soundUrl = $0
         }
     }
 
@@ -215,16 +213,20 @@ class AlertsEffectVideoImages: AlertsEffectImages {
     }
 }
 
-private func loadVideoSound(path: URL, onCompleted: @escaping (URL?) -> Void) {
+private func loadVideoSound(path: URL, onCompleted: @escaping @MainActor (URL?) -> Void) {
     let asset = AVAsset(url: path)
-    guard let reader = try? AVAssetReader(asset: asset) else {
-        onCompleted(nil)
-        return
-    }
     asset.loadTracks(withMediaType: .audio) { tracks, error in
         DispatchQueue.global().async {
+            guard let reader = try? AVAssetReader(asset: asset) else {
+                DispatchQueue.main.async {
+                    onCompleted(nil)
+                }
+                return
+            }
             guard let track = tracks?.first, error == nil else {
-                onCompleted(nil)
+                DispatchQueue.main.async {
+                    onCompleted(nil)
+                }
                 return
             }
             let outputSettings: [String: Any] = [
@@ -251,10 +253,14 @@ private func loadVideoSound(path: URL, onCompleted: @escaping (URL?) -> Void) {
             let wav = createWav(sampleRate: 48000, samples: [samples])
             let soundUrl = path.appendingPathExtension("wav")
             guard FileManager.default.createFile(atPath: soundUrl.path(), contents: wav) else {
-                onCompleted(nil)
+                DispatchQueue.main.async {
+                    onCompleted(nil)
+                }
                 return
             }
-            onCompleted(soundUrl)
+            DispatchQueue.main.async {
+                onCompleted(soundUrl)
+            }
         }
     }
 }
