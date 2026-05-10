@@ -3,7 +3,7 @@ import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
 import { WebSocketConnection } from "./utils.ts";
-import { GitHubLink, NamedItem, Picker, Section, Toggle } from "./components.tsx";
+import { GitHubLink, Button, NamedItem, Picker, Section, Toggle } from "./components.tsx";
 
 interface ZoomPreset extends NamedItem {}
 
@@ -317,13 +317,6 @@ function App() {
     setShowFilters(true);
   }
 
-  function presetButtonClass(active: boolean): string {
-    const base = "text-sm px-3 py-1 rounded transition-colors";
-    return active
-      ? `bg-indigo-700 text-white ${base}`
-      : `bg-zinc-700 hover:bg-zinc-600 text-zinc-200 ${base}`;
-  }
-
   function handleZoomSubmit() {
     const value = parseFloat(zoomValue());
     if (!isNaN(value)) connection.setZoom(value);
@@ -416,12 +409,16 @@ function App() {
               <div class="flex flex-wrap gap-2">
                 <For each={zoomPresets()}>
                   {(preset) => (
-                    <button
-                      class={presetButtonClass(preset.id === currentZoomPresetId())}
+                    <Button
+                      class={
+                        preset.id === currentZoomPresetId()
+                          ? "bg-indigo-700 text-white"
+                          : "bg-zinc-700 hover:bg-zinc-600 text-zinc-200"
+                      }
                       onClick={() => connection.setZoomPreset(preset.id)}
                     >
                       {preset.name}
-                    </button>
+                    </Button>
                   )}
                 </For>
               </div>
@@ -458,12 +455,12 @@ function App() {
               label="Debug logging"
             />
             <div class="flex flex-wrap gap-2">
-              <button
-                class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-sm px-3 py-1 rounded transition-colors"
+              <Button
+                class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200"
                 onClick={() => connection.reloadBrowserWidgets()}
               >
                 Reload browser widgets
-              </button>
+              </Button>
             </div>
           </div>
         </Show>
@@ -510,12 +507,12 @@ function App() {
           <div class="flex flex-wrap gap-2">
             <For each={gimbalPresets()}>
               {(preset) => (
-                <button
-                  class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-sm px-4 py-2 rounded transition-colors"
+                <Button
+                  class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-4 py-2"
                   onClick={() => connection.moveToGimbalPreset(preset.id)}
                 >
                   {preset.name}
-                </button>
+                </Button>
               )}
             </For>
           </div>

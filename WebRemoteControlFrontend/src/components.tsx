@@ -1,5 +1,28 @@
-import type { Accessor, ParentProps } from "solid-js";
+import type { Accessor, JSX, ParentProps } from "solid-js";
 import { For, Show } from "solid-js";
+import { twMerge } from "tailwind-merge";
+
+interface ButtonProps {
+  class?: string;
+  type?: "button" | "submit" | "reset";
+  onClick?: (event: MouseEvent) => void;
+  children?: JSX.Element;
+}
+
+export function Button({ class: extraClass, type = "button", onClick, children }: ButtonProps) {
+  return (
+    <button
+      type={type}
+      class={twMerge(
+        "cursor-pointer rounded border border-zinc-700 px-3 py-1 text-sm transition-colors hover:bg-zinc-800",
+        extraClass,
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
 
 interface ConfirmDialogProps {
   open: Accessor<boolean>;
@@ -36,20 +59,12 @@ export function ConfirmDialog({
             <p class="text-zinc-300">{message()}</p>
           </div>
           <div class="bg-zinc-800/60 px-4 py-3 sm:px-5 flex items-center justify-end gap-2">
-            <button
-              type="button"
-              class={`px-3 py-1.5 rounded-md border border-zinc-700 hover:bg-zinc-800 cursor-pointer ${okTextClass}`}
-              onClick={onOk}
-            >
+            <Button class={`py-1.5 rounded-md ${okTextClass}`} onClick={onOk}>
               {okLabel}
-            </button>
-            <button
-              type="button"
-              class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer"
-              onClick={onCancel}
-            >
+            </Button>
+            <Button class="py-1.5 rounded-md text-zinc-300" onClick={onCancel}>
               Cancel
-            </button>
+            </Button>
           </div>
         </form>
       </dialog>
