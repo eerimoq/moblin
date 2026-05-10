@@ -268,7 +268,6 @@ function App() {
   function Event() {
     return (
       <div class="card">
-        <div class="text-xs text-zinc-500 mb-2">Event</div>
         <div class="grid grid-cols-2 gap-2">
           <input
             type="text"
@@ -297,21 +296,21 @@ function App() {
     return (
       <div class="card">
         <div class="flex items-center justify-between mb-2">
-          <div class="text-xs text-zinc-500">Players</div>
+          <div class="text-xs text-zinc-500"></div>
           <div class="flex gap-1">
             <button
               class="btn-xs border-zinc-700 text-zinc-400"
               disabled={state.players.length <= 1}
               onClick={removePlayer}
             >
-              − Player
+              Remove player
             </button>
             <button
               class="btn-xs border-zinc-600 text-zinc-300"
               disabled={state.players.length >= 4}
               onClick={addPlayer}
             >
-              + Player
+              Add player
             </button>
           </div>
         </div>
@@ -335,58 +334,49 @@ function App() {
     );
   }
 
-  function CurrentHole() {
+  function Holes() {
     return (
       <div class="card">
-        <div class="text-xs text-zinc-500 mb-2">Current Hole</div>
-        <div class="flex gap-2 items-center flex-wrap">
-          <div class="flex flex-wrap gap-1 flex-1">
-            <For each={Array.from({ length: state.numberOfHoles }, (_, holeIndex) => holeIndex)}>
-              {(holeIndex) => {
-                const allScored = () =>
-                  state.players.every((player) => player.scores[holeIndex] >= 0);
-                const anyScored = () =>
-                  state.players.some((player) => player.scores[holeIndex] >= 0);
-                const isActive = () => holeIndex === state.currentHole;
-                const extraClass = () => {
-                  if (isActive()) return "";
-                  if (allScored()) return " complete";
-                  if (anyScored()) return " played";
-                  return "";
-                };
-                return (
-                  <button
-                    class={`hole-btn${isActive() ? " active" : ""}${extraClass()}`}
-                    onClick={() => selectHole(holeIndex)}
-                  >
-                    {holeIndex + 1}
-                  </button>
-                );
-              }}
-            </For>
-          </div>
-          <div class="flex items-center gap-1 shrink-0">
-            <span class="text-xs text-zinc-500">Par</span>
-            <select
-              value={String(state.pars[state.currentHole] ?? 4)}
-              class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
-              onChange={(event) => changeCurrentPar(parseInt(event.target.value))}
-            >
-              <For each={[9, 8, 7, 6, 5, 4, 3, 2, 1]}>
-                {(parValue) => <option value={String(parValue)}>{parValue}</option>}
-              </For>
-            </select>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  function Scores() {
-    return (
-      <div class="card">
-        <div class="text-xs text-zinc-500 mb-2">Scores — Hole {state.currentHole + 1}</div>
         <div class="space-y-2">
+          <div class="flex gap-2 items-center flex-wrap">
+            <div class="flex flex-wrap gap-1 flex-1">
+              <For each={Array.from({ length: state.numberOfHoles }, (_, holeIndex) => holeIndex)}>
+                {(holeIndex) => {
+                  const allScored = () =>
+                    state.players.every((player) => player.scores[holeIndex] >= 0);
+                  const anyScored = () =>
+                    state.players.some((player) => player.scores[holeIndex] >= 0);
+                  const isActive = () => holeIndex === state.currentHole;
+                  const extraClass = () => {
+                    if (isActive()) return "";
+                    if (allScored()) return " complete";
+                    if (anyScored()) return " played";
+                    return "";
+                  };
+                  return (
+                    <button
+                      class={`hole-btn${isActive() ? " active" : ""}${extraClass()}`}
+                      onClick={() => selectHole(holeIndex)}
+                    >
+                      {holeIndex + 1}
+                    </button>
+                  );
+                }}
+              </For>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <span class="text-xs text-zinc-500">Par</span>
+              <select
+                value={String(state.pars[state.currentHole] ?? 4)}
+                class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
+                onChange={(event) => changeCurrentPar(parseInt(event.target.value))}
+              >
+                <For each={[9, 8, 7, 6, 5, 4, 3, 2, 1]}>
+                  {(parValue) => <option value={String(parValue)}>{parValue}</option>}
+                </For>
+              </select>
+            </div>
+          </div>
           <For each={state.players}>
             {(player, playerIndex) => {
               const par = () => state.pars[state.currentHole] ?? 4;
@@ -435,7 +425,6 @@ function App() {
   function Leaderboard() {
     return (
       <div class="card">
-        <div class="text-xs text-zinc-500 mb-2">Leaderboard</div>
         <table class="w-full text-sm">
           <thead>
             <tr class="text-xs text-zinc-500">
@@ -468,73 +457,70 @@ function App() {
   function FullScorecard() {
     return (
       <div class="card">
-        <details>
-          <summary class="text-sm text-zinc-400 cursor-pointer py-1">Full Scorecard</summary>
-          <div class="overflow-x-auto mt-2">
-            <table class="scorecard-table text-xs">
-              <thead>
-                <tr>
-                  <th class="player-name-cell">Player</th>
-                  <For
-                    each={Array.from({ length: state.numberOfHoles }, (_, holeIndex) => holeIndex)}
-                  >
-                    {(holeIndex) => <th>{holeIndex + 1}</th>}
-                  </For>
-                  <th class="total-cell">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="player-name-cell text-zinc-500">Par</td>
-                  <For each={state.pars.slice(0, state.numberOfHoles)}>
-                    {(par) => <td class="text-zinc-500">{par}</td>}
-                  </For>
-                  <td class="total-cell text-zinc-500">
-                    {state.pars.slice(0, state.numberOfHoles).reduce((sum, par) => sum + par, 0)}
-                  </td>
-                </tr>
-                <For each={state.players}>
-                  {(player, playerIndex) => {
-                    const total = () =>
-                      totalRelativeToPar(
-                        state.players,
-                        state.pars,
-                        state.numberOfHoles,
-                        playerIndex(),
-                      );
-                    const strokes = () =>
-                      totalStrokes(state.players, state.numberOfHoles, playerIndex());
-                    const totalText = () => {
-                      const strokesTotal = strokes();
-                      const totalScore = total();
-                      return strokesTotal > 0
-                        ? `${strokesTotal} (${fmtRelPar(totalScore)})`
-                        : fmtRelPar(totalScore);
-                    };
-                    return (
-                      <tr>
-                        <td class="player-name-cell">{player.name}</td>
-                        <For
-                          each={Array.from(
-                            { length: state.numberOfHoles },
-                            (_, holeIndex) => holeIndex,
-                          )}
-                        >
-                          {(holeIndex) => {
-                            const score = player.scores[holeIndex];
-                            const cls = scoreClass(score, state.pars[holeIndex]);
-                            return <td class={cls}>{score >= 0 ? score : ""}</td>;
-                          }}
-                        </For>
-                        <td class={`total-cell ${totalClass(total())}`}>{totalText()}</td>
-                      </tr>
-                    );
-                  }}
+        <div class="overflow-x-auto">
+          <table class="scorecard-table text-xs">
+            <thead>
+              <tr>
+                <th class="player-name-cell">Player</th>
+                <For
+                  each={Array.from({ length: state.numberOfHoles }, (_, holeIndex) => holeIndex)}
+                >
+                  {(holeIndex) => <th>{holeIndex + 1}</th>}
                 </For>
-              </tbody>
-            </table>
-          </div>
-        </details>
+                <th class="total-cell">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="player-name-cell text-zinc-500">Par</td>
+                <For each={state.pars.slice(0, state.numberOfHoles)}>
+                  {(par) => <td class="text-zinc-500">{par}</td>}
+                </For>
+                <td class="total-cell text-zinc-500">
+                  {state.pars.slice(0, state.numberOfHoles).reduce((sum, par) => sum + par, 0)}
+                </td>
+              </tr>
+              <For each={state.players}>
+                {(player, playerIndex) => {
+                  const total = () =>
+                    totalRelativeToPar(
+                      state.players,
+                      state.pars,
+                      state.numberOfHoles,
+                      playerIndex(),
+                    );
+                  const strokes = () =>
+                    totalStrokes(state.players, state.numberOfHoles, playerIndex());
+                  const totalText = () => {
+                    const strokesTotal = strokes();
+                    const totalScore = total();
+                    return strokesTotal > 0
+                      ? `${strokesTotal} (${fmtRelPar(totalScore)})`
+                      : fmtRelPar(totalScore);
+                  };
+                  return (
+                    <tr>
+                      <td class="player-name-cell">{player.name}</td>
+                      <For
+                        each={Array.from(
+                          { length: state.numberOfHoles },
+                          (_, holeIndex) => holeIndex,
+                        )}
+                      >
+                        {(holeIndex) => {
+                          const score = player.scores[holeIndex];
+                          const cls = scoreClass(score, state.pars[holeIndex]);
+                          return <td class={cls}>{score >= 0 ? score : ""}</td>;
+                        }}
+                      </For>
+                      <td class={`total-cell ${totalClass(total())}`}>{totalText()}</td>
+                    </tr>
+                  );
+                }}
+              </For>
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
@@ -556,8 +542,7 @@ function App() {
       <ConnectionStatus />
       <Event />
       <Players />
-      <CurrentHole />
-      <Scores />
+      <Holes />
       <Leaderboard />
       <FullScorecard />
       <Buttons />
