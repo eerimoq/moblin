@@ -1,0 +1,20 @@
+{
+  "name": "moblin-web-remote-control",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "solid-js": "^1.9.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "typescript": "^6.0.3",
+    "vite": "^6.4.2",
+    "vite-plugin-solid": "^2.11.6"
+  }
+}

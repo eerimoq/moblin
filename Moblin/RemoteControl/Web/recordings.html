@@ -4,64 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Moblin Recordings</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/recordings.css" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script type="module" crossorigin src="/js/recordings.mjs"></script>
+    <link rel="modulepreload" crossorigin href="/js/app.mjs">
+    <link rel="modulepreload" crossorigin href="/js/vendor.mjs">
+    <link rel="modulepreload" crossorigin href="/js/utils.mjs">
+    <link rel="modulepreload" crossorigin href="/js/components.mjs">
+    <link rel="stylesheet" crossorigin href="/css/app.css">
+    <link rel="stylesheet" crossorigin href="/css/recordings.css">
+    <link rel="stylesheet" crossorigin href="/css/common.css">
   </head>
-
   <body class="bg-zinc-950 text-zinc-100 font-sans p-2">
-    <div class="max-w-3xl mx-auto space-y-2">
-      <h1 class="text-2xl font-bold text-center">Moblin Recordings</h1>
-
-      <div class="pb-1 text-center space-x-4">
-        <a href="./" class="text-indigo-400 hover:text-indigo-300 text-sm">Remote Control</a>
-        <a
-          href="https://github.com/eerimoq/moblin"
-          target="_blank"
-          class="text-indigo-400 hover:text-indigo-300 text-sm"
-        >
-          Github
-        </a>
-      </div>
-
-      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
-        <div id="recordingsList" class="space-y-1"></div>
-        <div id="emptyMessage" class="text-sm text-zinc-500 text-center hidden">
-          No recordings found.
-        </div>
-        <div id="loadingMessage" class="text-sm text-zinc-500 text-center">Loading...</div>
-      </div>
-    </div>
-
-    <dialog id="confirm" class="backdrop:bg-black/60 rounded-xl p-0">
-      <form method="dialog" class="bg-zinc-900 text-zinc-100">
-        <div class="p-2">
-          <p id="confirm-message" class="text-zinc-300"></p>
-        </div>
-        <div class="bg-zinc-800/60 px-4 py-3 sm:px-5 flex items-center justify-end gap-2">
-          <button
-            id="confirm-ok"
-            class="px-3 py-1.5 rounded-md border border-zinc-700 text-red-400 hover:bg-zinc-800 cursor-pointer"
-          >
-            Delete
-          </button>
-          <button
-            id="confirm-cancel"
-            class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </dialog>
-
-    <div id="mobilePreview" class="mobile-preview hidden" aria-hidden="true">
-      <div id="mobilePreviewBackdrop" class="mobile-preview-backdrop">
-        <img id="mobilePreviewImage" class="mobile-preview-image" alt="" />
-      </div>
-    </div>
-
-    <script src="js/recordings.mjs" type="module"></script>
+    <div id="app"></div>
   </body>
 </html>

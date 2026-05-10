@@ -1,0 +1,624 @@
+import { createSignal, For, Show } from "solid-js";
+import type { Accessor } from "solid-js";
+import { createStore } from "solid-js/store";
+import { render } from "solid-js/web";
+import { WebSocketConnection } from "./utils.ts";
+import { GitHubLink, NamedItem, Picker, Toggle } from "./components.tsx";
+
+interface ZoomPreset extends NamedItem {}
+
+interface BitratePreset {
+  id: string;
+  bitrate: number;
+}
+
+interface SrtPriority {
+  id: string;
+  name: string;
+  priority: number;
+  enabled: boolean;
+}
+
+interface GimbalPreset extends NamedItem {}
+
+type StatusRow = [string, string];
+
+const filterNames = {
+  pixellate: "Pixellate",
+  movie: "Movie",
+  grayScale: "Gray scale",
+  sepia: "Sepia",
+  triple: "Triple",
+  twin: "Twin",
+  fourThree: "4:3",
+  crt: "CRT",
+  pinch: "Pinch",
+  whirlpool: "Whirlpool",
+  poll: "Poll",
+  blurFaces: "Blur faces",
+  privacy: "Blur background",
+  beauty: "Beauty",
+  moblinInMouth: "Moblin in mouth",
+  cameraMan: "Camera man",
+};
+
+const allFilterKeys = [
+  "pixellate",
+  "movie",
+  "grayScale",
+  "sepia",
+  "triple",
+  "twin",
+  "fourThree",
+  "crt",
+  "pinch",
+  "whirlpool",
+  "poll",
+  "blurFaces",
+  "privacy",
+  "beauty",
+  "moblinInMouth",
+  "cameraMan",
+];
+
+const statusKeyToName = {
+  camera: "Camera",
+  chat: "Chat",
+  mic: "Mic",
+  stream: "Stream",
+  zoom: "Zoom",
+  obs: "OBS",
+  events: "Events",
+  viewers: "Viewers",
+  audioLevel: "Audio",
+  location: "Location",
+  moblink: "Moblink",
+  remoteControl: "Remote control",
+  rtmpServer: "RTMP/SRT(LA) servers",
+  gameController: "Game controller",
+  bitrate: "Bitrate",
+  uptime: "Uptime",
+  srtla: "Bonding",
+  srtlaRtts: "Bonding RTT:s",
+  recording: "Recording",
+  browserWidgets: "Browser widgets",
+  djiDevices: "DJI devices",
+};
+
+function formatBytesPerSecond(bps: number): string {
+  if (bps >= 1000000) return (bps / 1000000).toFixed(1) + " Mbps";
+  if (bps >= 1000) return (bps / 1000).toFixed(0) + " Kbps";
+  return bps + " bps";
+}
+
+interface StatusTableProps {
+  rows: Accessor<StatusRow[]>;
+}
+
+function StatusTable({ rows }: StatusTableProps) {
+  return (
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-zinc-300 table-auto">
+        <tbody>
+          <For each={rows()}>
+            {([name, value]) => (
+              <tr class="border-b border-zinc-800">
+                <td class="py-1.5 pr-4 text-zinc-200 font-medium whitespace-nowrap">{name}</td>
+                <td class="py-1.5 text-zinc-200" innerHTML={value} />
+              </tr>
+            )}
+          </For>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function App() {
+  const [connStatus, setConnStatus] = createSignal("connecting");
+  const [generalRows, setGeneralRows] = createSignal<StatusRow[]>([]);
+  const [topLeftRows, setTopLeftRows] = createSignal<StatusRow[]>([]);
+  const [topRightRows, setTopRightRows] = createSignal<StatusRow[]>([]);
+  const [showControl, setShowControl] = createSignal(false);
+  const [showSrt, setShowSrt] = createSignal(false);
+  const [showGimbal, setShowGimbal] = createSignal(false);
+  const [showFilters, setShowFilters] = createSignal(false);
+  const [liveOn, setLiveOn] = createSignal(false);
+  const [recordingOn, setRecordingOn] = createSignal(false);
+  const [mutedOn, setMutedOn] = createSignal(false);
+  const [debugLoggingOn, setDebugLoggingOn] = createSignal(false);
+  const [zoomValue, setZoomValue] = createSignal("");
+  const [zoomPresets, setZoomPresets] = createSignal<ZoomPreset[]>([]);
+  const [currentZoomPresetId, setCurrentZoomPresetId] = createSignal<string | null>(null);
+  const [scenes, setScenes] = createSignal<NamedItem[]>([]);
+  const [currentSceneId, setCurrentSceneId] = createSignal("");
+  const [autoSwitchers, setAutoSwitchers] = createSignal<NamedItem[]>([]);
+  const [currentAutoSwitcherId, setCurrentAutoSwitcherId] = createSignal("");
+  const [mics, setMics] = createSignal<NamedItem[]>([]);
+  const [currentMicId, setCurrentMicId] = createSignal("");
+  const [bitratePresets, setBitratePresets] = createSignal<BitratePreset[]>([]);
+  const [currentBitrateId, setCurrentBitrateId] = createSignal("");
+  const [srtEnabled, setSrtEnabled] = createSignal(false);
+  const [srtPriorities, setSrtPriorities] = createStore<SrtPriority[]>([]);
+  const [gimbalPresets, setGimbalPresets] = createSignal<GimbalPreset[]>([]);
+  const [filterStates, setFilterStates] = createStore<Record<string, boolean>>({});
+  let logContainer: HTMLDivElement | undefined;
+
+  class IndexConnection extends WebSocketConnection {
+    statusTimerId: ReturnType<typeof setTimeout> | undefined;
+    settingsTimerId: ReturnType<typeof setTimeout> | undefined;
+
+    constructor() {
+      super();
+      this.statusTimerId = undefined;
+      this.settingsTimerId = undefined;
+    }
+
+    onStatusChanged(newStatus: string): void {
+      if (newStatus === "Connected") {
+        setConnStatus("connected");
+      } else {
+        setConnStatus("connecting");
+      }
+    }
+
+    onConnected(): void {
+      this.sendStartStatusRequest();
+      this.sendGetStatusRequest();
+      this.sendGetSettingsRequest();
+    }
+
+    reconnectSoon(): void {
+      if (this.statusTimerId !== undefined) {
+        clearTimeout(this.statusTimerId);
+        this.statusTimerId = undefined;
+      }
+      if (this.settingsTimerId !== undefined) {
+        clearTimeout(this.settingsTimerId);
+        this.settingsTimerId = undefined;
+      }
+      setConnStatus("connecting");
+      super.reconnectSoon();
+    }
+
+    handleResponse(_id: number, result: { ok: boolean }, data: unknown): void {
+      if (!result.ok) return;
+      if (!data) return;
+      const d = data as {
+        getStatus?: Record<string, unknown>;
+        getSettings?: { data: Record<string, unknown> };
+      };
+      if (d.getStatus) {
+        this.handleGetStatusResponse(d.getStatus);
+      }
+      if (d.getSettings) {
+        this.handleGetSettingsResponse(d.getSettings);
+      }
+    }
+
+    handleGetStatusResponse(status: Record<string, unknown>): void {
+      updateStatus(status);
+      this.statusTimerId = setTimeout(() => {
+        this.sendGetStatusRequest();
+      }, 1000);
+    }
+
+    handleGetSettingsResponse(settingsData: { data: Record<string, unknown> }): void {
+      populateSettings(settingsData.data);
+      this.settingsTimerId = setTimeout(() => {
+        this.sendGetSettingsRequest();
+      }, 10000);
+    }
+
+    handleEvent(data: unknown): void {
+      const d = data as {
+        state?: { data: Record<string, unknown> };
+        log?: { entry: string };
+      };
+      if (d.state) {
+        this.handleStateEvent(d.state);
+      } else if (d.log) {
+        const entry = document.createElement("div");
+        entry.textContent = d.log.entry;
+        if (logContainer) logContainer.appendChild(entry);
+      }
+    }
+
+    handleStateEvent(state: { data: Record<string, unknown> }): void {
+      const sd = state.data;
+      if (sd.streaming !== undefined) setLiveOn(sd.streaming as boolean);
+      if (sd.recording !== undefined) setRecordingOn(sd.recording as boolean);
+      if (sd.muted !== undefined) setMutedOn(sd.muted as boolean);
+      if (sd.debugLogging !== undefined) setDebugLoggingOn(sd.debugLogging as boolean);
+      if (sd.zoom !== undefined) setZoomValue(String(sd.zoom));
+      if (sd.scene !== undefined) {
+        setCurrentSceneId(sd.scene as string);
+      }
+      if (sd.mic !== undefined) {
+        setCurrentMicId(sd.mic as string);
+      }
+      if (sd.bitrate !== undefined) {
+        setCurrentBitrateId(sd.bitrate as string);
+      }
+      if (sd.zoomPreset !== undefined) {
+        setCurrentZoomPresetId(sd.zoomPreset as string);
+      }
+      if (sd.zoomPresets !== undefined) {
+        setZoomPresets(sd.zoomPresets as ZoomPreset[]);
+        setCurrentZoomPresetId((sd.zoomPreset as string | undefined) ?? null);
+      }
+      if (sd.autoSceneSwitcher !== undefined) {
+        const switcher = sd.autoSceneSwitcher as { id: string } | null;
+        setCurrentAutoSwitcherId(switcher ? (switcher.id ?? "") : "");
+      }
+      if (sd.filters !== undefined) {
+        const filters = sd.filters as unknown[];
+        for (let filterIndex = 0; filterIndex < filters.length; filterIndex += 2) {
+          const name = Object.keys(filters[filterIndex] as object)[0];
+          const on = filters[filterIndex + 1] as boolean;
+          setFilterStates(name, on);
+        }
+      }
+    }
+  }
+
+  const connection = new IndexConnection();
+
+  function updateStatus(status: Record<string, unknown>): void {
+    const general = status.general as {
+      batteryLevel: number;
+      isMuted: boolean;
+      flame: string;
+      wiFiSsid: string;
+    };
+    const genRows: StatusRow[] = [
+      ["Battery level", String(general.batteryLevel)],
+      ["Muted", String(general.isMuted)],
+      ["Flame", general.flame],
+      ["WiFi", general.wiFiSsid],
+    ];
+    setGeneralRows(genRows);
+    const topLeft = (status.topLeft ?? {}) as Record<string, { message: string }>;
+    const tlRows: StatusRow[] = Object.keys(topLeft)
+      .sort()
+      .filter((statusKey) => statusKeyToName[statusKey as keyof typeof statusKeyToName])
+      .map((statusKey) => [
+        statusKeyToName[statusKey as keyof typeof statusKeyToName],
+        topLeft[statusKey].message,
+      ]);
+    setTopLeftRows(tlRows);
+    const topRight = (status.topRight ?? {}) as Record<string, { message: string }>;
+    const trRows: StatusRow[] = Object.keys(topRight)
+      .sort()
+      .filter((statusKey) => statusKeyToName[statusKey as keyof typeof statusKeyToName])
+      .map((statusKey) => [
+        statusKeyToName[statusKey as keyof typeof statusKeyToName],
+        topRight[statusKey].message,
+      ]);
+    setTopRightRows(trRows);
+  }
+
+  function populateSettings(data: Record<string, unknown>): void {
+    setShowControl(true);
+    setScenes((data.scenes as NamedItem[]) ?? []);
+    let baseAutoSceneSwitchers: NamedItem[] = [{ id: "", name: "-- None --" }];
+    setAutoSwitchers(baseAutoSceneSwitchers.concat(data.autoSceneSwitchers as NamedItem[]) ?? []);
+    setMics((data.mics as NamedItem[]) ?? []);
+    setBitratePresets((data.bitratePresets as BitratePreset[]) ?? []);
+    const srt = data.srt as
+      | {
+          connectionPriorities: SrtPriority[];
+          connectionPrioritiesEnabled: boolean;
+        }
+      | undefined;
+    if (srt && srt.connectionPriorities && srt.connectionPriorities.length > 0) {
+      setShowSrt(true);
+      setSrtEnabled(srt.connectionPrioritiesEnabled);
+      setSrtPriorities(srt.connectionPriorities);
+    }
+    const gimbalPresetList = data.gimbalPresets as GimbalPreset[] | undefined;
+    if (gimbalPresetList && gimbalPresetList.length > 0) {
+      setShowGimbal(true);
+      setGimbalPresets(gimbalPresetList);
+    }
+    setShowFilters(true);
+  }
+
+  function handleZoomSubmit() {
+    const value = parseFloat(zoomValue());
+    if (!isNaN(value)) connection.setZoom(value);
+  }
+
+  function Links() {
+    return (
+      <div class="text-center space-x-4">
+        <a href="./remote.html" class="text-indigo-400 hover:text-indigo-300 text-sm">
+          Scoreboard Control
+        </a>
+        <a href="./scoreboard.html" class="text-indigo-400 hover:text-indigo-300 text-sm">
+          Scoreboard Display
+        </a>
+        <a href="./golf.html" class="text-indigo-400 hover:text-indigo-300 text-sm">
+          Golf Scoreboard
+        </a>
+        <a href="./recordings.html" class="text-indigo-400 hover:text-indigo-300 text-sm">
+          Recordings
+        </a>
+        <GitHubLink />
+      </div>
+    );
+  }
+
+  function ConnectionStatus() {
+    return (
+      <div class="pb-1 text-center">
+        <Show when={connStatus() === "connected"}>
+          <span class="text-green-500 text-sm">Connected to server</span>
+        </Show>
+        <Show when={connStatus() === "connecting"}>
+          <span class="text-yellow-400 text-sm">Connecting to server</span>
+        </Show>
+      </div>
+    );
+  }
+
+  function Status() {
+    return (
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
+        <h2 class="text-xl font-semibold mb-3">Status</h2>
+        <h3 class="text-base font-medium text-zinc-300 mb-1">General</h3>
+        <StatusTable rows={generalRows} />
+        <h3 class="text-base font-medium text-zinc-300 mt-3 mb-1">Top left</h3>
+        <StatusTable rows={topLeftRows} />
+        <h3 class="text-base font-medium text-zinc-300 mt-3 mb-1">Top right</h3>
+        <StatusTable rows={topRightRows} />
+      </div>
+    );
+  }
+
+  function Control() {
+    return (
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
+        <h2 class="text-xl font-semibold mb-3">Control</h2>
+        <Show when={showControl()}>
+          <div class="space-y-3">
+            <Toggle
+              id="controlLive"
+              checked={liveOn()}
+              onChange={(event) => connection.setLive(event.target.checked)}
+              label="Live"
+            />
+            <Toggle
+              id="controlRecording"
+              checked={recordingOn()}
+              onChange={(event) => connection.setRecording(event.target.checked)}
+              label="Recording"
+            />
+            <Toggle
+              id="controlMuted"
+              checked={mutedOn()}
+              onChange={(event) => connection.setMuted(event.target.checked)}
+              label="Muted"
+            />
+            <div class="flex items-center space-x-4">
+              <label class="text-sm text-zinc-200 w-24 shrink-0">Zoom</label>
+              <input
+                type="text"
+                class="bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 w-20"
+                placeholder="1.0"
+                value={zoomValue()}
+                onInput={(event) => setZoomValue(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") handleZoomSubmit();
+                }}
+                onBlur={handleZoomSubmit}
+              />
+            </div>
+            <Show when={zoomPresets().length > 0}>
+              <div class="flex flex-wrap gap-2">
+                <For each={zoomPresets()}>
+                  {(preset) => (
+                    <button
+                      class={
+                        preset.id === currentZoomPresetId()
+                          ? "bg-indigo-700 text-white text-sm px-3 py-1 rounded transition-colors"
+                          : "bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-sm px-3 py-1 rounded transition-colors"
+                      }
+                      onClick={() => connection.setZoomPreset(preset.id)}
+                    >
+                      {preset.name}
+                    </button>
+                  )}
+                </For>
+              </div>
+            </Show>
+            <Picker
+              name="Scene"
+              options={scenes}
+              value={currentSceneId}
+              onChange={connection.setScene}
+            />
+            <Picker
+              name="Auto scene switcher"
+              options={autoSwitchers}
+              value={currentAutoSwitcherId}
+              onChange={(value) => {
+                connection.setAutoSceneSwitcher(value === "" ? null : value);
+              }}
+            />
+            <Picker name="Mic" options={mics} value={currentMicId} onChange={connection.setMic} />
+            <Picker
+              name="Bitrate"
+              options={(): NamedItem[] => {
+                return bitratePresets().map(({ id, bitrate }): NamedItem => {
+                  return { id, name: bitrate > 0 ? formatBytesPerSecond(bitrate) : "Unknown" };
+                });
+              }}
+              value={currentBitrateId}
+              onChange={connection.setBitratePreset}
+            />
+            <Toggle
+              id="controlDebugLogging"
+              checked={debugLoggingOn()}
+              onChange={(event) => connection.setDebugLogging(event.target.checked)}
+              label="Debug logging"
+            />
+            <div class="flex flex-wrap gap-2">
+              <button
+                class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-sm px-3 py-1 rounded transition-colors"
+                onClick={() => connection.reloadBrowserWidgets()}
+              >
+                Reload browser widgets
+              </button>
+            </div>
+          </div>
+        </Show>
+      </div>
+    );
+  }
+
+  function SrtConnectionPriorities() {
+    return (
+      <Show when={showSrt()}>
+        <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
+          <h2 class="text-xl font-semibold mb-3">SRT Connection Priorities</h2>
+          <Toggle
+            id="controlSrtEnabled"
+            checked={srtEnabled()}
+            onChange={(event) => {
+              setSrtEnabled(event.target.checked);
+              connection.setSrtConnectionPrioritiesEnabled(event.target.checked);
+            }}
+            label="Enabled"
+          />
+          <div class="space-y-2 mt-3">
+            <For each={srtPriorities}>
+              {(priority, priorityIndex) => (
+                <SrtPriorityRow
+                  priority={priority}
+                  onChange={(priorityValue, enabled) => {
+                    setSrtPriorities(priorityIndex(), "priority", priorityValue);
+                    setSrtPriorities(priorityIndex(), "enabled", enabled);
+                    connection.setSrtConnectionPriority(priority.id, priorityValue, enabled);
+                  }}
+                />
+              )}
+            </For>
+          </div>
+        </div>
+      </Show>
+    );
+  }
+
+  function GimbalPresets() {
+    return (
+      <Show when={showGimbal()}>
+        <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
+          <h2 class="text-xl font-semibold mb-3">Gimbal Presets</h2>
+          <div class="flex flex-wrap gap-2">
+            <For each={gimbalPresets()}>
+              {(preset) => (
+                <button
+                  class="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-sm px-4 py-2 rounded transition-colors"
+                  onClick={() => connection.moveToGimbalPreset(preset.id)}
+                >
+                  {preset.name}
+                </button>
+              )}
+            </For>
+          </div>
+        </div>
+      </Show>
+    );
+  }
+
+  function Filters() {
+    return (
+      <Show when={showFilters()}>
+        <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
+          <h2 class="text-xl font-semibold mb-3">Filters</h2>
+          <div class="space-y-3">
+            <For each={allFilterKeys}>
+              {(key) => (
+                <Toggle
+                  id={`filter_${key}`}
+                  checked={filterStates[key] || false}
+                  onChange={(event) => {
+                    setFilterStates(key, event.target.checked);
+                    connection.setFilter(key, event.target.checked);
+                  }}
+                  label={filterNames[key as keyof typeof filterNames] || key}
+                />
+              )}
+            </For>
+          </div>
+        </div>
+      </Show>
+    );
+  }
+
+  function Log() {
+    return (
+      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
+        <h2 class="text-xl font-semibold mb-3">Log</h2>
+        <div
+          ref={(el: HTMLDivElement) => {
+            logContainer = el;
+          }}
+          class="overflow-y-auto h-96 text-sm text-zinc-300"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div class="max-w-3xl mx-auto space-y-2">
+      <h1 class="text-2xl font-bold text-center">Moblin Remote Control</h1>
+      <Links />
+      <ConnectionStatus />
+      <Status />
+      <Control />
+      <SrtConnectionPriorities />
+      <GimbalPresets />
+      <Filters />
+      <Log />
+    </div>
+  );
+}
+
+interface SrtPriorityRowProps {
+  priority: SrtPriority;
+  onChange: (priority: number, enabled: boolean) => void;
+}
+
+function SrtPriorityRow({ priority, onChange }: SrtPriorityRowProps) {
+  const [sliderValue, setSliderValue] = createSignal(priority.priority);
+  const [checked, setChecked] = createSignal(priority.enabled);
+
+  return (
+    <div class="flex items-center space-x-3">
+      <label class="text-sm text-zinc-200 w-24 shrink-0">{priority.name}</label>
+      <input
+        type="checkbox"
+        checked={checked()}
+        class="w-4 h-4 bg-zinc-800 border border-zinc-600 rounded cursor-pointer accent-indigo-600"
+        onChange={(event) => {
+          setChecked(event.target.checked);
+          onChange(sliderValue(), event.target.checked);
+        }}
+      />
+      <input
+        type="range"
+        min="1"
+        max="10"
+        value={sliderValue()}
+        class="flex-1 accent-indigo-600"
+        onInput={(event) => setSliderValue(parseInt(event.target.value))}
+        onChange={(event) => onChange(parseInt(event.target.value), checked())}
+      />
+      <span class="text-sm text-zinc-300 w-6 text-right">{sliderValue()}</span>
+    </div>
+  );
+}
+
+render(() => <App />, document.getElementById("app")!);

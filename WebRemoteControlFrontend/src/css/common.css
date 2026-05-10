@@ -1,0 +1,29 @@
+:root {
+  --bg-color: #09090b;
+  --card-bg: #18181b;
+  --btn-bg: #27272a;
+  --btn-border: #3f3f46;
+  --text-main: #e4e4e7;
+  --text-dim: #a1a1aa;
+  --accent: #eab308;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 8px;
+  padding: 6px;
+}
+
+dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  width: min(400px, calc(100vw - 2rem));
+}
+
+::-webkit-scrollbar {
+  display: none;
+}

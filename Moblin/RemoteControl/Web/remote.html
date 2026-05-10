@@ -7,103 +7,17 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Moblin Scoreboard Control</title>
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/remote.css" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <script type="module" crossorigin src="/js/remote.mjs"></script>
+    <link rel="modulepreload" crossorigin href="/js/app.mjs">
+    <link rel="modulepreload" crossorigin href="/js/vendor.mjs">
+    <link rel="modulepreload" crossorigin href="/js/utils.mjs">
+    <link rel="modulepreload" crossorigin href="/js/components.mjs">
+    <link rel="stylesheet" crossorigin href="/css/app.css">
+    <link rel="stylesheet" crossorigin href="/css/remote.css">
+    <link rel="stylesheet" crossorigin href="/css/common.css">
   </head>
   <body class="p-2">
-    <div class="h-full flex flex-col max-w-lg mx-auto space-y-2">
-      <div id="ctrl" class="opacity-30 pointer-events-none flex gap-2">
-        <div id="t1a" class="flex-1 space-y-2"></div>
-        <div id="t2a" class="flex-1 space-y-2"></div>
-      </div>
-
-      <div id="clock-details">
-        <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
-          <button id="toggle-clock" class="btn btn-top bg-indigo-600 text-white border-none">
-            Clock
-          </button>
-          <input
-            type="text"
-            id="clock"
-            placeholder="0:00"
-            class="btn-top font-mono text-lg text-indigo-400 bg-black rounded"
-          />
-          <select id="clock-maximum" class="btn-top bg-black rounded"></select>
-          <select id="clock-direction" class="btn-top bg-black rounded">
-            <option value="up">Up</option>
-            <option value="down">Down</option>
-          </select>
-        </div>
-      </div>
-
-      <details>
-        <summary>HISTORICAL SCORES</summary>
-        <div class="grid grid-cols-5 gap-1 mt-1" id="history-grid"></div>
-      </details>
-
-      <div class="grid grid-cols-2 gap-2">
-        <button id="next-set" class="btn btn-ctrl border-zinc-600">Next set/period</button>
-        <button id="new-match" class="btn btn-ctrl border-red-900 text-red-400">New match</button>
-      </div>
-
-      <details open>
-        <summary>
-          <span>SCOREBOARD CONFIGURATION</span>
-          <span id="stat" class="status-text text-red-500">Disconnected</span>
-        </summary>
-        <div class="card grid grid-cols-4 gap-2 mt-1">
-          <select id="sport-selector" class="col-span-2 btn h-9 text-[10px] bg-black">
-            <option value="">LOADING...</option>
-          </select>
-          <select id="layout-selector" class="col-span-2 btn h-9 text-[10px] bg-black">
-            <option value="stacked">Stacked</option>
-            <option value="stackedInline">Stacked inline</option>
-            <option value="sideBySide">Side by side</option>
-            <option value="stackHistory">Stack history</option>
-          </select>
-
-          <input type="text" id="title" placeholder="TITLE" class="col-span-2 conf-input px-2" />
-          <div id="lbl-period" class="conf-label">PER</div>
-          <input type="text" id="period" class="conf-input" />
-
-          <button id="btn-show-title" class="btn h-9 text-[10px]">Title</button>
-          <button id="btn-more-stats" class="btn h-9 text-[10px]">More stats</button>
-          <button id="btn-info-box" class="btn h-9 text-[10px]">Info box</button>
-          <input type="text" id="info-box" placeholder="INFO BOX" class="conf-input px-2" />
-          <button id="btn-show-clock" class="btn h-9 text-[10px]">Clock</button>
-        </div>
-      </details>
-
-      <div
-        class="btn-top border border-zinc-800 rounded font-mono text-xs flex items-center justify-center gap-4 text-zinc-500"
-      >
-        <div>BIT: <span id="sb" class="text-white">--</span></div>
-        <div>BAT: <span id="sp" class="text-white">--</span></div>
-        <div id="si" class="text-amber-500">Syncing...</div>
-      </div>
-    </div>
-    <dialog id="confirm" class="backdrop:bg-black/60 rounded-xl p-0">
-      <form method="dialog" class="bg-zinc-900 text-zinc-100">
-        <div class="p-2">
-          <p id="confirm-message" class="text-zinc-300">The message</p>
-        </div>
-        <div class="bg-zinc-800/60 px-4 py-3 sm:px-5 flex items-center justify-end gap-2">
-          <button
-            id="confirm-ok"
-            class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer"
-          >
-            OK
-          </button>
-          <button
-            id="confirm-cancel"
-            class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </dialog>
-    <script src="js/remote.mjs" type="module"></script>
+    <div id="app"></div>
   </body>
 </html>

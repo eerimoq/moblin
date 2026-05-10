@@ -95,3 +95,6 @@ Config.xcconfig
 .DS_Store
 __MACOSX
 Config/User.xcconfig
+
+# Node.js
+node_modules/

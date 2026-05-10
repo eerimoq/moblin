@@ -5,14 +5,14 @@ SWIFTFORMAT_ARGS = \
 	--disable docComments \
 	--ifdef no-indent
 SWIFTLINT_ARGS = --strict --quiet
-OXFMT_ARGS = "Moblin/RemoteControl/Web"
-OXLINT_ARGS = "Moblin/RemoteControl/Web"
+OXFMT_ARGS = "WebRemoteControlFrontend"
+OXLINT_ARGS = "WebRemoteControlFrontend"
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 	--index-exclude "**/PrepareLicenseList/**" \
 	--disable-update-check
 CODESPELL_ARGS = \
-	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
+	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json" \
 	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
 PYLINT_ARGS = \
 	--disable missing-function-docstring \
@@ -31,6 +31,7 @@ CODE_FOLDERS += "Moblin Widget"
 CODE_FOLDERS += "Moblin Live Activity"
 CODE_FOLDERS += "Moblin Screen Recording"
 CODE_FOLDERS += "MoblinTests"
+CODE_FOLDERS += "WebRemoteControlFrontend"
 
 SHELL = /usr/bin/env bash
 
@@ -72,6 +73,7 @@ pack-exported-localizations:
 	    rm -rf $$f ; \
 	done
 
-generate-web-remote-control-css:
-	cd Moblin/RemoteControl/Web/ && \
-	tailwindcss -i <(echo '@import "tailwindcss";') -o css/app.css
+build-web-remote-control-frontend:
+	cd WebRemoteControlFrontend && \
+	npm install && \
+	npm run build

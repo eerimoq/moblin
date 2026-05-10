@@ -7,145 +7,16 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Moblin Golf Scoreboard</title>
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/golf.css" />
+    <script type="module" crossorigin src="/js/golf.mjs"></script>
+    <link rel="modulepreload" crossorigin href="/js/app.mjs">
+    <link rel="modulepreload" crossorigin href="/js/vendor.mjs">
+    <link rel="modulepreload" crossorigin href="/js/utils.mjs">
+    <link rel="modulepreload" crossorigin href="/js/components.mjs">
+    <link rel="stylesheet" crossorigin href="/css/app.css">
+    <link rel="stylesheet" crossorigin href="/css/golf.css">
+    <link rel="stylesheet" crossorigin href="/css/common.css">
   </head>
   <body class="bg-zinc-950 text-zinc-100 font-sans p-2">
-    <div class="max-w-3xl mx-auto space-y-2">
-      <h1 class="text-2xl font-bold text-center">Moblin Golf Scoreboard</h1>
-
-      <div class="text-center space-x-4">
-        <a href="./" class="text-indigo-400 hover:text-indigo-300 text-sm">Remote Control</a>
-        <a
-          href="https://github.com/eerimoq/moblin"
-          target="_blank"
-          class="text-indigo-400 hover:text-indigo-300 text-sm"
-        >
-          Github
-        </a>
-      </div>
-
-      <div class="pb-1 text-center">
-        <span id="status" class="text-sm"></span>
-      </div>
-
-      <div class="card">
-        <div class="text-xs text-zinc-500 mb-2">Event</div>
-        <div class="grid grid-cols-2 gap-2">
-          <input
-            type="text"
-            id="title"
-            placeholder="Event name"
-            value=""
-            class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
-          />
-          <select
-            id="number-of-holes"
-            class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
-          >
-            <option value="9">9 Holes</option>
-            <option value="18" selected>18 Holes</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-xs text-zinc-500">Players</div>
-          <div class="flex gap-1">
-            <button id="btn-remove-player" class="btn-xs border-zinc-700 text-zinc-400">
-              − Player
-            </button>
-            <button id="btn-add-player" class="btn-xs border-zinc-600 text-zinc-300">
-              + Player
-            </button>
-          </div>
-        </div>
-        <div id="player-list" class="space-y-1"></div>
-      </div>
-
-      <div class="card">
-        <div class="text-xs text-zinc-500 mb-2">Current Hole</div>
-        <div class="flex gap-2 items-center flex-wrap">
-          <div id="hole-buttons" class="flex flex-wrap gap-1 flex-1"></div>
-          <div class="flex items-center gap-1 shrink-0">
-            <span class="text-xs text-zinc-500">Par</span>
-            <select
-              id="current-par"
-              class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
-            >
-              <option value="9">9</option>
-              <option value="8">8</option>
-              <option value="7">7</option>
-              <option value="6">6</option>
-              <option value="5">5</option>
-              <option value="4" selected>4</option>
-              <option value="3">3</option>
-              <option value="2">2</option>
-              <option value="1">1</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="text-xs text-zinc-500 mb-2">
-          Scores — Hole <span id="entry-hole-num">1</span>
-        </div>
-        <div id="player-score-inputs" class="space-y-2"></div>
-      </div>
-
-      <div class="card">
-        <div class="text-xs text-zinc-500 mb-2">Leaderboard</div>
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="text-xs text-zinc-500">
-              <th class="text-left pb-1">Player</th>
-              <th class="text-right pb-1">Score</th>
-              <th class="text-right pb-1">Thru</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboard-body"></tbody>
-        </table>
-      </div>
-
-      <div class="card">
-        <details>
-          <summary class="text-sm text-zinc-400 cursor-pointer py-1">Full Scorecard</summary>
-          <div class="overflow-x-auto mt-2">
-            <table id="scorecard" class="scorecard-table text-xs"></table>
-          </div>
-        </details>
-      </div>
-
-      <div class="card">
-        <button id="btn-new-round" class="new-round-btn border-zinc-700 text-red-400">
-          New Round
-        </button>
-      </div>
-    </div>
-    <dialog id="confirm" class="backdrop:bg-black/60 rounded-xl p-0">
-      <form method="dialog" class="bg-zinc-900 text-zinc-100">
-        <div class="p-2">
-          <p id="confirm-message" class="text-zinc-300">The message</p>
-        </div>
-        <div class="bg-zinc-800/60 px-4 py-3 sm:px-5 flex items-center justify-end gap-2">
-          <button
-            id="confirm-ok"
-            class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer"
-          >
-            OK
-          </button>
-          <button
-            id="confirm-cancel"
-            class="px-3 py-1.5 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-800 cursor-pointer"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </dialog>
-    <script src="js/golf.mjs" type="module"></script>
+    <div id="app"></div>
   </body>
 </html>
