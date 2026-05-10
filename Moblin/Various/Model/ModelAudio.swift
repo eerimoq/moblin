@@ -31,7 +31,9 @@ class Mic: ObservableObject {
 extension Model {
     func setupInputGainObserver() {
         inputGainObservation = AVAudioSession.sharedInstance().observe(\.inputGain) { session, _ in
-            self.mic.inputGain = session.inputGain
+            DispatchQueue.main.async {
+                self.mic.inputGain = session.inputGain
+            }
         }
     }
 
@@ -97,10 +99,14 @@ extension Model {
                 try session.setActive(true)
                 logger.info("audio: Preferred sample rate: \(session.preferredSampleRate)")
             } catch {
-                self.makeErrorToastMain(title: "Audio session setup failed",
+                DispatchQueue.main.async {
+                    self.makeErrorToast(title: "Audio session setup failed",
                                         subTitle: error.localizedDescription)
+                }
             }
-            self.setAllowHapticsAndSystemSoundsDuringRecording()
+            DispatchQueue.main.async {
+                self.setAllowHapticsAndSystemSoundsDuringRecording()
+            }
         }
     }
 
@@ -160,7 +166,7 @@ extension Model {
         updateMicsListDatabase(foundMics: listMics())
     }
 
-    func updateMicsListAsync(onCompleted: (() -> Void)? = nil) {
+    func updateMicsListAsync(onCompleted: (@MainActor () -> Void)? = nil) {
         listMicsAsync {
             self.updateMicsListDatabase(foundMics: $0)
             onCompleted?()
@@ -275,9 +281,16 @@ extension Model {
         }
     }
 
-    @objc func systemVolumeDidChange(notification: NSNotification) {
+    @objc nonisolated func systemVolumeDidChange(notification: NSNotification) {
+        guard let userInfo = notification.userInfo,
+              let volume = userInfo["Volume"] as? Float,
+              let reason = userInfo["Reason"] as? String,
+              let sequenceNumber = userInfo["SequenceNumber"] as? Int
+        else {
+            return
+        }
         DispatchQueue.main.async {
-            self.handleSystemVolumeDidChange(notification: notification)
+            self.handleSystemVolumeDidChange(volume: volume, reason: reason, sequenceNumber: sequenceNumber)
         }
     }
 
@@ -296,14 +309,8 @@ extension Model {
         updateMicsListAsync()
     }
 
-    private func handleSystemVolumeDidChange(notification: NSNotification) {
-        guard let userInfo = notification.userInfo,
-              let volume = userInfo["Volume"] as? Float,
-              let reason = userInfo["Reason"] as? String,
-              let sequenceNumber = userInfo["SequenceNumber"] as? Int
-        else {
-            return
-        }
+    @MainActor
+    private func handleSystemVolumeDidChange(volume: Float, reason: String, sequenceNumber: Int) {
         // For some reason two similar notifications are received. Not sure how to distinguish
         // them from each other.
         guard sequenceNumber != latestVolumeChangeSequenceNumber else {

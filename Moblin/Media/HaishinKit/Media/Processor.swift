@@ -64,10 +64,12 @@ final class Processor: @unchecked Sendable {
         video.getFps()
     }
 
-    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
+    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping @MainActor () -> Void) {
         processorControlQueue.async {
             self.video.setColorSpace(colorSpace: colorSpace)
-            onComplete()
+            DispatchQueue.main.async {
+                onComplete()
+            }
         }
     }
 
@@ -105,25 +107,33 @@ final class Processor: @unchecked Sendable {
 
     func attachCamera(
         params: VideoUnitAttachParams,
-        onError: ((_ error: Error) -> Void)? = nil,
-        onSuccess: (() -> Void)? = nil
+        onError: (@MainActor (_ error: any Error) -> Void)? = nil,
+        onSuccess: (@MainActor () -> Void)? = nil
     ) {
         processorControlQueue.async {
             do {
                 try self.attachCameraInternal(params: params)
-                onSuccess?()
+                DispatchQueue.main.async {
+                    onSuccess?()
+                }
             } catch {
-                onError?(error)
+                DispatchQueue.main.async {
+                    onError?(error)
+                }
             }
         }
     }
 
-    func attachAudio(params: AudioUnitAttachParams, onError: ((_ error: Error) -> Void)? = nil) {
+    func attachAudio(params: AudioUnitAttachParams,
+                     onError: (@MainActor (_ error: any Error) -> Void)? = nil)
+    {
         processorControlQueue.async {
             do {
                 try self.attachAudioInternal(params: params)
             } catch {
-                onError?(error)
+                DispatchQueue.main.async {
+                    onError?(error)
+                }
             }
         }
     }

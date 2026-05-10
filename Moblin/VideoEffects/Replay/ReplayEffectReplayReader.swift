@@ -31,8 +31,9 @@ class ReplayEffectReplayReader: @unchecked Sendable {
                 let duration = CMTime(seconds: duration)
                 self.reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
                 asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+                    let self2 = self
                     replayEffectQueue.async {
-                        self?.loadVideoTrackCompletion(tracks: tracks, error: error)
+                        self2?.loadVideoTrackCompletion(tracks: tracks, error: error)
                     }
                 }
             }

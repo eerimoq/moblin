@@ -82,8 +82,9 @@ class ReplayEffectStingerReader: @unchecked Sendable {
             self.reader = try? AVAssetReader(asset: asset)
             self.duration = asset.duration()
             asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+                let self2 = self
                 replayEffectQueue.async {
-                    self?.loadVideoTrackCompletion(track: tracks?.first, error: error)
+                    self2?.loadVideoTrackCompletion(track: tracks?.first, error: error)
                 }
             }
         }

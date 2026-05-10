@@ -412,7 +412,7 @@ class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
         workoutBuilder.beginCollection(withStart: .now) { _, _ in }
     }
 
-    private func authorizeHealthKit(completion: @escaping () -> Void) {
+    private func authorizeHealthKit(completion: @escaping @Sendable () -> Void) {
         let typesToShare: Set = [
             HKQuantityType.workoutType(),
         ]

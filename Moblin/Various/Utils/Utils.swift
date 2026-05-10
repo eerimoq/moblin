@@ -44,7 +44,7 @@ private func createThumbnailInternal(path: URL, offset: Double) -> UIImage? {
     }
 }
 
-func createThumbnail(path: URL, offset: Double = 0, onComplete: @escaping (UIImage?) -> Void) {
+func createThumbnail(path: URL, offset: Double = 0, onComplete: @escaping @MainActor (UIImage?) -> Void) {
     thumbnailQueue.async {
         let image = createThumbnailInternal(path: path, offset: offset)
         DispatchQueue.main.async {
@@ -79,7 +79,7 @@ func uploadImage(
     fileName: String,
     image: Data,
     message: String?,
-    onCompleted: ((Bool) -> Void)? = nil
+    onCompleted: (@MainActor (Bool) -> Void)? = nil
 ) {
     let boundary = UUID().uuidString
     var request = URLRequest(url: url)

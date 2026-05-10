@@ -21,8 +21,9 @@ class AlertsEffectVideoReader: @unchecked Sendable {
             let asset = AVAsset(url: path)
             self.reader = try? AVAssetReader(asset: asset)
             asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+                let self2 = self
                 lockQueue.async {
-                    self?.loadVideoTrackCompletion(track: tracks?.first, error: error)
+                    self2?.loadVideoTrackCompletion(track: tracks?.first, error: error)
                 }
             }
         }

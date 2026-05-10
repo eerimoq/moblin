@@ -135,8 +135,9 @@ class WhepClient: @unchecked Sendable {
         request.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
         request.httpBody = offer.utf8Data
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            let self2 = self
             dispatchQueue.async {
-                self?.handleOfferResponse(data: data, response: response, error: error)
+                self2?.handleOfferResponse(data: data, response: response, error: error)
             }
         }.resume()
     }

@@ -13,13 +13,11 @@ extension Model {
             guard let imageJpeg = uiImage.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            DispatchQueue.main.async {
-                UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
-                self.makeToast(title: String(localized: "Snapshot saved to Photos"))
-                self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
-                self.printSnapshotCatPrinters(image: portraitImage)
-                self.appendSnapshotToSnapshotWidgets(image: image)
-            }
+            UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
+            self.makeToast(title: String(localized: "Snapshot saved to Photos"))
+            self.tryUploadSnapshotToDiscord(imageJpeg, message, isChatBot)
+            self.printSnapshotCatPrinters(image: portraitImage)
+            self.appendSnapshotToSnapshotWidgets(image: image)
         }
     }
 
@@ -102,12 +100,10 @@ extension Model {
             image: image,
             message: message
         ) { ok in
-            DispatchQueue.main.async {
-                if ok {
-                    self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
-                } else {
-                    self.makeErrorToast(title: String(localized: "Failed to upload snapshot to Discord"))
-                }
+            if ok {
+                self.makeToast(title: String(localized: "Snapshot uploaded to Discord"))
+            } else {
+                self.makeErrorToast(title: String(localized: "Failed to upload snapshot to Discord"))
             }
         }
     }

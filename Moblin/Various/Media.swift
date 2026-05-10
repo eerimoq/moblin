@@ -27,7 +27,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnWhipDisconnected(_ reason: String)
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
-                            completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+                            completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
     func mediaOnAudioMuteChange()
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
@@ -709,7 +709,7 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setCameraControls(enabled: enabled)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void) {
         processor?.takeSnapshot(age: age, onComplete: onComplete)
     }
 
@@ -740,7 +740,7 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setFps(value: Double(fps), preferAutoFps: preferAutoFps)
     }
 
-    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
+    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping @MainActor () -> Void) {
         processor?.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
     }
 
@@ -872,16 +872,14 @@ final class Media: NSObject, @unchecked Sendable {
         return Float(device.videoZoomFactor)
     }
 
-    func attachCamera(params: VideoUnitAttachParams, onSuccess: (() -> Void)? = nil) {
+    func attachCamera(params: VideoUnitAttachParams, onSuccess: (@MainActor () -> Void)? = nil) {
         processor?.attachCamera(
             params: params,
             onError: {
                 self.delegate.mediaError(error: $0)
             },
             onSuccess: {
-                DispatchQueue.main.async {
-                    onSuccess?()
-                }
+                onSuccess?()
             }
         )
     }
@@ -1266,7 +1264,7 @@ extension Media: WhipStreamDelegate {
 
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
     }

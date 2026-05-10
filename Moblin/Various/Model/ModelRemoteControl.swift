@@ -890,12 +890,10 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
                 return
             }
             whipServer.startClient(streamKey: String(streamKey), sdpOffer: sdpOffer) { sdpAnswer in
-                DispatchQueue.main.async {
-                    if let sdpAnswer {
-                        onCompleted(200, [], sdpAnswer.utf8Data)
-                    } else {
-                        onCompleted(400, [], Data())
-                    }
+                if let sdpAnswer {
+                    onCompleted(200, [], sdpAnswer.utf8Data)
+                } else {
+                    onCompleted(400, [], Data())
                 }
             }
         case "DELETE":

@@ -160,10 +160,8 @@ extension Model {
             guard let imageJpeg = image.jpegData(compressionQuality: 0.9) else {
                 return
             }
-            DispatchQueue.main.async {
-                if let url = URL(string: self.stream.goLiveNotificationDiscordWebhookUrl) {
-                    self.tryUploadGoLiveNotificationToDiscord(imageJpeg, url)
-                }
+            if let url = URL(string: self.stream.goLiveNotificationDiscordWebhookUrl) {
+                self.tryUploadGoLiveNotificationToDiscord(imageJpeg, url)
             }
         }
     }
@@ -355,7 +353,9 @@ extension Model {
         processorControlQueue.async {
             processor.setDrawable(drawable: self.streamPreviewView)
             processor.setExternalDisplayDrawable(drawable: self.externalDisplayStreamPreviewView)
-            self.processor = processor
+            DispatchQueue.main.async {
+                self.processor = processor
+            }
             processor.startRunning()
         }
     }
@@ -995,13 +995,13 @@ extension Model: @preconcurrency MediaDelegate {
         }
     }
 
-    func mediaError(error: Error) {
+    func mediaError(error: any Error) {
         makeErrorToastMain(title: error.localizedDescription, subTitle: tryGetToastSubTitle(error: error))
     }
 
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
-                            completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+                            completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         DispatchQueue.main.async {
             switch self.stream.whip.httpTransport {

@@ -115,10 +115,8 @@ extension Model {
             return
         }
         authorizeHealthKit {
-            DispatchQueue.main.async {
-                self.setIsWorkout(type: type)
-                Workout.shared.start(model: self, type: type)
-            }
+            self.setIsWorkout(type: type)
+            Workout.shared.start(model: self, type: type)
         }
     }
 
@@ -130,12 +128,14 @@ extension Model {
         Workout.shared.stop()
     }
 
-    private func authorizeHealthKit(completion: @escaping () -> Void) {
+    private func authorizeHealthKit(completion: @escaping @MainActor () -> Void) {
         let typesToShare: Set = [
             HKQuantityType.workoutType(),
         ]
         healthStore.requestAuthorization(toShare: typesToShare, read: types()) { _, _ in
-            completion()
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
 }

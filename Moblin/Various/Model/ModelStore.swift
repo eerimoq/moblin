@@ -54,8 +54,9 @@ extension Model {
         }
     }
 
-    func listenForAppStoreTransactions() -> Task<Void, Error> {
-        Task.detached {
+    @MainActor
+    func listenForAppStoreTransactions() -> Task<Void, any Error> {
+        Task {
             for await result in Transaction.updates {
                 guard let transaction = self.checkVerified(result: result) else {
                     logger.info("store: Updated transaction failed verification")

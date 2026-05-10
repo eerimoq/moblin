@@ -177,7 +177,7 @@ class Show: ObservableObject {
 }
 
 class Battery: ObservableObject {
-    @Published var level = Double(UIDevice.current.batteryLevel)
+    @Published var level = 0.0
     @Published var state: UIDevice.BatteryState = .full
 }
 
@@ -1782,7 +1782,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateCurrentSsid() {
         NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-            self.currentWiFiSsid = network?.ssid
+            let ssid = network?.ssid
+            DispatchQueue.main.async {
+                self.currentWiFiSsid = ssid
+            }
         })
     }
 
@@ -2567,10 +2570,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             for: ProcessInfo.thermalStateDidChangeNotification,
             object: nil
         )
-        .sink { _ in
-            DispatchQueue.main.async {
-                self.updateThermalState()
-            }
+        .sink { @MainActor _ in
+            self.updateThermalState()
         }
         .store(in: &subscriptions)
     }

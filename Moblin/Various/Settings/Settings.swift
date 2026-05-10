@@ -2109,12 +2109,14 @@ final class Settings: @unchecked Sendable {
         }
     }
 
-    func exportToFile(onCompleted: @escaping (URL?) -> Void) {
+    @MainActor
+    func exportToFile(onCompleted: @MainActor @escaping (URL?) -> Void) {
         store()
         let settingsJson = [UInt8](storage.utf8)
+        let name = UIDevice.current.name
         DispatchQueue.global().async {
             let url = FileManager.default.temporaryDirectory
-                .appendingPathComponent("\(UIDevice.current.name)_\(formatFilenameDateAndTime())")
+                .appendingPathComponent("\(name)_\(formatFilenameDateAndTime())")
                 .appendingPathExtension("moblinSettings")
             try? FileManager.default.removeItem(at: url)
             do {

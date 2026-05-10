@@ -124,7 +124,7 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
     func setLut(
         lut: SettingsColorLut?,
         imageStorage: ImageStorage,
-        onError: @escaping (String, String?) -> Void
+        onError: @escaping @MainActor (String, String?) -> Void
     ) {
         DispatchQueue.global().async {
             do {
@@ -154,7 +154,9 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
                 default:
                     "\(error)"
                 }
-                onError(String(localized: "Failed to load .cube file"), subTitle)
+                DispatchQueue.main.async {
+                    onError(String(localized: "Failed to load .cube file"), subTitle)
+                }
             }
         }
     }

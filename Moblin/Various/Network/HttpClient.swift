@@ -104,7 +104,10 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
         }
     }
 
-    private func connect(_ endpoint: NWEndpoint, _ useTls: Bool, _ onConnected: @escaping (Int) -> Void) {
+    private func connect(_ endpoint: NWEndpoint,
+                         _ useTls: Bool,
+                         _ onConnected: @escaping @MainActor (Int) -> Void)
+    {
         guard interfaceTypeIndex < interfaceTypes.count else {
             completed(data: nil)
             return
@@ -124,7 +127,9 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
                 break
             case .ready:
                 self.updateGlobalInterfaceTypesIfNeeded()
-                onConnected(interfaceTypeIndex)
+                DispatchQueue.main.async {
+                    onConnected(interfaceTypeIndex)
+                }
             default:
                 self.connection?.stateUpdateHandler = nil
                 self.connection?.cancel()
@@ -208,32 +213,45 @@ private class InterfaceTypeHttpClient: @unchecked Sendable {
     }
 }
 
-func httpCall(request: URLRequest, body: Data?, completion: @escaping (Data?) -> Void) {
+func httpCall(request: URLRequest, body: Data?, completion: @escaping @MainActor (Data?) -> Void) {
     InterfaceTypeHttpClient().call(request: request, body: body) { data in
         if let data {
-            completion(data)
+            DispatchQueue.main.async {
+                completion(data)
+            }
         } else {
             httpCallUrlSession(request: request, body: body, completion: completion)
         }
     }
 }
 
-private func httpCallUrlSession(request: URLRequest, body: Data?, completion: @escaping (Data?) -> Void) {
+private func httpCallUrlSession(request: URLRequest,
+                                body: Data?,
+                                completion: @escaping @MainActor (Data?) -> Void)
+{
     if let body {
         URLSession.shared.uploadTask(with: request, from: body) { data, response, error in
             guard error == nil, response?.http?.isSuccessful == true else {
-                completion(nil)
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
                 return
             }
-            completion(data)
+            DispatchQueue.main.async {
+                completion(data)
+            }
         }.resume()
     } else {
         httpRequest(request: request) { data, response, error in
             guard error == nil, response?.http?.isSuccessful == true else {
-                completion(nil)
+                DispatchQueue.main.async {
+                    completion(nil)
+                }
                 return
             }
-            completion(data)
+            DispatchQueue.main.async {
+                completion(data)
+            }
         }
     }
 }

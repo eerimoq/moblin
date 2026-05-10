@@ -56,8 +56,9 @@ private class FrameExtractorJob: @unchecked Sendable {
         let duration = CMTime(seconds: 3)
         reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
         asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+            let self2 = self
             replayQueue.async {
-                self?.loadVideoTrackCompletion(tracks: tracks, error: error)
+                self2?.loadVideoTrackCompletion(tracks: tracks, error: error)
             }
         }
     }
@@ -95,14 +96,18 @@ private class FrameExtractorJob: @unchecked Sendable {
     }
 }
 
-class ReplayFrameExtractor {
+class ReplayFrameExtractor: @unchecked Sendable {
     private let video: ReplayBufferFile
-    private weak var delegate: ReplayDelegate?
-    private var completion: (() -> Void)?
+    private weak var delegate: (any ReplayDelegate)?
+    private var completion: (@MainActor () -> Void)?
     private var job: FrameExtractorJob?
     private var pendingOffset: Double?
 
-    init(video: ReplayBufferFile, offset: Double, delegate: ReplayDelegate, completion: (() -> Void)?) {
+    init(video: ReplayBufferFile,
+         offset: Double,
+         delegate: any ReplayDelegate,
+         completion: (@MainActor () -> Void)?)
+    {
         self.video = video
         self.delegate = delegate
         self.completion = completion
@@ -155,7 +160,7 @@ class ReplayBuffer: @unchecked Sendable {
         }
     }
 
-    func createFile(completion: @escaping (ReplayBufferFile?) -> Void) {
+    func createFile(completion: @escaping @Sendable (ReplayBufferFile?) -> Void) {
         replayQueue.async {
             self.createFileInternal(completion: completion)
         }

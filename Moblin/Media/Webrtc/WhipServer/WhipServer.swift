@@ -89,19 +89,25 @@ class WhipServer: @unchecked Sendable {
     private func startClientInternal(
         streamKey: String,
         sdpOffer: String,
-        onCompleted: @escaping (String?) -> Void
+        onCompleted: @escaping @MainActor (String?) -> Void
     ) {
         guard let stream = settings.streams.first(where: { $0.streamKey == streamKey }) else {
-            onCompleted(nil)
+            DispatchQueue.main.async {
+                onCompleted(nil)
+            }
             return
         }
         setupClient(stream: stream, sdpOffer: sdpOffer) { [weak self] sdpAnswer in
             guard let sdpAnswer else {
-                onCompleted(nil)
+                DispatchQueue.main.async {
+                    onCompleted(nil)
+                }
                 self?.clients.removeValue(forKey: stream.id)
                 return
             }
-            onCompleted(sdpAnswer)
+            DispatchQueue.main.async {
+                onCompleted(sdpAnswer)
+            }
         }
     }
 

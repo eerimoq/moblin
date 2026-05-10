@@ -14,7 +14,7 @@ class ReplayProvider: ObservableObject {
 extension Model {
     func saveReplay(start: Double? = nil,
                     delay: Int? = nil,
-                    completion: ((ReplaySettings) -> Void)? = nil) -> Bool
+                    completion: (@MainActor (ReplaySettings) -> Void)? = nil) -> Bool
     {
         guard !replay.isSaving else {
             return false
@@ -41,7 +41,7 @@ extension Model {
         return true
     }
 
-    func loadReplay(video: ReplaySettings, completion: (() -> Void)? = nil) {
+    func loadReplay(video: ReplaySettings, completion: (@MainActor () -> Void)? = nil) {
         replaySettings = video
         replay.startFromEnd = video.startFromEnd()
         replay.selectedId = video.id
@@ -199,7 +199,7 @@ extension Model: @preconcurrency ReplayDelegate {
         image: UIImage,
         offset _: Double,
         video: ReplayBufferFile,
-        completion: (() -> Void)?
+        completion: (@MainActor () -> Void)?
     ) {
         DispatchQueue.main.async {
             self.replay.previewImage = image

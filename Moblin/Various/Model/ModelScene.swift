@@ -156,7 +156,7 @@ extension Model {
         for lut in allLuts() {
             let lutEffect = LutEffect()
             lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
-                self.makeErrorToastMain(title: title, subTitle: subTitle)
+                self.makeErrorToast(title: title, subTitle: subTitle)
             }
             lutEffects[lut.id] = lutEffect
         }

@@ -123,12 +123,17 @@ private struct GoProWifiCredentialsSettingsView: View {
             }
             .navigationTitle("WiFi credentials")
             .onAppear {
-                NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-                    if wifiCredentials.ssid.isEmpty, let network {
-                        wifiCredentials.ssid = network.ssid
-                        generate()
+                NEHotspotNetwork.fetchCurrent { network in
+                    guard let ssid = network?.ssid else {
+                        return
                     }
-                })
+                    DispatchQueue.main.async {
+                        if wifiCredentials.ssid.isEmpty {
+                            wifiCredentials.ssid = ssid
+                            generate()
+                        }
+                    }
+                }
             }
         }
     }

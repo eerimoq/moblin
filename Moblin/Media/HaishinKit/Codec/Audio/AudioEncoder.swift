@@ -58,7 +58,8 @@ class AudioEncoder: @unchecked Sendable {
         }
         ringBuffer = .init(&newInSourceFormat, numSamplesPerBuffer: samplesPerBuffer())
         audioConverter = makeAudioConverter(&newInSourceFormat)
-        sampleRate.mutate { $0 = newInSourceFormat.mSampleRate }
+        let newSampleRate = newInSourceFormat.mSampleRate
+        sampleRate.mutate { $0 = newSampleRate }
     }
 
     func getBitrate() -> Int {

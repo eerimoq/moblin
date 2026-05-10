@@ -109,8 +109,13 @@ private struct DjiDeviceWiFiSettingsView: View {
         }
         .onAppear {
             NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-                if device.wifiSsid.isEmpty, let network {
-                    device.wifiSsid = network.ssid
+                guard let ssid = network?.ssid else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    if device.wifiSsid.isEmpty {
+                        device.wifiSsid = ssid
+                    }
                 }
             })
         }

@@ -1,6 +1,6 @@
 import PhotosUI
 import SwiftUI
-import Translation
+@preconcurrency import Translation
 
 private struct Suggestion: Identifiable {
     let id: Int

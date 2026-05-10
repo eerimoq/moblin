@@ -78,7 +78,9 @@ extension Model {
         case .gimbalAnimate:
             if !pressed {
                 if #available(iOS 18.0, *) {
-                    Gimbal.shared?.animate(motion: functionData.gimbalMotion.toSystem())
+                    DispatchQueue.main.async {
+                        Gimbal.shared?.animate(motion: functionData.gimbalMotion.toSystem())
+                    }
                 }
             }
         case .torch:
@@ -210,10 +212,12 @@ extension Model {
 
     private func handleGameControllerButtonGimbal(pressed: Bool, velocity: Vector3D) {
         if #available(iOS 18.0, *) {
-            if pressed {
-                Gimbal.shared?.setMovement(velocity: velocity)
-            } else {
-                Gimbal.shared?.cancelMovement()
+            DispatchQueue.main.async {
+                if pressed {
+                    Gimbal.shared?.setMovement(velocity: velocity)
+                } else {
+                    Gimbal.shared?.cancelMovement()
+                }
             }
         }
     }

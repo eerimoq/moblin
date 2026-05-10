@@ -15,7 +15,7 @@ class Gimbal {
 
     init(model: Model) {
         self.model = model
-        task = Task { @MainActor [weak self] in
+        task = Task { [weak self] in
             do {
                 for await stateChange in try DockAccessoryManager.shared.accessoryStateChanges {
                     try self?.handleStateChange(stateChange: stateChange)
@@ -95,7 +95,7 @@ class Gimbal {
         stopAccessoryEventsHandler()
         self.accessory = accessory
         shutterCount = 0
-        accessoryTask = Task { @MainActor [weak self] in
+        accessoryTask = Task { [weak self] in
             do {
                 for await event in try accessory.accessoryEvents {
                     self?.handleAccessoryEvent(event)

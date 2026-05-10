@@ -184,11 +184,13 @@ extension Model {
             guard let self else {
                 return
             }
-            guard !camera.editingLockedFocus else {
-                return
+            DispatchQueue.main.async {
+                guard !self.camera.editingLockedFocus else {
+                    return
+                }
+                self.camera.lockedFocuses[device] = device.lensPosition
+                self.camera.lockedFocus = device.lensPosition
             }
-            camera.lockedFocuses[device] = device.lensPosition
-            camera.lockedFocus = device.lensPosition
         }
     }
 
@@ -286,12 +288,14 @@ extension Model {
             guard let self else {
                 return
             }
-            guard !camera.editingLockedIso else {
-                return
+            DispatchQueue.main.async {
+                guard !self.camera.editingLockedIso else {
+                    return
+                }
+                let iso = factorFromIso(device: device, iso: device.iso)
+                self.camera.lockedIsos[device] = iso
+                self.camera.lockedIso = iso
             }
-            let iso = factorFromIso(device: device, iso: device.iso)
-            camera.lockedIsos[device] = iso
-            camera.lockedIso = iso
         }
     }
 
@@ -312,12 +316,14 @@ extension Model {
             guard let self else {
                 return
             }
-            guard !camera.editingLockedExposure else {
-                return
+            DispatchQueue.main.async {
+                guard !self.camera.editingLockedExposure else {
+                    return
+                }
+                let exposure = factorFromExposure(device: device, exposure: device.exposureDuration)
+                self.camera.lockedExposures[device] = exposure
+                self.camera.lockedExposure = exposure
             }
-            let exposure = factorFromExposure(device: device, exposure: device.exposureDuration)
-            camera.lockedExposures[device] = exposure
-            camera.lockedExposure = exposure
         }
     }
 
@@ -393,15 +399,17 @@ extension Model {
             guard let self else {
                 return
             }
-            guard !camera.editingLockedWhiteBalance else {
-                return
+            DispatchQueue.main.async {
+                guard !self.camera.editingLockedWhiteBalance else {
+                    return
+                }
+                let factor = factorFromWhiteBalance(
+                    device: device,
+                    gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
+                )
+                self.camera.lockedWhiteBalances[device] = factor
+                self.camera.lockedWhiteBalance = factor
             }
-            let factor = factorFromWhiteBalance(
-                device: device,
-                gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
-            )
-            camera.lockedWhiteBalances[device] = factor
-            camera.lockedWhiteBalance = factor
         }
     }
 
@@ -450,7 +458,7 @@ extension Model {
             return
         }
         lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
-            self.makeErrorToastMain(title: title, subTitle: subTitle)
+            self.makeErrorToast(title: title, subTitle: subTitle)
         }
     }
 
@@ -802,14 +810,12 @@ extension Model {
                 .sRGB
             }
         }
-        media.setColorSpace(colorSpace: colorSpace, onComplete: {
-            DispatchQueue.main.async {
-                if let x = self.setCameraZoomX(x: self.zoom.x) {
-                    self.setZoomXWhenInRange(x: x)
-                }
-                self.lutEnabledUpdated()
+        media.setColorSpace(colorSpace: colorSpace) {
+            if let x = self.setCameraZoomX(x: self.zoom.x) {
+                self.setZoomXWhenInRange(x: x)
             }
-        })
+            self.lutEnabledUpdated()
+        }
     }
 
     private func getBuiltinCameraId(deviceUniqueId: String) -> UUID {

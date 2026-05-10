@@ -1531,10 +1531,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                                   _ sampleBuffers: Deque<CMSampleBuffer>,
                                   _ presentationTimeStamp: Double,
                                   _ age: Float,
-                                  _ onCompleted: @escaping (CVImageBuffer?) -> Void)
+                                  _ onCompleted: @escaping @MainActor (CVImageBuffer?) -> Void)
     {
         if age == 0.0 {
-            onCompleted(sampleBuffer.imageBuffer)
+            DispatchQueue.main.async {
+                onCompleted(sampleBuffer.imageBuffer)
+            }
         } else {
             let requestedPresentationTimeStamp = presentationTimeStamp - Double(age)
             let sampleBufferAtAge = sampleBuffers.last(where: {
@@ -1545,7 +1547,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 sampleBuffers.append(sampleBuffer)
                 findBestSnapshotUsingAesthetics(sampleBufferAtAge, sampleBuffers, onCompleted)
             } else {
-                onCompleted(sampleBufferAtAge.imageBuffer)
+                DispatchQueue.main.async {
+                    onCompleted(sampleBufferAtAge.imageBuffer)
+                }
             }
         }
     }
@@ -1553,7 +1557,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     @available(iOS 18, *)
     private func findBestSnapshotUsingAesthetics(_ preferredSampleBuffer: CMSampleBuffer,
                                                  _ sampleBuffers: Deque<CMSampleBuffer>,
-                                                 _ onComplete: @escaping (CVImageBuffer?) -> Void)
+                                                 _ onComplete: @escaping @MainActor (CVImageBuffer?) -> Void)
     {
         Task {
             var bestSampleBuffer = preferredSampleBuffer
@@ -1570,7 +1574,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                     bestResult = result
                 }
             }
-            onComplete(bestSampleBuffer.imageBuffer)
+            DispatchQueue.main.async {
+                onComplete(bestSampleBuffer.imageBuffer)
+            }
         }
     }
 

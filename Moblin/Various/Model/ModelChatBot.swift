@@ -93,9 +93,12 @@ extension Model {
         guard let message = chatBotMessages.popFirst() else {
             return
         }
-        handleChatBotMessage(message: message)
+        DispatchQueue.main.async {
+            self.handleChatBotMessage(message: message)
+        }
     }
 
+    @MainActor
     private func handleChatBotMessage(message: ChatBotMessage) {
         guard let command = ChatBotCommand(message: message, aliases: database.chat.aliases) else {
             return
