@@ -73,7 +73,11 @@ pack-exported-localizations:
 	    rm -rf $$f ; \
 	done
 
-build-web-remote-control-frontend:
+web-remote-control-frontend-prepare:
 	cd WebRemoteControlFrontend && \
-	npm install && \
-	npm run build
+	npm install --loglevel warn
+
+web-remote-control-frontend-build:
+	cd WebRemoteControlFrontend && \
+	NODE_NO_WARNINGS=1 npx tsc --noEmit && \
+	NODE_NO_WARNINGS=1 npm run build --silent

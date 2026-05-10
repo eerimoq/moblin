@@ -424,10 +424,14 @@ Roughly the steps to setup Moblin's developement environment.
 
 It's built with SolidJS.
 
-1. Modify files in `WebRemoteControlFrontend/`.
+1. Install dependencies.
 
-2. Build to update files in `Moblin/RemoteControl/Web/*`.
+   `make web-remote-control-frontend-prepare`
 
-   `make build-web-remote-control-frontend`
+2. Modify files in `WebRemoteControlFrontend/`.
 
-3. Done!
+3. Build to update files in `Moblin/RemoteControl/Web/*`.
+
+   `make web-remote-control-frontend-build`
+
+4. Done!

@@ -7,8 +7,9 @@ import { fileURLToPath } from "url";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineConfig({
+  logLevel: "warn",
   plugins: [solidPlugin(), tailwindcss()],
-  publicDir: resolve(__dirname, "../Moblin/RemoteControl/Web"),
+  publicDir: false,
   build: {
     outDir: resolve(__dirname, "../Moblin/RemoteControl/Web"),
     emptyOutDir: false,
