@@ -55,10 +55,16 @@ export function ConfirmDialog({
             <p class="text-base text-zinc-100 leading-relaxed">{message()}</p>
           </div>
           <div class="flex items-center justify-end gap-2 border-t border-zinc-700 px-6 py-4">
-            <Button class={`py-2 px-4 rounded-lg font-medium hover:bg-zinc-600 ${okTextClass}`} onClick={onOk}>
+            <Button
+              class={`py-2 px-4 rounded-lg font-medium hover:bg-zinc-600 ${okTextClass}`}
+              onClick={onOk}
+            >
               {okLabel}
             </Button>
-            <Button class="py-2 px-4 rounded-lg font-medium text-zinc-300 border border-zinc-600 hover:bg-zinc-700" onClick={onCancel}>
+            <Button
+              class="py-2 px-4 rounded-lg font-medium text-zinc-300 border border-zinc-600 hover:bg-zinc-700"
+              onClick={onCancel}
+            >
               Cancel
             </Button>
           </div>
