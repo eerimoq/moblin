@@ -2,7 +2,7 @@ import CoreImage
 
 final class MovieEffect: VideoEffect {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        return image
+        image
             .cropped(to: CGRect(x: 0,
                                 y: image.extent.height / 6,
                                 width: image.extent.width,

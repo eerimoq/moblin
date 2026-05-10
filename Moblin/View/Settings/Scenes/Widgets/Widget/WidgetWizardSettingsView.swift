@@ -1,7 +1,7 @@
 import SwiftUI
 
 func basicWidgetSettingsTitle(_ createWidgetWizard: CreateWidgetWizard) -> String {
-    return String(localized: "Basic \(createWidgetWizard.type.toString()) widget settings")
+    String(localized: "Basic \(createWidgetWizard.type.toString()) widget settings")
 }
 
 private struct AddWidgetToSceneView: View {
@@ -45,11 +45,10 @@ private struct SelectScenesView: View {
 
     private func create() {
         presentingCreateWizard = false
-        let name: String
-        if createWidgetWizard.name.isEmpty {
-            name = makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
+        let name: String = if createWidgetWizard.name.isEmpty {
+            makeUniqueName(name: SettingsWidget.baseName, existingNames: database.widgets)
         } else {
-            name = createWidgetWizard.name
+            createWidgetWizard.name
         }
         let widget = createWidgetWizard.widget
         widget.type = createWidgetWizard.type
@@ -124,7 +123,7 @@ struct WidgetWizardSettingsView: View {
     }
 
     private func canGoNext() -> Bool {
-        return isValidName() == nil
+        isValidName() == nil
     }
 
     var body: some View {

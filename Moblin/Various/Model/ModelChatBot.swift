@@ -81,11 +81,11 @@ private let answerByLanguage = [
 ]
 
 private func getAsked(_ language: String) -> String {
-    return askedByLanguage[language] ?? ""
+    askedByLanguage[language] ?? ""
 }
 
 private func getAnswer(_ language: String) -> String {
-    return answerByLanguage[language] ?? ""
+    answerByLanguage[language] ?? ""
 }
 
 extension Model {

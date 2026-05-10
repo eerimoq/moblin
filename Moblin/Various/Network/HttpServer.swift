@@ -80,19 +80,19 @@ class HttpServerRequest {
     fileprivate func getContentType() -> String {
         switch path.split(separator: ".").last {
         case "html":
-            return "text/html"
+            "text/html"
         case "mjs":
-            return "text/javascript"
+            "text/javascript"
         case "css":
-            return "text/css"
+            "text/css"
         case "woff2":
-            return "font/woff2"
+            "font/woff2"
         case "ico":
-            return "image/vnd.microsoft.icon"
+            "image/vnd.microsoft.icon"
         case "png":
-            return "image/png"
+            "image/png"
         default:
-            return "text/html"
+            "text/html"
         }
     }
 }
@@ -108,34 +108,34 @@ enum HttpServerStatus {
     func code() -> Int {
         switch self {
         case .ok:
-            return 200
+            200
         case .created:
-            return 201
+            201
         case .noContent:
-            return 204
+            204
         case .badRequest:
-            return 400
+            400
         case .notFound:
-            return 404
+            404
         case .methodNotAllowed:
-            return 405
+            405
         }
     }
 
     func text() -> String {
         switch self {
         case .ok:
-            return "OK"
+            "OK"
         case .created:
-            return "Created"
+            "Created"
         case .noContent:
-            return "No Content"
+            "No Content"
         case .badRequest:
-            return "Bad Request"
+            "Bad Request"
         case .notFound:
-            return "Not Found"
+            "Not Found"
         case .methodNotAllowed:
-            return "Method Not Allowed"
+            "Method Not Allowed"
         }
     }
 }
@@ -324,9 +324,9 @@ class HttpServerRoute {
 
     func matches(path: String) -> Bool {
         if prefixMatch {
-            return path.hasPrefix(self.path)
+            path.hasPrefix(self.path)
         } else {
-            return path == self.path
+            path == self.path
         }
     }
 }
@@ -386,10 +386,10 @@ class HttpServer {
         switch newState {
         case .failed:
             retryTimer.startSingleShot(timeout: 1) { [weak self] in
-                guard let self, self.started else {
+                guard let self, started else {
                     return
                 }
-                self.setupListener()
+                setupListener()
             }
         default:
             break
@@ -411,6 +411,6 @@ class HttpServer {
     }
 
     fileprivate func findRoute(request: HttpServerRequest) -> HttpServerRoute? {
-        return routes.first(where: { $0.matches(path: request.path) })
+        routes.first(where: { $0.matches(path: request.path) })
     }
 }

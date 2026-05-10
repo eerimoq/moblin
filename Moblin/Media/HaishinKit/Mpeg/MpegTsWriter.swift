@@ -22,7 +22,7 @@ class MpegTsWriter {
     private static let audioStreamId: UInt8 = 192
     private static let videoStreamId: UInt8 = 224
     private static let segmentDuration = CMTime(seconds: 2)
-    weak var delegate: MpegTsWriterDelegate?
+    weak var delegate: (any MpegTsWriterDelegate)?
     private var isRunning = false
     private var audioContinuityCounter: UInt8 = 0
     private var videoContinuityCounter: UInt8 = 0
@@ -90,7 +90,7 @@ class MpegTsWriter {
     }
 
     private func canWriteFor() -> Bool {
-        return (audioConfig != nil) && (videoConfig != nil)
+        (audioConfig != nil) && (videoConfig != nil)
     }
 
     private func encode(_ packetId: UInt16, _ packets: [MpegTsPacket]) -> Data {
@@ -336,21 +336,21 @@ class MpegTsWriter {
     private func makeAudioHeader(_ config: MpegTsAudioConfig, _ length: Int) -> Data {
         switch config.type {
         case .opus:
-            return makeAudioOpusHeader(length)
+            makeAudioOpusHeader(length)
         default:
-            return makeAudioAacHeader(config, length)
+            makeAudioAacHeader(config, length)
         }
     }
 
     private func makeAudioAacHeader(_ config: MpegTsAudioConfig, _ length: Int) -> Data {
-        return AdtsHeader.encode(type: config.type.rawValue,
-                                 frequency: config.frequency.rawValue,
-                                 channels: config.channel.rawValue,
-                                 length: length)
+        AdtsHeader.encode(type: config.type.rawValue,
+                          frequency: config.frequency.rawValue,
+                          channels: config.channel.rawValue,
+                          length: length)
     }
 
     private func makeAudioOpusHeader(_ length: Int) -> Data {
-        return OpusHeader.encode(length: length)
+        OpusHeader.encode(length: length)
     }
 }
 

@@ -37,17 +37,17 @@ final class FaceEffect: VideoEffect {
 
     override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
         if settings.blurFaces || settings.blurBackground || settings.showMouth {
-            return .now(nil)
+            .now(nil)
         } else {
-            return .off
+            .off
         }
     }
 
     override func needsTextDetections(_: Double) -> VideoEffectDetectionsMode {
         if settings.blurText {
-            return .now(nil)
+            .now(nil)
         } else {
-            return .off
+            .off
         }
     }
 

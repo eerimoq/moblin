@@ -52,7 +52,7 @@ private struct TwitchCategoryPickerView: View {
     private func fetchDefaultCategories() {
         let categoryNames = ["IRL", "Just Chatting", "Food & Drink"]
         model.fetchTwitchGames(stream: stream, names: categoryNames) { games in
-            self.categories = games ?? []
+            categories = games ?? []
         }
     }
 

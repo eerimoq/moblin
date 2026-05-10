@@ -49,7 +49,7 @@ private struct StaticFile {
     }
 
     func makePath() -> String {
-        return "\(path)\(name).\(ext)"
+        "\(path)\(name).\(ext)"
     }
 }
 
@@ -87,10 +87,10 @@ class RemoteControlWeb {
     private var websocketServer: NWListener?
     private var websocketPort: UInt16 = 0
     private let websocketRetryTimer = SimpleTimer(queue: .main)
-    private weak var delegate: RemoteControlWebDelegate?
+    private weak var delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
 
-    init(delegate: RemoteControlWebDelegate) {
+    init(delegate: any RemoteControlWebDelegate) {
         self.delegate = delegate
     }
 
@@ -265,10 +265,10 @@ class RemoteControlWeb {
         switch newState {
         case .failed:
             websocketRetryTimer.startSingleShot(timeout: 1) { [weak self] in
-                guard let self, self.started else {
+                guard let self, started else {
                     return
                 }
-                self.setupWebsocketServer()
+                setupWebsocketServer()
             }
         default:
             break

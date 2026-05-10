@@ -21,7 +21,7 @@ class AdaptiveBitrateRistExperiment: AdaptiveBitrate {
     private var fastPif: Double = 0
     private var settings = adaptiveBitrateFastSettings
 
-    init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
+    init(targetBitrate: UInt32, delegate: any AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
         currentBitrate = adaptiveBitrateStart
         previousBitrate = adaptiveBitrateStart
@@ -39,19 +39,19 @@ class AdaptiveBitrateRistExperiment: AdaptiveBitrate {
     }
 
     override func getCurrentBitrate() -> UInt32 {
-        return UInt32(currentBitrate)
+        UInt32(currentBitrate)
     }
 
     override func getCurrentMaximumBitrateInKbps() -> Int64 {
-        return currentMaximumBitrate / 1000
+        currentMaximumBitrate / 1000
     }
 
     override func getFastPif() -> Int64 {
-        return Int64(fastPif)
+        Int64(fastPif)
     }
 
     override func getSmoothPif() -> Int64 {
-        return Int64(smoothPif)
+        Int64(smoothPif)
     }
 
     // NB:To be called every 200ms when live

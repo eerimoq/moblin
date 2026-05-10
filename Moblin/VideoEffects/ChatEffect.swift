@@ -11,22 +11,22 @@ private struct HighlightMessageView: View {
 
     private func backgroundColor() -> Color {
         if settings.backgroundColorEnabled {
-            return settings.backgroundColorColor.opacity(0.6)
+            settings.backgroundColorColor.opacity(0.6)
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func shadowColor() -> Color {
         if settings.shadowColorEnabled {
-            return settings.shadowColorColor
+            settings.shadowColorColor
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        return CGFloat(settings.fontSize * 1.7)
+        CGFloat(settings.fontSize * 1.7)
     }
 
     var body: some View {
@@ -71,35 +71,35 @@ private struct LineView: View {
     let platform: Bool
 
     private func usernameColor() -> Color {
-        return post.userColor.color()
+        post.userColor.color()
     }
 
     private func messageColor(usernameColor _: Color) -> Color {
-        return settings.messageColorColor
+        settings.messageColorColor
     }
 
     private func backgroundColor() -> Color {
         if settings.backgroundColorEnabled {
-            return settings.backgroundColorColor.opacity(0.6)
+            settings.backgroundColorColor.opacity(0.6)
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func shadowColor() -> Color {
         if settings.shadowColorEnabled {
-            return settings.shadowColorColor
+            settings.shadowColorColor
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func frameHeightBadges() -> CGFloat {
-        return CGFloat(settings.fontSize * 1.4)
+        CGFloat(settings.fontSize * 1.4)
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        return CGFloat(settings.fontSize * 1.7)
+        CGFloat(settings.fontSize * 1.7)
     }
 
     var body: some View {
@@ -211,7 +211,7 @@ private struct ChatView: View {
     @ObservedObject var chat: ChatProvider
 
     private func width() -> Double {
-        return 20 * Double(settings.fontSize)
+        20 * Double(settings.fontSize)
     }
 
     var body: some View {
@@ -287,7 +287,7 @@ final class ChatEffect: VideoEffect {
             guard let self else {
                 return
             }
-            self.setChatImage(image: self.renderer?.ciImage())
+            setChatImage(image: renderer?.ciImage())
         }
         setChatImage(image: renderer?.ciImage())
     }

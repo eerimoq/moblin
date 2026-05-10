@@ -38,7 +38,7 @@ class BlackSharkCoolerDevice: NSObject {
     private var coolingStatsTimer = SimpleTimer(queue: blackSharkCoolerDeviceDispatchQueue)
     private var coolingPower: Int? // 0-100% How much the cooler should cool.
     private var fanSpeed: Int? // 0-100% How much the fan should spin.
-    weak var delegate: BlackSharkCoolerDeviceDelegate?
+    weak var delegate: (any BlackSharkCoolerDeviceDelegate)?
 
     func start(deviceId: UUID?) {
         blackSharkCoolerDeviceDispatchQueue.async {
@@ -112,19 +112,19 @@ extension BlackSharkCoolerDevice: CBCentralManagerDelegate {
         setState(state: .connecting)
     }
 
-    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
+    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: (any Error)?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         peripheral.discoverServices(nil)
     }
 
-    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: (any Error)?) {
         reconnect()
     }
 }
 
 extension BlackSharkCoolerDevice: CBPeripheralDelegate {
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         if let service = peripheral.services?.first(where: { $0.uuid == blackSharkCoolerServiceId }) {
             peripheral.discoverCharacteristics(nil, for: service)
         }
@@ -133,7 +133,7 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
     func peripheral(
         _: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
-        error _: Error?
+        error _: (any Error)?
     ) {
         for characteristic in service.characteristics ?? [] {
             logger.debug("black-shark-cooler-device: Characteristic found: \(characteristic.uuid)")
@@ -248,7 +248,11 @@ extension BlackSharkCoolerDevice: CBPeripheralDelegate {
         )
     }
 
-    func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
+    func peripheral(
+        _: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error _: (any Error)?
+    ) {
         guard let value = characteristic.value else {
             return
         }

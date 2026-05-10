@@ -23,7 +23,7 @@ private enum EventSubscription: UInt64 {
     case sceneItemTransformChanged = 0x80000
 
     static func all() -> UInt64 {
-        return EventSubscription.general.rawValue | EventSubscription.config.rawValue | EventSubscription
+        EventSubscription.general.rawValue | EventSubscription.config.rawValue | EventSubscription
             .scenes.rawValue | EventSubscription.inputs.rawValue | EventSubscription.transitions
             .rawValue | EventSubscription.filters.rawValue | EventSubscription.outputs
             .rawValue | EventSubscription.sceneItems.rawValue | EventSubscription.mediaInputs
@@ -32,7 +32,7 @@ private enum EventSubscription: UInt64 {
 }
 
 private func mulToDb(mul: Float) -> Float {
-    return 20 * log10f(mul)
+    20 * log10f(mul)
 }
 
 private enum OpCode: Int, Codable {
@@ -492,9 +492,9 @@ class ObsWebSocket {
     private var batchRequests: [String: BatchRequest] = [:]
     var connectionErrorMessage: String = ""
     private var connected = false
-    weak var delegate: ObsWebsocketDelegate?
+    weak var delegate: (any ObsWebsocketDelegate)?
 
-    init(url: URL, password: String, delegate: ObsWebsocketDelegate) {
+    init(url: URL, password: String, delegate: any ObsWebsocketDelegate) {
         self.url = url
         self.password = password
         self.delegate = delegate
@@ -524,7 +524,7 @@ class ObsWebSocket {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func startAudioVolume() {
@@ -542,7 +542,7 @@ class ObsWebSocket {
                 let response = try JSONDecoder().decode(GetSceneListResponse.self, from: response)
                 onSuccess(ObsSceneList(
                     current: response.currentProgramSceneName,
-                    scenes: response.scenes.reversed().map { $0.sceneName }
+                    scenes: response.scenes.reversed().map(\.sceneName)
                 ))
             } catch {
                 onError("JSON decode failed")
@@ -594,7 +594,7 @@ class ObsWebSocket {
         performRequestNoDataWithResponse(type: .getInputList, onSuccess: { response in
             do {
                 let response = try JSONDecoder().decode(GetInputListResponse.self, from: response)
-                onSuccess(response.inputs.map { $0.inputName })
+                onSuccess(response.inputs.map(\.inputName))
             } catch {
                 onError("JSON decode failed")
             }
@@ -892,9 +892,9 @@ class ObsWebSocket {
         )
     }
 
-    private func performRequestNoResponse<T: Encodable>(
+    private func performRequestNoResponse(
         type: RequestType,
-        request: T?,
+        request: (some Encodable)?,
         onSuccess: @escaping () -> Void,
         onError: @escaping (RequestError) -> Void
     ) {
@@ -906,9 +906,9 @@ class ObsWebSocket {
                        onError: onError)
     }
 
-    private func performRequestWithResponse<T: Encodable>(
+    private func performRequestWithResponse(
         type: RequestType,
-        request: T?,
+        request: (some Encodable)?,
         onSuccess: @escaping (Data) -> Void,
         onError: @escaping (RequestError) -> Void
     ) {
@@ -924,9 +924,9 @@ class ObsWebSocket {
                        onError: onError)
     }
 
-    private func performRequest<T: Encodable>(
+    private func performRequest(
         type: RequestType,
-        request: T?,
+        request: (some Encodable)?,
         onSuccess: @escaping (Data?) -> Void,
         onError: @escaping (RequestError) -> Void
     ) {
@@ -942,7 +942,7 @@ class ObsWebSocket {
         send(op: .request, data: request)
     }
 
-    private func packRequest<T: Encodable>(type: RequestType, request: T?) throws -> (Data, String) {
+    private func packRequest(type: RequestType, request: (some Encodable)?) throws -> (Data, String) {
         var data: Data?
         if let request {
             data = try JSONEncoder().encode(request)

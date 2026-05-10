@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 private func getReplaysDirectory() -> URL {
-    return createAndGetDirectory(name: "Replays")
+    createAndGetDirectory(name: "Replays")
 }
 
 class ReplaySettings: Identifiable, Codable {
@@ -12,31 +12,31 @@ class ReplaySettings: Identifiable, Codable {
     var stop: Double = SettingsReplay.stop
 
     func name() -> String {
-        return "\(id).mp4"
+        "\(id).mp4"
     }
 
     func url() -> URL {
-        return getReplaysDirectory().appending(component: name())
+        getReplaysDirectory().appending(component: name())
     }
 
     func thumbnailOffset() -> Double {
-        return max(startFromVideoStart(), 0)
+        max(startFromVideoStart(), 0)
     }
 
     func startFromEnd() -> Double {
-        return SettingsReplay.stop - start
+        SettingsReplay.stop - start
     }
 
     private func stopFromEnd() -> Double {
-        return SettingsReplay.stop - stop
+        SettingsReplay.stop - stop
     }
 
     func startFromVideoStart() -> Double {
-        return duration - startFromEnd()
+        duration - startFromEnd()
     }
 
     func stopFromVideoStart() -> Double {
-        return duration - stopFromEnd()
+        duration - stopFromEnd()
     }
 }
 
@@ -60,14 +60,14 @@ class ReplaysDatabase: Codable, ObservableObject {
     }
 
     static func fromString(settings: String) throws -> ReplaysDatabase {
-        return try JSONDecoder().decode(
+        try JSONDecoder().decode(
             ReplaysDatabase.self,
             from: settings.data(using: .utf8)!
         )
     }
 
     func toString() throws -> String {
-        return try String.fromUtf8(data: JSONEncoder().encode(self))
+        try String.fromUtf8(data: JSONEncoder().encode(self))
     }
 }
 
@@ -127,7 +127,7 @@ final class ReplaysStorage {
     private func migrateFromOlderVersions() {}
 
     func createReplay() -> ReplaySettings {
-        return ReplaySettings()
+        ReplaySettings()
     }
 
     func append(replay: ReplaySettings) {
@@ -138,10 +138,10 @@ final class ReplaysStorage {
     }
 
     func isFull() -> Bool {
-        return database.replays.count > 499
+        database.replays.count > 499
     }
 
     func defaultStorageDirectory() -> URL {
-        return getReplaysDirectory()
+        getReplaysDirectory()
     }
 }

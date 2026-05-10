@@ -42,25 +42,25 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .shape:
-            return String(localized: "Shape")
+            String(localized: "Shape")
         case .grayScale:
-            return String(localized: "Gray scale")
+            String(localized: "Gray scale")
         case .sepia:
-            return String(localized: "Sepia")
+            String(localized: "Sepia")
         case .whirlpool:
-            return String(localized: "Whirlpool")
+            String(localized: "Whirlpool")
         case .pinch:
-            return String(localized: "Pinch")
+            String(localized: "Pinch")
         case .removeBackground:
-            return String(localized: "Remove background")
+            String(localized: "Remove background")
         case .dewarp360:
-            return String(localized: "Dewarp 360")
+            String(localized: "Dewarp 360")
         case .anamorphicLens:
-            return String(localized: "Anamorphic lens")
+            String(localized: "Anamorphic lens")
         case .lut:
-            return String(localized: "LUT")
+            String(localized: "LUT")
         case .opacity:
-            return String(localized: "Opacity")
+            String(localized: "Opacity")
         }
     }
 }
@@ -84,13 +84,13 @@ class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
         toColor = to.color()
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.from, from)
         try container.encode(.to, to)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         from = container.decode(.from, RgbColor.self, defaultFromColor)
         fromColor = from.color()
@@ -125,7 +125,7 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
         borderColorColor = borderColor.color()
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.cornerRadius, cornerRadius)
         try container.encode(.borderWidth, borderWidth)
@@ -137,7 +137,7 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
         try container.encode(.cropHeight, cropHeight)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         cornerRadius = container.decode(.cornerRadius, Float.self, 0.1)
         borderWidth = container.decode(.borderWidth, Double.self, 0)
@@ -151,18 +151,18 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
     }
 
     func toSettings() -> ShapeEffectSettings {
-        return .init(cornerRadius: cornerRadius,
-                     borderWidth: borderWidth,
-                     borderColor: CIColor(
-                         red: Double(borderColor.red) / 255,
-                         green: Double(borderColor.green) / 255,
-                         blue: Double(borderColor.blue) / 255
-                     ),
-                     cropEnabled: cropEnabled,
-                     cropX: cropX,
-                     cropY: cropY,
-                     cropWidth: cropWidth,
-                     cropHeight: cropHeight)
+        .init(cornerRadius: cornerRadius,
+              borderWidth: borderWidth,
+              borderColor: CIColor(
+                  red: Double(borderColor.red) / 255,
+                  green: Double(borderColor.green) / 255,
+                  blue: Double(borderColor.blue) / 255
+              ),
+              cropEnabled: cropEnabled,
+              cropX: cropX,
+              cropY: cropY,
+              cropWidth: cropWidth,
+              cropHeight: cropHeight)
     }
 }
 
@@ -180,14 +180,14 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
              zoom
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.pan, pan)
         try container.encode(.tilt, tilt)
         try container.encode(.zoom, zoom)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         pan = container.decode(.pan, Float.self, 0)
         tilt = container.decode(.tilt, Float.self, 0)
@@ -200,9 +200,9 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
     }
 
     func toSettings() -> Dewarp360EffectSettings {
-        return .direct(pan: -pan.toRadians(),
-                       tilt: tilt.toRadians(),
-                       fieldOfView: zoomToFieldOfView(zoom: zoom))
+        .direct(pan: -pan.toRadians(),
+                tilt: tilt.toRadians(),
+                fieldOfView: zoomToFieldOfView(zoom: zoom))
     }
 }
 
@@ -215,12 +215,12 @@ class SettingsVideoEffectAnamorphicLens: Codable, ObservableObject {
         case scale
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.scale, scale)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         scale = container.decode(.scale, Double.self, 1.33)
     }
@@ -241,12 +241,12 @@ class SettingsVideoEffectLut: Codable, ObservableObject {
         case lut
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.lut, lut)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         lut = container.decode(.lut, UUID?.self, .init())
     }
@@ -261,12 +261,12 @@ class SettingsVideoEffectOpacity: Codable, ObservableObject {
         case opacity
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.opacity, opacity)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         opacity = container.decode(.opacity, Double.self, 0.5)
     }
@@ -297,7 +297,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.enabled, enabled)
@@ -310,7 +310,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         try container.encode(.opacity, opacity)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
@@ -380,26 +380,26 @@ enum SettingsFontDesign: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .default:
-            return String(localized: "Default")
+            String(localized: "Default")
         case .serif:
-            return String(localized: "Serif")
+            String(localized: "Serif")
         case .rounded:
-            return String(localized: "Rounded")
+            String(localized: "Rounded")
         case .monospaced:
-            return String(localized: "Monospaced")
+            String(localized: "Monospaced")
         }
     }
 
     func toSystem() -> Font.Design {
         switch self {
         case .default:
-            return .default
+            .default
         case .serif:
-            return .serif
+            .serif
         case .rounded:
-            return .rounded
+            .rounded
         case .monospaced:
-            return .monospaced
+            .monospaced
         }
     }
 }
@@ -412,22 +412,22 @@ enum SettingsFontWeight: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .regular:
-            return String(localized: "Regular")
+            String(localized: "Regular")
         case .light:
-            return String(localized: "Light")
+            String(localized: "Light")
         case .bold:
-            return String(localized: "Bold")
+            String(localized: "Bold")
         }
     }
 
     func toSystem() -> Font.Weight {
         switch self {
         case .regular:
-            return .regular
+            .regular
         case .light:
-            return .light
+            .light
         case .bold:
-            return .bold
+            .bold
         }
     }
 }
@@ -440,22 +440,22 @@ enum SettingsHorizontalAlignment: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .leading:
-            return String(localized: "Leading")
+            String(localized: "Leading")
         case .trailing:
-            return String(localized: "Trailing")
+            String(localized: "Trailing")
         case .center:
-            return String(localized: "Center")
+            String(localized: "Center")
         }
     }
 
     func toSystem() -> HorizontalAlignment {
         switch self {
         case .leading:
-            return .leading
+            .leading
         case .trailing:
-            return .trailing
+            .trailing
         case .center:
-            return .center
+            .center
         }
     }
 }
@@ -477,27 +477,27 @@ enum SettingsAlignment: String, Codable, CaseIterable {
     case center = "Center"
 
     func isLeft() -> Bool {
-        return self == .topLeft || self == .bottomLeft || self == .leftCenter
+        self == .topLeft || self == .bottomLeft || self == .leftCenter
     }
 
     func isHorizontalCenter() -> Bool {
-        return self == .topCenter || self == .bottomCenter || self == .center
+        self == .topCenter || self == .bottomCenter || self == .center
     }
 
     func isVerticalCenter() -> Bool {
-        return self == .leftCenter || self == .rightCenter || self == .center
+        self == .leftCenter || self == .rightCenter || self == .center
     }
 
     func isTop() -> Bool {
-        return self == .topLeft || self == .topRight || self == .topCenter
+        self == .topLeft || self == .topRight || self == .topCenter
     }
 
     func mirrorPositionHorizontally() -> Bool {
-        return self == .topRight || self == .bottomRight || self == .rightCenter
+        self == .topRight || self == .bottomRight || self == .rightCenter
     }
 
     func mirrorPositionVertically() -> Bool {
-        return self == .bottomLeft || self == .bottomRight || self == .bottomCenter
+        self == .bottomLeft || self == .bottomRight || self == .bottomCenter
     }
 }
 
@@ -514,14 +514,14 @@ class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.delta, delta)
         try container.encode(.endTime, endTime)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         delta = container.decode(.delta, Int.self, 5)
@@ -540,16 +540,16 @@ class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
     }
 
     func format() -> String {
-        return Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0)
+        Duration(secondsComponent: Int64(max(timeLeft(), 0)), attosecondsComponent: 0)
             .formatWithSeconds()
     }
 
     func textEffectEndTime() -> ContinuousClock.Instant {
-        return .now.advanced(by: .seconds(max(timeLeft(), 0)))
+        .now.advanced(by: .seconds(max(timeLeft(), 0)))
     }
 
     func timeLeft() -> Double {
-        return utcTimeDeltaFromNow(to: endTime)
+        utcTimeDeltaFromNow(to: endTime)
     }
 }
 
@@ -567,14 +567,14 @@ class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.totalElapsed, totalElapsed)
         try container.encode(.running, running)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         totalElapsed = container.decode(.totalElapsed, Double.self, 0)
@@ -592,9 +592,9 @@ class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
 
     func currentTime() -> Double {
         if running {
-            return totalElapsed + playPressedTime.duration(to: .now).seconds
+            totalElapsed + playPressedTime.duration(to: .now).seconds
         } else {
-            return totalElapsed
+            totalElapsed
         }
     }
 }
@@ -687,7 +687,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         fontSizeFloat = Float(fontSize)
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.formatString, formatString)
         try container.encode(.backgroundColor, backgroundColor)
@@ -717,7 +717,7 @@ class SettingsWidgetText: Codable, ObservableObject {
         try container.encode(.cornerRadius, cornerRadius)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         formatString = container.decode(.formatString, String.self, "{shortTime}")
         backgroundColor = container.decode(
@@ -789,11 +789,11 @@ enum SettingsWidgetBrowserMode: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .periodicAudioAndVideo:
-            return String(localized: "Periodic, audio and video")
+            String(localized: "Periodic, audio and video")
         case .audioAndVideoOnly:
-            return String(localized: "Audio and video only")
+            String(localized: "Audio and video only")
         case .audioOnly:
-            return String(localized: "Audio only")
+            String(localized: "Audio only")
         }
     }
 }
@@ -820,7 +820,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
              moblinAccess
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.url, url)
         try container.encode(.width, width)
@@ -831,7 +831,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         try container.encode(.moblinAccess, moblinAccess)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         url = container.decode(.url, String.self, "")
         width = container.decode(.width, Int.self, 500)
@@ -859,13 +859,13 @@ class SettingsWidgetMap: Codable {
              delay
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.northUp, northUp)
         try container.encode(.delay, delay)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         northUp = container.decode(.northUp, Bool.self, false)
         delay = container.decode(.delay, Double.self, 0.0)
@@ -900,9 +900,9 @@ enum SettingsWidgetAlertPositionType: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .scene:
-            return String(localized: "Scene")
+            String(localized: "Scene")
         case .face:
-            return String(localized: "Face")
+            String(localized: "Face")
         }
     }
 }
@@ -921,9 +921,9 @@ enum SettingsWidgetAlertsAlertMediaType: String, CaseIterable, Codable {
     func toString() -> LocalizedStringKey {
         switch self {
         case .gifAndSound:
-            return "GIF and sound"
+            "GIF and sound"
         case .video:
-            return "Video"
+            "Video"
         }
     }
 }
@@ -969,7 +969,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
              facePosition
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.enabled, enabled)
@@ -990,7 +990,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
         try container.encode(.facePosition, facePosition)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
@@ -1023,7 +1023,7 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject {
     }
 
     func isTextToSpeechEnabled() -> Bool {
-        return enabled && textToSpeechEnabled
+        enabled && textToSpeechEnabled
     }
 
     func makeVideoFilename() -> String? {
@@ -1067,7 +1067,7 @@ enum SettingsWidgetAlertsCheerBitsAlertOperator: String, Codable, CaseIterable {
     }
 }
 
-let cheerBitsAlertOperators = SettingsWidgetAlertsCheerBitsAlertOperator.allCases.map { $0.rawValue }
+let cheerBitsAlertOperators = SettingsWidgetAlertsCheerBitsAlertOperator.allCases.map(\.rawValue)
 
 class SettingsWidgetAlertsCheerBitsAlert: Codable, Identifiable {
     var id: UUID = .init()
@@ -1139,7 +1139,7 @@ class SettingsWidgetAlertsTwitch: Codable {
              cheerBits
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.follows, follows)
         try container.encode(.subscriptions, subscriptions)
@@ -1148,7 +1148,7 @@ class SettingsWidgetAlertsTwitch: Codable {
         try container.encode(.cheerBits, cheerBits)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         follows = container.decode(.follows, SettingsWidgetAlertsAlert.self, .init())
         subscriptions = container.decode(.subscriptions, SettingsWidgetAlertsAlert.self, .init())
@@ -1199,7 +1199,7 @@ class SettingsWidgetAlertsKick: Codable {
              kickGifts
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.subscriptions, subscriptions)
         try container.encode(.giftedSubscriptions, giftedSubscriptions)
@@ -1208,7 +1208,7 @@ class SettingsWidgetAlertsKick: Codable {
         try container.encode(.kickGifts, kickGifts)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         subscriptions = container.decode(.subscriptions, SettingsWidgetAlertsAlert.self, .init())
         giftedSubscriptions = container.decode(.giftedSubscriptions, SettingsWidgetAlertsAlert.self, .init())
@@ -1261,7 +1261,7 @@ class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Send
              imageType
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -1269,7 +1269,7 @@ class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Send
         try container.encode(.imageType, imageType)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "myname")
@@ -1295,12 +1295,12 @@ class SettingsWidgetAlertsChatBot: Codable, ObservableObject {
         case commands
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.commands, commands)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         commands = container.decode(.commands, [SettingsWidgetAlertsChatBotCommand].self, .init())
     }
@@ -1343,12 +1343,12 @@ class SettingsWidgetAlertsSpeechToText: Codable, ObservableObject {
         case strings
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.strings, strings)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         strings = container.decode(.strings, [SettingsWidgetAlertsSpeechToTextString].self, .init())
     }
@@ -1377,12 +1377,12 @@ class SettingsTtsMonster: Codable, ObservableObject {
         case apiToken
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.apiToken, apiToken)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         apiToken = container.decode(.apiToken, String.self, "")
     }
@@ -1419,7 +1419,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
              ttsMonster
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.twitch, twitch)
         try container.encode(.kick, kick)
@@ -1431,7 +1431,7 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
         try container.encode(.ttsMonster, ttsMonster)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         twitch = container.decode(.twitch, SettingsWidgetAlertsTwitch.self, .init())
         kick = container.decode(.kick, SettingsWidgetAlertsKick.self, .init())
@@ -1477,22 +1477,22 @@ enum SettingsSceneSwitchTransition: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .blur:
-            return String(localized: "Blur")
+            String(localized: "Blur")
         case .freeze:
-            return String(localized: "Freeze")
+            String(localized: "Freeze")
         case .blurAndZoom:
-            return String(localized: "Blur & zoom")
+            String(localized: "Blur & zoom")
         }
     }
 
     func toVideoUnit() -> SceneSwitchTransition {
         switch self {
         case .blur:
-            return .blur
+            .blur
         case .freeze:
-            return .freeze
+            .freeze
         case .blurAndZoom:
-            return .blurAndZoom
+            .blurAndZoom
         }
     }
 }
@@ -1536,7 +1536,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.cameraPosition, videoSource.cameraPosition)
@@ -1559,7 +1559,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
         try container.encode(.armsAngle, armsAngle)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
@@ -1583,7 +1583,7 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     }
 
     func toCameraId() -> SettingsCameraId {
-        return videoSource.toCameraId()
+        videoSource.toCameraId()
     }
 
     func updateCameraId(settingsCameraId: SettingsCameraId) {
@@ -1619,7 +1619,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.cameraPosition, videoSource.cameraPosition)
@@ -1639,7 +1639,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
         try container.encode(.sensitivity, sensitivity)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
@@ -1660,7 +1660,7 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     }
 
     func toCameraId() -> SettingsCameraId {
-        return videoSource.toCameraId()
+        videoSource.toCameraId()
     }
 
     func updateCameraId(settingsCameraId: SettingsCameraId) {
@@ -1679,13 +1679,13 @@ class SettingsWidgetSnapshot: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.showtime, showtime)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         showtime = container.decode(.showtime, Int.self, 5)
@@ -1732,7 +1732,7 @@ class SettingsWidgetChat: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.fontSize, fontSize)
@@ -1750,7 +1750,7 @@ class SettingsWidgetChat: Codable, ObservableObject {
         try container.encode(.height, height)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         fontSize = container.decode(.fontSize, Float.self, 19.0)
@@ -1806,14 +1806,14 @@ class SettingsWidgetSlideshowSlide: Codable, ObservableObject, Identifiable {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.widgetId, widgetId)
         try container.encode(.time, time)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         widgetId = container.decode(.widgetId, UUID.self, .init())
@@ -1832,13 +1832,13 @@ class SettingsWidgetSlideshow: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.slides, slides)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         slides = container.decode(.slides, [SettingsWidgetSlideshowSlide].self, [])
@@ -1851,7 +1851,7 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
     @Published var weight: Int = 1
 
     static func == (lhs: SettingsWidgetWheelOfLuckOption, rhs: SettingsWidgetWheelOfLuckOption) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     enum CodingKeys: CodingKey {
@@ -1862,14 +1862,14 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.text, text)
         try container.encode(.weight, weight)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         text = container.decode(.text, String.self, "")
@@ -1890,13 +1890,13 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.advanced, advanced)
         try container.encode(.options, options)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         advanced = container.decode(.advanced, Bool.self, false)
         options = container.decode(.options, [SettingsWidgetWheelOfLuckOption].self, [])
@@ -1931,7 +1931,7 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     }
 
     private func optionsToText() -> String {
-        return options.map { $0.text }.joined(separator: "\n")
+        options.map(\.text).joined(separator: "\n")
     }
 }
 
@@ -1959,21 +1959,21 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.backgroundColor, backgroundColor)
         try container.encode(.foregroundColor, foregroundColor)
         try container.encode(.squares, squares)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.baseBackgroundColor)
         backgroundColorColor = backgroundColor.color()
         foregroundColor = container.decode(.foregroundColor, RgbColor.self, Self.baseForegroundColor)
         foregroundColorColor = foregroundColor.color()
         squares = container.decode(.squares, [SettingsBingoCardSquare].self, [])
-        squaresText = squares.map { $0.text }.joined(separator: "\n")
+        squaresText = squares.map(\.text).joined(separator: "\n")
     }
 
     func update(other: SettingsWidgetBingoCard) {
@@ -1996,13 +1996,13 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
 
     func size() -> Int {
         if squares.count <= 4 {
-            return 2
+            2
         } else if squares.count <= 9 {
-            return 3
+            3
         } else if squares.count <= 16 {
-            return 4
+            4
         } else {
-            return 5
+            5
         }
     }
 }
@@ -2036,7 +2036,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     static func == (lhs: SettingsWidget, rhs: SettingsWidget) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     enum CodingKeys: CodingKey {
@@ -2063,7 +2063,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
              effects
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.name, name)
         try container.encode(.id, id)
@@ -2088,7 +2088,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.effects, effects)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
@@ -2147,15 +2147,15 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     func getEffects(model: Model) -> [VideoEffect] {
-        return effects.filter { $0.enabled }.map { $0.getEffect(model: model) }
+        effects.filter(\.enabled).map { $0.getEffect(model: model) }
     }
 
     func image() -> String {
-        return type.image()
+        type.image()
     }
 
     func hasPosition() -> Bool {
-        return [
+        [
             .image,
             .browser,
             .text,
@@ -2176,7 +2176,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     func hasSize() -> Bool {
-        return [
+        [
             .image,
             .browser,
             .crop,
@@ -2192,7 +2192,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     func hasAlignment() -> Bool {
-        return [
+        [
             .image,
             .browser,
             .text,
@@ -2235,13 +2235,13 @@ struct SettingsWidgetLayout: Equatable {
     }
 
     func extent() -> CGRect {
-        return .init(x: x, y: y, width: size, height: size)
+        .init(x: x, y: y, width: size, height: size)
     }
 }
 
 class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
     static func == (lhs: SettingsSceneWidget, rhs: SettingsSceneWidget) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     var id: UUID = .init()
@@ -2272,7 +2272,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
              migrated2
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.widgetId, widgetId)
         try container.encode(.id, id)
@@ -2287,7 +2287,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
         try container.encode(.migrated2, migrated2)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         widgetId = container.decode(.widgetId, UUID.self, .init())
         id = container.decode(.id, UUID.self, .init())
@@ -2341,7 +2341,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     }
 
     func isBuiltin() -> Bool {
-        return builtinCameraPositions.contains(self)
+        builtinCameraPositions.contains(self)
     }
 }
 
@@ -2370,35 +2370,35 @@ struct SettingsVideoSource {
     func toCameraId() -> SettingsCameraId {
         switch cameraPosition {
         case .back:
-            return .back(id: backCameraId)
+            .back(id: backCameraId)
         case .front:
-            return .front(id: frontCameraId)
+            .front(id: frontCameraId)
         case .rtmp:
-            return .rtmp(id: rtmpCameraId)
+            .rtmp(id: rtmpCameraId)
         case .external:
-            return .external(id: externalCameraId, name: externalCameraName)
+            .external(id: externalCameraId, name: externalCameraName)
         case .srtla:
-            return .srtla(id: srtlaCameraId)
+            .srtla(id: srtlaCameraId)
         case .rist:
-            return .rist(id: ristCameraId)
+            .rist(id: ristCameraId)
         case .rtsp:
-            return .rtsp(id: rtspCameraId)
+            .rtsp(id: rtspCameraId)
         case .whip:
-            return .whip(id: whipCameraId)
+            .whip(id: whipCameraId)
         case .whep:
-            return .whep(id: whepCameraId)
+            .whep(id: whepCameraId)
         case .mediaPlayer:
-            return .mediaPlayer(id: mediaPlayerCameraId)
+            .mediaPlayer(id: mediaPlayerCameraId)
         case .screenCapture:
-            return .screenCapture
+            .screenCapture
         case .backTripleLowEnergy:
-            return .backTripleLowEnergy
+            .backTripleLowEnergy
         case .backDualLowEnergy:
-            return .backDualLowEnergy
+            .backDualLowEnergy
         case .backWideDualLowEnergy:
-            return .backWideDualLowEnergy
+            .backWideDualLowEnergy
         case .none:
-            return .none
+            .none
         }
     }
 
@@ -2451,51 +2451,51 @@ struct SettingsVideoSource {
     func isCaptureDevice() -> Bool {
         switch cameraPosition {
         case .back:
-            return true
+            true
         case .backWideDualLowEnergy:
-            return true
+            true
         case .backDualLowEnergy:
-            return true
+            true
         case .backTripleLowEnergy:
-            return true
+            true
         case .front:
-            return true
+            true
         case .external:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
     func getCaptureDeviceCameraId() -> CameraId? {
         switch cameraPosition {
         case .back:
-            return backCameraId
+            backCameraId
         case .front:
-            return frontCameraId
+            frontCameraId
         case .external:
-            return externalCameraId
+            externalCameraId
         default:
-            return nil
+            nil
         }
     }
 
     func isNetwork(cameraId: UUID) -> Bool {
         switch cameraPosition {
         case .rtmp:
-            return cameraId == rtmpCameraId
+            cameraId == rtmpCameraId
         case .srtla:
-            return cameraId == srtlaCameraId
+            cameraId == srtlaCameraId
         case .rist:
-            return cameraId == ristCameraId
+            cameraId == ristCameraId
         case .rtsp:
-            return cameraId == rtspCameraId
+            cameraId == rtspCameraId
         case .whip:
-            return cameraId == whipCameraId
+            cameraId == whipCameraId
         case .whep:
-            return cameraId == whepCameraId
+            cameraId == whepCameraId
         default:
-            return false
+            false
         }
     }
 }
@@ -2547,7 +2547,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         borderColorColor = borderColor.color()
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.cornerRadius, cornerRadius)
         try container.encode(.cameraPosition, videoSource.cameraPosition)
@@ -2575,7 +2575,7 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
         try container.encode(.borderColor, borderColor)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         cornerRadius = container.decode(.cornerRadius, Float.self, 0)
         videoSource.cameraPosition = decodeCameraPosition(container, .cameraPosition, .screenCapture)
@@ -2605,14 +2605,14 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     }
 
     func toEffectSettings() -> VideoSourceEffectSettings {
-        return .init(rotation: rotation,
-                     trackFaceEnabled: trackFaceEnabled,
-                     trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
-                     mirror: mirror)
+        .init(rotation: rotation,
+              trackFaceEnabled: trackFaceEnabled,
+              trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
+              mirror: mirror)
     }
 
     func toCameraId() -> SettingsCameraId {
-        return videoSource.toCameraId()
+        videoSource.toCameraId()
     }
 
     func updateCameraId(settingsCameraId: SettingsCameraId) {
@@ -2636,27 +2636,27 @@ enum SettingsWidgetScoreboardSport: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .generic:
-            return String(localized: "Generic")
+            String(localized: "Generic")
         case .padel:
-            return String(localized: "Padel")
+            String(localized: "Padel")
         case .golf:
-            return String(localized: "Golf")
+            String(localized: "Golf")
         case .golfFullScorecard:
-            return String(localized: "Golf full scorecard")
+            String(localized: "Golf full scorecard")
         case .basketball:
-            return String(localized: "Basketball")
+            String(localized: "Basketball")
         case .generic2:
-            return String(localized: "Generic 2")
+            String(localized: "Generic 2")
         case .genericSets:
-            return String(localized: "Generic sets")
+            String(localized: "Generic sets")
         case .hockey:
-            return String(localized: "Hockey")
+            String(localized: "Hockey")
         case .football:
-            return String(localized: "Football")
+            String(localized: "Football")
         case .tennis:
-            return String(localized: "Tennis")
+            String(localized: "Tennis")
         case .volleyball:
-            return String(localized: "Volleyball")
+            String(localized: "Volleyball")
         }
     }
 }
@@ -2670,13 +2670,13 @@ enum SettingsWidgetScoreboardLayout: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .stacked:
-            return String(localized: "Stacked")
+            String(localized: "Stacked")
         case .stackedInline:
-            return String(localized: "Stacked inline")
+            String(localized: "Stacked inline")
         case .sideBySide:
-            return String(localized: "Side by side")
+            String(localized: "Side by side")
         case .stackHistory:
-            return String(localized: "Stack history")
+            String(localized: "Stack history")
         }
     }
 }
@@ -2693,13 +2693,13 @@ class SettingsWidgetScoreboardPlayer: Codable, Identifiable, ObservableObject, N
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -2718,9 +2718,9 @@ enum SettingsWidgetPadelScoreboardGameType: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .doubles:
-            return String(localized: "Doubles")
+            String(localized: "Doubles")
         case .singles:
-            return String(localized: "Singles")
+            String(localized: "Singles")
         }
     }
 }
@@ -2750,7 +2750,7 @@ class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.type, type)
         try container.encode(.homePlayer1, homePlayer1)
@@ -2760,7 +2760,7 @@ class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
         try container.encode(.score, score)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         type = container.decode(.type, SettingsWidgetPadelScoreboardGameType.self, .doubles)
         homePlayer1 = container.decode(.homePlayer1, UUID.self, .init())
@@ -2787,14 +2787,14 @@ class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObjec
         self.name = name
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.scores, scores)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "Player")
@@ -2824,7 +2824,7 @@ class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObjec
     }
 
     func holesPlayed(numHoles: Int) -> Int {
-        return scores.prefix(numHoles).filter { $0 != -1 }.count
+        scores.prefix(numHoles).filter { $0 != -1 }.count
     }
 }
 
@@ -2851,7 +2851,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.eventName, title)
         try container.encode(.numberOfHoles, numberOfHoles)
@@ -2860,7 +2860,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
         try container.encode(.players, players)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         title = container.decode(.eventName, String.self, Self.defaultTitle)
         numberOfHoles = container.decode(.numberOfHoles, Int.self, 18)
@@ -2884,9 +2884,9 @@ enum SettingsWidgetGenericScoreboardClockDirection: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .up:
-            return String(localized: "Up")
+            String(localized: "Up")
         case .down:
-            return String(localized: "Down")
+            String(localized: "Down")
         }
     }
 }
@@ -2912,7 +2912,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.home, home)
         try container.encode(.away, away)
@@ -2921,7 +2921,7 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
         try container.encode(.clock, clock)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         home = container.decode(.home, String.self, Self.baseName)
         away = container.decode(.away, String.self, Self.baseName)
@@ -2951,14 +2951,14 @@ class SettingsWidgetModularScoreboardTeam: Codable, ObservableObject {
         loadColors()
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.name, name)
         try container.encode(.textColor, textColor)
         try container.encode(.backgroundColor, backgroundColor)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "")
         textColor = container.decode(.textColor, RgbColor.self, .black)
@@ -2998,13 +2998,13 @@ class SettingsWidgetScoreboardClock: Codable, ObservableObject {
         reset()
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.maximum, maximum)
         try container.encode(.direction, direction)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         maximum = container.decode(.maximum, Int.self, 45)
         direction = container.decode(.direction,
@@ -3015,9 +3015,9 @@ class SettingsWidgetScoreboardClock: Codable, ObservableObject {
 
     func format() -> String {
         if seconds < 10 {
-            return "\(minutes):0\(seconds)"
+            "\(minutes):0\(seconds)"
         } else {
-            return "\(minutes):\(seconds)"
+            "\(minutes):\(seconds)"
         }
     }
 
@@ -3100,7 +3100,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
 
     init() {}
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.home, home)
         try container.encode(.away, away)
@@ -3118,7 +3118,7 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
         try container.encode(.showClock, showClock)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         home = container.decode(.home, SettingsWidgetModularScoreboardTeam.self, Self.createHomeTeam())
         away = container.decode(.away, SettingsWidgetModularScoreboardTeam.self, Self.createAwayTeam())
@@ -3137,19 +3137,19 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     }
 
     private static func createHomeTeam() -> SettingsWidgetModularScoreboardTeam {
-        return SettingsWidgetModularScoreboardTeam(name: baseName,
-                                                   textColor: baseHomeTextColor,
-                                                   backgroundColor: baseHomeBackgroundColor)
+        SettingsWidgetModularScoreboardTeam(name: baseName,
+                                            textColor: baseHomeTextColor,
+                                            backgroundColor: baseHomeBackgroundColor)
     }
 
     private static func createAwayTeam() -> SettingsWidgetModularScoreboardTeam {
-        return SettingsWidgetModularScoreboardTeam(name: baseName,
-                                                   textColor: baseAwayTextColor,
-                                                   backgroundColor: baseAwayBackgroundColor)
+        SettingsWidgetModularScoreboardTeam(name: baseName,
+                                            textColor: baseAwayTextColor,
+                                            backgroundColor: baseAwayBackgroundColor)
     }
 
     func fontSize() -> Double {
-        return Double(rowHeight * 0.8)
+        Double(rowHeight * 0.8)
     }
 
     func setLayout(name: String) {
@@ -3197,7 +3197,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
         loadColors()
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.type, sport)
         try container.encode(.textColor, textColor)
@@ -3209,7 +3209,7 @@ class SettingsWidgetScoreboard: Codable, ObservableObject {
         try container.encode(.modular, modular)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         sport = container.decode(.type, SettingsWidgetScoreboardSport.self, .generic)
         textColor = container.decode(.textColor, RgbColor.self, Self.baseTextColor)
@@ -3283,123 +3283,123 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .text:
-            return String(localized: "Text")
+            String(localized: "Text")
         case .browser:
-            return String(localized: "Browser")
+            String(localized: "Browser")
         case .videoSource:
-            return String(localized: "Video source")
+            String(localized: "Video source")
         case .image:
-            return String(localized: "Image")
+            String(localized: "Image")
         case .alerts:
-            return String(localized: "Alerts")
+            String(localized: "Alerts")
         case .map:
-            return String(localized: "Map")
+            String(localized: "Map")
         case .snapshot:
-            return String(localized: "Snapshot")
+            String(localized: "Snapshot")
         case .chat:
-            return String(localized: "Chat")
+            String(localized: "Chat")
         case .scene:
-            return String(localized: "Scene")
+            String(localized: "Scene")
         case .slideshow:
-            return String(localized: "Slideshow")
+            String(localized: "Slideshow")
         case .vTuber:
-            return String(localized: "VTuber")
+            String(localized: "VTuber")
         case .pngTuber:
-            return String(localized: "PNGTuber")
+            String(localized: "PNGTuber")
         case .qrCode:
-            return String(localized: "QR code")
+            String(localized: "QR code")
         case .scoreboard:
-            return String(localized: "Scoreboard")
+            String(localized: "Scoreboard")
         case .wheelOfLuck:
-            return String(localized: "Wheel of luck")
+            String(localized: "Wheel of luck")
         case .bingoCard:
-            return String(localized: "Bingo card")
+            String(localized: "Bingo card")
         case .crop:
-            return String(localized: "Crop")
+            String(localized: "Crop")
         }
     }
 
     func image() -> String {
         switch self {
         case .image:
-            return "photo"
+            "photo"
         case .browser:
-            return "globe"
+            "globe"
         case .text:
-            return "textformat"
+            "textformat"
         case .crop:
-            return "crop"
+            "crop"
         case .map:
-            return "map"
+            "map"
         case .snapshot:
-            return "camera.aperture"
+            "camera.aperture"
         case .chat:
-            return "message"
+            "message"
         case .scene:
-            return "photo.on.rectangle"
+            "photo.on.rectangle"
         case .slideshow:
-            return "play.rectangle"
+            "play.rectangle"
         case .qrCode:
-            return "qrcode"
+            "qrcode"
         case .alerts:
-            return "megaphone"
+            "megaphone"
         case .videoSource:
-            return "video"
+            "video"
         case .scoreboard:
-            return "rectangle.split.2x1"
+            "rectangle.split.2x1"
         case .vTuber:
-            return "person.crop.circle"
+            "person.crop.circle"
         case .pngTuber:
-            return "person.crop.circle.dashed"
+            "person.crop.circle.dashed"
         case .wheelOfLuck:
-            return "burn"
+            "burn"
         case .bingoCard:
-            return "square.grid.3x3.square"
+            "square.grid.3x3.square"
         }
     }
 
     func description() -> String {
         switch self {
         case .text:
-            return String(localized: "A text widget shows text, weather, clock and much more.")
+            String(localized: "A text widget shows text, weather, clock and much more.")
         case .browser:
-            return String(localized: "A browser widget shows a webpage.")
+            String(localized: "A browser widget shows a webpage.")
         case .videoSource:
-            return String(localized: "A video source widget shows another camera or screen capture.")
+            String(localized: "A video source widget shows another camera or screen capture.")
         case .image:
-            return String(localized: "An image widget shows an image.")
+            String(localized: "An image widget shows an image.")
         case .alerts:
-            return String(localized: "An alerts widget shows various alerts (subscriptions, raids, ...).")
+            String(localized: "An alerts widget shows various alerts (subscriptions, raids, ...).")
         case .map:
-            return String(localized: "A map widget shows a map with your location.")
+            String(localized: "A map widget shows a map with your location.")
         case .snapshot:
-            return String(localized: "A snapshot widget shows snapshots when taken.")
+            String(localized: "A snapshot widget shows snapshots when taken.")
         case .chat:
-            return String(localized: "A chat widget shows your chat.")
+            String(localized: "A chat widget shows your chat.")
         case .scene:
-            return String(localized: "A scene widget shows a scene's widgets.")
+            String(localized: "A scene widget shows a scene's widgets.")
         case .slideshow:
-            return String(localized: "A slideshow widget shows a slideshow of widgets.")
+            String(localized: "A slideshow widget shows a slideshow of widgets.")
         case .vTuber:
-            return String(
+            String(
                 localized: "A VTuber widget shows a VTuber model that imitates your facial movements."
             )
         case .pngTuber:
-            return String(
+            String(
                 localized: "A PNGTuber widget shows a PNGTuber model that imitates your facial movements."
             )
         case .qrCode:
-            return String(localized: "A QR code widget shows a QR code of any text.")
+            String(localized: "A QR code widget shows a QR code of any text.")
         case .scoreboard:
-            return String(
+            String(
                 localized: "A scoreboard widget shows a sports scoreboard, controlled with an Apple Watch."
             )
         case .crop:
-            return String(localized: "A crop widget shows parts of a browser widget.")
+            String(localized: "A crop widget shows parts of a browser widget.")
         case .wheelOfLuck:
-            return String(localized: "A wheel of luck widget shows a wheel of luck that you can spin.")
+            String(localized: "A wheel of luck widget shows a wheel of luck that you can spin.")
         case .bingoCard:
-            return String(localized: "A bingo card widget shows an interactive bingo card.")
+            String(localized: "A bingo card widget shows an interactive bingo card.")
         }
     }
 }
@@ -3424,7 +3424,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     }
 
     static func == (lhs: SettingsScene, rhs: SettingsScene) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     enum CodingKeys: CodingKey {
@@ -3454,7 +3454,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
              quickSwitchGroup
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.name, name)
         try container.encode(.id, id)
@@ -3481,7 +3481,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
         try container.encode(.quickSwitchGroup, quickSwitchGroup)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
@@ -3534,7 +3534,7 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     }
 
     func toCameraId() -> SettingsCameraId {
-        return videoSource.toCameraId()
+        videoSource.toCameraId()
     }
 
     func updateCameraId(settingsCameraId: SettingsCameraId) {
@@ -3553,7 +3553,7 @@ class SettingsAutoSceneSwitcherScene: Codable, Identifiable, ObservableObject {
              time
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.sceneId, sceneId)
@@ -3562,7 +3562,7 @@ class SettingsAutoSceneSwitcherScene: Codable, Identifiable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         sceneId = container.decode(.sceneId, UUID?.self, nil)
@@ -3584,7 +3584,7 @@ class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named 
              scenes
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -3594,7 +3594,7 @@ class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named 
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -3611,7 +3611,7 @@ class SettingsAutoSceneSwitchers: Codable, Identifiable, ObservableObject {
         case switcherId, switchers
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.switcherId, switcherId)
         try container.encode(.switchers, switchers)
@@ -3619,7 +3619,7 @@ class SettingsAutoSceneSwitchers: Codable, Identifiable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         switcherId = try? container.decode(UUID?.self, forKey: .switcherId)
         switchers = container.decode(.switchers, [SettingsAutoSceneSwitcher].self, [])

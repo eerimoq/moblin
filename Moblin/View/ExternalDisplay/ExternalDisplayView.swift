@@ -34,11 +34,11 @@ private struct LineView: View {
     let platform: Bool
 
     private func usernameColor() -> Color {
-        return post.userColor.color()
+        post.userColor.color()
     }
 
     private func imageOpacity() -> Double {
-        return deleted ? 0.25 : 1
+        deleted ? 0.25 : 1
     }
 
     var body: some View {
@@ -213,7 +213,7 @@ private struct ExternalDisplayStreamPreviewView: UIViewRepresentable {
     @EnvironmentObject var model: Model
 
     func makeUIView(context _: Context) -> PreviewView {
-        return model.externalDisplayStreamPreviewView
+        model.externalDisplayStreamPreviewView
     }
 
     func updateUIView(_: PreviewView, context _: Context) {}

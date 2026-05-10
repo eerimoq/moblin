@@ -19,7 +19,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
              macroId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.key, key)
@@ -31,7 +31,7 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
         try container.encode(.macroId, functionData.macroId)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         key = container.decode(.key, String.self, "")
@@ -53,12 +53,12 @@ class SettingsKeyboard: Codable, ObservableObject {
         case keys
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.keys, keys)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         keys = container.decode(.keys, [SettingsKeyboardKey].self, [])
     }

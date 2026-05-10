@@ -2,15 +2,15 @@ import SwiftUI
 
 private func formatCatPrinterState(state: CatPrinterState?) -> String {
     if state == nil || state == .disconnected {
-        return String(localized: "Disconnected")
+        String(localized: "Disconnected")
     } else if state == .discovering {
-        return String(localized: "Discovering")
+        String(localized: "Discovering")
     } else if state == .connecting {
-        return String(localized: "Connecting")
+        String(localized: "Connecting")
     } else if state == .connected {
-        return String(localized: "Connected")
+        String(localized: "Connected")
     } else {
-        return String(localized: "Unknown")
+        String(localized: "Unknown")
     }
 }
 
@@ -22,11 +22,11 @@ struct CatPrinterSettingsView: View {
     @ObservedObject var status: StatusTopRight
 
     private func state() -> String {
-        return formatCatPrinterState(state: status.catPrinterState)
+        formatCatPrinterState(state: status.catPrinterState)
     }
 
     private func canEnable() -> Bool {
-        return device.bluetoothPeripheralId != nil
+        device.bluetoothPeripheralId != nil
     }
 
     private func onDeviceChange(value: String) {

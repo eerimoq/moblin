@@ -32,9 +32,9 @@ struct AudioSettingsView: View {
 
     private func changeOutputChannel(value: String) -> String? {
         if Int(value) != nil {
-            return nil
+            nil
         } else {
-            return String(localized: "Not a number")
+            String(localized: "Not a number")
         }
     }
 

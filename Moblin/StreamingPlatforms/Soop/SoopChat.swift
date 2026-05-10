@@ -168,11 +168,11 @@ final class SoopChat: NSObject {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func hasEmotes() -> Bool {
-        return true
+        true
     }
 
     private func setupConnection(info: PlayerLiveChannel) async throws {

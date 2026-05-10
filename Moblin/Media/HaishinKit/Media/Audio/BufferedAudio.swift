@@ -23,7 +23,7 @@ class BufferedAudio {
     private let driftTracker: DriftTracker
     private var isInitialBuffering = true
     private var isSyncingWithOutput = true
-    weak var delegate: BufferedAudioSampleBufferDelegate?
+    weak var delegate: (any BufferedAudioSampleBufferDelegate)?
     private var hasBufferBeenAppended = false
     let latency: Double
     private var stats = BufferedStats()
@@ -42,7 +42,7 @@ class BufferedAudio {
     }
 
     func numberOfBuffers() -> Int {
-        return sampleBuffers.count
+        sampleBuffers.count
     }
 
     func setTargetLatency(latency: Double) {
@@ -152,16 +152,16 @@ class BufferedAudio {
                                _ drift: Double) -> Bool
     {
         if isSyncingWithOutput {
-            return hasBestBufferSynching(nextSampleBuffer,
-                                         candidateSampleBuffer,
-                                         outputPresentationTimeStamp,
-                                         drift)
+            hasBestBufferSynching(nextSampleBuffer,
+                                  candidateSampleBuffer,
+                                  outputPresentationTimeStamp,
+                                  drift)
         } else if let candidateSampleBuffer {
-            return hasBestBufferNormal(candidateSampleBuffer,
-                                       outputPresentationTimeStamp,
-                                       drift)
+            hasBestBufferNormal(candidateSampleBuffer,
+                                outputPresentationTimeStamp,
+                                drift)
         } else {
-            return false
+            false
         }
     }
 
@@ -218,7 +218,7 @@ class BufferedAudio {
     }
 
     private func makePresentationTimeStamp() -> CMTime {
-        return CMTime(
+        CMTime(
             value: Int64(frameLength * Double(outputCounter)),
             timescale: CMTimeScale(sampleRate)
         ) + startPresentationTimeStamp

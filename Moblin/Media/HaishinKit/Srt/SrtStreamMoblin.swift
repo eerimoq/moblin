@@ -9,11 +9,11 @@ protocol SrtStreamMoblinDelegate: AnyObject {
 
 class SrtStreamMoblin {
     private let writer: MpegTsWriter
-    private let delegate: SrtStreamMoblinDelegate
+    private let delegate: any SrtStreamMoblinDelegate
     private let processor: Processor
     private var srtSender: SrtSender?
 
-    init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamMoblinDelegate) {
+    init(processor: Processor, timecodesEnabled: Bool, delegate: any SrtStreamMoblinDelegate) {
         self.processor = processor
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: true)
         self.delegate = delegate
@@ -36,7 +36,7 @@ class SrtStreamMoblin {
     }
 
     func getPerformanceData() -> SrtPerformanceData? {
-        return srtSender?.getPerformanceData()
+        srtSender?.getPerformanceData()
     }
 
     private func write(data: Data, containsAudio: Bool) {

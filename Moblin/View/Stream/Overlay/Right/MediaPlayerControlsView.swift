@@ -6,9 +6,9 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
 
     private func playPauseImage() -> String {
         if mediaPlayer.playing {
-            return "pause"
+            "pause"
         } else {
-            return "play"
+            "play"
         }
     }
 

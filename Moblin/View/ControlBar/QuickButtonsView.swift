@@ -13,17 +13,17 @@ private struct QuickButtonImage: View {
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
-            return state.button.imageOn
+            state.button.imageOn
         } else {
-            return state.button.imageOff
+            state.button.imageOff
         }
     }
 
     private func foregroundColor() -> Color {
         if hideImage {
-            return .clear
+            .clear
         } else {
-            return .white
+            .white
         }
     }
 
@@ -33,9 +33,9 @@ private struct QuickButtonImage: View {
 
     private func iconSize() -> Font {
         if quickButtonsSettings.bigButtons {
-            return .system(size: 20)
+            .system(size: 20)
         } else {
-            return .body
+            .body
         }
     }
 
@@ -1002,7 +1002,7 @@ struct QuickButtonsInnerView: View {
                     button
                 }
             }
-            if quickButtonsSettings.showName && !orientation.isPortrait {
+            if quickButtonsSettings.showName, !orientation.isPortrait {
                 Text(state.button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)

@@ -80,13 +80,13 @@ class RemoteConnection {
     var typeString: String {
         switch type {
         case .wifi:
-            return "WiFi"
+            "WiFi"
         case .wiredEthernet:
-            return networkInterfaces.names[interface?.name ?? ""] ?? interface?.name ?? "Ethernet"
+            networkInterfaces.names[interface?.name ?? ""] ?? interface?.name ?? "Ethernet"
         case .cellular:
-            return "Cellular"
+            "Cellular"
         default:
-            return relayName ?? "Any"
+            relayName ?? "Any"
         }
     }
 
@@ -94,7 +94,7 @@ class RemoteConnection {
     private let relayName: String?
     private var localEndpoint: NWEndpoint?
 
-    weak var delegate: RemoteConnectionDelegate?
+    weak var delegate: (any RemoteConnectionDelegate)?
     private var networkInterfaces: SrtlaNetworkInterfaces
 
     init(
@@ -181,7 +181,7 @@ class RemoteConnection {
     }
 
     func isEnabled() -> Bool {
-        return priority > 0
+        priority > 0
     }
 
     func sendSrtPacket(packet: Data) {
@@ -277,7 +277,7 @@ class RemoteConnection {
     }
 
     private func isMoblink() -> Bool {
-        return relayId != nil
+        relayId != nil
     }
 
     private func setLocalEndpointIfMoblink() {
@@ -412,7 +412,7 @@ class RemoteConnection {
     }
 
     private func getKeepAliveTime() -> Int64 {
-        return keepAliveSendBaseTime.duration(to: .now).milliseconds
+        keepAliveSendBaseTime.duration(to: .now).milliseconds
     }
 
     private func handleSrtAck(packet: Data) {

@@ -50,7 +50,7 @@ extension Model {
 
     private func fillAutoSceneSwitcherIfNeeded(autoSwitcher: SettingsAutoSceneSwitcher) {
         if autoSceneSwitcher.sceneIds.isEmpty {
-            autoSceneSwitcher.sceneIds = autoSwitcher.scenes.map { $0.id }.reversed()
+            autoSceneSwitcher.sceneIds = autoSwitcher.scenes.map(\.id).reversed()
             if autoSwitcher.shuffle {
                 autoSceneSwitcher.sceneIds.shuffle()
                 if autoSceneSwitcher.sceneIds.last == autoSceneSwitcher.currentSwitcherSceneId {

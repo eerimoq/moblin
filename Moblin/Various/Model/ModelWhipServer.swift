@@ -3,35 +3,35 @@ import Foundation
 
 extension Model {
     func whipServerEnabled() -> Bool {
-        return database.srtlaServer.enabled
+        database.srtlaServer.enabled
     }
 
     func whipCameras() -> [Camera] {
-        return database.whipServer.streams.map { stream in
+        database.whipServer.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())
         }
     }
 
     func getWhipStream(id: UUID) -> SettingsWhipServerStream? {
-        return database.whipServer.streams.first { stream in
+        database.whipServer.streams.first { stream in
             stream.id == id
         }
     }
 
     func getWhipStream(idString: String) -> SettingsWhipServerStream? {
-        return database.whipServer.streams.first { stream in
+        database.whipServer.streams.first { stream in
             idString == stream.id.uuidString
         }
     }
 
     func getWhipStream(streamKey: String) -> SettingsWhipServerStream? {
-        return database.whipServer.streams.first { stream in
+        database.whipServer.streams.first { stream in
             stream.streamKey == streamKey
         }
     }
 
     func isWhipStreamConnected(streamId: UUID) -> Bool {
-        return ingests.whip?.isStreamConnected(streamId: streamId) ?? false
+        ingests.whip?.isStreamConnected(streamId: streamId) ?? false
     }
 
     func stopAllWhipStreams() {

@@ -91,14 +91,14 @@ final class ReplayEffect: VideoEffect {
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         switch transitionMode {
         case .none, .fade:
-            return executeNoneAndFade(image, info.presentationTimeStamp.seconds)
+            executeNoneAndFade(image, info.presentationTimeStamp.seconds)
         case .stingers:
-            return executeStingers(image, info.presentationTimeStamp.seconds)
+            executeStingers(image, info.presentationTimeStamp.seconds)
         }
     }
 
     override func shouldRemove() -> Bool {
-        return playbackCompleted
+        playbackCompleted
     }
 
     private func updateStatus(offset: Double) {
@@ -177,13 +177,13 @@ extension ReplayEffect {
     private func executeStingers(_ image: CIImage, _ presentationTimeStamp: Double) -> CIImage {
         switch stingersState {
         case .setup:
-            return executeStingersSetup(image, presentationTimeStamp)
+            executeStingersSetup(image, presentationTimeStamp)
         case .begin:
-            return executeStingersBegin(image, presentationTimeStamp)
+            executeStingersBegin(image, presentationTimeStamp)
         case .middle:
-            return executeStingersMiddle(image, presentationTimeStamp)
+            executeStingersMiddle(image, presentationTimeStamp)
         case .end:
-            return executeStingersEnd(image, presentationTimeStamp)
+            executeStingersEnd(image, presentationTimeStamp)
         }
     }
 

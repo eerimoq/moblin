@@ -5,11 +5,11 @@ class AudioLevel: ObservableObject {
     @Published var level: Float = defaultAudioLevel
 
     func isMuted() -> Bool {
-        return level.isNaN
+        level.isNaN
     }
 
     func isUnknown() -> Bool {
-        return level == .infinity
+        level == .infinity
     }
 }
 
@@ -200,7 +200,7 @@ extension Model {
     }
 
     func getMicById(id: String) -> SettingsMicsMic? {
-        return database.mics.mics.first(where: { $0.id == id })
+        database.mics.mics.first(where: { $0.id == id })
     }
 
     func manualSelectMicById(id: String) {
@@ -336,7 +336,7 @@ extension Model {
     }
 
     private func isVolumeMinOrMax(_ volume: Float) -> Bool {
-        return volume == 0 || volume == 1
+        volume == 0 || volume == 1
     }
 
     private func setSystemVolume(_ volume: Float) {
@@ -428,14 +428,14 @@ extension Model {
 
     private func getMicPriority(mic: SettingsMicsMic) -> Int {
         if let priority = database.mics.mics.firstIndex(where: { $0.id == mic.id }) {
-            return -priority
+            -priority
         } else {
-            return Int.min
+            Int.min
         }
     }
 
     private func getHighestPriorityConnectedMic() -> SettingsMicsMic? {
-        return database.mics.mics.first(where: { $0.connected })
+        database.mics.mics.first(where: { $0.connected })
     }
 
     private func makeMicChangeToast(name: String) {
@@ -703,27 +703,27 @@ extension Model {
     }
 
     private func getRtmpMicCameraId(mic: SettingsMicsMic) -> UUID? {
-        return getRtmpStream(idString: mic.inputUid)?.id
+        getRtmpStream(idString: mic.inputUid)?.id
     }
 
     private func getSrtlaMicCameraId(mic: SettingsMicsMic) -> UUID? {
-        return getSrtlaStream(idString: mic.inputUid)?.id
+        getSrtlaStream(idString: mic.inputUid)?.id
     }
 
     private func getRistMicCameraId(mic: SettingsMicsMic) -> UUID? {
-        return getRistStream(idString: mic.inputUid)?.id
+        getRistStream(idString: mic.inputUid)?.id
     }
 
     private func getWhipMicCameraId(mic: SettingsMicsMic) -> UUID? {
-        return getWhipStream(idString: mic.inputUid)?.id
+        getWhipStream(idString: mic.inputUid)?.id
     }
 
     private func getWhepMicCameraId(mic: SettingsMicsMic) -> UUID? {
-        return getWhepStream(idString: mic.inputUid)?.id
+        getWhepStream(idString: mic.inputUid)?.id
     }
 
     private func getMediaPlayerMicCameraId(mic: SettingsMicsMic) -> UUID? {
-        return getMediaPlayer(idString: mic.inputUid)?.id
+        getMediaPlayer(idString: mic.inputUid)?.id
     }
 
     private func attachBufferedAudio(cameraId: UUID?, micId: String) {

@@ -50,7 +50,7 @@ final class SnapshotEffect: VideoEffect {
     }
 
     override func isEnabled() -> Bool {
-        return currentSnapshot != nil
+        currentSnapshot != nil
     }
 
     private func appendSnapshotInternal(image: CIImage) {

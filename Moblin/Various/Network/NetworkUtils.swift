@@ -28,7 +28,7 @@ final class NWConnectionWithId: Hashable, Equatable {
     }
 
     static func == (lhs: NWConnectionWithId, rhs: NWConnectionWithId) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
@@ -61,9 +61,9 @@ enum NetworkResponse<T> {
     func isSuccessful() -> Bool {
         switch self {
         case .success:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }

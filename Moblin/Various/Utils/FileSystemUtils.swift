@@ -12,7 +12,7 @@ extension URL {
     }
 
     var fileSize: UInt64 {
-        return attributes?[.size] as? UInt64 ?? UInt64(0)
+        attributes?[.size] as? UInt64 ?? UInt64(0)
     }
 
     func remove() {
@@ -20,7 +20,7 @@ extension URL {
     }
 
     func exists() -> Bool {
-        return FileManager.default.fileExists(atPath: path())
+        FileManager.default.fileExists(atPath: path())
     }
 }
 

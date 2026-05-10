@@ -51,7 +51,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
 class RemoteControlStreamer {
     private var clientUrl: URL
     private var password: String
-    private weak var delegate: RemoteControlStreamerDelegate?
+    private weak var delegate: (any RemoteControlStreamerDelegate)?
     private var webSocket: WebSocketClient
     var connectionErrorMessage: String = ""
     private var connected = false
@@ -60,7 +60,7 @@ class RemoteControlStreamer {
     private var gotPong = true
     @AppStorage("remoteControlStreamerId") var id = ""
 
-    init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
+    init(clientUrl: URL, password: String, delegate: any RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
         self.password = password
         self.delegate = delegate
@@ -96,7 +96,7 @@ class RemoteControlStreamer {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func stateChanged(state: RemoteControlAssistantStreamerState) {

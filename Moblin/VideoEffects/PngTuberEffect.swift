@@ -98,7 +98,7 @@ final class PngTuberEffect: VideoEffect {
     init(model: URL, costume: Int) {
         do {
             let model = try JSONDecoder().decode([String: PngTuberImage].self, from: Data(contentsOf: model))
-            let images = model.sorted(by: { Int($0.key) ?? 0 < Int($1.key) ?? 0 }).map { $0.value }
+            let images = model.sorted(by: { Int($0.key) ?? 0 < Int($1.key) ?? 0 }).map(\.value)
             self.model = PngTuberFile(images: images)
         } catch {
             logger.info("png-tuber: Failed to load model with error: \(error)")
@@ -205,6 +205,6 @@ final class PngTuberEffect: VideoEffect {
     }
 
     override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
-        return .interval(videoSourceId, 0.1)
+        .interval(videoSourceId, 0.1)
     }
 }

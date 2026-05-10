@@ -12,15 +12,15 @@ struct VideoEffectInfo {
     let isFirstAfterAttach: Bool
 
     func sceneDetections() -> Detections? {
-        return detections[sceneVideoSourceId]
+        detections[sceneVideoSourceId]
     }
 
     func sceneFaceDetections() -> [VNFaceObservation]? {
-        return detections[sceneVideoSourceId]?.face
+        detections[sceneVideoSourceId]?.face
     }
 
     func faceDetections(_ videoSourceId: UUID) -> [VNFaceObservation]? {
-        return detections[videoSourceId]?.face
+        detections[videoSourceId]?.face
     }
 
     func getCiImage(_ videoSourceId: UUID) -> CIImage? {
@@ -44,31 +44,31 @@ class VideoEffect: NSObject {
     var effects: [VideoEffect] = []
 
     func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
-        return .off
+        .off
     }
 
     func needsTextDetections(_: Double) -> VideoEffectDetectionsMode {
-        return .off
+        .off
     }
 
     func isEnabled() -> Bool {
-        return true
+        true
     }
 
     func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        return image
+        image
     }
 
     func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        return image
+        image
     }
 
     func executeMetalPetal(_ image: MTIImage, _: VideoEffectInfo) -> MTIImage {
-        return image
+        image
     }
 
     func isMetalPetal() -> Bool {
-        return false
+        false
     }
 
     func prepare(_: CIImage, _: VideoEffectInfo) {}
@@ -76,7 +76,7 @@ class VideoEffect: NSObject {
     func removed() {}
 
     func shouldRemove() -> Bool {
-        return false
+        false
     }
 
     func applyEffectsResizeMirrorMove(_ image: CIImage,

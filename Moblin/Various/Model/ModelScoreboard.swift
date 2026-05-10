@@ -336,11 +336,11 @@ extension Model {
 
     func getEnabledScoreboardWidgetsInSelectedScene() -> [SettingsWidget] {
         if let scene = getSelectedScene() {
-            return getSceneWidgets(scene: scene, onlyEnabled: true)
+            getSceneWidgets(scene: scene, onlyEnabled: true)
                 .filter { $0.widget.type == .scoreboard }
-                .map { $0.widget }
+                .map(\.widget)
         } else {
-            return []
+            []
         }
     }
 
@@ -390,24 +390,23 @@ extension Model {
     func getModularScoreboardConfig(scoreboard: SettingsWidgetScoreboard?)
         -> RemoteControlScoreboardMatchConfig
     {
-        let sportId: String
-        switch scoreboard?.sport {
+        let sportId = switch scoreboard?.sport {
         case .basketball:
-            sportId = "basketball"
+            "basketball"
         case .generic2:
-            sportId = "generic"
+            "generic"
         case .genericSets:
-            sportId = "generic sets"
+            "generic sets"
         case .hockey:
-            sportId = "hockey"
+            "hockey"
         case .football:
-            sportId = "football"
+            "football"
         case .tennis:
-            sportId = "tennis"
+            "tennis"
         case .volleyball:
-            sportId = "volleyball"
+            "volleyball"
         default:
-            sportId = "generic"
+            "generic"
         }
         var config: RemoteControlScoreboardMatchConfig
         if let current = scoreboard?.modular.config, current.sportId == sportId {
@@ -820,7 +819,7 @@ extension Model {
     private func isSetCompleted(score: SettingsWidgetScoreboardScore) -> Bool {
         let maxScore = max(score.home, score.away)
         let minScore = min(score.home, score.away)
-        if maxScore == 6 && minScore <= 4 {
+        if maxScore == 6, minScore <= 4 {
             return true
         }
         if maxScore == 7 {

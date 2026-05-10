@@ -236,11 +236,11 @@ final class Amf0Decoder: ByteReader {
     }
 
     private func decodeDoubleValue() throws -> Double {
-        return try readDouble()
+        try readDouble()
     }
 
     private func decodeBoolValue() throws -> Bool {
-        return try readUInt8() == 0x01
+        try readUInt8() == 0x01
     }
 
     private func decodeEcmaArrayValue() throws -> AsEcmaArray {
@@ -273,7 +273,7 @@ final class Amf0Decoder: ByteReader {
     }
 
     private func decodeXmlDocumentValue() throws -> AsXmlDocument {
-        return try AsXmlDocument(data: decodeLongStringValue())
+        try AsXmlDocument(data: decodeLongStringValue())
     }
 
     private func decodeTypedObjectValue() throws -> AsTypedObject {
@@ -283,11 +283,11 @@ final class Amf0Decoder: ByteReader {
     }
 
     private func decodeStringValue() throws -> String {
-        return try readUtf8Bytes(Int(readUInt16()))
+        try readUtf8Bytes(Int(readUInt16()))
     }
 
     private func decodeLongStringValue() throws -> String {
-        return try readUtf8Bytes(Int(readUInt32()))
+        try readUtf8Bytes(Int(readUInt32()))
     }
 
     private func readAmf0Type() throws -> Amf0Type {

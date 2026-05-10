@@ -130,30 +130,29 @@ final class LutEffect: VideoEffect {
             do {
                 try self.loadLut(lut: lut, imageStorage: imageStorage)
             } catch {
-                let subTitle: String
-                switch error {
+                let subTitle = switch error {
                 case SwiftCubeError.couldNotDecodeData:
-                    subTitle = "Not a text file"
+                    "Not a text file"
                 case SwiftCubeError.sizeMissing:
-                    subTitle = "Size missing"
+                    "Size missing"
                 case let SwiftCubeError.sizeTooBig(size):
-                    subTitle = "Size \(size) too big"
+                    "Size \(size) too big"
                 case SwiftCubeError.oneDimensionalLutNotSupported:
-                    subTitle = "One dimensional LUT not supported"
+                    "One dimensional LUT not supported"
                 case let SwiftCubeError.unsupportedKey(key):
-                    subTitle = "Unsupported key \(key)"
+                    "Unsupported key \(key)"
                 case SwiftCubeError.invalidType:
-                    subTitle = "Invalid type"
+                    "Invalid type"
                 case SwiftCubeError.typeMissing:
-                    subTitle = "Type missing"
+                    "Type missing"
                 case let SwiftCubeError.invalidDataPoint(point):
-                    subTitle = "Invalid data point \(point)"
+                    "Invalid data point \(point)"
                 case let SwiftCubeError.wrongNumberOfDataPoints(count):
-                    subTitle = "Wrong number of data points \(count)"
+                    "Wrong number of data points \(count)"
                 case let SwiftCubeError.invalidSyntax(text):
-                    subTitle = "Invalid syntax \(text)"
+                    "Invalid syntax \(text)"
                 default:
-                    subTitle = "\(error)"
+                    "\(error)"
                 }
                 onError(String(localized: "Failed to load .cube file"), subTitle)
             }
@@ -161,7 +160,7 @@ final class LutEffect: VideoEffect {
     }
 
     override func isEnabled() -> Bool {
-        return filter != nil
+        filter != nil
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

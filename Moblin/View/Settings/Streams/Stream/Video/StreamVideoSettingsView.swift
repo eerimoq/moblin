@@ -210,7 +210,7 @@ private struct AdaptiveResolutionThresholdSettingsView: View {
     }
 
     private func formatBitrate(_ value: UInt32) -> String {
-        return formatBytesPerSecond(speed: Int64(value))
+        formatBytesPerSecond(speed: Int64(value))
     }
 
     var body: some View {

@@ -119,6 +119,6 @@ extension Model {
     }
 
     func isShowingStatusRecording() -> Bool {
-        return isRecording
+        isRecording
     }
 }

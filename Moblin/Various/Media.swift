@@ -3,15 +3,15 @@ import Network
 import SwiftUI
 
 private func isMuted(level: Float) -> Bool {
-    return level.isNaN
+    level.isNaN
 }
 
 private func becameMuted(old: Float, new: Float) -> Bool {
-    return !isMuted(level: old) && isMuted(level: new)
+    !isMuted(level: old) && isMuted(level: new)
 }
 
 private func becameUnmuted(old: Float, new: Float) -> Bool {
-    return isMuted(level: old) && !isMuted(level: new)
+    isMuted(level: old) && !isMuted(level: new)
 }
 
 protocol MediaDelegate: AnyObject {
@@ -93,11 +93,11 @@ final class Media: NSObject {
     }
 
     func srtlaConnectionStatistics() -> [BondingConnection]? {
-        return srtlaClient?.connectionStatistics()
+        srtlaClient?.connectionStatistics()
     }
 
     func ristBondingStatistics() -> [BondingConnection]? {
-        return ristStream?.connectionStatistics()
+        ristStream?.connectionStatistics()
     }
 
     func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
@@ -174,15 +174,15 @@ final class Media: NSObject {
     }
 
     func getAudioLevel() -> Float {
-        return currentAudioLevel
+        currentAudioLevel
     }
 
     func getNumberOfAudioChannels() -> Int {
-        return numberOfAudioChannels
+        numberOfAudioChannels
     }
 
     func getAudioSampleRate() -> Double {
-        return audioSampleRate
+        audioSampleRate
     }
 
     func srtStartStream(
@@ -290,9 +290,9 @@ final class Media: NSObject {
 
     func getNumberOfDestinations() -> Int {
         if rtmpStream != nil {
-            return rtmpStreams.count
+            rtmpStreams.count
         } else {
-            return 1
+            1
         }
     }
 
@@ -327,11 +327,11 @@ final class Media: NSObject {
     }
 
     private func getSrtStats() -> SrtPerformanceData? {
-        return srtStreamNew?.getPerformanceData() ?? srtStreamOld?.getPerformanceData()
+        srtStreamNew?.getPerformanceData() ?? srtStreamOld?.getPerformanceData()
     }
 
     private func isSrtStreamActive() -> Bool {
-        return srtStreamNew != nil || srtStreamOld != nil
+        srtStreamNew != nil || srtStreamOld != nil
     }
 
     private func updateAdaptiveBitrateSrtBela(overlay: Bool,
@@ -345,12 +345,11 @@ final class Media: NSObject {
         guard let adaptiveBitrate else {
             return nil
         }
-        let sndData: Int32?
-        if let srtStreamOld {
+        let sndData: Int32? = if let srtStreamOld {
             // This one blocks if srt_connect() has not returned.
-            sndData = srtStreamOld.getSndData()
+            srtStreamOld.getSndData()
         } else {
-            sndData = stats.pktFlightSize
+            stats.pktFlightSize
         }
         guard let sndData else {
             return nil
@@ -509,17 +508,17 @@ final class Media: NSObject {
 
     func streamTransportBitrate() -> Int64? {
         if !limitAdaptiveBitrateByTransportBitrate {
-            return nil
+            nil
         } else if let rtmpStream {
-            return Int64(8 * rtmpStream.info.bitrateStats.value.latestSpeed)
+            Int64(8 * rtmpStream.info.bitrateStats.value.latestSpeed)
         } else if isSrtStreamActive() {
-            return srtTransportBitrate
+            srtTransportBitrate
         } else if ristStream != nil {
-            return Int64(ristStream?.getSpeed() ?? 0)
+            Int64(ristStream?.getSpeed() ?? 0)
         } else if whipStream != nil {
-            return 0
+            0
         } else {
-            return 0
+            0
         }
     }
 
@@ -541,7 +540,7 @@ final class Media: NSObject {
     }
 
     private func queryContains(queryItems: [URLQueryItem], name: String) -> Bool {
-        return queryItems.contains(where: { parameter in parameter.name == name })
+        queryItems.contains(where: { parameter in parameter.name == name })
     }
 
     func makeLocalhostSrtUrl(
@@ -734,7 +733,7 @@ final class Media: NSObject {
     }
 
     func getCanvasSize() -> CGSize {
-        return canvasSize
+        canvasSize
     }
 
     func setFps(fps: Int, preferAutoFps: Bool) {
@@ -762,9 +761,9 @@ final class Media: NSObject {
 
     func getVideoStreamBitrate(bitrate: UInt32) -> UInt32 {
         if let adaptiveBitrate {
-            return adaptiveBitrate.getCurrentBitrate()
+            adaptiveBitrate.getCurrentBitrate()
         } else {
-            return bitrate
+            bitrate
         }
     }
 
@@ -966,7 +965,7 @@ final class Media: NSObject {
     }
 
     func getProcessor() -> Processor? {
-        return processor
+        processor
     }
 
     func startRecording(
@@ -998,12 +997,11 @@ final class Media: NSObject {
                                               videoBitrate: Int?,
                                               keyFrameInterval: Int?) -> [String: Any]
     {
-        var codec: AVVideoCodecType
-        switch videoCodec {
+        var codec = switch videoCodec {
         case .h264avc:
-            codec = AVVideoCodecType.h264
+            AVVideoCodecType.h264
         case .h265hevc:
-            codec = AVVideoCodecType.hevc
+            AVVideoCodecType.hevc
         }
         var settings: [String: Any] = [
             AVVideoCodecKey: codec,
@@ -1133,7 +1131,7 @@ extension Media: SrtlaDelegate {
                         guard let self else {
                             return false
                         }
-                        if let srtla = self.srtlaClient {
+                        if let srtla = srtlaClient {
                             srtlaClientQueue.async {
                                 srtla.handleLocalPacket(packet: data)
                             }

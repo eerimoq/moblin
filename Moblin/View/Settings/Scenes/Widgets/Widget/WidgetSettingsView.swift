@@ -61,15 +61,15 @@ struct WidgetLayoutView: View {
     @Binding var numericInput: Bool
 
     private func dimensions() -> CMVideoDimensions {
-        return model.stream.resolution.dimensions(portrait: model.stream.portrait)
+        model.stream.resolution.dimensions(portrait: model.stream.portrait)
     }
 
     private func horizontalIncrement() -> Double {
-        return 100 / Double(dimensions().width)
+        100 / Double(dimensions().width)
     }
 
     private func verticalIncrement() -> Double {
-        return 100 / Double(dimensions().height)
+        100 / Double(dimensions().height)
     }
 
     private func setXBasedOnYIfLocked() {

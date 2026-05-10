@@ -45,7 +45,7 @@ class GForceManager {
     }
 
     func getLatest() -> GForce? {
-        return GForce(now: now, recentMax: recentMaxNow, max: maximum)
+        GForce(now: now, recentMax: recentMaxNow, max: maximum)
     }
 
     private func handleAccelerometerUpdate(data: CMAccelerometerData) {
@@ -67,6 +67,6 @@ class GForceManager {
     }
 
     private func easeIn(progress: Double) -> Double {
-        return progress * progress * progress * progress
+        progress * progress * progress * progress
     }
 }

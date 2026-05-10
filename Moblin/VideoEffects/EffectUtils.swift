@@ -2,7 +2,7 @@ import CoreImage
 import Vision
 
 func toPixels(_ percentage: Double, _ total: Double) -> Double {
-    return (percentage * total) / 100
+    (percentage * total) / 100
 }
 
 extension CIImage {
@@ -60,11 +60,11 @@ extension CIImage {
     }
 
     func translated(x: Double, y: Double) -> CIImage {
-        return transformed(by: CGAffineTransform(translationX: x, y: y))
+        transformed(by: CGAffineTransform(translationX: x, y: y))
     }
 
     func scaled(x: Double, y: Double) -> CIImage {
-        return transformed(by: CGAffineTransform(scaleX: x, y: y))
+        transformed(by: CGAffineTransform(scaleX: x, y: y))
     }
 
     func scaledTo(size: CGSize) -> CIImage {

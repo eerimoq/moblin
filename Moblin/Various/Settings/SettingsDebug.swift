@@ -92,7 +92,7 @@ class SettingsDebug: Codable, ObservableObject {
              videoBitrateChangeEnabled
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.logLevel, logLevel)
         try container.encode(.logFilter, logFilter)
@@ -130,7 +130,7 @@ class SettingsDebug: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         logLevel = container.decode(.logLevel, SettingsLogLevel.self, .error)
         logFilter = container.decode(.logFilter, String.self, "")

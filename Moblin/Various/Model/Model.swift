@@ -50,9 +50,9 @@ enum ShowingPanel {
 
     func buttonsBackgroundColor() -> Color {
         if self == .chat {
-            return .black
+            .black
         } else {
-            return Color(UIColor.secondarySystemBackground)
+            Color(UIColor.secondarySystemBackground)
         }
     }
 }
@@ -74,7 +74,7 @@ let flameRedSubMessage = String(localized: "Your device is hot and may overheat.
 let unknownSad = String(localized: "Unknown 😢")
 
 private func randomBuyIconsTitle() -> String {
-    return [
+    [
         String(localized: "👍 Buy Moblin icons if you like the app 👍"),
         String(localized: "🍔 Buy Moblin icons to support the devs 🍔"),
         String(localized: "🙈 Buy Moblin icons to hide this message 🙈"),
@@ -83,7 +83,7 @@ private func randomBuyIconsTitle() -> String {
 }
 
 func formatWarning(_ message: String) -> String {
-    return "⚠️ \(message) ⚠️"
+    "⚠️ \(message) ⚠️"
 }
 
 let noMic = SettingsMicsMic()
@@ -100,7 +100,7 @@ class ButtonState: ObservableObject {
 
 struct QuickButtonPair: Identifiable, Equatable {
     static func == (lhs: QuickButtonPair, rhs: QuickButtonPair) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     var id: UUID
@@ -220,11 +220,11 @@ class SystemMonitor: ObservableObject {
     @Published var ram = 0
 
     func format() -> String {
-        return "\(cpu)% \(ram) MB"
+        "\(cpu)% \(ram) MB"
     }
 
     func formatShort() -> String {
-        return String(cpu)
+        String(cpu)
     }
 }
 
@@ -707,11 +707,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isLandscapeStreamAndPortraitUi() -> Bool {
-        return !stream.portrait && database.portrait
+        !stream.portrait && database.portrait
     }
 
     var enabledScenes: [SettingsScene] {
-        database.scenes.filter { $0.enabled }
+        database.scenes.filter(\.enabled)
     }
 
     func setAdaptiveBitrateSrtAlgorithm(stream: SettingsStream) {
@@ -765,7 +765,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func isShowingPanelQuickButton(type: SettingsQuickButtonType) -> Bool {
-        return [
+        [
             .widgets,
             .luts,
             .chat,
@@ -963,7 +963,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func makeStreamShareLogUrl(logId: UUID) -> URL {
-        return logsStorage.makePath(id: logId)
+        logsStorage.makePath(id: logId)
     }
 
     func clearLog() {
@@ -1636,13 +1636,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if isWatchLocal() {
             trySendNextChatPostToWatch()
         }
-        if let lastAttachCompletedTime = lastAttachCompletedTime,
+        if let lastAttachCompletedTime,
            lastAttachCompletedTime.duration(to: monotonicNow) > .seconds(0.5)
         {
             updateTorch()
             self.lastAttachCompletedTime = nil
         }
-        if let relaxedBitrateStartTime = relaxedBitrateStartTime,
+        if let relaxedBitrateStartTime,
            relaxedBitrateStartTime.duration(to: monotonicNow) > .seconds(3)
         {
             relaxedBitrate = false
@@ -1812,18 +1812,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var hasCount = false
         var streamingPlatformsStatus: [StreamingPlatformStatus] = []
         for streamingPlatformStatus in statusTopLeft.streamingPlatformStatuses {
-            let newStreamingPlatformStatus: StreamingPlatformStatus
-            switch streamingPlatformStatus.platform {
+            let newStreamingPlatformStatus: StreamingPlatformStatus = switch streamingPlatformStatus
+                .platform
+            {
             case .twitch:
-                newStreamingPlatformStatus = updateViewersTwitch()
+                updateViewersTwitch()
             case .kick:
-                newStreamingPlatformStatus = updateViewersKick()
+                updateViewersKick()
             case .youTube:
-                newStreamingPlatformStatus = updateViewersYouTube()
+                updateViewersYouTube()
             case .soop:
-                newStreamingPlatformStatus = updateViewersSoop()
+                updateViewersSoop()
             default:
-                newStreamingPlatformStatus = streamingPlatformStatus
+                streamingPlatformStatus
             }
             streamingPlatformsStatus.append(newStreamingPlatformStatus)
             switch newStreamingPlatformStatus.status {
@@ -1853,9 +1854,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func updateViewersCompact(_ newNumberOfViewers: Int, _ hasCount: Bool) -> String {
         if hasCount {
-            return countFormatter.format(newNumberOfViewers)
+            countFormatter.format(newNumberOfViewers)
         } else {
-            return noValue
+            noValue
         }
     }
 
@@ -1925,11 +1926,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getAllAlertImages() -> [SettingsAlertsMediaGalleryItem] {
-        return database.alertsMediaGallery.bundledImages + database.alertsMediaGallery.customImages
+        database.alertsMediaGallery.bundledImages + database.alertsMediaGallery.customImages
     }
 
     func getAllAlertSounds() -> [SettingsAlertsMediaGalleryItem] {
-        return database.alertsMediaGallery.bundledSounds + database.alertsMediaGallery.customSounds
+        database.alertsMediaGallery.bundledSounds + database.alertsMediaGallery.customSounds
     }
 
     func getAlertsEffect(id: UUID) -> AlertsEffect? {
@@ -2005,7 +2006,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func updateAlertsSettings() {
         for widget in database.widgets where widget.type == .alerts {
-            widget.alerts.needsSubtitles = !widget.alerts.speechToText.strings.filter { $0.alert.enabled }
+            widget.alerts.needsSubtitles = !widget.alerts.speechToText.strings.filter(\.alert.enabled)
                 .isEmpty
             getAlertsEffect(id: widget.id)?.setSettings(settings: widget.alerts.clone())
         }
@@ -2031,7 +2032,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func getQuickButton(type: SettingsQuickButtonType) -> SettingsQuickButton? {
-        return database.quickButtons.first(where: { $0.type == type })
+        database.quickButtons.first(where: { $0.type == type })
     }
 
     func showQuickButtonSettings(type: SettingsQuickButtonType) {
@@ -2192,7 +2193,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isTimecodesEnabled() -> Bool {
-        return stream.timecodesEnabled && !stream.ntpPoolAddress.isEmpty
+        stream.timecodesEnabled && !stream.ntpPoolAddress.isEmpty
     }
 
     func setPixellateStrength(strength: Float) {
@@ -2213,29 +2214,29 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isEventsConfigured() -> Bool {
-        return isTwitchEventSubConfigured()
+        isTwitchEventSubConfigured()
     }
 
     func isEventsConnected() -> Bool {
-        return isTwitchEventsConnected()
+        isTwitchEventsConnected()
     }
 
     func isViewersConfigured() -> Bool {
-        return isTwitchViewersConfigured() || isKickViewersConfigured() || isYouTubeViewersConfigured() ||
+        isTwitchViewersConfigured() || isKickViewersConfigured() || isYouTubeViewersConfigured() ||
             isSoopViewersConfigured()
     }
 
     func isOpenStreamingPlatformChatConfigured() -> Bool {
-        return database.chat.enabled && stream.openStreamingPlatformUrl != "" && stream
+        database.chat.enabled && stream.openStreamingPlatformUrl != "" && stream
             .openStreamingPlatformChannelId != ""
     }
 
     func isOpenStreamingPlatformChatConnected() -> Bool {
-        return openStreamingPlatformChat?.isConnected() ?? false
+        openStreamingPlatformChat?.isConnected() ?? false
     }
 
     func hasOpenStreamingPlatformChatEmotes() -> Bool {
-        return openStreamingPlatformChat?.hasEmotes() ?? false
+        openStreamingPlatformChat?.hasEmotes() ?? false
     }
 
     func reloadOpenStreamingPlatformChat() {
@@ -2292,11 +2293,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             }
         }
-        var message: String
-        if messages.isEmpty {
-            message = noValue
+        var message: String = if messages.isEmpty {
+            noValue
         } else {
-            message = messages.joined(separator: ", ")
+            messages.joined(separator: ", ")
         }
         if statusTopRight.browserWidgetsStatus != message {
             statusTopRight.browserWidgetsStatus = message
@@ -2377,7 +2377,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func findScoreboardPlayer(id: UUID) -> String {
-        return database.scoreboardPlayers.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
+        database.scoreboardPlayers.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
     }
 
     private func updateDigitalClock(now: Date) {
@@ -2410,7 +2410,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isBatteryCharging() -> Bool {
-        return battery.state == .charging || battery.state == .full
+        battery.state == .charging || battery.state == .full
     }
 
     private func updateIngestsSpeed() {
@@ -2655,13 +2655,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        var device: AVCaptureDevice?
-        if zoom.backX < 1.0 {
-            device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
+        var device: AVCaptureDevice? = if zoom.backX < 1.0 {
+            AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
         } else if zoom.backX < x {
-            device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+            AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
         } else {
-            device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
+            AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
         }
         guard let device, let scene = getSelectedScene() else {
             return
@@ -2687,11 +2686,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        var device: AVCaptureDevice?
-        if zoom.backX < x {
-            device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+        var device: AVCaptureDevice? = if zoom.backX < x {
+            AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
         } else {
-            device = AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
+            AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
         }
         guard let device, let scene = getSelectedScene() else {
             return
@@ -2717,11 +2715,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        var device: AVCaptureDevice?
-        if zoom.backX < x {
-            device = AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
+        var device: AVCaptureDevice? = if zoom.backX < x {
+            AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
         } else {
-            device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+            AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
         }
         guard let device, let scene = getSelectedScene() else {
             return
@@ -2801,14 +2798,14 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func getIgnoreFramesAfterAttachSeconds() -> Double {
-        return Double(database.debug.cameraSwitchRemoveBlackish) + database.debug.builtinAudioAndVideoDelay
+        Double(database.debug.cameraSwitchRemoveBlackish) + database.debug.builtinAudioAndVideoDelay
     }
 
     private func getIgnoreFramesAfterAttachSecondsReplaceCamera() -> Double {
         if database.forceSceneSwitchTransition {
-            return Double(database.debug.cameraSwitchRemoveBlackish)
+            Double(database.debug.cameraSwitchRemoveBlackish)
         } else {
-            return 0.0
+            0.0
         }
     }
 
@@ -2842,9 +2839,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func getVideoStabilizationMode(scene: SettingsScene) -> AVCaptureVideoStabilizationMode {
         if scene.overrideVideoStabilizationMode {
-            return getVideoStabilization(mode: scene.videoStabilizationMode)
+            getVideoStabilization(mode: scene.videoStabilizationMode)
         } else {
-            return getVideoStabilization(mode: database.videoStabilizationMode)
+            getVideoStabilization(mode: database.videoStabilizationMode)
         }
     }
 
@@ -2854,24 +2851,24 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         if #available(iOS 18.0, *) {
             switch mode {
             case .off:
-                return .off
+                .off
             case .standard:
-                return .standard
+                .standard
             case .cinematic:
-                return .cinematic
+                .cinematic
             case .cinematicExtendedEnhanced:
-                return .cinematicExtendedEnhanced
+                .cinematicExtendedEnhanced
             }
         } else {
             switch mode {
             case .off:
-                return .off
+                .off
             case .standard:
-                return .standard
+                .standard
             case .cinematic:
-                return .cinematic
+                .cinematic
             case .cinematicExtendedEnhanced:
-                return .off
+                .off
             }
         }
     }
@@ -2952,31 +2949,31 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func preferredCamera(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         if let scene = findEnabledScene(id: sceneSelector.selectedSceneId) {
             if position == .back {
-                return AVCaptureDevice(uniqueID: scene.videoSource.backCameraId)
+                AVCaptureDevice(uniqueID: scene.videoSource.backCameraId)
             } else if position == .front {
-                return AVCaptureDevice(uniqueID: scene.videoSource.frontCameraId)
+                AVCaptureDevice(uniqueID: scene.videoSource.frontCameraId)
             } else {
-                return AVCaptureDevice(uniqueID: scene.videoSource.externalCameraId)
+                AVCaptureDevice(uniqueID: scene.videoSource.externalCameraId)
             }
         } else {
-            return nil
+            nil
         }
     }
 
     func isShowingStatusCamera() -> Bool {
-        return database.show.cameras
+        database.show.cameras
     }
 
     func isShowingStatusMic() -> Bool {
-        return database.show.microphone
+        database.show.microphone
     }
 
     func isShowingStatusEvents() -> Bool {
-        return database.show.events && isEventsConfigured()
+        database.show.events && isEventsConfigured()
     }
 
     func isShowingStatusViewers() -> Bool {
-        return isLive && database.show.viewers && !statusTopLeft.streamingPlatformStatuses.isEmpty
+        isLive && database.show.viewers && !statusTopLeft.streamingPlatformStatuses.isEmpty
     }
 
     private func statusStreamText() -> String {
@@ -2987,11 +2984,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let bitrate = stream.bitrateString()
         let audioCodec = stream.audioCodecString()
         let audioBitrate = stream.audioBitrateString()
-        let fps: String
-        if lowLightBoost {
-            fps = "\(currentFps ?? stream.fps) LLB"
+        let fps = if lowLightBoost {
+            "\(currentFps ?? stream.fps) LLB"
         } else {
-            fps = String(currentFps ?? stream.fps)
+            String(currentFps ?? stream.fps)
         }
         return """
         \(stream.name) (\(resolution), \(fps), \(proto), \(codec) \(rateControl) \(bitrate), \
@@ -3007,20 +3003,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func updateStatusEventsText() {
-        let status: String
-        if !isEventsConfigured() {
-            status = String(localized: "Not configured")
+        let status = if !isEventsConfigured() {
+            String(localized: "Not configured")
         } else if isRemoteControlChatAndEvents(platform: nil) {
             if isRemoteControlStreamerConnected() {
-                status = String(localized: "Connected (remote control)")
+                String(localized: "Connected (remote control)")
             } else {
-                status = String(localized: "Disconnected (remote control)")
+                String(localized: "Disconnected (remote control)")
             }
         } else {
             if isEventsConnected() {
-                status = String(localized: "Connected")
+                String(localized: "Connected")
             } else {
-                status = String(localized: "Disconnected")
+                String(localized: "Disconnected")
             }
         }
         if status != statusTopLeft.statusEventsText {
@@ -3030,26 +3025,26 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func statusViewersText() -> String {
         if isViewersConfigured() {
-            return statusTopLeft.numberOfViewersCompact
+            statusTopLeft.numberOfViewersCompact
         } else {
-            return String(localized: "Not configured")
+            String(localized: "Not configured")
         }
     }
 
     func isShowingStatusHypeTrain() -> Bool {
-        return hypeTrain.status != noValue
+        hypeTrain.status != noValue
     }
 
     func isShowingStatusAdsRemainingTimer() -> Bool {
-        return statusTopRight.adsRemainingTimerStatus != noValue
+        statusTopRight.adsRemainingTimerStatus != noValue
     }
 
     func isShowingStatusIngests() -> Bool {
-        return database.show.ingests && isIngestsConfigured()
+        database.show.ingests && isIngestsConfigured()
     }
 
     func isIngestsConfigured() -> Bool {
-        return rtmpServerEnabled()
+        rtmpServerEnabled()
             || srtlaServerEnabled()
             || ristServerEnabled()
             || !ingests.rtsp.isEmpty
@@ -3058,71 +3053,71 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func isShowingStatusMoblink() -> Bool {
-        return database.show.moblink && isAnyMoblinkConfigured()
+        database.show.moblink && isAnyMoblinkConfigured()
     }
 
     func isAnyMoblinkConfigured() -> Bool {
-        return isMoblinkRelayConfigured() || isMoblinkStreamerConfigured()
+        isMoblinkRelayConfigured() || isMoblinkStreamerConfigured()
     }
 
     func isShowingStatusDjiDevices() -> Bool {
-        return database.show.djiDevices && statusTopRight.djiDevicesStatus != noValue
+        database.show.djiDevices && statusTopRight.djiDevicesStatus != noValue
     }
 
     func isShowingStatusBitrate() -> Bool {
-        return database.show.speed && isLive
+        database.show.speed && isLive
     }
 
     func isShowingStatusStreamUptime() -> Bool {
-        return database.show.uptime && isLive
+        database.show.uptime && isLive
     }
 
     func isShowingStatusBonding() -> Bool {
-        return database.show.bonding && isStatusBondingActive()
+        database.show.bonding && isStatusBondingActive()
     }
 
     func isStatusBondingActive() -> Bool {
-        return stream.isBonding() && isLive
+        stream.isBonding() && isLive
     }
 
     func isShowingStatusBondingRtts() -> Bool {
-        return database.show.bondingRtts && isStatusBondingRttsActive()
+        database.show.bondingRtts && isStatusBondingRttsActive()
     }
 
     func isStatusBondingRttsActive() -> Bool {
-        return stream.isBonding() && isLive
+        stream.isBonding() && isLive
     }
 
     func isShowingStatusReplay() -> Bool {
-        return stream.replay.enabled
+        stream.replay.enabled
     }
 
     func isShowingStatusBrowserWidgets() -> Bool {
-        return database.show.browserWidgets && isStatusBrowserWidgetsActive()
+        database.show.browserWidgets && isStatusBrowserWidgetsActive()
     }
 
     func isShowingStatusCatPrinter() -> Bool {
-        return database.show.catPrinter && isAnyCatPrinterConfigured()
+        database.show.catPrinter && isAnyCatPrinterConfigured()
     }
 
     func isShowingStatusWorkoutDevice() -> Bool {
-        return database.show.workoutDevice && isAnyWorkoutDeviceConfigured()
+        database.show.workoutDevice && isAnyWorkoutDeviceConfigured()
     }
 
     func isShowingStatusFixedHorizon() -> Bool {
         if let scene = getSelectedScene() {
-            return isFixedHorizonEnabled(scene: scene)
+            isFixedHorizonEnabled(scene: scene)
         } else {
-            return false
+            false
         }
     }
 
     func isStatusBrowserWidgetsActive() -> Bool {
-        return !statusTopRight.browserWidgetsStatus.isEmpty && statusTopRight.browserWidgetsStatusChanged
+        !statusTopRight.browserWidgetsStatus.isEmpty && statusTopRight.browserWidgetsStatusChanged
     }
 
     func isShowingStatusCpu() -> Bool {
-        return database.show.systemMonitor
+        database.show.systemMonitor
     }
 
     func setBlurFaces(on: Bool) {

@@ -2,11 +2,11 @@ import AVFoundation
 import SwiftUI
 
 func randomString() -> String {
-    return Data.random(length: 64).base64EncodedString()
+    Data.random(length: 64).base64EncodedString()
 }
 
 func randomHumanString() -> String {
-    return Data.random(length: 15).base64EncodedString().replacingOccurrences(
+    Data.random(length: 15).base64EncodedString().replacingOccurrences(
         of: "[+/=]",
         with: "",
         options: .regularExpression
@@ -19,7 +19,7 @@ func randomName() -> String {
 }
 
 func openUrl(url: String) {
-    return UIApplication.shared.open(URL(string: url)!)
+    UIApplication.shared.open(URL(string: url)!)
 }
 
 private var thumbnails: [URL: UIImage] = [:]
@@ -53,11 +53,11 @@ func createThumbnail(path: URL, offset: Double = 0, onComplete: @escaping (UIIma
 }
 
 func currentPresentationTimeStamp() -> CMTime {
-    return CMClockGetTime(CMClockGetHostTimeClock())
+    CMClockGetTime(CMClockGetHostTimeClock())
 }
 
 func utcTimeDeltaFromNow(to: Double) -> Double {
-    return Date(timeIntervalSince1970: to).timeIntervalSinceNow
+    Date(timeIntervalSince1970: to).timeIntervalSinceNow
 }
 
 func emojiFlag(countryCode: String?) -> String {
@@ -104,11 +104,11 @@ func uploadImage(
 
 extension CGSize {
     func minimum() -> CGFloat {
-        return min(height, width)
+        min(height, width)
     }
 
     func maximum() -> CGFloat {
-        return max(height, width)
+        max(height, width)
     }
 }
 
@@ -124,11 +124,11 @@ class ResourceUsage {
     }
 
     func getCpuUsage() -> Int {
-        return Int(cpuUsage)
+        Int(cpuUsage)
     }
 
     func getMemoryUsage() -> Int {
-        return Int(memoryUsage)
+        Int(memoryUsage)
     }
 
     private func updateCpuUsage(now: ContinuousClock.Instant) {
@@ -181,9 +181,9 @@ func generateQrCode(from string: String) -> UIImage? {
 
 func tryGetToastSubTitle(error: Error) -> String? {
     if let error = error as? AVError {
-        return error._nsError.localizedFailureReason
+        error._nsError.localizedFailureReason
     } else {
-        return nil
+        nil
     }
 }
 
@@ -195,7 +195,7 @@ extension CMTime {
 
 extension Data {
     static func random(length: Int) -> Data {
-        return Data((0 ..< length).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
+        Data((0 ..< length).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) })
     }
 }
 
@@ -235,8 +235,8 @@ protocol Named {
     var name: String { get }
 }
 
-func makeUniqueName<T: Named>(name: String, existingNames: [T]) -> String {
-    let existingNames = existingNames.map { $0.name }
+func makeUniqueName(name: String, existingNames: [some Named]) -> String {
+    let existingNames = existingNames.map(\.name)
     if !existingNames.contains(name) {
         return name
     }
@@ -264,16 +264,16 @@ func makeRecordingPath(recordingPath: Data) -> URL? {
 }
 
 func zoomToFieldOfView(zoom: Float, zoomOne: Float = .pi / 2) -> Float {
-    return 2 * atan(tan(zoomOne / 2) / zoom)
+    2 * atan(tan(zoomOne / 2) / zoom)
 }
 
 func fieldOfViewToZoom(fieldOfView: Float, zoomOne: Float = .pi / 2) -> Float {
-    return tan(zoomOne / 2) / tan(fieldOfView / 2)
+    tan(zoomOne / 2) / tan(fieldOfView / 2)
 }
 
 extension Locale.Language {
     func name() -> String {
-        return NSLocale.current.localizedString(forIdentifier: minimalIdentifier) ?? "Unknown"
+        NSLocale.current.localizedString(forIdentifier: minimalIdentifier) ?? "Unknown"
     }
 }
 
@@ -362,7 +362,7 @@ func clockAsMinutesAndSeconds(clock: String) -> (Int, Int) {
     }
 }
 
-extension Array where Element == String {
+extension [String] {
     func withCPointers<T>(_ body: (UnsafeMutablePointer<UnsafePointer<CChar>?>) -> T) -> T {
         let pointersArray = UnsafeMutablePointer<UnsafePointer<CChar>?>.allocate(capacity: count)
         defer {
@@ -403,11 +403,11 @@ private let filenameDateFormatter: DateFormatter = {
 }()
 
 func formatFilenameDateAndTime(date: Date? = nil) -> String {
-    return filenameDateFormatter.string(from: date ?? Date()).replacing(/\s+/, with: "_")
+    filenameDateFormatter.string(from: date ?? Date()).replacing(/\s+/, with: "_")
 }
 
 func extractSrtStreamId(url: String) -> String? {
-    return URL(string: url)?.dictionaryFromQuery()["streamid"]
+    URL(string: url)?.dictionaryFromQuery()["streamid"]
 }
 
 extension String {

@@ -101,12 +101,12 @@ private class Relay {
             guard let self else {
                 return
             }
-            if self.pongReceived {
-                self.pongReceived = false
-                self.webSocket.connection.sendWebSocket(data: nil, opcode: .ping)
+            if pongReceived {
+                pongReceived = false
+                webSocket.connection.sendWebSocket(data: nil, opcode: .ping)
             } else {
                 logger.info("moblink-streamer: \(name): Ping timeout")
-                self.webSocket.connection.cancel()
+                webSocket.connection.cancel()
             }
         }
     }
@@ -232,7 +232,7 @@ class MoblinkStreamer: NSObject {
     private var server: NWListener?
     var connectionErrorMessage = ""
     private var retryStartTimer = SimpleTimer(queue: .main)
-    fileprivate weak var delegate: MoblinkStreamerDelegate?
+    fileprivate weak var delegate: (any MoblinkStreamerDelegate)?
     private var relays: [Relay] = []
     private var destinationAddress: String?
     private var destinationPort: UInt16?
@@ -247,7 +247,7 @@ class MoblinkStreamer: NSObject {
         }
     }
 
-    func start(delegate: MoblinkStreamerDelegate) {
+    func start(delegate: any MoblinkStreamerDelegate) {
         stop()
         logger.debug("moblink-streamer: start")
         self.delegate = delegate
@@ -283,7 +283,7 @@ class MoblinkStreamer: NSObject {
     }
 
     func getStatuses() -> [(String, Int?, MoblinkThermalState?)] {
-        return relays
+        relays
             .sorted(by: { $0.name < $1.name })
             .map { ($0.name, $0.batteryPercentage, $0.thermalState) }
     }

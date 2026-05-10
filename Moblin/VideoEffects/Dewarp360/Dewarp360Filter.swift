@@ -71,6 +71,6 @@ class Dewarp360Filter: CIFilter {
 
 extension SIMD3<Float> {
     func toCiVector() -> CIVector {
-        return CIVector(values: [CGFloat(x), CGFloat(y), CGFloat(z)], count: 3)
+        CIVector(values: [CGFloat(x), CGFloat(y), CGFloat(z)], count: 3)
     }
 }

@@ -5,7 +5,7 @@ enum SettingsStreamCodec: String, Codable, CaseIterable {
     case h265hevc = "H.265/HEVC"
     case h264avc = "H.264/AVC"
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         self = try SettingsStreamCodec(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .h264avc
     }
@@ -13,9 +13,9 @@ enum SettingsStreamCodec: String, Codable, CaseIterable {
     func shortString() -> String {
         switch self {
         case .h265hevc:
-            return "H.265"
+            "H.265"
         case .h264avc:
-            return "H.264"
+            "H.264"
         }
     }
 }
@@ -34,22 +34,22 @@ enum SettingsStreamRateControl: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .abr:
-            return String(localized: "ABR (Average)")
+            String(localized: "ABR (Average)")
         case .cbr:
-            return String(localized: "CBR (Constant)")
+            String(localized: "CBR (Constant)")
         case .vbr:
-            return String(localized: "VBR (Variable)")
+            String(localized: "VBR (Variable)")
         }
     }
 
     func shortString() -> String {
         switch self {
         case .abr:
-            return String(localized: "ABR")
+            String(localized: "ABR")
         case .cbr:
-            return String(localized: "CBR")
+            String(localized: "CBR")
         case .vbr:
-            return String(localized: "VBR")
+            String(localized: "VBR")
         }
     }
 
@@ -66,13 +66,13 @@ enum SettingsStreamRateControl: String, Codable, CaseIterable {
 
     static func makeValid(value: SettingsStreamRateControl) -> SettingsStreamRateControl {
         if #available(iOS 26, *) {
-            return value
+            value
         } else {
             switch value {
             case .vbr:
-                return .abr
+                .abr
             default:
-                return value
+                value
             }
         }
     }
@@ -93,65 +93,64 @@ enum SettingsStreamResolution: String, Codable, CaseIterable {
     case r426x240 = "426x240"
 
     static func > (lhs: SettingsStreamResolution, rhs: SettingsStreamResolution) -> Bool {
-        return lhs.dimensions(portrait: false).width > rhs.dimensions(portrait: false).width
+        lhs.dimensions(portrait: false).width > rhs.dimensions(portrait: false).width
     }
 
     func shortString() -> String {
         switch self {
         case .r4032x3024:
-            return "3024p (4:3)"
+            "3024p (4:3)"
         case .r3840x2160:
-            return "4K"
+            "4K"
         case .r2560x1440:
-            return "1440p"
+            "1440p"
         case .r1920x1440:
-            return "1440p (4:3)"
+            "1440p (4:3)"
         case .r1920x1080:
-            return "1080p"
+            "1080p"
         case .r1664x936:
-            return "936p"
+            "936p"
         case .r1024x768:
-            return "768p (4:3)"
+            "768p (4:3)"
         case .r1280x720:
-            return "720p"
+            "720p"
         case .r960x540:
-            return "540p"
+            "540p"
         case .r854x480:
-            return "480p"
+            "480p"
         case .r640x360:
-            return "360p"
+            "360p"
         case .r426x240:
-            return "240p"
+            "240p"
         }
     }
 
     func dimensions(portrait: Bool) -> CMVideoDimensions {
-        var size: CMVideoDimensions
-        switch self {
+        var size: CMVideoDimensions = switch self {
         case .r4032x3024:
-            size = .init(width: 4032, height: 3024)
+            .init(width: 4032, height: 3024)
         case .r3840x2160:
-            size = .init(width: 3840, height: 2160)
+            .init(width: 3840, height: 2160)
         case .r2560x1440:
-            size = .init(width: 2560, height: 1440)
+            .init(width: 2560, height: 1440)
         case .r1920x1440:
-            size = .init(width: 1920, height: 1440)
+            .init(width: 1920, height: 1440)
         case .r1920x1080:
-            size = .init(width: 1920, height: 1080)
+            .init(width: 1920, height: 1080)
         case .r1664x936:
-            size = .init(width: 1664, height: 936)
+            .init(width: 1664, height: 936)
         case .r1024x768:
-            size = .init(width: 1024, height: 768)
+            .init(width: 1024, height: 768)
         case .r1280x720:
-            size = .init(width: 1280, height: 720)
+            .init(width: 1280, height: 720)
         case .r960x540:
-            size = .init(width: 960, height: 540)
+            .init(width: 960, height: 540)
         case .r854x480:
-            size = .init(width: 854, height: 480)
+            .init(width: 854, height: 480)
         case .r640x360:
-            size = .init(width: 640, height: 360)
+            .init(width: 640, height: 360)
         case .r426x240:
-            size = .init(width: 426, height: 240)
+            .init(width: 426, height: 240)
         }
         if portrait {
             size = .init(width: size.height, height: size.width)
@@ -169,9 +168,9 @@ enum SettingsStreamSrtImplementation: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .moblin:
-            return String(localized: "Moblin")
+            String(localized: "Moblin")
         case .official:
-            return String(localized: "Official")
+            String(localized: "Official")
         }
     }
 }
@@ -183,18 +182,18 @@ enum SettingsStreamAudioCodec: String, Codable, CaseIterable {
     func toEncoder() -> AudioEncoderSettings.Format {
         switch self {
         case .aac:
-            return .aac
+            .aac
         case .opus:
-            return .opus
+            .opus
         }
     }
 
     func toString() -> String {
         switch self {
         case .aac:
-            return "AAC"
+            "AAC"
         case .opus:
-            return "Opus"
+            "Opus"
         }
     }
 }
@@ -205,7 +204,7 @@ enum SettingsStreamProtocol: String, Codable {
     case rist = "RIST"
     case whip = "WHIP"
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         self = try SettingsStreamProtocol(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ??
             .rtmp
     }
@@ -240,7 +239,7 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
              relayId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -249,7 +248,7 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
         try container.encode(.relayId, relayId)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "")
@@ -291,7 +290,7 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
     case slowIrl
     case customIrl
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if container.contains(CodingKeys.belabox) {
             self = .belabox
@@ -309,13 +308,13 @@ enum SettingsStreamSrtAdaptiveBitrateAlgorithm: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .belabox:
-            return String(localized: "BELABOX")
+            String(localized: "BELABOX")
         case .fastIrl:
-            return String(localized: "Fast IRL")
+            String(localized: "Fast IRL")
         case .slowIrl:
-            return String(localized: "Slow IRL")
+            String(localized: "Slow IRL")
         case .customIrl:
-            return String(localized: "Custom IRL")
+            String(localized: "Custom IRL")
         }
     }
 }
@@ -331,13 +330,13 @@ class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
              minimumBitrate
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.packetsInFlight, packetsInFlight)
         try container.encode(.minimumBitrate, minimumBitrate)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         packetsInFlight = container.decode(.packetsInFlight, Int32.self, 200)
         minimumBitrate = container.decode(.minimumBitrate, Float.self, 250)
@@ -370,7 +369,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
              minimumBitrate
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.packetsInFlight, packetsInFlight)
         try container.encode(.pifDiffIncreaseFactor, pifDiffIncreaseFactor)
@@ -380,7 +379,7 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
         try container.encode(.minimumBitrate, minimumBitrate)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         packetsInFlight = container.decode(.packetsInFlight, Int32.self, 200)
         pifDiffIncreaseFactor = container.decode(.pifDiffIncreaseFactor, Float.self, 100)
@@ -411,12 +410,12 @@ class SettingsStreamSrtAdaptiveBitrateBelaboxSettings: Codable {
         case minimumBitrate
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.minimumBitrate, minimumBitrate)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         minimumBitrate = container.decode(.minimumBitrate, Float.self, 250)
     }
@@ -443,7 +442,7 @@ class SettingsStreamSrtAdaptiveBitrate: Codable, ObservableObject {
              belaboxSettings
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.algorithm, algorithm)
         try container.encode(.fastIrlSettings, fastIrlSettings)
@@ -451,7 +450,7 @@ class SettingsStreamSrtAdaptiveBitrate: Codable, ObservableObject {
         try container.encode(.belaboxSettings, belaboxSettings)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         algorithm = container.decode(.algorithm, SettingsStreamSrtAdaptiveBitrateAlgorithm.self, .belabox)
         fastIrlSettings = container.decode(
@@ -512,7 +511,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
              implemenationMigrated
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.latency, latency)
         try container.encode(.maximumBandwidthFollowInput, maximumBandwidthFollowInput)
@@ -528,7 +527,7 @@ class SettingsStreamSrt: Codable, ObservableObject {
         try container.encode(.implemenationMigrated, implemenationMigrated)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         latency = container.decode(.latency, Int32.self, defaultSrtLatency)
         maximumBandwidthFollowInput = container.decode(.maximumBandwidthFollowInput, Bool.self, true)
@@ -558,9 +557,9 @@ class SettingsStreamSrt: Codable, ObservableObject {
 
     func mpegtsPacketsPerPacket() -> Int {
         if bigPackets {
-            return 7
+            7
         } else {
-            return 6
+            6
         }
     }
 
@@ -615,9 +614,9 @@ enum SettingsStreamWhipHttpTransport: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .standard:
-            return String(localized: "Standard")
+            String(localized: "Standard")
         case .remoteControl:
-            return String(localized: "Remote control")
+            String(localized: "Remote control")
         }
     }
 }
@@ -633,13 +632,13 @@ class SettingsStreamWhip: Codable, ObservableObject {
              httpTransport
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.headers, headers)
         try container.encode(.httpTransport, httpTransport)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         headers = container.decode(.headers, [SettingsHttpHeader].self, [])
         httpTransport = container.decode(.httpTransport, SettingsStreamWhipHttpTransport.self, .standard)
@@ -698,7 +697,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
              recordingPath
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.overrideStream, overrideStream)
         try container.encode(.resolution, resolution)
@@ -714,7 +713,7 @@ class SettingsStreamRecording: Codable, ObservableObject {
         try container.encode(.recordingPath, recordingPath)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         overrideStream = container.decode(.overrideStream, Bool.self, false)
         resolution = container.decode(
@@ -750,30 +749,30 @@ class SettingsStreamRecording: Codable, ObservableObject {
 
     func videoBitrateString() -> String {
         if videoBitrate != 0 {
-            return formatBytesPerSecond(speed: Int64(videoBitrate))
+            formatBytesPerSecond(speed: Int64(videoBitrate))
         } else {
-            return String(localized: "Auto")
+            String(localized: "Auto")
         }
     }
 
     func maxKeyFrameIntervalString() -> String {
         if maxKeyFrameInterval != 0 {
-            return "\(maxKeyFrameInterval) s"
+            "\(maxKeyFrameInterval) s"
         } else {
-            return String(localized: "Auto")
+            String(localized: "Auto")
         }
     }
 
     func audioBitrateString() -> String {
         if audioBitrate != 0 {
-            return formatBytesPerSecond(speed: Int64(audioBitrate))
+            formatBytesPerSecond(speed: Int64(audioBitrate))
         } else {
-            return String(localized: "Auto")
+            String(localized: "Auto")
         }
     }
 
     func isDefaultRecordingPath() -> Bool {
-        return recordingPath == nil
+        recordingPath == nil
     }
 }
 
@@ -782,7 +781,7 @@ enum SettingsStreamReplayTransitionType: String, Codable, CaseIterable {
     case stingers
     case none
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         self = try SettingsStreamReplayTransitionType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ??
             .fade
@@ -791,11 +790,11 @@ enum SettingsStreamReplayTransitionType: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .fade:
-            return String(localized: "Fade")
+            String(localized: "Fade")
         case .stingers:
-            return String(localized: "Stingers")
+            String(localized: "Stingers")
         case .none:
-            return String(localized: "None")
+            String(localized: "None")
         }
     }
 }
@@ -839,7 +838,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
              enterForegroundCountAtLatestUsage
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.transitionType, transitionType)
@@ -854,7 +853,7 @@ class SettingsStreamReplay: Codable, ObservableObject {
         try container.encode(.enterForegroundCountAtLatestUsage, enterForegroundCountAtLatestUsage)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         if let fade = try? container.decode(Bool.self, forKey: .fade) {
@@ -918,14 +917,14 @@ class SettingsStreamMultiStreamingDestination: Codable, Identifiable, Observable
              enabled
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.name, name)
         try container.encode(.url, url)
         try container.encode(.enabled, enabled)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, Self.baseName)
         url = container.decode(.url, String.self, defaultRtmpStreamUrl)
@@ -950,12 +949,12 @@ class SettingsStreamMultiStreaming: Codable, ObservableObject {
         case destinations
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.destinations, destinations)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         destinations = container.decode(.destinations, [SettingsStreamMultiStreamingDestination].self, [])
     }
@@ -992,7 +991,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
              minimumCheerBits
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.follows, follows)
         try container.encode(.subscriptions, subscriptions)
@@ -1004,7 +1003,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
         try container.encode(.minimumCheerBits, minimumCheerBits)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         follows = container.decode(.follows, Bool.self, true)
         subscriptions = container.decode(.subscriptions, Bool.self, true)
@@ -1030,7 +1029,7 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
     }
 
     func isBitsEnabled(amount: Int) -> Bool {
-        return cheers && amount >= minimumCheerBits
+        cheers && amount >= minimumCheerBits
     }
 }
 
@@ -1055,7 +1054,7 @@ class SettingsKickAlerts: Codable, ObservableObject {
              minimumKicks
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.subscriptions, subscriptions)
         try container.encode(.giftedSubscriptions, giftedSubscriptions)
@@ -1066,7 +1065,7 @@ class SettingsKickAlerts: Codable, ObservableObject {
         try container.encode(.minimumKicks, minimumKicks)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         subscriptions = container.decode(.subscriptions, Bool.self, true)
         giftedSubscriptions = container.decode(.giftedSubscriptions, Bool.self, true)
@@ -1090,7 +1089,7 @@ class SettingsKickAlerts: Codable, ObservableObject {
     }
 
     func isKicksEnabled(amount: Int) -> Bool {
-        return kicks && amount >= minimumKicks
+        kicks && amount >= minimumKicks
     }
 }
 
@@ -1271,7 +1270,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
              multiStreaming
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.name, name)
         try container.encode(.id, id)
@@ -1357,7 +1356,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
         try container.encode(.multiStreaming, multiStreaming)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "My stream")
         id = container.decode(.id, UUID.self, .init())
@@ -1546,135 +1545,135 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named 
     }
 
     func getScheme() -> String? {
-        return URL(string: url)?.scheme
+        URL(string: url)?.scheme
     }
 
     func getProtocol() -> SettingsStreamProtocol {
         switch getScheme() {
         case "rtmp":
-            return .rtmp
+            .rtmp
         case "rtmps":
-            return .rtmp
+            .rtmp
         case "srt":
-            return .srt
+            .srt
         case "srtla":
-            return .srt
+            .srt
         case "rist":
-            return .rist
+            .rist
         case "whip":
-            return .whip
+            .whip
         case "whips":
-            return .whip
+            .whip
         default:
-            return .rtmp
+            .rtmp
         }
     }
 
     func getDetailedProtocol() -> SettingsStreamDetailedProtocol {
         switch getScheme() {
         case "rtmp":
-            return .rtmp
+            .rtmp
         case "rtmps":
-            return .rtmps
+            .rtmps
         case "srt":
-            return .srt
+            .srt
         case "srtla":
-            return .srtla
+            .srtla
         case "rist":
-            return .rist
+            .rist
         case "whip":
-            return .whip
+            .whip
         case "whips":
-            return .whips
+            .whips
         default:
-            return .rtmp
+            .rtmp
         }
     }
 
     func protocolString() -> String {
-        if getProtocol() == .srt && isSrtla() {
-            return "SRTLA"
-        } else if getProtocol() == .rtmp && isRtmps() {
-            return "RTMPS"
+        if getProtocol() == .srt, isSrtla() {
+            "SRTLA"
+        } else if getProtocol() == .rtmp, isRtmps() {
+            "RTMPS"
         } else {
-            return getProtocol().rawValue
+            getProtocol().rawValue
         }
     }
 
     func isRtmps() -> Bool {
-        return getScheme() == "rtmps"
+        getScheme() == "rtmps"
     }
 
     func isSrtla() -> Bool {
-        return getScheme() == "srtla"
+        getScheme() == "srtla"
     }
 
     func isBonding() -> Bool {
         if isSrtla() {
             return true
         }
-        if getProtocol() == .rist && rist.bonding {
+        if getProtocol() == .rist, rist.bonding {
             return true
         }
         return false
     }
 
     func resolutionString() -> String {
-        return resolution.shortString()
+        resolution.shortString()
     }
 
     func dimensions() -> CMVideoDimensions {
-        return resolution.dimensions(portrait: portrait)
+        resolution.dimensions(portrait: portrait)
     }
 
     func codecString() -> String {
-        return codec.shortString()
+        codec.shortString()
     }
 
     func rateControlString() -> String {
-        return rateControl.shortString()
+        rateControl.shortString()
     }
 
     func bitrateString() -> String {
         var bitrate = formatBytesPerSecond(speed: Int64(bitrate))
-        if getProtocol() == .srt && srt.adaptiveBitrateEnabled {
+        if getProtocol() == .srt, srt.adaptiveBitrateEnabled {
             bitrate = "<\(bitrate)"
-        } else if getProtocol() == .rtmp && rtmp.adaptiveBitrateEnabled {
+        } else if getProtocol() == .rtmp, rtmp.adaptiveBitrateEnabled {
             bitrate = "<\(bitrate)"
         }
         return bitrate
     }
 
     func audioBitrateString() -> String {
-        return formatBytesPerSecond(speed: Int64(audioBitrate))
+        formatBytesPerSecond(speed: Int64(audioBitrate))
     }
 
     func audioCodecString() -> String {
-        return audioCodec.toString()
+        audioCodec.toString()
     }
 
     func maxKeyFrameIntervalString() -> String {
         if maxKeyFrameInterval != 0 {
-            return "\(maxKeyFrameInterval) s"
+            "\(maxKeyFrameInterval) s"
         } else {
-            return String(localized: "Auto")
+            String(localized: "Auto")
         }
     }
 
     private func encodeYouTubeAuthState() -> Data? {
         if let youTubeAuthState {
-            return try? NSKeyedArchiver.archivedData(withRootObject: youTubeAuthState,
-                                                     requiringSecureCoding: false)
+            try? NSKeyedArchiver.archivedData(withRootObject: youTubeAuthState,
+                                              requiringSecureCoding: false)
         } else {
-            return nil
+            nil
         }
     }
 
     private func decodeYouTubeAuthState(encoded: Data?) -> OIDAuthState? {
         if let encoded {
-            return try? NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: encoded)
+            try? NSKeyedUnarchiver.unarchivedObject(ofClass: OIDAuthState.self, from: encoded)
         } else {
-            return nil
+            nil
         }
     }
 }

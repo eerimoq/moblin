@@ -48,9 +48,9 @@ private func rgbToHsv(red: Float, green: Float, blue: Float) -> HsvColor {
 
 private func isHueInRange(hue: CGFloat, fromHue: CGFloat, toHue: CGFloat) -> Bool {
     if fromHue <= toHue {
-        return hue >= fromHue && hue <= toHue
+        hue >= fromHue && hue <= toHue
     } else {
-        return hue >= fromHue || hue <= toHue
+        hue >= fromHue || hue <= toHue
     }
 }
 

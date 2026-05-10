@@ -243,7 +243,7 @@ final class VideoUnit: NSObject {
             }
             session.beginConfiguration()
             for device in captureSessionDevices {
-                for connection in device.output.connections.filter({ $0.isVideoOrientationSupported }) {
+                for connection in device.output.connections.filter(\.isVideoOrientationSupported) {
                     setOrientation(device: device.device.device,
                                    isLandscapeStreamAndPortraitUi: isLandscapeStreamAndPortraitUi,
                                    connection: connection,
@@ -310,7 +310,7 @@ final class VideoUnit: NSObject {
     }
 
     func getFps() -> Double {
-        return fps
+        fps
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace) {
@@ -674,7 +674,7 @@ final class VideoUnit: NSObject {
     }
 
     private func makePresentationTimeStamp() -> CMTime {
-        return CMTime(value: outputCounter, timescale: Int32(fps)) + startPresentationTimeStamp
+        CMTime(value: outputCounter, timescale: Int32(fps)) + startPresentationTimeStamp
     }
 
     private func handleFrameTimer() {
@@ -1012,13 +1012,13 @@ final class VideoUnit: NSObject {
     private func rotateCoreImage(_ image: CIImage, _ rotation: Double) -> CIImage {
         switch rotation {
         case 90:
-            return image.oriented(.right)
+            image.oriented(.right)
         case 180:
-            return image.oriented(.down)
+            image.oriented(.down)
         case 270:
-            return image.oriented(.left)
+            image.oriented(.left)
         default:
-            return image
+            image
         }
     }
 
@@ -1677,11 +1677,10 @@ final class VideoUnit: NSObject {
     ) -> [DetectionJob] {
         var detectionJobs: [DetectionJob] = []
         for videoSourceId in faceDetectionVideoSourceIds.union(textDetectionVideoSourceIds) {
-            var videoSourceImageBuffer: CVPixelBuffer?
-            if videoSourceId == sceneVideoSourceId {
-                videoSourceImageBuffer = imageBuffer
+            var videoSourceImageBuffer: CVPixelBuffer? = if videoSourceId == sceneVideoSourceId {
+                imageBuffer
             } else {
-                videoSourceImageBuffer = bufferedVideos[videoSourceId]?
+                bufferedVideos[videoSourceId]?
                     .getSampleBuffer(presentationTimeStamp)?
                     .imageBuffer
             }
@@ -1753,7 +1752,7 @@ final class VideoUnit: NSObject {
         var formats = device.formats
         formats = formats.filter { $0.isFrameRateSupported(fps) }
         if #available(iOS 18, *), preferAutoFrameRate {
-            let autoFrameRateFormats = formats.filter { $0.isAutoVideoFrameRateSupported }
+            let autoFrameRateFormats = formats.filter(\.isAutoVideoFrameRateSupported)
             if !autoFrameRateFormats.isEmpty {
                 formats = autoFrameRateFormats
                 useAutoFrameRate = true
@@ -2035,11 +2034,10 @@ final class VideoUnit: NSObject {
             bufferedVideo.setLatestSampleBuffer(sampleBuffer)
             return nil
         }
-        var sampleBufferCopy: CMSampleBuffer
-        if bufferedVideo.numberOfBuffers() > 4 {
-            sampleBufferCopy = makeCopy(sampleBuffer: sampleBuffer) ?? sampleBuffer
+        var sampleBufferCopy: CMSampleBuffer = if bufferedVideo.numberOfBuffers() > 4 {
+            makeCopy(sampleBuffer: sampleBuffer) ?? sampleBuffer
         } else {
-            sampleBufferCopy = sampleBuffer
+            sampleBuffer
         }
         let presentationTimeStamp = sampleBufferCopy
             .presentationTimeStamp + CMTime(seconds: bufferedVideo.latency)
@@ -2050,7 +2048,7 @@ final class VideoUnit: NSObject {
     }
 
     private func isSceneVideoSource(device: AVCaptureDevice) -> Bool {
-        return captureSessionDevices.first(where: { $0.device.device == device })?.device
+        captureSessionDevices.first(where: { $0.device.device == device })?.device
             .id == sceneVideoSourceId
     }
 
@@ -2106,7 +2104,7 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
 }
 
 private func createBlackImage(width: Double, height: Double) -> CIImage {
-    return CIImage.black.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
+    CIImage.black.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
 }
 
 @available(iOS 18.0, *)

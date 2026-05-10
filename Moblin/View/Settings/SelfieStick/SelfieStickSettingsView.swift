@@ -16,7 +16,7 @@ struct SelfieStickSettingsView: View {
     @ObservedObject var selfieStick: SettingsSelfieStick
 
     private func functions() -> [SettingsControllerFunction] {
-        return SettingsControllerFunction.allCases.filter {
+        SettingsControllerFunction.allCases.filter {
             ![.unused, .zoomIn, .zoomOut].contains($0)
         }
     }

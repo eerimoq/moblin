@@ -46,18 +46,18 @@ final class BeautyEffect: VideoEffect {
     }
 
     override func isEnabled() -> Bool {
-        return smoothnessStrength > 0 || shapeStrength > 0
+        smoothnessStrength > 0 || shapeStrength > 0
     }
 
     override func isMetalPetal() -> Bool {
-        return true
+        true
     }
 
     override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
         if shapeStrength > 0 {
-            return .now(nil)
+            .now(nil)
         } else {
-            return .off
+            .off
         }
     }
 
@@ -135,6 +135,6 @@ final class BeautyEffect: VideoEffect {
     }
 
     private func shapeScaleMetalPetal() -> Float {
-        return -(shapeStrength * 0.075) * shapeScaleFactor
+        -(shapeStrength * 0.075) * shapeScaleFactor
     }
 }

@@ -261,7 +261,7 @@ class ChatTextToSpeech: NSObject {
             return false
         }
         let probability = recognizer.languageHypotheses(withMaximum: 1).first?.value ?? 0.0
-        if probability < 0.7 && message.count > 30 {
+        if probability < 0.7, message.count > 30 {
             return true
         }
         if message.hasPrefix("!") {
@@ -315,7 +315,7 @@ class ChatTextToSpeech: NSObject {
     }
 
     private func getSays(_ language: String) -> String {
-        return saysByLanguage[language] ?? ""
+        saysByLanguage[language] ?? ""
     }
 
     private func getVoice(message: String) -> (Voice?, String)? {

@@ -18,7 +18,7 @@ struct YouTubeApiLiveBroadcastStatus: Codable {
     let privacyStatus: String
 
     func visibility() -> YouTubeApiLiveBroadcaseVisibility? {
-        return YouTubeApiLiveBroadcaseVisibility(rawValue: privacyStatus)
+        YouTubeApiLiveBroadcaseVisibility(rawValue: privacyStatus)
     }
 }
 
@@ -54,7 +54,7 @@ struct YouTubeApiLiveStreamsListResponse: Codable {
 }
 
 private func serialize(_ value: Any) -> Data {
-    return (try? JSONSerialization.data(withJSONObject: value))!
+    (try? JSONSerialization.data(withJSONObject: value))!
 }
 
 enum YouTubeApiLiveBroadcaseVisibility: String, Codable, CaseIterable {
@@ -65,11 +65,11 @@ enum YouTubeApiLiveBroadcaseVisibility: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .public:
-            return String(localized: "Public")
+            String(localized: "Public")
         case .private:
-            return String(localized: "Private")
+            String(localized: "Private")
         case .unlisted:
-            return String(localized: "Unlisted")
+            String(localized: "Unlisted")
         }
     }
 }
@@ -80,7 +80,7 @@ struct YouTubeApiListVideoStreamingDetails: Codable {
     let actualEndTime: String?
 
     func isLive() -> Bool {
-        return actualStartTime != nil && actualEndTime == nil
+        actualStartTime != nil && actualEndTime == nil
     }
 }
 

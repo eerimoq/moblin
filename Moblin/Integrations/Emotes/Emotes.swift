@@ -21,7 +21,7 @@ class Emotes {
     private var ready: Bool = false
 
     func isReady() -> Bool {
-        return ready
+        ready
     }
 
     func start(

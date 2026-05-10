@@ -6,7 +6,7 @@ struct StreamWizardNetworkSetupBelaboxSettingsView: View {
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.belaboxUrl.trim().isEmpty || !urlError.isEmpty
+        createStreamWizard.belaboxUrl.trim().isEmpty || !urlError.isEmpty
     }
 
     private func updateUrlError() {

@@ -487,17 +487,17 @@ class TextEffectFormatter {
 
     private func formatOptional(value: Int?) -> String {
         if let value {
-            return String(value)
+            String(value)
         } else {
-            return "-"
+            "-"
         }
     }
 
     private func formatOptionalOneDecimal(value: Double?) -> String {
         if let value {
-            return formatOneDecimal(Float(value))
+            formatOneDecimal(Float(value))
         } else {
-            return "-"
+            "-"
         }
     }
 

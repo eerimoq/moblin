@@ -73,7 +73,7 @@ struct GameControllersControllerButtonSettingsView: View {
     @ObservedObject var button: SettingsGameControllerButton
 
     private func functions() -> [SettingsControllerFunction] {
-        return SettingsControllerFunction.allCases
+        SettingsControllerFunction.allCases
     }
 
     var body: some View {

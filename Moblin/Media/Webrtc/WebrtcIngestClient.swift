@@ -53,7 +53,7 @@ final class WebrtcIngestClient {
     private let latency: Double
     private let syncTimestamps: Bool
     private(set) var peerConnectionId: Int32 = -1
-    weak var delegate: WebrtcIngestClientDelegate?
+    weak var delegate: (any WebrtcIngestClientDelegate)?
     private var connected = false
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?
@@ -77,7 +77,7 @@ final class WebrtcIngestClient {
          syncTimestamps: Bool,
          iceServers: [String],
          dispatchQueue: DispatchQueue,
-         delegate: WebrtcIngestClientDelegate)
+         delegate: any WebrtcIngestClientDelegate)
     {
         self.streamId = streamId
         self.latency = latency
@@ -141,7 +141,7 @@ final class WebrtcIngestClient {
                           name: String,
                           profile: String) throws -> Int32
     {
-        return try mid.withCString { midCStr in
+        try mid.withCString { midCStr in
             try name.withCString { nameCStr in
                 try UUID().uuidString.withCString { trackIdCStr in
                     try msid.withCString { msidCStr in

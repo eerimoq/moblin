@@ -21,7 +21,7 @@ class WhepClient {
     private let url: URL
     private let latency: Double
     private let syncTimestamps: Bool
-    private let delegate: WhepClientDelegate
+    private let delegate: any WhepClientDelegate
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
     private var started = false
@@ -29,7 +29,7 @@ class WhepClient {
     private var connected: Bool = false
     private var bitrateStats = BitrateStats()
 
-    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool, delegate: WhepClientDelegate) {
+    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool, delegate: any WhepClientDelegate) {
         self.streamId = streamId
         self.url = url
         self.latency = latency
@@ -54,13 +54,13 @@ class WhepClient {
     }
 
     func isConnected() -> Bool {
-        return dispatchQueue.sync {
+        dispatchQueue.sync {
             ingestClient != nil
         }
     }
 
     func updateStats() -> BitrateStatsInstant {
-        return dispatchQueue.sync {
+        dispatchQueue.sync {
             bitrateStats.update()
         }
     }

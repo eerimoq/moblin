@@ -28,11 +28,11 @@ private func makeVideoHeader(_ frameType: FlvFrameType,
 }
 
 private func makeAvcVideoTagHeader(_ frameType: FlvFrameType, _ packetType: FlvAvcPacketType) -> Data {
-    return makeVideoHeader(frameType, .avc1, packetType, .sequenceStart)
+    makeVideoHeader(frameType, .avc1, packetType, .sequenceStart)
 }
 
 private func makeHevcExtendedTagHeader(_ frameType: FlvFrameType, _ packetType: FlvVideoPacketType) -> Data {
-    return makeVideoHeader(frameType, .hevc, .nal, packetType)
+    makeVideoHeader(frameType, .hevc, .nal, packetType)
 }
 
 protocol RtmpStreamDelegate: AnyObject {
@@ -80,9 +80,9 @@ class RtmpStream {
     private var prevRebasedAudioTimeStamp: Double?
     private var prevRebasedVideoTimeStamp: Double?
     private let processor: Processor
-    weak var delegate: RtmpStreamDelegate?
+    weak var delegate: (any RtmpStreamDelegate)?
 
-    init(name: String, processor: Processor, delegate: RtmpStreamDelegate, queue: DispatchQueue) {
+    init(name: String, processor: Processor, delegate: any RtmpStreamDelegate, queue: DispatchQueue) {
         self.name = name
         self.processor = processor
         self.delegate = delegate
@@ -431,11 +431,10 @@ class RtmpStream {
     private func videoEncoderOutputSampleBufferInternal(_ format: VideoEncoderSettings.Format,
                                                         _ sampleBuffer: CMSampleBuffer)
     {
-        let decodeTimeStamp: Double
-        if sampleBuffer.decodeTimeStamp.isValid {
-            decodeTimeStamp = sampleBuffer.decodeTimeStamp.seconds
+        let decodeTimeStamp: Double = if sampleBuffer.decodeTimeStamp.isValid {
+            sampleBuffer.decodeTimeStamp.seconds
         } else {
-            decodeTimeStamp = sampleBuffer.presentationTimeStamp.seconds
+            sampleBuffer.presentationTimeStamp.seconds
         }
         guard let rebasedTimestamp = rebaseTimeStamp(timestamp: decodeTimeStamp) else {
             return

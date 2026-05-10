@@ -80,9 +80,9 @@ private struct DrawOnStreamControlsView: View {
 
     private func buttonColor() -> Color {
         if drawOnStream.lines.isEmpty {
-            return .gray
+            .gray
         } else {
-            return .white
+            .white
         }
     }
 

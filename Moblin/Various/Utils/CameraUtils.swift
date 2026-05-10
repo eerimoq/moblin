@@ -6,18 +6,18 @@ extension AVCaptureDevice {
         if hasUltraWideCamera {
             switch deviceType {
             case .builtInTripleCamera, .builtInDualWideCamera, .builtInUltraWideCamera:
-                return 0.5
+                0.5
             case .builtInTelephotoCamera:
-                return (virtualDeviceSwitchOverVideoZoomFactors.last?.floatValue ?? 10.0) / 2
+                (virtualDeviceSwitchOverVideoZoomFactors.last?.floatValue ?? 10.0) / 2
             default:
-                return 1.0
+                1.0
             }
         } else {
             switch deviceType {
             case .builtInTelephotoCamera:
-                return virtualDeviceSwitchOverVideoZoomFactors.last?.floatValue ?? 2.0
+                virtualDeviceSwitchOverVideoZoomFactors.last?.floatValue ?? 2.0
             default:
-                return 1.0
+                1.0
             }
         }
     }
@@ -68,19 +68,19 @@ extension AVCaptureDevice {
     private func baseName() -> String {
         switch deviceType {
         case .builtInTripleCamera:
-            return String(localized: "Triple (auto)")
+            String(localized: "Triple (auto)")
         case .builtInDualCamera:
-            return String(localized: "Dual (auto)")
+            String(localized: "Dual (auto)")
         case .builtInDualWideCamera:
-            return String(localized: "Wide dual (auto)")
+            String(localized: "Wide dual (auto)")
         case .builtInUltraWideCamera:
-            return String(localized: "Ultra wide")
+            String(localized: "Ultra wide")
         case .builtInWideAngleCamera:
-            return String(localized: "Wide")
+            String(localized: "Wide")
         case .builtInTelephotoCamera:
-            return String(localized: "Telephoto")
+            String(localized: "Telephoto")
         default:
-            return localizedName
+            localizedName
         }
     }
 }
@@ -97,11 +97,11 @@ let hasUltraWideFrontCamera = AVCaptureDevice
 func hasUltraWideCamera(position: AVCaptureDevice.Position) -> Bool {
     switch position {
     case .back:
-        return hasUltraWideBackCamera
+        hasUltraWideBackCamera
     case .front:
-        return hasUltraWideFrontCamera
+        hasUltraWideFrontCamera
     default:
-        return false
+        false
     }
 }
 
@@ -132,27 +132,27 @@ private func getBestFrontCameraDevice() -> AVCaptureDevice? {
 let bestFrontCameraDevice = getBestFrontCameraDevice()
 
 private func getBestBackCameraId() -> CameraId {
-    return bestBackCameraDevice?.uniqueID ?? ""
+    bestBackCameraDevice?.uniqueID ?? ""
 }
 
 let bestBackCameraId = getBestBackCameraId()
 
 private func getDefaultBackCameraPosition() -> SettingsSceneCameraPosition {
     if hasTripleBackCamera {
-        return .backTripleLowEnergy
+        .backTripleLowEnergy
     } else if hasWideDualBackCamera {
-        return .backWideDualLowEnergy
+        .backWideDualLowEnergy
     } else if hasDualBackCamera {
-        return .backDualLowEnergy
+        .backDualLowEnergy
     } else {
-        return .back
+        .back
     }
 }
 
 let defaultBackCameraPosition = getDefaultBackCameraPosition()
 
 private func getBestFrontCameraId() -> String {
-    return bestFrontCameraDevice?.uniqueID ?? ""
+    bestFrontCameraDevice?.uniqueID ?? ""
 }
 
 let bestFrontCameraId = getBestFrontCameraId()
@@ -234,19 +234,19 @@ func factorFromWhiteBalance(device: AVCaptureDevice, gains: AVCaptureDevice.Whit
 
 extension AVCaptureDevice.WhiteBalanceGains {
     func clamped(maxGain: Float) -> AVCaptureDevice.WhiteBalanceGains {
-        return .init(redGain: redGain.clamped(to: 1 ... maxGain),
-                     greenGain: greenGain.clamped(to: 1 ... maxGain),
-                     blueGain: blueGain.clamped(to: 1 ... maxGain))
+        .init(redGain: redGain.clamped(to: 1 ... maxGain),
+              greenGain: greenGain.clamped(to: 1 ... maxGain),
+              blueGain: blueGain.clamped(to: 1 ... maxGain))
     }
 }
 
 func calcCameraAngle(gravity: CMAcceleration, portrait: Bool) -> Double {
     if portrait {
-        return -1 * (atan2(gravity.y, gravity.x) + .pi / 2)
+        -1 * (atan2(gravity.y, gravity.x) + .pi / 2)
     } else if gravity.x > 0 {
-        return atan2(-gravity.x, -gravity.y) + .pi / 2
+        atan2(-gravity.x, -gravity.y) + .pi / 2
     } else {
-        return atan2(gravity.x, gravity.y) + .pi / 2
+        atan2(gravity.x, gravity.y) + .pi / 2
     }
 }
 

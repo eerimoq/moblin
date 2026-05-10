@@ -12,7 +12,7 @@ class AlertVideoMediaStorage {
     }
 
     func makePath(filename: String) -> URL {
-        return mediasUrl.appendingPathComponent(filename)
+        mediasUrl.appendingPathComponent(filename)
     }
 
     func add(filename: String, url: URL) {

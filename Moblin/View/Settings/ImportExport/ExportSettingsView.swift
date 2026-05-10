@@ -16,7 +16,7 @@ struct ExportSettingsView: View {
         }
         .onAppear {
             model.exportToFile {
-                self.url = $0
+                url = $0
             }
         }
     }

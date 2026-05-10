@@ -104,21 +104,21 @@ enum RemoteControlReaction: Codable, CaseIterable {
     func toSettings() -> SettingsReaction {
         switch self {
         case .fireworks:
-            return .fireworks
+            .fireworks
         case .balloons:
-            return .balloons
+            .balloons
         case .hearts:
-            return .hearts
+            .hearts
         case .confetti:
-            return .confetti
+            .confetti
         case .lasers:
-            return .lasers
+            .lasers
         case .rain:
-            return .rain
+            .rain
         case .glasses:
-            return .glasses
+            .glasses
         case .sparkle:
-            return .sparkle
+            .sparkle
         }
     }
 }
@@ -183,74 +183,74 @@ enum RemoteControlFilter: Codable, CaseIterable {
     func toSettings() -> SettingsQuickButtonType {
         switch self {
         case .pixellate:
-            return .pixellate
+            .pixellate
         case .movie:
-            return .movie
+            .movie
         case .grayScale:
-            return .grayScale
+            .grayScale
         case .sepia:
-            return .sepia
+            .sepia
         case .triple:
-            return .triple
+            .triple
         case .twin:
-            return .twin
+            .twin
         case .fourThree:
-            return .fourThree
+            .fourThree
         case .crt:
-            return .crt
+            .crt
         case .pinch:
-            return .pinch
+            .pinch
         case .whirlpool:
-            return .whirlpool
+            .whirlpool
         case .poll:
-            return .poll
+            .poll
         case .blurFaces:
-            return .blurFaces
+            .blurFaces
         case .privacy:
-            return .privacy
+            .privacy
         case .beauty:
-            return .beauty
+            .beauty
         case .moblinInMouth:
-            return .moblinInMouth
+            .moblinInMouth
         case .cameraMan:
-            return .cameraMan
+            .cameraMan
         }
     }
 
     func toString() -> String {
         switch self {
         case .pixellate:
-            return String(localized: "Pixellate")
+            String(localized: "Pixellate")
         case .movie:
-            return String(localized: "Movie")
+            String(localized: "Movie")
         case .grayScale:
-            return String(localized: "Gray scale")
+            String(localized: "Gray scale")
         case .sepia:
-            return String(localized: "Sepia")
+            String(localized: "Sepia")
         case .triple:
-            return String(localized: "Triple")
+            String(localized: "Triple")
         case .twin:
-            return String(localized: "Twin")
+            String(localized: "Twin")
         case .fourThree:
-            return String(localized: "4:3")
+            String(localized: "4:3")
         case .crt:
-            return String(localized: "CRT")
+            String(localized: "CRT")
         case .pinch:
-            return String(localized: "Pinch")
+            String(localized: "Pinch")
         case .whirlpool:
-            return String(localized: "Whirlpool")
+            String(localized: "Whirlpool")
         case .poll:
-            return String(localized: "Poll")
+            String(localized: "Poll")
         case .blurFaces:
-            return String(localized: "Blur faces")
+            String(localized: "Blur faces")
         case .privacy:
-            return String(localized: "Blur background")
+            String(localized: "Blur background")
         case .beauty:
-            return String(localized: "Beauty")
+            String(localized: "Beauty")
         case .moblinInMouth:
-            return String(localized: "Moblin in mouth")
+            String(localized: "Moblin in mouth")
         case .cameraMan:
-            return String(localized: "Camera man")
+            String(localized: "Camera man")
         }
     }
 }
@@ -485,11 +485,11 @@ enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
     func toSettings() -> SettingsHorizontalAlignment {
         switch self {
         case .leading:
-            return .leading
+            .leading
         case .trailing:
-            return .trailing
+            .trailing
         case .center:
-            return .center
+            .center
         }
     }
 }
@@ -600,41 +600,41 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     }
 
     func toStats() -> TextEffectStats {
-        return TextEffectStats(timestamp: .now,
-                               bitrate: bitrate,
-                               bitrateAndTotal: bitrateAndTotal,
-                               resolution: resolution,
-                               fps: fps,
-                               date: date,
-                               debugOverlayLines: debugOverlayLines,
-                               speed: speed,
-                               averageSpeed: averageSpeed,
-                               altitude: altitude,
-                               distance: distance,
-                               slope: slope,
-                               conditions: conditions,
-                               temperature: temperature,
-                               feelsLikeTemperature: feelsLikeTemperature,
-                               windSpeed: windSpeed,
-                               windGust: windGust,
-                               country: country,
-                               countryFlag: countryFlag,
-                               state: state,
-                               city: city,
-                               muted: muted,
-                               heartRates: heartRates,
-                               activeEnergyBurned: activeEnergyBurned,
-                               workoutDistance: workoutDistance,
-                               power: power,
-                               stepCount: stepCount,
-                               teslaBatteryLevel: teslaBatteryLevel,
-                               teslaDrive: teslaDrive,
-                               teslaMedia: teslaMedia,
-                               cyclingPower: cyclingPower,
-                               cyclingCadence: cyclingCadence,
-                               runningMetrics: runningMetrics,
-                               browserTitle: browserTitle,
-                               gForce: gForce)
+        TextEffectStats(timestamp: .now,
+                        bitrate: bitrate,
+                        bitrateAndTotal: bitrateAndTotal,
+                        resolution: resolution,
+                        fps: fps,
+                        date: date,
+                        debugOverlayLines: debugOverlayLines,
+                        speed: speed,
+                        averageSpeed: averageSpeed,
+                        altitude: altitude,
+                        distance: distance,
+                        slope: slope,
+                        conditions: conditions,
+                        temperature: temperature,
+                        feelsLikeTemperature: feelsLikeTemperature,
+                        windSpeed: windSpeed,
+                        windGust: windGust,
+                        country: country,
+                        countryFlag: countryFlag,
+                        state: state,
+                        city: city,
+                        muted: muted,
+                        heartRates: heartRates,
+                        activeEnergyBurned: activeEnergyBurned,
+                        workoutDistance: workoutDistance,
+                        power: power,
+                        stepCount: stepCount,
+                        teslaBatteryLevel: teslaBatteryLevel,
+                        teslaDrive: teslaDrive,
+                        teslaMedia: teslaMedia,
+                        cyclingPower: cyclingPower,
+                        cyclingCadence: cyclingCadence,
+                        runningMetrics: runningMetrics,
+                        browserTitle: browserTitle,
+                        gForce: gForce)
     }
 }
 
@@ -648,7 +648,7 @@ struct RemoteControlRemoteSceneDataLocation: Codable {
     }
 
     func toLocation() -> CLLocation {
-        return CLLocation(latitude: latitude, longitude: longitude)
+        CLLocation(latitude: latitude, longitude: longitude)
     }
 }
 
@@ -665,11 +665,11 @@ enum RemoteControlStatusGeneralFlame: String, Codable {
     func toThermalState() -> ProcessInfo.ThermalState {
         switch self {
         case .white:
-            return .fair
+            .fair
         case .yellow:
-            return .serious
+            .serious
         case .red:
-            return .critical
+            .critical
         }
     }
 }
@@ -682,11 +682,11 @@ enum RemoteControlStatusTopRightAudioLevel: Codable {
     func toFloat() -> Float {
         switch self {
         case .muted:
-            return .nan
+            .nan
         case .unknown:
-            return .infinity
+            .infinity
         case let .value(value):
-            return value
+            value
         }
     }
 }
@@ -870,7 +870,7 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     var showClock: Bool?
 
     func minutesAndSeconds() -> (Int, Int) {
-        return clockAsMinutesAndSeconds(clock: timer)
+        clockAsMinutesAndSeconds(clock: timer)
     }
 }
 
@@ -895,9 +895,9 @@ struct RemoteControlScoreboardMatchConfig: Codable {
 
     func infoBoxStats(showClock: Bool) -> [String] {
         if showClock {
-            return [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+            [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
         } else {
-            return [periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+            [periodFull(), global.infoBoxText].filter { !$0.isEmpty }
         }
     }
 }
@@ -990,7 +990,7 @@ class RemoteControlEncryption {
     }
 
     func encrypt(data: Data) -> Data? {
-        return try? AES.GCM.seal(data, using: key).combined
+        try? AES.GCM.seal(data, using: key).combined
     }
 
     func decrypt(data: Data) -> Data? {

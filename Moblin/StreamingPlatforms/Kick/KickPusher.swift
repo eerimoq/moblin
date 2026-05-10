@@ -51,11 +51,11 @@ private class KickBadges {
     }
 
     func getSubscriberBadgeUrl(months: Int) -> URL? {
-        return subscriberBadges.last(where: { months >= $0.months })?.url
+        subscriberBadges.last(where: { months >= $0.months })?.url
     }
 
     func getStaticBadgeUrl(for badgeType: String) -> URL? {
-        return staticBadges[badgeType]
+        staticBadges[badgeType]
     }
 }
 
@@ -91,11 +91,11 @@ private struct ChatMessageEvent: Decodable {
     var metadata: Metadata?
 
     func isModerator() -> Bool {
-        return sender.identity.badges.contains(where: { $0.type == BadgeType.moderator })
+        sender.identity.badges.contains(where: { $0.type == BadgeType.moderator })
     }
 
     func isSubscriber() -> Bool {
-        return sender.identity.badges.contains(where: { $0.type == BadgeType.subscriber })
+        sender.identity.badges.contains(where: { $0.type == BadgeType.subscriber })
     }
 }
 
@@ -189,35 +189,35 @@ private func decodeEvent(message: String) throws -> (String, String) {
 }
 
 private func decodeChatMessageEvent(data: String) throws -> ChatMessageEvent {
-    return try JSONDecoder().decode(ChatMessageEvent.self, from: data.utf8Data)
+    try JSONDecoder().decode(ChatMessageEvent.self, from: data.utf8Data)
 }
 
 private func decodeMessageDeletedEvent(data: String) throws -> MessageDeletedEvent {
-    return try JSONDecoder().decode(MessageDeletedEvent.self, from: data.utf8Data)
+    try JSONDecoder().decode(MessageDeletedEvent.self, from: data.utf8Data)
 }
 
 private func decodeUserBannedEvent(data: String) throws -> KickPusherUserBannedEvent {
-    return try JSONDecoder().decode(KickPusherUserBannedEvent.self, from: data.utf8Data)
+    try JSONDecoder().decode(KickPusherUserBannedEvent.self, from: data.utf8Data)
 }
 
 private func decodeSubscriptionEvent(data: String) throws -> KickPusherSubscriptionEvent {
-    return try JSONDecoder().decode(KickPusherSubscriptionEvent.self, from: data.utf8Data)
+    try JSONDecoder().decode(KickPusherSubscriptionEvent.self, from: data.utf8Data)
 }
 
 private func decodeGiftedSubscriptionsEvent(data: String) throws -> KickPusherGiftedSubscriptionsEvent {
-    return try JSONDecoder().decode(KickPusherGiftedSubscriptionsEvent.self, from: data.utf8Data)
+    try JSONDecoder().decode(KickPusherGiftedSubscriptionsEvent.self, from: data.utf8Data)
 }
 
 private func decodeRewardRedeemedEvent(data: String) throws -> KickPusherRewardRedeemedEvent {
-    return try JSONDecoder().decode(KickPusherRewardRedeemedEvent.self, from: data.utf8Data)
+    try JSONDecoder().decode(KickPusherRewardRedeemedEvent.self, from: data.utf8Data)
 }
 
 private func decodeStreamHostEvent(data: String) throws -> KickPusherStreamHostEvent {
-    return try JSONDecoder().decode(KickPusherStreamHostEvent.self, from: data.utf8Data)
+    try JSONDecoder().decode(KickPusherStreamHostEvent.self, from: data.utf8Data)
 }
 
 private func decodeKicksGiftedEvent(data: String) throws -> KickPusherKicksGiftedEvent {
-    return try JSONDecoder().decode(KickPusherKicksGiftedEvent.self, from: data.utf8Data)
+    try JSONDecoder().decode(KickPusherKicksGiftedEvent.self, from: data.utf8Data)
 }
 
 private var url =
@@ -257,10 +257,10 @@ final class KickPusher: NSObject {
     private var badges: KickBadges
     private let settings: SettingsStreamChat
     private var gotInfo = false
-    private weak var delegate: KickPusherDelegate?
+    private weak var delegate: (any KickPusherDelegate)?
 
     init(
-        delegate: KickPusherDelegate,
+        delegate: any KickPusherDelegate,
         channelName: String,
         channelId: String,
         chatroomChannelId: String,
@@ -309,11 +309,11 @@ final class KickPusher: NSObject {
     }
 
     func isConnected() -> Bool {
-        return webSocket.isConnected()
+        webSocket.isConnected()
     }
 
     func hasEmotes() -> Bool {
-        return emotes.isReady()
+        emotes.isReady()
     }
 
     private func fetchSubscriberBadges() {

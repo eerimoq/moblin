@@ -14,7 +14,7 @@ func moblinkRelayLoadRelayId() {
 }
 
 func getMoblinkRelayId() -> String {
-    return relayId
+    relayId
 }
 
 func moblinkRelayResetId() {
@@ -48,7 +48,7 @@ protocol MoblinkRelayDelegate: AnyObject {
 private class Relay: NSObject {
     private var streamerUrl: URL
     private var password: String
-    private weak var delegate: MoblinkRelayDelegate?
+    private weak var delegate: (any MoblinkRelayDelegate)?
     private var webSocket: WebSocketClient
     private let name: String
     private var startTunnelId: Int?
@@ -69,7 +69,7 @@ private class Relay: NSObject {
         name: String,
         streamerUrl: URL,
         password: String,
-        delegate: MoblinkRelayDelegate?,
+        delegate: (any MoblinkRelayDelegate)?,
         destinationInterface: NWInterface,
         relay: MoblinkRelay
     ) {
@@ -355,12 +355,12 @@ class MoblinkRelay: NSObject {
     private let name: String
     let streamerUrl: URL
     private let password: String
-    private weak var delegate: MoblinkRelayDelegate?
+    private weak var delegate: (any MoblinkRelayDelegate)?
     private var relays: [Relay] = []
     private let networkPathMonitor = NWPathMonitor()
     private var started = false
 
-    init(name: String, streamerUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
+    init(name: String, streamerUrl: URL, password: String, delegate: any MoblinkRelayDelegate) {
         self.name = name
         self.streamerUrl = streamerUrl
         self.password = password
@@ -408,17 +408,17 @@ class MoblinkRelay: NSObject {
 
     private func makeRelayId(_ interface: NWInterface) -> String {
         if interface.type == .cellular {
-            return relayId
+            relayId
         } else {
-            return UUID(uuidString: relayId)?.add(data: interface.name.utf8Data).uuidString ?? relayId
+            UUID(uuidString: relayId)?.add(data: interface.name.utf8Data).uuidString ?? relayId
         }
     }
 
     private func makeRelayName(_ interface: NWInterface) -> String {
         if interface.type == .cellular {
-            return name
+            name
         } else {
-            return "\(name)-\(interface.index)"
+            "\(name)-\(interface.index)"
         }
     }
 

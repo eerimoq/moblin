@@ -82,7 +82,7 @@ private struct TextView: View {
     @ObservedObject var state: TextViewState
 
     private func scaledFontSize(size: CGSize) -> CGFloat {
-        return state.fontSize * (size.maximum() / 1920)
+        state.fontSize * (size.maximum() / 1920)
     }
 
     var body: some View {
@@ -205,7 +205,7 @@ final class TextEffect: VideoEffect {
                 guard let self else {
                     return
                 }
-                self.setOverlay(image: self.renderer?.ciImage())
+                setOverlay(image: renderer?.ciImage())
             }
             self.setOverlay(image: self.renderer?.ciImage())
         }

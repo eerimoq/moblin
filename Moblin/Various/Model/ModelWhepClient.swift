@@ -3,25 +3,25 @@ import Foundation
 
 extension Model {
     func whepCameras() -> [Camera] {
-        return database.whepClient.streams.map { stream in
+        database.whepClient.streams.map { stream in
             Camera(id: stream.id.uuidString, name: stream.camera())
         }
     }
 
     func getWhepStream(id: UUID) -> SettingsWhepClientStream? {
-        return database.whepClient.streams.first { stream in
+        database.whepClient.streams.first { stream in
             stream.id == id
         }
     }
 
     func getWhepStream(idString: String) -> SettingsWhepClientStream? {
-        return database.whepClient.streams.first { stream in
+        database.whepClient.streams.first { stream in
             idString == stream.id.uuidString
         }
     }
 
     func isWhepStreamConnected(streamId: UUID) -> Bool {
-        return ingests.whep.first(where: { $0.streamId == streamId })?.isConnected() ?? false
+        ingests.whep.first(where: { $0.streamId == streamId })?.isConnected() ?? false
     }
 
     func reloadWhepClient() {

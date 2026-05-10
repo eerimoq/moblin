@@ -10,9 +10,9 @@ class SettingsPrivacyRegion: Codable, Identifiable {
 
 private func formatMeters(value: Int) -> String {
     if value == 1 {
-        return String(localized: "\(value) meter")
+        String(localized: "\(value) meter")
     } else {
-        return String(localized: "\(value) meters")
+        String(localized: "\(value) meters")
     }
 }
 
@@ -24,11 +24,11 @@ enum SettingsLocationDesiredAccuracy: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .best:
-            return String(localized: "Best")
+            String(localized: "Best")
         case .nearestTenMeters:
-            return formatMeters(value: 10)
+            formatMeters(value: 10)
         case .hundredMeters:
-            return formatMeters(value: 100)
+            formatMeters(value: 100)
         }
     }
 }
@@ -47,23 +47,23 @@ enum SettingsLocationDistanceFilter: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .none:
-            return String(localized: "None")
+            String(localized: "None")
         case .oneMeter:
-            return formatMeters(value: 1)
+            formatMeters(value: 1)
         case .threeMeters:
-            return formatMeters(value: 3)
+            formatMeters(value: 3)
         case .fiveMeters:
-            return formatMeters(value: 5)
+            formatMeters(value: 5)
         case .tenMeters:
-            return formatMeters(value: 10)
+            formatMeters(value: 10)
         case .twentyMeters:
-            return formatMeters(value: 20)
+            formatMeters(value: 20)
         case .fiftyMeters:
-            return formatMeters(value: 50)
+            formatMeters(value: 50)
         case .hundredMeters:
-            return formatMeters(value: 100)
+            formatMeters(value: 100)
         case .twoHundredMeters:
-            return formatMeters(value: 200)
+            formatMeters(value: 200)
         }
     }
 }
@@ -85,7 +85,7 @@ class SettingsLocation: Codable, ObservableObject {
              distanceFilter
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.privacyRegions, privacyRegions)
@@ -97,7 +97,7 @@ class SettingsLocation: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         privacyRegions = container.decode(.privacyRegions, [SettingsPrivacyRegion].self, [])

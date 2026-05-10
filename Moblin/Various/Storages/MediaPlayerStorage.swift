@@ -12,11 +12,11 @@ class MediaPlayerStorage {
     }
 
     func makePath(id: UUID) -> URL {
-        return mediasUrl.appendingPathComponent("\(id).mp4")
+        mediasUrl.appendingPathComponent("\(id).mp4")
     }
 
     func ids() -> [UUID] {
-        return fileManager.idsBeforeDot(directory: mediasUrl.path)
+        fileManager.idsBeforeDot(directory: mediasUrl.path)
     }
 
     func add(id: UUID, url: URL) {

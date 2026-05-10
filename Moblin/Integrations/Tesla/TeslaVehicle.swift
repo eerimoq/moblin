@@ -38,7 +38,7 @@ extension P256.KeyAgreement.PublicKey {
     }
 
     func toBytes() -> Data {
-        return derRepresentation[26...]
+        derRepresentation[26...]
     }
 }
 
@@ -97,11 +97,11 @@ private class VehicleDomain {
     }
 
     func hasSessionInfo() -> Bool {
-        return sessionInfo != nil
+        sessionInfo != nil
     }
 
     func epoch() -> Data {
-        return sessionInfo?.epoch ?? Data()
+        sessionInfo?.epoch ?? Data()
     }
 
     func nextCounter() -> UInt32 {
@@ -117,7 +117,7 @@ private class VehicleDomain {
 }
 
 func teslaGeneratePrivateKey() -> P256.KeyAgreement.PrivateKey {
-    return P256.KeyAgreement.PrivateKey()
+    P256.KeyAgreement.PrivateKey()
 }
 
 protocol TeslaVehicleDelegate: AnyObject {
@@ -348,7 +348,7 @@ class TeslaVehicle: NSObject {
     }
 
     private func getNextAddress() -> Data {
-        return Data.random(length: 16)
+        Data.random(length: 16)
     }
 
     private func startVehicleSecurityHandshake() throws {
@@ -566,7 +566,7 @@ extension TeslaVehicle: CBCentralManagerDelegate {
         setState(state: .connecting)
     }
 
-    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {
+    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: (any Error)?) {
         logger.debug("tesla-vehicle: Connect failure")
         reset()
     }
@@ -576,14 +576,14 @@ extension TeslaVehicle: CBCentralManagerDelegate {
         peripheral.discoverServices([vehicleServiceUuid])
     }
 
-    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: (any Error)?) {
         logger.debug("tesla-vehicle: Disconnected")
         reset()
     }
 }
 
 extension TeslaVehicle: CBPeripheralDelegate {
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         guard let peripheralServices = peripheral.services else {
             logger.info("tesla-vehicle: No services found")
             return
@@ -596,7 +596,7 @@ extension TeslaVehicle: CBPeripheralDelegate {
     func peripheral(
         _ peripheral: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
-        error _: Error?
+        error _: (any Error)?
     ) {
         for characteristic in service.characteristics ?? [] {
             if characteristic.uuid == toVehicleUuid {
@@ -614,7 +614,11 @@ extension TeslaVehicle: CBPeripheralDelegate {
         }
     }
 
-    func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
+    func peripheral(
+        _: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error _: (any Error)?
+    ) {
         guard let value = characteristic.value else {
             return
         }

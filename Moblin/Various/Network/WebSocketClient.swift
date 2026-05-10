@@ -45,7 +45,7 @@ final class WebSocketClient {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func send(string: String) {
@@ -105,12 +105,12 @@ final class WebSocketClient {
             guard let self else {
                 return
             }
-            if self.pongReceived {
-                self.pongReceived = false
-                self.webSocket.ping()
+            if pongReceived {
+                pongReceived = false
+                webSocket.ping()
             } else {
-                self.startInternal()
-                self.delegate?.webSocketClientDisconnected(self)
+                startInternal()
+                delegate?.webSocketClientDisconnected(self)
             }
         }
     }
@@ -154,7 +154,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
 
     func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
         logger.debug("websocket: Error \(error.localizedDescription)")
-        let connected = self.connected
+        let connected = connected
         stopInternal()
         startConnectTimer()
         if connected {

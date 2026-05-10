@@ -1,7 +1,7 @@
 import WebKit
 
 private func moblinScript() -> String {
-    return loadStringResource(name: "moblin", ext: "js")
+    loadStringResource(name: "moblin", ext: "js")
 }
 
 private enum PublishMessage: Codable {
@@ -45,7 +45,7 @@ private enum MessageToBrowser: Codable {
     case message(data: Message)
 
     func toJson() -> String? {
-        return try? String(bytes: JSONEncoder().encode(self), encoding: .utf8)
+        try? String(bytes: JSONEncoder().encode(self), encoding: .utf8)
     }
 }
 

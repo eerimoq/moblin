@@ -29,8 +29,8 @@ class VideoEncoder {
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var formatDescription: CMFormatDescription?
-    weak var delegate: VideoEncoderDelegate?
-    weak var controlDelegate: VideoEncoderControlDelegate?
+    weak var delegate: (any VideoEncoderDelegate)?
+    weak var controlDelegate: (any VideoEncoderControlDelegate)?
     private var session: VTCompressionSession? {
         didSet {
             oldValue?.invalidate()
@@ -71,7 +71,7 @@ class VideoEncoder {
         guard isRunning else {
             return
         }
-        let settings = self.settings.value
+        let settings = settings.value
         let newBitrateVideoSize = updateAdaptiveResolution(settings: settings)
         if newBitrateVideoSize != oldBitrateVideoSize {
             session = makeSession(settings: settings, videoSize: newBitrateVideoSize)
@@ -92,7 +92,7 @@ class VideoEncoder {
             guard let self else {
                 return
             }
-            self.lockQueue.async {
+            lockQueue.async {
                 guard let sampleBuffer, status == noErr else {
                     logger.info("""
                     video-encoder: Failed to encode frame status \(status) an got \
@@ -116,9 +116,9 @@ class VideoEncoder {
 
     private func makeDecodeTimeStampOffset(_ settings: VideoEncoderSettings) -> CMTime {
         if settings.allowFrameReordering {
-            return CMTime(seconds: 0.15)
+            CMTime(seconds: 0.15)
         } else {
-            return .zero
+            .zero
         }
     }
 
@@ -170,26 +170,25 @@ class VideoEncoder {
 
     private func getVideoSize(settings: VideoEncoderSettings) -> CMVideoDimensions? {
         if settings.bitrate < settings.adaptiveResolution160Threshold {
-            return settings.videoSize.convertTo(dimension: 160)
+            settings.videoSize.convertTo(dimension: 160)
         } else if settings.bitrate < settings.adaptiveResolution360Threshold {
-            return settings.videoSize.convertTo(dimension: 360)
+            settings.videoSize.convertTo(dimension: 360)
         } else if settings.bitrate < settings.adaptiveResolution480Threshold {
-            return settings.videoSize.convertTo(dimension: 480)
+            settings.videoSize.convertTo(dimension: 480)
         } else if settings.bitrate < settings.adaptiveResolution720Threshold {
-            return settings.videoSize.convertTo(dimension: 720)
+            settings.videoSize.convertTo(dimension: 720)
         } else if settings.bitrate < settings.adaptiveResolution1080Threshold {
-            return settings.videoSize.convertTo(dimension: 1080)
+            settings.videoSize.convertTo(dimension: 1080)
         } else {
-            return settings.videoSize
+            settings.videoSize
         }
     }
 
     private func updateAdaptiveResolution(settings: VideoEncoderSettings) -> CMVideoDimensions {
-        var videoSize: CMVideoDimensions?
-        if settings.adaptiveResolution {
-            videoSize = getVideoSize(settings: settings)
+        var videoSize: CMVideoDimensions? = if settings.adaptiveResolution {
+            getVideoSize(settings: settings)
         } else {
-            videoSize = settings.videoSize
+            settings.videoSize
         }
         guard let videoSize, videoSize.height <= settings.videoSize.height else {
             return settings.videoSize

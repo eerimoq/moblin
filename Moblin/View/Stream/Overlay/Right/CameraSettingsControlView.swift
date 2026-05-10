@@ -251,7 +251,7 @@ private struct ButtonsView: View {
     }
 
     private func formatWhiteBalance() -> String {
-        return String(Int(minimumWhiteBalanceTemperature +
+        String(Int(minimumWhiteBalanceTemperature +
                 (maximumWhiteBalanceTemperature - minimumWhiteBalanceTemperature) * camera
                 .lockedWhiteBalance))
     }
@@ -271,14 +271,14 @@ private struct ButtonsView: View {
     }
 
     private func formatFocus() -> String {
-        return String(Int(camera.lockedFocus * 100))
+        String(Int(camera.lockedFocus * 100))
     }
 
     private func height() -> Double {
         if database.bigButtons {
-            return segmentHeightBig
+            segmentHeightBig
         } else {
-            return segmentHeight
+            segmentHeight
         }
     }
 

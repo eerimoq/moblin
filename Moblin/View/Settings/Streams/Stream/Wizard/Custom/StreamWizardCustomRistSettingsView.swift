@@ -6,7 +6,7 @@ struct StreamWizardCustomRistSettingsView: View {
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.customRistUrl.isEmpty || !urlError.isEmpty
+        createStreamWizard.customRistUrl.isEmpty || !urlError.isEmpty
     }
 
     private func updateUrlError() {

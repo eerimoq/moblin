@@ -60,7 +60,7 @@ struct WidgetCropSettingsView: View {
     }
 
     private func sourceWidgetExists() -> Bool {
-        return model.database.widgets.contains(where: { $0.id == widget.crop.sourceWidgetId })
+        model.database.widgets.contains(where: { $0.id == widget.crop.sourceWidgetId })
     }
 
     var body: some View {

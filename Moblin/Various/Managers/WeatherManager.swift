@@ -42,7 +42,7 @@ class WeatherManager {
     }
 
     func getLatestWeather() -> Weather? {
-        return weather
+        weather
     }
 
     func stop() {

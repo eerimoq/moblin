@@ -146,5 +146,5 @@ class SrtServer {
 }
 
 private func lastSrtSocketError() -> String {
-    return String(cString: srt_getlasterror_str())
+    String(cString: srt_getlasterror_str())
 }

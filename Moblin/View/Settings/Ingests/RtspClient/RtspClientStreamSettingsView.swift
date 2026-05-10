@@ -77,7 +77,7 @@ struct UrlSettingsView: View {
             }
         }
         .onDisappear {
-            if changed && !submitted {
+            if changed, !submitted {
                 submitUrl()
             }
         }

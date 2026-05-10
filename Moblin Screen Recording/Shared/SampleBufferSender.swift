@@ -44,7 +44,7 @@ class SampleBufferSender: NSObject {
     }
 
     private func isConnected() -> Bool {
-        return fd != -1
+        fd != -1
     }
 
     private func tryConnect() -> Bool {
@@ -187,8 +187,8 @@ class VideoEncoder {
                 guard let sampleBuffer, status == noErr else {
                     return
                 }
-                self.formatDescription = sampleBuffer.formatDescription
-                self.delegate?.videoEncoderOutputSampleBuffer(sampleBuffer)
+                formatDescription = sampleBuffer.formatDescription
+                delegate?.videoEncoderOutputSampleBuffer(sampleBuffer)
             }
         )
     }

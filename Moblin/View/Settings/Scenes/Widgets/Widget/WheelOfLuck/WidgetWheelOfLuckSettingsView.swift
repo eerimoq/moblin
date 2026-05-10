@@ -45,7 +45,7 @@ private struct OptionView: View {
     }
 
     private func calcPercent() -> Int {
-        return 100 * options.weight / wheelOfLuck.totalWeight
+        100 * options.weight / wheelOfLuck.totalWeight
     }
 
     var body: some View {

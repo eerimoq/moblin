@@ -48,11 +48,11 @@ private struct ActionTaken {
 }
 
 class AdaptiveBitrate {
-    weak var delegate: AdaptiveBitrateDelegate?
+    weak var delegate: (any AdaptiveBitrateDelegate)?
     private var actionsTaken: Deque<ActionTaken> = []
     private let dateFormatter = DateFormatter()
 
-    init(delegate: AdaptiveBitrateDelegate) {
+    init(delegate: any AdaptiveBitrateDelegate) {
         self.delegate = delegate
         dateFormatter.dateFormat = "HH:mm:ss.SSS"
     }
@@ -62,23 +62,23 @@ class AdaptiveBitrate {
     func setSettings(settings _: AdaptiveBitrateSettings) {}
 
     func getCurrentBitrate() -> UInt32 {
-        return 0
+        0
     }
 
     func getCurrentBitrateInKbps() -> Int64 {
-        return Int64(getCurrentBitrate() / 1000)
+        Int64(getCurrentBitrate() / 1000)
     }
 
     func getCurrentMaximumBitrateInKbps() -> Int64 {
-        return 0
+        0
     }
 
     func getFastPif() -> Int64 {
-        return 0
+        0
     }
 
     func getSmoothPif() -> Int64 {
-        return 0
+        0
     }
 
     func update(stats _: StreamStats) {
@@ -86,7 +86,7 @@ class AdaptiveBitrate {
     }
 
     func getActionsTaken() -> [String] {
-        return actionsTaken.map { $0.message }
+        actionsTaken.map(\.message)
     }
 
     func logAdaptiveAcion(actionTaken: String) {

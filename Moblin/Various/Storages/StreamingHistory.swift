@@ -24,19 +24,19 @@ enum ThermalState: Int, Codable, Comparable {
     }
 
     static func < (lhs: ThermalState, rhs: ThermalState) -> Bool {
-        return lhs.rawValue < rhs.rawValue
+        lhs.rawValue < rhs.rawValue
     }
 
     func toProcessInfo() -> ProcessInfo.ThermalState {
         switch self {
         case .nominal:
-            return .nominal
+            .nominal
         case .fair:
-            return .fair
+            .fair
         case .serious:
-            return .serious
+            .serious
         case .critical:
-            return .critical
+            .critical
         }
     }
 }
@@ -69,7 +69,7 @@ class StreamingHistoryStream: Identifiable, Codable {
     }
 
     func highestBitrateString() -> String {
-        return formatBytesPerSecond(speed: highestBitrate!)
+        formatBytesPerSecond(speed: highestBitrate!)
     }
 
     func updateHighestThermalState(thermalState: ThermalState) {
@@ -85,11 +85,11 @@ class StreamingHistoryStream: Identifiable, Codable {
     }
 
     func lowestBatteryPercentageString() -> String {
-        return "\(Int(100 * lowestBatteryLevel!))%"
+        "\(Int(100 * lowestBatteryLevel!))%"
     }
 
     func duration() -> Duration {
-        return .seconds(stopTime.timeIntervalSince(startTime))
+        .seconds(stopTime.timeIntervalSince(startTime))
     }
 }
 
@@ -125,14 +125,14 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
     }
 
     static func fromString(settings: String) throws -> StreamingHistoryDatabase {
-        return try JSONDecoder().decode(
+        try JSONDecoder().decode(
             StreamingHistoryDatabase.self,
             from: settings.data(using: .utf8)!
         )
     }
 
     func toString() throws -> String {
-        return try String.fromUtf8(data: JSONEncoder().encode(self))
+        try String.fromUtf8(data: JSONEncoder().encode(self))
     }
 }
 

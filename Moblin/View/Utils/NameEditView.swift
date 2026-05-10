@@ -6,11 +6,11 @@ struct NameEditView: View {
 
     private func onChange(value: String) -> String? {
         if value.isEmpty {
-            return String(localized: "Empty names are not allowed.")
+            String(localized: "Empty names are not allowed.")
         } else if existingNames.contains(where: { $0.name == value }), value != name {
-            return String(localized: "The name '\(value)' is already in use.")
+            String(localized: "The name '\(value)' is already in use.")
         } else {
-            return nil
+            nil
         }
     }
 

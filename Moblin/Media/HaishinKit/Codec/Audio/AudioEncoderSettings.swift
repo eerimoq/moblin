@@ -9,7 +9,7 @@ struct AudioEncoderSettings {
         case opus
 
         func makeAudioBuffer(_ format: AVAudioFormat) -> AVAudioCompressedBuffer {
-            return AVAudioCompressedBuffer(
+            AVAudioCompressedBuffer(
                 format: format,
                 packetCapacity: 1,
                 maximumPacketSize: 1024 * Int(format.channelCount)
@@ -18,10 +18,9 @@ struct AudioEncoderSettings {
 
         func makeAudioFormat(_ inSourceFormat: AudioStreamBasicDescription) -> AVAudioFormat? {
             let channels = min(inSourceFormat.mChannelsPerFrame, AudioEncoderSettings.maximumNumberOfChannels)
-            var streamDescription: AudioStreamBasicDescription
-            switch self {
+            var streamDescription = switch self {
             case .aac:
-                streamDescription = AudioStreamBasicDescription(
+                AudioStreamBasicDescription(
                     mSampleRate: inSourceFormat.mSampleRate,
                     mFormatID: kAudioFormatMPEG4AAC,
                     mFormatFlags: UInt32(MPEG4ObjectID.AAC_LC.rawValue),
@@ -33,7 +32,7 @@ struct AudioEncoderSettings {
                     mReserved: 0
                 )
             case .opus:
-                streamDescription = AudioStreamBasicDescription(
+                AudioStreamBasicDescription(
                     mSampleRate: inSourceFormat.mSampleRate,
                     mFormatID: kAudioFormatOpus,
                     mFormatFlags: 0,

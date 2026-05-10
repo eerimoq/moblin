@@ -41,17 +41,17 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
 
     func username() -> String {
         if user.isEmpty {
-            return String(localized: "-- Any --")
+            String(localized: "-- Any --")
         } else {
-            return user
+            user
         }
     }
 
     func message() -> String {
         if messageStart.isEmpty {
-            return String(localized: "-- Any --")
+            String(localized: "-- Any --")
         } else {
-            return messageStart
+            messageStart
         }
     }
 
@@ -76,7 +76,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
              print
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.enabled, enabled)
@@ -91,7 +91,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
@@ -124,7 +124,7 @@ class SettingsChatBotPermissionsCommand: Codable, ObservableObject {
              cooldown
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.moderatorsEnabled, moderatorsEnabled)
         try container.encode(.subscribersEnabled, subscribersEnabled)
@@ -138,7 +138,7 @@ class SettingsChatBotPermissionsCommand: Codable, ObservableObject {
         self.moderatorsEnabled = moderatorsEnabled
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         moderatorsEnabled = container.decode(.moderatorsEnabled, Bool.self, true)
         subscribersEnabled = container.decode(.subscribersEnabled, Bool.self, false)
@@ -194,7 +194,7 @@ class SettingsChatBotPermissions: Codable {
              migrated
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.tts, tts)
         try container.encode(.fix, fix)
@@ -220,7 +220,7 @@ class SettingsChatBotPermissions: Codable {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         tts = container.decode(.tts, SettingsChatBotPermissionsCommand.self, .init())
         fix = container.decode(.fix, SettingsChatBotPermissionsCommand.self, .init())
@@ -262,7 +262,7 @@ class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
              replacement
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.alias, alias)
         try container.encode(.replacement, replacement)
@@ -270,7 +270,7 @@ class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         alias = container.decode(.alias, String.self, "")
         replacement = container.decode(.replacement, String.self, "")
@@ -301,7 +301,7 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
              redTag
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.text, text)
@@ -314,7 +314,7 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         text = container.decode(.text, String.self, "")
@@ -361,7 +361,7 @@ class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
              orangeTag
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.redTag, redTag)
         try container.encode(.greenTag, greenTag)
@@ -372,7 +372,7 @@ class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         redTag = container.decode(.redTag, Bool.self, false)
         greenTag = container.decode(.greenTag, Bool.self, false)
@@ -382,7 +382,7 @@ class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
     }
 
     func isEnabled() -> Bool {
-        return redTag || greenTag || blueTag || yellowTag || orangeTag
+        redTag || greenTag || blueTag || yellowTag || orangeTag
     }
 }
 
@@ -397,7 +397,7 @@ class SettingsChatNickname: Codable, Identifiable, ObservableObject {
              nickname
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.user, user)
@@ -406,7 +406,7 @@ class SettingsChatNickname: Codable, Identifiable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         user = container.decode(.user, String.self, "")
@@ -421,20 +421,20 @@ class SettingsChatNicknames: Codable, ObservableObject {
         case nicknames
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.nicknames, nicknames)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         nicknames = container.decode(.nicknames, [SettingsChatNickname].self, [])
     }
 
     func getNickname(user: String) -> String? {
-        return nicknames.first(where: { $0.user == user })?.nickname
+        nicknames.first(where: { $0.user == user })?.nickname
     }
 }
 
@@ -456,7 +456,7 @@ class SettingsOpenAi: Codable, ObservableObject {
              role
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.baseUrl, baseUrl)
         try container.encode(.apiKey, apiKey)
@@ -464,7 +464,7 @@ class SettingsOpenAi: Codable, ObservableObject {
         try container.encode(.role, personality)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         baseUrl = container.decode(
             .baseUrl,
@@ -510,11 +510,11 @@ enum SettingsChatDisplayStyle: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .internationalName:
-            return String(localized: "International name")
+            String(localized: "International name")
         case .internationalNameAndUsername:
-            return String(localized: "International name (Username)")
+            String(localized: "International name (Username)")
         case .username:
-            return String(localized: "Username")
+            String(localized: "Username")
         }
     }
 }
@@ -523,7 +523,7 @@ enum SettingsVoiceType: String, Codable, CaseIterable {
     case apple
     case ttsMonster
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         self = try SettingsVoiceType(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .apple
     }
@@ -653,7 +653,7 @@ class SettingsChat: Codable, ObservableObject {
              sharedChatIcons
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.fontSize, fontSize)
         try container.encode(.usernameColor, usernameColor)
@@ -708,7 +708,7 @@ class SettingsChat: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         fontSize = container.decode(.fontSize, Float.self, 19.0)
         usernameColor = container.decode(.usernameColor, RgbColor.self, .init(red: 255, green: 163, blue: 0))
@@ -799,25 +799,25 @@ class SettingsChat: Codable, ObservableObject {
 
     func getRotation() -> Double {
         if newMessagesAtTop {
-            return 0.0
+            0.0
         } else {
-            return 180.0
+            180.0
         }
     }
 
     func getScaleX() -> Double {
         if newMessagesAtTop {
-            return 1.0
+            1.0
         } else {
-            return -1.0
+            -1.0
         }
     }
 
     func isMirrored() -> CGFloat {
         if mirrored {
-            return -1
+            -1
         } else {
-            return 1
+            1
         }
     }
 }

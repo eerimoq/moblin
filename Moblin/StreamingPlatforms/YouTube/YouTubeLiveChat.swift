@@ -49,7 +49,7 @@ private func createPaidStickerHighlight(chatDescription: ChatDescription) -> Cha
 }
 
 private func createMemberHighlight() -> ChatHighlight {
-    return ChatHighlight.makeMember()
+    ChatHighlight.makeMember()
 }
 
 private struct InvalidationContinuationData: Codable {
@@ -202,11 +202,11 @@ final class YouTubeLiveChat: NSObject {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func hasEmotes() -> Bool {
-        return emotes.isReady()
+        emotes.isReady()
     }
 
     private func handleError(title: String, subTitle: String) {
@@ -222,11 +222,11 @@ final class YouTubeLiveChat: NSObject {
     }
 
     private func makeLiveChatUrl() -> URL? {
-        return URL(string: "https://www.youtube.com/live_chat?is_popout=1&v=\(videoId)")
+        URL(string: "https://www.youtube.com/live_chat?is_popout=1&v=\(videoId)")
     }
 
     private func makeGetLiveChatUrl() -> URL? {
-        return URL(string: "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat")
+        URL(string: "https://www.youtube.com/youtubei/v1/live_chat/get_live_chat")
     }
 
     private func getInitialContinuation() async throws {
@@ -426,7 +426,7 @@ final class YouTubeLiveChat: NSObject {
     }
 
     private func makeGetLiveChatBody() -> Data {
-        return """
+        """
         {
             "context": {
                 "client": {

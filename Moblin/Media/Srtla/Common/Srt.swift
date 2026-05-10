@@ -16,27 +16,27 @@ enum SrtPacketType: UInt16 {
 }
 
 func isSrtDataPacket(packet: Data) -> Bool {
-    return (packet[0] & 0x80) == 0
+    (packet[0] & 0x80) == 0
 }
 
 func getSrtControlPacketType(packet: Data) -> UInt16 {
-    return packet.getUInt16Be() & 0x7FFF
+    packet.getUInt16Be() & 0x7FFF
 }
 
 func getSrtSequenceNumber(packet: Data) -> UInt32 {
-    return packet.getUInt32Be()
+    packet.getUInt32Be()
 }
 
 func isSrtSnAcked(sn: UInt32, ackSn: UInt32) -> Bool {
     if sn < ackSn {
-        return ackSn - sn < 100_000_000
+        ackSn - sn < 100_000_000
     } else {
-        return sn - ackSn > 100_000_000
+        sn - ackSn > 100_000_000
     }
 }
 
 func isSrtSnRange(sn: UInt32) -> Bool {
-    return (sn & 0x8000_0000) == 0x8000_0000
+    (sn & 0x8000_0000) == 0x8000_0000
 }
 
 func processSrtNak(packet: Data, onNak: (UInt32) -> Void) {

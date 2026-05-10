@@ -43,7 +43,7 @@ class GeographyManager {
     }
 
     func getLatestPlacemark() -> CLPlacemark? {
-        return placemark
+        placemark
     }
 
     func stop() {

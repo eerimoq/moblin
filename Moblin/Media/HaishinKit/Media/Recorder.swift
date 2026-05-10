@@ -27,7 +27,7 @@ class Recorder: NSObject {
     private var audioConverter: AVAudioConverter?
     private var audioOutputFormat: AVAudioFormat?
     private var basePresentationTimeStamp: CMTime = .zero
-    weak var delegate: RecorderDelegate?
+    weak var delegate: (any RecorderDelegate)?
 
     func setAudioChannelsMap(map: [Int: Int]) {
         processorPipelineQueue.async {
@@ -122,7 +122,7 @@ class Recorder: NSObject {
     private func convertAudio(_ sampleBuffer: CMSampleBuffer,
                               _ presentationTimeStamp: CMTime) -> CMSampleBuffer?
     {
-        return tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: false)
+        tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: false)
             ?? tryConvertAudio(sampleBuffer, presentationTimeStamp, makeConverter: true)
     }
 
@@ -358,7 +358,7 @@ class Recorder: NSObject {
     }
 
     private func isReadyForStartWriting(writer: AVAssetWriter) -> Bool {
-        return writer.inputs.count == 2
+        writer.inputs.count == 2
     }
 }
 

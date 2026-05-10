@@ -42,11 +42,10 @@ class AudioMixer {
         engine.attach(player)
         engine.connect(player, to: engine.mainMixerNode, format: outputFormat)
         player.play()
-        let converter: AVAudioConverter?
-        if format.sampleRate != outputFormat.sampleRate {
-            converter = AVAudioConverter(from: format, to: outputFormat)
+        let converter: AVAudioConverter? = if format.sampleRate != outputFormat.sampleRate {
+            AVAudioConverter(from: format, to: outputFormat)
         } else {
-            converter = nil
+            nil
         }
         inputs[inputId] = Input(player: player, converter: converter)
     }
@@ -59,7 +58,7 @@ class AudioMixer {
     }
 
     func numberOfInputs() -> Int {
-        return inputs.count
+        inputs.count
     }
 
     func append(inputId: UUID, buffer: AVAudioPCMBuffer) {

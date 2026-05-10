@@ -172,7 +172,7 @@ extension Model {
     }
 
     func isCameraSupportingManualFocus() -> Bool {
-        return cameraDevice?.isLockingFocusWithCustomLensPositionSupported ?? false
+        cameraDevice?.isLockingFocusWithCustomLensPositionSupported ?? false
     }
 
     func startObservingFocus() {
@@ -184,11 +184,11 @@ extension Model {
             guard let self else {
                 return
             }
-            guard !self.camera.editingLockedFocus else {
+            guard !camera.editingLockedFocus else {
                 return
             }
-            self.camera.lockedFocuses[device] = device.lensPosition
-            self.camera.lockedFocus = device.lensPosition
+            camera.lockedFocuses[device] = device.lensPosition
+            camera.lockedFocus = device.lensPosition
         }
     }
 
@@ -235,7 +235,7 @@ extension Model {
     }
 
     func isCameraSupportingManualExposureAndIso() -> Bool {
-        return cameraDevice?.isExposureModeSupported(.custom) ?? false
+        cameraDevice?.isExposureModeSupported(.custom) ?? false
     }
 
     private func setManualExposureAndIso(exposureFactor: Float?, isoFactor: Float?) {
@@ -286,12 +286,12 @@ extension Model {
             guard let self else {
                 return
             }
-            guard !self.camera.editingLockedIso else {
+            guard !camera.editingLockedIso else {
                 return
             }
             let iso = factorFromIso(device: device, iso: device.iso)
-            self.camera.lockedIsos[device] = iso
-            self.camera.lockedIso = iso
+            camera.lockedIsos[device] = iso
+            camera.lockedIso = iso
         }
     }
 
@@ -312,12 +312,12 @@ extension Model {
             guard let self else {
                 return
             }
-            guard !self.camera.editingLockedExposure else {
+            guard !camera.editingLockedExposure else {
                 return
             }
             let exposure = factorFromExposure(device: device, exposure: device.exposureDuration)
-            self.camera.lockedExposures[device] = exposure
-            self.camera.lockedExposure = exposure
+            camera.lockedExposures[device] = exposure
+            camera.lockedExposure = exposure
         }
     }
 
@@ -378,7 +378,7 @@ extension Model {
     }
 
     func isCameraSupportingManualWhiteBalance() -> Bool {
-        return cameraDevice?.isLockingWhiteBalanceWithCustomDeviceGainsSupported ?? false
+        cameraDevice?.isLockingWhiteBalanceWithCustomDeviceGainsSupported ?? false
     }
 
     func startObservingWhiteBalance() {
@@ -393,15 +393,15 @@ extension Model {
             guard let self else {
                 return
             }
-            guard !self.camera.editingLockedWhiteBalance else {
+            guard !camera.editingLockedWhiteBalance else {
                 return
             }
             let factor = factorFromWhiteBalance(
                 device: device,
                 gains: device.deviceWhiteBalanceGains.clamped(maxGain: device.maxWhiteBalanceGain)
             )
-            self.camera.lockedWhiteBalances[device] = factor
-            self.camera.lockedWhiteBalance = factor
+            camera.lockedWhiteBalances[device] = factor
+            camera.lockedWhiteBalance = factor
         }
     }
 
@@ -491,11 +491,11 @@ extension Model {
     }
 
     func allLuts() -> [SettingsColorLut] {
-        return database.color.bundledLuts + database.color.diskLutsCube + database.color.diskLutsPng
+        database.color.bundledLuts + database.color.diskLutsCube + database.color.diskLutsPng
     }
 
     func getLogLutById(id: UUID) -> SettingsColorLut? {
-        return allLuts().first { $0.id == id }
+        allLuts().first { $0.id == id }
     }
 
     func updateLutsButtonState() {
@@ -576,98 +576,98 @@ extension Model {
     }
 
     private func isBackCamera(cameraId: CameraId) -> Bool {
-        return backCameras.contains(where: { $0.id == cameraId })
+        backCameras.contains(where: { $0.id == cameraId })
     }
 
     private func isFrontCamera(cameraId: CameraId) -> Bool {
-        return frontCameras.contains(where: { $0.id == cameraId })
+        frontCameras.contains(where: { $0.id == cameraId })
     }
 
     private func isBackTripleLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backTripleLowEnergyCamera.id
+        cameraId == backTripleLowEnergyCamera.id
     }
 
     private func isBackDualLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backDualLowEnergyCamera.id
+        cameraId == backDualLowEnergyCamera.id
     }
 
     private func isBackWideDualLowEnergyAutoCamera(cameraId: CameraId) -> Bool {
-        return cameraId == backWideDualLowEnergyCamera.id
+        cameraId == backWideDualLowEnergyCamera.id
     }
 
     func getCameraId(scene: SettingsScene?) -> CameraId {
-        return getCameraId(settingsCameraId: scene?.toCameraId())
+        getCameraId(settingsCameraId: scene?.toCameraId())
     }
 
     func getCameraId(videoSourceWidget: SettingsWidgetVideoSource?) -> CameraId {
-        return getCameraId(settingsCameraId: videoSourceWidget?.toCameraId())
+        getCameraId(settingsCameraId: videoSourceWidget?.toCameraId())
     }
 
     func getCameraId(vTuberWidget: SettingsWidgetVTuber?) -> CameraId {
-        return getCameraId(settingsCameraId: vTuberWidget?.toCameraId())
+        getCameraId(settingsCameraId: vTuberWidget?.toCameraId())
     }
 
     func getCameraId(pngTuberWidget: SettingsWidgetPngTuber?) -> CameraId {
-        return getCameraId(settingsCameraId: pngTuberWidget?.toCameraId())
+        getCameraId(settingsCameraId: pngTuberWidget?.toCameraId())
     }
 
     func cameraIdToSettingsCameraId(cameraId: CameraId) -> SettingsCameraId {
         if let id = getSrtlaStream(idString: cameraId)?.id {
-            return .srtla(id: id)
+            .srtla(id: id)
         } else if let id = getRtmpStream(idString: cameraId)?.id {
-            return .rtmp(id: id)
+            .rtmp(id: id)
         } else if let id = getRistStream(idString: cameraId)?.id {
-            return .rist(id: id)
+            .rist(id: id)
         } else if let id = getRtspStream(idString: cameraId)?.id {
-            return .rtsp(id: id)
+            .rtsp(id: id)
         } else if let id = getWhipStream(idString: cameraId)?.id {
-            return .whip(id: id)
+            .whip(id: id)
         } else if let id = getWhepStream(idString: cameraId)?.id {
-            return .whep(id: id)
+            .whep(id: id)
         } else if let id = getMediaPlayer(idString: cameraId)?.id {
-            return .mediaPlayer(id: id)
+            .mediaPlayer(id: id)
         } else if isBackCamera(cameraId: cameraId) {
-            return .back(id: cameraId)
+            .back(id: cameraId)
         } else if isFrontCamera(cameraId: cameraId) {
-            return .front(id: cameraId)
+            .front(id: cameraId)
         } else if isScreenCaptureCamera(cameraId: cameraId) {
-            return .screenCapture
+            .screenCapture
         } else if isBackTripleLowEnergyAutoCamera(cameraId: cameraId) {
-            return .backTripleLowEnergy
+            .backTripleLowEnergy
         } else if isBackDualLowEnergyAutoCamera(cameraId: cameraId) {
-            return .backDualLowEnergy
+            .backDualLowEnergy
         } else if isBackWideDualLowEnergyAutoCamera(cameraId: cameraId) {
-            return .backWideDualLowEnergy
+            .backWideDualLowEnergy
         } else if isNoneCamera(cameraId: cameraId) {
-            return .none
+            .none
         } else {
-            return .external(id: cameraId, name: getExternalCameraName(cameraId: cameraId))
+            .external(id: cameraId, name: getExternalCameraName(cameraId: cameraId))
         }
     }
 
     func cameraIdToSettingsCameraId(cameraId: UUID) -> SettingsCameraId? {
         if let id = getSrtlaStream(id: cameraId)?.id {
-            return .srtla(id: id)
+            .srtla(id: id)
         } else if let id = getRtmpStream(id: cameraId)?.id {
-            return .rtmp(id: id)
+            .rtmp(id: id)
         } else if let id = getRistStream(id: cameraId)?.id {
-            return .rist(id: id)
+            .rist(id: id)
         } else if let id = getRtspStream(id: cameraId)?.id {
-            return .rtsp(id: id)
+            .rtsp(id: id)
         } else if let id = getWhipStream(id: cameraId)?.id {
-            return .whip(id: id)
+            .whip(id: id)
         } else if let id = getWhepStream(id: cameraId)?.id {
-            return .whep(id: id)
+            .whep(id: id)
         } else if let id = getMediaPlayer(id: cameraId)?.id {
-            return .mediaPlayer(id: id)
+            .mediaPlayer(id: id)
         } else if isScreenCaptureCamera(cameraId: cameraId.uuidString) {
-            return .screenCapture
+            .screenCapture
         } else if isNoneCamera(cameraId: cameraId.uuidString) {
-            return SettingsCameraId.none
+            SettingsCameraId.none
         } else if let deviceUniqueId = getBuiltinDeviceUniqueId(cameraId: cameraId) {
-            return cameraIdToSettingsCameraId(cameraId: deviceUniqueId)
+            cameraIdToSettingsCameraId(cameraId: deviceUniqueId)
         } else {
-            return nil
+            nil
         }
     }
 
@@ -710,19 +710,19 @@ extension Model {
     }
 
     func getCameraPositionName(scene: SettingsScene?) -> String {
-        return getCameraPositionName(settingsCameraId: scene?.toCameraId())
+        getCameraPositionName(settingsCameraId: scene?.toCameraId())
     }
 
     func getCameraPositionName(videoSourceWidget: SettingsWidgetVideoSource?) -> String {
-        return getCameraPositionName(settingsCameraId: videoSourceWidget?.toCameraId())
+        getCameraPositionName(settingsCameraId: videoSourceWidget?.toCameraId())
     }
 
     func getCameraPositionName(vTuberWidget: SettingsWidgetVTuber?) -> String {
-        return getCameraPositionName(settingsCameraId: vTuberWidget?.toCameraId())
+        getCameraPositionName(settingsCameraId: vTuberWidget?.toCameraId())
     }
 
     func getCameraPositionName(pngTuberWidget: SettingsWidgetPngTuber?) -> String {
-        return getCameraPositionName(settingsCameraId: pngTuberWidget?.toCameraId())
+        getCameraPositionName(settingsCameraId: pngTuberWidget?.toCameraId())
     }
 
     private func getCameraPositionName(settingsCameraId: SettingsCameraId?) -> String {
@@ -777,30 +777,29 @@ extension Model {
 
     func getExternalCameraName(cameraId: CameraId) -> String {
         if let camera = externalCameras.first(where: { $0.id == cameraId }) {
-            return camera.name
+            camera.name
         } else {
-            return unknownSad
+            unknownSad
         }
     }
 
     func isExternalCameraConnected(cameraId: String) -> Bool {
-        return externalCameras.first { $0.id == cameraId } != nil
+        externalCameras.first { $0.id == cameraId } != nil
     }
 
     func setColorSpace() {
-        var colorSpace: AVCaptureColorSpace
-        switch database.color.space {
+        var colorSpace: AVCaptureColorSpace = switch database.color.space {
         case .srgb:
-            colorSpace = .sRGB
+            .sRGB
         case .p3D65:
-            colorSpace = .P3_D65
+            .P3_D65
         case .hlgBt2020:
-            colorSpace = .HLG_BT2020
+            .HLG_BT2020
         case .appleLog:
             if #available(iOS 17.0, *) {
-                colorSpace = .appleLog
+                .appleLog
             } else {
-                colorSpace = .sRGB
+                .sRGB
             }
         }
         media.setColorSpace(colorSpace: colorSpace, onComplete: {
@@ -823,19 +822,19 @@ extension Model {
     }
 
     private func getBuiltinDeviceUniqueId(cameraId: UUID) -> String? {
-        return builtinCameraIds.first { _, value in
+        builtinCameraIds.first { _, value in
             value == cameraId
         }?.key
     }
 
     func makeCaptureDevice(device: AVCaptureDevice) -> CaptureDevice {
-        return CaptureDevice(device: device,
-                             id: getBuiltinCameraId(deviceUniqueId: device.uniqueID),
-                             isVideoMirrored: getVideoMirroredOnStream(device: device))
+        CaptureDevice(device: device,
+                      id: getBuiltinCameraId(deviceUniqueId: device.uniqueID),
+                      isVideoMirrored: getVideoMirroredOnStream(device: device))
     }
 
     private func statusCameraText() -> String {
-        return getCameraPositionName(scene: findEnabledScene(id: sceneSelector.selectedSceneId))
+        getCameraPositionName(scene: findEnabledScene(id: sceneSelector.selectedSceneId))
     }
 
     func updateStatusCameraText() {
@@ -848,35 +847,35 @@ extension Model {
     func getVideoSourceId(cameraId: SettingsCameraId) -> UUID? {
         switch cameraId {
         case let .rtmp(id: id):
-            return id
+            id
         case let .srtla(id: id):
-            return id
+            id
         case let .rist(id: id):
-            return id
+            id
         case let .rtsp(id: id):
-            return id
+            id
         case let .whip(id: id):
-            return id
+            id
         case let .whep(id: id):
-            return id
+            id
         case let .mediaPlayer(id: id):
-            return id
+            id
         case .screenCapture:
-            return screenCaptureCameraId
+            screenCaptureCameraId
         case let .back(id: id):
-            return getBuiltinCameraId(deviceUniqueId: id)
+            getBuiltinCameraId(deviceUniqueId: id)
         case let .front(id: id):
-            return getBuiltinCameraId(deviceUniqueId: id)
+            getBuiltinCameraId(deviceUniqueId: id)
         case let .external(id: id, name: _):
-            return getBuiltinCameraId(deviceUniqueId: id)
+            getBuiltinCameraId(deviceUniqueId: id)
         case .backDualLowEnergy:
-            return nil
+            nil
         case .backTripleLowEnergy:
-            return nil
+            nil
         case .backWideDualLowEnergy:
-            return nil
+            nil
         case .none:
-            return noneCameraId
+            noneCameraId
         }
     }
 

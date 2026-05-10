@@ -6,11 +6,11 @@ private struct PadelScoreboardScore: Identifiable {
     let away: Int
 
     func isHomeWin() -> Bool {
-        return isSetWin(first: home, second: away)
+        isSetWin(first: home, second: away)
     }
 
     func isAwayWin() -> Bool {
-        return isSetWin(first: away, second: home)
+        isSetWin(first: away, second: home)
     }
 }
 
@@ -30,11 +30,11 @@ private struct PadelScoreboard {
 }
 
 private func createPadelPlayer(players: [SettingsWidgetScoreboardPlayer], id: UUID) -> PadelScoreboardPlayer {
-    return PadelScoreboardPlayer(name: findScoreboardPlayer(players: players, id: id))
+    PadelScoreboardPlayer(name: findScoreboardPlayer(players: players, id: id))
 }
 
 private func findScoreboardPlayer(players: [SettingsWidgetScoreboardPlayer], id: UUID) -> String {
-    return players.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
+    players.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
 }
 
 private func padelScoreboardSettingsToEffect(_ scoreboard: SettingsWidgetPadelScoreboard,
@@ -62,9 +62,9 @@ struct ScoreboardEffectPadelView: View {
     private func scoreFontSize() -> Double {
         switch padel.type {
         case .doubles:
-            return scoreboardScoreBigFontSize
+            scoreboardScoreBigFontSize
         case .singles:
-            return scoreboardScoreFontSize
+            scoreboardScoreFontSize
         }
     }
 

@@ -25,12 +25,11 @@ class AlertsEffectMedia: @unchecked Sendable {
     private var soundUrl: URL?
 
     func getPlayer() -> AlertsEffectPlayer {
-        let images: AlertsEffectImages
-        switch mediaType {
+        let images: AlertsEffectImages = switch mediaType {
         case .gifAndSound:
-            images = AlertsEffectGifImages(images: gifImages)
+            AlertsEffectGifImages(images: gifImages)
         case .video:
-            images = AlertsEffectVideoImages(videoUrl: videoUrl)
+            AlertsEffectVideoImages(videoUrl: videoUrl)
         }
         return AlertsEffectPlayer(images: images, soundUrl: soundUrl)
     }
@@ -82,11 +81,12 @@ class AlertsEffectMedia: @unchecked Sendable {
                                          _ mediaStorage: AlertMediaStorage,
                                          _ bundledImages: [SettingsAlertsMediaGalleryItem])
     {
-        let image: AlertsEffectMediaItem
-        if let bundledImage = bundledImages.first(where: { $0.id == alert.imageId }) {
-            image = .bundledName(bundledImage.name)
+        let image: AlertsEffectMediaItem = if let bundledImage = bundledImages
+            .first(where: { $0.id == alert.imageId })
+        {
+            .bundledName(bundledImage.name)
         } else {
-            image = .customUrl(mediaStorage.makePath(id: alert.imageId))
+            .customUrl(mediaStorage.makePath(id: alert.imageId))
         }
         let loopCount = alert.imageLoopCount
         DispatchQueue.global().async {
@@ -111,11 +111,12 @@ class AlertsEffectMedia: @unchecked Sendable {
                                            _ mediaStorage: AlertMediaStorage,
                                            _ bundledSounds: [SettingsAlertsMediaGalleryItem])
     {
-        let sound: AlertsEffectMediaItem
-        if let bundledSound = bundledSounds.first(where: { $0.id == alert.soundId }) {
-            sound = .bundledName(bundledSound.name)
+        let sound: AlertsEffectMediaItem = if let bundledSound = bundledSounds
+            .first(where: { $0.id == alert.soundId })
+        {
+            .bundledName(bundledSound.name)
         } else {
-            sound = .customUrl(mediaStorage.makePath(id: alert.soundId))
+            .customUrl(mediaStorage.makePath(id: alert.soundId))
         }
         switch sound {
         case let .bundledName(name):
@@ -190,7 +191,7 @@ class AlertsEffectGifImages: AlertsEffectImages {
     }
 
     func isEmpty() -> Bool {
-        return images.isEmpty
+        images.isEmpty
     }
 }
 
@@ -206,11 +207,11 @@ class AlertsEffectVideoImages: AlertsEffectImages {
     }
 
     func getImage(_ presentationTimeStamp: Double) -> CIImage? {
-        return reader?.getImage(presentationTimeStamp: presentationTimeStamp)
+        reader?.getImage(presentationTimeStamp: presentationTimeStamp)
     }
 
     func isEmpty() -> Bool {
-        return reader?.hasEnded() ?? true
+        reader?.hasEnded() ?? true
     }
 }
 

@@ -12,7 +12,7 @@ class GimbalPresetJob {
     }
 
     func wasLongPress() -> Bool {
-        return timer == nil
+        timer == nil
     }
 }
 
@@ -195,7 +195,7 @@ extension Model {
     }
 
     func isGameControllerConnected() -> Bool {
-        return numberOfGameControllers() > 0
+        numberOfGameControllers() > 0
     }
 
     private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
@@ -275,7 +275,7 @@ extension Model {
     }
 
     private func numberOfGameControllers() -> Int {
-        return gameControllers.filter { $0 != nil }.count
+        gameControllers.filter { $0 != nil }.count
     }
 
     private func updateGameControllers() {
@@ -374,6 +374,6 @@ extension Model {
     }
 
     func isShowingStatusGameController() -> Bool {
-        return database.show.gameController && isGameControllerConnected()
+        database.show.gameController && isGameControllerConnected()
     }
 }

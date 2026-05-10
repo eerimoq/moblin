@@ -30,7 +30,7 @@ extension Model {
     }
 
     func pictureInPictureEnabled() -> Bool {
-        return pipController?.contentSource != nil
+        pipController?.contentSource != nil
     }
 }
 
@@ -43,13 +43,13 @@ extension Model: AVPictureInPictureSampleBufferPlaybackDelegate {
     func pictureInPictureControllerTimeRangeForPlayback(
         _: AVPictureInPictureController
     ) -> CMTimeRange {
-        return CMTimeRange(start: .negativeInfinity, duration: .positiveInfinity)
+        CMTimeRange(start: .negativeInfinity, duration: .positiveInfinity)
     }
 
     func pictureInPictureControllerIsPlaybackPaused(
         _: AVPictureInPictureController
     ) -> Bool {
-        return false
+        false
     }
 
     func pictureInPictureController(

@@ -38,7 +38,7 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
     private var nextBitrateDecrTime: ContinuousClock.Instant = .now
     private var currentBitrate: Int64 = 0
 
-    init(targetBitrate: UInt32, delegate: AdaptiveBitrateDelegate) {
+    init(targetBitrate: UInt32, delegate: any AdaptiveBitrateDelegate) {
         self.targetBitrate = Int64(targetBitrate)
         currentBitrate = Int64(adaptiveBitrateStart)
         super.init(delegate: delegate)
@@ -54,15 +54,15 @@ class AdaptiveBitrateSrtBelabox: AdaptiveBitrate {
     }
 
     override func getCurrentBitrate() -> UInt32 {
-        return UInt32(currentBitrate)
+        UInt32(currentBitrate)
     }
 
     override func getCurrentMaximumBitrateInKbps() -> Int64 {
-        return Int64(currentBitrate) / 1000
+        Int64(currentBitrate) / 1000
     }
 
     private func rttToSendBufferSize(rtt: Double, throughput: Double) -> Double {
-        return (throughput / 8) * rtt / 1316
+        (throughput / 8) * rtt / 1316
     }
 
     private func updateSendBufferSizeAverage(sendBufferSize: Double) {

@@ -47,7 +47,7 @@ class DriftTracker {
     }
 
     func getDrift() -> Double {
-        return drift
+        drift
     }
 
     func update(_ outputPresentationTimeStamp: Double, _ sampleBuffers: Deque<CMSampleBuffer>) -> Double? {
@@ -97,14 +97,14 @@ class DriftTracker {
 
     private func lowWaterMark() -> Double {
         if targetFillLevel >= 0.1 {
-            return max(targetFillLevel - 0.2, targetFillLevel / 2)
+            max(targetFillLevel - 0.2, targetFillLevel / 2)
         } else {
             // Should do something better. The queue is likely close to empty.
-            return 0
+            0
         }
     }
 
     private func highWaterMark() -> Double {
-        return targetFillLevel + 0.2
+        targetFillLevel + 0.2
     }
 }

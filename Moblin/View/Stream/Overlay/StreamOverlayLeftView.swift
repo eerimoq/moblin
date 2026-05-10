@@ -148,43 +148,43 @@ private struct StatusesView: View {
 
     func eventsColor() -> Color {
         if !model.isEventsConfigured() {
-            return .white
+            .white
         } else if model.isRemoteControlChatAndEvents(platform: nil) {
             if model.isRemoteControlStreamerConnected() {
-                return .white
+                .white
             } else {
-                return .red
+                .red
             }
         } else if model.isEventsConnected() {
-            return .white
+            .white
         } else {
-            return .red
+            .red
         }
     }
 
     func chatColor() -> Color {
         if !model.isChatConfigured() {
-            return .white
+            .white
         } else if model.isRemoteControlChatAndEvents(platform: nil) {
             if model.isRemoteControlStreamerConnected() {
-                return .white
+                .white
             } else {
-                return .red
+                .red
             }
-        } else if model.isChatConnected() && model.hasChatEmotes() {
-            return .white
+        } else if model.isChatConnected(), model.hasChatEmotes() {
+            .white
         } else {
-            return .red
+            .red
         }
     }
 
     func obsStatusColor() -> Color {
         if !model.isObsRemoteControlConfigured() {
-            return .white
+            .white
         } else if model.isObsConnected() {
-            return .white
+            .white
         } else {
-            return .red
+            .red
         }
     }
 

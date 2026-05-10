@@ -23,9 +23,9 @@ struct VideoEncoderSettings {
         var codecType: UInt32 {
             switch self {
             case .h264:
-                return kCMVideoCodecType_H264
+                kCMVideoCodecType_H264
             case .hevc:
-                return kCMVideoCodecType_HEVC
+                kCMVideoCodecType_HEVC
             }
         }
     }
@@ -78,7 +78,7 @@ struct VideoEncoderSettings {
     }
 
     func shouldInvalidateSession(_ other: VideoEncoderSettings) -> Bool {
-        return !(videoSize == other.videoSize &&
+        !(videoSize == other.videoSize &&
             maxKeyFrameIntervalDuration == other.maxKeyFrameIntervalDuration &&
             allowFrameReordering == other.allowFrameReordering &&
             profileLevel == other.profileLevel &&

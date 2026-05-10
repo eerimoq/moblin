@@ -17,7 +17,7 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
              maxKeyFrameInterval
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.resolution, resolution)
         try container.encode(.fps, fps)
@@ -29,7 +29,7 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         resolution = container.decode(
             .resolution,
@@ -52,14 +52,14 @@ class DeepLinkCreatorStreamAudio: Codable, ObservableObject {
         case bitrate
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.bitrate, bitrate)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         bitrate = container.decode(.bitrate, Int.self, 128_000)
         bitrateFloat = Float(bitrate / 1000)
@@ -77,7 +77,7 @@ class DeepLinkCreatorStreamSrt: Codable, ObservableObject {
              dnsLookupStrategy
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.latency, latency)
         try container.encode(.adaptiveBitrateEnabled, adaptiveBitrateEnabled)
@@ -86,7 +86,7 @@ class DeepLinkCreatorStreamSrt: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         latency = container.decode(.latency, Int32.self, defaultSrtLatency)
         adaptiveBitrateEnabled = container.decode(.adaptiveBitrateEnabled, Bool.self, true)
@@ -103,7 +103,7 @@ class DeepLinkCreatorStreamObs: Codable, ObservableObject {
              webSocketPassword
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.webSocketUrl, webSocketUrl)
         try container.encode(.webSocketPassword, webSocketPassword)
@@ -111,7 +111,7 @@ class DeepLinkCreatorStreamObs: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         webSocketUrl = container.decode(.webSocketUrl, String.self, "")
         webSocketPassword = container.decode(.webSocketPassword, String.self, "")
@@ -127,7 +127,7 @@ class DeepLinkCreatorStreamTwitch: Codable, ObservableObject {
              channelId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.channelName, channelName)
         try container.encode(.channelId, channelId)
@@ -135,7 +135,7 @@ class DeepLinkCreatorStreamTwitch: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         channelName = container.decode(.channelName, String.self, "")
         channelId = container.decode(.channelId, String.self, "")
@@ -149,14 +149,14 @@ class DeepLinkCreatorStreamKick: Codable, ObservableObject {
         case channelName
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.channelName, channelName)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         channelName = container.decode(.channelName, String.self, "")
     }
@@ -188,7 +188,7 @@ class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject, Named {
              kick
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -204,7 +204,7 @@ class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -232,7 +232,7 @@ class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
              page
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.type, type)
@@ -242,7 +242,7 @@ class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
@@ -264,7 +264,7 @@ class DeepLinkCreatorQuickButtons: Codable, ObservableObject {
              buttons
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.twoColumns, twoColumns)
         try container.encode(.showName, showName)
@@ -274,7 +274,7 @@ class DeepLinkCreatorQuickButtons: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         twoColumns = container.decode(.twoColumns, Bool.self, true)
         showName = container.decode(.showName, Bool.self, true)
@@ -290,14 +290,14 @@ class DeepLinkCreatorWebBrowser: Codable, ObservableObject {
         case home
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.home, home)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         home = container.decode(.home, String.self, "")
     }
@@ -318,7 +318,7 @@ class DeepLinkCreator: Codable, ObservableObject {
              webBrowser
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.streams, streams)
         try container.encode(.quickButtonsEnabled, quickButtonsEnabled)
@@ -329,7 +329,7 @@ class DeepLinkCreator: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         streams = container.decode(.streams, [DeepLinkCreatorStream].self, [])
         quickButtonsEnabled = container.decode(.quickButtonsEnabled, Bool.self, false)

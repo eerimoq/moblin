@@ -18,27 +18,27 @@ extension Model {
     }
 
     func ristServerEnabled() -> Bool {
-        return database.ristServer.enabled
+        database.ristServer.enabled
     }
 
     func ristCameras() -> [Camera] {
-        return database.ristServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
+        database.ristServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
     func getRistStream(id: UUID) -> SettingsRistServerStream? {
-        return database.ristServer.streams.first { $0.id == id }
+        database.ristServer.streams.first { $0.id == id }
     }
 
     func getRistStream(idString: String) -> SettingsRistServerStream? {
-        return database.ristServer.streams.first { $0.id.uuidString == idString }
+        database.ristServer.streams.first { $0.id.uuidString == idString }
     }
 
     func getRistStream(virtualDestinationPort: UInt16) -> SettingsRistServerStream? {
-        return database.ristServer.streams.first { $0.virtualDestinationPort == virtualDestinationPort }
+        database.ristServer.streams.first { $0.virtualDestinationPort == virtualDestinationPort }
     }
 
     func isRistStreamConnected(port: UInt16) -> Bool {
-        return database.ristServer.streams.first { $0.virtualDestinationPort == port }?.connected == true
+        database.ristServer.streams.first { $0.virtualDestinationPort == port }?.connected == true
     }
 }
 

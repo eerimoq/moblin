@@ -2,15 +2,15 @@ import AVFoundation
 
 extension CMVideoDimensions: @retroactive Equatable {
     public static func == (lhs: CMVideoDimensions, rhs: CMVideoDimensions) -> Bool {
-        return lhs.width == rhs.width && lhs.height == rhs.height
+        lhs.width == rhs.width && lhs.height == rhs.height
     }
 
     func isPortrait() -> Bool {
-        return height > width
+        height > width
     }
 
     func aspectRatio() -> Double {
-        return Double(width) / Double(height)
+        Double(width) / Double(height)
     }
 
     func convertTo(dimension: Int32) -> CMVideoDimensions? {
@@ -30,6 +30,6 @@ extension CMVideoDimensions: @retroactive Equatable {
     }
 
     func toSize() -> CGSize {
-        return CGSize(width: Double(width), height: Double(height))
+        CGSize(width: Double(width), height: Double(height))
     }
 }

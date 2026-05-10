@@ -16,7 +16,7 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable, N
              relay
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -27,7 +27,7 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable, N
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -50,7 +50,7 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
              reliableChatAndEvents
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.url, url)
@@ -60,7 +60,7 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         url = container.decode(.url, String.self, "")
@@ -80,7 +80,7 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
              bridgeId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.baseUrl, baseUrl)
@@ -89,7 +89,7 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         baseUrl = container.decode(
@@ -112,7 +112,7 @@ class SettingsRemoteControlWeb: Codable, ObservableObject {
              deviceName
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.port, port)
@@ -121,7 +121,7 @@ class SettingsRemoteControlWeb: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 80)
@@ -148,7 +148,7 @@ class SettingsRemoteControl: Codable, ObservableObject {
              hasMigratedAssistant
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.client, assistant)
         try container.encode(.server, streamer)
@@ -161,7 +161,7 @@ class SettingsRemoteControl: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         assistant = container.decode(.client, SettingsRemoteControlAssistant.self, .init())
         streamer = container.decode(.server, SettingsRemoteControlStreamer.self, .init())
@@ -185,6 +185,6 @@ class SettingsRemoteControl: Codable, ObservableObject {
     }
 
     func getSelectedStreamerName() -> String? {
-        return streamers.first(where: { $0.id == selectedStreamer })?.name
+        streamers.first(where: { $0.id == selectedStreamer })?.name
     }
 }

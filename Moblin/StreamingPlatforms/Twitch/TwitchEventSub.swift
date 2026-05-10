@@ -31,7 +31,7 @@ struct TwitchEventSubNotificationChannelSubscribeEvent: Decodable {
     var is_gift: Bool
 
     func tierAsNumber() -> Int {
-        return twitchTierAsNumber(tier: tier)
+        twitchTierAsNumber(tier: tier)
     }
 }
 
@@ -49,7 +49,7 @@ struct TwitchEventSubNotificationChannelSubscriptionGiftEvent: Decodable {
     var tier: String
 
     func tierAsNumber() -> Int {
-        return twitchTierAsNumber(tier: tier)
+        twitchTierAsNumber(tier: tier)
     }
 }
 
@@ -68,7 +68,7 @@ struct TwitchEventSubNotificationChannelSubscriptionMessageEvent: Decodable {
     var message: TwitchEventSubMessage
 
     func tierAsNumber() -> Int {
-        return twitchTierAsNumber(tier: tier)
+        twitchTierAsNumber(tier: tier)
     }
 }
 
@@ -309,10 +309,10 @@ final class TwitchEventSub: NSObject {
         logger.debug("twitch: event-sub: Start")
         stopInternal()
         connectDelayTimer.startSingleShot(timeout: 2.0) { [weak self] in
-            guard let self, self.started else {
+            guard let self, started else {
                 return
             }
-            self.connect()
+            connect()
         }
         started = true
     }
@@ -331,7 +331,7 @@ final class TwitchEventSub: NSObject {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func handleMessage(messageText: String) {
@@ -490,7 +490,7 @@ final class TwitchEventSub: NSObject {
     }
 
     private func createBody(type: String, version: Int, condition: String) -> String {
-        return """
+        """
         {
             "type": "\(type)",
             "version": "\(version)",
@@ -504,9 +504,9 @@ final class TwitchEventSub: NSObject {
     }
 
     private func createBroadcasterUserIdBody(type: String, version: Int = 1) -> String {
-        return createBody(type: type,
-                          version: version,
-                          condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
+        createBody(type: type,
+                   version: version,
+                   condition: "{\"broadcaster_user_id\":\"\(userId)\"}")
     }
 
     private func handleNotification(message: BasicMessage, messageText: String, messageData: Data) {

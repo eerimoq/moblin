@@ -22,7 +22,7 @@ struct ZoomPresetSettingsView: View {
     }
 
     private func formatX(x: Float) -> String {
-        return formatOneDecimal(x)
+        formatOneDecimal(x)
     }
 
     var body: some View {

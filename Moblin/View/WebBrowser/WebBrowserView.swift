@@ -7,7 +7,7 @@ struct WebView: UIViewRepresentable {
     let model: Model
 
     func makeUIView(context _: Context) -> WKWebView {
-        return model.getWebBrowser()
+        model.getWebBrowser()
     }
 
     func updateUIView(_: WKWebView, context _: Context) {}
@@ -140,14 +140,14 @@ private struct WebBrowserSmallView: View {
 
     private func offset(metrics _: GeometryProxy) -> Double {
         if database.bigButtons {
-            return -(2 * segmentHeightBig + 10)
+            -(2 * segmentHeightBig + 10)
         } else {
-            return -(2 * segmentHeight + 10)
+            -(2 * segmentHeight + 10)
         }
     }
 
     private func mapSide(maximum: Double) -> Double {
-        return min(maximum - 130, smallBrowserSide)
+        min(maximum - 130, smallBrowserSide)
     }
 
     var body: some View {

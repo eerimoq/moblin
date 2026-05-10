@@ -24,12 +24,12 @@ func fetchFfzEmotes(platform: EmotesPlatform,
     var message: String?
     var emotes: [String: Emote] = [:]
     do {
-        emotes = try emotes.merging(await fetchGlobalEmotes(platform: platform)) { $1 }
+        emotes = try await emotes.merging(fetchGlobalEmotes(platform: platform)) { $1 }
     } catch {
         message = String(localized: "Failed to get FFZ emotes")
     }
     do {
-        emotes = try emotes.merging(await fetchChannelEmotes(
+        emotes = try await emotes.merging(fetchChannelEmotes(
             platform: platform,
             channelId: channelId
         )) { $1 }
@@ -50,7 +50,7 @@ private func makeUrl(emote: FfzEmote) -> URL? {
 }
 
 private func fetchGlobalEmotes(platform: EmotesPlatform) async throws -> [String: Emote] {
-    return try await fetchEmotes(
+    try await fetchEmotes(
         url: "https://api.betterttv.net/3/cached/frankerfacez/emotes/global",
         platform: platform
     )

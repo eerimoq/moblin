@@ -45,20 +45,20 @@ enum FlvTagType: UInt8 {
     var streamId: UInt16 {
         switch self {
         case .audio, .video:
-            return UInt16(rawValue)
+            UInt16(rawValue)
         case .data:
-            return 0
+            0
         }
     }
 
     var headerSize: Int {
         switch self {
         case .audio:
-            return 2
+            2
         case .video:
-            return 5
+            5
         case .data:
-            return 0
+            0
         }
     }
 }
@@ -70,9 +70,9 @@ enum FlvVideoCodec: UInt8 {
     func toString() -> String {
         switch self {
         case .avc:
-            return "H.264/AVC"
+            "H.264/AVC"
         case .hevc:
-            return "H.265/HEVC"
+            "H.265/HEVC"
         }
     }
 }
@@ -105,9 +105,9 @@ enum FlvAudioCodec: UInt8 {
     var headerSize: Int {
         switch self {
         case .aac:
-            return 2
+            2
         default:
-            return 1
+            1
         }
     }
 }

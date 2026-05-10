@@ -13,8 +13,8 @@ private func minimalBoundingRectWithAspect(width: CGFloat, height: CGFloat, angl
     corners = corners.map {
         CGPoint(x: $0.x * cosAngle - $0.y * sinAngle, y: $0.x * sinAngle + $0.y * cosAngle)
     }
-    let xs = corners.map { $0.x }
-    let ys = corners.map { $0.y }
+    let xs = corners.map(\.x)
+    let ys = corners.map(\.y)
     let boxWidth = xs.max()! - xs.min()!
     let boxHeight = ys.max()! - ys.min()!
     let aspect = width / height
@@ -68,11 +68,10 @@ final class FixedHorizonEffect: VideoEffect {
         guard let targetAngle else {
             return image
         }
-        let targetWeight: Double
-        if abs(targetAngle) < 0.1 {
-            targetWeight = 2 * abs(targetAngle)
+        let targetWeight: Double = if abs(targetAngle) < 0.1 {
+            2 * abs(targetAngle)
         } else {
-            targetWeight = 0.2
+            0.2
         }
         currentAngle = targetWeight * targetAngle + (1 - targetWeight) * currentAngle
         let boundingSize = minimalBoundingRectWithAspect(

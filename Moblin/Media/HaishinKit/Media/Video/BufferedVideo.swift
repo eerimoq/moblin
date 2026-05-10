@@ -142,11 +142,11 @@ class BufferedVideo {
     }
 
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
+        currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
     }
 
     func numberOfBuffers() -> Int {
-        return sampleBuffers.count
+        sampleBuffers.count
     }
 
     func setDrift(drift: Double) {

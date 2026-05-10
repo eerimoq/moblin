@@ -31,7 +31,7 @@ class WorkoutDevice: NSObject {
     private let cyclingPower = WorkoutDeviceCyclingPower()
     private let running = WorkoutDeviceRunning()
     private var deviceId: UUID?
-    weak var delegate: WorkoutDeviceDelegate?
+    weak var delegate: (any WorkoutDeviceDelegate)?
 
     func start(deviceId: UUID?) {
         dispatchQueue.async {
@@ -46,7 +46,7 @@ class WorkoutDevice: NSObject {
     }
 
     func getState() -> WorkoutDeviceState {
-        return state
+        state
     }
 
     private func startInternal(deviceId: UUID?) {
@@ -109,7 +109,7 @@ extension WorkoutDevice: CBCentralManagerDelegate {
         setState(state: .connecting)
     }
 
-    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
+    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: (any Error)?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         peripheral.discoverServices(nil)
@@ -118,7 +118,7 @@ extension WorkoutDevice: CBCentralManagerDelegate {
     func centralManager(
         _: CBCentralManager,
         didDisconnectPeripheral _: CBPeripheral,
-        error _: Error?
+        error _: (any Error)?
     ) {
         reconnect()
     }
@@ -156,7 +156,7 @@ extension WorkoutDevice: CBCentralManagerDelegate {
 }
 
 extension WorkoutDevice: CBPeripheralDelegate {
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         guard let services = peripheral.services else {
             return
         }
@@ -174,7 +174,7 @@ extension WorkoutDevice: CBPeripheralDelegate {
     func peripheral(
         _: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
-        error _: Error?
+        error _: (any Error)?
     ) {
         for characteristic in service.characteristics ?? [] {
             switch characteristic.uuid {
@@ -196,7 +196,11 @@ extension WorkoutDevice: CBPeripheralDelegate {
         }
     }
 
-    func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
+    func peripheral(
+        _: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error _: (any Error)?
+    ) {
         guard let value = characteristic.value else {
             return
         }

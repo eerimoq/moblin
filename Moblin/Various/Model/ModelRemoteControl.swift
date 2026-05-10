@@ -48,11 +48,11 @@ enum RemoteControlAssistantPreviewUser {
 
 extension Model {
     func isShowingStatusRemoteControl() -> Bool {
-        return database.show.remoteControl && isAnyRemoteControlConfigured()
+        database.show.remoteControl && isAnyRemoteControlConfigured()
     }
 
     private func isAnyRemoteControlConfigured() -> Bool {
-        return isRemoteControlStreamerConfigured() || isRemoteControlAssistantConfigured()
+        isRemoteControlStreamerConfigured() || isRemoteControlAssistantConfigured()
     }
 
     func clearRemoteControlAssistantLog() {
@@ -120,7 +120,7 @@ extension Model {
     }
 
     func isRemoteControlStreamerConnected() -> Bool {
-        return remoteControlStreamer?.isConnected() ?? false
+        remoteControlStreamer?.isConnected() ?? false
     }
 
     func stopRemoteControlAssistant() {
@@ -142,7 +142,7 @@ extension Model {
     }
 
     func isRemoteControlAssistantConnected() -> Bool {
-        return remoteControlAssistant?.isConnected() ?? false
+        remoteControlAssistant?.isConnected() ?? false
     }
 
     func updateRemoteControlAssistantStatus() {
@@ -177,7 +177,7 @@ extension Model {
     }
 
     private func shouldSendRemoteScene() -> Bool {
-        return database.remoteSceneId != nil && remoteControlAssistant?.isConnected() == true
+        database.remoteSceneId != nil && remoteControlAssistant?.isConnected() == true
     }
 
     func remoteControlAssistantSetRemoteSceneDataTextStats(stats: TextEffectStats) {
@@ -400,7 +400,7 @@ extension Model {
         if isChatConfigured() {
             topLeft.chat = RemoteControlStatusItem(message: statusTopLeft.statusChatText)
         }
-        if isViewersConfigured() && isLive {
+        if isViewersConfigured(), isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
         }
         return topLeft
@@ -479,7 +479,7 @@ extension Model {
     }
 
     func isRemoteControlStreamerPreviewActive() -> Bool {
-        return isRemoteControlStreamerConnected()
+        isRemoteControlStreamerConnected()
             && isRemoteControlAssistantRequestingPreview
             && database.remoteControl.streamer.previewFps > 0
     }
@@ -665,7 +665,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerGetSettings() -> RemoteControlSettings {
-        return handleGetSettings()
+        handleGetSettings()
     }
 
     func remoteControlStreamerSetScene(id: UUID) {
@@ -848,7 +848,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {
-        return getScoreboardSports()
+        getScoreboardSports()
     }
 
     func remoteControlStreamerSetScoreboardSport(sportId: String) {
@@ -1065,11 +1065,11 @@ extension Model: RemoteControlWebDelegate {
     func remoteControlWebGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     {
-        return remoteControlStreamerGetStatus()
+        remoteControlStreamerGetStatus()
     }
 
     func remoteControlWebGetSettings() -> RemoteControlSettings {
-        return handleGetSettings()
+        handleGetSettings()
     }
 
     func remoteControlWebSetScene(id: UUID) {
@@ -1133,7 +1133,7 @@ extension Model: RemoteControlWebDelegate {
     }
 
     func remoteControlWebGetScoreboardSports() -> [String] {
-        return getScoreboardSports()
+        getScoreboardSports()
     }
 
     func remoteControlWebSetScoreboardSport(sportId: String) {
@@ -1157,7 +1157,7 @@ extension Model: RemoteControlWebDelegate {
     }
 
     func remoteControlWebGetGolfScoreboard() -> RemoteControlGolfScoreboard {
-        return getGolfScoreboardForRemoteControl()
+        getGolfScoreboardForRemoteControl()
     }
 
     func remoteControlWebUpdateGolfScoreboard(data: RemoteControlGolfScoreboard) {

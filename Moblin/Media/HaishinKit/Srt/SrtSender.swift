@@ -14,11 +14,11 @@ private class SrtClock {
     private let startTime = ContinuousClock.now
 
     func timestamp() -> UInt32 {
-        return timestamp(now: .now)
+        timestamp(now: .now)
     }
 
     func timestamp(now: ContinuousClock.Instant) -> UInt32 {
-        return UInt32(truncatingIfNeeded: startTime.duration(to: now).microseconds)
+        UInt32(truncatingIfNeeded: startTime.duration(to: now).microseconds)
     }
 }
 
@@ -237,7 +237,7 @@ class SrtSender {
     }
 
     func newDataPacket(payload: UnsafeRawBufferPointer) -> SrtDataPacket {
-        return SrtDataPacket(payload: payload)
+        SrtDataPacket(payload: payload)
     }
 
     func enqueue(packet: SrtDataPacket, now: ContinuousClock.Instant) {
@@ -273,7 +273,7 @@ class SrtSender {
     }
 
     func getPerformanceData() -> SrtPerformanceData? {
-        return performanceData.value
+        performanceData.value
     }
 
     private func handleConnectTimeout() {
@@ -610,6 +610,6 @@ class SrtSender {
     }
 
     private func numberOfPacketsToRetransmit() -> Int {
-        return audioSequenceNumbersToRetransmit.count + videoSequenceNumbersToRetransmit.count
+        audioSequenceNumbersToRetransmit.count + videoSequenceNumbersToRetransmit.count
     }
 }

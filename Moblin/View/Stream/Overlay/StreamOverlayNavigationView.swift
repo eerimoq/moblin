@@ -90,14 +90,14 @@ private struct ControlsView: View {
 
     private func minMaxButtonIcon() -> String {
         if navigation.isSmall {
-            return "arrow.up.left.and.arrow.down.right"
+            "arrow.up.left.and.arrow.down.right"
         } else {
-            return "arrow.down.right.and.arrow.up.left"
+            "arrow.down.right.and.arrow.up.left"
         }
     }
 
     private func shouldStackVertically() -> Bool {
-        return metrics.size.width < maximumBigMapSide
+        metrics.size.width < maximumBigMapSide
     }
 
     var body: some View {
@@ -193,7 +193,7 @@ private struct MapView: View {
     }
 
     private func mapSide(maximum: Double) -> Double {
-        return min(maximum - 10, navigation.isSmall ? smallMapSide : maximumBigMapSide)
+        min(maximum - 10, navigation.isSmall ? smallMapSide : maximumBigMapSide)
     }
 
     var body: some View {
@@ -279,11 +279,10 @@ struct StreamOverlayNavigationView: View {
     @ObservedObject var navigation: Navigation
 
     private func offset(metrics: GeometryProxy) -> Double {
-        let offset: Double
-        if database.bigButtons {
-            offset = -(2 * segmentHeightBig + 10)
+        let offset: Double = if database.bigButtons {
+            -(2 * segmentHeightBig + 10)
         } else {
-            offset = -(2 * segmentHeight + 10)
+            -(2 * segmentHeight + 10)
         }
         if navigation.isSmall || metrics.size.height - offset > maximumBigMapSide {
             return offset

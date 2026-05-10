@@ -25,7 +25,7 @@ class SrtStreamOfficial {
     private var options: [SrtSocketOption: String] = [:]
     private var perf = CBytePerfMon()
     private var socket: SRTSOCKET = SRT_INVALID_SOCK
-    weak var srtStreamDelegate: SrtStreamOfficialDelegate?
+    weak var srtStreamDelegate: (any SrtStreamOfficialDelegate)?
     private let processor: Processor
 
     private var readyState: ReadyState = .initialized {
@@ -53,7 +53,7 @@ class SrtStreamOfficial {
         }
     }
 
-    init(processor: Processor, timecodesEnabled: Bool, delegate: SrtStreamOfficialDelegate) {
+    init(processor: Processor, timecodesEnabled: Bool, delegate: any SrtStreamOfficialDelegate) {
         self.processor = processor
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: false)
         srtStreamDelegate = delegate

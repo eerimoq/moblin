@@ -4,31 +4,31 @@ import SwiftUI
 
 extension Model {
     func updateViewersTwitch() -> StreamingPlatformStatus {
-        return StreamingPlatformStatus(platform: .twitch, status: twitchPlatformStatus)
+        StreamingPlatformStatus(platform: .twitch, status: twitchPlatformStatus)
     }
 
     func isTwitchEventSubConfigured() -> Bool {
-        return stream.twitchLoggedIn
+        stream.twitchLoggedIn
     }
 
     func isTwitchEventsConnected() -> Bool {
-        return twitchEventSub?.isConnected() ?? false
+        twitchEventSub?.isConnected() ?? false
     }
 
     func isTwitchViewersConfigured() -> Bool {
-        return stream.twitchChannelId != "" && stream.twitchLoggedIn
+        stream.twitchChannelId != "" && stream.twitchLoggedIn
     }
 
     func isTwitchChatConfigured() -> Bool {
-        return database.chat.enabled && stream.twitchChannelName != ""
+        database.chat.enabled && stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
-        return twitchChat?.isConnected() ?? false
+        twitchChat?.isConnected() ?? false
     }
 
     func hasTwitchChatEmotes() -> Bool {
-        return twitchChat?.hasEmotes() ?? false
+        twitchChat?.hasEmotes() ?? false
     }
 
     func reloadTwitchChat() {

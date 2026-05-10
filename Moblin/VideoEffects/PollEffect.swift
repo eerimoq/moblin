@@ -14,7 +14,7 @@ private struct PollView: View {
     @ObservedObject var state: PollState
 
     private func scaledFontSize(size: CGSize) -> CGFloat {
-        return 30 * (size.maximum() / 1920)
+        30 * (size.maximum() / 1920)
     }
 
     var body: some View {
@@ -59,17 +59,16 @@ final class PollEffect: VideoEffect {
             guard let self else {
                 return
             }
-            self.setOverlay(image: self.renderer?.ciImage())
+            setOverlay(image: renderer?.ciImage())
         }
         setOverlay(image: renderer?.ciImage())
     }
 
     private func setOverlay(image: CIImage?) {
-        let overlay: CIImage?
-        if let image {
-            overlay = moveToTopRight(image: image, size: state.size)
+        let overlay: CIImage? = if let image {
+            moveToTopRight(image: image, size: state.size)
         } else {
-            overlay = nil
+            nil
         }
         processorPipelineQueue.async {
             self.overlay = overlay

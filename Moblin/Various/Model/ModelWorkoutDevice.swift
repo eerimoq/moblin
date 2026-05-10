@@ -2,7 +2,7 @@ import Foundation
 
 extension Model {
     func isWorkoutDeviceEnabled(device: SettingsWorkoutDevice) -> Bool {
-        return device.enabled
+        device.enabled
     }
 
     func enableWorkoutDevice(device: SettingsWorkoutDevice) {
@@ -19,7 +19,7 @@ extension Model {
     }
 
     private func getWorkoutDeviceSettings(device: WorkoutDevice) -> SettingsWorkoutDevice? {
-        return database.workoutDevices.devices.first(where: { workoutDevices[$0.id] === device })
+        database.workoutDevices.devices.first(where: { workoutDevices[$0.id] === device })
     }
 
     func setCurrentWorkoutDevice(device: SettingsWorkoutDevice) {
@@ -28,7 +28,7 @@ extension Model {
     }
 
     func getWorkoutDeviceState(device: SettingsWorkoutDevice) -> WorkoutDeviceState {
-        return workoutDevices[device.id]?.getState() ?? .disconnected
+        workoutDevices[device.id]?.getState() ?? .disconnected
     }
 
     func autoStartWorkoutDevices() {
@@ -44,11 +44,11 @@ extension Model {
     }
 
     func isAnyWorkoutDeviceConfigured() -> Bool {
-        return database.workoutDevices.devices.contains(where: { $0.enabled })
+        database.workoutDevices.devices.contains(where: \.enabled)
     }
 
     func areAllWorkoutDevicesConnected() -> Bool {
-        return !workoutDevices.values.contains(where: {
+        !workoutDevices.values.contains(where: {
             getWorkoutDeviceSettings(device: $0)?.enabled == true && $0.getState() != .connected
         })
     }

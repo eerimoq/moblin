@@ -44,7 +44,7 @@ class MpegTsProgramSpecificInformation {
     }
 
     fileprivate func encodeSectionData() -> Data {
-        return Data()
+        Data()
     }
 
     fileprivate func decodeSectionData(data _: Data) throws {}

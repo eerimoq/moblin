@@ -52,7 +52,7 @@ struct KeyboardKeySettingsView: View {
     @ObservedObject var key: SettingsKeyboardKey
 
     private func functions() -> [SettingsControllerFunction] {
-        return SettingsControllerFunction.allCases.filter {
+        SettingsControllerFunction.allCases.filter {
             ![.zoomIn, .zoomOut].contains($0)
         }
     }

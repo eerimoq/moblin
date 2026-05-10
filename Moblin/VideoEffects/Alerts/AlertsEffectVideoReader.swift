@@ -41,7 +41,7 @@ class AlertsEffectVideoReader {
     }
 
     func hasEnded() -> Bool {
-        return fillEnded && images.isEmpty
+        fillEnded && images.isEmpty
     }
 
     private func findImage(offset: Double) -> CIImage? {

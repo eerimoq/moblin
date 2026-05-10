@@ -10,30 +10,30 @@ enum Platform: Codable, CaseIterable {
     func name() -> String {
         switch self {
         case .soop:
-            return String(localized: "SOOP")
+            String(localized: "SOOP")
         case .kick:
-            return String(localized: "Kick")
+            String(localized: "Kick")
         case .openStreamingPlatform:
-            return String(localized: "Open Streaming Platform")
+            String(localized: "Open Streaming Platform")
         case .twitch:
-            return String(localized: "Twitch")
+            String(localized: "Twitch")
         case .youTube:
-            return String(localized: "YouTube")
+            String(localized: "YouTube")
         }
     }
 
     func imageName() -> String {
         switch self {
         case .soop:
-            return "SoopLogo"
+            "SoopLogo"
         case .kick:
-            return "KickLogo"
+            "KickLogo"
         case .openStreamingPlatform:
-            return "OpenStreamingPlatform"
+            "OpenStreamingPlatform"
         case .twitch:
-            return "TwitchLogo"
+            "TwitchLogo"
         case .youTube:
-            return "YouTubeLogo"
+            "YouTubeLogo"
         }
     }
 }

@@ -3,19 +3,19 @@ import Foundation
 
 extension Model {
     func rtmpCameras() -> [Camera] {
-        return database.rtmpServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
+        database.rtmpServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
     func getRtmpStream(id: UUID) -> SettingsRtmpServerStream? {
-        return database.rtmpServer.streams.first { $0.id == id }
+        database.rtmpServer.streams.first { $0.id == id }
     }
 
     func getRtmpStream(idString: String) -> SettingsRtmpServerStream? {
-        return database.rtmpServer.streams.first { $0.id.uuidString == idString }
+        database.rtmpServer.streams.first { $0.id.uuidString == idString }
     }
 
     func getRtmpStream(streamKey: String) -> SettingsRtmpServerStream? {
-        return database.rtmpServer.streams.first { $0.streamKey == streamKey }
+        database.rtmpServer.streams.first { $0.streamKey == streamKey }
     }
 
     func stopAllRtmpStreams() {
@@ -25,7 +25,7 @@ extension Model {
     }
 
     func isRtmpStreamConnected(streamKey: String) -> Bool {
-        return ingests.rtmp?.isStreamConnected(streamKey: streamKey) ?? false
+        ingests.rtmp?.isStreamConnected(streamKey: streamKey) ?? false
     }
 
     func handleRtmpServerPublishStart(streamKey: String) {
@@ -93,7 +93,7 @@ extension Model {
     }
 
     func rtmpServerEnabled() -> Bool {
-        return database.rtmpServer.enabled
+        database.rtmpServer.enabled
     }
 }
 

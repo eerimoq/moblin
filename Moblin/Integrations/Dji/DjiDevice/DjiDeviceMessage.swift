@@ -26,7 +26,7 @@ class DjiPreparingToLivestreamMessagePayload {
     static let payload = Data([0x1A])
 
     func encode() -> Data {
-        return DjiPreparingToLivestreamMessagePayload.payload
+        DjiPreparingToLivestreamMessagePayload.payload
     }
 }
 
@@ -67,29 +67,26 @@ class DjiStartStreamingMessagePayload {
     }
 
     func encode() -> Data {
-        var resolutionByte: UInt8
-        switch resolution {
+        var resolutionByte: UInt8 = switch resolution {
         case .r480p:
-            resolutionByte = 0x47
+            0x47
         case .r720p:
-            resolutionByte = 0x04
+            0x04
         case .r1080p:
-            resolutionByte = 0x0A
+            0x0A
         }
-        var fpsByte: UInt8
-        switch fps {
+        var fpsByte: UInt8 = switch fps {
         case 25:
-            fpsByte = 2
+            2
         case 30:
-            fpsByte = 3
+            3
         default:
-            fpsByte = 0
+            0
         }
-        var byte1: UInt8
-        if oa5 {
-            byte1 = 0x2A
+        var byte1: UInt8 = if oa5 {
+            0x2A
         } else {
-            byte1 = 0x2E
+            0x2E
         }
         let writer = ByteWriter()
         writer.writeBytes(DjiStartStreamingMessagePayload.payload1)
@@ -109,7 +106,7 @@ class DjiConfirmStartStreamingMessagePayload {
     static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x01])
 
     func encode() -> Data {
-        return DjiConfirmStartStreamingMessagePayload.payload
+        DjiConfirmStartStreamingMessagePayload.payload
     }
 }
 
@@ -117,7 +114,7 @@ class DjiStopStreamingMessagePayload {
     static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])
 
     func encode() -> Data {
-        return DjiStopStreamingMessagePayload.payload
+        DjiStopStreamingMessagePayload.payload
     }
 }
 
@@ -134,24 +131,22 @@ class DjiConfigureMessagePayload {
     }
 
     func encode() -> Data {
-        var imageStabilizationByte: UInt8
-        switch imageStabilization {
+        var imageStabilizationByte: UInt8 = switch imageStabilization {
         case .off:
-            imageStabilizationByte = 0
+            0
         case .rockSteady:
-            imageStabilizationByte = 1
+            1
         case .rockSteadyPlus:
-            imageStabilizationByte = 3
+            3
         case .horizonBalancing:
-            imageStabilizationByte = 4
+            4
         case .horizonSteady:
-            imageStabilizationByte = 2
+            2
         }
-        var byte1: UInt8
-        if oa5 {
-            byte1 = 0x1A
+        var byte1: UInt8 = if oa5 {
+            0x1A
         } else {
-            byte1 = 0x08
+            0x08
         }
         let writer = ByteWriter()
         writer.writeBytes(DjiConfigureMessagePayload.payload1)

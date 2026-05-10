@@ -40,7 +40,7 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
                 return
             }
             logger.info("rist: Failed to connect to server")
-            self.state = .disconnected
+            state = .disconnected
             self.stream?.checkDisconnected()
         }
     }
@@ -52,11 +52,11 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
     func bondingConnectionName() -> String {
         switch interfaceType {
         case .cellular:
-            return "Cellular"
+            "Cellular"
         case .wifi:
-            return "WiFi"
+            "WiFi"
         default:
-            return interfaceName
+            interfaceName
         }
     }
 
@@ -70,11 +70,11 @@ private class RistRemotePeer: AdaptiveBitrateDelegate {
     }
 
     func isConnected() -> Bool {
-        return state == .connected
+        state == .connected
     }
 
     func isDisconnected() -> Bool {
-        return state == .disconnected
+        state == .disconnected
     }
 
     private func stopConnectingTimer() {
@@ -106,11 +106,11 @@ class RistStream {
     private var bonding: Bool = false
     private var url: String = ""
     private var state: RistStreamState = .connecting
-    private weak var ristDelegate: RistStreamDelegate?
+    private weak var ristDelegate: (any RistStreamDelegate)?
     private let processor: Processor
     private var totalByteCount = Atomic<Int64>(0)
 
-    init(processor: Processor, timecodesEnabled: Bool, delegate: RistStreamDelegate) {
+    init(processor: Processor, timecodesEnabled: Bool, delegate: any RistStreamDelegate) {
         self.processor = processor
         writer = MpegTsWriter(timecodesEnabled: timecodesEnabled, newSrt: false)
         ristDelegate = delegate
@@ -154,7 +154,7 @@ class RistStream {
     }
 
     func getTotalByteCount() -> Int64 {
-        return totalByteCount.value
+        totalByteCount.value
     }
 
     func connectionStatistics() -> [BondingConnection] {
@@ -173,7 +173,7 @@ class RistStream {
     }
 
     func getStats() -> [RistSenderStats] {
-        return ristQueue.sync {
+        ristQueue.sync {
             peers.filter { $0.stats != nil }.map { $0.stats! }
         }
     }
@@ -292,7 +292,7 @@ class RistStream {
         let interfaces = path.uniqueAvailableInterfaces()
         var removedInterfaceNames: [String] = []
         for peer in peers where peer.relayEndpoint == nil {
-            if interfaces.map({ $0.name }).contains(peer.interfaceName) {
+            if interfaces.map(\.name).contains(peer.interfaceName) {
                 continue
             }
             removedInterfaceNames.append(peer.interfaceName)
@@ -341,7 +341,7 @@ class RistStream {
     }
 
     private func getPeerById(peerId: UInt32) -> RistRemotePeer? {
-        return peers.first(where: { $0.peer.getId() == peerId })
+        peers.first(where: { $0.peer.getId() == peerId })
     }
 
     private func send(data: Data) {

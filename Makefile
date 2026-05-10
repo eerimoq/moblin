@@ -1,6 +1,6 @@
 SWIFTFORMAT_ARGS = \
 	--maxwidth 110 \
-	--swiftversion 5 \
+	--swiftversion 5.9 \
 	--exclude Moblin/Integrations/Tesla/Protobuf \
 	--disable docComments \
 	--ifdef no-indent

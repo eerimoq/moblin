@@ -3,7 +3,7 @@ import VideoToolbox
 
 extension VTCompressionSession {
     func prepareToEncodeFrames() -> OSStatus {
-        return VTCompressionSessionPrepareToEncodeFrames(self)
+        VTCompressionSessionPrepareToEncodeFrames(self)
     }
 
     @inline(__always)
@@ -13,7 +13,7 @@ extension VTCompressionSession {
         duration _: CMTime,
         outputHandler: @escaping VTCompressionOutputHandler
     ) -> OSStatus {
-        return VTCompressionSessionEncodeFrame(
+        VTCompressionSessionEncodeFrame(
             self,
             imageBuffer: imageBuffer,
             presentationTimeStamp: presentationTimeStamp,
@@ -29,7 +29,7 @@ extension VTCompressionSession {
     }
 
     func setProperty(_ property: VTSessionProperty) -> OSStatus {
-        return VTSessionSetProperty(self, key: property.key.value, value: property.value)
+        VTSessionSetProperty(self, key: property.key.value, value: property.value)
     }
 
     func setProperties(_ properties: [VTSessionProperty]) -> OSStatus {

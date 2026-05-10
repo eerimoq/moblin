@@ -9,15 +9,15 @@ import SwiftUI
 
 private func formatBlackSharkCoolerDeviceState(state: BlackSharkCoolerDeviceState?) -> String {
     if state == nil || state == .disconnected {
-        return String(localized: "Disconnected")
+        String(localized: "Disconnected")
     } else if state == .discovering {
-        return String(localized: "Discovering")
+        String(localized: "Discovering")
     } else if state == .connecting {
-        return String(localized: "Connecting")
+        String(localized: "Connecting")
     } else if state == .connected {
-        return String(localized: "Connected")
+        String(localized: "Connected")
     } else {
-        return String(localized: "Unknown")
+        String(localized: "Unknown")
     }
 }
 
@@ -29,11 +29,11 @@ struct BlackSharkCoolerDeviceSettingsView: View {
     @ObservedObject var status: StatusTopRight
 
     private func state() -> String {
-        return formatBlackSharkCoolerDeviceState(state: status.blackSharkCoolerDeviceState)
+        formatBlackSharkCoolerDeviceState(state: status.blackSharkCoolerDeviceState)
     }
 
     private func canEnable() -> Bool {
-        return device.bluetoothPeripheralId != nil
+        device.bluetoothPeripheralId != nil
     }
 
     private func onDeviceChange(value: String) {

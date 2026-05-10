@@ -24,29 +24,29 @@ enum CatPrinterEvent {
     func platform() -> Platform {
         switch self {
         case .twitchFollow:
-            return .twitch
+            .twitch
         case .twitchSubscribe:
-            return .twitch
+            .twitch
         case .twitchSubscrptionGift:
-            return .twitch
+            .twitch
         case .twitchResubscribe:
-            return .twitch
+            .twitch
         case .twitchRaid:
-            return .twitch
+            .twitch
         case .twitchCheer:
-            return .twitch
+            .twitch
         case .twitchReward:
-            return .twitch
+            .twitch
         case .kickSubscription:
-            return .kick
+            .kick
         case .kickGiftedSubscriptions:
-            return .kick
+            .kick
         case .kickHost:
-            return .kick
+            .kick
         case .kickReward:
-            return .kick
+            .kick
         case .kickKicks:
-            return .kick
+            .kick
         }
     }
 }
@@ -151,7 +151,7 @@ extension Model {
     }
 
     func isAnyCatPrinterConfigured() -> Bool {
-        database.catPrinters.devices.contains(where: { $0.enabled })
+        database.catPrinters.devices.contains(where: \.enabled)
     }
 
     func areAllCatPrintersConnected() -> Bool {
@@ -163,29 +163,29 @@ extension Model {
     private func isCatPrinterEventEnabled(event: CatPrinterEvent, settings: SettingsCatPrinter) -> Bool {
         switch event {
         case .twitchFollow:
-            return settings.printTwitch.follows
+            settings.printTwitch.follows
         case .twitchSubscribe:
-            return settings.printTwitch.subscriptions
+            settings.printTwitch.subscriptions
         case .twitchSubscrptionGift:
-            return settings.printTwitch.giftSubscriptions
+            settings.printTwitch.giftSubscriptions
         case .twitchResubscribe:
-            return settings.printTwitch.resubscriptions
+            settings.printTwitch.resubscriptions
         case .twitchRaid:
-            return settings.printTwitch.raids
+            settings.printTwitch.raids
         case let .twitchCheer(amount):
-            return settings.printTwitch.isBitsEnabled(amount: amount)
+            settings.printTwitch.isBitsEnabled(amount: amount)
         case .twitchReward:
-            return settings.printTwitch.rewards
+            settings.printTwitch.rewards
         case .kickSubscription:
-            return settings.printKick.subscriptions
+            settings.printKick.subscriptions
         case .kickGiftedSubscriptions:
-            return settings.printKick.giftedSubscriptions
+            settings.printKick.giftedSubscriptions
         case .kickHost:
-            return settings.printKick.hosts
+            settings.printKick.hosts
         case .kickReward:
-            return settings.printKick.rewards
+            settings.printKick.rewards
         case let .kickKicks(amount):
-            return settings.printKick.isKicksEnabled(amount: amount)
+            settings.printKick.isKicksEnabled(amount: amount)
         }
     }
 
@@ -237,11 +237,11 @@ extension Model {
     private func fetchProfilePicture(username: String, platform: Platform) async -> UIImage? {
         switch platform {
         case .twitch:
-            return await fetchTwitchProfilePicture(username: username)
+            await fetchTwitchProfilePicture(username: username)
         case .kick:
-            return await fetchKickProfilePicture(username: username)
+            await fetchKickProfilePicture(username: username)
         default:
-            return nil
+            nil
         }
     }
 }

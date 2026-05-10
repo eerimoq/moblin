@@ -61,7 +61,7 @@ class DjiDevice: NSObject {
     private var cameraPeripheral: CBPeripheral?
     private var fff5Characteristic: CBCharacteristic?
     private var state: DjiDeviceState = .idle
-    weak var delegate: DjiDeviceDelegate?
+    weak var delegate: (any DjiDeviceDelegate)?
     private let startStreamingTimer = SimpleTimer(queue: .main)
     private let stopStreamingTimer = SimpleTimer(queue: .main)
     private var model: SettingsDjiDeviceModel = .unknown
@@ -106,7 +106,7 @@ class DjiDevice: NSObject {
     }
 
     func getBatteryPercentage() -> Int? {
-        return batteryPercentage
+        batteryPercentage
     }
 
     private func reset() {
@@ -157,7 +157,7 @@ class DjiDevice: NSObject {
     }
 
     func getState() -> DjiDeviceState {
-        return state
+        state
     }
 }
 
@@ -187,19 +187,19 @@ extension DjiDevice: CBCentralManagerDelegate {
         setState(state: .connecting)
     }
 
-    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
+    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: (any Error)?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         peripheral.discoverServices(nil)
     }
 
-    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: (any Error)?) {
         reset()
     }
 }
 
 extension DjiDevice: CBPeripheralDelegate {
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         guard let peripheralServices = peripheral.services else {
             return
         }
@@ -211,7 +211,7 @@ extension DjiDevice: CBPeripheralDelegate {
     func peripheral(
         _ peripheral: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
-        error _: Error?
+        error _: (any Error)?
     ) {
         for characteristic in service.characteristics ?? [] {
             if characteristic.uuid == fff5Id {
@@ -221,7 +221,11 @@ extension DjiDevice: CBPeripheralDelegate {
         }
     }
 
-    func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
+    func peripheral(
+        _: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error _: (any Error)?
+    ) {
         guard let value = characteristic.value else {
             return
         }
@@ -419,7 +423,7 @@ extension DjiDevice: CBPeripheralDelegate {
     func peripheral(
         _: CBPeripheral,
         didUpdateNotificationStateFor characteristic: CBCharacteristic,
-        error _: Error?
+        error _: (any Error)?
     ) {
         guard state == .connecting else {
             return

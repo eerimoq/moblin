@@ -22,9 +22,9 @@ private struct QuickButtonsView: View {
 
     private func buttonSize() -> Double {
         if quickButtonsSettings.bigButtons {
-            return controlBarQuickButtonSingleQuickButtonSize
+            controlBarQuickButtonSingleQuickButtonSize
         } else {
-            return controlBarButtonSize
+            controlBarButtonSize
         }
     }
 

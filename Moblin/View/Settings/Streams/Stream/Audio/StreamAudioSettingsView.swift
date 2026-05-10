@@ -6,7 +6,7 @@ struct StreamAudioSettingsView: View {
     @State var bitrate: Float
 
     private func calcBitrate() -> Int {
-        return Int((bitrate * 1000).rounded(.up))
+        Int((bitrate * 1000).rounded(.up))
     }
 
     var body: some View {

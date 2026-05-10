@@ -62,15 +62,15 @@ class AudioEncoder {
     }
 
     func getBitrate() -> Int {
-        return bitrate.value
+        bitrate.value
     }
 
     func getSampleRate() -> Double? {
-        return sampleRate.value
+        sampleRate.value
     }
 
     static func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {
-        return AVAudioFormat(
+        AVAudioFormat(
             streamDescription: &basicDescription,
             channelLayout: makeChannelLayout(basicDescription.mChannelsPerFrame)
         )
@@ -79,9 +79,9 @@ class AudioEncoder {
     private func samplesPerBuffer() -> Int {
         switch settings.format {
         case .aac:
-            return 1024
+            1024
         case .opus:
-            return 960
+            960
         }
     }
 

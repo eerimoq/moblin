@@ -33,7 +33,7 @@ extension Model {
     }
 
     func isLocationEnabled() -> Bool {
-        return database.location.enabled
+        database.location.enabled
     }
 
     private func handleLocationUpdate(location: CLLocation) {
@@ -57,14 +57,14 @@ extension Model {
 
     func getLatestKnownLocation() -> (Double, Double)? {
         if let location = locationManager.getLatestKnownLocation() {
-            return (location.coordinate.latitude, location.coordinate.longitude)
+            (location.coordinate.latitude, location.coordinate.longitude)
         } else {
-            return nil
+            nil
         }
     }
 
     func isRealtimeIrlConfigured() -> Bool {
-        return stream.realtimeIrlEnabled && !stream.realtimeIrlBaseUrl.isEmpty && !stream.realtimeIrlPushKey
+        stream.realtimeIrlEnabled && !stream.realtimeIrlBaseUrl.isEmpty && !stream.realtimeIrlPushKey
             .isEmpty
     }
 
@@ -122,10 +122,10 @@ extension Model {
     }
 
     func getDistance() -> String {
-        return format(distance: database.location.distance)
+        format(distance: database.location.distance)
     }
 
     func isShowingStatusLocation() -> Bool {
-        return database.show.location && isLocationEnabled()
+        database.show.location && isLocationEnabled()
     }
 }

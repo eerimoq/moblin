@@ -9,13 +9,13 @@ enum ChatterRole {
     func localized() -> String {
         switch self {
         case .owner:
-            return String(localized: "Owner")
+            String(localized: "Owner")
         case .staff:
-            return String(localized: "Staff")
+            String(localized: "Staff")
         case .moderator:
-            return String(localized: "Moderator")
+            String(localized: "Moderator")
         case .viewer:
-            return String(localized: "Viewer")
+            String(localized: "Viewer")
         }
     }
 }

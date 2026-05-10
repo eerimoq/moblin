@@ -95,11 +95,11 @@ extension Model {
     func isAlertMessage(post: ChatPost) -> Bool {
         switch post.highlight?.kind {
         case .redemption:
-            return true
+            true
         case .newFollower:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
@@ -166,7 +166,7 @@ extension Model {
     }
 
     func isChatConfigured() -> Bool {
-        return isTwitchChatConfigured() || isKickPusherConfigured() ||
+        isTwitchChatConfigured() || isKickPusherConfigured() ||
             isYouTubeLiveChatConfigured() || isSoopChatConfigured() ||
             isOpenStreamingPlatformChatConfigured()
     }
@@ -182,26 +182,26 @@ extension Model {
     }
 
     func isChatConnected() -> Bool {
-        if isTwitchChatConfigured() && !isTwitchChatConnected() {
+        if isTwitchChatConfigured(), !isTwitchChatConnected() {
             return false
         }
-        if isKickPusherConfigured() && !isKickPusherConnected() {
+        if isKickPusherConfigured(), !isKickPusherConnected() {
             return false
         }
-        if isYouTubeLiveChatConfigured() && !isYouTubeLiveChatConnected() {
+        if isYouTubeLiveChatConfigured(), !isYouTubeLiveChatConnected() {
             return false
         }
-        if isSoopChatConfigured() && !isSoopChatConnected() {
+        if isSoopChatConfigured(), !isSoopChatConnected() {
             return false
         }
-        if isOpenStreamingPlatformChatConfigured() && !isOpenStreamingPlatformChatConnected() {
+        if isOpenStreamingPlatformChatConfigured(), !isOpenStreamingPlatformChatConnected() {
             return false
         }
         return true
     }
 
     func hasChatEmotes() -> Bool {
-        return hasTwitchChatEmotes()
+        hasTwitchChatEmotes()
             || hasKickPusherEmotes()
             || hasYouTubeLiveChatEmotes()
             || hasSoopChatEmotes()
@@ -243,7 +243,7 @@ extension Model {
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
-        return database.chat.filters.first(where: { $0.isMatching(user: user, segments: segments) })
+        database.chat.filters.first(where: { $0.isMatching(user: user, segments: segments) })
     }
 
     func appendChatMessage(
@@ -369,7 +369,7 @@ extension Model {
     }
 
     func isShowingStatusChat() -> Bool {
-        return database.show.chat && isChatConfigured()
+        database.show.chat && isChatConfigured()
     }
 
     func updateStatusChatText() {
@@ -401,7 +401,7 @@ extension Model {
                 statuses.append(ChatPlatformStatus(platform: .openStreamingPlatform,
                                                    connected: isOpenStreamingPlatformChatConnected()))
             }
-            if statuses.allSatisfy({ $0.connected }) {
+            if statuses.allSatisfy(\.connected) {
                 status = String(localized: "Connected")
             } else {
                 status = String(localized: "Disconnected")

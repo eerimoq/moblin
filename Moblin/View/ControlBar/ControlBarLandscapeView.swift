@@ -2,17 +2,17 @@ import SwiftUI
 
 private func edgesToIgnore() -> Edge.Set {
     if isPhone() {
-        return [.trailing]
+        [.trailing]
     } else {
-        return []
+        []
     }
 }
 
 func controlBarWidth(quickButtons: SettingsQuickButtons) -> Double {
-    if quickButtons.bigButtons && quickButtons.twoColumns {
-        return controlBarWidthBigQuickButtons
+    if quickButtons.bigButtons, quickButtons.twoColumns {
+        controlBarWidthBigQuickButtons
     } else {
-        return controlBarWidthDefault
+        controlBarWidthDefault
     }
 }
 
@@ -25,17 +25,17 @@ private struct QuickButtonsView: View {
 
     private func buttonSize() -> Double {
         if quickButtonsSettings.bigButtons {
-            return controlBarQuickButtonSingleQuickButtonSize
+            controlBarQuickButtonSingleQuickButtonSize
         } else {
-            return controlBarButtonSize
+            controlBarButtonSize
         }
     }
 
     private func nameSize() -> Double {
         if quickButtonsSettings.bigButtons {
-            return controlBarQuickButtonNameSingleColumnSize
+            controlBarQuickButtonNameSingleColumnSize
         } else {
-            return controlBarQuickButtonNameSize
+            controlBarQuickButtonNameSize
         }
     }
 
@@ -189,10 +189,10 @@ private struct MainPageView: View {
     let width: Double
 
     private func buttonsWidth() -> Double {
-        if quickButtonsSettings.bigButtons && quickButtonsSettings.twoColumns {
-            return width - 20
+        if quickButtonsSettings.bigButtons, quickButtonsSettings.twoColumns {
+            width - 20
         } else {
-            return width - 10
+            width - 10
         }
     }
 
@@ -252,10 +252,10 @@ private struct PagesView: View {
     let width: Double
 
     private func offsetX() -> Double {
-        if quickButtonsSettings.bigButtons && quickButtonsSettings.twoColumns {
-            return -6
+        if quickButtonsSettings.bigButtons, quickButtonsSettings.twoColumns {
+            -6
         } else {
-            return -1
+            -1
         }
     }
 

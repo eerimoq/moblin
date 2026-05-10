@@ -165,15 +165,15 @@ struct StreamOverlayView: View {
 
     private func leadingPadding() -> CGFloat {
         if UIDevice.current.userInterfaceIdiom == .pad || orientation.isPortrait {
-            return 15
+            15
         } else {
-            return 0
+            0
         }
     }
 
     var body: some View {
         ZStack {
-            if streamOverlay.isTorchOn && streamOverlay.isFrontCameraSelected {
+            if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
                 FrontTorchView(orientation: orientation)
             }
             ZStack {

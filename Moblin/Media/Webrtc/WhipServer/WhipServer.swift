@@ -18,11 +18,11 @@ protocol WhipServerDelegate: AnyObject {
 class WhipServer {
     private var server: HttpServer?
     private var clients: [UUID: WhipServerClient] = [:]
-    private let delegate: WhipServerDelegate
+    private let delegate: any WhipServerDelegate
     var settings: SettingsWhipServer
     private var bitrateStats = BitrateStats()
 
-    init(settings: SettingsWhipServer, delegate: WhipServerDelegate) {
+    init(settings: SettingsWhipServer, delegate: any WhipServerDelegate) {
         self.settings = settings
         self.delegate = delegate
     }
@@ -40,19 +40,19 @@ class WhipServer {
     }
 
     func getNumberOfClients() -> Int {
-        return whipServerDispatchQueue.sync {
+        whipServerDispatchQueue.sync {
             clients.count
         }
     }
 
     func updateStats() -> BitrateStatsInstant {
-        return whipServerDispatchQueue.sync {
+        whipServerDispatchQueue.sync {
             bitrateStats.update()
         }
     }
 
     func isStreamConnected(streamId: UUID) -> Bool {
-        return whipServerDispatchQueue.sync {
+        whipServerDispatchQueue.sync {
             clients[streamId] != nil
         }
     }

@@ -10,11 +10,11 @@ class LogsStorage {
     }
 
     func makePath(id: UUID) -> URL {
-        return logsUrl.appendingPathComponent("\(id.uuidString).txt")
+        logsUrl.appendingPathComponent("\(id.uuidString).txt")
     }
 
     func ids() -> [UUID] {
-        return fileManager.idsBeforeDot(directory: logsUrl.path)
+        fileManager.idsBeforeDot(directory: logsUrl.path)
     }
 
     func write(id: UUID, data: Data) {

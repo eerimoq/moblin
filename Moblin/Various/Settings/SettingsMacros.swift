@@ -39,40 +39,40 @@ enum SettingsReaction: Codable, CaseIterable {
     func toSystem() -> AVCaptureReactionType? {
         switch self {
         case .fireworks:
-            return .fireworks
+            .fireworks
         case .balloons:
-            return .balloons
+            .balloons
         case .hearts:
-            return .heart
+            .heart
         case .confetti:
-            return .confetti
+            .confetti
         case .lasers:
-            return .lasers
+            .lasers
         case .rain:
-            return .rain
+            .rain
         default:
-            return nil
+            nil
         }
     }
 
     func toString() -> String {
         switch self {
         case .fireworks:
-            return String(localized: "Fireworks")
+            String(localized: "Fireworks")
         case .balloons:
-            return String(localized: "Balloons")
+            String(localized: "Balloons")
         case .hearts:
-            return String(localized: "Hearts")
+            String(localized: "Hearts")
         case .confetti:
-            return String(localized: "Confetti")
+            String(localized: "Confetti")
         case .lasers:
-            return String(localized: "Lasers")
+            String(localized: "Lasers")
         case .rain:
-            return String(localized: "Rain")
+            String(localized: "Rain")
         case .glasses:
-            return String(localized: "Glasses")
+            String(localized: "Glasses")
         case .sparkle:
-            return String(localized: "Sparkle")
+            String(localized: "Sparkle")
         }
     }
 }
@@ -96,33 +96,33 @@ enum SettingsMacrosActionFunction: String, CaseIterable, Codable {
     func toString() -> String {
         switch self {
         case .scene:
-            return String(localized: "Scene")
+            String(localized: "Scene")
         case .zoom:
-            return String(localized: "Zoom")
+            String(localized: "Zoom")
         case .filters:
-            return String(localized: "Filters")
+            String(localized: "Filters")
         case .reaction:
-            return String(localized: "Reaction")
+            String(localized: "Reaction")
         case .enableDisableScenes:
-            return String(localized: "Scenes")
+            String(localized: "Scenes")
         case .record:
-            return String(localized: "Record")
+            String(localized: "Record")
         case .snapshot:
-            return String(localized: "Snapshot")
+            String(localized: "Snapshot")
         case .mute:
-            return String(localized: "Mute")
+            String(localized: "Mute")
         case .torch:
-            return String(localized: "Torch")
+            String(localized: "Torch")
         case .autoSceneSwitcher:
-            return String(localized: "Auto scene switcher")
+            String(localized: "Auto scene switcher")
         case .djiDevices:
-            return String(localized: "DJI devices")
+            String(localized: "DJI devices")
         case .gimbalPreset:
-            return String(localized: "Move to gimbal preset")
+            String(localized: "Move to gimbal preset")
         case .delay:
-            return String(localized: "Delay")
+            String(localized: "Delay")
         case .macro:
-            return String(localized: "Run macro")
+            String(localized: "Run macro")
         }
     }
 }
@@ -164,7 +164,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
              reaction
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.function, function)
@@ -183,7 +183,7 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
         try container.encode(.reaction, reaction)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         function = container.decode(.function, SettingsMacrosActionFunction?.self, nil)
@@ -223,14 +223,14 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
              actions
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.actions, actions)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -255,12 +255,12 @@ class SettingsMacros: Codable, ObservableObject {
         case macros
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.macros, macros)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         macros = container.decode(.macros, [SettingsMacrosMacro].self, [])
     }

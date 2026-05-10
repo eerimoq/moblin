@@ -27,30 +27,30 @@ enum WizardCustomProtocol {
     func toDefaultCodec() -> SettingsStreamCodec {
         switch self {
         case .none:
-            return .h264avc
+            .h264avc
         case .srt:
-            return .h265hevc
+            .h265hevc
         case .rtmp:
-            return .h264avc
+            .h264avc
         case .rist:
-            return .h265hevc
+            .h265hevc
         case .whip:
-            return .h264avc
+            .h264avc
         }
     }
 
     func toDefaultAudioCodec() -> SettingsStreamAudioCodec {
         switch self {
         case .none:
-            return .aac
+            .aac
         case .srt:
-            return .aac
+            .aac
         case .rtmp:
-            return .aac
+            .aac
         case .rist:
-            return .aac
+            .aac
         case .whip:
-            return .opus
+            .opus
         }
     }
 }

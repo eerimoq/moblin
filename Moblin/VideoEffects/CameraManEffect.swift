@@ -37,7 +37,7 @@ final class CameraManEffect: VideoEffect {
         let elapsed = now - startTime!
         let scale = minScale + (1 - minScale) * (0.5 + 0.5 * cos(elapsed * zoomSpeed * speed))
         let isRising = scale - previousScale > 0
-        if previousIsRising && !isRising {
+        if previousIsRising, !isRising {
             isStill.toggle()
         }
         previousScale = scale

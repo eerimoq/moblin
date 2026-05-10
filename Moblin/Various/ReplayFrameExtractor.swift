@@ -111,8 +111,8 @@ class ReplayFrameExtractor {
             guard let self else {
                 return
             }
-            self.pendingOffset = offset
-            self.tryNextJob()
+            pendingOffset = offset
+            tryNextJob()
         }
     }
 

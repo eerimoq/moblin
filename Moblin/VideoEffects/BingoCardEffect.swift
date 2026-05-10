@@ -7,7 +7,7 @@ private struct BingoView: View {
     let canvasSize: CGSize
 
     private func squareSize(squaresCountSide: Int) -> Double {
-        return toPixels(sceneWidget.layout.size, canvasSize.minimum()) / Double(squaresCountSide)
+        toPixels(sceneWidget.layout.size, canvasSize.minimum()) / Double(squaresCountSide)
     }
 
     var body: some View {
@@ -80,7 +80,7 @@ final class BingoCardEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        return bingoImage?
+        bingoImage?
             .move(sceneWidgetPipeline.layout, image.extent.size)
             .cropped(to: image.extent)
             .composited(over: image) ?? image
@@ -95,7 +95,7 @@ final class BingoCardEffect: VideoEffect {
             guard let self else {
                 return
             }
-            self.setBingoImage(image: self.renderer?.ciImage())
+            setBingoImage(image: renderer?.ciImage())
         }
         setBingoImage(image: renderer?.ciImage())
     }

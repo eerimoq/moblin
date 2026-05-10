@@ -41,7 +41,7 @@ private struct KickCategoryPickerView: View {
         for categoryName in categoryNames {
             model.fetchKickCategories(query: categoryName) { result in
                 if let category = result?.first {
-                    self.categories.append(category)
+                    categories.append(category)
                 }
             }
         }
@@ -84,7 +84,7 @@ private struct KickCategoryPickerView: View {
                             return
                         }
                         model.searchKickCategories(stream: stream, query: searchText) { result in
-                            self.categories = result ?? []
+                            categories = result ?? []
                         }
                     }
             }
@@ -237,7 +237,7 @@ struct StreamKickSettingsView: View {
 
     private func onLoggedIn() {
         model.createKickApi(stream: stream).getUser { data in
-            self.handleUser(data: data)
+            handleUser(data: data)
         }
     }
 

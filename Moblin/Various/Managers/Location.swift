@@ -80,7 +80,7 @@ class Location: NSObject {
     }
 
     func getLatestKnownLocation() -> CLLocation? {
-        return latestLocation
+        latestLocation
     }
 }
 

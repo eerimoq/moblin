@@ -33,7 +33,7 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
     private let pifMax: Double
 
     init(targetBitrate: UInt32,
-         delegate: AdaptiveBitrateDelegate,
+         delegate: any AdaptiveBitrateDelegate,
          rttMax: Double = 250,
          pifMax: Double = 100)
     {
@@ -56,19 +56,19 @@ class AdaptiveBitrateSrtFight: AdaptiveBitrate {
     }
 
     override func getCurrentBitrate() -> UInt32 {
-        return UInt32(currentBitrate)
+        UInt32(currentBitrate)
     }
 
     override func getCurrentMaximumBitrateInKbps() -> Int64 {
-        return currentMaximumBitrate / 1000
+        currentMaximumBitrate / 1000
     }
 
     override func getFastPif() -> Int64 {
-        return Int64(fastPif)
+        Int64(fastPif)
     }
 
     override func getSmoothPif() -> Int64 {
-        return Int64(smoothPif)
+        Int64(smoothPif)
     }
 
     // NB:To be called every 200ms when live

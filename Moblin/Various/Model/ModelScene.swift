@@ -52,73 +52,73 @@ extension Model {
     }
 
     func getVideoSourceEffect(id: UUID) -> VideoSourceEffect? {
-        return videoSourceEffects[id]
+        videoSourceEffects[id]
     }
 
     func getVTuberEffect(id: UUID) -> VTuberEffect? {
-        return vTuberEffects[id]
+        vTuberEffects[id]
     }
 
     func getPngTuberEffect(id: UUID) -> PngTuberEffect? {
-        return pngTuberEffects[id]
+        pngTuberEffects[id]
     }
 
     func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
-        return snapshotEffects[id]
+        snapshotEffects[id]
     }
 
     func getChatEffect(id: UUID) -> ChatEffect? {
-        return chatEffects[id]
+        chatEffects[id]
     }
 
     func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
-        return qrCodeEffects[id]
+        qrCodeEffects[id]
     }
 
     func getWheelOfLuckEffect(id: UUID) -> WheelOfLuckEffect? {
-        return wheelOfLuckEffects[id]
+        wheelOfLuckEffects[id]
     }
 
     func getBingoCardEffect(id: UUID) -> BingoCardEffect? {
-        return bingoCardEffects[id]
+        bingoCardEffects[id]
     }
 
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
-        return scoreboardEffects[id]
+        scoreboardEffects[id]
     }
 
     func getWidgetShapeEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> ShapeEffect? {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetAnamorphicLensEffect(_ widget: SettingsWidget,
                                        _ effect: SettingsVideoEffect) -> AnamorphicLensEffect?
     {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetDewarp360Effect(_ widget: SettingsWidget,
                                   _ effect: SettingsVideoEffect) -> Dewarp360Effect?
     {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetLutEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> LutEffect? {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetOpacityEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> OpacityEffect? {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetRemoveBackgroundEffect(_ widget: SettingsWidget,
                                          _ effect: SettingsVideoEffect) -> RemoveBackgroundEffect?
     {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     private func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
-        return getVideoSourceEffect(id: id)
+        getVideoSourceEffect(id: id)
             ?? getImageEffect(id: id)
             ?? getBrowserEffect(id: id)
             ?? getMapEffect(id: id)
@@ -127,7 +127,7 @@ extension Model {
     }
 
     private func getWidgetVideoEffect<T>(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> T? {
-        guard let effectIndex = widget.effects.filter({ $0.enabled }).firstIndex(where: { $0 === effect }),
+        guard let effectIndex = widget.effects.filter(\.enabled).firstIndex(where: { $0 === effect }),
               let effect = getEffectWithPossibleEffects(id: widget.id),
               effectIndex < effect.effects.count
         else {
@@ -137,7 +137,7 @@ extension Model {
     }
 
     func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
-        return database.fixedHorizon && scene.videoSource.cameraPosition.isBuiltin()
+        database.fixedHorizon && scene.videoSource.cameraPosition.isBuiltin()
     }
 
     func resetSelectedScene(changeScene: Bool = true, attachCamera: Bool = true) {
@@ -164,7 +164,7 @@ extension Model {
     }
 
     func getSelectedScene() -> SettingsScene? {
-        return findEnabledScene(id: sceneSelector.selectedSceneId)
+        findEnabledScene(id: sceneSelector.selectedSceneId)
     }
 
     func showSceneSettings(scene: SettingsScene) {
@@ -228,15 +228,15 @@ extension Model {
     }
 
     func getSceneName(id: UUID?) -> String? {
-        return database.scenes.first { $0.id == id }?.name
+        database.scenes.first { $0.id == id }?.name
     }
 
     func getScene(id: UUID?) -> SettingsScene? {
-        return database.scenes.first(where: { $0.id == id })
+        database.scenes.first(where: { $0.id == id })
     }
 
     func getWidgetName(id: UUID?) -> String? {
-        return database.widgets.first { $0.id == id }?.name
+        database.widgets.first { $0.id == id }?.name
     }
 
     func removeDeadWidgetsFromScenes() {
@@ -314,11 +314,11 @@ extension Model {
     }
 
     func findEnabledScene(id: UUID) -> SettingsScene? {
-        return enabledScenes.first(where: { $0.id == id })
+        enabledScenes.first(where: { $0.id == id })
     }
 
     func findEnabledSceneIndex(id: UUID) -> Int? {
-        return enabledScenes.firstIndex(where: { $0.id == id })
+        enabledScenes.firstIndex(where: { $0.id == id })
     }
 
     func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
@@ -327,7 +327,7 @@ extension Model {
     }
 
     func getFillFrame(scene: SettingsScene) -> Bool {
-        return scene.fillFrame
+        scene.fillFrame
     }
 
     func widgetsInCurrentScene(onlyEnabled: Bool) -> [WidgetInScene] {
@@ -444,21 +444,21 @@ extension Model {
     func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
         switch scene.videoSource.cameraPosition {
         case .rtmp:
-            return activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
         case .srtla:
-            return activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
         case .rist:
-            return activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
         case .rtsp:
-            return activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
         case .whip:
-            return activeBufferedVideoIds.contains(scene.videoSource.whipCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.whipCameraId)
         case .whep:
-            return activeBufferedVideoIds.contains(scene.videoSource.whepCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.whepCameraId)
         case .external:
-            return isExternalCameraConnected(cameraId: scene.videoSource.externalCameraId)
+            isExternalCameraConnected(cameraId: scene.videoSource.externalCameraId)
         default:
-            return true
+            true
         }
     }
 
@@ -633,15 +633,15 @@ extension Model {
     }
 
     private func getImageEffect(id: UUID) -> ImageEffect? {
-        return imageEffects[id]
+        imageEffects[id]
     }
 
     private func getBrowserEffect(id: UUID) -> BrowserEffect? {
-        return browserEffects[id]
+        browserEffects[id]
     }
 
     private func getMapEffect(id: UUID) -> MapEffect? {
-        return mapEffects[id]
+        mapEffects[id]
     }
 
     private func resetVideoEffects(widgets: [SettingsWidget]) {
@@ -668,7 +668,7 @@ extension Model {
     }
 
     private func createImageEffect(widget: SettingsWidget) -> ImageEffect {
-        return ImageEffect(imageStorage: imageStorage, widgetId: widget.id)
+        ImageEffect(imageStorage: imageStorage, widgetId: widget.id)
     }
 
     private func resetImageEffects(widgets: [SettingsWidget]) {
@@ -681,7 +681,7 @@ extension Model {
     }
 
     private func createTextEffect(widget: SettingsWidget) -> TextEffect {
-        return TextEffect(
+        TextEffect(
             format: widget.text.formatString,
             backgroundColor: widget.text.backgroundColor,
             foregroundColor: widget.text.foregroundColor,
@@ -697,9 +697,9 @@ extension Model {
                 .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
             },
             stopwatches: widget.text.stopwatches.map { $0.clone() },
-            checkboxes: widget.text.checkboxes.map { $0.checked },
-            ratings: widget.text.ratings.map { $0.rating },
-            lapTimes: widget.text.lapTimes.map { $0.lapTimes }
+            checkboxes: widget.text.checkboxes.map(\.checked),
+            ratings: widget.text.ratings.map(\.rating),
+            lapTimes: widget.text.lapTimes.map(\.lapTimes)
         )
     }
 
@@ -856,7 +856,7 @@ extension Model {
     }
 
     private func isQuickButtonOn(type: SettingsQuickButtonType) -> Bool {
-        return database.quickButtons.first(where: { $0.type == type })?.isOn ?? false
+        database.quickButtons.first(where: { $0.type == type })?.isOn ?? false
     }
 
     private func isFaceEnabled() -> Bool {
@@ -885,7 +885,7 @@ extension Model {
     }
 
     private func findSceneWidget(scene: SettingsScene, widgetId: UUID) -> SettingsSceneWidget? {
-        return scene.widgets.first(where: { $0.widgetId == widgetId })
+        scene.widgets.first(where: { $0.widgetId == widgetId })
     }
 
     private func sceneUpdatedOn(scene: SettingsScene, attachCamera: Bool) {
@@ -1057,11 +1057,12 @@ extension Model {
         guard let effect = browserEffects[widget.crop.sourceWidgetId], !effects.contains(effect) else {
             return
         }
-        let sceneWidget: SettingsSceneWidget?
-        if findWidget(id: widget.crop.sourceWidgetId)?.enabled == true {
-            sceneWidget = findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId)
+        let sceneWidget: SettingsSceneWidget? = if findWidget(id: widget.crop.sourceWidgetId)?
+            .enabled == true
+        {
+            findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId)
         } else {
-            sceneWidget = nil
+            nil
         }
         effect.setSceneWidget(
             sceneWidget: sceneWidget?.clone(),
@@ -1287,11 +1288,11 @@ extension Model {
     }
 
     private func getLocalAndRemoteScenes() -> [SettingsScene] {
-        return database.scenes + remoteSceneScenes
+        database.scenes + remoteSceneScenes
     }
 
     private func getLocalAndRemoteWidgets() -> [SettingsWidget] {
-        return database.widgets + remoteSceneWidgets
+        database.widgets + remoteSceneWidgets
     }
 
     private func findWidgetCrops(scene: SettingsScene, sourceWidgetId: UUID) -> [WidgetCrop] {
@@ -1379,7 +1380,7 @@ extension Model {
                 lapTimes.lapTimes[lastIndex] = now - currentLapStartTime
             }
             for effect in getTextEffects(id: widget.id) {
-                effect.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
+                effect.setLapTimes(lapTimes: widget.text.lapTimes.map(\.lapTimes))
             }
         }
     }
@@ -1449,9 +1450,9 @@ extension Model {
 
     private func getBrowserTitle() -> String {
         if showBrowser {
-            return getWebBrowser().title ?? ""
+            getWebBrowser().title ?? ""
         } else {
-            return ""
+            ""
         }
     }
 
@@ -1579,7 +1580,7 @@ extension Model {
     ) {
         let length = parts.filter { $0 == .checkbox }.count
         text.checkboxes.truncate(length: length, create: { .init() })
-        textEffect.setCheckboxes(checkboxes: text.checkboxes.map { $0.checked })
+        textEffect.setCheckboxes(checkboxes: text.checkboxes.map(\.checked))
     }
 
     private func updateRatings(
@@ -1589,7 +1590,7 @@ extension Model {
     ) {
         let length = parts.filter { $0 == .rating }.count
         text.ratings.truncate(length: length, create: { .init() })
-        textEffect.setRatings(ratings: text.ratings.map { $0.rating })
+        textEffect.setRatings(ratings: text.ratings.map(\.rating))
     }
 
     private func updateLapTimes(
@@ -1599,7 +1600,7 @@ extension Model {
     ) {
         let length = parts.filter { $0 == .lapTimes }.count
         text.lapTimes.truncate(length: length, create: { .init() })
-        textEffect.setLapTimes(lapTimes: text.lapTimes.map { $0.lapTimes })
+        textEffect.setLapTimes(lapTimes: text.lapTimes.map(\.lapTimes))
     }
 
     private func updateSubtitles(_ text: SettingsWidgetText, _: TextEffect?, _ parts: [TextFormatPart]) {
@@ -1622,9 +1623,9 @@ extension Model {
         text.needsWeather = parts.contains(where: {
             switch $0 {
             case .conditions, .temperature:
-                return true
+                true
             default:
-                return false
+                false
             }
         })
         startWeatherManager()
@@ -1634,9 +1635,9 @@ extension Model {
         text.needsGeography = parts.contains(where: {
             switch $0 {
             case .country, .countryFlag, .state, .city:
-                return true
+                true
             default:
-                return false
+                false
             }
         })
         startGeographyManager()
@@ -1646,9 +1647,9 @@ extension Model {
         text.needsGForce = parts.contains(where: {
             switch $0 {
             case .gForce, .gForceRecentMax, .gForceMax:
-                return true
+                true
             default:
-                return false
+                false
             }
         })
         startGForceManager()

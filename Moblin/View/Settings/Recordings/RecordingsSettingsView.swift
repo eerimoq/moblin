@@ -32,11 +32,10 @@ private struct RecordingsLocationView: View {
 
     private func copyPathToClipboard(path: URL) {
         UIPasteboard.general.string = path.path()
-        let subTitle: String?
-        if isMac() {
-            subTitle = String(localized: "Open it in Finder app → Go → Go to Folder...")
+        let subTitle: String? = if isMac() {
+            String(localized: "Open it in Finder app → Go → Go to Folder...")
         } else {
-            subTitle = nil
+            nil
         }
         model.makeToast(title: String(localized: "Directory copied to clipboard"), subTitle: subTitle)
     }

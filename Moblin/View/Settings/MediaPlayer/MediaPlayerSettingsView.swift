@@ -82,7 +82,7 @@ struct MediaPlayerSettingsView: View {
                             DispatchQueue.main.async {
                                 switch result {
                                 case let .success(video?):
-                                    self.appendMedia(url: video.url)
+                                    appendMedia(url: video.url)
                                 case .success(nil):
                                     logger.info("media-player: Media is nil")
                                 case let .failure(error):

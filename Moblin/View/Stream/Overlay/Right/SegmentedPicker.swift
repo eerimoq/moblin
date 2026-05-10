@@ -44,13 +44,13 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
         ForEach(items.indices, id: \.self) { index in
             ZStack {
                 Rectangle()
-                    .overlay(self.overlay(for: self.items[index]))
+                    .overlay(overlay(for: items[index]))
                     .foregroundStyle(.black.opacity(0.1))
-                self.content(self.items[index])
+                content(items[index])
                     .contentShape(Rectangle())
             }
             .onTapGesture {
-                self.selectedItem = self.items[index]
+                selectedItem = items[index]
             }
             .onLongPressGesture {
                 onLongPress?(index)

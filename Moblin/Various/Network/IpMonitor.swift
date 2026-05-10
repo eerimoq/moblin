@@ -9,9 +9,9 @@ class IPMonitor {
         func formatAddress(_ address: String) -> String {
             switch self {
             case .ipv4:
-                return address
+                address
             case .ipv6:
-                return "[\(address)]"
+                "[\(address)]"
             }
         }
     }

@@ -18,17 +18,17 @@ private struct ZoomPresetView: View {
 
     private func segmentWidth() -> Double {
         if database.bigButtons {
-            return zoomSegmentWidthBig
+            zoomSegmentWidthBig
         } else {
-            return zoomSegmentWidth
+            zoomSegmentWidth
         }
     }
 
     private func height() -> Double {
         if database.bigButtons {
-            return segmentHeightBig
+            segmentHeightBig
         } else {
-            return segmentHeight
+            segmentHeight
         }
     }
 
@@ -67,17 +67,17 @@ private struct ZoomPresetVView: View {
 
     private func segmentWidth() -> Double {
         if database.bigButtons {
-            return zoomSegmentWidthBig
+            zoomSegmentWidthBig
         } else {
-            return zoomSegmentWidth
+            zoomSegmentWidth
         }
     }
 
     private func height() -> Double {
         if database.bigButtons {
-            return segmentHeightBig
+            segmentHeightBig
         } else {
-            return segmentHeight
+            segmentHeight
         }
     }
 
@@ -114,17 +114,17 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
 
     private func presets() -> Binding<[SettingsZoomPreset]> {
         if model.cameraPosition == .front {
-            return $zoom.frontZoomPresets
+            $zoom.frontZoomPresets
         } else {
-            return $zoom.backZoomPresets
+            $zoom.backZoomPresets
         }
     }
 
     private func selectedPresetId() -> Binding<UUID> {
         if model.cameraPosition == .front {
-            return $zoom.frontPresetId
+            $zoom.frontPresetId
         } else {
-            return $zoom.backPresetId
+            $zoom.backPresetId
         }
     }
 
@@ -145,17 +145,17 @@ struct StreamOverlayRightZoomPresetVSelctorView: View {
 
     private func presets() -> Binding<[SettingsZoomPreset]> {
         if model.cameraPosition == .front {
-            return $zoom.frontZoomPresets
+            $zoom.frontZoomPresets
         } else {
-            return $zoom.backZoomPresets
+            $zoom.backZoomPresets
         }
     }
 
     private func selectedPresetId() -> Binding<UUID> {
         if model.cameraPosition == .front {
-            return $zoom.frontPresetId
+            $zoom.frontPresetId
         } else {
-            return $zoom.backPresetId
+            $zoom.backPresetId
         }
     }
 

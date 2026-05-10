@@ -8,9 +8,9 @@ struct GameControllersSettingsView: View {
         if let index = database.gameControllers.firstIndex(where: { gameController2 in
             gameController.id == gameController2.id
         }) {
-            return index + 1
+            index + 1
         } else {
-            return 1
+            1
         }
     }
 

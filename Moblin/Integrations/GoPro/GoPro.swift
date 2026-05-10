@@ -4,14 +4,13 @@ class GoPro {
     static func generateLaunchLiveStream(isHero12Or13: Bool,
                                          resolution: SettingsGoProLaunchLiveStreamResolution) -> UIImage?
     {
-        let suffix: String
-        switch resolution {
+        let suffix = switch resolution {
         case .r1080p:
-            suffix = "!GL"
+            "!GL"
         case .r720p:
-            suffix = "!GM"
+            "!GM"
         case .r480p:
-            suffix = "!GS"
+            "!GS"
         }
         if isHero12Or13 {
             return generateQrCode(from: suffix)
@@ -21,10 +20,10 @@ class GoPro {
     }
 
     static func generateWifiCredentialsQrCode(ssid: String, password: String) -> UIImage? {
-        return generateQrCode(from: "!MJOIN=\"\(ssid):\(password)\"")
+        generateQrCode(from: "!MJOIN=\"\(ssid):\(password)\"")
     }
 
     static func generateRtmpUrlQrCode(url: String) -> UIImage? {
-        return generateQrCode(from: "!MRTMP=\"\(url)\"")
+        generateQrCode(from: "!MRTMP=\"\(url)\"")
     }
 }

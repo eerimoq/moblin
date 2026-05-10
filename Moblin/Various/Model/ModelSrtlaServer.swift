@@ -20,27 +20,27 @@ extension Model {
     }
 
     func srtlaServerEnabled() -> Bool {
-        return database.srtlaServer.enabled
+        database.srtlaServer.enabled
     }
 
     func srtlaCameras() -> [Camera] {
-        return database.srtlaServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
+        database.srtlaServer.streams.map { Camera(id: $0.id.uuidString, name: $0.camera()) }
     }
 
     func getSrtlaStream(id: UUID) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer.streams.first { $0.id == id }
+        database.srtlaServer.streams.first { $0.id == id }
     }
 
     func getSrtlaStream(idString: String) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer.streams.first { $0.id.uuidString == idString }
+        database.srtlaServer.streams.first { $0.id.uuidString == idString }
     }
 
     func getSrtlaStream(streamId: String) -> SettingsSrtlaServerStream? {
-        return database.srtlaServer.streams.first { $0.streamId == streamId }
+        database.srtlaServer.streams.first { $0.streamId == streamId }
     }
 
     func isSrtlaStreamConnected(streamId: String) -> Bool {
-        return ingests.srtla?.isStreamConnected(streamId: streamId) ?? false
+        ingests.srtla?.isStreamConnected(streamId: streamId) ?? false
     }
 }
 

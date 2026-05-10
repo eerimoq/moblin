@@ -16,13 +16,13 @@ enum SettingsGimbalMotion: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .kapow:
-            return String(localized: "Kapow")
+            String(localized: "Kapow")
         case .yes:
-            return String(localized: "Yes")
+            String(localized: "Yes")
         case .no:
-            return String(localized: "No")
+            String(localized: "No")
         case .wakeup:
-            return String(localized: "Wakeup")
+            String(localized: "Wakeup")
         }
     }
 
@@ -30,13 +30,13 @@ enum SettingsGimbalMotion: Codable, CaseIterable {
     func toSystem() -> DockAccessory.Animation {
         switch self {
         case .kapow:
-            return .kapow
+            .kapow
         case .yes:
-            return .yes
+            .yes
         case .no:
-            return .no
+            .no
         case .wakeup:
-            return .wakeup
+            .wakeup
         }
     }
 }
@@ -48,18 +48,18 @@ enum SettingsControllerThumbStickFunction: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .unused:
-            return String(localized: "Unused")
+            String(localized: "Unused")
         case .gimbalPanTilt:
-            return String(localized: "Gimbal pan and tilt")
+            String(localized: "Gimbal pan and tilt")
         }
     }
 
     func color() -> Color {
         switch self {
         case .unused:
-            return .gray
+            .gray
         default:
-            return .primary
+            .primary
         }
     }
 }
@@ -106,79 +106,79 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .unused:
-            return String(localized: "Unused")
+            String(localized: "Unused")
         case .record:
-            return String(localized: "Record")
+            String(localized: "Record")
         case .stream:
-            return String(localized: "Stream")
+            String(localized: "Stream")
         case .zoomIn:
-            return String(localized: "Zoom in")
+            String(localized: "Zoom in")
         case .zoomOut:
-            return String(localized: "Zoom out")
+            String(localized: "Zoom out")
         case .gimbalUp:
-            return String(localized: "Gimbal up")
+            String(localized: "Gimbal up")
         case .gimbalDown:
-            return String(localized: "Gimbal down")
+            String(localized: "Gimbal down")
         case .gimbalLeft:
-            return String(localized: "Gimbal left")
+            String(localized: "Gimbal left")
         case .gimbalRight:
-            return String(localized: "Gimbal right")
+            String(localized: "Gimbal right")
         case .gimbalPreset:
-            return String(localized: "Gimbal preset")
+            String(localized: "Gimbal preset")
         case .gimbalAnimate:
-            return String(localized: "Gimbal animate")
+            String(localized: "Gimbal animate")
         case .gimbalTracking:
-            return String(localized: "Gimbal tracking")
+            String(localized: "Gimbal tracking")
         case .mute:
-            return String(localized: "Mute")
+            String(localized: "Mute")
         case .torch:
-            return String(localized: "Torch")
+            String(localized: "Torch")
         case .blackScreen:
-            return String(localized: "Stealth mode")
+            String(localized: "Stealth mode")
         case .scene:
-            return String(localized: "Scene")
+            String(localized: "Scene")
         case .switchScene:
-            return String(localized: "Switch scene")
+            String(localized: "Switch scene")
         case .widget:
-            return String(localized: "Widget")
+            String(localized: "Widget")
         case .macro:
-            return String(localized: "Macro")
+            String(localized: "Macro")
         case .instantReplay:
-            return String(localized: "Instant replay")
+            String(localized: "Instant replay")
         case .stopReplay:
-            return String(localized: "Stop replay")
+            String(localized: "Stop replay")
         case .snapshot:
-            return String(localized: "Snapshot")
+            String(localized: "Snapshot")
         case .pauseTts:
-            return String(localized: "Pause TTS")
+            String(localized: "Pause TTS")
         case .pixellate:
-            return String(localized: "Pixellate")
+            String(localized: "Pixellate")
         case .movie:
-            return String(localized: "Movie")
+            String(localized: "Movie")
         case .grayScale:
-            return String(localized: "Gray scale")
+            String(localized: "Gray scale")
         case .sepia:
-            return String(localized: "Sepia")
+            String(localized: "Sepia")
         case .triple:
-            return String(localized: "Triple")
+            String(localized: "Triple")
         case .twin:
-            return String(localized: "Twin")
+            String(localized: "Twin")
         case .fourThree:
-            return String(localized: "4:3")
+            String(localized: "4:3")
         case .pinch:
-            return String(localized: "Pinch")
+            String(localized: "Pinch")
         case .whirlpool:
-            return String(localized: "Whirlpool")
+            String(localized: "Whirlpool")
         case .poll:
-            return String(localized: "Poll")
+            String(localized: "Poll")
         case .blurFaces:
-            return String(localized: "Blur faces")
+            String(localized: "Blur faces")
         case .privacy:
-            return String(localized: "Blur background")
+            String(localized: "Blur background")
         case .beauty:
-            return String(localized: "Beauty")
+            String(localized: "Beauty")
         case .cameraMan:
-            return String(localized: "Camera man")
+            String(localized: "Camera man")
         }
     }
 
@@ -186,106 +186,106 @@ enum SettingsControllerFunction: String, Codable, CaseIterable {
         switch self {
         case .scene:
             if let sceneName {
-                return String(localized: "\(sceneName) scene")
+                String(localized: "\(sceneName) scene")
             } else {
-                return String(localized: "Scene")
+                String(localized: "Scene")
             }
         case .widget:
             if let widgetName {
-                return String(localized: "\(widgetName) widget")
+                String(localized: "\(widgetName) widget")
             } else {
-                return String(localized: "Widget")
+                String(localized: "Widget")
             }
         default:
-            return toString()
+            toString()
         }
     }
 
     func color() -> Color {
         switch self {
         case .unused:
-            return .gray
+            .gray
         default:
-            return .primary
+            .primary
         }
     }
 
     func section() -> SettingsControllerFunctionSection {
         switch self {
         case .unused:
-            return .general
+            .general
         case .record:
-            return .general
+            .general
         case .stream:
-            return .general
+            .general
         case .zoomIn:
-            return .general
+            .general
         case .zoomOut:
-            return .general
+            .general
         case .gimbalUp:
-            return .general
+            .general
         case .gimbalDown:
-            return .general
+            .general
         case .gimbalLeft:
-            return .general
+            .general
         case .gimbalRight:
-            return .general
+            .general
         case .gimbalPreset:
-            return .general
+            .general
         case .gimbalAnimate:
-            return .general
+            .general
         case .gimbalTracking:
-            return .general
+            .general
         case .mute:
-            return .general
+            .general
         case .torch:
-            return .general
+            .general
         case .blackScreen:
-            return .general
+            .general
         case .scene:
-            return .general
+            .general
         case .switchScene:
-            return .general
+            .general
         case .widget:
-            return .general
+            .general
         case .macro:
-            return .general
+            .general
         case .instantReplay:
-            return .general
+            .general
         case .stopReplay:
-            return .general
+            .general
         case .snapshot:
-            return .general
+            .general
         case .pauseTts:
-            return .general
+            .general
         case .pixellate:
-            return .filters
+            .filters
         case .movie:
-            return .filters
+            .filters
         case .grayScale:
-            return .filters
+            .filters
         case .sepia:
-            return .filters
+            .filters
         case .triple:
-            return .filters
+            .filters
         case .twin:
-            return .filters
+            .filters
         case .fourThree:
-            return .filters
+            .filters
         case .pinch:
-            return .filters
+            .filters
         case .whirlpool:
-            return .filters
+            .filters
         case .poll:
-            return .filters
+            .filters
         case .blurFaces:
-            return .filters
+            .filters
         case .privacy:
-            return .filters
+            .filters
         case .beauty:
-            return .filters
+            .filters
         case .cameraMan:
-            return .filters
+            .filters
         }
     }
 }
@@ -319,7 +319,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
              macroId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -332,7 +332,7 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
         try container.encode(.macroId, functionData.macroId)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "")
@@ -458,7 +458,7 @@ class SettingsGameController: Codable, Identifiable, ObservableObject {
              rightThumbStickFunction
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.buttons, buttons)
@@ -466,7 +466,7 @@ class SettingsGameController: Codable, Identifiable, ObservableObject {
         try container.encode(.rightThumbStickFunction, rightThumbStickFunction)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         buttons = container.decode(.buttons, [SettingsGameControllerButton].self, [])

@@ -9,7 +9,7 @@ private struct HighlightMessageView: View {
     let highlight: ChatHighlight
 
     private func imageOpacity() -> Double {
-        return postState.deleted ? 0.25 : 1
+        postState.deleted ? 0.25 : 1
     }
 
     var body: some View {
@@ -65,7 +65,7 @@ private struct LineView: View {
     @Binding var selectedPost: ChatPost?
 
     private func imageOpacity() -> Double {
-        return deleted ? 0.25 : 1
+        deleted ? 0.25 : 1
     }
 
     var body: some View {
@@ -412,10 +412,10 @@ private struct AlertsPostView: View {
     let size: CGSize
 
     private func shouldShowMessage(highlight: ChatHighlight) -> Bool {
-        if highlight.kind == .firstMessage && !showFirstTimeChatterMessage {
+        if highlight.kind == .firstMessage, !showFirstTimeChatterMessage {
             return false
         }
-        if highlight.kind == .newFollower && !showNewFollowerMessage {
+        if highlight.kind == .newFollower, !showNewFollowerMessage {
             return false
         }
         if highlight.kind == .reply {
@@ -772,11 +772,11 @@ private struct SendMessagesToSelectorView: View {
     @State var presentingSelector = false
 
     private func isTwitchOnly() -> Bool {
-        return stream.twitchSendMessagesTo && !stream.kickSendMessagesTo
+        stream.twitchSendMessagesTo && !stream.kickSendMessagesTo
     }
 
     private func isKickOnly() -> Bool {
-        return stream.kickSendMessagesTo && !stream.twitchSendMessagesTo
+        stream.kickSendMessagesTo && !stream.twitchSendMessagesTo
     }
 
     var body: some View {
@@ -967,7 +967,7 @@ private struct ActionButtonsView: View {
     }
 
     private var chat: SettingsChat {
-        return model.database.chat
+        model.database.chat
     }
 
     private func banButton(selectedPost: ChatPost) -> some View {

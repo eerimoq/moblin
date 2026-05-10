@@ -20,11 +20,11 @@ class RistServer {
     private var port: UInt16
     private var context: RistReceiverContext?
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]
-    let delegate: RistServerDelegate
+    let delegate: any RistServerDelegate
     private let streams: [SettingsRistServerStream]
     private var bitrateStats = BitrateStats()
 
-    init?(port: UInt16, streams: [SettingsRistServerStream], delegate: RistServerDelegate) {
+    init?(port: UInt16, streams: [SettingsRistServerStream], delegate: any RistServerDelegate) {
         self.port = port
         self.streams = streams
         self.delegate = delegate
@@ -43,13 +43,13 @@ class RistServer {
     }
 
     func updateStats() -> BitrateStatsInstant {
-        return ristServerQueue.sync {
+        ristServerQueue.sync {
             bitrateStats.update()
         }
     }
 
     func getNumberOfClients() -> Int {
-        return ristServerQueue.sync {
+        ristServerQueue.sync {
             clientsByVirtualDestinationPort.count
         }
     }

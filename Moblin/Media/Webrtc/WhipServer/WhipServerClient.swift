@@ -18,13 +18,13 @@ final class WhipServerClient {
     let streamId: UUID
     private var ingestClient: WebrtcIngestClient?
     private var answerCompletion: ((String?) -> Void)?
-    weak var delegate: WhipServerClientDelegate?
+    weak var delegate: (any WhipServerClientDelegate)?
 
     init(streamId: UUID,
          latency: Double,
          syncTimestamps: Bool,
          iceServers: [String],
-         delegate: WhipServerClientDelegate)
+         delegate: any WhipServerClientDelegate)
     {
         self.streamId = streamId
         self.delegate = delegate

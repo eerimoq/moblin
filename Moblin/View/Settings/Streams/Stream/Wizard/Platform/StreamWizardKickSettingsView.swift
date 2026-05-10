@@ -5,7 +5,7 @@ struct StreamWizardKickSettingsView: View {
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.kickChannelName.trim().isEmpty
+        createStreamWizard.kickChannelName.trim().isEmpty
     }
 
     private func onLoginComplete() {

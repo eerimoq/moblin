@@ -9,18 +9,18 @@ enum RtmpChunkType: UInt8 {
     func messageHeaderSize() -> Int {
         switch self {
         case .zero:
-            return 11
+            11
         case .one:
-            return 7
+            7
         case .two:
-            return 3
+            3
         case .three:
-            return 0
+            0
         }
     }
 
     func areBasicAndMessageHeadersAvailable(_ data: Data) -> Bool {
-        return basicHeaderSize(data[0]) + messageHeaderSize() <= data.count
+        basicHeaderSize(data[0]) + messageHeaderSize() <= data.count
     }
 
     func toBasicHeader(_ chunkStreamId: UInt16) -> Data {
@@ -35,7 +35,7 @@ enum RtmpChunkType: UInt8 {
 }
 
 private func basicAndMessageHeadersSize(chunkStreamId: UInt16, type: RtmpChunkType) -> Int {
-    return basicHeaderSize(chunkStreamId: chunkStreamId) + type.messageHeaderSize()
+    basicHeaderSize(chunkStreamId: chunkStreamId) + type.messageHeaderSize()
 }
 
 private func basicHeaderSize(chunkStreamId: UInt16) -> Int {
@@ -51,11 +51,11 @@ private func basicHeaderSize(chunkStreamId: UInt16) -> Int {
 private func basicHeaderSize(_ byte: UInt8) -> Int {
     switch byte & 0b0011_1111 {
     case 0:
-        return 2
+        2
     case 1:
-        return 3
+        3
     default:
-        return 1
+        1
     }
 }
 

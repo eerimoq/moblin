@@ -19,11 +19,11 @@ struct AlertsEffectBackgroundLandmarkRectangle {
     }
 
     func width() -> Double {
-        return bottomRightX - topLeftX
+        bottomRightX - topLeftX
     }
 
     func height() -> Double {
-        return bottomRightY - topLeftY
+        bottomRightY - topLeftY
     }
 }
 

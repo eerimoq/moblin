@@ -26,7 +26,7 @@ class Gimbal {
     }
 
     func isConnected() -> Bool {
-        return accessory != nil
+        accessory != nil
     }
 
     func setTracking(on: Bool) {

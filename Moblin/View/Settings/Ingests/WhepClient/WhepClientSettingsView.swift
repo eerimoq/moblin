@@ -6,7 +6,7 @@ struct WhepClientSettingsView: View {
     @State var numberOfEnabledStreams: Int = 0
 
     private func status() -> String {
-        return String(numberOfEnabledStreams)
+        String(numberOfEnabledStreams)
     }
 
     private func deleteStream(at indexes: IndexSet) {
@@ -53,7 +53,7 @@ struct WhepClientSettingsView: View {
             }
         }
         .onAppear {
-            numberOfEnabledStreams = whepClient.streams.filter { $0.enabled }.count
+            numberOfEnabledStreams = whepClient.streams.filter(\.enabled).count
         }
     }
 }

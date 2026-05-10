@@ -86,300 +86,300 @@ enum SrtSocketOption: String {
     private var symbol: SRT_SOCKOPT {
         switch self {
         case .rcvsyn:
-            return SRTO_RCVSYN
+            SRTO_RCVSYN
         case .maxbw:
-            return SRTO_MAXBW
+            SRTO_MAXBW
         case .pbkeylen:
-            return SRTO_PBKEYLEN
+            SRTO_PBKEYLEN
         case .passphrase:
-            return SRTO_PASSPHRASE
+            SRTO_PASSPHRASE
         case .mss:
-            return SRTO_MSS
+            SRTO_MSS
         case .fc:
-            return SRTO_FC
+            SRTO_FC
         case .sndbuf:
-            return SRTO_SNDBUF
+            SRTO_SNDBUF
         case .rcvbuf:
-            return SRTO_RCVBUF
+            SRTO_RCVBUF
         case .ipttl:
-            return SRTO_IPTTL
+            SRTO_IPTTL
         case .iptos:
-            return SRTO_IPTOS
+            SRTO_IPTOS
         case .inputbw:
-            return SRTO_INPUTBW
+            SRTO_INPUTBW
         case .oheadbw:
-            return SRTO_OHEADBW
+            SRTO_OHEADBW
         case .latency:
-            return SRTO_LATENCY
+            SRTO_LATENCY
         case .tsbdmode:
-            return SRTO_TSBPDMODE
+            SRTO_TSBPDMODE
         case .tlpktdrop:
-            return SRTO_TLPKTDROP
+            SRTO_TLPKTDROP
         case .nakreport:
-            return SRTO_NAKREPORT
+            SRTO_NAKREPORT
         case .conntimeo:
-            return SRTO_CONNTIMEO
+            SRTO_CONNTIMEO
         case .lossmaxttl:
-            return SRTO_LOSSMAXTTL
+            SRTO_LOSSMAXTTL
         case .rcvlatency:
-            return SRTO_RCVLATENCY
+            SRTO_RCVLATENCY
         case .peerlatency:
-            return SRTO_PEERLATENCY
+            SRTO_PEERLATENCY
         case .minversion:
-            return SRTO_MINVERSION
+            SRTO_MINVERSION
         case .streamid:
-            return SRTO_STREAMID
+            SRTO_STREAMID
         case .messageapi:
-            return SRTO_MESSAGEAPI
+            SRTO_MESSAGEAPI
         case .payloadsize:
-            return SRTO_PAYLOADSIZE
+            SRTO_PAYLOADSIZE
         case .transtype:
-            return SRTO_TRANSTYPE
+            SRTO_TRANSTYPE
         case .kmrefreshrate:
-            return SRTO_KMREFRESHRATE
+            SRTO_KMREFRESHRATE
         case .kmpreannounce:
-            return SRTO_KMPREANNOUNCE
+            SRTO_KMPREANNOUNCE
         case .maxrexmitbw:
-            return SRTO_MAXREXMITBW
+            SRTO_MAXREXMITBW
         case .sndsyn:
-            return SRTO_SNDSYN
+            SRTO_SNDSYN
         case .isn:
-            return SRTO_ISN
+            SRTO_ISN
         case .linger:
-            return SRTO_LINGER
+            SRTO_LINGER
         case .udpsndbuf:
-            return SRTO_UDP_SNDBUF
+            SRTO_UDP_SNDBUF
         case .udprcvbuf:
-            return SRTO_UDP_RCVBUF
+            SRTO_UDP_RCVBUF
         case .rendezvous:
-            return SRTO_RENDEZVOUS
+            SRTO_RENDEZVOUS
         case .sndtimeo:
-            return SRTO_SNDTIMEO
+            SRTO_SNDTIMEO
         case .rcvtimeo:
-            return SRTO_RCVTIMEO
+            SRTO_RCVTIMEO
         case .reuseaddr:
-            return SRTO_REUSEADDR
+            SRTO_REUSEADDR
         case .state:
-            return SRTO_STATE
+            SRTO_STATE
         case .event:
-            return SRTO_EVENT
+            SRTO_EVENT
         case .snddata:
-            return SRTO_SNDDATA
+            SRTO_SNDDATA
         case .rcvdata:
-            return SRTO_RCVDATA
+            SRTO_RCVDATA
         case .sender:
-            return SRTO_SENDER
+            SRTO_SENDER
         case .kmstate:
-            return SRTO_KMSTATE
+            SRTO_KMSTATE
         case .snddropdelay:
-            return SRT_SOCKOPT(rawValue: 32)
+            SRT_SOCKOPT(rawValue: 32)
         case .sndkmstate:
-            return SRTO_SNDKMSTATE
+            SRTO_SNDKMSTATE
         case .srtlaPatches:
-            return SRTO_SRTLAPATCHES
+            SRTO_SRTLAPATCHES
         }
     }
 
     var binding: Binding {
         switch self {
         case .rcvsyn:
-            return .pre
+            .pre
         case .maxbw:
-            return .post
+            .post
         case .pbkeylen:
-            return .pre
+            .pre
         case .passphrase:
-            return .pre
+            .pre
         case .mss:
-            return .pre
+            .pre
         case .fc:
-            return .pre
+            .pre
         case .sndbuf:
-            return .pre
+            .pre
         case .rcvbuf:
-            return .pre
+            .pre
         case .ipttl:
-            return .pre
+            .pre
         case .iptos:
-            return .pre
+            .pre
         case .inputbw:
-            return .post
+            .post
         case .oheadbw:
-            return .post
+            .post
         case .tsbdmode:
-            return .pre
+            .pre
         case .latency:
-            return .pre
+            .pre
         case .tlpktdrop:
-            return .pre
+            .pre
         case .nakreport:
-            return .pre
+            .pre
         case .conntimeo:
-            return .pre
+            .pre
         case .lossmaxttl:
-            return .pre
+            .pre
         case .rcvlatency:
-            return .pre
+            .pre
         case .peerlatency:
-            return .pre
+            .pre
         case .minversion:
-            return .pre
+            .pre
         case .streamid:
-            return .pre
+            .pre
         case .messageapi:
-            return .pre
+            .pre
         case .payloadsize:
-            return .pre
+            .pre
         case .transtype:
-            return .pre
+            .pre
         case .kmrefreshrate:
-            return .pre
+            .pre
         case .kmpreannounce:
-            return .pre
+            .pre
         case .maxrexmitbw:
-            return .post
+            .post
         case .sndsyn:
-            return .post
+            .post
         case .isn:
-            return .post
+            .post
         case .linger:
-            return .post
+            .post
         case .udpsndbuf:
-            return .pre
+            .pre
         case .udprcvbuf:
-            return .pre
+            .pre
         case .rendezvous:
-            return .pre
+            .pre
         case .sndtimeo:
-            return .post
+            .post
         case .rcvtimeo:
-            return .post
+            .post
         case .reuseaddr:
-            return .post
+            .post
         case .state:
-            return .post
+            .post
         case .event:
-            return .post
+            .post
         case .snddata:
-            return .post
+            .post
         case .rcvdata:
-            return .post
+            .post
         case .sender:
-            return .post
+            .post
         case .kmstate:
-            return .post
+            .post
         case .snddropdelay:
-            return .post
+            .post
         case .sndkmstate:
-            return .post
+            .post
         case .srtlaPatches:
-            return .pre
+            .pre
         }
     }
 
     var type: Type {
         switch self {
         case .tsbdmode:
-            return .bool
+            .bool
         case .rcvsyn:
-            return .bool
+            .bool
         case .maxbw:
-            return .int64
+            .int64
         case .pbkeylen:
-            return .int
+            .int
         case .passphrase:
-            return .string
+            .string
         case .mss:
-            return .int
+            .int
         case .fc:
-            return .int
+            .int
         case .sndbuf:
-            return .int
+            .int
         case .rcvbuf:
-            return .int
+            .int
         case .ipttl:
-            return .int
+            .int
         case .iptos:
-            return .int
+            .int
         case .inputbw:
-            return .int64
+            .int64
         case .oheadbw:
-            return .int
+            .int
         case .latency:
-            return .int
+            .int
         case .tlpktdrop:
-            return .bool
+            .bool
         case .nakreport:
-            return .bool
+            .bool
         case .conntimeo:
-            return .int
+            .int
         case .lossmaxttl:
-            return .int
+            .int
         case .rcvlatency:
-            return .int
+            .int
         case .peerlatency:
-            return .int
+            .int
         case .minversion:
-            return .int
+            .int
         case .streamid:
-            return .string
+            .string
         case .messageapi:
-            return .bool
+            .bool
         case .payloadsize:
-            return .int
+            .int
         case .transtype:
-            return .enumeration
+            .enumeration
         case .kmrefreshrate:
-            return .int
+            .int
         case .kmpreannounce:
-            return .int
+            .int
         case .maxrexmitbw:
-            return .int64
+            .int64
         case .sndsyn:
-            return .bool
+            .bool
         case .isn:
-            return .int
+            .int
         case .linger:
-            return .int
+            .int
         case .udpsndbuf:
-            return .int
+            .int
         case .udprcvbuf:
-            return .int
+            .int
         case .rendezvous:
-            return .bool
+            .bool
         case .sndtimeo:
-            return .int
+            .int
         case .rcvtimeo:
-            return .int
+            .int
         case .reuseaddr:
-            return .bool
+            .bool
         case .state:
-            return .int
+            .int
         case .event:
-            return .int
+            .int
         case .snddata:
-            return .int
+            .int
         case .rcvdata:
-            return .int
+            .int
         case .sender:
-            return .int
+            .int
         case .kmstate:
-            return .int
+            .int
         case .snddropdelay:
-            return .int
+            .int
         case .sndkmstate:
-            return .int
+            .int
         case .srtlaPatches:
-            return .bool
+            .bool
         }
     }
 
     var valmap: [String: Any]? {
         switch self {
         case .transtype:
-            return enummapTranstype
+            enummapTranstype
         default:
-            return nil
+            nil
         }
     }
 

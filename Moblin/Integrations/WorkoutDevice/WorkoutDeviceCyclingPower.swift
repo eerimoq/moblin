@@ -157,7 +157,7 @@ private class AverageMeasurementCalculator {
     }
 
     func average() -> Int {
-        return values.reduce(0, +) / averageSampleCount
+        values.reduce(0, +) / averageSampleCount
     }
 
     func averageIngoreZeros() -> Int {
@@ -188,7 +188,7 @@ class WorkoutDeviceCyclingPower {
     }
 
     func isAnyCharacteristicDiscovered() -> Bool {
-        return measurementCharacteristic != nil
+        measurementCharacteristic != nil
     }
 
     func handleMeasurement(value: Data) throws -> (Int, Int) {

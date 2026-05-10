@@ -51,15 +51,14 @@ struct KickChatterInfo: Codable {
     func toChatterInfo(accountCreated: String?, bio: String?,
                        followers: Int?) -> ChatterInfo
     {
-        let role: ChatterRole
-        if is_channel_owner {
-            role = .owner
+        let role: ChatterRole = if is_channel_owner {
+            .owner
         } else if is_staff {
-            role = .staff
+            .staff
         } else if is_moderator {
-            role = .moderator
+            .moderator
         } else {
-            role = .viewer
+            .viewer
         }
         let giftedSubs = badges.first(where: { $0.type == "sub_gifter" })?.count
         return ChatterInfo(
@@ -141,7 +140,7 @@ struct KickStreamInfo {
 private let userUrl = URL(string: "https://kick.com/api/v1/user")!
 
 private func makeSlug(channelName: String) -> String {
-    return channelName.replacingOccurrences(of: "_", with: "-")
+    channelName.replacingOccurrences(of: "_", with: "-")
 }
 
 func getKickChannelInfo(channelName: String) async throws -> KickChannel {
@@ -455,7 +454,7 @@ class KickApi {
                 onComplete(nil)
                 return
             }
-            onComplete(searchResponse.hits.map { $0.document })
+            onComplete(searchResponse.hits.map(\.document))
         }
     }
 

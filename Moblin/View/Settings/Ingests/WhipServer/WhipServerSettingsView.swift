@@ -14,9 +14,9 @@ struct WhipServerSettingsView: View {
 
     private func status() -> String {
         if whipServer.enabled {
-            return String(whipServer.streams.count)
+            String(whipServer.streams.count)
         } else {
-            return "0"
+            "0"
         }
     }
 

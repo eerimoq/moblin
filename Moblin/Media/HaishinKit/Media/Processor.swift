@@ -27,21 +27,21 @@ let processorPipelineQueue = DispatchQueue(
 )
 
 private class Stream {
-    weak var delegate: (AudioEncoderDelegate & VideoEncoderDelegate)?
+    weak var delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)?
 
-    init(delegate: (AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
+    init(delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
         self.delegate = delegate
     }
 }
 
-final class Processor {
+final class Processor: @unchecked Sendable {
     let audio = AudioUnit()
     let video = VideoUnit()
     let recorder = Recorder()
     private var streams: [Stream] = []
-    let delegate: ProcessorDelegate
+    let delegate: any ProcessorDelegate
 
-    init(delegate: ProcessorDelegate) {
+    init(delegate: any ProcessorDelegate) {
         self.delegate = delegate
         audio.processor = self
         video.processor = self
@@ -61,7 +61,7 @@ final class Processor {
     }
 
     func getFps() -> Double {
-        return video.getFps()
+        video.getFps()
     }
 
     func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
@@ -304,11 +304,11 @@ final class Processor {
     }
 
     func getAudioEncoder() -> AudioEncoder {
-        return audio.encoder
+        audio.encoder
     }
 
     func getVideoEncoder() -> VideoEncoder {
-        return video.encoder
+        video.encoder
     }
 
     func setBufferedAudioDrift(cameraId: UUID, drift: Double) {

@@ -2,15 +2,15 @@ import SwiftUI
 
 private func formatTeslaVehicleState(state: TeslaVehicleState?) -> String {
     if state == nil || state == .idle {
-        return String(localized: "Disconnected")
+        String(localized: "Disconnected")
     } else if state == .discovering {
-        return String(localized: "Discovering")
+        String(localized: "Discovering")
     } else if state == .connecting {
-        return String(localized: "Connecting")
+        String(localized: "Connecting")
     } else if state == .connected {
-        return String(localized: "Connected")
+        String(localized: "Connected")
     } else {
-        return String(localized: "Unknown")
+        String(localized: "Unknown")
     }
 }
 
@@ -19,7 +19,7 @@ private struct TeslaSettingsConfigurationView: View {
     @ObservedObject var tesla: Tesla
 
     private var database: Database {
-        return model.database
+        model.database
     }
 
     private func onSubmitVin(value: String) {

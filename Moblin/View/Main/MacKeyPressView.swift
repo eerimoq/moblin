@@ -5,7 +5,7 @@ class MacKeyPressUIView: UIView {
     var model: Model?
 
     override var canBecomeFirstResponder: Bool {
-        return true
+        true
     }
 
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {

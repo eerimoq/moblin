@@ -24,7 +24,7 @@ private func createStyleSheetSource(styleSheet: String) -> String? {
 }
 
 private func videoScript() -> String {
-    return loadStringResource(name: "video", ext: "js")
+    loadStringResource(name: "video", ext: "js")
 }
 
 private func addScript(_ configuration: WKWebViewConfiguration,
@@ -101,7 +101,7 @@ final class BrowserEffect: VideoEffect {
     }
 
     override func isEnabled() -> Bool {
-        return mode != .audioOnly && snapshot != nil
+        mode != .audioOnly && snapshot != nil
     }
 
     func sendChatMessage(post: ChatPost) {
@@ -213,7 +213,7 @@ final class BrowserEffect: VideoEffect {
                 return
             }
             let takeSnapshotBeginTime = ContinuousClock.now
-            self.webView.takeSnapshot(with: snapshotConfiguration) { [weak self] image, _ in
+            webView.takeSnapshot(with: snapshotConfiguration) { [weak self] image, _ in
                 guard let self, !stopped, !suspended else {
                     return
                 }

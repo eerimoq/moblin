@@ -1,7 +1,7 @@
 import Foundation
 
 private func getRecordingsDirectory() -> URL {
-    return createAndGetDirectory(name: "Recordings")
+    createAndGetDirectory(name: "Recordings")
 }
 
 private func loadRecordingPath(settings: SettingsStreamRecording?) -> URL? {
@@ -40,7 +40,7 @@ class Recording {
     }
 
     private func name() -> String {
-        return filename
+        filename
     }
 
     func url() -> URL? {
@@ -55,16 +55,16 @@ class Recording {
     }
 
     private func isDefaultRecordingPath() -> Bool {
-        return recording?.isDefaultRecordingPath() ?? true
+        recording?.isDefaultRecordingPath() ?? true
     }
 }
 
 final class RecordingsStorage {
     func createRecording(recording: SettingsStreamRecording) -> Recording? {
-        return Recording(recording: recording)
+        Recording(recording: recording)
     }
 
     func defaultStorageDirectory() -> URL {
-        return getRecordingsDirectory()
+        getRecordingsDirectory()
     }
 }

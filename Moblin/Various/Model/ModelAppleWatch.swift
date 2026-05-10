@@ -3,7 +3,7 @@ import WatchConnectivity
 
 extension Model {
     func isWatchReachable() -> Bool {
-        return WCSession.default.activationState == .activated && WCSession.default.isReachable
+        WCSession.default.activationState == .activated && WCSession.default.isReachable
     }
 
     private func sendMessageToWatch(
@@ -258,11 +258,10 @@ extension Model {
         guard isWatchReachable() else {
             return
         }
-        let zoomPreset: UUID
-        if cameraPosition == .front {
-            zoomPreset = zoom.frontPresetId
+        let zoomPreset: UUID = if cameraPosition == .front {
+            zoom.frontPresetId
         } else {
-            zoomPreset = zoom.backPresetId
+            zoom.backPresetId
         }
         sendMessageToWatch(type: .zoomPreset, data: zoomPreset.uuidString)
     }
@@ -361,11 +360,11 @@ extension Model {
     }
 
     func isWatchRemoteControl() -> Bool {
-        return database.watch.viaRemoteControl
+        database.watch.viaRemoteControl
     }
 
     func isWatchLocal() -> Bool {
-        return !isWatchRemoteControl()
+        !isWatchRemoteControl()
     }
 }
 

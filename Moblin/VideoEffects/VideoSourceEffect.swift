@@ -40,9 +40,9 @@ final class VideoSourceEffect: VideoEffect {
 
     override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
         if settings.trackFaceEnabled {
-            return .interval(videoSourceId, 0.5)
+            .interval(videoSourceId, 0.5)
         } else {
-            return .off
+            .off
         }
     }
 
@@ -69,11 +69,11 @@ final class VideoSourceEffect: VideoEffect {
                                _ videoSourceImageSize: CGSize) -> Bool
     {
         if boundingBox.height < videoSourceImageSize.height / 10 {
-            return false
+            false
         } else if boundingBox.height < biggestBoundingBox.height / 2 {
-            return false
+            false
         } else {
-            return true
+            true
         }
     }
 
@@ -150,13 +150,13 @@ final class VideoSourceEffect: VideoEffect {
     private func rotate(_ videoSourceImage: CIImage, _ settings: VideoSourceEffectSettings) -> CIImage {
         switch settings.rotation {
         case 90:
-            return videoSourceImage.oriented(.right)
+            videoSourceImage.oriented(.right)
         case 180:
-            return videoSourceImage.oriented(.down)
+            videoSourceImage.oriented(.down)
         case 270:
-            return videoSourceImage.oriented(.left)
+            videoSourceImage.oriented(.left)
         default:
-            return videoSourceImage
+            videoSourceImage
         }
     }
 

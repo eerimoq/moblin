@@ -10,11 +10,11 @@ extension SettingsPrivacyRegion {
 }
 
 func toLatitudeDeltaDegrees(meters: Double) -> Double {
-    return 360 * meters / 40_075_000
+    360 * meters / 40_075_000
 }
 
 func toLongitudeDeltaDegrees(meters: Double, latitudeDegrees: Double) -> Double {
-    return 360 * meters / (40_075_000 * cos(latitudeDegrees.toRadians()))
+    360 * meters / (40_075_000 * cos(latitudeDegrees.toRadians()))
 }
 
 extension CLLocationCoordinate2D {

@@ -3,17 +3,17 @@ import SwiftUI
 private func getHistoricScore(team: RemoteControlScoreboardTeam, indexPlusOne: Int) -> String? {
     switch indexPlusOne {
     case 1:
-        return team.secondaryScore1
+        team.secondaryScore1
     case 2:
-        return team.secondaryScore2
+        team.secondaryScore2
     case 3:
-        return team.secondaryScore3
+        team.secondaryScore3
     case 4:
-        return team.secondaryScore4
+        team.secondaryScore4
     case 5:
-        return team.secondaryScore5
+        team.secondaryScore5
     default:
-        return nil
+        nil
     }
 }
 
@@ -34,7 +34,7 @@ struct ScoreboardEffectModularView: View {
     }
 
     private func fontSize() -> Double {
-        return modular.fontSize()
+        modular.fontSize()
     }
 
     @ViewBuilder

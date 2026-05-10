@@ -30,7 +30,7 @@ private struct Open: Codable, DynamicNodeEncoding {
     let id: String?
 
     static func nodeEncoding(for _: CodingKey) -> XMLEncoder.NodeEncoding {
-        return .attribute
+        .attribute
     }
 }
 
@@ -74,9 +74,9 @@ private struct Auth: Codable, DynamicNodeEncoding {
     static func nodeEncoding(for key: CodingKey) -> XMLEncoder.NodeEncoding {
         switch key {
         case CodingKeys.value:
-            return .element
+            .element
         default:
-            return .attribute
+            .attribute
         }
     }
 }
@@ -150,11 +150,11 @@ class OpenStreamingPlatformChat {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func hasEmotes() -> Bool {
-        return true
+        true
     }
 
     private func setupConnection() async throws {

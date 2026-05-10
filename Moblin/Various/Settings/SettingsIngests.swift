@@ -16,7 +16,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
              latency
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -26,7 +26,7 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -35,11 +35,11 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     }
 
     func camera() -> String {
-        return rtmpCamera(name: name)
+        rtmpCamera(name: name)
     }
 
     func latencySeconds() -> Double {
-        return Double(latency) / 1000
+        Double(latency) / 1000
     }
 
     func clone() -> SettingsRtmpServerStream {
@@ -63,7 +63,7 @@ class SettingsRtmpServer: Codable, ObservableObject {
              streams
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.port, port)
@@ -72,7 +72,7 @@ class SettingsRtmpServer: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 1935)
@@ -102,7 +102,7 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
              streamId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -111,7 +111,7 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -119,7 +119,7 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
     }
 
     func camera() -> String {
-        return srtlaCamera(name: name)
+        srtlaCamera(name: name)
     }
 
     func clone() -> SettingsSrtlaServerStream {
@@ -144,7 +144,7 @@ class SettingsSrtlaServer: Codable, ObservableObject {
              streams
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.srtPort, srtPort)
@@ -154,7 +154,7 @@ class SettingsSrtlaServer: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         srtPort = container.decode(.srtPort, UInt16.self, 4000)
@@ -174,7 +174,7 @@ class SettingsSrtlaServer: Codable, ObservableObject {
     }
 
     func srtlaSrtPort() -> UInt16 {
-        return srtlaPort + 1
+        srtlaPort + 1
     }
 }
 
@@ -193,7 +193,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
              latency
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -203,7 +203,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -212,7 +212,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     }
 
     func latencySeconds() -> Double {
-        return Double(latency) / 1000
+        Double(latency) / 1000
     }
 
     func clone() -> SettingsRistServerStream {
@@ -224,7 +224,7 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     }
 
     func camera() -> String {
-        return ristCamera(name: name)
+        ristCamera(name: name)
     }
 }
 
@@ -239,7 +239,7 @@ class SettingsRistServer: Codable, ObservableObject {
              streams
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.port, port)
@@ -248,7 +248,7 @@ class SettingsRistServer: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 6500)
@@ -271,9 +271,9 @@ enum SettingsRtspTransport: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .rtpRtspTcp:
-            return "RTP/RTSP/TCP"
+            "RTP/RTSP/TCP"
         case .rtpUdp:
-            return "RTP/UDP"
+            "RTP/UDP"
         }
     }
 }
@@ -297,10 +297,10 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     }
 
     func latencySeconds() -> Double {
-        return Double(latency) / 1000
+        Double(latency) / 1000
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -312,7 +312,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -323,7 +323,7 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     }
 
     func camera() -> String {
-        return rtspCamera(name: name)
+        rtspCamera(name: name)
     }
 }
 
@@ -334,14 +334,14 @@ class SettingsRtspClient: Codable, ObservableObject {
         case streams
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.streams, streams)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         streams = container.decode(.streams, [SettingsRtspClientStream].self, [])
     }
@@ -363,7 +363,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
              syncTimestamps
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -374,7 +374,7 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -384,11 +384,11 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
     }
 
     func camera() -> String {
-        return whipCamera(name: name)
+        whipCamera(name: name)
     }
 
     func latencySeconds() -> Double {
-        return Double(latency) / 1000
+        Double(latency) / 1000
     }
 
     func clone() -> SettingsWhipServerStream {
@@ -412,7 +412,7 @@ class SettingsWhipServer: Codable, ObservableObject {
              streams
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.port, port)
@@ -421,7 +421,7 @@ class SettingsWhipServer: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 8310)
@@ -458,10 +458,10 @@ class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
     }
 
     func latencySeconds() -> Double {
-        return Double(latency) / 1000
+        Double(latency) / 1000
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -473,7 +473,7 @@ class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -484,7 +484,7 @@ class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
     }
 
     func camera() -> String {
-        return whepCamera(name: name)
+        whepCamera(name: name)
     }
 }
 
@@ -495,14 +495,14 @@ class SettingsWhepClient: Codable, ObservableObject {
         case streams
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.streams, streams)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         streams = container.decode(.streams, [SettingsWhepClientStream].self, [])
     }

@@ -4,7 +4,7 @@ let minimumSrtConnectionPriority = 1
 let maximumSrtConnectionPriority = 10
 
 func clampConnectionPriority(value: Int) -> Int {
-    return value.clamped(to: minimumSrtConnectionPriority ... maximumSrtConnectionPriority)
+    value.clamped(to: minimumSrtConnectionPriority ... maximumSrtConnectionPriority)
 }
 
 private struct NoConnectionPrioritiesView: View {
@@ -30,14 +30,14 @@ private struct PriorityItemView: View {
 
     private func makeName() -> String {
         if priority.relayId != nil {
-            return priority.name
+            priority.name
         } else if let name = model.database.networkInterfaceNames
             .first(where: { $0.interfaceName == priority.name })?
             .name, !name.isEmpty
         {
-            return name
+            name
         } else {
-            return priority.name
+            priority.name
         }
     }
 

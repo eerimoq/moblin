@@ -9,7 +9,7 @@ class VideoDecoder {
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var formatDescription: CMFormatDescription?
-    weak var delegate: VideoDecoderDelegate?
+    weak var delegate: (any VideoDecoderDelegate)?
     private var invalidateSession = true
     private var session: VTDecompressionSession? {
         didSet {
@@ -68,7 +68,7 @@ class VideoDecoder {
                 else {
                     return
                 }
-                self.lockQueue.async {
+                lockQueue.async {
                     self.delegate?.videoDecoderOutputSampleBuffer(self, sampleBuffer)
                 }
             }

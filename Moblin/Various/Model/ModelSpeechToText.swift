@@ -18,7 +18,7 @@ extension Model {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
             switch widget.widget.type {
             case .text:
-                let languageIdentifiers = Set(widget.widget.text.subtitles.map { $0.identifier })
+                let languageIdentifiers = Set(widget.widget.text.subtitles.map(\.identifier))
                 for languageIdentifier in languageIdentifiers {
                     if let languageIdentifier {
                         addTranslator(targetIdentifier: languageIdentifier)

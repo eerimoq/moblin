@@ -16,7 +16,7 @@ class Zoom: ObservableObject {
     @Published var frontZoomPresets: [SettingsZoomPreset] = []
 
     func statusText() -> String {
-        return String(format: "%.1f", x)
+        String(format: "%.1f", x)
     }
 }
 
@@ -125,11 +125,11 @@ extension Model {
     private func findZoomPreset(id: UUID) -> SettingsZoomPreset? {
         switch cameraPosition {
         case .back:
-            return database.zoom.back.first { $0.id == id }
+            database.zoom.back.first { $0.id == id }
         case .front:
-            return database.zoom.front.first { $0.id == id }
+            database.zoom.front.first { $0.id == id }
         default:
-            return nil
+            nil
         }
     }
 
@@ -162,14 +162,13 @@ extension Model {
     }
 
     func zoomPresetsMayHaveChanged() {
-        let presets: [SettingsZoomPreset]
-        switch cameraPosition {
+        let presets: [SettingsZoomPreset] = switch cameraPosition {
         case .back:
-            presets = zoom.backZoomPresets
+            zoom.backZoomPresets
         case .front:
-            presets = zoom.frontZoomPresets
+            zoom.frontZoomPresets
         default:
-            presets = []
+            []
         }
         let zoomPresets = presets.map { RemoteControlZoomPreset(id: $0.id, name: $0.name) }
         remoteControlStateChanged(state: RemoteControlAssistantStreamerState(zoomPresets: zoomPresets))
@@ -213,9 +212,9 @@ extension Model {
     }
 
     private func factorToX(position: AVCaptureDevice.Position, factor: Float) -> Float {
-        if position == .back && hasUltraWideBackCamera {
+        if position == .back, hasUltraWideBackCamera {
             return factor / 2
-        } else if position == .front && hasUltraWideFrontCamera {
+        } else if position == .front, hasUltraWideFrontCamera {
             return factor / 2
         }
         return factor
@@ -241,7 +240,7 @@ extension Model {
     }
 
     func isShowingStatusZoom() -> Bool {
-        return database.show.zoom && zoom.hasZoom
+        database.show.zoom && zoom.hasZoom
     }
 
     private func showPreset(preset: SettingsZoomPreset) -> Bool {
@@ -250,7 +249,7 @@ extension Model {
     }
 
     func setCameraZoomX(x: Float, rate: Float? = nil) -> Float? {
-        return cameraZoomLevelToX(media.setCameraZoomLevel(
+        cameraZoomLevelToX(media.setCameraZoomLevel(
             device: cameraDevice,
             level: x / cameraZoomLevelToXScale,
             rate: rate
@@ -258,7 +257,7 @@ extension Model {
     }
 
     func stopCameraZoom() -> Float? {
-        return cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
+        cameraZoomLevelToX(media.stopCameraZoomLevel(device: cameraDevice))
     }
 
     private func cameraZoomLevelToX(_ level: Float?) -> Float? {

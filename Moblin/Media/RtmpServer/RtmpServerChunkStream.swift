@@ -59,7 +59,7 @@ class RtmpServerChunkStream {
     }
 
     private func messageRemain() -> Int {
-        return messageLength - messageBody.count
+        messageLength - messageBody.count
     }
 
     private func processMessage() {
@@ -582,11 +582,10 @@ class RtmpServerChunkStream {
                                        compositionTime: Int32,
                                        dataOffset: Int) -> CMSampleBuffer?
     {
-        var duration: Int64
-        if videoTimestamp == -1 {
-            duration = 0
+        var duration: Int64 = if videoTimestamp == -1 {
+            0
         } else {
-            duration = Int64((mediaTimestamp - mediaTimestampZero) - videoTimestamp)
+            Int64((mediaTimestamp - mediaTimestampZero) - videoTimestamp)
         }
         videoTimestamp = mediaTimestamp - mediaTimestampZero
         let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp(client)) +
@@ -633,7 +632,7 @@ class RtmpServerChunkStream {
     }
 
     private func getBasePresentationTimeStamp(_ client: RtmpServerClient) -> Double {
-        return client.getBasePresentationTimeStamp()
+        client.getBasePresentationTimeStamp()
     }
 
     private func checkMessageBodyBigEnough(client: RtmpServerClient, minimumSize: Int) -> Bool {

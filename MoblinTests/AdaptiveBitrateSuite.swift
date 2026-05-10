@@ -14,12 +14,12 @@ extension Handler: AdaptiveBitrateDelegate {
 }
 
 private func makeStats(bitrate: Int64) -> StreamStats {
-    return StreamStats(rttMs: 30,
-                       packetsInFlight: 15,
-                       transportBitrate: bitrate,
-                       latency: 3000,
-                       mbpsSendRate: Double(bitrate),
-                       relaxed: false)
+    StreamStats(rttMs: 30,
+                packetsInFlight: 15,
+                transportBitrate: bitrate,
+                latency: 3000,
+                mbpsSendRate: Double(bitrate),
+                relaxed: false)
 }
 
 private func update(belabox: AdaptiveBitrateSrtBelabox, bitrate: Int64) async throws {

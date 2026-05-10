@@ -31,7 +31,7 @@ let srtlaClientQueue = DispatchQueue(label: "com.eerimoq.srtla-client")
 class SrtlaClient: NSObject {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
-    private weak var delegate: SrtlaDelegate?
+    private weak var delegate: (any SrtlaDelegate)?
     private let passThrough: Bool
     private var connectTimer = SimpleTimer(queue: srtlaClientQueue)
     private var state: State = .idle {
@@ -53,7 +53,7 @@ class SrtlaClient: NSObject {
     private let srtImplementation: SettingsStreamSrtImplementation
 
     init(
-        delegate: SrtlaDelegate,
+        delegate: any SrtlaDelegate,
         passThrough: Bool,
         mpegtsPacketsPerPacket: Int,
         networkInterfaceNames: [SettingsNetworkInterfaceName],
@@ -332,15 +332,15 @@ class SrtlaClient: NSObject {
         }
         remoteConnections = newRemoteConnections.sorted(by: { first, second in
             if first.type == .cellular {
-                return true
+                true
             } else if second.type == .cellular {
-                return false
+                false
             } else if first.type == .wifi {
-                return true
+                true
             } else if second.type == .wifi {
-                return false
+                false
             } else {
-                return true
+                true
             }
         })
     }
@@ -499,10 +499,10 @@ extension SrtlaClient: RemoteConnectionDelegate {
 private func interfaceName(type: NWInterface.InterfaceType?, interface: NWInterface?) -> String {
     switch type {
     case .cellular:
-        return "Cellular"
+        "Cellular"
     case .wifi:
-        return "WiFi"
+        "WiFi"
     default:
-        return interface?.name ?? ""
+        interface?.name ?? ""
     }
 }

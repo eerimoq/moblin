@@ -24,9 +24,9 @@ protocol MoblinkScannerDelegate: AnyObject {
 class MoblinkScanner: NSObject {
     private var browser: NetServiceBrowser?
     private var services: [DiscoveredSerivce] = []
-    private weak var delegate: MoblinkScannerDelegate?
+    private weak var delegate: (any MoblinkScannerDelegate)?
 
-    init(delegate: MoblinkScannerDelegate) {
+    init(delegate: any MoblinkScannerDelegate) {
         self.delegate = delegate
     }
 

@@ -2,7 +2,7 @@ import NetworkExtension
 import SwiftUI
 
 func qrCodeHeight(_ metrics: GeometryProxy) -> Double {
-    return metrics.size.width * 0.5
+    metrics.size.width * 0.5
 }
 
 private struct GoProLaunchLiveStreamSettingsView: View {
@@ -148,7 +148,7 @@ private struct GoProWifiCredentialsSettingsEntryView: View {
 }
 
 private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
-    return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
+    "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
 }
 
 private struct GoProRtmpUrlSettingsView: View {

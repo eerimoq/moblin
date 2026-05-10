@@ -246,7 +246,7 @@ class TextFormatLoader {
 }
 
 func loadTextFormat(format: String) -> [TextFormatPart] {
-    return TextFormatLoader().load(format: format)
+    TextFormatLoader().load(format: format)
 }
 
 extension [TextFormatPart] {

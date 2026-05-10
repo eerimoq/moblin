@@ -218,7 +218,7 @@ private class Badges {
     }
 
     func getUrl(badgeId: String) -> URL? {
-        return badges[badgeId]
+        badges[badgeId]
     }
 
     func tryFetch() {
@@ -359,11 +359,11 @@ final class TwitchChat {
     private var badges: Badges
     private var cheermotes: Cheermotes
     private var channelName: String
-    private weak var delegate: TwitchChatDelegate?
+    private weak var delegate: (any TwitchChatDelegate)?
     private var sourceRoomIcons: [String: URL?] = [:]
     private var accessToken: String = ""
 
-    init(delegate: TwitchChatDelegate) {
+    init(delegate: any TwitchChatDelegate) {
         self.delegate = delegate
         channelName = ""
         emotes = Emotes()
@@ -409,15 +409,15 @@ final class TwitchChat {
     }
 
     func createSegmentsNoTwitchEmotes(text: String, bits: String?) -> [ChatPostSegment] {
-        return createSegments(text: text, emotes: [], emotesManager: emotes, bits: bits)
+        createSegments(text: text, emotes: [], emotesManager: emotes, bits: bits)
     }
 
     func isConnected() -> Bool {
-        return webSocket.isConnected()
+        webSocket.isConnected()
     }
 
     func hasEmotes() -> Bool {
-        return emotes.isReady()
+        emotes.isReady()
     }
 
     private func handleMessage(message: String) throws {
@@ -440,11 +440,10 @@ final class TwitchChat {
                 processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
             } else {
                 TwitchApi(accessToken).getUserById(id: sourceRoomId) { user in
-                    let sourceRoomIcon: URL?
-                    if let user {
-                        sourceRoomIcon = URL(string: user.profile_image_url)
+                    let sourceRoomIcon: URL? = if let user {
+                        URL(string: user.profile_image_url)
                     } else {
-                        sourceRoomIcon = nil
+                        nil
                     }
                     self.sourceRoomIcons[sourceRoomId] = sourceRoomIcon
                     self.processChatMessage(message: message, sourceChannelIcon: sourceRoomIcon)
@@ -538,16 +537,16 @@ final class TwitchChat {
                                  replyText: String?) -> ChatHighlight?
     {
         if announcement {
-            return ChatHighlight.makeAnnouncement()
+            ChatHighlight.makeAnnouncement()
         } else if firstMessage {
-            return ChatHighlight.makeFirstMessage()
+            ChatHighlight.makeFirstMessage()
         } else if let sender = replySender, let text = replyText {
-            return ChatHighlight.makeReply(
+            ChatHighlight.makeReply(
                 user: sender,
                 segments: createSegmentsNoTwitchEmotes(text: text, bits: nil)
             )
         } else {
-            return nil
+            nil
         }
     }
 

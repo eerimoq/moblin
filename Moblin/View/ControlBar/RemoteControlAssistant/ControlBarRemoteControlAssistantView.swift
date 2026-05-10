@@ -28,9 +28,9 @@ private struct RemoteControlSrtConnectionPriorityView: View {
         if let name = model.database.networkInterfaceNames.first(where: { interface in
             interface.interfaceName == priority.name
         })?.name, !name.isEmpty {
-            return name
+            name
         } else {
-            return priority.name
+            priority.name
         }
     }
 
@@ -114,7 +114,7 @@ private struct RemoteControlAudioLevelView: View {
     }
 
     private func isClipping() -> Bool {
-        return level > clippingThresholdDb
+        level > clippingThresholdDb
     }
 
     private func clippingText() -> Substring {
@@ -885,9 +885,9 @@ struct ControlBarRemoteControlAssistantView: View {
 
     private func title() -> String {
         if let streamerName = remoteControlSettings.getSelectedStreamerName() {
-            return String(localized: "Remote control assistant") + " (\(streamerName))"
+            String(localized: "Remote control assistant") + " (\(streamerName))"
         } else {
-            return String(localized: "Remote control assistant")
+            String(localized: "Remote control assistant")
         }
     }
 

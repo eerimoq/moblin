@@ -326,5 +326,5 @@ class MediaPlayer {
 }
 
 private func outputPresentationTimeStamp() -> CMTime {
-    return currentPresentationTimeStamp() + CMTime(seconds: mediaPlayerLatency)
+    currentPresentationTimeStamp() + CMTime(seconds: mediaPlayerLatency)
 }

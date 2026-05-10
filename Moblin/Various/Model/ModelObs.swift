@@ -81,11 +81,11 @@ extension Model {
     }
 
     func isObsConnected() -> Bool {
-        return obsWebSocket?.isConnected() ?? false
+        obsWebSocket?.isConnected() ?? false
     }
 
     func obsConnectionErrorMessage() -> String {
-        return obsWebSocket?.connectionErrorMessage ?? ""
+        obsWebSocket?.connectionErrorMessage ?? ""
     }
 
     func listObsScenes(updateAudioInputs: Bool = false) {
@@ -120,7 +120,7 @@ extension Model {
                         }
                     }
                     self.obsWebSocket?.getInputMuteBatch(
-                        inputNames: obsSceneInputs.map { $0.name },
+                        inputNames: obsSceneInputs.map(\.name),
                         onSuccess: { muteds in
                             guard muteds.count == obsSceneInputs.count else {
                                 self.obsQuickButton.sceneInputs = []
@@ -419,24 +419,24 @@ extension Model {
     }
 
     func isShowingStatusObs() -> Bool {
-        return database.show.obsStatus && isObsRemoteControlConfigured()
+        database.show.obsStatus && isObsRemoteControlConfigured()
     }
 
     private func statusObsText() -> String {
         if !isObsRemoteControlConfigured() {
-            return String(localized: "Not configured")
+            String(localized: "Not configured")
         } else if isObsConnected() {
-            if obsQuickButton.streaming && obsQuickButton.recording {
-                return "\(obsQuickButton.currentScene) (Streaming, Recording)"
+            if obsQuickButton.streaming, obsQuickButton.recording {
+                "\(obsQuickButton.currentScene) (Streaming, Recording)"
             } else if obsQuickButton.streaming {
-                return "\(obsQuickButton.currentScene) (Streaming)"
+                "\(obsQuickButton.currentScene) (Streaming)"
             } else if obsQuickButton.recording {
-                return "\(obsQuickButton.currentScene) (Recording)"
+                "\(obsQuickButton.currentScene) (Recording)"
             } else {
-                return obsQuickButton.currentScene
+                obsQuickButton.currentScene
             }
         } else {
-            return obsConnectionErrorMessage()
+            obsConnectionErrorMessage()
         }
     }
 
@@ -445,7 +445,7 @@ extension Model {
     }
 
     func isObsRemoteControlConfigured() -> Bool {
-        return stream.obsWebSocketEnabled && stream.obsWebSocketUrl != ""
+        stream.obsWebSocketEnabled && stream.obsWebSocketUrl != ""
     }
 }
 

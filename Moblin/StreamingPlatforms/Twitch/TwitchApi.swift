@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 private func serialize(_ value: Any) -> Data {
-    return (try? JSONSerialization.data(withJSONObject: value))!
+    (try? JSONSerialization.data(withJSONObject: value))!
 }
 
 struct TwitchApiUser: Decodable {
@@ -70,7 +70,7 @@ struct TwitchApiGameData: Decodable, Identifiable {
     let box_art_url: String?
 
     func boxArtUrl(width: Int, height: Int) -> String? {
-        return box_art_url?
+        box_art_url?
             .replacingOccurrences(of: "{width}", with: String(width))
             .replacingOccurrences(of: "{height}", with: String(height))
     }
@@ -97,7 +97,7 @@ struct TwitchApiGetBroadcasterSubscriptionsData: Decodable {
     let tier: String
 
     func tierAsNumber() -> Int {
-        return twitchTierAsNumber(tier: tier)
+        twitchTierAsNumber(tier: tier)
     }
 }
 
@@ -178,7 +178,7 @@ func fetchTwitchProfilePicture(username: String) async -> UIImage? {
 class TwitchApi {
     private let clientId: String
     private let accessToken: String
-    weak var delegate: TwitchApiDelegate?
+    weak var delegate: (any TwitchApiDelegate)?
 
     init(_ accessToken: String) {
         clientId = twitchMoblinAppClientId
@@ -647,7 +647,7 @@ class TwitchApi {
     }
 
     private func makeHelixUrl(subPath: String) -> URL {
-        return URL(string: "https://api.twitch.tv/helix/\(subPath)")!
+        URL(string: "https://api.twitch.tv/helix/\(subPath)")!
     }
 
     private func doRequest(_ request: URLRequest, _ onComplete: @escaping (OperationResult) -> Void) {

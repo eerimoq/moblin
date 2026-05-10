@@ -51,7 +51,7 @@ class WorkoutDeviceRunning {
     }
 
     func isAnyCharacteristicDiscovered() -> Bool {
-        return measurementCharacteristic != nil
+        measurementCharacteristic != nil
     }
 
     func handleMeasurement(value: Data) throws -> WorkoutDeviceRunningMetrics {

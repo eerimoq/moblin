@@ -40,10 +40,10 @@ extension Model {
         for macro in database.macros.macros {
             for action in macro.actions {
                 action.sceneIds = action.sceneIds.filter { id in
-                    database.scenes.map { $0.id }.contains(id)
+                    database.scenes.map(\.id).contains(id)
                 }
                 action.djiDevices = action.djiDevices.filter { id in
-                    database.djiDevices.devices.map { $0.id }.contains(id)
+                    database.djiDevices.devices.map(\.id).contains(id)
                 }
             }
         }
@@ -65,40 +65,39 @@ extension Model {
         }
         let action = currentMacro.actions[currentMacro.nextActionIndex]
         currentMacro.nextActionIndex += 1
-        let executeNext: Bool
-        switch action.function {
+        let executeNext: Bool = switch action.function {
         case .scene:
-            executeNext = executeScene(action: action)
+            executeScene(action: action)
         case .enableDisableScenes:
-            executeNext = executeEnableDisableScenes(action: action)
+            executeEnableDisableScenes(action: action)
         case .autoSceneSwitcher:
-            executeNext = executeAutoSceneSwitcher(action: action)
+            executeAutoSceneSwitcher(action: action)
         case .zoom:
-            executeNext = executeZoom(action: action)
+            executeZoom(action: action)
         case .gimbalPreset:
-            executeNext = executeGimbalPreset(action: action)
+            executeGimbalPreset(action: action)
         case .delay:
-            executeNext = executeDelay(currentMacro: currentMacro,
-                                       action: action,
-                                       macro: macro)
+            executeDelay(currentMacro: currentMacro,
+                         action: action,
+                         macro: macro)
         case .macro:
-            executeNext = executeMacro(action: action, macro: macro)
+            executeMacro(action: action, macro: macro)
         case .djiDevices:
-            executeNext = executeDjiDevices(action: action)
+            executeDjiDevices(action: action)
         case .record:
-            executeNext = executeRecord(action: action)
+            executeRecord(action: action)
         case .mute:
-            executeNext = executeMute(action: action)
+            executeMute(action: action)
         case .torch:
-            executeNext = executeTorch(action: action)
+            executeTorch(action: action)
         case .snapshot:
-            executeNext = executeSnapshot()
+            executeSnapshot()
         case .filters:
-            executeNext = executeFilters(action: action)
+            executeFilters(action: action)
         case .reaction:
-            executeNext = executeReaction(action: action)
+            executeReaction(action: action)
         case nil:
-            executeNext = true
+            true
         }
         if executeNext {
             executeNextAction(macro: macro)

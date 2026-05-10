@@ -5,7 +5,7 @@ struct InlinePickerItem: Identifiable {
     let text: String
 
     static func fromStrings(values: [String]) -> [InlinePickerItem] {
-        return values.map { InlinePickerItem(id: $0, text: $0) }
+        values.map { InlinePickerItem(id: $0, text: $0) }
     }
 }
 

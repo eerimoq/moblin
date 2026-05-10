@@ -5,14 +5,14 @@ struct BatteryView: View {
     @ObservedObject var battery: Battery
 
     private func percentage(level: Double) -> String {
-        return String(Int(level * 100))
+        String(Int(level * 100))
     }
 
     private func boltColor() -> Color {
         if model.isBatteryCharging() {
-            return .white
+            .white
         } else {
-            return .black
+            .black
         }
     }
 

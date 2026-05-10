@@ -136,7 +136,7 @@ private class InterfaceTypeHttpClient {
     }
 
     private func isCurrentConnection(_ interfaceTypeIndex: Int) -> Bool {
-        return self.interfaceTypeIndex == interfaceTypeIndex
+        self.interfaceTypeIndex == interfaceTypeIndex
     }
 
     private func updateGlobalInterfaceTypesIfNeeded() {

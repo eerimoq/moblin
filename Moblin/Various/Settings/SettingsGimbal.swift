@@ -16,7 +16,7 @@ class SettingsGimbalPreset: Codable, Identifiable, ObservableObject, Named {
              zoomX
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -27,7 +27,7 @@ class SettingsGimbalPreset: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, SettingsGimbalPreset.baseName)
@@ -67,7 +67,7 @@ class SettingsGimbal: Codable, ObservableObject {
              presets
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.zoomSpeed, zoomSpeed)
         try container.encode(.naturalZoom, naturalZoom)
@@ -89,7 +89,7 @@ class SettingsGimbal: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         zoomSpeed = container.decode(.zoomSpeed, Float.self, Self.zoomSpeedDefault)
         naturalZoom = container.decode(.naturalZoom, Bool.self, true)

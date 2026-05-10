@@ -8,7 +8,7 @@ struct NalUnitInfo {
     let dataLength: Int
 
     func dataOffset() -> Int {
-        return startCodeOffset + startCodeLength
+        startCodeOffset + startCodeLength
     }
 }
 
@@ -66,13 +66,13 @@ protocol NalUnit {
 }
 
 func readH264NalUnits(data: Data, nalUnits: [NalUnitInfo], filter: [AvcNalUnitType]) -> [AvcNalUnit] {
-    return readNalUnits(data, nalUnits) { byte in
+    readNalUnits(data, nalUnits) { byte in
         filter.contains(AvcNalUnitType(rawValue: byte & 0x1F) ?? .unspec)
     }
 }
 
 func readH265NalUnits(data: Data, nalUnits: [NalUnitInfo], filter: [HevcNalUnitType]) -> [HevcNalUnit] {
-    return readNalUnits(data, nalUnits) { byte in
+    readNalUnits(data, nalUnits) { byte in
         filter.contains(HevcNalUnitType(rawValue: (byte & 0x7E) >> 1) ?? .unspec)
     }
 }

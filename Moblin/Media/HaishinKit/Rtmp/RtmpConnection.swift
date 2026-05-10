@@ -19,7 +19,7 @@ enum RtmpConnectionCode: String {
     case connectSuccess = "NetConnection.Connect.Success"
 
     func eventData() -> AsObject {
-        return [
+        [
             "code": .string(rawValue),
         ]
     }
@@ -305,7 +305,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         }
         let encoded = chunk.encode()
         var offset = encoded.count
-        if (encoded.count >= 4) && (encoded[1] == 0xFF) && (encoded[2] == 0xFF) && (encoded[3] == 0xFF) {
+        if encoded.count >= 4, encoded[1] == 0xFF, encoded[2] == 0xFF, encoded[3] == 0xFF {
             offset += 4
         }
         if currentChunk != nil {
@@ -313,7 +313,7 @@ extension RtmpConnection: RtmpSocketDelegate {
         }
         if chunk.type == .two {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
-        } else if chunk.type == .three && fragmentedChunks[chunk.chunkStreamId] == nil {
+        } else if chunk.type == .three, fragmentedChunks[chunk.chunkStreamId] == nil {
             offset = chunk.append(data: data, message: messages[chunk.chunkStreamId])
         }
         if let message = chunk.message, chunk.ready() {
@@ -351,7 +351,7 @@ extension RtmpConnection: RtmpSocketDelegate {
                 fragmentedChunks.removeValue(forKey: chunk.chunkStreamId)
             }
         }
-        if offset > 0 && offset < data.count {
+        if offset > 0, offset < data.count {
             return socketDataReceived(data: data.advanced(by: offset))
         }
         return Data()

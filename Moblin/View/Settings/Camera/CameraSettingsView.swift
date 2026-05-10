@@ -8,9 +8,9 @@ struct CustomLutView: View {
 
     func loadImage() -> UIImage? {
         if let data = model.imageStorage.tryRead(id: lut.id) {
-            return UIImage(data: data)
+            UIImage(data: data)
         } else {
-            return nil
+            nil
         }
     }
 

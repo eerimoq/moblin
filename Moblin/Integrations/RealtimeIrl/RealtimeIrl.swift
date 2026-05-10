@@ -19,9 +19,9 @@ class RealtimeIrl {
 
     func status() -> String {
         if updateCount > 0 {
-            return " (\(updateCount))"
+            " (\(updateCount))"
         } else {
-            return ""
+            ""
         }
     }
 

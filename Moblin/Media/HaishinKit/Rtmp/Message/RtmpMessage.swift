@@ -30,31 +30,31 @@ class RtmpMessage {
     static func create(type: RtmpMessageType) -> RtmpMessage {
         switch type {
         case .chunkSize:
-            return RtmpSetChunkSizeMessage()
+            RtmpSetChunkSizeMessage()
         case .abort:
-            return RtmpAbortMessge()
+            RtmpAbortMessge()
         case .ack:
-            return RtmpAcknowledgementMessage()
+            RtmpAcknowledgementMessage()
         case .user:
-            return RtmpUserControlMessage()
+            RtmpUserControlMessage()
         case .windowAck:
-            return RtmpWindowAcknowledgementSizeMessage()
+            RtmpWindowAcknowledgementSizeMessage()
         case .bandwidth:
-            return RtmpSetPeerBandwidthMessage()
+            RtmpSetPeerBandwidthMessage()
         case .audio:
-            return RtmpAudioMessage()
+            RtmpAudioMessage()
         case .video:
-            return RtmpVideoMessage()
+            RtmpVideoMessage()
         case .amf3Data:
-            return RtmpDataMessage(dataType: .amf3Data)
+            RtmpDataMessage(dataType: .amf3Data)
         case .amf3Command:
-            return RtmpCommandMessage(commandType: .amf3Command)
+            RtmpCommandMessage(commandType: .amf3Command)
         case .amf0Data:
-            return RtmpDataMessage(dataType: .amf0Data)
+            RtmpDataMessage(dataType: .amf0Data)
         case .amf0Command:
-            return RtmpCommandMessage(commandType: .amf0Command)
+            RtmpCommandMessage(commandType: .amf0Command)
         case .aggregate:
-            return RtmpAggregateMessage()
+            RtmpAggregateMessage()
         }
     }
 }

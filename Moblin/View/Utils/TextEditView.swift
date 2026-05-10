@@ -62,7 +62,7 @@ struct TextEditBindingView: View {
                     }
                     .submitLabel(.done)
                     .onDisappear {
-                        if changed && !submitted {
+                        if changed, !submitted {
                             submit()
                         }
                     }

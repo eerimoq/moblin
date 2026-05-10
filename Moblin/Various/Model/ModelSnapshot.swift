@@ -42,15 +42,15 @@ extension Model {
     }
 
     func formatSnapshotTakenBy(user: String) -> String {
-        return String(localized: "Snapshot taken by \(user).")
+        String(localized: "Snapshot taken by \(user).")
     }
 
     func formatSnapshotTakenSuccessfully(user: String) -> String {
-        return String(localized: "\(user), thanks for bringing our photo album to life. 🎉")
+        String(localized: "\(user), thanks for bringing our photo album to life. 🎉")
     }
 
     func formatSnapshotTakenNotAllowed(user: String) -> String {
-        return String(localized: " \(user), you are not allowed to take snapshots, sorry. 😢")
+        String(localized: " \(user), you are not allowed to take snapshots, sorry. 😢")
     }
 
     private func snapshotCountdownTick() {
@@ -83,9 +83,9 @@ extension Model {
 
     private func getDiscordWebhookUrl(_ isChatBot: Bool) -> URL? {
         if isChatBot {
-            return URL(string: stream.discordChatBotSnapshotWebhook)
+            URL(string: stream.discordChatBotSnapshotWebhook)
         } else {
-            return URL(string: stream.discordSnapshotWebhook)
+            URL(string: stream.discordSnapshotWebhook)
         }
     }
 

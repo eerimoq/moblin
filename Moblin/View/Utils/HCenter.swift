@@ -10,7 +10,7 @@ struct HCenter<Content: View>: View {
     var body: some View {
         HStack {
             Spacer()
-            self.content()
+            content()
             Spacer()
         }
     }

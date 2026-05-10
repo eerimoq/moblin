@@ -12,26 +12,26 @@ private struct HighlightMessageView: View {
 
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
-            return chat.backgroundColorColor.opacity(0.6)
+            chat.backgroundColorColor.opacity(0.6)
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func shadowColor() -> Color {
         if chat.shadowColorEnabled {
-            return chat.shadowColorColor
+            chat.shadowColorColor
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        return CGFloat(chat.fontSize * 1.7)
+        CGFloat(chat.fontSize * 1.7)
     }
 
     private func imageOpacity() -> Double {
-        return postState.deleted ? 0.25 : 1
+        postState.deleted ? 0.25 : 1
     }
 
     var body: some View {
@@ -87,43 +87,43 @@ private struct LineView: View {
     let platform: Bool
 
     private func usernameColor() -> Color {
-        return post.userColor.color()
+        post.userColor.color()
     }
 
     private func messageColor(usernameColor: Color) -> Color {
-        if post.isAction && chat.meInUsernameColor {
-            return usernameColor
+        if post.isAction, chat.meInUsernameColor {
+            usernameColor
         } else {
-            return chat.messageColorColor
+            chat.messageColorColor
         }
     }
 
     private func backgroundColor() -> Color {
         if chat.backgroundColorEnabled {
-            return chat.backgroundColorColor.opacity(0.6)
+            chat.backgroundColorColor.opacity(0.6)
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func shadowColor() -> Color {
         if chat.shadowColorEnabled {
-            return chat.shadowColorColor
+            chat.shadowColorColor
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func frameHeightBadges() -> CGFloat {
-        return CGFloat(chat.fontSize * 1.4)
+        CGFloat(chat.fontSize * 1.4)
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        return CGFloat(chat.fontSize * 1.7)
+        CGFloat(chat.fontSize * 1.7)
     }
 
     private func imageOpacity() -> Double {
-        return deleted ? 0.25 : 1
+        deleted ? 0.25 : 1
     }
 
     var body: some View {
@@ -295,17 +295,17 @@ struct StreamOverlayChatView: View {
 
     private func heightFactor() -> CGFloat {
         if fullSize {
-            return 1
+            1
         } else {
-            return chatSettings.height
+            chatSettings.height
         }
     }
 
     private func widthFactor() -> CGFloat {
         if fullSize {
-            return 1
+            1
         } else {
-            return chatSettings.width
+            chatSettings.width
         }
     }
 

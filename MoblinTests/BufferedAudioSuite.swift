@@ -158,11 +158,11 @@ struct BufferedAudioSuite {
 }
 
 private func createBufferedAudio() -> BufferedAudio {
-    return BufferedAudio(cameraId: .init(),
-                         name: "",
-                         latency: 0.1,
-                         processor: nil,
-                         manualOutput: true)
+    BufferedAudio(cameraId: .init(),
+                  name: "",
+                  latency: 0.1,
+                  processor: nil,
+                  manualOutput: true)
 }
 
 private func createSampleBuffer(presentationTimeStamp: Double) -> CMSampleBuffer {
@@ -174,7 +174,7 @@ private func createSampleBuffer(presentationTimeStamp: Double) -> CMSampleBuffer
 }
 
 private func createOa6SampleBuffers() -> [CMSampleBuffer] {
-    return [
+    [
         createSampleBuffer(presentationTimeStamp: 565.064),
         createSampleBuffer(presentationTimeStamp: 565.097),
         createSampleBuffer(presentationTimeStamp: 565.097),

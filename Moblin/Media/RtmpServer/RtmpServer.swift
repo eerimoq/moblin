@@ -21,12 +21,12 @@ protocol RtmpServerDelegate: AnyObject {
 class RtmpServer {
     private var listener: NWListener?
     private var clients: [RtmpServerClient]
-    let delegate: RtmpServerDelegate
+    let delegate: any RtmpServerDelegate
     var settings: SettingsRtmpServer
     private var periodicTimer = SimpleTimer(queue: rtmpServerDispatchQueue)
     var bitrateStats = BitrateStats()
 
-    init(settings: SettingsRtmpServer, delegate: RtmpServerDelegate) {
+    init(settings: SettingsRtmpServer, delegate: any RtmpServerDelegate) {
         self.settings = settings
         self.delegate = delegate
         clients = []
@@ -54,7 +54,7 @@ class RtmpServer {
     }
 
     func isStreamConnected(streamKey: String) -> Bool {
-        return rtmpServerDispatchQueue.sync {
+        rtmpServerDispatchQueue.sync {
             clients.contains(where: { client in
                 client.streamKey == streamKey
             })
@@ -62,13 +62,13 @@ class RtmpServer {
     }
 
     func updateStats() -> BitrateStatsInstant {
-        return rtmpServerDispatchQueue.sync {
+        rtmpServerDispatchQueue.sync {
             bitrateStats.update()
         }
     }
 
     func getNumberOfClients() -> Int {
-        return rtmpServerDispatchQueue.sync {
+        rtmpServerDispatchQueue.sync {
             clients.count
         }
     }

@@ -148,38 +148,38 @@ private enum ModActionType: CaseIterable {
     func title() -> LocalizedStringKey {
         switch self {
         case .ban:
-            return "Ban"
+            "Ban"
         case .timeout:
-            return "Timeout"
+            "Timeout"
         case .unban:
-            return "Unban"
+            "Unban"
         case .mod:
-            return "Mod"
+            "Mod"
         case .unmod:
-            return "Unmod"
+            "Unmod"
         case .vip:
-            return "VIP"
+            "VIP"
         case .unvip:
-            return "UnVIP"
+            "UnVIP"
         }
     }
 
     func image() -> String {
         switch self {
         case .ban:
-            return "hand.raised"
+            "hand.raised"
         case .timeout:
-            return "clock"
+            "clock"
         case .unban:
-            return "checkmark.circle"
+            "checkmark.circle"
         case .mod:
-            return "shield"
+            "shield"
         case .unmod:
-            return "shield.slash"
+            "shield.slash"
         case .vip:
-            return "crown"
+            "crown"
         case .unvip:
-            return "crown"
+            "crown"
         }
     }
 }
@@ -195,7 +195,7 @@ private struct UserModerationItemView: View {
     private let timeoutPresets = [60, 300, 600, 1800, 3600, 21600, 86400, 604_800]
 
     private func canExecute() -> Bool {
-        return !username.trim().isEmpty
+        !username.trim().isEmpty
     }
 
     private func executeAction(onComplete: @escaping (OperationResult) -> Void) {
@@ -410,7 +410,7 @@ private struct CreatePredictionView: View {
     @StateObject private var executor = Executor()
 
     private func canExecute() -> Bool {
-        return !title.trim().isEmpty && !outcome1.trim().isEmpty && !outcome2.trim().isEmpty
+        !title.trim().isEmpty && !outcome1.trim().isEmpty && !outcome2.trim().isEmpty
     }
 
     var body: some View {
@@ -600,7 +600,7 @@ private struct KickHostChannelSearchView: View {
                     executor.startProgress()
                     model.searchKickChannels(query: searchText) { results in
                         if let results {
-                            self.channels = results.sorted(by: {
+                            channels = results.sorted(by: {
                                 let searchText = searchText.lowercased()
                                 let first = $0.username.lowercased()
                                 let second = $1.username.lowercased()
@@ -662,7 +662,7 @@ private struct KickHostChannelView: View {
         NavigationLinkView(text: "Host channel", image: "play.tv") {
             KickHostChannelSearchView(model: model)
             Section {
-                ForEach(channels.filter { $0.is_live }) { channel in
+                ForEach(channels.filter(\.is_live)) { channel in
                     RaidChannelView(buttonText: "Host",
                                     channel: channel.user_username,
                                     category: channel.category_name ?? "",
@@ -736,15 +736,15 @@ private enum AnnouncementColor: String, CaseIterable {
     func toString() -> String {
         switch self {
         case .primary:
-            return String(localized: "Primary")
+            String(localized: "Primary")
         case .blue:
-            return "🔵"
+            "🔵"
         case .green:
-            return "🟢"
+            "🟢"
         case .orange:
-            return "🟠"
+            "🟠"
         case .purple:
-            return "🟣"
+            "🟣"
         }
     }
 }
@@ -756,7 +756,7 @@ private struct SendAnnouncementView: View {
     @StateObject private var executor = Executor()
 
     private func canSend() -> Bool {
-        return !message.trim().isEmpty
+        !message.trim().isEmpty
     }
 
     var body: some View {

@@ -28,7 +28,7 @@ private struct QuickButtonStealthModeView: View {
                     case let .success(data?):
                         model.saveStealthModeImage(data: data)
                         DispatchQueue.main.async {
-                            self.stealthMode.image = UIImage(data: data)
+                            stealthMode.image = UIImage(data: data)
                         }
                     default:
                         break

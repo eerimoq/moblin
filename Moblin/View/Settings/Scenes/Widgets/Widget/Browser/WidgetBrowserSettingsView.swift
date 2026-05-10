@@ -53,7 +53,7 @@ struct WidgetBrowserSettingsView: View {
     }
 
     private func formatFps(value: Float) -> String {
-        return formatOneDecimal(value)
+        formatOneDecimal(value)
     }
 
     var body: some View {

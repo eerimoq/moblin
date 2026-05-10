@@ -2,34 +2,34 @@ import NetworkExtension
 import SwiftUI
 
 private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
-    return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
+    "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
 }
 
 func formatDjiDeviceState(state: DjiDeviceState?) -> String {
     if state == nil || state == .idle {
-        return String(localized: "Not started")
+        String(localized: "Not started")
     } else if state == .discovering {
-        return String(localized: "Discovering")
+        String(localized: "Discovering")
     } else if state == .connecting {
-        return String(localized: "Connecting")
+        String(localized: "Connecting")
     } else if state == .checkingIfPaired || state == .pairing {
-        return String(localized: "Pairing")
+        String(localized: "Pairing")
     } else if state == .stoppingStream || state == .cleaningUp {
-        return String(localized: "Stopping stream")
+        String(localized: "Stopping stream")
     } else if state == .preparingStream {
-        return String(localized: "Preparing to stream")
+        String(localized: "Preparing to stream")
     } else if state == .settingUpWifi {
-        return String(localized: "Setting up WiFi")
+        String(localized: "Setting up WiFi")
     } else if state == .wifiSetupFailed {
-        return String(localized: "WiFi setup failed")
+        String(localized: "WiFi setup failed")
     } else if state == .configuring {
-        return String(localized: "Configuring")
+        String(localized: "Configuring")
     } else if state == .startingStream {
-        return String(localized: "Starting stream")
+        String(localized: "Starting stream")
     } else if state == .streaming {
-        return String(localized: "Streaming")
+        String(localized: "Streaming")
     } else {
-        return String(localized: "Unknown")
+        String(localized: "Unknown")
     }
 }
 
@@ -313,7 +313,7 @@ struct DjiDeviceSettingsView: View {
     @ObservedObject var status: StatusTopRight
 
     func state() -> String {
-        return formatDjiDeviceState(state: status.djiDeviceStreamingState)
+        formatDjiDeviceState(state: status.djiDeviceStreamingState)
     }
 
     var body: some View {
