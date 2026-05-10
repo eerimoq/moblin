@@ -137,8 +137,7 @@ export function Picker({ name, options, value, onChange }: PickerProps) {
           <For each={options()}>
             {(option) => (
               <option value={option.id} selected={option.id === value()}>
-                {" "}
-                {option.name}{" "}
+                {option.name}
               </option>
             )}
           </For>
