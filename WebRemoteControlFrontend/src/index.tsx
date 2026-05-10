@@ -3,7 +3,7 @@ import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
 import { WebSocketConnection } from "./utils.ts";
-import { GitHubLink, NamedItem, Picker, Toggle } from "./components.tsx";
+import { GitHubLink, NamedItem, Picker, Section, Toggle } from "./components.tsx";
 
 interface ZoomPreset extends NamedItem {}
 
@@ -264,6 +264,13 @@ function App() {
 
   const connection = new IndexConnection();
 
+  function overlayStatusRows(overlay: Record<string, { message: string }>): StatusRow[] {
+    return Object.keys(overlay)
+      .sort()
+      .filter((key) => statusKeyToName[key as keyof typeof statusKeyToName])
+      .map((key) => [statusKeyToName[key as keyof typeof statusKeyToName], overlay[key].message]);
+  }
+
   function updateStatus(status: Record<string, unknown>): void {
     const general = status.general as {
       batteryLevel: number;
@@ -279,23 +286,9 @@ function App() {
     ];
     setGeneralRows(genRows);
     const topLeft = (status.topLeft ?? {}) as Record<string, { message: string }>;
-    const tlRows: StatusRow[] = Object.keys(topLeft)
-      .sort()
-      .filter((statusKey) => statusKeyToName[statusKey as keyof typeof statusKeyToName])
-      .map((statusKey) => [
-        statusKeyToName[statusKey as keyof typeof statusKeyToName],
-        topLeft[statusKey].message,
-      ]);
-    setTopLeftRows(tlRows);
+    setTopLeftRows(overlayStatusRows(topLeft));
     const topRight = (status.topRight ?? {}) as Record<string, { message: string }>;
-    const trRows: StatusRow[] = Object.keys(topRight)
-      .sort()
-      .filter((statusKey) => statusKeyToName[statusKey as keyof typeof statusKeyToName])
-      .map((statusKey) => [
-        statusKeyToName[statusKey as keyof typeof statusKeyToName],
-        topRight[statusKey].message,
-      ]);
-    setTopRightRows(trRows);
+    setTopRightRows(overlayStatusRows(topRight));
   }
 
   function populateSettings(data: Record<string, unknown>): void {
@@ -322,6 +315,13 @@ function App() {
       setGimbalPresets(gimbalPresetList);
     }
     setShowFilters(true);
+  }
+
+  function presetButtonClass(active: boolean): string {
+    const base = "text-sm px-3 py-1 rounded transition-colors";
+    return active
+      ? `bg-indigo-700 text-white ${base}`
+      : `bg-zinc-700 hover:bg-zinc-600 text-zinc-200 ${base}`;
   }
 
   function handleZoomSubmit() {
@@ -364,22 +364,20 @@ function App() {
 
   function Status() {
     return (
-      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
-        <h2 class="text-xl font-semibold mb-3">Status</h2>
+      <Section title="Status">
         <h3 class="text-base font-medium text-zinc-300 mb-1">General</h3>
         <StatusTable rows={generalRows} />
         <h3 class="text-base font-medium text-zinc-300 mt-3 mb-1">Top left</h3>
         <StatusTable rows={topLeftRows} />
         <h3 class="text-base font-medium text-zinc-300 mt-3 mb-1">Top right</h3>
         <StatusTable rows={topRightRows} />
-      </div>
+      </Section>
     );
   }
 
   function Control() {
     return (
-      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
-        <h2 class="text-xl font-semibold mb-3">Control</h2>
+      <Section title="Control">
         <Show when={showControl()}>
           <div class="space-y-3">
             <Toggle
@@ -419,11 +417,7 @@ function App() {
                 <For each={zoomPresets()}>
                   {(preset) => (
                     <button
-                      class={
-                        preset.id === currentZoomPresetId()
-                          ? "bg-indigo-700 text-white text-sm px-3 py-1 rounded transition-colors"
-                          : "bg-zinc-700 hover:bg-zinc-600 text-zinc-200 text-sm px-3 py-1 rounded transition-colors"
-                      }
+                      class={presetButtonClass(preset.id === currentZoomPresetId())}
                       onClick={() => connection.setZoomPreset(preset.id)}
                     >
                       {preset.name}
@@ -473,15 +467,14 @@ function App() {
             </div>
           </div>
         </Show>
-      </div>
+      </Section>
     );
   }
 
   function SrtConnectionPriorities() {
     return (
       <Show when={showSrt()}>
-        <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
-          <h2 class="text-xl font-semibold mb-3">SRT Connection Priorities</h2>
+        <Section title="SRT Connection Priorities">
           <Toggle
             id="controlSrtEnabled"
             checked={srtEnabled()}
@@ -505,7 +498,7 @@ function App() {
               )}
             </For>
           </div>
-        </div>
+        </Section>
       </Show>
     );
   }
@@ -513,8 +506,7 @@ function App() {
   function GimbalPresets() {
     return (
       <Show when={showGimbal()}>
-        <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
-          <h2 class="text-xl font-semibold mb-3">Gimbal Presets</h2>
+        <Section title="Gimbal Presets">
           <div class="flex flex-wrap gap-2">
             <For each={gimbalPresets()}>
               {(preset) => (
@@ -527,7 +519,7 @@ function App() {
               )}
             </For>
           </div>
-        </div>
+        </Section>
       </Show>
     );
   }
@@ -535,8 +527,7 @@ function App() {
   function Filters() {
     return (
       <Show when={showFilters()}>
-        <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
-          <h2 class="text-xl font-semibold mb-3">Filters</h2>
+        <Section title="Filters">
           <div class="space-y-3">
             <For each={allFilterKeys}>
               {(key) => (
@@ -552,22 +543,21 @@ function App() {
               )}
             </For>
           </div>
-        </div>
+        </Section>
       </Show>
     );
   }
 
   function Log() {
     return (
-      <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
-        <h2 class="text-xl font-semibold mb-3">Log</h2>
+      <Section title="Log">
         <div
           ref={(el: HTMLDivElement) => {
             logContainer = el;
           }}
           class="overflow-y-auto h-96 text-sm text-zinc-300"
         />
-      </div>
+      </Section>
     );
   }
 

@@ -1,4 +1,4 @@
-import type { Accessor } from "solid-js";
+import type { Accessor, ParentProps } from "solid-js";
 import { For, Show } from "solid-js";
 
 interface ConfirmDialogProps {
@@ -54,6 +54,15 @@ export function ConfirmDialog({
         </form>
       </dialog>
     </Show>
+  );
+}
+
+export function Section(props: ParentProps<{ title: string }>) {
+  return (
+    <div class="bg-zinc-900 border border-zinc-700 rounded-lg p-2">
+      <h2 class="text-xl font-semibold mb-3">{props.title}</h2>
+      {props.children}
+    </div>
   );
 }
 
