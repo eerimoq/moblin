@@ -427,7 +427,7 @@ function App() {
               name="Scene"
               options={scenes}
               value={currentSceneId}
-              onChange={connection.setScene}
+              onChange={(value) => connection.setScene(value)}
             />
             <Picker
               name="Auto scene switcher"
@@ -437,7 +437,12 @@ function App() {
                 connection.setAutoSceneSwitcher(value === "" ? null : value);
               }}
             />
-            <Picker name="Mic" options={mics} value={currentMicId} onChange={connection.setMic} />
+            <Picker
+              name="Mic"
+              options={mics}
+              value={currentMicId}
+              onChange={(value) => connection.setMic(value)}
+            />
             <Picker
               name="Bitrate"
               options={(): NamedItem[] => {
@@ -446,7 +451,7 @@ function App() {
                 });
               }}
               value={currentBitrateId}
-              onChange={connection.setBitratePreset}
+              onChange={(value) => connection.setBitratePreset(value)}
             />
             <Toggle
               id="controlDebugLogging"
