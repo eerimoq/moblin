@@ -25,7 +25,7 @@ class AlertsEffectMedia: @unchecked Sendable {
     private var soundUrl: URL?
 
     func getPlayer() -> AlertsEffectPlayer {
-        let images: AlertsEffectImages = switch mediaType {
+        let images: any AlertsEffectImages = switch mediaType {
         case .gifAndSound:
             AlertsEffectGifImages(images: gifImages)
         case .video:

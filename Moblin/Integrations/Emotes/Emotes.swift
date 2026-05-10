@@ -17,7 +17,7 @@ class Emote {
 
 class Emotes {
     private var emotes: [String: Emote] = [:]
-    private var task: Task<Void, Error>?
+    private var task: Task<Void, any Error>?
     private var ready: Bool = false
 
     func isReady() -> Bool {

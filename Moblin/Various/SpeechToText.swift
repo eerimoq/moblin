@@ -10,7 +10,7 @@ class SpeechToText: NSObject {
     private let speechRecognizer = SFSpeechRecognizer()
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     private var recognitionTask: SFSpeechRecognitionTask?
-    weak var delegate: SpeechToTextDelegate?
+    weak var delegate: (any SpeechToTextDelegate)?
     private var latestResultTime: ContinuousClock.Instant = .now
     private var hasResult = false
     private var running = false

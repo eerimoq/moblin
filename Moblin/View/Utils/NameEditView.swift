@@ -2,7 +2,7 @@ import SwiftUI
 
 struct NameEditView: View {
     @Binding var name: String
-    var existingNames: [Named] = []
+    var existingNames: [any Named] = []
 
     private func onChange(value: String) -> String? {
         if value.isEmpty {

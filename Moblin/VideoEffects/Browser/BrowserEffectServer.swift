@@ -68,7 +68,7 @@ class BrowserEffectServer: NSObject {
     private let pingTimer = SimpleTimer(queue: .main)
     private var gotPing = true
     private let moblinAccess: Bool
-    weak var delegate: BrowserEffectServerDelegate?
+    weak var delegate: (any BrowserEffectServerDelegate)?
 
     init(configuration: WKWebViewConfiguration, moblinAccess: Bool) {
         self.moblinAccess = moblinAccess

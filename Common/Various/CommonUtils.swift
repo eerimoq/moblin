@@ -175,11 +175,9 @@ private func createSpeedFormatter() -> MeasurementFormatter {
     return formatter
 }
 
-private let speedFormatter = createSpeedFormatter()
-
 func format(speed: Double) -> String {
     let measurement = Measurement(value: max(speed, 0), unit: UnitSpeed.metersPerSecond)
-    return speedFormatter.string(from: measurement)
+    return createSpeedFormatter().string(from: measurement)
 }
 
 private func createWindSpeedFormatter() -> MeasurementFormatter {
@@ -189,11 +187,9 @@ private func createWindSpeedFormatter() -> MeasurementFormatter {
     return formatter
 }
 
-private let windSpeedFormatter = createWindSpeedFormatter()
-
 func formatWindSpeed(speed: Measurement<UnitSpeed>) -> String {
     let unit: UnitSpeed = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
-    return windSpeedFormatter.string(from: speed.converted(to: unit))
+    return createWindSpeedFormatter().string(from: speed.converted(to: unit))
 }
 
 func formatWindAndGustSpeed(speed: Measurement<UnitSpeed>, gust: Measurement<UnitSpeed>) -> String {
@@ -224,29 +220,23 @@ private func createDistanceFormatter() -> LengthFormatter {
     return formatter
 }
 
-private let distanceFormatter = createDistanceFormatter()
-
 func format(distance: Double) -> String {
-    distanceFormatter.string(fromMeters: distance)
+    createDistanceFormatter().string(fromMeters: distance)
 }
 
 private func createAltitudeFormatter() -> MeasurementFormatter {
     let formatter = MeasurementFormatter()
-    var options: MeasurementFormatter.UnitOptions = []
-    options.insert(.providedUnit)
-    formatter.unitOptions = options
+    formatter.unitOptions = .providedUnit
     formatter.numberFormatter.maximumFractionDigits = 0
     return formatter
 }
-
-private let altitudeFormatter = createAltitudeFormatter()
 
 func format(altitude: Double) -> String {
     var measurement = Measurement(value: altitude, unit: UnitLength.meters)
     if UnitLength(forLocale: .current) == .feet {
         measurement = measurement.converted(to: .feet)
     }
-    return altitudeFormatter.string(from: measurement)
+    return createAltitudeFormatter().string(from: measurement)
 }
 
 extension ProcessInfo.ThermalState {

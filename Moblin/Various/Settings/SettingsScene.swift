@@ -1060,7 +1060,7 @@ enum SettingsWidgetAlertsCheerBitsAlertOperator: String, Codable, CaseIterable {
     case equal = "="
     case greaterEqual = ">="
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         self = try SettingsWidgetAlertsCheerBitsAlertOperator(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ??
             .equal
@@ -2335,7 +2335,7 @@ enum SettingsSceneCameraPosition: String, Codable, CaseIterable {
     case backWideDualLowEnergy = "Back wide dual"
     case none = "None"
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         self = try SettingsSceneCameraPosition(rawValue: decoder.singleValueContainer()
             .decode(RawValue.self)) ?? .back
     }

@@ -9,7 +9,7 @@ private class PngCoordinate: Decodable {
     // periphery:ignore
     let y: Double
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let value = try decoder.singleValueContainer().decode(String.self)
         if let match = value.firstMatch(of: /Vector2\(([-\d]+), ([-\d]+)\)/) {
             x = Double(match.1) ?? 0
@@ -53,7 +53,7 @@ private class PngTuberImage: Decodable {
              zindex
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let costumeLayersData = try container.decode(String.self, forKey: .costumeLayers).utf8Data
         costumeLayers = try JSONDecoder().decode([Int].self, from: costumeLayersData)

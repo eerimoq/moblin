@@ -34,7 +34,7 @@ protocol AlertsEffectDelegate: AnyObject {
 private struct Pipeline {
     var playing: Bool = false
     var messageImage: CIImage?
-    var images: AlertsEffectImages = AlertsEffectGifImages()
+    var images: any AlertsEffectImages = AlertsEffectGifImages()
     var x: Double = 0
     var y: Double = 0
     var landmarkSettings: AlertsEffectLandmarkSettings?
@@ -53,7 +53,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var volume: Float = 1.0
     private var synthesizer = createSpeechSynthesizer()
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
-    private weak var delegate: AlertsEffectDelegate?
+    private weak var delegate: (any AlertsEffectDelegate)?
     private var isPlaying: Bool = false
     private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts
@@ -78,7 +78,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     init(
         settings: SettingsWidgetAlerts,
-        delegate: AlertsEffectDelegate,
+        delegate: any AlertsEffectDelegate,
         mediaStorage: AlertMediaStorage,
         bundledImages: [SettingsAlertsMediaGalleryItem],
         bundledSounds: [SettingsAlertsMediaGalleryItem]

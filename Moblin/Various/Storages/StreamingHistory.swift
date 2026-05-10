@@ -108,7 +108,7 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
              streams
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.totalTime, totalTime)
         try container.encode(.totalBytes, totalBytes)
@@ -116,7 +116,7 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
         try container.encode(.streams, streams)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         totalTime = container.decode(.totalTime, Duration.self, .seconds(0))
         totalBytes = container.decode(.totalBytes, UInt64.self, 0)

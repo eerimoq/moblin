@@ -54,7 +54,7 @@ private func isHueInRange(hue: CGFloat, fromHue: CGFloat, toHue: CGFloat) -> Boo
     }
 }
 
-private func makeFilter(settings: FilterSettings) -> CIColorCubeWithColorSpace {
+private func makeFilter(settings: FilterSettings) -> (any CIColorCubeWithColorSpace) {
     let size = 64
     var cube = [Float]()
     cube.reserveCapacity(size * size * size * 4)

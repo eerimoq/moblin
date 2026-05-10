@@ -12,7 +12,7 @@ class Translator {
     private var ready = true
     private var latestText: String?
     private let targetIdentifier: String
-    weak var delegate: TranslatorDelegate?
+    weak var delegate: (any TranslatorDelegate)?
 
     init(targetIdentifier: String) {
         self.targetIdentifier = targetIdentifier

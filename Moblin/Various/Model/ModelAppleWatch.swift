@@ -10,7 +10,7 @@ extension Model {
         type: WatchMessageToWatch,
         data: Any,
         replyHandler: (([String: Any]) -> Void)? = nil,
-        errorHandler: ((Error) -> Void)? = nil
+        errorHandler: ((any Error) -> Void)? = nil
     ) {
         WCSession.default.sendMessage(
             WatchMessageToWatch.pack(type: type, data: data),
@@ -369,10 +369,10 @@ extension Model {
 }
 
 extension Model: WCSessionDelegate {
-    func session(
+    nonisolated func session(
         _: WCSession,
         activationDidCompleteWith activationState: WCSessionActivationState,
-        error _: Error?
+        error _: (any Error)?
     ) {
         logger.debug("watch: \(activationState)")
         switch activationState {

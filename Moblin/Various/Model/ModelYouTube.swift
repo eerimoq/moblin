@@ -4,7 +4,7 @@ import Foundation
 
 class YouTube {
     // periphery: ignore
-    var session: OIDExternalUserAgentSession?
+    var session: (any OIDExternalUserAgentSession)?
 }
 
 extension Model {

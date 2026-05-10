@@ -34,12 +34,12 @@ private protocol JobDelegate: AnyObject {
 private class FrameExtractorJob {
     private let video: ReplayBufferFile
     private let offset: Double
-    weak var delegate: JobDelegate?
+    weak var delegate: (any JobDelegate)?
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
     private let context = CIContext()
 
-    init(video: ReplayBufferFile, offset: Double, delegate: JobDelegate) throws {
+    init(video: ReplayBufferFile, offset: Double, delegate: any JobDelegate) throws {
         self.video = video
         self.offset = offset
         self.delegate = delegate
@@ -59,7 +59,7 @@ private class FrameExtractorJob {
         }
     }
 
-    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
+    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
         if let error {
             logger.info("replay: Failed to get video track with error: \(error)")
             delegate?.jobCompleted(image: nil, video: video, offset: offset)

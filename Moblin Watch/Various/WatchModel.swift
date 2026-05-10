@@ -522,7 +522,7 @@ extension WatchModel: WCSessionDelegate {
     func session(
         _: WCSession,
         activationDidCompleteWith _: WCSessionActivationState,
-        error _: Error?
+        error _: (any Error)?
     ) {}
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {

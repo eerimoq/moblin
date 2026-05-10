@@ -4,7 +4,7 @@ import WeatherKit
 
 class WeatherManager {
     let weatherService = WeatherService()
-    private var task: Task<Void, Error>?
+    private var task: Task<Void, any Error>?
     private var location: CLLocation?
     private var weather: Weather?
     private var enabled = true

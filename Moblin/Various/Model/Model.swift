@@ -647,7 +647,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var latestVolumeChangeSequenceNumber: Int?
     let volumeView = MPVolumeView(frame: .zero)
     var latestSetVolumeTime = ContinuousClock.now
-    private var appStoreUpdateListenerTask: Task<Void, Error>?
+    private var appStoreUpdateListenerTask: Task<Void, any Error>?
     var products: [String: Product] = [:]
     var streamTotalBytes: UInt64 = 0
     var streamLog: Deque<String> = []
@@ -859,7 +859,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
-    func makeErrorToastMain(title: String, font: Font? = nil, subTitle: String? = nil,
+    func makeErrorToastMain(title: String,
+                            font: Font? = nil,
+                            subTitle: String? = nil,
                             vibrate: Bool = false)
     {
         DispatchQueue.main.async {

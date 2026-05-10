@@ -32,7 +32,7 @@ final class ReplayEffect: VideoEffect {
     private let speed: Double
     private let reader: ReplayEffectReplayReader
     private var startPresentationTimeStamp: Double?
-    private weak var delegate: ReplayEffectDelegate?
+    private weak var delegate: (any ReplayEffectDelegate)?
     private var lastImageOffset: Double?
     private var latestImage: CIImage?
     private var cancelled = false
@@ -58,7 +58,7 @@ final class ReplayEffect: VideoEffect {
         size: CMVideoDimensions,
         layout: SettingsWidgetLayout,
         transitionMode: ReplayEffectTransitionMode,
-        delegate: ReplayEffectDelegate
+        delegate: any ReplayEffectDelegate
     ) {
         self.speed = speed
         self.layout = layout

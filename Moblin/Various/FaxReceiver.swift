@@ -7,7 +7,7 @@ protocol FaxReceiverDelegate: AnyObject {
 }
 
 class FaxReceiver {
-    weak var delegate: FaxReceiverDelegate?
+    weak var delegate: (any FaxReceiverDelegate)?
 
     func add(url: URL) {
         httpRequest(request: URLRequest(url: url)) { data, response, _ in

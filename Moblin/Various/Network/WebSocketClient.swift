@@ -17,7 +17,7 @@ final class WebSocketClient {
     private var networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
     private var pingTimer = SimpleTimer(queue: .main)
     private var pongReceived = true
-    var delegate: WebSocketClientDelegate?
+    var delegate: (any WebSocketClientDelegate)?
     private let url: URL
     private let loopback: Bool
     private var connected = false
@@ -121,7 +121,7 @@ final class WebSocketClient {
 }
 
 extension WebSocketClient: WebSocketConnectionDelegate {
-    func webSocketDidConnect(connection _: WebSocketConnection) {
+    func webSocketDidConnect(connection _: any WebSocketConnection) {
         logger.debug("websocket: Connected")
         connectDelayMs = shortestDelayMs
         stopConnectTimer()
@@ -129,7 +129,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         delegate?.webSocketClientConnected(self)
     }
 
-    func webSocketDidDisconnect(connection _: WebSocketConnection,
+    func webSocketDidDisconnect(connection _: any WebSocketConnection,
                                 closeCode _: NWProtocolWebSocket.CloseCode, reason _: Data?)
     {
         logger.debug("websocket: Disconnected")
@@ -138,7 +138,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         delegate?.webSocketClientDisconnected(self)
     }
 
-    func webSocketViabilityDidChange(connection _: WebSocketConnection, isViable: Bool) {
+    func webSocketViabilityDidChange(connection _: any WebSocketConnection, isViable: Bool) {
         logger.debug("websocket: Viability changed to \(isViable)")
         guard !isViable else {
             return
@@ -148,11 +148,11 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         delegate?.webSocketClientDisconnected(self)
     }
 
-    func webSocketDidAttemptBetterPathMigration(result _: Result<WebSocketConnection, NWError>) {
+    func webSocketDidAttemptBetterPathMigration(result _: Result<any WebSocketConnection, NWError>) {
         logger.debug("websocket: Better path migration")
     }
 
-    func webSocketDidReceiveError(connection _: WebSocketConnection, error: NWError) {
+    func webSocketDidReceiveError(connection _: any WebSocketConnection, error: NWError) {
         logger.debug("websocket: Error \(error.localizedDescription)")
         let connected = connected
         stopInternal()
@@ -162,13 +162,13 @@ extension WebSocketClient: WebSocketConnectionDelegate {
         }
     }
 
-    func webSocketDidReceivePong(connection _: WebSocketConnection) {
+    func webSocketDidReceivePong(connection _: any WebSocketConnection) {
         pongReceived = true
     }
 
-    func webSocketDidReceiveMessage(connection _: WebSocketConnection, string: String) {
+    func webSocketDidReceiveMessage(connection _: any WebSocketConnection, string: String) {
         delegate?.webSocketClientReceiveMessage(self, string: string)
     }
 
-    func webSocketDidReceiveMessage(connection _: WebSocketConnection, data _: Data) {}
+    func webSocketDidReceiveMessage(connection _: any WebSocketConnection, data _: Data) {}
 }

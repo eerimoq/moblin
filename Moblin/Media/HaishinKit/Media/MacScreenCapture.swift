@@ -11,7 +11,7 @@ protocol MacScreenCaptureDelegate: AnyObject {
 @available(macCatalyst 18.2, *)
 class MacScreenCapture: NSObject {
     static let shared = MacScreenCapture()
-    weak var delegate: MacScreenCaptureDelegate?
+    weak var delegate: (any MacScreenCaptureDelegate)?
     private var stream: SCStream?
 
     func start(fps: Float64) {

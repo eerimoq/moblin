@@ -2,7 +2,7 @@ import Foundation
 
 class DjiDeviceWrapper {
     let device: DjiDevice
-    var autoRestartStreamTimer: DispatchSourceTimer?
+    var autoRestartStreamTimer: (any DispatchSourceTimer)?
 
     init(device: DjiDevice) {
         self.device = device

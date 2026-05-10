@@ -45,7 +45,7 @@ protocol MediaDelegate: AnyObject {
     func mediaSetZoomX(x: Float)
     func mediaSetExposureBias(bias: Float)
     func mediaSelectedFps(auto: Bool)
-    func mediaError(error: Error)
+    func mediaError(error: any Error)
 }
 
 final class Media: NSObject {
@@ -71,7 +71,7 @@ final class Media: NSObject {
     private var experimental: Bool = false
     private var overheadBandwidth: Int32 = 25
     private var maximumBandwidthFollowInput: Bool = false
-    private let delegate: MediaDelegate
+    private let delegate: any MediaDelegate
     private var adaptiveBitrate: AdaptiveBitrate?
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoEncoderSettings()
@@ -84,7 +84,7 @@ final class Media: NSObject {
     private var canvasSize: CGSize = .init(width: 1920, height: 1080)
     private var limitAdaptiveBitrateByTransportBitrate: Bool = true
 
-    init(delegate: MediaDelegate) {
+    init(delegate: any MediaDelegate) {
         self.delegate = delegate
     }
 

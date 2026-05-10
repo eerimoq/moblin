@@ -88,7 +88,7 @@ class ReplayEffectStingerReader {
         }
     }
 
-    private func loadVideoTrackCompletion(track: AVAssetTrack?, error: Error?) {
+    private func loadVideoTrackCompletion(track: AVAssetTrack?, error: (any Error)?) {
         guard error == nil, let track else {
             setupComplete(state: .failed)
             return

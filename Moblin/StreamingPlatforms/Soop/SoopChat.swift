@@ -83,11 +83,11 @@ final class SoopChat: NSObject {
     private var model: Model
     private var channelName: String
     private var streamId: String
-    private var task: Task<Void, Error>?
+    private var task: Task<Void, any Error>?
     private var connected: Bool = false
     private var webSocket: URLSessionWebSocketTask
     private var emotes: Emotes
-    private var keepAliveTask: Task<Void, Error>?
+    private var keepAliveTask: Task<Void, any Error>?
 
     init(model: Model, channelName: String, streamId: String) {
         self.model = model

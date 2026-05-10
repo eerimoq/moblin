@@ -156,7 +156,7 @@ private struct GetLiveChat: Codable {
 final class YouTubeLiveChat: NSObject {
     private var model: Model
     private var videoId: String
-    private var task: Task<Void, Error>?
+    private var task: Task<Void, any Error>?
     private var emotes: Emotes
     private var settings: SettingsStreamChat
     private var connected: Bool = false
