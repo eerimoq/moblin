@@ -420,16 +420,14 @@ Roughly the steps to setup Moblin's developement environment.
 
 3. Done!
 
-## Modify Web remote control CSS files
+## Web remote control frontend
 
-1. Install tool.
+It's built with SolidJS.
 
-    `brew install tailwindcss`
+1. Modify files in `WebRemoteControlFrontend/`.
 
-2. Modify `Moblin/RemoteControl/Web/css/app.input.css`.
+2. Build to update files in `Moblin/RemoteControl/Web/*`.
 
-3. Generate `Moblin/RemoteControl/Web/css/app.css`.
+   `make build-web-remote-control-frontend`
 
-   `make generate-web-remote-control-css`
-
-4. Done!
+3. Done!
