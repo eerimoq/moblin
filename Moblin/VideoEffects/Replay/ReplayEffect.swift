@@ -27,7 +27,7 @@ private enum StingersState {
     case end
 }
 
-final class ReplayEffect: VideoEffect {
+final class ReplayEffect: VideoEffect, @unchecked Sendable {
     private var playbackCompleted = false
     private let speed: Double
     private let reader: ReplayEffectReplayReader

@@ -2,7 +2,7 @@ import Collections
 import CoreImage
 import MapKit
 
-final class MapEffect: VideoEffect {
+final class MapEffect: VideoEffect, @unchecked Sendable {
     private var mapSnapshot: CIImage?
     private let widget: SettingsWidgetMap
     private var sceneWidget: SettingsSceneWidget?

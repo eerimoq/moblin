@@ -149,7 +149,7 @@ private struct TextView: View {
     }
 }
 
-final class TextEffect: VideoEffect {
+final class TextEffect: VideoEffect, @unchecked Sendable {
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
     private var nextUpdateTime = ContinuousClock.now

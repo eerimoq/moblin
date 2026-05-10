@@ -1,6 +1,6 @@
 import CoreImage
 
-final class GrayScaleEffect: VideoEffect {
+final class GrayScaleEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.colorMonochrome()
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

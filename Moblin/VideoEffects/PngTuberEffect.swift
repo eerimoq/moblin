@@ -85,7 +85,7 @@ private class PngTuberFile {
     }
 }
 
-final class PngTuberEffect: VideoEffect {
+final class PngTuberEffect: VideoEffect, @unchecked Sendable {
     private let model: PngTuberFile?
     private var videoSourceId: UUID = .init()
     private var sceneWidget: SettingsSceneWidget?

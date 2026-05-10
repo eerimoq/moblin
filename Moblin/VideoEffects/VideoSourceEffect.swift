@@ -28,7 +28,7 @@ class PositionInterpolator {
     }
 }
 
-final class VideoSourceEffect: VideoEffect {
+final class VideoSourceEffect: VideoEffect, @unchecked Sendable {
     private var videoSourceId: UUID = .init()
     private var sceneWidget: SettingsSceneWidget?
     private var settings: VideoSourceEffectSettings = .init()

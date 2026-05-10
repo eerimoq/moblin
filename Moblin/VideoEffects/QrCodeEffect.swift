@@ -1,6 +1,6 @@
 import CoreImage
 
-final class QrCodeEffect: VideoEffect {
+final class QrCodeEffect: VideoEffect, @unchecked Sendable {
     private let widget: SettingsWidgetQrCode
     private var newSceneWidget: SettingsSceneWidget?
     private var sceneWidget: SettingsSceneWidget?

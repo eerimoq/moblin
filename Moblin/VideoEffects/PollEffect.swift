@@ -30,7 +30,7 @@ private struct PollView: View {
     }
 }
 
-final class PollEffect: VideoEffect {
+final class PollEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
     private var renderer: ImageRenderer<PollView>?

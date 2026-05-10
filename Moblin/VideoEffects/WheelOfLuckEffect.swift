@@ -53,7 +53,7 @@ private struct ArrowView: View {
     }
 }
 
-final class WheelOfLuckEffect: VideoEffect {
+final class WheelOfLuckEffect: VideoEffect, @unchecked Sendable {
     private var wheel: CIImage?
     private var arrow: CIImage?
     private var startPresentationTimeStamp: Double = .infinity

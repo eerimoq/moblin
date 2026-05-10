@@ -1,6 +1,6 @@
 import CoreImage
 
-final class OpacityEffect: VideoEffect {
+final class OpacityEffect: VideoEffect, @unchecked Sendable {
     private var opacity: Double = 1.0
 
     func setOpacity(opacity: Double) {

@@ -23,7 +23,7 @@ private func minimalBoundingRectWithAspect(width: CGFloat, height: CGFloat, angl
     return CGSize(width: scaleWidth, height: scaleHeight)
 }
 
-final class FixedHorizonEffect: VideoEffect {
+final class FixedHorizonEffect: VideoEffect, @unchecked Sendable {
     private var targetAngle: Double?
     private var currentAngle = 0.0
     // Sometimes crashes on Mac in deinit() if instantiated here.

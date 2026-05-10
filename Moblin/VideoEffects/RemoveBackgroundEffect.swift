@@ -1,4 +1,4 @@
-import CoreImage
+@preconcurrency import CoreImage
 
 private struct HsvColor {
     let hue: CGFloat
@@ -84,8 +84,8 @@ private func makeFilter(settings: FilterSettings) -> (any CIColorCubeWithColorSp
     return filter
 }
 
-final class RemoveBackgroundEffect: VideoEffect {
-    private var filter: CIColorCubeWithColorSpace?
+final class RemoveBackgroundEffect: VideoEffect, @unchecked Sendable {
+    private var filter: (any CIColorCubeWithColorSpace)?
     private var pendingSettings: FilterSettings?
     private var updating = false
 

@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 import CoreImage
 
@@ -9,7 +9,7 @@ private struct VideoImage {
 
 private let lockQueue = DispatchQueue(label: "com.eerimoq.alerts-effect")
 
-class AlertsEffectVideoReader {
+class AlertsEffectVideoReader: @unchecked Sendable {
     private var images: Deque<VideoImage> = []
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
@@ -64,6 +64,7 @@ class AlertsEffectVideoReader {
         guard let trackOutput else {
             return
         }
+        nonisolated(unsafe)
         var newImages: [VideoImage] = []
         for _ in 0 ... 10 {
             if let sampleBuffer = trackOutput.copyNextSampleBuffer(),

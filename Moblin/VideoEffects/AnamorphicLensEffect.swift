@@ -1,6 +1,6 @@
 import CoreImage
 
-final class AnamorphicLensEffect: VideoEffect {
+final class AnamorphicLensEffect: VideoEffect, @unchecked Sendable {
     private var settings: SettingsVideoEffectAnamorphicLens
 
     init(settings: SettingsVideoEffectAnamorphicLens) {

@@ -51,7 +51,7 @@ private struct BingoView: View {
     }
 }
 
-final class BingoCardEffect: VideoEffect {
+final class BingoCardEffect: VideoEffect, @unchecked Sendable {
     private let canvasSize: CGSize
     private var settings = SettingsWidgetBingoCard()
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())

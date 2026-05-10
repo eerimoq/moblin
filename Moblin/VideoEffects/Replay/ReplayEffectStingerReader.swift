@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 import CoreImage
 
@@ -8,7 +8,7 @@ enum ReplayEffectStingerReaderSetupState {
     case failed
 }
 
-class ReplayEffectStingerReader {
+class ReplayEffectStingerReader: @unchecked Sendable {
     private var images: Deque<ReplayImage> = []
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?

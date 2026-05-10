@@ -2,7 +2,7 @@ import SwiftUI
 import Vision
 import WebKit
 
-struct WidgetCrop {
+struct WidgetCrop: @unchecked Sendable {
     let crop: SettingsWidgetCrop
     let sceneWidget: SettingsSceneWidget
 }
@@ -38,7 +38,7 @@ private func addScript(_ configuration: WKWebViewConfiguration,
     ))
 }
 
-final class BrowserEffect: VideoEffect {
+final class BrowserEffect: VideoEffect, @unchecked Sendable {
     let webView: WKWebView
     private var snapshot: CIImage?
     let width: Double

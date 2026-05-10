@@ -18,7 +18,7 @@ struct ShapeEffectSettings {
     }
 }
 
-final class ShapeEffect: VideoEffect {
+final class ShapeEffect: VideoEffect, @unchecked Sendable {
     private var settings: ShapeEffectSettings = .init()
 
     func setSettings(settings: ShapeEffectSettings) {

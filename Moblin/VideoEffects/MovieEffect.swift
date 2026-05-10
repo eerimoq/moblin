@@ -1,6 +1,6 @@
 import CoreImage
 
-final class MovieEffect: VideoEffect {
+final class MovieEffect: VideoEffect, @unchecked Sendable {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         image
             .cropped(to: CGRect(x: 0,

@@ -1,7 +1,7 @@
 import Collections
 import CoreImage
 
-final class SnapshotEffect: VideoEffect {
+final class SnapshotEffect: VideoEffect, @unchecked Sendable {
     private var snapshots: Deque<CIImage> = []
     private var sceneWidget: SettingsSceneWidget?
     private var currentSnapshot: CIImage?

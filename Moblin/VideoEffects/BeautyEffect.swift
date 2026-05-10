@@ -1,7 +1,7 @@
 import MetalPetal
 import Vision
 
-final class BeautyEffect: VideoEffect {
+final class BeautyEffect: VideoEffect, @unchecked Sendable {
     private var smoothnessRadius: Float = 10.0
     private var smoothnessStrength: Float = 0.65
     private var shapePosition: Float = 0.5

@@ -37,7 +37,7 @@ private func transformPoint(
     return CGPoint(x: x, y: point.y * scale - offsetY)
 }
 
-final class DrawOnStreamEffect: VideoEffect {
+final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
 

@@ -1,6 +1,6 @@
 import CoreImage
 
-final class ImageEffect: VideoEffect {
+final class ImageEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
     private var originalImage: CIImage?
     private var sceneWidget: SettingsSceneWidget?

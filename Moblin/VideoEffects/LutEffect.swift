@@ -118,8 +118,8 @@ func lutEffectConvertLut(image: UIImage) throws -> (Float, Data) {
     return (Float(dimension), Data(bytes: originalCube, count: numberOutputOfComponents * 4))
 }
 
-final class LutEffect: VideoEffect {
-    private var filter: (CIFilter & CIColorCubeWithColorSpace)?
+final class LutEffect: VideoEffect, @unchecked Sendable {
+    private var filter: (any CIFilter & CIColorCubeWithColorSpace)?
 
     func setLut(
         lut: SettingsColorLut?,
@@ -212,6 +212,7 @@ final class LutEffect: VideoEffect {
             }
             sc3dLut.size = 64
         }
+        nonisolated(unsafe)
         let filter = try sc3dLut.ciFilter()
         processorPipelineQueue.async {
             self.filter = filter
@@ -220,6 +221,7 @@ final class LutEffect: VideoEffect {
 
     private func loadImageLut(image: UIImage) throws {
         let (dimension, data) = try lutEffectConvertLut(image: image)
+        nonisolated(unsafe)
         let filter = CIFilter.colorCubeWithColorSpace()
         filter.cubeData = data
         filter.cubeDimension = dimension

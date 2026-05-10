@@ -17,7 +17,7 @@ enum FaceEffectPrivacyMode {
     case faceImage(CIImage)
 }
 
-final class FaceEffect: VideoEffect {
+final class FaceEffect: VideoEffect, @unchecked Sendable {
     private var settings = FaceEffectSettings()
     let moblinImage: CIImage?
 

@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 import SDWebImage
 
@@ -13,8 +13,8 @@ struct AlertsEffectGifImage {
     let timeOffset: Double
 }
 
-struct AlertsEffectPlayer {
-    let images: AlertsEffectImages
+struct AlertsEffectPlayer: @unchecked Sendable {
+    let images: any AlertsEffectImages
     let soundUrl: URL?
 }
 

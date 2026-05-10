@@ -232,7 +232,7 @@ private struct ChatView: View {
     }
 }
 
-final class ChatEffect: VideoEffect {
+final class ChatEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var chatImage: CIImage?
     private var renderer: ImageRenderer<ChatView>?

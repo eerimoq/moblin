@@ -1,6 +1,6 @@
 import CoreImage
 
-final class TwinEffect: VideoEffect {
+final class TwinEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

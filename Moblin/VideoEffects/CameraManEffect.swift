@@ -1,6 +1,6 @@
 import CoreImage
 
-final class CameraManEffect: VideoEffect {
+final class CameraManEffect: VideoEffect, @unchecked Sendable {
     private var startTime: Double?
     private let minScale: Double = 0.92
     private let xSpeed: Double = 0.27
