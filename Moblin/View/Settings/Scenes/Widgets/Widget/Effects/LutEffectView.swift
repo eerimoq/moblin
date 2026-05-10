@@ -15,7 +15,7 @@ struct LutEffectView: View {
         }
         model.getWidgetLutEffect(widget, effect)?
             .setLut(lut: lut, imageStorage: model.imageStorage) { title, subTitle in
-                model.makeErrorToastMain(title: title, subTitle: subTitle)
+                model.makeErrorToast(title: title, subTitle: subTitle)
             }
     }
 
