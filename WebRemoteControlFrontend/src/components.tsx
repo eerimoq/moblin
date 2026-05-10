@@ -43,31 +43,27 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <Show when={open()}>
-      <dialog
-        open
-        class="backdrop:bg-black/60 rounded-xl p-0"
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          margin: 0,
-        }}
+      <div
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+        onClick={onCancel}
       >
-        <form method="dialog" class="bg-zinc-900 text-zinc-100">
-          <div class="p-2">
-            <p class="text-zinc-300">{message()}</p>
+        <div
+          class="relative w-full max-w-sm mx-4 rounded-2xl border border-zinc-600 bg-zinc-800 shadow-2xl shadow-black/60 ring-1 ring-white/10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div class="px-6 pt-6 pb-4">
+            <p class="text-base text-zinc-100 leading-relaxed">{message()}</p>
           </div>
-          <div class="bg-zinc-800/60 px-4 py-3 sm:px-5 flex items-center justify-end gap-2">
-            <Button class={`py-1.5 rounded-md ${okTextClass}`} onClick={onOk}>
+          <div class="flex items-center justify-end gap-2 border-t border-zinc-700 px-6 py-4">
+            <Button class={`py-2 px-4 rounded-lg font-medium hover:bg-zinc-600 ${okTextClass}`} onClick={onOk}>
               {okLabel}
             </Button>
-            <Button class="py-1.5 rounded-md text-zinc-300" onClick={onCancel}>
+            <Button class="py-2 px-4 rounded-lg font-medium text-zinc-300 border border-zinc-600 hover:bg-zinc-700" onClick={onCancel}>
               Cancel
             </Button>
           </div>
-        </form>
-      </dialog>
+        </div>
+      </div>
     </Show>
   );
 }
