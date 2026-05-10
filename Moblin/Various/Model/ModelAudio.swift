@@ -450,24 +450,6 @@ extension Model {
         makeToast(title: String(localized: "Switched mic to '\(name)'"))
     }
 
-    private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {
-        guard let orientation else {
-            return nil
-        }
-        switch orientation {
-        case .bottom:
-            return .bottom
-        case .front:
-            return .front
-        case .back:
-            return .back
-        case .top:
-            return .top
-        default:
-            return nil
-        }
-    }
-
     private func listMics() -> [SettingsMicsMic] {
         var mics: [SettingsMicsMic] = []
         listMediaPlayerMics(&mics)
@@ -490,62 +472,12 @@ extension Model {
         listWhipMics(&mics)
         listWhepMics(&mics)
         processorControlQueue.async {
-            self.listAudioSessionMics(&mics)
+            listAudioSessionMics(&mics)
+            let mics = mics
             DispatchQueue.main.async {
                 onCompleted(mics)
             }
         }
-    }
-
-    private func listAudioSessionMics(_ mics: inout [SettingsMicsMic]) {
-        for inputPort in AVAudioSession.sharedInstance().availableInputs ?? [] {
-            if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
-                addAudioSessionBuiltinMics(&mics, inputPort, dataSources)
-            } else {
-                addAudioSessionExternalMics(&mics, inputPort)
-            }
-        }
-    }
-
-    private func addAudioSessionBuiltinMics(_ mics: inout [SettingsMicsMic],
-                                            _ inputPort: AVAudioSessionPortDescription,
-                                            _ dataSources: [AVAudioSessionDataSourceDescription])
-    {
-        var builtInMics: [SettingsMicsMic] = []
-        for dataSource in dataSources {
-            var name: String
-            var builtInOrientation: SettingsMic?
-            if inputPort.portType == .builtInMic {
-                name = dataSource.dataSourceName
-                builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
-            } else {
-                name = "\(inputPort.portName): \(dataSource.dataSourceName)"
-            }
-            let mic = SettingsMicsMic()
-            mic.name = name
-            mic.inputUid = inputPort.uid
-            mic.dataSourceId = dataSource.dataSourceID.intValue
-            mic.builtInOrientation = builtInOrientation
-            mic.connected = true
-            switch mic.builtInOrientation {
-            case .bottom, .top:
-                builtInMics.append(mic)
-            default:
-                builtInMics.insert(mic, at: 0)
-            }
-        }
-        mics += builtInMics
-    }
-
-    private func addAudioSessionExternalMics(
-        _ mics: inout [SettingsMicsMic],
-        _ inputPort: AVAudioSessionPortDescription
-    ) {
-        let mic = SettingsMicsMic()
-        mic.name = inputPort.portName
-        mic.inputUid = inputPort.uid
-        mic.connected = true
-        mics.append(mic)
     }
 
     private func listRtmpMics(_ mics: inout [SettingsMicsMic]) {
@@ -779,5 +711,74 @@ private func setBuiltInMicAudioMode(
         }
     } else {
         try dataSource.setPreferredPolarPattern(.none)
+    }
+}
+
+private func listAudioSessionMics(_ mics: inout [SettingsMicsMic]) {
+    for inputPort in AVAudioSession.sharedInstance().availableInputs ?? [] {
+        if let dataSources = inputPort.dataSources, !dataSources.isEmpty {
+            addAudioSessionBuiltinMics(&mics, inputPort, dataSources)
+        } else {
+            addAudioSessionExternalMics(&mics, inputPort)
+        }
+    }
+}
+
+private func addAudioSessionBuiltinMics(_ mics: inout [SettingsMicsMic],
+                                        _ inputPort: AVAudioSessionPortDescription,
+                                        _ dataSources: [AVAudioSessionDataSourceDescription])
+{
+    var builtInMics: [SettingsMicsMic] = []
+    for dataSource in dataSources {
+        var name: String
+        var builtInOrientation: SettingsMic?
+        if inputPort.portType == .builtInMic {
+            name = dataSource.dataSourceName
+            builtInOrientation = getBuiltInMicOrientation(orientation: dataSource.orientation)
+        } else {
+            name = "\(inputPort.portName): \(dataSource.dataSourceName)"
+        }
+        let mic = SettingsMicsMic()
+        mic.name = name
+        mic.inputUid = inputPort.uid
+        mic.dataSourceId = dataSource.dataSourceID.intValue
+        mic.builtInOrientation = builtInOrientation
+        mic.connected = true
+        switch mic.builtInOrientation {
+        case .bottom, .top:
+            builtInMics.append(mic)
+        default:
+            builtInMics.insert(mic, at: 0)
+        }
+    }
+    mics += builtInMics
+}
+
+private func addAudioSessionExternalMics(
+    _ mics: inout [SettingsMicsMic],
+    _ inputPort: AVAudioSessionPortDescription
+) {
+    let mic = SettingsMicsMic()
+    mic.name = inputPort.portName
+    mic.inputUid = inputPort.uid
+    mic.connected = true
+    mics.append(mic)
+}
+
+private func getBuiltInMicOrientation(orientation: AVAudioSession.Orientation?) -> SettingsMic? {
+    guard let orientation else {
+        return nil
+    }
+    switch orientation {
+    case .bottom:
+        return .bottom
+    case .front:
+        return .front
+    case .back:
+        return .back
+    case .top:
+        return .top
+    default:
+        return nil
     }
 }

@@ -26,8 +26,8 @@ private struct QuickButtonStealthModeView: View {
                 imageItem?.loadTransferable(type: Data.self) { result in
                     switch result {
                     case let .success(data?):
-                        model.saveStealthModeImage(data: data)
                         DispatchQueue.main.async {
+                            model.saveStealthModeImage(data: data)
                             stealthMode.image = UIImage(data: data)
                         }
                     default:
