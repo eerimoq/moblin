@@ -185,7 +185,7 @@ class VideoEncoder {
     }
 
     private func updateAdaptiveResolution(settings: VideoEncoderSettings) -> CMVideoDimensions {
-        var videoSize: CMVideoDimensions? = if settings.adaptiveResolution {
+        let videoSize: CMVideoDimensions? = if settings.adaptiveResolution {
             getVideoSize(settings: settings)
         } else {
             settings.videoSize

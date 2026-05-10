@@ -1677,7 +1677,7 @@ final class VideoUnit: NSObject {
     ) -> [DetectionJob] {
         var detectionJobs: [DetectionJob] = []
         for videoSourceId in faceDetectionVideoSourceIds.union(textDetectionVideoSourceIds) {
-            var videoSourceImageBuffer: CVPixelBuffer? = if videoSourceId == sceneVideoSourceId {
+            let videoSourceImageBuffer: CVPixelBuffer? = if videoSourceId == sceneVideoSourceId {
                 imageBuffer
             } else {
                 bufferedVideos[videoSourceId]?

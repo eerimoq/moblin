@@ -67,7 +67,7 @@ class DjiStartStreamingMessagePayload {
     }
 
     func encode() -> Data {
-        var resolutionByte: UInt8 = switch resolution {
+        let resolutionByte: UInt8 = switch resolution {
         case .r480p:
             0x47
         case .r720p:
@@ -75,7 +75,7 @@ class DjiStartStreamingMessagePayload {
         case .r1080p:
             0x0A
         }
-        var fpsByte: UInt8 = switch fps {
+        let fpsByte: UInt8 = switch fps {
         case 25:
             2
         case 30:
@@ -83,7 +83,7 @@ class DjiStartStreamingMessagePayload {
         default:
             0
         }
-        var byte1: UInt8 = if oa5 {
+        let byte1: UInt8 = if oa5 {
             0x2A
         } else {
             0x2E
@@ -131,7 +131,7 @@ class DjiConfigureMessagePayload {
     }
 
     func encode() -> Data {
-        var imageStabilizationByte: UInt8 = switch imageStabilization {
+        let imageStabilizationByte: UInt8 = switch imageStabilization {
         case .off:
             0
         case .rockSteady:
@@ -143,7 +143,7 @@ class DjiConfigureMessagePayload {
         case .horizonSteady:
             2
         }
-        var byte1: UInt8 = if oa5 {
+        let byte1: UInt8 = if oa5 {
             0x1A
         } else {
             0x08

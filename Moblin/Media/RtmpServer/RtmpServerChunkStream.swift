@@ -582,7 +582,7 @@ class RtmpServerChunkStream {
                                        compositionTime: Int32,
                                        dataOffset: Int) -> CMSampleBuffer?
     {
-        var duration: Int64 = if videoTimestamp == -1 {
+        let duration: Int64 = if videoTimestamp == -1 {
             0
         } else {
             Int64((mediaTimestamp - mediaTimestampZero) - videoTimestamp)

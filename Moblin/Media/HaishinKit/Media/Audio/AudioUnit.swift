@@ -283,7 +283,7 @@ final class AudioUnit: NSObject {
         guard let bufferedBuiltinAudio, bufferedBuiltinAudio.latency > 0 else {
             return nil
         }
-        var sampleBufferCopy: CMSampleBuffer = if bufferedBuiltinAudio.numberOfBuffers() > 4 {
+        let sampleBufferCopy: CMSampleBuffer = if bufferedBuiltinAudio.numberOfBuffers() > 4 {
             sampleBuffer.deepCopyAudioSampleBuffer() ?? sampleBuffer
         } else {
             sampleBuffer

@@ -2293,7 +2293,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 }
             }
         }
-        var message: String = if messages.isEmpty {
+        let message: String = if messages.isEmpty {
             noValue
         } else {
             messages.joined(separator: ", ")
@@ -2655,7 +2655,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        var device: AVCaptureDevice? = if zoom.backX < 1.0 {
+        let device: AVCaptureDevice? = if zoom.backX < 1.0 {
             AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
         } else if zoom.backX < x {
             AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
@@ -2686,7 +2686,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        var device: AVCaptureDevice? = if zoom.backX < x {
+        let device: AVCaptureDevice? = if zoom.backX < x {
             AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
         } else {
             AVCaptureDevice.default(.builtInTelephotoCamera, for: .video, position: .back)
@@ -2715,7 +2715,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         let scale = bestDevice.getZoomFactorScale(hasUltraWideCamera: hasUltraWideBackCamera)
         let x = (Float(truncating: lastZoomFactor) * scale).rounded()
-        var device: AVCaptureDevice? = if zoom.backX < x {
+        let device: AVCaptureDevice? = if zoom.backX < x {
             AVCaptureDevice.default(.builtInUltraWideCamera, for: .video, position: .back)
         } else {
             AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)

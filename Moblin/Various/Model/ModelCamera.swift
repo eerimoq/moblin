@@ -788,7 +788,7 @@ extension Model {
     }
 
     func setColorSpace() {
-        var colorSpace: AVCaptureColorSpace = switch database.color.space {
+        let colorSpace: AVCaptureColorSpace = switch database.color.space {
         case .srgb:
             .sRGB
         case .p3D65:

@@ -140,7 +140,7 @@ extension Model {
         djiDeviceWrapper: DjiDeviceWrapper,
         device: SettingsDjiDevice
     ) {
-        var rtmpUrl: String? = switch device.rtmpUrlType {
+        let rtmpUrl: String? = switch device.rtmpUrlType {
         case .server:
             device.serverRtmpUrl
         case .custom:

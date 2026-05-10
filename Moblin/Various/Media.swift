@@ -997,7 +997,7 @@ final class Media: NSObject {
                                               videoBitrate: Int?,
                                               keyFrameInterval: Int?) -> [String: Any]
     {
-        var codec = switch videoCodec {
+        let codec = switch videoCodec {
         case .h264avc:
             AVVideoCodecType.h264
         case .h265hevc:

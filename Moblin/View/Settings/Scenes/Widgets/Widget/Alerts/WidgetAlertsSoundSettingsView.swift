@@ -3,7 +3,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 private func loadSound(model: Model, soundId: UUID) -> AudioPlayer? {
-    var url: URL? = if let bundledSound = model.database.alertsMediaGallery.bundledSounds
+    let url: URL? = if let bundledSound = model.database.alertsMediaGallery.bundledSounds
         .first(where: { $0.id == soundId })
     {
         Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")

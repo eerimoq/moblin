@@ -370,7 +370,7 @@ extension Model {
         } else {
             stream.resolution
         }
-        var captureSize: CGSize = switch resolution {
+        let captureSize: CGSize = switch resolution {
         case .r4032x3024:
             .init(width: 4032, height: 3024)
         case .r3840x2160:
