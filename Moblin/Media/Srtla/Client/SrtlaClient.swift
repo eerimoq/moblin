@@ -28,7 +28,7 @@ class SrtlaNetworkInterfaces {
 
 let srtlaClientQueue = DispatchQueue(label: "com.eerimoq.srtla-client")
 
-class SrtlaClient: NSObject {
+class SrtlaClient: NSObject, @unchecked Sendable {
     private var remoteConnections: [RemoteConnection] = []
     private var localListener: LocalListener?
     private weak var delegate: (any SrtlaDelegate)?

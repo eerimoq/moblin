@@ -19,7 +19,7 @@ private class SendHook {
     }
 }
 
-class SrtStreamOfficial {
+class SrtStreamOfficial: @unchecked Sendable {
     private let writer: MpegTsWriter
     private var sendHook = SendHook(closure: nil)
     private var options: [SrtSocketOption: String] = [:]

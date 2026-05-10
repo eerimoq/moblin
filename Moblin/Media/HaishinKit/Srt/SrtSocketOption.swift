@@ -1,7 +1,7 @@
 import Foundation
 import libsrt
 
-private let enummapTranstype: [String: Any] = [
+private nonisolated(unsafe) let enummapTranstype: [String: Any] = [
     "live": SRTT_LIVE,
     "file": SRTT_FILE,
 ]

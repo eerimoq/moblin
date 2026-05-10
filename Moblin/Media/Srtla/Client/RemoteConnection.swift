@@ -35,7 +35,7 @@ protocol RemoteConnectionDelegate: AnyObject {
     func remoteConnectionOnSrtlaAck(sn: UInt32)
 }
 
-class RemoteConnection {
+class RemoteConnection: @unchecked Sendable {
     var type: NWInterface.InterfaceType?
     private var connection: NWConnection? {
         didSet {

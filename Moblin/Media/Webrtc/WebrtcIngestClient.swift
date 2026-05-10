@@ -48,7 +48,7 @@ private enum VideoCodec {
     }
 }
 
-final class WebrtcIngestClient {
+final class WebrtcIngestClient: @unchecked Sendable {
     let streamId: UUID
     private let latency: Double
     private let syncTimestamps: Bool

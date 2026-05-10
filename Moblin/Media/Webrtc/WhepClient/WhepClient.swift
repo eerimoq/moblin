@@ -16,7 +16,7 @@ protocol WhepClientDelegate: AnyObject {
     )
 }
 
-class WhepClient {
+class WhepClient: @unchecked Sendable {
     let streamId: UUID
     private let url: URL
     private let latency: Double

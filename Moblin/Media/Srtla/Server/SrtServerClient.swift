@@ -19,6 +19,7 @@ class SrtServerClient {
 
     func run(clientSocket: Int32) {
         let packetSize = 2048
+        nonisolated(unsafe)
         var packet = Data(count: packetSize)
         while server?.running == true {
             // No idea why, but OBS does not work without this.

@@ -1,6 +1,6 @@
 import Foundation
 import Network
-import Rist
+@preconcurrency import Rist
 
 private let ristQueue = DispatchQueue(label: "com.eerimoq.Moblin.rist")
 private let weigthTargetBitrate: UInt32 = 10_000_000
@@ -98,7 +98,7 @@ protocol RistStreamDelegate: AnyObject {
     func ristStreamRelayDestinationAddress(address: String, port: UInt16)
 }
 
-class RistStream {
+class RistStream: @unchecked Sendable {
     private var context: RistSenderContext?
     private var peers: [RistRemotePeer] = []
     private let writer: MpegTsWriter

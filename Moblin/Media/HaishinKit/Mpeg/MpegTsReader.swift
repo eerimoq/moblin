@@ -6,7 +6,7 @@ protocol MpegTsReaderDelegate: AnyObject {
     func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double)
 }
 
-class MpegTsReader {
+class MpegTsReader: @unchecked Sendable {
     private var programAssociationTable = MpegTsProgramAssociation()
     private var programMappingTable: [UInt16: MpegTsProgramMapping] = [:]
     private var programs: [UInt16: UInt16] = [:]

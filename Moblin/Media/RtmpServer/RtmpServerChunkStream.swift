@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 import Network
 
-class RtmpServerChunkStream {
+class RtmpServerChunkStream: @unchecked Sendable {
     private var messageBody: Data
     var messageLength: Int
     var messageTypeId: UInt8

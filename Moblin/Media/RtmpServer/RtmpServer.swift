@@ -18,7 +18,7 @@ protocol RtmpServerDelegate: AnyObject {
     )
 }
 
-class RtmpServer {
+class RtmpServer: @unchecked Sendable {
     private var listener: NWListener?
     private var clients: [RtmpServerClient]
     let delegate: any RtmpServerDelegate

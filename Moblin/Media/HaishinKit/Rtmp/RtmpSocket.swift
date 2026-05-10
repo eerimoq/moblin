@@ -16,7 +16,7 @@ protocol RtmpSocketDelegate: AnyObject {
     func socketPost(data: AsObject)
 }
 
-final class RtmpSocket {
+final class RtmpSocket: @unchecked Sendable {
     var maximumChunkSizeFromServer = RtmpChunk.defaultSize
     var maximumChunkSizeToServer = RtmpChunk.defaultSize
     private var readyState: RtmpSocketReadyState = .uninitialized

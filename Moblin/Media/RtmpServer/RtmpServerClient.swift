@@ -27,7 +27,7 @@ enum RtmpServerClientConnectionState {
     case connected
 }
 
-class RtmpServerClient {
+class RtmpServerClient: @unchecked Sendable {
     private var connection: NWConnection
     private var state: ClientState
     private var chunkState: ChunkState

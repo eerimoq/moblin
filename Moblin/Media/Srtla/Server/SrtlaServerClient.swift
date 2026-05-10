@@ -58,7 +58,7 @@ private class NakPacket {
     }
 }
 
-class SrtlaServerClient {
+class SrtlaServerClient: @unchecked Sendable {
     private var localSrtServerConnection: NWConnection?
     private var connections: [SrtlaServerClientConnection] = []
     private var latestConnection: SrtlaServerClientConnection?

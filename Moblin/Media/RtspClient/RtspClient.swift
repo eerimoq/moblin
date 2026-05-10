@@ -567,7 +567,7 @@ private class Rtp {
     }
 }
 
-class RtspClient {
+class RtspClient: @unchecked Sendable {
     private var state: State
     private var transport: RtspTransport?
     private let cameraId: UUID

@@ -1,7 +1,7 @@
 import AVFoundation
 import libsrt
 
-class SrtServer {
+class SrtServer: @unchecked Sendable {
     weak var srtlaServer: SrtlaServer?
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
     var acceptedStreamId: Atomic<String> = .init("")

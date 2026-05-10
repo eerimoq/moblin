@@ -22,7 +22,7 @@ protocol SrtlaServerDelegate: AnyObject {
     )
 }
 
-class SrtlaServer {
+class SrtlaServer: @unchecked Sendable {
     private var listener: NWListener?
     private var clients: [Data: SrtlaServerClient] = [:]
     let settings: SettingsSrtlaServer
@@ -77,6 +77,7 @@ class SrtlaServer {
     }
 
     func updateStats() -> BitrateStatsInstant {
+        nonisolated(unsafe)
         var result: BitrateStatsInstant?
         bitrateStats.mutate {
             result = $0.update()

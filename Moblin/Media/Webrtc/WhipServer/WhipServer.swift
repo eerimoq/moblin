@@ -15,7 +15,7 @@ protocol WhipServerDelegate: AnyObject {
     )
 }
 
-class WhipServer {
+class WhipServer: @unchecked Sendable {
     private var server: HttpServer?
     private var clients: [UUID: WhipServerClient] = [:]
     private let delegate: any WhipServerDelegate

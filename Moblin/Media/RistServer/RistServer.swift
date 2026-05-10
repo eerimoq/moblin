@@ -16,7 +16,7 @@ protocol RistServerDelegate: AnyObject {
 
 let ristServerQueue = DispatchQueue(label: "com.eerimoq.rist-server")
 
-class RistServer {
+class RistServer: @unchecked Sendable {
     private var port: UInt16
     private var context: RistReceiverContext?
     private var clientsByVirtualDestinationPort: [UInt16: RistServerClient] = [:]

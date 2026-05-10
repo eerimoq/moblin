@@ -29,7 +29,7 @@ struct AsXmlDocument: Equatable {
     let data: String
 }
 
-enum AsValue: Equatable {
+enum AsValue: Equatable, @unchecked Sendable {
     case number(Double)
     case bool(Bool)
     case string(String)

@@ -1,6 +1,6 @@
 import Foundation
 
-final class RtmpDataMessage: RtmpMessage {
+final class RtmpDataMessage: RtmpMessage, @unchecked Sendable {
     var handlerName: String = ""
     var arguments: [AsValue] = []
 

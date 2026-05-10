@@ -29,7 +29,7 @@ class RtspTransport {
     func handleSetupTransportResponse(_: String) throws {}
 }
 
-class RtspTransportRtpRtspTcp: RtspTransport {
+class RtspTransportRtpRtspTcp: RtspTransport, @unchecked Sendable {
     private let channelStart = "$".first!.asciiValue!
     private var connection: NWConnection?
     private var rtpChannel: UInt8?
@@ -176,7 +176,7 @@ class RtspTransportRtpRtspTcp: RtspTransport {
     }
 }
 
-class RtspTransportRtpUdp: RtspTransport {
+class RtspTransportRtpUdp: RtspTransport, @unchecked Sendable {
     private var host: String = ""
     private var port: Int = 554
     private var rtspConnection: NWConnection?

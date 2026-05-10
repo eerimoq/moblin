@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 
 let extendedVideoHeader: UInt8 = 0b1000_0000
 
@@ -58,7 +58,7 @@ private enum State {
     case publishing
 }
 
-class RtmpStream {
+class RtmpStream: @unchecked Sendable {
     let info = RtmpStreamInfo()
     var streamId: UInt32 = 0
     private var state: State = .initialized

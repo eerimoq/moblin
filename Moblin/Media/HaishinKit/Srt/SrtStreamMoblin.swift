@@ -7,7 +7,7 @@ protocol SrtStreamMoblinDelegate: AnyObject {
     func srtStreamMoblinOutput(packet: Data)
 }
 
-class SrtStreamMoblin {
+class SrtStreamMoblin: @unchecked Sendable {
     private let writer: MpegTsWriter
     private let delegate: any SrtStreamMoblinDelegate
     private let processor: Processor

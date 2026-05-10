@@ -174,8 +174,8 @@ private enum HandshakeType: UInt32 {
     case induction = 0x0000_0001
 }
 
-class SrtSender {
-    weak var delegate: SrtSenderDelegate?
+class SrtSender: @unchecked Sendable {
+    weak var delegate: (any SrtSenderDelegate)?
     private var nextSequenceNumber: UInt32 = .random(in: 0 ..< 10000)
     private var peerDestinationSrtSocketId: UInt32 = 0
     private let streamId: String?

@@ -45,7 +45,7 @@ private func makeSanJoseAuthCommand(_ url: URL, description: String) -> String {
     return command
 }
 
-class RtmpConnection {
+class RtmpConnection: @unchecked Sendable {
     private var uri: URL?
     private(set) var socket: RtmpSocket
     weak var stream: RtmpStream?

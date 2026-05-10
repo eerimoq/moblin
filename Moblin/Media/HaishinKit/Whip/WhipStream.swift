@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import DataChannel
 import libdatachannel
 
@@ -417,7 +417,7 @@ protocol WhipStreamDelegate: AnyObject {
                            completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
 }
 
-final class WhipStream {
+final class WhipStream: @unchecked Sendable {
     private let processor: Processor
     private weak var delegate: (any WhipStreamDelegate)?
     private var peerConnection: PeerConnection?
@@ -734,12 +734,16 @@ final class WhipStream {
 
 extension WhipStream: PeerConnectionDelegate {
     fileprivate func peerConnectionOnConnectionStateChanged(state: DataChannelConnectionState) {
+        nonisolated(unsafe)
+        let state = state
         whipQueue.async {
             self.handleConnectionStateChanged(state: state)
         }
     }
 
     fileprivate func peerConnectionOnGatheringStateChanged(state: DataChannelGatheringState) {
+        nonisolated(unsafe)
+        let state = state
         whipQueue.async {
             self.handleGatheringStateChanged(state: state)
         }
