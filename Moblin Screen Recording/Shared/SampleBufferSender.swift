@@ -150,8 +150,8 @@ protocol VideoEncoderDelegate: AnyObject {
     func videoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer)
 }
 
-class VideoEncoder {
-    weak var delegate: VideoEncoderDelegate?
+class VideoEncoder: @unchecked Sendable {
+    weak var delegate: (any VideoEncoderDelegate)?
     private var session: VTCompressionSession?
     private var formatDescription: CMFormatDescription? {
         didSet {

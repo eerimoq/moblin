@@ -45,7 +45,7 @@ class PreviewView: UIView {
         layer.videoGravity = videoGravity
     }
 
-    func enqueue(_ sampleBuffer: CMSampleBuffer?, isFirstAfterAttach: Bool) {
+    nonisolated func enqueue(_ sampleBuffer: CMSampleBuffer?, isFirstAfterAttach: Bool) {
         guard let sampleBuffer else {
             return
         }

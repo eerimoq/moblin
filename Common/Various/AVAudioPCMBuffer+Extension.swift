@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 
 extension AVAudioPCMBuffer {
     final func makeSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {

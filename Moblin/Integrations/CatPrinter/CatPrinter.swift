@@ -1,9 +1,9 @@
 // Based on https://github.com/rbaron/catprinter
 // MIT License
 
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 import CoreImage
 import Foundation
 
@@ -74,7 +74,7 @@ private let catPrinterServices = [
     CBUUID(string: "0000af30-0000-1000-8000-00805f9b34fb"),
 ]
 
-let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
+nonisolated(unsafe) let catPrinterScanner = BluetoothScanner(serviceIds: catPrinterServices)
 
 private let printCharacteristicId = CBUUID(string: "AE01")
 private let notifyCharacteristicId = CBUUID(string: "AE02")
@@ -86,7 +86,7 @@ private struct PrintJob {
     let printMode: CatPrinterPrintMode
 }
 
-class CatPrinter: NSObject {
+class CatPrinter: NSObject, @unchecked Sendable {
     private var state: CatPrinterState = .disconnected
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?

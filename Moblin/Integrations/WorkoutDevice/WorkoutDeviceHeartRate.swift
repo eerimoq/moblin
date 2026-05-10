@@ -1,4 +1,4 @@
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 
 let workoutDeviceHeartRateServiceId = CBUUID(string: "180D")
 let workoutDeviceHeartRateMeasurementCharacteristicId = CBUUID(string: "2A37")

@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 
 private let deltaLimit = 0.03

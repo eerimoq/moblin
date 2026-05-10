@@ -1,5 +1,5 @@
 import Collections
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 import Foundation
 
 let workoutDeviceCyclingPowerServiceId = CBUUID(string: "1818")

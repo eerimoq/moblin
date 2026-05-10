@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 
 enum FlvAacPacketType: UInt8 {
     case seq = 0

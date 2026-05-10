@@ -37,7 +37,7 @@ protocol SampleBufferReceiverDelegate: AnyObject {
 
 private let lockQueue = DispatchQueue(label: "com.eerimoq.Moblin.SampleBufferReceiver")
 
-class SampleBufferReceiver {
+class SampleBufferReceiver: @unchecked Sendable {
     private var listenerFd: Int32 = -1
     weak var delegate: (any SampleBufferReceiverDelegate)?
     private var formatDescription: CMVideoFormatDescription?

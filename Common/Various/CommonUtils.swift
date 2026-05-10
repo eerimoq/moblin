@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import AVKit
 import MapKit
 import Network
@@ -659,8 +659,8 @@ class RgbColor: Codable, Equatable {
             .opacity
     }
 
-    static let white = RgbColor(red: 255, green: 255, blue: 255)
-    static let black = RgbColor(red: 0, green: 0, blue: 0)
+    nonisolated(unsafe) static let white = RgbColor(red: 255, green: 255, blue: 255)
+    nonisolated(unsafe) static let black = RgbColor(red: 0, green: 0, blue: 0)
 
     var red: Int = 0
     var green: Int = 0

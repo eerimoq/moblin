@@ -3,7 +3,7 @@ import Foundation
 
 private let dispatchQueue = DispatchQueue(label: "com.eerimoq.workout-device")
 
-let workoutDeviceScanner = BluetoothScanner(serviceIds: [
+nonisolated(unsafe) let workoutDeviceScanner = BluetoothScanner(serviceIds: [
     workoutDeviceHeartRateServiceId,
     workoutDeviceCyclingPowerServiceId,
     workoutDeviceRunningServiceId,
@@ -23,7 +23,7 @@ enum WorkoutDeviceState {
     case connected
 }
 
-class WorkoutDevice: NSObject {
+class WorkoutDevice: NSObject, @unchecked Sendable {
     private var state: WorkoutDeviceState = .disconnected
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?

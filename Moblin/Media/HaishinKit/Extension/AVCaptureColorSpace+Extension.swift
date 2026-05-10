@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency public import AVFoundation
 import Foundation
 
 extension AVCaptureColorSpace: @retroactive CustomStringConvertible {

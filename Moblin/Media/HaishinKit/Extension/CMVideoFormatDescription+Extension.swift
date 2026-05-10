@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 
 extension CMVideoFormatDescription {
     static func create(imageBuffer: CVImageBuffer) -> CMVideoFormatDescription? {

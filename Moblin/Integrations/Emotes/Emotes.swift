@@ -15,7 +15,7 @@ class Emote {
     }
 }
 
-class Emotes {
+class Emotes: @unchecked Sendable {
     private var emotes: [String: Emote] = [:]
     private var task: Task<Void, any Error>?
     private var ready: Bool = false

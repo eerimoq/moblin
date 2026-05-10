@@ -40,7 +40,7 @@ enum VideoEffectDetectionsMode {
     case interval(UUID?, Double)
 }
 
-class VideoEffect: NSObject {
+class VideoEffect: NSObject, @unchecked Sendable {
     var effects: [VideoEffect] = []
 
     func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {

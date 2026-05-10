@@ -1,7 +1,7 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import VideoToolbox
 
-var numberOfFailedEncodings = 0
+nonisolated(unsafe) var numberOfFailedEncodings = 0
 
 protocol VideoEncoderDelegate: AnyObject {
     func videoEncoderOutputFormat(_ encoder: VideoEncoder, _ formatDescription: CMFormatDescription)
@@ -14,7 +14,7 @@ protocol VideoEncoderControlDelegate: AnyObject {
     func videoEncoderControlResolutionChanged(_ encoder: VideoEncoder, resolution: CGSize)
 }
 
-class VideoEncoder {
+class VideoEncoder: @unchecked Sendable {
     var settings: Atomic<VideoEncoderSettings> = .init(.init()) {
         didSet {
             lockQueue.async {

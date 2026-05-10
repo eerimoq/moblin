@@ -1,4 +1,4 @@
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 import Foundation
 
 // The actual values do not matter.

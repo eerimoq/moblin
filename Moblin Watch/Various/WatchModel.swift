@@ -77,7 +77,7 @@ struct WatchChatPost: Identifiable {
     }
 }
 
-class WatchModel: NSObject, ObservableObject {
+class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     let chat = Chat()
     let preview = Preview()
     let control = Control()
@@ -526,9 +526,10 @@ extension WatchModel: WCSessionDelegate {
     ) {}
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {
-        guard let (type, data) = WatchMessageToWatch.unpack(message) else {
+        guard let (type, value) = WatchMessageToWatch.unpack(message) else {
             return
         }
+        nonisolated(unsafe) let data = value
         DispatchQueue.main.async {
             self.numberOfMessagesReceived += 1
             do {

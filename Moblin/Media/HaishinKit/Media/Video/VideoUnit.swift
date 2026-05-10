@@ -4,7 +4,7 @@ import CoreImage
 import MetalPetal
 import SwiftUI
 import VideoToolbox
-import Vision
+@preconcurrency import Vision
 
 private let deltaLimit = 0.03
 
@@ -15,7 +15,7 @@ struct DetectionJob {
     let detectText: Bool
 }
 
-struct VideoUnitAttachParams {
+struct VideoUnitAttachParams: @unchecked Sendable {
     let devices: CaptureDevices
     let builtinDelay: Double
     let cameraPreviewLayer: AVCaptureVideoPreviewLayer
@@ -81,8 +81,8 @@ struct CaptureDevices {
     var devices: [CaptureDevice]
 }
 
-var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
-var allowVideoRangePixelFormat = false
+nonisolated(unsafe) var pixelFormatType = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+nonisolated(unsafe) var allowVideoRangePixelFormat = false
 private let detectionsQueue = DispatchQueue(
     label: "com.haishinkit.HaishinKit.Detections",
     attributes: .concurrent
@@ -115,7 +115,7 @@ struct Detections {
     let text: [TextDetection]
 }
 
-private class DetectionsCompletion {
+private class DetectionsCompletion: @unchecked Sendable {
     let sequenceNumber: UInt64
     let sampleBuffer: CMSampleBuffer
     let isFirstAfterAttach: Bool
@@ -159,7 +159,7 @@ private func makeCaptureSession() -> AVCaptureSession {
     return session
 }
 
-final class VideoUnit: NSObject {
+final class VideoUnit: NSObject, @unchecked Sendable {
     static let defaultFrameRate: Float64 = 30
     private var device: AVCaptureDevice?
     private var captureSessionDevices: [CaptureSessionDevice] = []
@@ -1339,7 +1339,9 @@ final class VideoUnit: NSObject {
     }
 
     private func detectObjects(detectionJob: DetectionJob, completion: DetectionsCompletion) {
+        nonisolated(unsafe)
         var faceDetections: [VNFaceObservation] = []
+        nonisolated(unsafe)
         var textDetections: [TextDetection] = []
         var faceLandmarksRequest: VNDetectFaceLandmarksRequest?
         var textRequest: VNRecognizeTextRequest?

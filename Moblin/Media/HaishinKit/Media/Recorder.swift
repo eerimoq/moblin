@@ -14,7 +14,7 @@ protocol RecorderDelegate: AnyObject {
 
 private let fileWriterQueue = DispatchQueue(label: "com.eerimoq.recorder")
 
-class Recorder: NSObject {
+final class Recorder: NSObject, @unchecked Sendable {
     private var replay = false
     private var audioOutputSettings: [String: Any] = [:]
     private var videoOutputSettings: [String: Any] = [:]
@@ -41,6 +41,10 @@ class Recorder: NSObject {
         audioOutputSettings: [String: Any],
         videoOutputSettings: [String: Any]
     ) {
+        nonisolated(unsafe)
+        let audioOutputSettings = audioOutputSettings
+        nonisolated(unsafe)
+        let videoOutputSettings = videoOutputSettings
         processorPipelineQueue.async {
             self.startRunningInternal(
                 url: url,

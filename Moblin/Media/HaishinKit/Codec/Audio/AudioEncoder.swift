@@ -1,12 +1,12 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 
 protocol AudioEncoderDelegate: AnyObject {
     func audioEncoderOutputFormat(_ format: AVAudioFormat)
     func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime)
 }
 
-class AudioEncoder {
-    weak var delegate: AudioEncoderDelegate?
+class AudioEncoder: @unchecked Sendable {
+    weak var delegate: (any AudioEncoderDelegate)?
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var ringBuffer: AudioEncoderRingBuffer?
