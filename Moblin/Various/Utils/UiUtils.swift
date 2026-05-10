@@ -14,6 +14,7 @@ extension UIImage {
     }
 }
 
+@MainActor
 func getOrientation() -> UIDeviceOrientation {
     let orientation = UIDevice.current.orientation
     if orientation != .unknown {
@@ -38,10 +39,12 @@ extension UIDevice {
     }
 }
 
+@MainActor
 func isPhone() -> Bool {
     UIDevice.current.userInterfaceIdiom == .phone
 }
 
+@MainActor
 func isPad() -> Bool {
     UIDevice.current.userInterfaceIdiom == .pad
 }
@@ -60,6 +63,7 @@ extension ImageRenderer {
     }
 }
 
+@MainActor
 func getWindow() -> UIWindow? {
     guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
         return nil
@@ -67,10 +71,12 @@ func getWindow() -> UIWindow? {
     return scene.windows.first
 }
 
+@MainActor
 func getRootViewController() -> UIViewController? {
     getWindow()?.rootViewController
 }
 
+@MainActor
 func screenScale() -> CGFloat {
     if isMac() {
         2

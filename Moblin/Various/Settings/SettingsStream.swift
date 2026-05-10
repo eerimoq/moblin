@@ -266,7 +266,7 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
     }
 }
 
-class SettingsStreamSrtConnectionPriorities: Codable {
+class SettingsStreamSrtConnectionPriorities: Codable, @unchecked Sendable {
     var enabled: Bool = false
     var priorities: [SettingsStreamSrtConnectionPriority] = [
         SettingsStreamSrtConnectionPriority(name: "Cellular"),
@@ -652,7 +652,7 @@ class SettingsStreamWhip: Codable, ObservableObject {
     }
 }
 
-class SettingsStreamChat: Codable {
+class SettingsStreamChat: Codable, @unchecked Sendable {
     var bttvEmotes: Bool = false
     var ffzEmotes: Bool = false
     var seventvEmotes: Bool = false
@@ -1093,7 +1093,7 @@ class SettingsKickAlerts: Codable, ObservableObject {
     }
 }
 
-class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named {
+class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named, @unchecked Sendable {
     static let defaultRealtimeIrlBaseUrl = "https://rtirl.com/api"
     static let defaultResolution: SettingsStreamResolution = .r1920x1080
     static let defaultFps: Int = 30

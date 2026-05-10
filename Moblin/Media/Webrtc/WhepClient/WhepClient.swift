@@ -141,7 +141,7 @@ class WhepClient: @unchecked Sendable {
         }.resume()
     }
 
-    private func handleOfferResponse(data: Data?, response: URLResponse?, error: Error?) {
+    private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
         guard error == nil,
               let response = response?.http,
               response.isSuccessful,

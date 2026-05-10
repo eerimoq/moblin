@@ -164,7 +164,7 @@ class ChatPostState: ObservableObject {
     }
 }
 
-struct ChatPost: Identifiable, Equatable {
+struct ChatPost: Identifiable, Equatable, @unchecked Sendable {
     static func == (lhs: ChatPost, rhs: ChatPost) -> Bool {
         lhs.id == rhs.id
     }

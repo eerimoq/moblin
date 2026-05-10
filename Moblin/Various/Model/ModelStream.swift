@@ -877,7 +877,7 @@ extension Model {
     }
 }
 
-extension Model: MediaDelegate {
+extension Model: @preconcurrency MediaDelegate {
     func mediaOnSrtConnected() {
         handleSrtConnected()
     }

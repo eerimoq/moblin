@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 
 protocol MediaPlayerDelegate: AnyObject {
     func mediaPlayerFileLoaded(playerId: UUID, name: String)
@@ -11,7 +11,7 @@ protocol MediaPlayerDelegate: AnyObject {
 private let mediaPlayerQueue = DispatchQueue(label: "com.eerimoq.moblin.media-player")
 let mediaPlayerLatency = 0.5
 
-class MediaPlayer {
+class MediaPlayer: @unchecked Sendable {
     private var asset: AVAsset?
     private var reader: AVAssetReader?
     private var videoTrackOutput: AVAssetReaderTrackOutput?

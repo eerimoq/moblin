@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 class WatchSettingsChat: Codable, ObservableObject {

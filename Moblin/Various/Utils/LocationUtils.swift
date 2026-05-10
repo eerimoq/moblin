@@ -1,4 +1,4 @@
-import MapKit
+public import MapKit
 
 extension SettingsPrivacyRegion {
     func contains(coordinate: CLLocationCoordinate2D) -> Bool {

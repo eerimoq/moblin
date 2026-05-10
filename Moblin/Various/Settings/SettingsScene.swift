@@ -65,8 +65,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     }
 }
 
-private let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
-private let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
+private nonisolated(unsafe) let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
+private nonisolated(unsafe) let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
 
 class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
     var from: RgbColor = defaultFromColor
@@ -206,7 +206,7 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
     }
 }
 
-class SettingsVideoEffectAnamorphicLens: Codable, ObservableObject {
+class SettingsVideoEffectAnamorphicLens: Codable, ObservableObject, @unchecked Sendable {
     @Published var scale: Double = 1.33
 
     init() {}
@@ -331,6 +331,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         opacity = container.decode(.opacity, SettingsVideoEffectOpacity.self, .init())
     }
 
+    @MainActor
     func getEffect(model: Model) -> VideoEffect {
         switch type {
         case .grayScale:
@@ -359,7 +360,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             let effect = LutEffect()
             if let id = lut.lut, let lut = model.getLogLutById(id: id) {
                 effect.setLut(lut: lut.clone(), imageStorage: model.imageStorage) { title, subTitle in
-                    model.makeErrorToastMain(title: title, subTitle: subTitle)
+                    model.makeErrorToast(title: title, subTitle: subTitle)
                 }
             }
             return effect
@@ -928,7 +929,7 @@ enum SettingsWidgetAlertsAlertMediaType: String, CaseIterable, Codable {
     }
 }
 
-class SettingsWidgetAlertsAlert: Codable, ObservableObject {
+class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable {
     var id: UUID = .init()
     var enabled: Bool = true
     @Published var mediaType: SettingsWidgetAlertsAlertMediaType = .gifAndSound
@@ -1942,8 +1943,8 @@ struct SettingsBingoCardSquare: Codable, Identifiable {
 }
 
 class SettingsWidgetBingoCard: Codable, ObservableObject {
-    static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
-    static let baseForegroundColor = RgbColor.white
+    nonisolated(unsafe) static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
+    nonisolated(unsafe) static let baseForegroundColor = RgbColor.white
     var backgroundColor: RgbColor = baseBackgroundColor
     @Published var backgroundColorColor: Color = baseBackgroundColor.color()
     var foregroundColor: RgbColor = baseForegroundColor
@@ -2007,7 +2008,7 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
     }
 }
 
-class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named {
+class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named, @unchecked Sendable {
     static let baseName = String(localized: "My widget")
     @Published var name: String
     var id: UUID = .init()
@@ -2146,6 +2147,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named 
         }
     }
 
+    @MainActor
     func getEffects(model: Model) -> [VideoEffect] {
         effects.filter(\.enabled).map { $0.getEffect(model: model) }
     }
@@ -2239,7 +2241,7 @@ struct SettingsWidgetLayout: Equatable {
     }
 }
 
-class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject {
+class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @unchecked Sendable {
     static func == (lhs: SettingsSceneWidget, rhs: SettingsSceneWidget) -> Bool {
         lhs.id == rhs.id
     }
@@ -2771,7 +2773,7 @@ class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
     }
 }
 
-class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObject {
+class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObject, @unchecked Sendable {
     static let defaultScores = Array(repeating: -1, count: 18)
     var id: UUID = .init()
     @Published var name: String = "Player"
@@ -3059,10 +3061,10 @@ class SettingsWidgetScoreboardClock: Codable, ObservableObject {
 class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     static let baseName = String(localized: "🇸🇪 Moblin")
     static let baseTitle = "⚽️"
-    static let baseHomeTextColor: RgbColor = .white
-    static let baseHomeBackgroundColor: RgbColor = .init(red: 11, green: 16, blue: 172)
-    static let baseAwayTextColor: RgbColor = .white
-    static let baseAwayBackgroundColor: RgbColor = .init(red: 220, green: 38, blue: 38)
+    nonisolated(unsafe) static let baseHomeTextColor: RgbColor = .white
+    nonisolated(unsafe) static let baseHomeBackgroundColor: RgbColor = .init(red: 11, green: 16, blue: 172)
+    nonisolated(unsafe) static let baseAwayTextColor: RgbColor = .white
+    nonisolated(unsafe) static let baseAwayBackgroundColor: RgbColor = .init(red: 220, green: 38, blue: 38)
     @Published var home: SettingsWidgetModularScoreboardTeam = createHomeTeam()
     @Published var away: SettingsWidgetModularScoreboardTeam = createAwayTeam()
     @Published var title: String = baseTitle
@@ -3166,10 +3168,11 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     }
 }
 
-class SettingsWidgetScoreboard: Codable, ObservableObject {
-    static let baseTextColor = RgbColor.white
+class SettingsWidgetScoreboard: Codable, ObservableObject, @unchecked Sendable {
+    nonisolated(unsafe) static let baseTextColor = RgbColor.white
+    nonisolated(unsafe)
     static let basePrimaryBackgroundColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC)
-    static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
+    nonisolated(unsafe) static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
     @Published var sport: SettingsWidgetScoreboardSport = .generic
     var textColor = baseTextColor
     @Published var textColorColor: Color = .clear

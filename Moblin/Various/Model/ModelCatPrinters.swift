@@ -246,7 +246,7 @@ extension Model {
     }
 }
 
-extension Model: CatPrinterDelegate {
+extension Model: @preconcurrency CatPrinterDelegate {
     func catPrinterState(_ catPrinter: CatPrinter, state: CatPrinterState) {
         DispatchQueue.main.async {
             guard let device = self.getCatPrinterSettings(catPrinter: catPrinter) else {

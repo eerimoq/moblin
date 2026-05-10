@@ -177,7 +177,7 @@ class HttpServerResponse {
     }
 }
 
-private class HttpServerConnection {
+private class HttpServerConnection: @unchecked Sendable {
     private let connection: NWConnection
     private weak var server: HttpServer?
     private var parser = HttpRequestParser()
@@ -331,7 +331,7 @@ class HttpServerRoute {
     }
 }
 
-class HttpServer {
+class HttpServer: @unchecked Sendable {
     private let queue: DispatchQueue
     private let routes: [HttpServerRoute]
     private var listener: NWListener?

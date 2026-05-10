@@ -1,8 +1,8 @@
 import CoreLocation
 import Foundation
 
-class GeographyManager {
-    private var task: Task<Void, Error>?
+class GeographyManager: @unchecked Sendable {
+    private var task: Task<Void, any Error>?
     private var newLocation: CLLocation?
     private var location: CLLocation?
     private var placemark: CLPlacemark?

@@ -339,7 +339,7 @@ extension Model {
     }
 }
 
-extension Model: KickPusherDelegate {
+extension Model: @preconcurrency KickPusherDelegate {
     func kickPusherMakeErrorToast(title: String, subTitle: String?) {
         makeErrorToast(title: title, subTitle: subTitle)
     }

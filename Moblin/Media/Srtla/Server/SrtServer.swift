@@ -126,7 +126,8 @@ class SrtServer: @unchecked Sendable {
                 }
                 let srtServer: SrtServer = Unmanaged.fromOpaque(server)
                     .takeUnretainedValue()
-                srtServer.acceptedStreamId.mutate { $0 = String(cString: streamIdIn) }
+                let streamId = String(cString: streamIdIn)
+                srtServer.acceptedStreamId.mutate { $0 = streamId }
                 return 0
             },
             server

@@ -96,7 +96,7 @@ enum SettingsDjiDeviceModel: String, Codable {
     }
 }
 
-var djiDeviceBitrates: [UInt32] = [
+let djiDeviceBitrates: [UInt32] = [
     20_000_000,
     16_000_000,
     12_000_000,
@@ -107,7 +107,7 @@ var djiDeviceBitrates: [UInt32] = [
     2_000_000,
 ]
 
-var djiDeviceFpss: [Int] = [25, 30]
+let djiDeviceFpss: [Int] = [25, 30]
 
 class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My device")

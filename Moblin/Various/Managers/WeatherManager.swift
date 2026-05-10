@@ -2,7 +2,7 @@ import CoreLocation
 import Foundation
 import WeatherKit
 
-class WeatherManager {
+class WeatherManager: @unchecked Sendable {
     let weatherService = WeatherService()
     private var task: Task<Void, any Error>?
     private var location: CLLocation?

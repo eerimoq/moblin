@@ -48,7 +48,7 @@ protocol MediaDelegate: AnyObject {
     func mediaError(error: any Error)
 }
 
-final class Media: NSObject {
+final class Media: NSObject, @unchecked Sendable {
     private var rtmpStreams: [RtmpStream] = []
     private var rtmpStream: RtmpStream? {
         rtmpStreams.first

@@ -25,4 +25,4 @@ class EasyLogger {
     }
 }
 
-let logger = EasyLogger()
+nonisolated(unsafe) let logger = EasyLogger()

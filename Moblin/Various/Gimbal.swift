@@ -3,6 +3,7 @@ import Foundation
 import Spatial
 
 @available(iOS 18.0, *)
+@MainActor
 class Gimbal {
     private let model: Model
     private var task: Task<Void, Never>?

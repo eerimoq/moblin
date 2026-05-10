@@ -1,3 +1,4 @@
+@MainActor
 func controlBarScrollTargetBehavior(model: Model, containerWidth: Double, targetPosition: Double) -> Double {
     let spacing = 8.0
     let originalPagePosition = Double(model.quickButtons.page - 1) * (containerWidth + spacing)

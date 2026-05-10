@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 private let rtmpExamples: [(LocalizedStringKey, String)] = [
     ("Twitch", "rtmp://arn03.contribute.live-video.net/app/live_123321_sdfopjfwjfpawjefpjawef"),
     ("YouTube", "rtmp://a.rtmp.youtube.com/live2/1bk2-0d03-9683-7k65-e4d3"),
@@ -8,6 +9,7 @@ private let rtmpExamples: [(LocalizedStringKey, String)] = [
     ("RTMP server", "rtmp://foobar.org:3321/app/5678"),
 ]
 
+@MainActor
 private let srtExamples: [(LocalizedStringKey, String)] = [
     ("OBS Media Source (SRT)", "srt://134.20.342.12:5000"),
     ("BELABOX cloud SRTLA", "srtla://uk.srt.belabox.net:5000?streamid=NtlPUqXGFV4Bcm448wgc4fUuLdvDB3"),
@@ -16,6 +18,7 @@ private let srtExamples: [(LocalizedStringKey, String)] = [
     ("SRT Live Server (SLS)", "srt://120.12.32.12:4000?streamid=publish/live/feed"),
 ]
 
+@MainActor
 private let whipExamples: [(LocalizedStringKey, String)] = [
     ("MediaMTX WHIP", "whip://120.12.32.12:8889/mystream/whip"),
     ("MESHCAST.IO WHIP", "whips://de1.meshcast.io/whip/mystream"),

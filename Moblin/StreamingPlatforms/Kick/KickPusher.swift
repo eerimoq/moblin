@@ -220,7 +220,7 @@ private func decodeKicksGiftedEvent(data: String) throws -> KickPusherKicksGifte
     try JSONDecoder().decode(KickPusherKicksGiftedEvent.self, from: data.utf8Data)
 }
 
-private var url =
+private let url =
     URL(
         string: "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false"
     )!
@@ -248,7 +248,7 @@ protocol KickPusherDelegate: AnyObject {
     func kickPusherKicksGifted(event: KickPusherKicksGiftedEvent)
 }
 
-final class KickPusher: NSObject {
+final class KickPusher: NSObject, @unchecked Sendable {
     private var channelName: String
     private var channelId: String
     private var chatroomChannelId: String

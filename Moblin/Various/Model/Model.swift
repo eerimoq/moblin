@@ -248,6 +248,7 @@ class StatusTopRight: ObservableObject {
     @Published var isLowPowerMode = false
 }
 
+@MainActor
 class Toast: ObservableObject {
     @Published var showingToast = false
     @Published var toast = AlertToast(type: .regular, title: "") {
@@ -357,6 +358,7 @@ class CameraLevel: ObservableObject {
     }
 }
 
+@MainActor
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @AppStorage("enterForegroundCount") var enterForegroundCount = 0
     @Published var showingPanel: ShowingPanel = .none
@@ -404,9 +406,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     var activeBufferedVideoIds: Set<UUID> = []
-    var wiFiAwareSenderTask: Task<Void, Error>?
-    var wiFiAwareReceiverTask: Task<Void, Error>?
-    let youTube = YouTube()
+    var wiFiAwareSenderTask: Task<Void, any Error>?
+    var wiFiAwareReceiverTask: Task<Void, any Error>?
+    nonisolated(unsafe) let youTube = YouTube()
     let webBrowserState = WebBrowserState()
     let cameraLevel = CameraLevel()
     let orientation = Orientation()
@@ -454,7 +456,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var streaming = false
     var inServiceBackground = false
     #if !targetEnvironment(macCatalyst)
-    var liveActivity: Activity<LiveActivityAttributes>?
+    nonisolated(unsafe) var liveActivity: Activity<LiveActivityAttributes>?
     #endif
     var streamStartTime: ContinuousClock.Instant?
     var isRecorderRecording = false
@@ -522,7 +524,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var isMuteOn = false
     var log: Deque<LogEntry> = []
     var remoteControlAssistantLog: Deque<LogEntry> = []
-    var imageStorage = ImageStorage()
+    nonisolated let imageStorage = ImageStorage()
     var replayTransitionsStorage = ReplayTransitionsStorage()
     var logsStorage = LogsStorage()
     var mediaStorage = MediaPlayerStorage()
@@ -988,6 +990,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     func setup() {
+        battery.level = Double(UIDevice.current.batteryLevel)
         bluetoothCentralManger = CBCentralManager(delegate: self, queue: .main)
         deleteTrash()
         cameraPreviewLayer = cameraPreviewView.previewLayer
@@ -3261,7 +3264,7 @@ extension Model {
     }
 }
 
-extension Model: AlertsEffectDelegate {
+extension Model: @preconcurrency AlertsEffectDelegate {
     func alertsMakeErrorToast(title: String) {
         makeErrorToast(title: title)
     }
@@ -3278,7 +3281,7 @@ extension Model: UIDocumentPickerDelegate {
     }
 }
 
-extension Model: FaxReceiverDelegate {
+extension Model: @preconcurrency FaxReceiverDelegate {
     func faxReceiverPrint(image: CIImage) {
         printAllCatPrinters(image: image)
     }

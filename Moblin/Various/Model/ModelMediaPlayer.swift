@@ -113,7 +113,7 @@ extension Model {
     }
 }
 
-extension Model: MediaPlayerDelegate {
+extension Model: @preconcurrency MediaPlayerDelegate {
     func mediaPlayerFileLoaded(playerId: UUID, name: String) {
         let name = "Media player: \(name)"
         let latency = mediaPlayerLatency

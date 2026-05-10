@@ -54,7 +54,7 @@ extension Model {
     }
 }
 
-extension Model: WorkoutDeviceDelegate {
+extension Model: @preconcurrency WorkoutDeviceDelegate {
     func workoutDeviceState(_ device: WorkoutDevice, state: WorkoutDeviceState) {
         DispatchQueue.main.async {
             guard let device = self.getWorkoutDeviceSettings(device: device) else {

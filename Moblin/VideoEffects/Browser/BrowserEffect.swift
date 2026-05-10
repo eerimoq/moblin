@@ -27,6 +27,7 @@ private func videoScript() -> String {
     loadStringResource(name: "video", ext: "js")
 }
 
+@MainActor
 private func addScript(_ configuration: WKWebViewConfiguration,
                        _ script: String,
                        _ injectionTime: WKUserScriptInjectionTime)
@@ -58,6 +59,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
     private var suspended = false
     private let snapshotConfiguration: WKSnapshotConfiguration
 
+    @MainActor
     init(
         url: URL,
         styleSheet: String,
@@ -104,6 +106,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         mode != .audioOnly && snapshot != nil
     }
 
+    @MainActor
     func sendChatMessage(post: ChatPost) {
         server.sendChatMessage(post: post)
     }
@@ -112,6 +115,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         url.host() ?? "?"
     }
 
+    @MainActor
     var progress: Int {
         Int(100 * webView.estimatedProgress)
     }
@@ -120,10 +124,12 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         stopTakeSnapshots()
     }
 
+    @MainActor
     func reload() {
         webView.reload()
     }
 
+    @MainActor
     func setSceneWidget(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
         stopTakeSnapshots()
         if sceneWidget != nil || !crops.isEmpty {
@@ -158,6 +164,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         return image
     }
 
+    @MainActor
     private func setSceneWidgetEnabled(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
         processorPipelineQueue.async {
             self.sceneWidget = sceneWidget
@@ -173,6 +180,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         startTakeSnapshots()
     }
 
+    @MainActor
     private func setSceneWidgetLoaded() {
         processorPipelineQueue.async {
             self.snapshot = nil
@@ -182,6 +190,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         isLoaded = false
     }
 
+    @MainActor
     private func startTakeSnapshots() {
         guard !stopped, mode == .periodicAudioAndVideo else {
             return
@@ -202,11 +211,13 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    @MainActor
     private func resumeTakeSnapshots() {
         suspended = false
         takeSnapshots(takeSnapshotTime: 0)
     }
 
+    @MainActor
     private func takeSnapshots(takeSnapshotTime: Double) {
         snapshotTimer.startSingleShot(timeout: max(1 / fps - takeSnapshotTime, 0.001)) { [weak self] in
             guard let self else {

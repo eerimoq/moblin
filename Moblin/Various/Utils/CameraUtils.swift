@@ -1,4 +1,4 @@
-import AVKit
+@preconcurrency import AVKit
 import CoreMotion
 
 extension AVCaptureDevice {

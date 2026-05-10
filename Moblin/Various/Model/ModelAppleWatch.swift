@@ -2,7 +2,7 @@ import SwiftUI
 import WatchConnectivity
 
 extension Model {
-    func isWatchReachable() -> Bool {
+    nonisolated func isWatchReachable() -> Bool {
         WCSession.default.activationState == .activated && WCSession.default.isReachable
     }
 
@@ -385,22 +385,22 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    func sessionDidBecomeInactive(_: WCSession) {
+    nonisolated func sessionDidBecomeInactive(_: WCSession) {
         logger.debug("watch: Session inactive")
     }
 
-    func sessionDidDeactivate(_: WCSession) {
+    nonisolated func sessionDidDeactivate(_: WCSession) {
         logger.debug("watch: Session deactive")
     }
 
-    func sessionReachabilityDidChange(_: WCSession) {
+    nonisolated func sessionReachabilityDidChange(_: WCSession) {
         logger.debug("watch: Reachability changed to \(isWatchReachable())")
         DispatchQueue.main.async {
             self.sendInitToWatch()
         }
     }
 
-    private func makePng(_ uiImage: UIImage) -> Data {
+    private nonisolated func makePng(_ uiImage: UIImage) -> Data {
         for height in [35.0, 25.0, 15.0] {
             guard let pngData = uiImage.resize(height: height).pngData() else {
                 return Data()
@@ -412,7 +412,7 @@ extension Model: WCSessionDelegate {
         return Data()
     }
 
-    private func handleGetImage(_ data: Any, _ replyHandler: @escaping ([String: Any]) -> Void) {
+    private nonisolated func handleGetImage(_ data: Any, _ replyHandler: @escaping ([String: Any]) -> Void) {
         guard let urlString = data as? String else {
             replyHandler(["data": Data()])
             return
@@ -438,7 +438,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSetIsLive(_ data: Any) {
+    private nonisolated func handleSetIsLive(_ data: Any) {
         guard let value = data as? Bool else {
             return
         }
@@ -455,7 +455,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSetIsRecording(_ data: Any) {
+    private nonisolated func handleSetIsRecording(_ data: Any) {
         guard let value = data as? Bool else {
             return
         }
@@ -472,7 +472,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSetIsMuted(_ data: Any) {
+    private nonisolated func handleSetIsMuted(_ data: Any) {
         guard let value = data as? Bool else {
             return
         }
@@ -485,7 +485,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSkipCurrentChatTextToSpeechMessage() {
+    private nonisolated func handleSkipCurrentChatTextToSpeechMessage() {
         DispatchQueue.main.async {
             if self.isWatchLocal() {
                 self.chatTextToSpeech.skipCurrentMessage()
@@ -493,7 +493,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSetZoomMessage(_ data: Any) {
+    private nonisolated func handleSetZoomMessage(_ data: Any) {
         guard let x = data as? Float else {
             return
         }
@@ -506,7 +506,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSetZoomPresetMessage(_ data: Any) {
+    private nonisolated func handleSetZoomPresetMessage(_ data: Any) {
         guard let data = data as? String else {
             return
         }
@@ -520,7 +520,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSetSceneMessage(_ data: Any) {
+    private nonisolated func handleSetSceneMessage(_ data: Any) {
         guard let data = data as? String else {
             return
         }
@@ -536,7 +536,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleUpdateWorkoutStats(_ data: Any) {
+    private nonisolated func handleUpdateWorkoutStats(_ data: Any) {
         guard let data = data as? Data else {
             return
         }
@@ -550,7 +550,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleUpdatePadelScoreboard(_ data: Any) {
+    private nonisolated func handleUpdatePadelScoreboard(_ data: Any) {
         guard let data = data as? Data else {
             return
         }
@@ -566,7 +566,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleUpdateGenericScoreboard(_ data: Any) {
+    private nonisolated func handleUpdateGenericScoreboard(_ data: Any) {
         guard let data = data as? Data else {
             return
         }
@@ -582,7 +582,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleCreateStreamMarker() {
+    private nonisolated func handleCreateStreamMarker() {
         DispatchQueue.main.async {
             if self.isWatchLocal() {
                 self.createStreamMarker()
@@ -590,7 +590,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleInstantReplay(_ data: Any) {
+    private nonisolated func handleInstantReplay(_ data: Any) {
         guard let data = data as? Data else {
             return
         }
@@ -607,7 +607,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    private func handleSaveReplay() {
+    private nonisolated func handleSaveReplay() {
         DispatchQueue.main.async {
             if self.isWatchLocal() {
                 _ = self.saveReplay()
@@ -617,7 +617,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    func session(
+    nonisolated func session(
         _: WCSession,
         didReceiveMessage message: [String: Any],
         replyHandler: @escaping ([String: Any]) -> Void
@@ -635,7 +635,7 @@ extension Model: WCSessionDelegate {
         }
     }
 
-    func session(_: WCSession, didReceiveMessage message: [String: Any]) {
+    nonisolated func session(_: WCSession, didReceiveMessage message: [String: Any]) {
         guard let (type, data) = WatchMessageFromWatch.unpack(message) else {
             logger.info("watch: Invalid message")
             return

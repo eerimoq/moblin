@@ -12,7 +12,7 @@ enum SettingsMic: String, Codable, CaseIterable {
     }
 }
 
-class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject {
+class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unchecked Sendable {
     static func == (lhs: SettingsMicsMic, rhs: SettingsMicsMic) -> Bool {
         lhs.inputUid == rhs.inputUid && lhs.dataSourceId == rhs.dataSourceId
     }

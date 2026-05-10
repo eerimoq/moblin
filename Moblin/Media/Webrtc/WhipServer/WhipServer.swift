@@ -57,7 +57,10 @@ class WhipServer: @unchecked Sendable {
         }
     }
 
-    func startClient(streamKey: String, sdpOffer: String, onCompleted: @escaping (String?) -> Void) {
+    func startClient(streamKey: String,
+                     sdpOffer: String,
+                     onCompleted: @escaping @MainActor (String?) -> Void)
+    {
         whipServerDispatchQueue.async {
             self.startClientInternal(streamKey: streamKey, sdpOffer: sdpOffer, onCompleted: onCompleted)
         }

@@ -21,6 +21,7 @@ private struct Response: Codable {
     let choices: [Choice]
 }
 
+@MainActor
 class OpenAi {
     private let url: URL
     private let apiKey: String

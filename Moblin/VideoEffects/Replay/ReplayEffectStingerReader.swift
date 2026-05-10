@@ -53,6 +53,7 @@ class ReplayEffectStingerReader: @unchecked Sendable {
         guard let trackOutput else {
             return
         }
+        nonisolated(unsafe)
         var newImages: [ReplayImage] = []
         for _ in 0 ... 10 {
             if let sampleBuffer = trackOutput.copyNextSampleBuffer(),

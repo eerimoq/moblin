@@ -53,8 +53,8 @@ class HttpResponseParser: HttpParser {
     }
 }
 
-private class InterfaceTypeHttpClient {
-    private static var interfaceTypes: Atomic<[NWInterface.InterfaceType]> = .init([
+private class InterfaceTypeHttpClient: @unchecked Sendable {
+    private nonisolated(unsafe) static var interfaceTypes: Atomic<[NWInterface.InterfaceType]> = .init([
         .cellular,
         .wifi,
         .wiredEthernet,
@@ -143,6 +143,7 @@ private class InterfaceTypeHttpClient {
         guard interfaceTypeIndex != 0 else {
             return
         }
+        nonisolated(unsafe)
         var interfaceTypes = interfaceTypes
         let interfaceType = interfaceTypes[0]
         interfaceTypes[0] = interfaceTypes[interfaceTypeIndex]

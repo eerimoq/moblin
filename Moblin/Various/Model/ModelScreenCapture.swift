@@ -94,7 +94,7 @@ extension Model {
     }
 }
 
-extension Model: SampleBufferReceiverDelegate {
+extension Model: @preconcurrency SampleBufferReceiverDelegate {
     func senderConnected() {
         DispatchQueue.main.async {
             self.handleScreenCaptureStarted(latency: screenRecordingLatency)

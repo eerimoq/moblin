@@ -203,7 +203,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var lowFpsImageLatest: Double = 0.0
     private var lowFpsImageFrameNumber: UInt64 = 0
     private var takeSnapshotAge: Float = 0.0
-    private var takeSnapshotComplete: ((UIImage, CIImage, CIImage) -> Void)?
+    private var takeSnapshotComplete: (@MainActor (UIImage, CIImage, CIImage) -> Void)?
     private var takeSnapshotSampleBuffers: Deque<CMSampleBuffer> = []
     private var cleanRecordings = false
     private var cleanSnapshots = false
@@ -405,7 +405,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void) {
         processorPipelineQueue.async {
             self.takeSnapshotAge = age
             self.takeSnapshotComplete = onComplete
@@ -1578,9 +1578,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                               _ sampleBuffers: Deque<CMSampleBuffer>,
                               _ presentationTimeStamp: Double,
                               _ age: Float,
-                              _ onComplete: @escaping (UIImage, CIImage, CIImage) -> Void)
+                              _ onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void)
     {
-        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { imageBuffer in
+        findBestSnapshot(sampleBuffer, sampleBuffers, presentationTimeStamp, age) { @MainActor imageBuffer in
             guard let imageBuffer else {
                 return
             }
@@ -2001,8 +2001,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         guard cameraControlsEnabled, let device else {
             return
         }
+        let displayVideoZoomFactorMultiplier = device.displayVideoZoomFactorMultiplier
         let zoomSlider = AVCaptureSystemZoomSlider(device: device) { [weak self] zoomFactor in
-            let x = Float(device.displayVideoZoomFactorMultiplier * zoomFactor)
+            let x = Float(displayVideoZoomFactorMultiplier * zoomFactor)
             self?.processor?.delegate.streamSetZoomX(x: x)
         }
         if session.canAddControl(zoomSlider) {

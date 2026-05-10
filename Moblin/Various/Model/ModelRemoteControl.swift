@@ -629,7 +629,7 @@ extension Model {
     }
 }
 
-extension Model: RemoteControlStreamerDelegate {
+extension Model: @preconcurrency RemoteControlStreamerDelegate {
     func remoteControlStreamerConnected() {
         useRemoteControlForChatAndEvents = database.remoteControl.streamer.reliableChatAndEvents
         let subTitle: String?
@@ -918,7 +918,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 }
 
-extension Model: RemoteControlAssistantDelegate {
+extension Model: @preconcurrency RemoteControlAssistantDelegate {
     func remoteControlAssistantConnected() {
         makeToast(title: String(localized: "Remote control streamer connected"))
         remoteControlAssistantStreamerState.filters = [:]
@@ -1054,7 +1054,7 @@ extension Model: RemoteControlAssistantDelegate {
     }
 }
 
-extension Model: RemoteControlWebDelegate {
+extension Model: @preconcurrency RemoteControlWebDelegate {
     func remoteControlWebConnected() {
         remoteControlWeb?.stateChanged(state: createRemoteControlStateChanged())
         remoteControlWeb?.sendGolfScoreboardUpdate(data: getGolfScoreboardForRemoteControl())

@@ -18,6 +18,7 @@ private class Cache {
     }
 }
 
+@MainActor
 private let cache = Cache()
 
 struct CacheAsyncImage<Content: View, Content2: View>: View {

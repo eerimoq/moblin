@@ -61,7 +61,7 @@ extension Model {
     }
 }
 
-extension Model: RtspClientDelegate {
+extension Model: @preconcurrency RtspClientDelegate {
     func rtspClientErrorToast(title: String) {
         makeErrorToastMain(title: title)
     }

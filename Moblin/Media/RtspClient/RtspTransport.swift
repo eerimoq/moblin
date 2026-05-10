@@ -162,7 +162,7 @@ class RtspTransportRtpRtspTcp: RtspTransport, @unchecked Sendable {
         }
     }
 
-    private func receive(size: Int, onComplete: @escaping (Data) throws -> Void) {
+    private func receive(size: Int, onComplete: @escaping @Sendable (Data) throws -> Void) {
         connection?.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
             guard let data else {
                 return
@@ -378,7 +378,7 @@ class RtspTransportRtpUdp: RtspTransport, @unchecked Sendable {
         }
     }
 
-    private func receiveRtsp(size: Int, onComplete: @escaping (Data) throws -> Void) {
+    private func receiveRtsp(size: Int, onComplete: @escaping @Sendable (Data) throws -> Void) {
         rtspConnection?
             .receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
                 guard let data else {

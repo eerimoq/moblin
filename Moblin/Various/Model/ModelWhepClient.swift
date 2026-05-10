@@ -52,7 +52,7 @@ extension Model {
     }
 }
 
-extension Model: WhepClientDelegate {
+extension Model: @preconcurrency WhepClientDelegate {
     func whepClientOnPublishStart(streamId: UUID) {
         DispatchQueue.main.async {
             guard let stream = self.getWhepStream(id: streamId) else {

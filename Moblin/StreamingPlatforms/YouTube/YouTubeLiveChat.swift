@@ -153,7 +153,7 @@ private struct GetLiveChat: Codable {
     let continuationContents: ContinuationContents
 }
 
-final class YouTubeLiveChat: NSObject {
+final class YouTubeLiveChat: NSObject, @unchecked Sendable {
     private var model: Model
     private var videoId: String
     private var task: Task<Void, any Error>?

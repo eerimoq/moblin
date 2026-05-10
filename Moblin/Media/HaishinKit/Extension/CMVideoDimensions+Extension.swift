@@ -1,4 +1,4 @@
-import AVFoundation
+public import AVFoundation
 
 extension CMVideoDimensions: @retroactive Equatable {
     public static func == (lhs: CMVideoDimensions, rhs: CMVideoDimensions) -> Bool {

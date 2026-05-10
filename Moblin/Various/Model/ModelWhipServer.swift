@@ -105,7 +105,7 @@ extension Model {
     }
 }
 
-extension Model: WhipServerDelegate {
+extension Model: @preconcurrency WhipServerDelegate {
     func whipServerOnPublishStart(streamId: UUID) {
         handleWhipServerPublishStart(streamId: streamId)
     }

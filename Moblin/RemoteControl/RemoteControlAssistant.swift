@@ -19,7 +19,7 @@ private struct RemoteControlRequestResponse {
     let onError: (String) -> Void
 }
 
-class RemoteControlAssistant: NSObject {
+class RemoteControlAssistant: NSObject, @unchecked Sendable {
     private let port: UInt16
     private let password: String
     private var connected: Bool = false

@@ -1,6 +1,6 @@
 import Foundation
 
-class SettingsGimbalPreset: Codable, Identifiable, ObservableObject, Named {
+class SettingsGimbalPreset: Codable, Identifiable, ObservableObject, Named, @unchecked Sendable {
     static let baseName = String(localized: "My preset")
     var id: UUID = .init()
     @Published var name: String = baseName

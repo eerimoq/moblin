@@ -1,11 +1,11 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 import CoreImage
 import SwiftUI
 
 private let replayQueue = DispatchQueue(label: "com.eerimoq.replay", qos: .background)
 
-class ReplayBufferFile {
+class ReplayBufferFile: @unchecked Sendable {
     let url: URL
     let duration: Double
     private let remove: Bool
@@ -24,14 +24,17 @@ class ReplayBufferFile {
 }
 
 protocol ReplayDelegate: AnyObject {
-    func replayOutputFrame(image: UIImage, offset: Double, video: ReplayBufferFile, completion: (() -> Void)?)
+    func replayOutputFrame(image: UIImage,
+                           offset: Double,
+                           video: ReplayBufferFile,
+                           completion: (@MainActor () -> Void)?)
 }
 
 private protocol JobDelegate: AnyObject {
     func jobCompleted(image: UIImage?, video: ReplayBufferFile, offset: Double)
 }
 
-private class FrameExtractorJob {
+private class FrameExtractorJob: @unchecked Sendable {
     private let video: ReplayBufferFile
     private let offset: Double
     weak var delegate: (any JobDelegate)?
@@ -136,7 +139,7 @@ extension ReplayFrameExtractor: JobDelegate {
     }
 }
 
-class ReplayBuffer {
+class ReplayBuffer: @unchecked Sendable {
     private var initSegment: Data?
     private var dataSegments: Deque<RecorderDataSegment> = []
 

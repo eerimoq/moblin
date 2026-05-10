@@ -328,6 +328,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func executeSelfieStickAction() {
         handleControllerFunction(buttonId: "s:button",
                                  function: database.selfieStick.function,
@@ -472,7 +473,8 @@ extension Model {
         return mics
     }
 
-    private func listMicsAsync(onCompleted: @escaping ([SettingsMicsMic]) -> Void) {
+    private func listMicsAsync(onCompleted: @MainActor @escaping ([SettingsMicsMic]) -> Void) {
+        nonisolated(unsafe)
         var mics: [SettingsMicsMic] = []
         listMediaPlayerMics(&mics)
         listRistMics(&mics)

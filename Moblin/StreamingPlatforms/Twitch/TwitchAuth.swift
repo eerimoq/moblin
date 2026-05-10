@@ -59,6 +59,7 @@ struct TwitchLoginView: View {
     }
 }
 
+@MainActor
 class TwitchAuth: NSObject {
     private var webBrowser: WKWebView?
     private var onAccessToken: ((String) -> Void)?

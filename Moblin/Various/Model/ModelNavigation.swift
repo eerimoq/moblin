@@ -30,6 +30,7 @@ enum NavigationTransportType: CaseIterable {
 }
 
 @available(iOS 26, *)
+@MainActor
 class Navigation: ObservableObject {
     static let shared = Navigation()
     @Published var cameraPosition: MapCameraPosition = .automatic
@@ -68,7 +69,11 @@ class Navigation: ObservableObject {
             guard let response else {
                 return
             }
-            self.route = response.routes.first
+            nonisolated(unsafe)
+            let route = response.routes.first
+            DispatchQueue.main.async {
+                self.route = route
+            }
         }
     }
 }

@@ -95,7 +95,7 @@ private struct FeaturesContainer: Codable {
     let features: Features
 }
 
-class OpenStreamingPlatformChat {
+class OpenStreamingPlatformChat: @unchecked Sendable {
     private var model: Model
     private var task: Task<Void, any Error>?
     private var connected: Bool = false

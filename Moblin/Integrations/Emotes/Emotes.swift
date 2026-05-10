@@ -27,14 +27,14 @@ class Emotes: @unchecked Sendable {
     func start(
         platform: EmotesPlatform,
         channelId: String,
-        onError: @escaping (String, String) -> Void,
-        onOk: @escaping (String) -> Void,
+        onError: @escaping @MainActor (String, String) -> Void,
+        onOk: @escaping @MainActor (String) -> Void,
         settings: SettingsStreamChat
     ) {
         let settings = settings.clone()
         ready = false
         emotes.removeAll()
-        task = Task {
+        task = Task { @MainActor in
             var firstRetry = true
             var retryTime = 30
             while !self.ready {

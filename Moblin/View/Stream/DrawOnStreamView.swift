@@ -7,6 +7,7 @@ struct DrawOnStreamLine: Identifiable {
     let color: Color
 }
 
+@MainActor
 private var drawing = false
 
 private struct DrawOnStreamCanvasView: View {

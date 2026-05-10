@@ -165,6 +165,7 @@ extension Model {
                          platform: platform)
     }
 
+    @MainActor
     private func handleChatBotMessageTtsOn(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.tts,
@@ -178,6 +179,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageTtsOff(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.tts,
@@ -192,6 +194,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageTtsSay(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.tts,
@@ -208,6 +211,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageObsFix(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.fix,
@@ -230,6 +234,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageMapZoomOut(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.map,
@@ -245,6 +250,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageLocationDataReset(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.location,
@@ -254,6 +260,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageSnapshot(command: ChatBotCommand) {
         let permissions = database.chat.botCommandPermissions.snapshot
         executeIfUserAllowedToUseChatBot(
@@ -277,6 +284,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
         let permissions = database.chat.botCommandPermissions.snapshot
         executeIfUserAllowedToUseChatBot(
@@ -300,6 +308,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageMute(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.audio,
@@ -318,6 +327,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageUnmute(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.audio,
@@ -336,6 +346,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageAi(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.ai,
@@ -379,6 +390,7 @@ extension Model {
             }
     }
 
+    @MainActor
     private func handleChatBotMessageTwitch(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.twitch,
@@ -412,6 +424,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageGimbal(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.gimbal,
@@ -470,6 +483,7 @@ extension Model {
         stopMacro(macro: macro)
     }
 
+    @MainActor
     private func handleChatBotMessageReaction(command: ChatBotCommand) {
         guard #available(iOS 17, *) else {
             return
@@ -513,6 +527,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageScene(command: ChatBotCommand) {
         guard let sceneName = command.popFirst() else {
             return
@@ -525,6 +540,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageStream(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.stream,
@@ -566,6 +582,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageWidget(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.widget,
@@ -647,6 +664,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageAlert(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.alert,
@@ -659,6 +677,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageFax(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.fax,
@@ -670,6 +689,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageFilter(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.filter,
@@ -704,6 +724,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageZoom(command: ChatBotCommand) {
         let permissions = database.chat.botCommandPermissions.zoom
         executeIfUserAllowedToUseChatBot(
@@ -724,6 +745,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageTesla(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.tesla,
@@ -775,6 +797,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func executeIfUserAllowedToUseChatBot(
         permissions: SettingsChatBotPermissionsCommand,
         command: ChatBotCommand,

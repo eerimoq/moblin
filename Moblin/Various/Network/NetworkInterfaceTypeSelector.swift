@@ -2,7 +2,7 @@ import Collections
 import Foundation
 import Network
 
-class NetworkInterfaceTypeSelector {
+class NetworkInterfaceTypeSelector: @unchecked Sendable {
     private let networkPathMonitor = NWPathMonitor()
     private var interfaceTypes: Deque<NWInterface.InterfaceType> = [.cellular, .wifi, .wiredEthernet, .other]
     private let cellular: Bool

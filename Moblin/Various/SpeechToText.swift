@@ -6,7 +6,7 @@ protocol SpeechToTextDelegate: AnyObject {
     func speechToTextClear()
 }
 
-class SpeechToText: NSObject {
+class SpeechToText: NSObject, @unchecked Sendable {
     private let speechRecognizer = SFSpeechRecognizer()
     private var recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
     private var recognitionTask: SFSpeechRecognitionTask?

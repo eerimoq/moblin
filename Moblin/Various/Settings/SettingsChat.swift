@@ -106,7 +106,7 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     }
 }
 
-class SettingsChatBotPermissionsCommand: Codable, ObservableObject {
+class SettingsChatBotPermissionsCommand: Codable, ObservableObject, @unchecked Sendable {
     @Published var moderatorsEnabled: Bool = true
     @Published var subscribersEnabled: Bool = false
     @Published var minimumSubscriberTier: Int = 1
@@ -538,7 +538,7 @@ class SettingsVoiceTtsMonster: Codable {
     var voiceId: String = ""
 }
 
-class SettingsVoice: Codable {
+class SettingsVoice: Codable, @unchecked Sendable {
     var type: SettingsVoiceType = .apple
     var apple: SettingsVoiceApple = .init()
     var ttsMonster: SettingsVoiceTtsMonster = .init()

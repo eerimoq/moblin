@@ -18,11 +18,12 @@ func randomName() -> String {
     return colors.randomElement() ?? "Black"
 }
 
+@MainActor
 func openUrl(url: String) {
     UIApplication.shared.open(URL(string: url)!)
 }
 
-private var thumbnails: [URL: UIImage] = [:]
+private nonisolated(unsafe) var thumbnails: [URL: UIImage] = [:]
 private let thumbnailQueue = DispatchQueue(label: "com.eerimoq.moblin.thumbnail")
 
 private func createThumbnailInternal(path: URL, offset: Double) -> UIImage? {
@@ -179,7 +180,7 @@ func generateQrCode(from string: String) -> UIImage? {
     return UIImage(cgImage: cgImage)
 }
 
-func tryGetToastSubTitle(error: Error) -> String? {
+func tryGetToastSubTitle(error: any Error) -> String? {
     if let error = error as? AVError {
         error._nsError.localizedFailureReason
     } else {

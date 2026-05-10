@@ -226,9 +226,10 @@ private class Relay {
     }
 }
 
-class MoblinkStreamer: NSObject {
+class MoblinkStreamer: NSObject, @unchecked Sendable {
     private let port: UInt16
     private let password: String
+    private let name: String
     private var server: NWListener?
     var connectionErrorMessage = ""
     private var retryStartTimer = SimpleTimer(queue: .main)
@@ -238,9 +239,10 @@ class MoblinkStreamer: NSObject {
     private var destinationPort: UInt16?
     @AppStorage("moblinkServerId") var id = ""
 
-    init(port: UInt16, password: String) {
+    init(port: UInt16, password: String, name: String) {
         self.port = port
         self.password = password
+        self.name = name
         super.init()
         if id.isEmpty {
             id = UUID().uuidString
@@ -305,7 +307,7 @@ class MoblinkStreamer: NSObject {
                 name: id,
                 type: moblinkBonjourType,
                 domain: moblinkBonjourDomain,
-                txtRecord: NWTXTRecord(["name": UIDevice.current.name])
+                txtRecord: NWTXTRecord(["name": name])
             )
             server?.newConnectionHandler = handleNewConnection
             server?.start(queue: .main)

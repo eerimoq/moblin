@@ -34,7 +34,7 @@ extension Model {
     }
 }
 
-extension Model: AVPictureInPictureSampleBufferPlaybackDelegate {
+extension Model: @preconcurrency AVPictureInPictureSampleBufferPlaybackDelegate {
     func pictureInPictureController(
         _: AVPictureInPictureController,
         setPlaying _: Bool

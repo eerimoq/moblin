@@ -42,7 +42,7 @@ extension Model {
     }
 }
 
-extension Model: RistServerDelegate {
+extension Model: @preconcurrency RistServerDelegate {
     func ristServerOnConnected(port: UInt16) {
         DispatchQueue.main.async {
             self.ristServerOnConnectedInternal(virtualDestinationPort: port)

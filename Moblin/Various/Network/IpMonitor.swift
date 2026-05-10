@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-class IPMonitor {
+class IPMonitor: @unchecked Sendable {
     enum IPType {
         case ipv4
         case ipv6

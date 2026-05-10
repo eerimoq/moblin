@@ -17,7 +17,7 @@ private func types() -> Set<HKSampleType> {
 }
 
 @available(iOS 26.0, *)
-class Workout: NSObject {
+class Workout: NSObject, @unchecked Sendable {
     static let shared = Workout()
     private let healthStore = HKHealthStore()
     private var workoutSession: HKWorkoutSession?

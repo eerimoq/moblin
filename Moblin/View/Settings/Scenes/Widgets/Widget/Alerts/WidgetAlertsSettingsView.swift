@@ -84,10 +84,12 @@ struct AlertTextToSpeechView: View {
     }
 }
 
+@MainActor
 private func getImageName(model: Model, id: UUID?) -> String {
     model.getAllAlertImages().first(where: { $0.id == id })?.name ?? ""
 }
 
+@MainActor
 private func getSoundName(model: Model, id: UUID?) -> String {
     model.getAllAlertSounds().first(where: { $0.id == id })?.name ?? ""
 }

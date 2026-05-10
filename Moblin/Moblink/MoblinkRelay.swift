@@ -4,7 +4,7 @@ import SwiftUI
 
 private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
 private let relayIdKey = "srtlaRelayId"
-private var relayId: String = ""
+private nonisolated(unsafe) var relayId: String = ""
 
 func moblinkRelayLoadRelayId() {
     relayId = UserDefaults.standard.string(forKey: relayIdKey) ?? ""
@@ -45,7 +45,7 @@ protocol MoblinkRelayDelegate: AnyObject {
     func moblinkRelayGetStatus() -> (Int?, MoblinkThermalState?)
 }
 
-private class Relay: NSObject {
+private class Relay: NSObject, @unchecked Sendable {
     private var streamerUrl: URL
     private var password: String
     private weak var delegate: (any MoblinkRelayDelegate)?
@@ -351,7 +351,7 @@ extension Relay: WebSocketClientDelegate {
     }
 }
 
-class MoblinkRelay: NSObject {
+class MoblinkRelay: NSObject, @unchecked Sendable {
     private let name: String
     let streamerUrl: URL
     private let password: String

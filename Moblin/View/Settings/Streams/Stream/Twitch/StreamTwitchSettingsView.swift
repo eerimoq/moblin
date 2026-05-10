@@ -136,6 +136,7 @@ struct TwitchAlertsSettingsView: View {
     }
 }
 
+@MainActor
 func loadTwitchStreamInfo(model: Model,
                           stream: SettingsStream,
                           loggedIn: Bool,

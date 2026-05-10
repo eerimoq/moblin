@@ -172,6 +172,7 @@ struct KickAlertsSettingsView: View {
     }
 }
 
+@MainActor
 func loadKickStreamInfo(model: Model,
                         stream: SettingsStream,
                         loggedIn: Bool,

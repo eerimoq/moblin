@@ -162,6 +162,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
     private var forceUpdate: Bool = false
     private var previousLines: [TextEffectLine]?
 
+    @MainActor
     init(
         format: String,
         backgroundColor: RgbColor,
@@ -226,6 +227,7 @@ final class TextEffect: VideoEffect, @unchecked Sendable {
         previousLines = nil
     }
 
+    @MainActor
     func setFormat(format: String) {
         formatter.formatParts = loadTextFormat(format: format)
         forceOverlayUpdate()

@@ -198,7 +198,7 @@ struct TwitchChatMessage {
     }
 }
 
-private class Badges {
+private class Badges: @unchecked Sendable {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var badges: [String: URL] = [:]
@@ -264,7 +264,7 @@ private class Badges {
     }
 }
 
-private class Cheermotes {
+private class Cheermotes: @unchecked Sendable {
     private var channelId: String = ""
     private var accessToken: String = ""
     private var emotes: [String: [TwitchApiGetCheermotesDataTier]] = [:]
@@ -353,7 +353,7 @@ protocol TwitchChatDelegate: AnyObject {
     func twitchChatDeleteUser(userId: String)
 }
 
-final class TwitchChat {
+final class TwitchChat: @unchecked Sendable {
     private var webSocket: WebSocketClient
     private var emotes: Emotes
     private var badges: Badges

@@ -127,7 +127,7 @@ extension Model {
     }
 }
 
-extension Model: SpeechToTextDelegate {
+extension Model: @preconcurrency SpeechToTextDelegate {
     func speechToTextPartialResult(position: Int, text: String) {
         speechToTextLatestPosition = position
         speechToTextLatestText = text
@@ -149,7 +149,7 @@ extension Model: SpeechToTextDelegate {
     }
 }
 
-extension Model: TranslatorDelegate {
+extension Model: @preconcurrency TranslatorDelegate {
     func translatorTranslated(languageIdentifier: String, text: String) {
         let position: Int
         if let textAligner = speechToTextTextAligners[languageIdentifier] {

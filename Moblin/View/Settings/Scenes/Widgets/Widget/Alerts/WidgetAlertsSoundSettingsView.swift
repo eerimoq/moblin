@@ -2,6 +2,7 @@ import AVFAudio
 import SwiftUI
 import UniformTypeIdentifiers
 
+@MainActor
 private func loadSound(model: Model, soundId: UUID) -> AudioPlayer? {
     let url: URL? = if let bundledSound = model.database.alertsMediaGallery.bundledSounds
         .first(where: { $0.id == soundId })
@@ -116,6 +117,7 @@ private struct SoundGalleryView: View {
     }
 }
 
+@MainActor
 private var player: AudioPlayer?
 
 struct AlertSoundSelectorView: View {

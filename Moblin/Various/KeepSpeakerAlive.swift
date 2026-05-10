@@ -1,7 +1,7 @@
 import AVFoundation
 
 class KeepSpeakerAlivePlayer {
-    static let shared = KeepSpeakerAlivePlayer()
+    nonisolated(unsafe) static let shared = KeepSpeakerAlivePlayer()
     private var keepSpeakerAlivePlayer: AudioPlayer?
     private var latestPlayTime: Atomic<ContinuousClock.Instant> = .init(.now)
 
@@ -33,7 +33,7 @@ class AudioPlayer {
         player = try AVAudioPlayer(contentsOf: contentsOf)
     }
 
-    func setDelegate(delegate: AVAudioPlayerDelegate) {
+    func setDelegate(delegate: any AVAudioPlayerDelegate) {
         player.delegate = delegate
     }
 

@@ -194,7 +194,7 @@ extension Model {
     }
 }
 
-extension Model: ReplayDelegate {
+extension Model: @preconcurrency ReplayDelegate {
     func replayOutputFrame(
         image: UIImage,
         offset _: Double,
@@ -209,7 +209,7 @@ extension Model: ReplayDelegate {
     }
 }
 
-extension Model: ReplayEffectDelegate {
+extension Model: @preconcurrency ReplayEffectDelegate {
     func replayEffectStatus(timeLeft: Int) {
         DispatchQueue.main.async {
             self.replay.timeLeft = timeLeft

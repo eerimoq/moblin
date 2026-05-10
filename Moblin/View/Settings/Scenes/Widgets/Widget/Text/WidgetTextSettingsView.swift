@@ -27,8 +27,10 @@ private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 private let suggestionTesla = "🚗 Tesla\n⚙️ {teslaDrive}\n🔋 {teslaBatteryLevel}\n🔈 {teslaMedia}"
 private let suggestionRacing = "🏎️ Racing 🏎️\n{lapTimes}"
 
+@MainActor
 private let suggestions = createSuggestions()
 
+@MainActor
 private func createSuggestions() -> [Suggestion] {
     var suggestions = [
         Suggestion(id: 0, name: "Travel", text: suggestionTravel),

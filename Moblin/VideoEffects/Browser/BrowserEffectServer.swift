@@ -57,11 +57,13 @@ private class Subscriptions {
     var chat: Chat?
 }
 
+@MainActor
 protocol BrowserEffectServerDelegate: AnyObject {
     func browserEffectServerVideoPlaying()
     func browserEffectServerVideoEnded()
 }
 
+@MainActor
 class BrowserEffectServer: NSObject {
     weak var webView: WKWebView?
     private let subscriptions = Subscriptions()

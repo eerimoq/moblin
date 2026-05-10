@@ -57,7 +57,7 @@ private enum Voice {
     case ttsMonster(voiceId: String)
 }
 
-class ChatTextToSpeech: NSObject {
+final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var rate: Float = 0.4
     private var volume: Float = 0.6
     private var sayUsername: Bool = false

@@ -4,8 +4,8 @@ import ZipArchive
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
-let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
-let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
+nonisolated(unsafe) let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
+nonisolated(unsafe) let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
 let defaultSrtLatency: Int32 = 3000
 let minZoomX: Float = 0.5
 
@@ -33,7 +33,7 @@ enum SettingsColorLutType: String, Codable {
     case diskCube
 }
 
-class SettingsColorLut: Codable, Identifiable, ObservableObject {
+class SettingsColorLut: Codable, Identifiable, ObservableObject, @unchecked Sendable {
     var id: UUID = .init()
     @Published var type: SettingsColorLutType = .bundled
     @Published var name: String = ""
@@ -394,7 +394,7 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     }
 }
 
-var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
+let videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
     if #available(iOS 18.0, *) {
         true
     } else {
@@ -449,7 +449,7 @@ class SettingsMediaPlayerFile: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named {
+class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named, @unchecked Sendable {
     static let baseName = String(localized: "My player")
     var id: UUID = .init()
     @Published var name: String = baseName
@@ -679,7 +679,7 @@ class SettingsWorkoutDevices: Codable, ObservableObject {
     }
 }
 
-private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
+private nonisolated(unsafe) let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
 class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My cooler")
@@ -739,20 +739,20 @@ class SettingsBlackSharkCoolerDevices: Codable, ObservableObject {
         case devices
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.devices, devices)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         devices = container.decode(.devices, [SettingsBlackSharkCoolerDevice].self, [])
     }
 }
 
-class SettingsNetworkInterfaceName: Codable, Identifiable {
+class SettingsNetworkInterfaceName: Codable, Identifiable, @unchecked Sendable {
     var id: UUID = .init()
     var interfaceName: String = ""
     var name: String = ""
@@ -832,7 +832,7 @@ class SettingsAlertsMediaGalleryItem: Codable, Identifiable {
     }
 }
 
-private let allBundledAlertsMediaGalleryImages = [
+private nonisolated(unsafe) let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "Moblin pixels"),
     SettingsAlertsMediaGalleryItem(name: "Moblin party"),
     SettingsAlertsMediaGalleryItem(name: "Moblin trillionaire"),
@@ -843,7 +843,7 @@ private let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "-100"),
 ]
 
-private let allBundledAlertsMediaGallerySounds = [
+private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
     SettingsAlertsMediaGalleryItem(name: "Notification 2"),
     SettingsAlertsMediaGalleryItem(name: "Boing"),
     SettingsAlertsMediaGalleryItem(name: "Cash register"),
@@ -1141,6 +1141,7 @@ class Database: Codable, ObservableObject {
     var talkback: SettingsTalkback = .init()
     var gimbal: SettingsGimbal = .init()
 
+    @MainActor
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
             Database.self,
@@ -1890,6 +1891,7 @@ private func addMissingQuickButtonsPageThree(database: Database) {
     updateQuickButton(database: database, button: button)
 }
 
+@MainActor
 private func addMissingQuickButtons(database: Database) {
     addMissingQuickButtonsPageOne(database: database)
     addMissingQuickButtonsPageTwo(database: database)
@@ -2000,6 +2002,7 @@ func getDefaultMic() -> SettingsMic {
     return .bottom
 }
 
+@MainActor
 private func createDefault() -> Database {
     let database = Database()
     addDefaultScenes(database: database)
@@ -2026,7 +2029,7 @@ private let exportFiles = [
     URL.documentsDirectory.appending(component: "faceBackgroundImage.img"),
 ]
 
-final class Settings {
+final class Settings: @unchecked Sendable {
     private var realDatabase = Database()
     var database: Database {
         realDatabase
@@ -2034,6 +2037,7 @@ final class Settings {
 
     @AppStorage("settings") var storage = ""
 
+    @MainActor
     func load() {
         do {
             try tryLoadAndMigrate(settings: storage)
@@ -2043,6 +2047,7 @@ final class Settings {
         }
     }
 
+    @MainActor
     private func tryLoadAndMigrate(settings: String) throws {
         realDatabase = try Database.fromString(settings: settings)
         addSensitiveData(database: realDatabase)
@@ -2059,12 +2064,13 @@ final class Settings {
         }
     }
 
+    @MainActor
     func reset() {
         realDatabase = createDefault()
         store()
     }
 
-    func importFromFile(url: URL, onCompleted: @escaping (String?) -> Void) {
+    func importFromFile(url: URL, onCompleted: @MainActor @escaping (String?) -> Void) {
         let root = URL.documentsDirectory
         DispatchQueue.global().async {
             let settingsJson = root.appendingPathComponent(settingsJsonName)
@@ -2092,6 +2098,7 @@ final class Settings {
         }
     }
 
+    @MainActor
     func importFromClipboard(settings: String, onCompleted: @escaping (String?) -> Void) {
         do {
             try tryLoadAndMigrate(settings: settings)

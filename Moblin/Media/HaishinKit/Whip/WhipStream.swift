@@ -414,7 +414,7 @@ protocol WhipStreamDelegate: AnyObject {
     func whipStreamOnDisconnected(reason: String)
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
 }
 
 final class WhipStream: @unchecked Sendable {

@@ -97,7 +97,7 @@ extension Model {
     }
 }
 
-extension Model: RtmpServerDelegate {
+extension Model: @preconcurrency RtmpServerDelegate {
     func rtmpServerOnPublishStart(streamKey: String) {
         handleRtmpServerPublishStart(streamKey: streamKey)
     }

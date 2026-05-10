@@ -15,17 +15,18 @@ class MacScreenCapture: NSObject, @unchecked Sendable {
     private var stream: SCStream?
 
     func start(fps: Float64) {
-        Task {
+        Task { @MainActor in
             await startInternal(fps: fps)
         }
     }
 
     func stop() {
-        Task {
+        Task { @MainActor in
             await stopInternal()
         }
     }
 
+    @MainActor
     private func startInternal(fps: Float64) async {
         do {
             let (filter, display) = try await makeContentFilter()

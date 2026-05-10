@@ -44,7 +44,7 @@ extension Model {
     }
 }
 
-extension Model: SrtlaServerDelegate {
+extension Model: @preconcurrency SrtlaServerDelegate {
     func srtlaServerOnClientStart(cameraId: UUID, name: String) {
         DispatchQueue.main.async {
             self.srtlaServerOnClientStartInternal(cameraId: cameraId, name: name)

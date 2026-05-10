@@ -209,6 +209,7 @@ private struct BitrateStatusView: View {
     }
 }
 
+@MainActor
 private func netStreamColor(model: Model) -> Color {
     if model.isStreaming() {
         switch model.streamState {

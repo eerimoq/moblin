@@ -1,7 +1,8 @@
 import SwiftUI
 
 @available(iOS 17, *)
-private struct ControlBarPageScrollTargetBehavior: ScrollTargetBehavior {
+@MainActor
+private struct ControlBarPageScrollTargetBehavior: @preconcurrency ScrollTargetBehavior {
     let model: Model
 
     func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {

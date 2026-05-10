@@ -18,7 +18,7 @@ extension NWEndpoint.Port {
     }
 }
 
-final class NWConnectionWithId: Hashable, Equatable {
+final class NWConnectionWithId: Hashable, Equatable, @unchecked Sendable {
     let id: String
     let connection: NWConnection
 

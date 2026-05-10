@@ -209,7 +209,7 @@ extension Model {
     }
 }
 
-extension Model: DjiDeviceDelegate {
+extension Model: @preconcurrency DjiDeviceDelegate {
     func djiDeviceStreamingState(_ device: DjiDevice, state: DjiDeviceState) {
         guard let device = getDjiDeviceSettings(djiDevice: device) else {
             return

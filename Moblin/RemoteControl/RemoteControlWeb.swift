@@ -81,7 +81,7 @@ private let staticFiles: [StaticFile] = [
 private let recordingsPrefix = "/recordings/"
 private let thumbnailsPrefix = "/thumbnails/"
 
-class RemoteControlWeb {
+class RemoteControlWeb: @unchecked Sendable {
     private var server: HttpServer?
     private var started: Bool = false
     private var websocketServer: NWListener?
