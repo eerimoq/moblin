@@ -422,43 +422,11 @@ function App() {
     );
   }
 
-  function Leaderboard() {
-    return (
-      <div class="card">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="text-xs text-zinc-500">
-              <th class="text-left pb-1">Player</th>
-              <th class="text-right pb-1">Score</th>
-              <th class="text-right pb-1">Thru</th>
-            </tr>
-          </thead>
-          <tbody>
-            <For each={leaderboard()}>
-              {({ name, total, thru }) => {
-                const thruText = thru === 0 ? "–" : thru < state.numberOfHoles ? String(thru) : "F";
-                return (
-                  <tr>
-                    <td class="py-1 truncate max-w-xs">{name}</td>
-                    <td class={`text-right font-bold text-base ${totalClass(total)}`}>
-                      {fmtRelPar(total)}
-                    </td>
-                    <td class="text-right text-zinc-500 text-xs">{thruText}</td>
-                  </tr>
-                );
-              }}
-            </For>
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-
   function FullScorecard() {
     return (
       <div class="card">
         <div class="overflow-x-auto">
-          <table class="scorecard-table text-xs">
+          <table class="scorecard-table text-sm">
             <thead>
               <tr>
                 <th class="player-name-cell">Player</th>
@@ -543,7 +511,6 @@ function App() {
       <Event />
       <Players />
       <Holes />
-      <Leaderboard />
       <FullScorecard />
       <Buttons />
       <ConfirmDialog
