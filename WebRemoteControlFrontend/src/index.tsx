@@ -3,7 +3,7 @@ import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
 import { connectionStatus, WebSocketConnection } from "./utils.ts";
-import { GitHubLink, Button, NamedItem, Picker, Section, Toggle } from "./components.tsx";
+import { GitHubLink, Button, NamedItem, Picker, Section, Toggle, Title } from "./components.tsx";
 
 interface ZoomPreset extends NamedItem {}
 
@@ -562,7 +562,7 @@ function App() {
 
   return (
     <div class="max-w-3xl mx-auto space-y-2">
-      <h1 class="text-2xl font-bold text-center">Moblin Remote Control</h1>
+      <Title title="Moblin Remote Control"/>
       <Links />
       <ConnectionStatus />
       <Status />

@@ -1,7 +1,7 @@
 import { createSignal, For, Show, onMount } from "solid-js";
 import { render } from "solid-js/web";
 import { showConfirm, confirmOk, confirmCancel } from "./utils.ts";
-import { BasicLinks, ConfirmDialog } from "./components.tsx";
+import { BasicLinks, ConfirmDialog, Title } from "./components.tsx";
 
 interface Recording {
   name: string;
@@ -280,7 +280,7 @@ function App() {
 
   return (
     <div class="max-w-3xl mx-auto space-y-2">
-      <h1 class="text-2xl font-bold text-center">Moblin Recordings</h1>
+      <Title title="Moblin Recordings"/>
       <BasicLinks />
       <Recordings />
       {hoverPreview.element}

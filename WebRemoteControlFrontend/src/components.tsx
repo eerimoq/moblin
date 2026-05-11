@@ -112,6 +112,16 @@ export function BasicLinks() {
   );
 }
 
+interface TitleProps {
+  title: string;
+}
+
+export function Title({title}: TitleProps) {
+  return (
+    <h1 class="text-2xl font-bold text-center">{title}</h1>
+  );
+}
+
 export interface NamedItem {
   id: string;
   name: string;

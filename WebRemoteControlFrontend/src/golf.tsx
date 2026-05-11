@@ -8,7 +8,7 @@ import {
   confirmOk,
   confirmCancel,
 } from "./utils.ts";
-import { BasicLinks, ConfirmDialog } from "./components.tsx";
+import { BasicLinks, ConfirmDialog, Title } from "./components.tsx";
 
 interface Player {
   name: string;
@@ -483,7 +483,7 @@ function App() {
 
   return (
     <div class="max-w-xl mx-auto space-y-2">
-      <h1 class="text-2xl font-bold text-center">Moblin Golf Scoreboard</h1>
+      <Title title="Moblin Golf Scoreboard"/>
       <BasicLinks />
       <ConnectionStatus />
       <Event />
