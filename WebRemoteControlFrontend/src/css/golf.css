@@ -74,6 +74,22 @@
   color: var(--text-main);
 }
 
+.scorecard-outer {
+  display: flex;
+}
+
+.scorecard-scroll {
+  overflow-x: auto;
+  flex: 1;
+  min-width: 0;
+}
+
+.scorecard-names,
+.scorecard-totals {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
 .scorecard-table {
   border-collapse: collapse;
   min-width: 100%;
@@ -105,17 +121,22 @@
   max-width: 7rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  position: sticky;
-  left: 0;
-  z-index: 1;
 }
 
 .scorecard-table .total-cell {
   font-weight: 700;
   background: var(--card-bg);
-  position: sticky;
-  right: 0;
-  z-index: 1;
+}
+
+/* Remove borders at the junctions between the three sections */
+.scorecard-names td,
+.scorecard-names th {
+  border-right: none;
+}
+
+.scorecard-totals td,
+.scorecard-totals th {
+  border-left: none;
 }
 
 .scorecard-table .birdie {
