@@ -277,7 +277,7 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
 
     private func sendChatMessageHistory() {
         performRequestNoResponseData(
-            data: .chatMessages(history: true, messages: chatMessageHistory.map { $0 }),
+            data: .chatMessages(history: true, messages: chatMessageHistory.map(\.self)),
             onSuccess: {}
         )
     }

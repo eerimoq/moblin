@@ -98,7 +98,6 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
     }
 
     deinit {
-        webView.configuration.userContentController.removeAllScriptMessageHandlers()
         stopTakeSnapshots()
     }
 
