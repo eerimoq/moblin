@@ -474,7 +474,7 @@ function App() {
                 </td>
               </tr>
               <For each={state.players}>
-                {(_, playerIndex) => {
+                {(_player, playerIndex) => {
                   const total = () =>
                     totalRelativeToPar(
                       state.players,
