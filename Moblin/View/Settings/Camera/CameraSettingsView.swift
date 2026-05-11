@@ -84,6 +84,7 @@ private struct CameraSettingsCubeLutsView: View {
 private struct CameraSettingsPngLutsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var color: SettingsColor
+    @State var presentingPicker: Bool = false
     @State var selectedImageItem: PhotosPickerItem?
 
     private func deleteLutPng(at offsets: IndexSet) {
@@ -104,11 +105,16 @@ private struct CameraSettingsPngLutsView: View {
                 }
                 .onDelete(perform: deleteLutPng)
             }
-            PhotosPicker(selection: $selectedImageItem, matching: .images) {
+            Button {
+                presentingPicker = true
+            } label: {
                 HCenter {
                     Text("Add")
                 }
             }
+            .photosPicker(isPresented: $presentingPicker,
+                          selection: $selectedImageItem,
+                          matching: .images)
             .onChange(of: selectedImageItem) { imageItem in
                 imageItem?.loadTransferable(type: Data.self) { result in
                     switch result {

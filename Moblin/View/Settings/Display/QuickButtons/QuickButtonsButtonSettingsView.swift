@@ -4,11 +4,14 @@ import SwiftUI
 private struct QuickButtonStealthModeView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var stealthMode: StealthMode
+    @State var presentingPicker: Bool = false
     @State var selectedImageItem: PhotosPickerItem?
 
     var body: some View {
         Section {
-            PhotosPicker(selection: $selectedImageItem, matching: .images) {
+            Button {
+                presentingPicker = true
+            } label: {
                 if let image = stealthMode.image {
                     HCenter {
                         Image(uiImage: image)
@@ -21,6 +24,7 @@ private struct QuickButtonStealthModeView: View {
                     }
                 }
             }
+            .photosPicker(isPresented: $presentingPicker, selection: $selectedImageItem, matching: .images)
             .onChange(of: selectedImageItem) { imageItem in
                 selectedImageItem = nil
                 imageItem?.loadTransferable(type: Data.self) { result in

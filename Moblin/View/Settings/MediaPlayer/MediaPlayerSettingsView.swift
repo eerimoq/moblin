@@ -23,6 +23,7 @@ struct MediaPlayerSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var mediaPlayers: SettingsMediaPlayers
     @ObservedObject var player: SettingsMediaPlayer
+    @State var presentingPicker: Bool = false
     @State var selectedVideoItem: PhotosPickerItem?
 
     private func appendMedia(url: URL) {
@@ -67,7 +68,9 @@ struct MediaPlayerSettingsView: View {
                         }
                         .onDelete(perform: deletePlaylistFile)
                     }
-                    PhotosPicker(selection: $selectedVideoItem, matching: .videos) {
+                    Button {
+                        presentingPicker = true
+                    } label: {
                         HCenter {
                             if selectedVideoItem != nil {
                                 ProgressView()
@@ -76,6 +79,9 @@ struct MediaPlayerSettingsView: View {
                             }
                         }
                     }
+                    .photosPicker(isPresented: $presentingPicker,
+                                  selection: $selectedVideoItem,
+                                  matching: .videos)
                     .disabled(selectedVideoItem != nil)
                     .onChange(of: selectedVideoItem) { videoItem in
                         videoItem?.loadTransferable(type: Video.self) { result in

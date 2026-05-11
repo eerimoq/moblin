@@ -6,6 +6,7 @@ struct WidgetImagePickerView: View {
     let widget: SettingsWidget
     @Binding var image: UIImage?
     let sizeScale: Double
+    @State var presentingPicker: Bool = false
     @State private var selectedImageItem: PhotosPickerItem?
 
     func loadImage() {
@@ -18,7 +19,9 @@ struct WidgetImagePickerView: View {
 
     var body: some View {
         Section {
-            PhotosPicker(selection: $selectedImageItem, matching: .images) {
+            Button {
+                presentingPicker = true
+            } label: {
                 if let image {
                     HCenter {
                         Image(uiImage: image)
@@ -32,6 +35,9 @@ struct WidgetImagePickerView: View {
                     }
                 }
             }
+            .photosPicker(isPresented: $presentingPicker,
+                          selection: $selectedImageItem,
+                          matching: .images)
             .onChange(of: selectedImageItem) { imageItem in
                 imageItem?.loadTransferable(type: Data.self) { result in
                     switch result {
