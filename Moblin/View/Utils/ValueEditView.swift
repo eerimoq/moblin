@@ -125,6 +125,7 @@ struct ValueEditCompactView: View {
                 Image(systemName: decrementImageName)
                     .font(.title)
             }
+            .disabled(number == (mirror ? maximum : minimum))
             Button {
                 add(offset: mirror ? -increment : increment)
                 value = onSubmit(value.trim())
@@ -133,6 +134,7 @@ struct ValueEditCompactView: View {
                 Image(systemName: incrementImageName)
                     .font(.title)
             }
+            .disabled(number == (mirror ? minimum : maximum))
         }
         .buttonStyle(.borderless)
     }
