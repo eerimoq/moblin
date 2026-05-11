@@ -105,7 +105,7 @@ export function RemoteControlLink() {
 
 export function BasicLinks() {
   return (
-    <div class="pb-1 text-center space-x-4">
+    <div class="text-center space-x-4">
       <RemoteControlLink />
       <GitHubLink />
     </div>

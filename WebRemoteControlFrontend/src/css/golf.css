@@ -22,13 +22,13 @@
 }
 
 .hole-btn {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 0.25rem;
   border: 1px solid var(--btn-border);
   background: var(--btn-bg);
   color: var(--text-dim);
-  font-size: 0.75rem;
+  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;

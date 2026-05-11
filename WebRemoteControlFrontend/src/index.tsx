@@ -1,8 +1,8 @@
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Match, Show, Switch } from "solid-js";
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
-import { WebSocketConnection } from "./utils.ts";
+import { connectionStatus, WebSocketConnection } from "./utils.ts";
 import { GitHubLink, Button, NamedItem, Picker, Section, Toggle } from "./components.tsx";
 
 interface ZoomPreset extends NamedItem {}
@@ -115,7 +115,7 @@ function StatusTable({ rows }: StatusTableProps) {
 }
 
 function App() {
-  const [connStatus, setConnStatus] = createSignal("connecting");
+  const [status, setStatus] = createSignal<string>(connectionStatus.connecting);
   const [generalRows, setGeneralRows] = createSignal<StatusRow[]>([]);
   const [topLeftRows, setTopLeftRows] = createSignal<StatusRow[]>([]);
   const [topRightRows, setTopRightRows] = createSignal<StatusRow[]>([]);
@@ -155,11 +155,7 @@ function App() {
     }
 
     onStatusChanged(newStatus: string): void {
-      if (newStatus === "Connected") {
-        setConnStatus("connected");
-      } else {
-        setConnStatus("connecting");
-      }
+      setStatus(newStatus);
     }
 
     onConnected(): void {
@@ -177,7 +173,6 @@ function App() {
         clearTimeout(this.settingsTimerId);
         this.settingsTimerId = undefined;
       }
-      setConnStatus("connecting");
       super.reconnectSoon();
     }
 
@@ -344,13 +339,15 @@ function App() {
 
   function ConnectionStatus() {
     return (
-      <div class="pb-1 text-center">
-        <Show when={connStatus() === "connected"}>
-          <span class="text-green-500 text-sm">Connected to server</span>
-        </Show>
-        <Show when={connStatus() === "connecting"}>
-          <span class="text-yellow-400 text-sm">Connecting to server</span>
-        </Show>
+      <div class="pb-1 text-center text-sm">
+        <Switch fallback={<span class="text-red-500">Unknown server status</span>}>
+          <Match when={status() === connectionStatus.connecting}>
+            <span class="text-yellow-400">Connecting to server</span>
+          </Match>
+          <Match when={status() === connectionStatus.connected}>
+            <span class="text-green-500">Connected to server</span>
+          </Match>
+        </Switch>
       </div>
     );
   }
