@@ -100,11 +100,17 @@
   max-width: 7rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: sticky;
+  left: 0;
+  z-index: 1;
 }
 
 .scorecard-table .total-cell {
   font-weight: 700;
   background: var(--card-bg);
+  position: sticky;
+  right: 0;
+  z-index: 1;
 }
 
 .scorecard-table .birdie {
