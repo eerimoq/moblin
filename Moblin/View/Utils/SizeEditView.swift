@@ -26,7 +26,7 @@ struct SizeEditView: View {
             incrementImageName: "square.resize.up",
             decrementImageName: "square.resize.down",
             mirror: false,
-            increment: 0.125
+            increment: 1 / 15
         )
     }
 }
