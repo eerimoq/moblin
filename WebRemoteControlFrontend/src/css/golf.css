@@ -87,6 +87,11 @@
   white-space: nowrap;
 }
 
+.scorecard-table .hole-score-cell {
+  width: 2rem;
+  min-width: 2rem;
+}
+
 .scorecard-table thead th {
   background: var(--card-bg);
   color: var(--text-dim);

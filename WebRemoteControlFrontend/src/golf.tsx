@@ -433,7 +433,7 @@ function App() {
                 <For
                   each={Array.from({ length: state.numberOfHoles }, (_, holeIndex) => holeIndex)}
                 >
-                  {(holeIndex) => <th>{holeIndex + 1}</th>}
+                  {(holeIndex) => <th class="hole-score-cell">{holeIndex + 1}</th>}
                 </For>
                 <th class="total-cell">Total</th>
               </tr>
@@ -478,7 +478,7 @@ function App() {
                         {(holeIndex) => {
                           const score = player.scores[holeIndex];
                           const cls = scoreClass(score, state.pars[holeIndex]);
-                          return <td class={cls}>{score >= 0 ? score : ""}</td>;
+                          return <td class={`hole-score-cell ${cls}`}>{score >= 0 ? score : ""}</td>;
                         }}
                       </For>
                       <td class={`total-cell ${totalClass(total())}`}>{totalText()}</td>
