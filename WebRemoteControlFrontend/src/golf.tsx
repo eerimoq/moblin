@@ -39,7 +39,7 @@ interface RemoteGolfData {
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
 const MAX_HOLES = DEFAULT_PARS_18.length;
-const MAX_SCORE = 9;
+const HOLE_SCORES = [9, 8, 7, 6, 5, 4, 3, 2, 1];
 
 function ensureLength(arr: number[], len: number, fill: number): number[] {
   const out = [...arr];
@@ -70,7 +70,7 @@ function totalStrokes(players: Player[], numberOfHoles: number, playerIndex: num
   return total;
 }
 
-function fmtRelPar(val: number): string {
+function formatRelativePar(val: number): string {
   if (val === 0) return "E";
   return val > 0 ? `+${val}` : `${val}`;
 }
@@ -230,7 +230,6 @@ function App() {
   }
 
   function changeCurrentPar(par: number): void {
-    if (isNaN(par)) return;
     setState("pars", state.currentHole, par);
     sendUpdate();
   }
@@ -356,7 +355,7 @@ function App() {
                 class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
                 onChange={(event) => changeCurrentPar(parseInt(event.target.value))}
               >
-                <For each={[9, 8, 7, 6, 5, 4, 3, 2, 1]}>
+                <For each={HOLE_SCORES}>
                   {(parValue) => <option value={String(parValue)}>{parValue}</option>}
                 </For>
               </select>
@@ -366,13 +365,12 @@ function App() {
             {(player, playerIndex) => {
               const par = () => state.pars[state.currentHole] ?? 4;
               const val = () => player.scores[state.currentHole];
-              const selectColor = () => scoreOptionColor(val(), par());
               return (
                 <div class="flex items-center gap-2">
                   <span class="text-sm flex-1 truncate">{player.name}</span>
                   <select
                     class="score-select"
-                    style={{ color: val() >= 0 ? selectColor() : "" }}
+                    style={{ color: val() >= 0 ? scoreOptionColor(val(), par()) : "" }}
                     value={String(val())}
                     onChange={(event) => {
                       const score = parseInt(event.target.value);
@@ -380,18 +378,11 @@ function App() {
                       setScore(playerIndex(), state.currentHole, score);
                     }}
                   >
-                    <For
-                      each={Array.from(
-                        { length: MAX_SCORE },
-                        (_, scoreIndex) => MAX_SCORE - scoreIndex,
-                      )}
-                    >
+                    <For each={HOLE_SCORES}>
                       {(score) => {
-                        const color = scoreOptionColor(score, par());
-                        const rel = fmtRelPar(score - par());
                         return (
-                          <option value={String(score)} style={{ color }}>
-                            {score} ({rel})
+                          <option value={String(score)} style={scoreOptionColor(score, par())}>
+                            {score} ({formatRelativePar(score - par())})
                           </option>
                         );
                       }}
@@ -448,8 +439,8 @@ function App() {
                     const strokesTotal = strokes();
                     const totalScore = total();
                     return strokesTotal > 0
-                      ? `${strokesTotal} (${fmtRelPar(totalScore)})`
-                      : fmtRelPar(totalScore);
+                      ? `${strokesTotal} (${formatRelativePar(totalScore)})`
+                      : formatRelativePar(totalScore);
                   };
                   return (
                     <tr>
