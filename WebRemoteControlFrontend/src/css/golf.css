@@ -80,19 +80,17 @@
 
 .scorecard-scroll {
   overflow-x: auto;
-  flex: 1;
-  min-width: 0;
-}
-
-.scorecard-names,
-.scorecard-totals {
-  flex-shrink: 0;
+  flex: 1 1 0;
   min-width: 0;
 }
 
 .scorecard-table {
   border-collapse: collapse;
-  min-width: 100%;
+}
+
+.scorecard-names,
+.scorecard-totals {
+  flex: 0 0 auto;
 }
 
 .scorecard-table th,
