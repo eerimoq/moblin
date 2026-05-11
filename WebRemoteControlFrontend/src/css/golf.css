@@ -75,16 +75,23 @@
 }
 
 .scorecard-table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   min-width: 100%;
 }
 
 .scorecard-table th,
 .scorecard-table td {
-  border: 1px solid var(--btn-border);
+  border-right: 1px solid var(--btn-border);
+  border-bottom: 1px solid var(--btn-border);
   padding: 2px 5px;
   text-align: center;
   white-space: nowrap;
+}
+
+.scorecard-table th:first-child,
+.scorecard-table td:first-child {
+  border-left: 1px solid var(--btn-border);
 }
 
 .scorecard-table .hole-score-cell {
@@ -95,6 +102,7 @@
 .scorecard-table thead th {
   background: var(--card-bg);
   color: var(--text-dim);
+  border-top: 1px solid var(--btn-border);
 }
 
 .scorecard-table .player-name-cell {
@@ -116,6 +124,7 @@
   position: sticky;
   right: 0;
   z-index: 1;
+  box-shadow: -1px 0 0 0 var(--btn-border);
 }
 
 .scorecard-table .birdie {
