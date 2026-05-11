@@ -338,8 +338,8 @@ function App() {
     return (
       <div class="card">
         <div class="space-y-2">
-          <div class="flex gap-2 items-center flex-wrap">
-            <div class="flex flex-wrap gap-1 flex-1">
+          <div class="flex gap-2 items-center">
+            <div class="flex gap-1 flex-1 overflow-x-auto">
               <For each={Array.from({ length: state.numberOfHoles }, (_, holeIndex) => holeIndex)}>
                 {(holeIndex) => {
                   const allScored = () =>
@@ -355,7 +355,7 @@ function App() {
                   };
                   return (
                     <button
-                      class={`hole-btn${isActive() ? " active" : ""}${extraClass()}`}
+                      class={`hole-btn shrink-0${isActive() ? " active" : ""}${extraClass()}`}
                       onClick={() => selectHole(holeIndex)}
                     >
                       {holeIndex + 1}
