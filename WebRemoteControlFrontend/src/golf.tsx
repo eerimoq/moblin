@@ -70,10 +70,6 @@ function totalStrokes(players: Player[], numberOfHoles: number, playerIndex: num
   return total;
 }
 
-function holesPlayed(players: Player[], numberOfHoles: number, playerIndex: number): number {
-  return players[playerIndex].scores.slice(0, numberOfHoles).filter((score) => score >= 0).length;
-}
-
 function fmtRelPar(val: number): string {
   if (val === 0) return "E";
   return val > 0 ? `+${val}` : `${val}`;
@@ -238,17 +234,6 @@ function App() {
     setState("pars", state.currentHole, par);
     sendUpdate();
   }
-
-  const leaderboard = () => {
-    return state.players
-      .map((player, playerIndex) => ({
-        name: player.name,
-        total: totalRelativeToPar(state.players, state.pars, state.numberOfHoles, playerIndex),
-        thru: holesPlayed(state.players, state.numberOfHoles, playerIndex),
-        index: playerIndex,
-      }))
-      .sort((entryA, entryB) => entryA.total - entryB.total);
-  };
 
   function ConnectionStatus() {
     return (
@@ -478,7 +463,9 @@ function App() {
                         {(holeIndex) => {
                           const score = player.scores[holeIndex];
                           const cls = scoreClass(score, state.pars[holeIndex]);
-                          return <td class={`hole-score-cell ${cls}`}>{score >= 0 ? score : ""}</td>;
+                          return (
+                            <td class={`hole-score-cell ${cls}`}>{score >= 0 ? score : ""}</td>
+                          );
                         }}
                       </For>
                       <td class={`total-cell ${totalClass(total())}`}>{totalText()}</td>
