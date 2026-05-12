@@ -16,17 +16,17 @@ interface ResponseResult {
   ok: boolean;
 }
 
-export interface RemoteGolfPlayer {
+export interface RemoteControlGolfPlayer {
   name: string;
-  scores?: number[];
+  scores: number[];
 }
 
-export interface RemoteGolfData {
-  title?: string;
-  numberOfHoles?: number;
-  pars?: number[];
-  currentHole?: number;
-  players?: RemoteGolfPlayer[];
+export interface RemoteControlGolfScoreboard {
+  title: string;
+  numberOfHoles: number;
+  pars: number[];
+  currentHole: number;
+  players: RemoteControlGolfPlayer[];
 }
 
 export interface ScoreboardTeamState {
@@ -92,14 +92,14 @@ export interface ResponseData {
   getStatus?: Record<string, unknown>;
   getSettings?: { data: Record<string, unknown> };
   getScoreboardSports?: { names: string[] };
-  getGolfScoreboard?: { data: RemoteGolfData };
+  getGolfScoreboard?: { data: RemoteControlGolfScoreboard };
 }
 
 export interface EventData {
   state?: { data: Record<string, unknown> };
   log?: { entry: string };
   scoreboard?: { config: Partial<ScoreboardMatchConfig> };
-  golfScoreboard?: { data: RemoteGolfData };
+  golfScoreboard?: { data: RemoteControlGolfScoreboard };
 }
 
 interface IncomingMessage {
@@ -228,7 +228,7 @@ export class WebSocketConnection {
   }
 
   reloadBrowserWidgets(): void {
-    this.sendRequest("reloadBrowserWidgets");
+    this.sendRequest({ reloadBrowserWidgets: {} });
   }
 
   setSrtConnectionPrioritiesEnabled(enabled: boolean): void {

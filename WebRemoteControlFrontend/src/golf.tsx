@@ -7,38 +7,20 @@ import {
   showConfirm,
   confirmOk,
   confirmCancel,
-  RemoteGolfData,
   ResponseData,
   EventData,
+  RemoteControlGolfScoreboard,
+  RemoteControlGolfPlayer,
 } from "./utils.ts";
 import { BasicLinks, ConfirmDialog, Title, ConnectionStatus } from "./components.tsx";
-
-interface Player {
-  name: string;
-  scores: number[];
-}
-
-interface GolfState {
-  title: string;
-  numberOfHoles: number;
-  pars: number[];
-  currentHole: number;
-  players: Player[];
-}
 
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
 const MAX_HOLES = DEFAULT_PARS_18.length;
 const HOLE_SCORES = [9, 8, 7, 6, 5, 4, 3, 2, 1];
 
-function ensureLength(arr: number[], len: number, fill: number): number[] {
-  const out = [...arr];
-  while (out.length < len) out.push(fill);
-  return out;
-}
-
 function totalRelativeToPar(
-  players: Player[],
+  players: RemoteControlGolfPlayer[],
   pars: number[],
   numberOfHoles: number,
   playerIndex: number,
@@ -51,7 +33,11 @@ function totalRelativeToPar(
   return total;
 }
 
-function totalStrokes(players: Player[], numberOfHoles: number, playerIndex: number): number {
+function totalStrokes(
+  players: RemoteControlGolfPlayer[],
+  numberOfHoles: number,
+  playerIndex: number,
+): number {
   let total = 0;
   for (let holeIndex = 0; holeIndex < numberOfHoles; holeIndex++) {
     const score = players[playerIndex].scores[holeIndex];
@@ -94,15 +80,12 @@ function scoreOptionColor(score: number, par: number): string {
 }
 
 function App() {
-  const [state, setState] = createStore<GolfState>({
+  const [state, setState] = createStore<RemoteControlGolfScoreboard>({
     title: "",
     numberOfHoles: 18,
     pars: [...DEFAULT_PARS_18],
     currentHole: 0,
-    players: [
-      { name: "Player 1", scores: Array(MAX_HOLES).fill(-1) as number[] },
-      { name: "Player 2", scores: Array(MAX_HOLES).fill(-1) as number[] },
-    ],
+    players: [],
   });
 
   const [status, setStatus] = createSignal<string>(connectionStatus.connecting);
@@ -134,22 +117,8 @@ function App() {
 
   const connection = new GolfConnection();
 
-  function applyRemoteState(data: RemoteGolfData | null | undefined): void {
-    if (!data) return;
-    setState((prevState) => ({
-      ...prevState,
-      title: data.title ?? prevState.title,
-      numberOfHoles: data.numberOfHoles ?? prevState.numberOfHoles,
-      pars: Array.isArray(data.pars) && data.pars.length >= 18 ? data.pars : prevState.pars,
-      currentHole: data.currentHole ?? prevState.currentHole,
-      players:
-        Array.isArray(data.players) && data.players.length > 0
-          ? data.players.map((player) => ({
-              name: player.name,
-              scores: ensureLength(player.scores ?? [], MAX_HOLES, -1),
-            }))
-          : prevState.players,
-    }));
+  function applyRemoteState(data: RemoteControlGolfScoreboard): void {
+    setState(data);
   }
 
   function sendUpdate() {
