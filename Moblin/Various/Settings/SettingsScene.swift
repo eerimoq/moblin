@@ -3243,6 +3243,9 @@ class SettingsWidgetScoreboard: Codable, ObservableObject, @unchecked Sendable {
     }
 
     func setModularSport(sportId: String) {
+        guard isModularSport() else {
+            return
+        }
         switch sportId {
         case "basketball":
             sport = .basketball
@@ -3260,6 +3263,15 @@ class SettingsWidgetScoreboard: Codable, ObservableObject, @unchecked Sendable {
             sport = .volleyball
         default:
             break
+        }
+    }
+
+    private func isModularSport() -> Bool {
+        switch sport {
+        case .basketball, .generic2, .genericSets, .hockey, .football, .tennis, .volleyball:
+            true
+        default:
+            false
         }
     }
 }
