@@ -283,8 +283,8 @@ function App() {
   }): void {
     const general = status.general;
     const genRows: StatusRow[] = [
-      ["Battery level", String(general?.batteryLevel ?? "")],
-      ["Muted", String(general?.isMuted ?? "")],
+      ["Battery level", general?.batteryLevel !== undefined ? String(general.batteryLevel) : ""],
+      ["Muted", general?.isMuted !== undefined ? String(general.isMuted) : ""],
       ["Flame", general?.flame ?? ""],
       ["WiFi", general?.wiFiSsid ?? ""],
     ];

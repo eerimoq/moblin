@@ -164,7 +164,8 @@ function App() {
     topRight?: RemoteControlStatusTopRight;
   }): void {
     if (status.general !== undefined) {
-      setBatteryLevel(`${status.general.batteryLevel ?? ""}%`);
+      const level = status.general.batteryLevel;
+      setBatteryLevel(level !== undefined ? `${level}%` : "--");
     }
     if (status.topRight?.bitrate !== undefined) {
       setBitrateMessage(status.topRight.bitrate.message);
