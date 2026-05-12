@@ -16,55 +16,206 @@ interface ResponseResult {
   ok: boolean;
 }
 
-export interface RemoteGolfPlayer {
-  name: string;
-  scores?: number[];
+// ---------- Status types (mirrors RemoteControlStatus* in Swift) ----------
+
+type RemoteControlStatusGeneralFlame = "White" | "Yellow" | "Red";
+
+export interface RemoteControlStatusItem {
+  message: string;
+  ok: boolean;
 }
 
-export interface RemoteGolfData {
-  title?: string;
-  numberOfHoles?: number;
-  pars?: number[];
-  currentHole?: number;
-  players?: RemoteGolfPlayer[];
+export interface RemoteControlStatusGeneral {
+  batteryCharging?: boolean;
+  batteryLevel?: number;
+  flame?: RemoteControlStatusGeneralFlame;
+  wiFiSsid?: string;
+  isLive?: boolean;
+  isRecording?: boolean;
+  isMuted?: boolean;
 }
+
+export interface RemoteControlStatusTopLeft {
+  stream?: RemoteControlStatusItem;
+  camera?: RemoteControlStatusItem;
+  mic?: RemoteControlStatusItem;
+  zoom?: RemoteControlStatusItem;
+  obs?: RemoteControlStatusItem;
+  events?: RemoteControlStatusItem;
+  chat?: RemoteControlStatusItem;
+  viewers?: RemoteControlStatusItem;
+}
+
+export interface RemoteControlStatusTopRight {
+  audioLevel?: RemoteControlStatusItem;
+  rtmpServer?: RemoteControlStatusItem;
+  remoteControl?: RemoteControlStatusItem;
+  gameController?: RemoteControlStatusItem;
+  bitrate?: RemoteControlStatusItem;
+  uptime?: RemoteControlStatusItem;
+  location?: RemoteControlStatusItem;
+  srtla?: RemoteControlStatusItem;
+  srtlaRtts?: RemoteControlStatusItem;
+  recording?: RemoteControlStatusItem;
+  replay?: RemoteControlStatusItem;
+  browserWidgets?: RemoteControlStatusItem;
+  moblink?: RemoteControlStatusItem;
+  djiDevices?: RemoteControlStatusItem;
+  systemMonitor?: RemoteControlStatusItem;
+}
+
+// ---------- Settings types (mirrors RemoteControlSettings* in Swift) ----------
+
+export interface RemoteControlSettingsScene {
+  id: string;
+  name: string;
+}
+
+export interface RemoteControlSettingsAutoSceneSwitcher {
+  id: string;
+  name: string;
+}
+
+export interface RemoteControlSettingsBitratePreset {
+  id: string;
+  bitrate: number;
+}
+
+export interface RemoteControlSettingsMic {
+  id: string;
+  name: string;
+}
+
+export interface RemoteControlSettingsSrtConnectionPriority {
+  id: string;
+  name: string;
+  priority: number;
+  enabled: boolean;
+}
+
+export interface RemoteControlSettingsSrt {
+  connectionPrioritiesEnabled: boolean;
+  connectionPriorities: RemoteControlSettingsSrtConnectionPriority[];
+}
+
+export interface RemoteControlSettingsGimbalPreset {
+  id: string;
+  name: string;
+}
+
+export interface RemoteControlSettings {
+  scenes: RemoteControlSettingsScene[];
+  autoSceneSwitchers?: RemoteControlSettingsAutoSceneSwitcher[];
+  bitratePresets: RemoteControlSettingsBitratePreset[];
+  mics: RemoteControlSettingsMic[];
+  srt: RemoteControlSettingsSrt;
+  gimbalPresets: RemoteControlSettingsGimbalPreset[];
+}
+
+// ---------- Streamer state types (mirrors RemoteControlAssistantStreamerState in Swift) ----------
+
+interface RemoteControlStateAutoSceneSwitcher {
+  id?: string;
+}
+
+export type RemoteControlFilterName =
+  | "pixellate"
+  | "movie"
+  | "grayScale"
+  | "sepia"
+  | "triple"
+  | "twin"
+  | "fourThree"
+  | "crt"
+  | "pinch"
+  | "whirlpool"
+  | "poll"
+  | "blurFaces"
+  | "privacy"
+  | "beauty"
+  | "moblinInMouth"
+  | "cameraMan";
+
+// Swift encodes [RemoteControlFilter: Bool] as a flat alternating array:
+// [{ filterName: {} }, boolean, { filterName: {} }, boolean, ...]
+type FilterKeyObject = { [K in RemoteControlFilterName]?: Record<string, never> };
+type FiltersArray = Array<FilterKeyObject | boolean>;
+
+export interface RemoteControlAssistantStreamerState {
+  scene?: string;
+  autoSceneSwitcher?: RemoteControlStateAutoSceneSwitcher;
+  mic?: string;
+  bitrate?: string;
+  zoom?: number;
+  zoomPresets?: ZoomPreset[];
+  zoomPreset?: string;
+  debugLogging?: boolean;
+  streaming?: boolean;
+  recording?: boolean;
+  muted?: boolean;
+  torchOn?: boolean;
+  batteryCharging?: boolean;
+  filters?: FiltersArray;
+}
+
+// ---------- Golf scoreboard (mirrors RemoteControlGolfScoreboard in Swift) ----------
+
+export interface RemoteControlGolfPlayer {
+  name: string;
+  scores: number[];
+}
+
+export interface RemoteControlGolfScoreboard {
+  title: string;
+  numberOfHoles: number;
+  pars: number[];
+  currentHole: number;
+  players: RemoteControlGolfPlayer[];
+}
+
+// ---------- Scoreboard types (mirrors RemoteControlScoreboard* in Swift) ----------
 
 export interface ScoreboardTeamState {
   name: string;
   bgColor: string;
   textColor: string;
+  possession: boolean;
   primaryScore: string;
   secondaryScore: string;
-  secondaryScore1: string;
-  secondaryScore2: string;
-  secondaryScore3: string;
-  secondaryScore4: string;
-  secondaryScore5: string;
+  secondaryScoreLabel?: string;
+  secondaryScore1?: string;
+  secondaryScore2?: string;
+  secondaryScore3?: string;
+  secondaryScore4?: string;
+  secondaryScore5?: string;
   stat1: string;
+  stat1Label: string;
   stat2: string;
+  stat2Label: string;
   stat3: string;
+  stat3Label: string;
   stat4: string;
-  possession: boolean;
-  [key: string]: string | boolean;
+  stat4Label: string;
 }
 
 export interface ScoreboardGlobalState {
   title: string;
-  period: string;
-  periodLabel: string;
   timer: string;
   timerDirection: string;
-  duration: string;
+  duration?: number;
+  period: string;
+  periodLabel: string;
   infoBoxText: string;
-  scoringMode: string;
-  showTitle: boolean;
-  showStats: boolean;
-  showMoreStats: boolean;
-  showClock: boolean;
-  changePossessionOnScore: boolean;
-  maxSetScore: number;
-  minSetScore: number;
-  [key: string]: string | boolean | number;
+  primaryScoreResetOnPeriod?: boolean;
+  secondaryScoreResetOnPeriod?: boolean;
+  changePossessionOnScore?: boolean;
+  scoringMode?: string;
+  minSetScore?: number;
+  maxSetScore?: number;
+  showTitle?: boolean;
+  showStats?: boolean;
+  showMoreStats?: boolean;
+  showClock?: boolean;
 }
 
 export interface ScoreboardControlDef {
@@ -81,33 +232,41 @@ export interface ScoreboardMatchConfig {
   team2: ScoreboardTeamState;
   global: ScoreboardGlobalState;
   controls: Record<string, ScoreboardControlDef>;
-  [key: string]:
-    | ScoreboardTeamState
-    | ScoreboardGlobalState
-    | Record<string, ScoreboardControlDef>
-    | string;
 }
 
+// ---------- Message envelope types ----------
+
 export interface ResponseData {
-  getStatus?: Record<string, unknown>;
-  getSettings?: { data: Record<string, unknown> };
+  getStatus?: {
+    general?: RemoteControlStatusGeneral;
+    topLeft?: RemoteControlStatusTopLeft;
+    topRight?: RemoteControlStatusTopRight;
+  };
+  getSettings?: { data: RemoteControlSettings };
   getScoreboardSports?: { names: string[] };
-  getGolfScoreboard?: { data: RemoteGolfData };
+  getGolfScoreboard?: { data: RemoteControlGolfScoreboard };
 }
 
 export interface EventData {
-  state?: { data: Record<string, unknown> };
+  state?: { data: RemoteControlAssistantStreamerState };
   log?: { entry: string };
-  scoreboard?: { config: Partial<ScoreboardMatchConfig> };
-  golfScoreboard?: { data: RemoteGolfData };
+  status?: {
+    general?: RemoteControlStatusGeneral;
+    topLeft?: RemoteControlStatusTopLeft;
+    topRight?: RemoteControlStatusTopRight;
+  };
+  scoreboard?: { config: ScoreboardMatchConfig };
+  golfScoreboard?: { data: RemoteControlGolfScoreboard };
 }
 
 interface IncomingMessage {
-  ping?: unknown;
+  ping?: Record<string, never>;
   response?: { id: number; result: ResponseResult; data: ResponseData };
   event?: { data: EventData };
-  pong?: unknown;
+  pong?: Record<string, never>;
 }
+
+// ---------- Convenience aliases (kept for call-site compatibility) ----------
 
 export interface NamedItem {
   id: string;
@@ -228,7 +387,7 @@ export class WebSocketConnection {
   }
 
   reloadBrowserWidgets(): void {
-    this.sendRequest("reloadBrowserWidgets");
+    this.sendRequest({ reloadBrowserWidgets: {} });
   }
 
   setSrtConnectionPrioritiesEnabled(enabled: boolean): void {
@@ -243,7 +402,7 @@ export class WebSocketConnection {
     this.sendRequest({ moveToGimbalPreset: { id } });
   }
 
-  setFilter(filter: string, on: boolean): void {
+  setFilter(filter: RemoteControlFilterName, on: boolean): void {
     this.sendRequest({ setFilter: { filter: { [filter]: {} }, on } });
   }
 
@@ -251,7 +410,7 @@ export class WebSocketConnection {
     this.sendRequest({ getGolfScoreboard: {} });
   }
 
-  updateGolfScoreboard(data: unknown): void {
+  updateGolfScoreboard(data: RemoteControlGolfScoreboard): void {
     this.sendRequest({ updateGolfScoreboard: { data } });
   }
 

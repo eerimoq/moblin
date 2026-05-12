@@ -7,7 +7,7 @@ import {
   showConfirm,
   confirmOk,
   confirmCancel,
-  RemoteGolfData,
+  RemoteControlGolfScoreboard,
   ResponseData,
   EventData,
 } from "./utils.ts";
@@ -134,7 +134,7 @@ function App() {
 
   const connection = new GolfConnection();
 
-  function applyRemoteState(data: RemoteGolfData | null | undefined): void {
+  function applyRemoteState(data: RemoteControlGolfScoreboard | null | undefined): void {
     if (!data) return;
     setState((prevState) => ({
       ...prevState,
@@ -146,7 +146,7 @@ function App() {
         Array.isArray(data.players) && data.players.length > 0
           ? data.players.map((player) => ({
               name: player.name,
-              scores: ensureLength(player.scores ?? [], MAX_HOLES, -1),
+              scores: ensureLength(player.scores, MAX_HOLES, -1),
             }))
           : prevState.players,
     }));

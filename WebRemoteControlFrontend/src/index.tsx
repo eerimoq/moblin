@@ -8,6 +8,13 @@ import {
   EventData,
   GimbalPreset,
   NamedItem,
+  RemoteControlAssistantStreamerState,
+  RemoteControlFilterName,
+  RemoteControlSettings,
+  RemoteControlStatusGeneral,
+  RemoteControlStatusItem,
+  RemoteControlStatusTopLeft,
+  RemoteControlStatusTopRight,
   ResponseData,
   SrtPriority,
   WebSocketConnection,
@@ -44,7 +51,7 @@ const filterNames = {
   cameraMan: "Camera man",
 };
 
-const allFilterKeys = [
+const allFilterKeys: RemoteControlFilterName[] = [
   "pixellate",
   "movie",
   "grayScale",
@@ -187,14 +194,18 @@ function App() {
       }
     }
 
-    handleGetStatusResponse(status: Record<string, unknown>): void {
+    handleGetStatusResponse(status: {
+      general?: RemoteControlStatusGeneral;
+      topLeft?: RemoteControlStatusTopLeft;
+      topRight?: RemoteControlStatusTopRight;
+    }): void {
       updateStatus(status);
       this.statusTimerId = setTimeout(() => {
         this.sendGetStatusRequest();
       }, 1000);
     }
 
-    handleGetSettingsResponse(settingsData: { data: Record<string, unknown> }): void {
+    handleGetSettingsResponse(settingsData: { data: RemoteControlSettings }): void {
       populateSettings(settingsData.data);
       this.settingsTimerId = setTimeout(() => {
         this.sendGetSettingsRequest();
@@ -203,7 +214,7 @@ function App() {
 
     handleEvent(data: EventData): void {
       if (data.state !== undefined) {
-        this.handleStateEvent(data.state);
+        this.handleStateEvent(data.state.data);
       } else if (data.log !== undefined) {
         const entry = document.createElement("div");
         entry.textContent = data.log.entry;
@@ -211,39 +222,41 @@ function App() {
       }
     }
 
-    handleStateEvent(state: { data: Record<string, unknown> }): void {
-      const sd = state.data;
-      if (sd.streaming !== undefined) setLiveOn(sd.streaming as boolean);
-      if (sd.recording !== undefined) setRecordingOn(sd.recording as boolean);
-      if (sd.muted !== undefined) setMutedOn(sd.muted as boolean);
-      if (sd.debugLogging !== undefined) setDebugLoggingOn(sd.debugLogging as boolean);
+    handleStateEvent(sd: RemoteControlAssistantStreamerState): void {
+      if (sd.streaming !== undefined) setLiveOn(sd.streaming);
+      if (sd.recording !== undefined) setRecordingOn(sd.recording);
+      if (sd.muted !== undefined) setMutedOn(sd.muted);
+      if (sd.debugLogging !== undefined) setDebugLoggingOn(sd.debugLogging);
       if (sd.zoom !== undefined) setZoomValue(String(sd.zoom));
       if (sd.scene !== undefined) {
-        setCurrentSceneId(sd.scene as string);
+        setCurrentSceneId(sd.scene);
       }
       if (sd.mic !== undefined) {
-        setCurrentMicId(sd.mic as string);
+        setCurrentMicId(sd.mic);
       }
       if (sd.bitrate !== undefined) {
-        setCurrentBitrateId(sd.bitrate as string);
+        setCurrentBitrateId(sd.bitrate);
       }
       if (sd.zoomPreset !== undefined) {
-        setCurrentZoomPresetId(sd.zoomPreset as string);
+        setCurrentZoomPresetId(sd.zoomPreset);
       }
       if (sd.zoomPresets !== undefined) {
-        setZoomPresets(sd.zoomPresets as ZoomPreset[]);
-        setCurrentZoomPresetId((sd.zoomPreset as string | undefined) ?? null);
+        setZoomPresets(sd.zoomPresets);
+        setCurrentZoomPresetId(sd.zoomPreset ?? null);
       }
       if (sd.autoSceneSwitcher !== undefined) {
-        const switcher = sd.autoSceneSwitcher as { id: string } | null;
-        setCurrentAutoSwitcherId(switcher ? (switcher.id ?? "") : "");
+        setCurrentAutoSwitcherId(sd.autoSceneSwitcher.id ?? "");
       }
       if (sd.filters !== undefined) {
-        const filters = sd.filters as unknown[];
+        const filters = sd.filters;
         for (let filterIndex = 0; filterIndex < filters.length; filterIndex += 2) {
-          const name = Object.keys(filters[filterIndex] as object)[0];
-          const on = filters[filterIndex + 1] as boolean;
-          setFilterStates(name, on);
+          const filterKey = filters[filterIndex];
+          if (typeof filterKey !== "object" || filterKey === null) continue;
+          const name = Object.keys(filterKey)[0] as RemoteControlFilterName;
+          const on = filters[filterIndex + 1];
+          if (typeof on === "boolean") {
+            setFilterStates(name, on);
+          }
         }
       }
     }
@@ -251,52 +264,53 @@ function App() {
 
   const connection = new IndexConnection();
 
-  function overlayStatusRows(overlay: Record<string, { message: string }>): StatusRow[] {
+  function overlayStatusRows(
+    overlay: RemoteControlStatusTopLeft | RemoteControlStatusTopRight,
+  ): StatusRow[] {
     return Object.keys(overlay)
       .sort()
       .filter((key) => statusKeyToName[key as keyof typeof statusKeyToName])
-      .map((key) => [statusKeyToName[key as keyof typeof statusKeyToName], overlay[key].message]);
+      .map((key) => [
+        statusKeyToName[key as keyof typeof statusKeyToName],
+        (overlay as Record<string, RemoteControlStatusItem>)[key]?.message ?? "",
+      ]);
   }
 
-  function updateStatus(status: Record<string, unknown>): void {
-    const general = status.general as {
-      batteryLevel: number;
-      isMuted: boolean;
-      flame: string;
-      wiFiSsid: string;
-    };
+  function updateStatus(status: {
+    general?: RemoteControlStatusGeneral;
+    topLeft?: RemoteControlStatusTopLeft;
+    topRight?: RemoteControlStatusTopRight;
+  }): void {
+    const general = status.general;
     const genRows: StatusRow[] = [
-      ["Battery level", String(general.batteryLevel)],
-      ["Muted", String(general.isMuted)],
-      ["Flame", general.flame],
-      ["WiFi", general.wiFiSsid],
+      ["Battery level", String(general?.batteryLevel ?? "")],
+      ["Muted", String(general?.isMuted ?? "")],
+      ["Flame", general?.flame ?? ""],
+      ["WiFi", general?.wiFiSsid ?? ""],
     ];
     setGeneralRows(genRows);
-    const topLeft = (status.topLeft ?? {}) as Record<string, { message: string }>;
-    setTopLeftRows(overlayStatusRows(topLeft));
-    const topRight = (status.topRight ?? {}) as Record<string, { message: string }>;
-    setTopRightRows(overlayStatusRows(topRight));
+    if (status.topLeft !== undefined) {
+      setTopLeftRows(overlayStatusRows(status.topLeft));
+    }
+    if (status.topRight !== undefined) {
+      setTopRightRows(overlayStatusRows(status.topRight));
+    }
   }
 
-  function populateSettings(data: Record<string, unknown>): void {
+  function populateSettings(data: RemoteControlSettings): void {
     setShowControl(true);
-    setScenes((data.scenes as NamedItem[]) ?? []);
-    let baseAutoSceneSwitchers: NamedItem[] = [{ id: "", name: "-- None --" }];
-    setAutoSwitchers(baseAutoSceneSwitchers.concat(data.autoSceneSwitchers as NamedItem[]) ?? []);
-    setMics((data.mics as NamedItem[]) ?? []);
-    setBitratePresets((data.bitratePresets as BitratePreset[]) ?? []);
-    const srt = data.srt as
-      | {
-          connectionPriorities: SrtPriority[];
-          connectionPrioritiesEnabled: boolean;
-        }
-      | undefined;
+    setScenes(data.scenes ?? []);
+    const baseAutoSceneSwitchers: NamedItem[] = [{ id: "", name: "-- None --" }];
+    setAutoSwitchers(baseAutoSceneSwitchers.concat(data.autoSceneSwitchers ?? []));
+    setMics(data.mics ?? []);
+    setBitratePresets(data.bitratePresets ?? []);
+    const srt = data.srt;
     if (srt && srt.connectionPriorities && srt.connectionPriorities.length > 0) {
       setShowSrt(true);
       setSrtEnabled(srt.connectionPrioritiesEnabled);
       setSrtPriorities(srt.connectionPriorities);
     }
-    const gimbalPresetList = data.gimbalPresets as GimbalPreset[] | undefined;
+    const gimbalPresetList = data.gimbalPresets;
     if (gimbalPresetList && gimbalPresetList.length > 0) {
       setShowGimbal(true);
       setGimbalPresets(gimbalPresetList);
