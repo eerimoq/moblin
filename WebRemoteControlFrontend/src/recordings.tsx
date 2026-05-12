@@ -69,17 +69,17 @@ function HoverPreview(): HoverPreviewHandle {
   let previewEl!: HTMLDivElement;
 
   function positionPreview(event: MouseEvent): void {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const pw = previewEl.offsetWidth || PREVIEW_FALLBACK_WIDTH;
-    const ph = previewEl.offsetHeight || PREVIEW_FALLBACK_HEIGHT;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const previewWidth = previewEl.offsetWidth || PREVIEW_FALLBACK_WIDTH;
+    const previewHeight = previewEl.offsetHeight || PREVIEW_FALLBACK_HEIGHT;
     let xPos = event.clientX + PREVIEW_CURSOR_MARGIN;
     let yPos = event.clientY + PREVIEW_CURSOR_MARGIN;
-    if (xPos + pw > vw - PREVIEW_CURSOR_MARGIN) {
-      xPos = event.clientX - pw - PREVIEW_CURSOR_MARGIN;
+    if (xPos + previewWidth > windowWidth - PREVIEW_CURSOR_MARGIN) {
+      xPos = event.clientX - previewWidth - PREVIEW_CURSOR_MARGIN;
     }
-    if (yPos + ph > vh - PREVIEW_CURSOR_MARGIN) {
-      yPos = vh - ph - PREVIEW_CURSOR_MARGIN;
+    if (yPos + previewHeight > windowHeight - PREVIEW_CURSOR_MARGIN) {
+      yPos = windowHeight - previewHeight - PREVIEW_CURSOR_MARGIN;
     }
     if (xPos < PREVIEW_CURSOR_MARGIN) xPos = PREVIEW_CURSOR_MARGIN;
     if (yPos < PREVIEW_CURSOR_MARGIN) yPos = PREVIEW_CURSOR_MARGIN;
@@ -157,7 +157,7 @@ function RecordingRow({ recording, onDelete, onMobilePreview, hoverPreview }: Re
   }
 
   return (
-    <div class="recording-row">
+    <div class="recording">
       <div class="recording-header">
         <img
           class="recording-thumbnail"
@@ -174,7 +174,7 @@ function RecordingRow({ recording, onDelete, onMobilePreview, hoverPreview }: Re
         <span class="recording-size">{recording.size}</span>
         <button
           type="button"
-          class="recording-share-button"
+          class="recording-button"
           aria-label={`Copy download link for ${recording.name}`}
           onClick={handleCopy}
         >
@@ -182,7 +182,7 @@ function RecordingRow({ recording, onDelete, onMobilePreview, hoverPreview }: Re
         </button>
         <button
           type="button"
-          class="recording-download-button"
+          class="recording-button"
           aria-label={`Download ${recording.name}`}
           onClick={handleDownload}
         >
