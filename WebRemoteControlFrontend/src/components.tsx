@@ -1,6 +1,7 @@
 import type { Accessor, JSX, ParentProps } from "solid-js";
-import { For, Show } from "solid-js";
+import { For, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
+import { connectionStatus } from "./utils.ts";
 
 interface ButtonProps {
   class?: string;
@@ -182,6 +183,25 @@ export function Toggle(props: ToggleProps) {
       <label for={props.id} class="ml-3 text-sm text-zinc-200 cursor-pointer">
         {props.label}
       </label>
+    </div>
+  );
+}
+
+interface ConnectionStatusProps {
+  status: Accessor<string>;
+}
+
+export function ConnectionStatus({ status }: ConnectionStatusProps) {
+  return (
+    <div class="pb-1 text-center text-sm">
+      <Switch fallback={<span class="text-red-500">Unknown server status</span>}>
+        <Match when={status() === connectionStatus.connecting}>
+          <span class="text-yellow-400">Connecting to server</span>
+        </Match>
+        <Match when={status() === connectionStatus.connected}>
+          <span class="text-green-500">Connected to server</span>
+        </Match>
+      </Switch>
     </div>
   );
 }

@@ -1,9 +1,18 @@
-import { createSignal, For, Match, Show, Switch } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
 import { connectionStatus, WebSocketConnection } from "./utils.ts";
-import { GitHubLink, Button, NamedItem, Picker, Section, Toggle, Title } from "./components.tsx";
+import {
+  GitHubLink,
+  Button,
+  NamedItem,
+  Picker,
+  Section,
+  Toggle,
+  Title,
+  ConnectionStatus,
+} from "./components.tsx";
 
 interface ZoomPreset extends NamedItem {}
 
@@ -337,21 +346,6 @@ function App() {
     );
   }
 
-  function ConnectionStatus() {
-    return (
-      <div class="pb-1 text-center text-sm">
-        <Switch fallback={<span class="text-red-500">Unknown server status</span>}>
-          <Match when={status() === connectionStatus.connecting}>
-            <span class="text-yellow-400">Connecting to server</span>
-          </Match>
-          <Match when={status() === connectionStatus.connected}>
-            <span class="text-green-500">Connected to server</span>
-          </Match>
-        </Switch>
-      </div>
-    );
-  }
-
   function Status() {
     return (
       <Section title="Status">
@@ -564,7 +558,7 @@ function App() {
     <div class="max-w-3xl mx-auto space-y-2">
       <Title title="Moblin Remote Control" />
       <Links />
-      <ConnectionStatus />
+      <ConnectionStatus status={status} />
       <Status />
       <Control />
       <SrtConnectionPriorities />

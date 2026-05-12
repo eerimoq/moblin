@@ -1,4 +1,4 @@
-import { createSignal, For, Match, Switch } from "solid-js";
+import { createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
 import {
@@ -8,7 +8,7 @@ import {
   confirmOk,
   confirmCancel,
 } from "./utils.ts";
-import { BasicLinks, ConfirmDialog, Title } from "./components.tsx";
+import { BasicLinks, ConfirmDialog, Title, ConnectionStatus } from "./components.tsx";
 
 interface Player {
   name: string;
@@ -232,21 +232,6 @@ function App() {
   function changeCurrentPar(par: number): void {
     setState("pars", state.currentHole, par);
     sendUpdate();
-  }
-
-  function ConnectionStatus() {
-    return (
-      <div class="pb-1 text-center text-sm">
-        <Switch fallback={<span class="text-red-500">Unknown server status</span>}>
-          <Match when={status() === connectionStatus.connecting}>
-            <span class="text-yellow-400">Connecting to server</span>
-          </Match>
-          <Match when={status() === connectionStatus.connected}>
-            <span class="text-green-500">Connected to server</span>
-          </Match>
-        </Switch>
-      </div>
-    );
   }
 
   function Event() {
@@ -485,7 +470,7 @@ function App() {
     <div class="max-w-xl mx-auto space-y-2">
       <Title title="Moblin Golf Scoreboard" />
       <BasicLinks />
-      <ConnectionStatus />
+      <ConnectionStatus status={status} />
       <Event />
       <Players />
       <Holes />
