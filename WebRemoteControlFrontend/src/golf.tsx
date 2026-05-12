@@ -7,6 +7,9 @@ import {
   showConfirm,
   confirmOk,
   confirmCancel,
+  RemoteGolfData,
+  ResponseData,
+  EventData,
 } from "./utils.ts";
 import { BasicLinks, ConfirmDialog, Title, ConnectionStatus } from "./components.tsx";
 
@@ -21,19 +24,6 @@ interface GolfState {
   pars: number[];
   currentHole: number;
   players: Player[];
-}
-
-interface RemotePlayer {
-  name: string;
-  scores?: number[];
-}
-
-interface RemoteGolfData {
-  title?: string;
-  numberOfHoles?: number;
-  pars?: number[];
-  currentHole?: number;
-  players?: RemotePlayer[];
 }
 
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
@@ -128,19 +118,16 @@ function App() {
       this.sendGetGolfScoreboard();
     }
 
-    handleResponse(_id: number, result: { ok: boolean }, data: unknown): void {
-      if (!result.ok) return;
-      if (!data) return;
-      const d = data as { getGolfScoreboard?: { data: RemoteGolfData } };
-      if (d.getGolfScoreboard) {
-        applyRemoteState(d.getGolfScoreboard.data);
+    handleResponse(_id: number, result: { ok: boolean }, data?: ResponseData): void {
+      if (!result.ok || data === undefined) return;
+      if (data.getGolfScoreboard !== undefined) {
+        applyRemoteState(data.getGolfScoreboard.data);
       }
     }
 
-    handleEvent(data: unknown): void {
-      const d = data as { golfScoreboard?: { data: RemoteGolfData } };
-      if (d.golfScoreboard) {
-        applyRemoteState(d.golfScoreboard.data);
+    handleEvent(data: EventData): void {
+      if (data.golfScoreboard !== undefined) {
+        applyRemoteState(data.golfScoreboard.data);
       }
     }
   }

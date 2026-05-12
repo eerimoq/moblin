@@ -1,7 +1,7 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import type { Accessor } from "solid-js";
 import { render } from "solid-js/web";
-import { WebSocketConnection } from "./utils.ts";
+import { EventData, WebSocketConnection } from "./utils.ts";
 
 interface Team {
   bgColor: string;
@@ -53,12 +53,11 @@ function App() {
   const [team2, setTeam2] = createSignal({ ...defaultTeam, name: "TEAM 2" });
 
   class ScoreboardConnection extends WebSocketConnection {
-    handleEvent(data: unknown): void {
-      const d = data as { scoreboard?: { config: { team1: Team; team2: Team } } };
-      if (d.scoreboard) {
-        const { team1: t1, team2: t2 } = d.scoreboard.config;
-        setTeam1({ ...t1 });
-        setTeam2({ ...t2 });
+    handleEvent(data: EventData): void {
+      if (data.scoreboard !== undefined) {
+        const config = data.scoreboard.config;
+        if (config.team1) setTeam1({ ...config.team1 });
+        if (config.team2) setTeam2({ ...config.team2 });
       }
     }
   }

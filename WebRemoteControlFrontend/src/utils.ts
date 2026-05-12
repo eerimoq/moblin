@@ -16,10 +16,96 @@ interface ResponseResult {
   ok: boolean;
 }
 
+export interface RemoteGolfPlayer {
+  name: string;
+  scores?: number[];
+}
+
+export interface RemoteGolfData {
+  title?: string;
+  numberOfHoles?: number;
+  pars?: number[];
+  currentHole?: number;
+  players?: RemoteGolfPlayer[];
+}
+
+export interface ScoreboardTeamState {
+  name: string;
+  bgColor: string;
+  textColor: string;
+  primaryScore: string;
+  secondaryScore: string;
+  secondaryScore1: string;
+  secondaryScore2: string;
+  secondaryScore3: string;
+  secondaryScore4: string;
+  secondaryScore5: string;
+  stat1: string;
+  stat2: string;
+  stat3: string;
+  stat4: string;
+  possession: boolean;
+  [key: string]: string | boolean;
+}
+
+export interface ScoreboardGlobalState {
+  title: string;
+  period: string;
+  periodLabel: string;
+  timer: string;
+  timerDirection: string;
+  duration: string;
+  infoBoxText: string;
+  scoringMode: string;
+  showTitle: boolean;
+  showStats: boolean;
+  showMoreStats: boolean;
+  showClock: boolean;
+  changePossessionOnScore: boolean;
+  maxSetScore: number;
+  minSetScore: number;
+  [key: string]: string | boolean | number;
+}
+
+export interface ScoreboardControlDef {
+  type: string;
+  label?: string;
+  options?: string[];
+  periodReset?: boolean;
+}
+
+export interface ScoreboardMatchConfig {
+  sportId: string;
+  layout: string;
+  team1: ScoreboardTeamState;
+  team2: ScoreboardTeamState;
+  global: ScoreboardGlobalState;
+  controls: Record<string, ScoreboardControlDef>;
+  [key: string]:
+    | ScoreboardTeamState
+    | ScoreboardGlobalState
+    | Record<string, ScoreboardControlDef>
+    | string;
+}
+
+export interface ResponseData {
+  getStatus?: Record<string, unknown>;
+  getSettings?: { data: Record<string, unknown> };
+  getScoreboardSports?: { names: string[] };
+  getGolfScoreboard?: { data: RemoteGolfData };
+}
+
+export interface EventData {
+  state?: { data: Record<string, unknown> };
+  log?: { entry: string };
+  scoreboard?: { config: Partial<ScoreboardMatchConfig> };
+  golfScoreboard?: { data: RemoteGolfData };
+}
+
 interface IncomingMessage {
   ping?: unknown;
-  response?: { id: number; result: ResponseResult; data: unknown };
-  event?: { data: unknown };
+  response?: { id: number; result: ResponseResult; data: ResponseData };
+  event?: { data: EventData };
   pong?: unknown;
 }
 
@@ -177,9 +263,9 @@ export class WebSocketConnection {
   async handleMessage(message: IncomingMessage): Promise<void> {
     if (message.ping !== undefined) {
       this.handlePing();
-    } else if (message.response) {
+    } else if (message.response !== undefined) {
       this.handleResponse(message.response.id, message.response.result, message.response.data);
-    } else if (message.event) {
+    } else if (message.event !== undefined) {
       this.handleEvent(message.event.data);
     }
   }
@@ -188,9 +274,9 @@ export class WebSocketConnection {
     this.send({ pong: {} });
   }
 
-  handleResponse(_id: number, _result: ResponseResult, _data: unknown): void {}
+  handleResponse(_id: number, _result: ResponseResult, _data?: ResponseData): void {}
 
-  handleEvent(_data: unknown): void {}
+  handleEvent(_data: EventData): void {}
 
   sendGetStatusRequest(): void {
     this.sendRequest({ getStatus: {} });

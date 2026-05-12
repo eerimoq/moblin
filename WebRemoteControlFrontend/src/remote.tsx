@@ -3,6 +3,12 @@ import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
 import {
   connectionStatus,
+  EventData,
+  ResponseData,
+  ScoreboardControlDef,
+  ScoreboardGlobalState,
+  ScoreboardMatchConfig,
+  ScoreboardTeamState,
   WebSocketConnection,
   confirmCancel,
   confirmOk,
@@ -10,60 +16,10 @@ import {
 } from "./utils.ts";
 import { ConfirmDialog } from "./components.tsx";
 
-interface TeamState {
-  name: string;
-  bgColor: string;
-  textColor: string;
-  primaryScore: string;
-  secondaryScore: string;
-  secondaryScore1: string;
-  secondaryScore2: string;
-  secondaryScore3: string;
-  secondaryScore4: string;
-  secondaryScore5: string;
-  stat1: string;
-  stat2: string;
-  stat3: string;
-  stat4: string;
-  possession: boolean;
-  [key: string]: string | boolean;
-}
-
-interface GlobalState {
-  title: string;
-  period: string;
-  periodLabel: string;
-  timer: string;
-  timerDirection: string;
-  duration: string;
-  infoBoxText: string;
-  scoringMode: string;
-  showTitle: boolean;
-  showStats: boolean;
-  showMoreStats: boolean;
-  showClock: boolean;
-  changePossessionOnScore: boolean;
-  maxSetScore: number;
-  minSetScore: number;
-  [key: string]: string | boolean | number;
-}
-
-interface ControlDef {
-  type: string;
-  label?: string;
-  options?: string[];
-  periodReset?: boolean;
-}
-
-interface ScoreboardState {
-  sportId: string;
-  layout: string;
-  team1: TeamState;
-  team2: TeamState;
-  global: GlobalState;
-  controls: Record<string, ControlDef>;
-  [key: string]: TeamState | GlobalState | Record<string, ControlDef> | string;
-}
+type TeamState = ScoreboardTeamState;
+type GlobalState = ScoreboardGlobalState;
+type ControlDef = ScoreboardControlDef;
+type ScoreboardState = ScoreboardMatchConfig;
 
 interface ControlEntry {
   kind: "counter" | "single";
@@ -162,23 +118,18 @@ function App() {
       setStatus(newStatus);
     }
 
-    handleResponse(_id: number, _result: { ok: boolean }, data: unknown): void {
-      if (data === undefined) return;
-      const d = data as {
-        getScoreboardSports?: { names: string[] };
-        getStatus?: Record<string, unknown>;
-      };
-      if (d.getScoreboardSports !== undefined) {
-        setSports(d.getScoreboardSports.names);
-      } else if (d.getStatus !== undefined) {
-        handleGetStatus(d.getStatus);
+    handleResponse(_id: number, result: { ok: boolean }, data?: ResponseData): void {
+      if (!result.ok || data === undefined) return;
+      if (data.getScoreboardSports !== undefined) {
+        setSports(data.getScoreboardSports.names);
+      } else if (data.getStatus !== undefined) {
+        handleGetStatus(data.getStatus);
       }
     }
 
-    handleEvent(data: unknown): void {
-      const d = data as { scoreboard?: { config: Partial<ScoreboardState> } };
-      if (d.scoreboard !== undefined) {
-        handleEventScoreboard(d.scoreboard.config);
+    handleEvent(data: EventData): void {
+      if (data.scoreboard !== undefined) {
+        handleEventScoreboard(data.scoreboard.config);
       }
     }
   }
@@ -227,8 +178,8 @@ function App() {
 
   function handleEventScoreboard(config: Partial<ScoreboardState>): void {
     setScoreboardState({
-      sportId: (config.sportId as string) ?? scoreboardState.sportId,
-      layout: (config.layout as string) ?? scoreboardState.layout,
+      sportId: config.sportId,
+      layout: config.layout,
       team1: { ...emptyTeam(), ...(config.team1 as TeamState) },
       team2: { ...emptyTeam(), ...(config.team2 as TeamState) },
       global: { ...emptyGlobal(), ...(config.global as GlobalState) },

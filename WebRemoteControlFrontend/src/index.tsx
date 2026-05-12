@@ -5,8 +5,10 @@ import { render } from "solid-js/web";
 import {
   BitratePreset,
   connectionStatus,
+  EventData,
   GimbalPreset,
   NamedItem,
+  ResponseData,
   SrtPriority,
   WebSocketConnection,
   ZoomPreset,
@@ -176,18 +178,12 @@ function App() {
       super.reconnectSoon();
     }
 
-    handleResponse(_id: number, result: { ok: boolean }, data: unknown): void {
-      if (!result.ok) return;
-      if (!data) return;
-      const d = data as {
-        getStatus?: Record<string, unknown>;
-        getSettings?: { data: Record<string, unknown> };
-      };
-      if (d.getStatus) {
-        this.handleGetStatusResponse(d.getStatus);
-      }
-      if (d.getSettings) {
-        this.handleGetSettingsResponse(d.getSettings);
+    handleResponse(_id: number, result: { ok: boolean }, data?: ResponseData): void {
+      if (!result.ok || data === undefined) return;
+      if (data.getStatus !== undefined) {
+        this.handleGetStatusResponse(data.getStatus);
+      } else if (data.getSettings !== undefined) {
+        this.handleGetSettingsResponse(data.getSettings);
       }
     }
 
@@ -205,16 +201,12 @@ function App() {
       }, 10000);
     }
 
-    handleEvent(data: unknown): void {
-      const d = data as {
-        state?: { data: Record<string, unknown> };
-        log?: { entry: string };
-      };
-      if (d.state) {
-        this.handleStateEvent(d.state);
-      } else if (d.log) {
+    handleEvent(data: EventData): void {
+      if (data.state !== undefined) {
+        this.handleStateEvent(data.state);
+      } else if (data.log !== undefined) {
         const entry = document.createElement("div");
-        entry.textContent = d.log.entry;
+        entry.textContent = data.log.entry;
         if (logContainer) logContainer.appendChild(entry);
       }
     }
