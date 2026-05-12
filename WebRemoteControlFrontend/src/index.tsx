@@ -2,33 +2,24 @@ import { createSignal, For, Show } from "solid-js";
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
-import { connectionStatus, WebSocketConnection } from "./utils.ts";
+import {
+  BitratePreset,
+  connectionStatus,
+  GimbalPreset,
+  NamedItem,
+  SrtPriority,
+  WebSocketConnection,
+  ZoomPreset,
+} from "./utils.ts";
 import {
   GitHubLink,
   Button,
-  NamedItem,
   Picker,
   Section,
   Toggle,
   Title,
   ConnectionStatus,
 } from "./components.tsx";
-
-interface ZoomPreset extends NamedItem {}
-
-interface BitratePreset {
-  id: string;
-  bitrate: number;
-}
-
-interface SrtPriority {
-  id: string;
-  name: string;
-  priority: number;
-  enabled: boolean;
-}
-
-interface GimbalPreset extends NamedItem {}
 
 type StatusRow = [string, string];
 

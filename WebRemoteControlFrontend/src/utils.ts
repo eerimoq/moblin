@@ -23,6 +23,27 @@ interface IncomingMessage {
   pong?: unknown;
 }
 
+export interface NamedItem {
+  id: string;
+  name: string;
+}
+
+export interface ZoomPreset extends NamedItem {}
+
+export interface BitratePreset {
+  id: string;
+  bitrate: number;
+}
+
+export interface SrtPriority {
+  id: string;
+  name: string;
+  priority: number;
+  enabled: boolean;
+}
+
+export interface GimbalPreset extends NamedItem {}
+
 export class WebSocketConnection {
   protected connectTimerId: ReturnType<typeof setTimeout> | undefined;
   protected nextId: number;

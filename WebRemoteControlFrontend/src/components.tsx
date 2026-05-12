@@ -1,7 +1,7 @@
 import type { Accessor, JSX, ParentProps } from "solid-js";
 import { For, Match, Show, Switch } from "solid-js";
 import { twMerge } from "tailwind-merge";
-import { connectionStatus } from "./utils.ts";
+import { connectionStatus, NamedItem } from "./utils.ts";
 
 interface ButtonProps {
   class?: string;
@@ -119,11 +119,6 @@ interface TitleProps {
 
 export function Title({ title }: TitleProps) {
   return <h1 class="text-2xl font-bold text-center">{title}</h1>;
-}
-
-export interface NamedItem {
-  id: string;
-  name: string;
 }
 
 export interface PickerProps {
