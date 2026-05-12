@@ -562,7 +562,7 @@ function App() {
 
   return (
     <div class="max-w-3xl mx-auto space-y-2">
-      <Title title="Moblin Remote Control"/>
+      <Title title="Moblin Remote Control" />
       <Links />
       <ConnectionStatus />
       <Status />

@@ -280,7 +280,7 @@ function App() {
 
   return (
     <div class="max-w-3xl mx-auto space-y-2">
-      <Title title="Moblin Recordings"/>
+      <Title title="Moblin Recordings" />
       <BasicLinks />
       <Recordings />
       {hoverPreview.element}

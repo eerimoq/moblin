@@ -483,7 +483,7 @@ function App() {
 
   return (
     <div class="max-w-xl mx-auto space-y-2">
-      <Title title="Moblin Golf Scoreboard"/>
+      <Title title="Moblin Golf Scoreboard" />
       <BasicLinks />
       <ConnectionStatus />
       <Event />
