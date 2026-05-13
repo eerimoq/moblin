@@ -192,6 +192,17 @@ struct StreamSettingsView: View {
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
 
+    private func isValidSecondaryStreamUrl(value: String) -> String? {
+        if value.isEmpty {
+            return nil
+        }
+        return isValidUrl(url: value, allowedSchemes: ["whip", "whips"])
+    }
+
+    private func submitSecondaryStreamUrl(value: String) {
+        stream.secondaryStreamUrl = value
+    }
+
     var body: some View {
         Form {
             Section {
@@ -203,6 +214,15 @@ struct StreamSettingsView: View {
                 } label: {
                     TextItemLocalizedView(name: "URL", value: stream.url, sensitive: true)
                 }
+                Toggle("Secondary stream", isOn: $stream.secondaryStreamEnabled)
+                TextEditNavigationView(
+                    title: String(localized: "Secondary stream WHIP URL"),
+                    value: stream.secondaryStreamUrl,
+                    onChange: isValidSecondaryStreamUrl,
+                    onSubmit: submitSecondaryStreamUrl,
+                    placeholder: "whip://your-server/live"
+                )
+                .disabled(!stream.secondaryStreamEnabled)
                 if database.showAllSettings {
                     switch stream.getProtocol() {
                     case .srt:

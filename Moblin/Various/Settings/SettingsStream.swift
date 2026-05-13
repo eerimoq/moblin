@@ -1177,6 +1177,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var goLiveNotificationDiscordMessage: String = ""
     @Published var goLiveNotificationDiscordWebhookUrl: String = ""
     @Published var multiStreaming: SettingsStreamMultiStreaming = .init()
+    @Published var secondaryStreamEnabled: Bool = false
+    @Published var secondaryStreamUrl: String = ""
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -1267,7 +1269,9 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
              replay,
              goLiveNotificationDiscordMessage,
              goLiveNotificationDiscordWebhookUrl,
-             multiStreaming
+             multiStreaming,
+             secondaryStreamEnabled,
+             secondaryStreamUrl
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1354,6 +1358,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.goLiveNotificationDiscordMessage, goLiveNotificationDiscordMessage)
         try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
         try container.encode(.multiStreaming, multiStreaming)
+        try container.encode(.secondaryStreamEnabled, secondaryStreamEnabled)
+        try container.encode(.secondaryStreamUrl, secondaryStreamUrl)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1467,6 +1473,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             ""
         )
         multiStreaming = container.decode(.multiStreaming, SettingsStreamMultiStreaming.self, .init())
+        secondaryStreamEnabled = container.decode(.secondaryStreamEnabled, Bool.self, false)
+        secondaryStreamUrl = container.decode(.secondaryStreamUrl, String.self, "")
     }
 
     func clone() -> SettingsStream {
@@ -1541,6 +1549,8 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.goLiveNotificationDiscordMessage = goLiveNotificationDiscordMessage
         new.goLiveNotificationDiscordWebhookUrl = goLiveNotificationDiscordWebhookUrl
         new.multiStreaming = multiStreaming.clone()
+        new.secondaryStreamEnabled = secondaryStreamEnabled
+        new.secondaryStreamUrl = secondaryStreamUrl
         return new
     }
 

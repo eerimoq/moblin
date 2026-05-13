@@ -243,11 +243,10 @@ extension Model {
     }
 
     private func startSecondaryWhipStreamIfEnabled() {
-        let streamer = database.remoteControl.streamer
-        guard streamer.secondaryStreamEnabled, !streamer.secondaryStreamUrl.isEmpty else {
+        guard stream.secondaryStreamEnabled, !stream.secondaryStreamUrl.isEmpty else {
             return
         }
-        media.secondaryWhipStartStream(url: streamer.secondaryStreamUrl)
+        media.secondaryWhipStartStream(url: stream.secondaryStreamUrl)
     }
 
     func stopNetStream() {

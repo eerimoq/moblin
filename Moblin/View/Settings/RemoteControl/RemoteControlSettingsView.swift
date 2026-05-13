@@ -63,17 +63,6 @@ private struct RemoteControlSettingsStreamerView: View {
         String(Int(value))
     }
 
-    private func isValidSecondaryStreamUrl(value: String) -> String? {
-        if value.isEmpty {
-            return nil
-        }
-        return isValidUrl(url: value, allowedSchemes: ["whip", "whips"])
-    }
-
-    private func submitSecondaryStreamUrl(value: String) {
-        streamer.secondaryStreamUrl = value
-    }
-
     var body: some View {
         Section {
             Toggle("Enabled", isOn: $streamer.enabled)
@@ -127,22 +116,6 @@ private struct RemoteControlSettingsStreamerView: View {
                     format: formatStreamerPreviewFps
                 )
             }
-        }
-        Section {
-            Toggle("Secondary stream", isOn: $streamer.secondaryStreamEnabled)
-            TextEditNavigationView(
-                title: String(localized: "WHIP URL"),
-                value: streamer.secondaryStreamUrl,
-                onChange: isValidSecondaryStreamUrl,
-                onSubmit: submitSecondaryStreamUrl,
-                placeholder: "whip://your-server/live"
-            )
-            .disabled(!streamer.secondaryStreamEnabled)
-        } footer: {
-            Text("""
-            Enable to stream a secondary 480p/500 kbps H.264 video and 64 kbps OPUS audio \
-            stream via WHIP when going live.
-            """)
         }
     }
 }
