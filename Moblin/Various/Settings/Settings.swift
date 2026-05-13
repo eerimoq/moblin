@@ -1884,8 +1884,8 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  page: page)
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .gimbalTracking,
-                                 imageOn: "figure.stand",
-                                 imageOff: "figure.stand",
+                                 imageOn: "iphone.dock.motorized.viewfinder",
+                                 imageOff: "iphone.dock.motorized.viewfinder",
                                  isOn: true,
                                  page: page)
     updateQuickButton(database: database, button: button)
