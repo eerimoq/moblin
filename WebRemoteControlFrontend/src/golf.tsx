@@ -12,7 +12,7 @@ import {
   RemoteControlGolfScoreboard,
   RemoteControlGolfPlayer,
 } from "./utils.ts";
-import { BasicLinks, ConfirmDialog, Title, ConnectionStatus } from "./components.tsx";
+import { BasicLinks, ConfirmDialog, Title, ConnectingOverlay } from "./components.tsx";
 
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
@@ -426,7 +426,7 @@ function App() {
     <div class="max-w-xl mx-auto space-y-2">
       <Title title="Moblin Golf Scoreboard" />
       <BasicLinks />
-      <ConnectionStatus status={status} />
+      <ConnectingOverlay status={status} />
       <Event />
       <Players />
       <Holes />

@@ -20,7 +20,7 @@ import {
   Section,
   Toggle,
   Title,
-  ConnectionStatus,
+  ConnectingOverlay,
 } from "./components.tsx";
 
 type StatusRow = [string, string];
@@ -541,7 +541,7 @@ function App() {
     <div class="max-w-3xl mx-auto space-y-2">
       <Title title="Moblin Remote Control" />
       <Links />
-      <ConnectionStatus status={status} />
+      <ConnectingOverlay status={status} />
       <Status />
       <Control />
       <SrtConnectionPriorities />

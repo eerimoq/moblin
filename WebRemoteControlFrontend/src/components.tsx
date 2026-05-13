@@ -1,5 +1,5 @@
 import type { Accessor, JSX, ParentProps } from "solid-js";
-import { For, Match, Show, Switch } from "solid-js";
+import { For, Show } from "solid-js";
 import { twMerge } from "tailwind-merge";
 import { connectionStatus, NamedItem } from "./utils.ts";
 
@@ -182,21 +182,21 @@ export function Toggle(props: ToggleProps) {
   );
 }
 
-interface ConnectionStatusProps {
+interface ConnectingOverlayProps {
   status: Accessor<string>;
 }
 
-export function ConnectionStatus({ status }: ConnectionStatusProps) {
+export function ConnectingOverlay({ status }: ConnectingOverlayProps) {
   return (
-    <div class="pb-1 text-center text-sm">
-      <Switch fallback={<span class="text-red-500">Unknown server status</span>}>
-        <Match when={status() === connectionStatus.connecting}>
-          <span class="text-yellow-400">Connecting to server</span>
-        </Match>
-        <Match when={status() === connectionStatus.connected}>
-          <span class="text-green-500">Connected to server</span>
-        </Match>
-      </Switch>
-    </div>
+    <Show when={status() !== connectionStatus.connected}>
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div class="relative w-full max-w-sm mx-4 rounded-2xl border border-zinc-600 bg-zinc-800 shadow-2xl shadow-black/60 ring-1 ring-white/10">
+          <div class="px-6 py-8 flex flex-col items-center gap-4">
+            <div class="w-10 h-10 border-4 border-zinc-600 border-t-indigo-400 rounded-full animate-spin" />
+            <p class="text-base text-zinc-100 leading-relaxed">Connecting to server...</p>
+          </div>
+        </div>
+      </div>
+    </Show>
   );
 }

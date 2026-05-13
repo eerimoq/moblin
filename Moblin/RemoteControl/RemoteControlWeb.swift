@@ -63,6 +63,7 @@ private let staticFiles: [StaticFile] = [
     StaticFile("/", "volleyball", "png"),
     StaticFile("/css/", "app", "css"),
     StaticFile("/css/", "common", "css"),
+    StaticFile("/css/", "components", "css"),
     StaticFile("/css/", "golf", "css"),
     StaticFile("/css/", "recordings", "css"),
     StaticFile("/css/", "remote", "css"),

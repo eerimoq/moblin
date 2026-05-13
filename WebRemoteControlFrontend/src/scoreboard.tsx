@@ -1,11 +1,13 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { render } from "solid-js/web";
 import {
+  connectionStatus,
   createScoreboardTeam,
   EventData,
   RemoteControlScoreboardTeam,
   WebSocketConnection,
 } from "./utils.ts";
+import { ConnectingOverlay } from "./components.tsx";
 
 interface TeamColumnProps {
   team: RemoteControlScoreboardTeam;
@@ -41,8 +43,13 @@ function TeamColumn(props: TeamColumnProps) {
 function App() {
   const [team1, setTeam1] = createSignal(createScoreboardTeam());
   const [team2, setTeam2] = createSignal(createScoreboardTeam());
+  const [status, setStatus] = createSignal<string>(connectionStatus.connecting);
 
   class ScoreboardConnection extends WebSocketConnection {
+    onStatusChanged(newStatus: string): void {
+      setStatus(newStatus);
+    }
+
     handleEvent(data: EventData): void {
       if (data.scoreboard !== undefined) {
         const config = data.scoreboard.config;
@@ -71,10 +78,13 @@ function App() {
   });
 
   return (
-    <div class="flex">
-      <TeamColumn team={team1()} />
-      <TeamColumn team={team2()} />
-    </div>
+    <>
+      <div class="flex">
+        <TeamColumn team={team1()} />
+        <TeamColumn team={team2()} />
+      </div>
+      <ConnectingOverlay status={status} />
+    </>
   );
 }
 

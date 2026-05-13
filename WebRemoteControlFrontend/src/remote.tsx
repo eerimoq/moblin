@@ -14,7 +14,7 @@ import {
   showConfirm,
   createScoreboardTeam,
 } from "./utils.ts";
-import { ConfirmDialog } from "./components.tsx";
+import { ConfirmDialog, ConnectingOverlay } from "./components.tsx";
 
 interface ControlEntry {
   kind: "counter" | "single";
@@ -550,15 +550,6 @@ function App() {
       <details open>
         <summary>
           <span>SCOREBOARD CONFIGURATION</span>
-          <span
-            class="status-text"
-            classList={{
-              "text-green-500": connected(),
-              "text-red-500": !connected(),
-            }}
-          >
-            {connected() ? "Connected" : "Disconnected"}
-          </span>
         </summary>
         <div class="card grid grid-cols-4 gap-2 mt-1">
           <Show when={sports().length > 0}>
@@ -689,6 +680,7 @@ function App() {
         onCancel={confirmCancel}
         okTextClass="text-zinc-300"
       />
+      <ConnectingOverlay status={status} />
     </>
   );
 }
