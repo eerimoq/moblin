@@ -434,6 +434,7 @@ final class WhipStream: @unchecked Sendable {
     private var offerSent = false
     private var timeStampRebaser = TimeStampRebaser()
     private let connectTimer = SimpleTimer(queue: whipQueue)
+    private var isSecondaryStream = false
     private var secondaryVideoSettings: VideoEncoderSettings?
     private var secondaryAudioSettings: AudioEncoderSettings?
 
@@ -485,6 +486,7 @@ final class WhipStream: @unchecked Sendable {
                                secondaryAudioSettings: AudioEncoderSettings? = nil)
     {
         stopInternal()
+        isSecondaryStream = secondaryVideoSettings != nil && secondaryAudioSettings != nil
         self.secondaryVideoSettings = secondaryVideoSettings
         self.secondaryAudioSettings = secondaryAudioSettings
         guard let endpointUrl = makeEndpointUrl(url: url) else {
@@ -647,7 +649,7 @@ final class WhipStream: @unchecked Sendable {
     }
 
     private func stopEncoding() {
-        let isSecondary = secondaryVideoSettings != nil
+        let isSecondary = isSecondaryStream
         processorControlQueue.async {
             if isSecondary {
                 self.processor.stopSecondaryEncoding()

@@ -654,12 +654,16 @@ final class Media: NSObject, @unchecked Sendable {
         guard let processor else {
             return
         }
+        let videoBitrate: UInt32 = 500_000
+        let audioBitrate = 64_000
+        let videoWidth: Int32 = 854
+        let videoHeight: Int32 = 480
         var videoSettings = VideoEncoderSettings()
-        videoSettings.videoSize = CMVideoDimensions(width: 854, height: 480)
-        videoSettings.bitrate = 500_000
+        videoSettings.videoSize = CMVideoDimensions(width: videoWidth, height: videoHeight)
+        videoSettings.bitrate = videoBitrate
         videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_AutoLevel as String
         var audioSettings = AudioEncoderSettings()
-        audioSettings.bitrate = 64_000
+        audioSettings.bitrate = audioBitrate
         audioSettings.format = .opus
         let handler = SecondaryWhipStreamHandler()
         secondaryWhipStreamHandler = handler
@@ -670,7 +674,7 @@ final class Media: NSObject, @unchecked Sendable {
             iceServers: [defaultStunServer],
             videoCodec: .h264avc,
             audioCodec: .opus,
-            videoBitrate: Double(videoSettings.bitrate),
+            videoBitrate: Double(videoBitrate),
             secondaryVideoSettings: videoSettings,
             secondaryAudioSettings: audioSettings
         )
