@@ -1,7 +1,7 @@
 import ActivityKit
 import Foundation
 
-#if !targetEnvironment(macCatalyst)
+#if false && !targetEnvironment(macCatalyst)
 
 extension Model {
     func startLiveActivity() {
