@@ -6,13 +6,13 @@ import {
   EventData,
   ResponseData,
   ScoreboardControlDef,
-  ScoreboardGlobalState,
   ScoreboardMatchConfig,
-  ScoreboardTeamState,
+  RemoteControlScoreboardTeam,
   WebSocketConnection,
   confirmCancel,
   confirmOk,
   showConfirm,
+  createScoreboardTeam,
 } from "./utils.ts";
 import { ConfirmDialog } from "./components.tsx";
 
@@ -43,26 +43,6 @@ const CONTROL_ORDER = [
   "possession",
 ];
 
-function emptyTeam() {
-  return {
-    name: "",
-    bgColor: "#000000",
-    textColor: "#ffffff",
-    primaryScore: "0",
-    secondaryScore: "0",
-    secondaryScore1: "",
-    secondaryScore2: "",
-    secondaryScore3: "",
-    secondaryScore4: "",
-    secondaryScore5: "",
-    stat1: "",
-    stat2: "",
-    stat3: "",
-    stat4: "",
-    possession: false,
-  };
-}
-
 function emptyGlobal() {
   return {
     title: "",
@@ -78,8 +58,6 @@ function emptyGlobal() {
     showMoreStats: false,
     showClock: false,
     changePossessionOnScore: false,
-    maxSetScore: 30,
-    minSetScore: 0,
   };
 }
 
@@ -87,8 +65,8 @@ function App() {
   const [scoreboardState, setScoreboardState] = createStore<ScoreboardMatchConfig>({
     sportId: "",
     layout: "",
-    team1: emptyTeam(),
-    team2: emptyTeam(),
+    team1: createScoreboardTeam(),
+    team2: createScoreboardTeam(),
     global: emptyGlobal(),
     controls: {},
   });
@@ -97,15 +75,13 @@ function App() {
   const [batteryLevel, setBatteryLevel] = createSignal("");
   const [bitrateMessage, setBitrateMessage] = createSignal("");
   const [activeInputId, setActiveInputId] = createSignal<string | null>(null);
-  const [rangeMax, setRangeMax] = createSignal(30);
-  const [_rangeMin, setRangeMin] = createSignal(0);
   const [confirmOpen, setConfirmOpen] = createSignal(false);
   const [confirmMessage, setConfirmMessage] = createSignal("");
   let statusIntervalId: ReturnType<typeof setInterval> | null = null;
 
   class RemoteConnection extends WebSocketConnection {
     onConnected(): void {
-      this.sendRequest({ getScoreboardSports: {} });
+      this.sendGetScoreboardSports();
       this.sendGetStatusRequest();
     }
 
@@ -131,31 +107,12 @@ function App() {
 
   const connection = new RemoteConnection();
 
-  function connected() {
+  function connected(): boolean {
     return status() == connectionStatus.connected;
   }
 
-  function sendToggleClock() {
-    connection.sendRequest({ toggleScoreboardClock: {} });
-  }
-
-  function sendSetScoreboardClock(time: string): void {
-    connection.sendRequest({ setScoreboardClock: { time } });
-  }
-
-  function sendUpdateScoreboard() {
-    connection.sendRequest({
-      updateScoreboard: {
-        config: {
-          sportId: scoreboardState.sportId,
-          layout: scoreboardState.layout,
-          team1: scoreboardState.team1,
-          team2: scoreboardState.team2,
-          global: scoreboardState.global,
-          controls: scoreboardState.controls,
-        },
-      },
-    });
+  function sendUpdateScoreboard(): void {
+    connection.sendUpdateScoreboard(scoreboardState);
   }
 
   function handleGetStatus(status: Record<string, unknown>): void {
@@ -171,20 +128,8 @@ function App() {
     }
   }
 
-  function handleEventScoreboard(config: Partial<ScoreboardMatchConfig>): void {
-    console.log(config.team1, config.team2);
-    setScoreboardState({
-      sportId: config.sportId,
-      layout: config.layout,
-      team1: { ...emptyTeam(), ...config.team1 },
-      team2: { ...emptyTeam(), ...config.team2 },
-      global: { ...emptyGlobal(), ...(config.global as ScoreboardGlobalState) },
-      controls: config.controls,
-    });
-    if (config.global) {
-      setRangeMin(config.global.minSetScore);
-      setRangeMax(config.global.maxSetScore);
-    }
+  function handleEventScoreboard(config: ScoreboardMatchConfig): void {
+    setScoreboardState(config);
   }
 
   function adjust(teamNumber: number, key: string, delta: number): void {
@@ -198,7 +143,7 @@ function App() {
       const setNum = parseInt(scoreboardState.global.period) || 1;
       if (setNum >= 1 && setNum <= 5) {
         const actualKey = makeSecondaryScoreKey(setNum);
-        const current = parseInt(team[actualKey]) || 0;
+        const current = parseInt(team[actualKey] ?? "0") || 0;
         const newVal = Math.max(0, current + delta).toString();
         setScoreboardState(teamKey, actualKey, newVal);
         const otherTeamKey = makeOtherTeamKey(teamNumber);
@@ -207,7 +152,7 @@ function App() {
           setScoreboardState(otherTeamKey, actualKey, "0");
         }
       }
-      sendUpdateScoreboard();
+      connection.sendUpdateScoreboard(scoreboardState);
       return;
     }
     const current = parseInt(team[key] as string) || 0;
@@ -338,7 +283,7 @@ function App() {
 
   function switchSport(sportId: string): void {
     if (!sportId) return;
-    connection.sendRequest({ setScoreboardSport: { sportId } });
+    connection.sendSetScoreboardSport(sportId);
   }
 
   function switchLayout(layout: string): void {
@@ -429,10 +374,6 @@ function App() {
       setScoreboardState("team1", "primaryScore", "0");
       setScoreboardState("team2", "primaryScore", "0");
     }
-    if (scoreboardState.global.secondaryScoreResetOnPeriod) {
-      setScoreboardState("team1", "secondaryScore", "0");
-      setScoreboardState("team2", "secondaryScore", "0");
-    }
     sendUpdateScoreboard();
   }
 
@@ -517,7 +458,7 @@ function App() {
           <div class="card grid grid-cols-4 gap-2 items-center shadow-xl">
             <button
               class="btn btn-top bg-indigo-600 text-white border-none"
-              onClick={sendToggleClock}
+              onClick={() => connection.sendToggleClock()}
             >
               Clock
             </button>
@@ -529,17 +470,13 @@ function App() {
               onFocus={() => setActiveInputId("clock")}
               onBlur={(event) => {
                 setActiveInputId(null);
-                sendSetScoreboardClock(event.target.value);
+                connection.sendSetScoreboardClock(event.target.value);
               }}
             />
             <select
               class="btn-top bg-black rounded"
               value={scoreboardState.global.duration}
-              onChange={(event) =>
-                connection.sendRequest({
-                  setScoreboardDuration: { minutes: parseInt(event.target.value) },
-                })
-              }
+              onChange={(event) => connection.setScoreboardDuration(parseInt(event.target.value))}
             >
               <For each={Array.from({ length: 120 }, (_, minute) => minute + 1)}>
                 {(minute) => <option value={minute}>{minute} min</option>}
@@ -577,32 +514,16 @@ function App() {
                 >
                   SET {setNumber}
                 </div>
-                <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
-                  <select
-                    value={scoreboardState.team1[makeSecondaryScoreKey(setNumber)]}
-                    onChange={(event) => setHistoricScore(1, setNumber, event.target.value)}
-                  >
-                    <option value="">-</option>
-                    <For
-                      each={Array.from({ length: rangeMax() + 1 }, (_, scoreValue) => scoreValue)}
-                    >
-                      {(scoreValue) => <option value={String(scoreValue)}>{scoreValue}</option>}
-                    </For>
-                  </select>
-                </div>
-                <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
-                  <select
-                    value={scoreboardState.team2[makeSecondaryScoreKey(setNumber)]}
-                    onChange={(event) => setHistoricScore(2, setNumber, event.target.value)}
-                  >
-                    <option value="">-</option>
-                    <For
-                      each={Array.from({ length: rangeMax() + 1 }, (_, scoreValue) => scoreValue)}
-                    >
-                      {(scoreValue) => <option value={String(scoreValue)}>{scoreValue}</option>}
-                    </For>
-                  </select>
-                </div>
+                <TeamScorePicker
+                  setNumber={setNumber}
+                  team={scoreboardState.team1}
+                  onChange={(value) => setHistoricScore(1, setNumber, value)}
+                />
+                <TeamScorePicker
+                  setNumber={setNumber}
+                  team={scoreboardState.team2}
+                  onChange={(value) => setHistoricScore(2, setNumber, value)}
+                />
               </div>
             )}
           </For>
@@ -803,33 +724,23 @@ function makeSecondaryScoreKey(scoreNumber: number): SecondaryScoreKey {
   return `secondaryScore${scoreNumber}` as SecondaryScoreKey;
 }
 
-function getTeam(state: ScoreboardMatchConfig, teamNumber: number): ScoreboardTeamState {
+function getTeam(state: ScoreboardMatchConfig, teamNumber: number): RemoteControlScoreboardTeam {
   return state[makeTeamKey(teamNumber)];
 }
 
-function TeamColumn({
-  teamNumber,
-  state,
-  onAdjust,
-  onCycle,
-  onToggle,
-  onSelectControl,
-  onNameChange,
-  onBgColor,
-  onTextColor,
-}: TeamColumnProps) {
-  const team = () => getTeam(state, teamNumber);
+function TeamColumn(props: TeamColumnProps) {
+  const team = () => getTeam(props.state, props.teamNumber);
 
   const secScore = () => {
-    if (state.global.scoringMode === "tennis") {
-      return team()[makeSecondaryScoreKey(parseInt(state.global.period))] || "0";
+    if (props.state.global.scoringMode === "tennis") {
+      return team()[makeSecondaryScoreKey(parseInt(props.state.global.period))] || "0";
     }
     return team().secondaryScore || "-";
   };
 
   const controls = (): AnyControlEntry[] => {
     const result: AnyControlEntry[] = [];
-    const ctrl = state.controls;
+    const ctrl = props.state.controls;
     if (!ctrl) return result;
     for (let orderIndex = 0; orderIndex < CONTROL_ORDER.length; orderIndex++) {
       const key = CONTROL_ORDER[orderIndex];
@@ -872,7 +783,7 @@ function TeamColumn({
           type="text"
           class=""
           value={team().name}
-          onBlur={(event) => onNameChange(teamNumber, event.target.value)}
+          onBlur={(event) => props.onNameChange(props.teamNumber, event.target.value)}
         />
       </div>
     );
@@ -892,27 +803,27 @@ function TeamColumn({
             <input
               type="color"
               value={team().bgColor}
-              onInput={(event) => onBgColor(teamNumber, event.target.value)}
+              onInput={(event) => props.onBgColor(props.teamNumber, event.target.value)}
             />
           </div>
           <div class="rounded border border-zinc-700 bg-zinc-800">
             <input
               type="color"
               value={team().textColor}
-              onInput={(event) => onTextColor(teamNumber, event.target.value)}
+              onInput={(event) => props.onTextColor(props.teamNumber, event.target.value)}
             />
           </div>
         </div>
         <div class="grid grid-cols-3 gap-1 mb-2">
           <button
             class="col-span-2 btn btn-score"
-            onClick={() => onAdjust(teamNumber, "primaryScore", 1)}
+            onClick={() => props.onAdjust(props.teamNumber, "primaryScore", 1)}
           >
             +Pt
           </button>
           <button
             class="col-span-1 btn btn-score"
-            onClick={() => onAdjust(teamNumber, "primaryScore", -1)}
+            onClick={() => props.onAdjust(props.teamNumber, "primaryScore", -1)}
           >
             -Pt
           </button>
@@ -922,10 +833,16 @@ function TeamColumn({
             if (ctrl.kind === "counter") {
               return (
                 <div class="grid grid-cols-2 gap-1 mb-1">
-                  <button class="btn btn-ctrl" onClick={() => onAdjust(teamNumber, ctrl.key, 1)}>
+                  <button
+                    class="btn btn-ctrl"
+                    onClick={() => props.onAdjust(props.teamNumber, ctrl.key, 1)}
+                  >
                     +{ctrl.c.label}
                   </button>
-                  <button class="btn btn-ctrl" onClick={() => onAdjust(teamNumber, ctrl.key, -1)}>
+                  <button
+                    class="btn btn-ctrl"
+                    onClick={() => props.onAdjust(props.teamNumber, ctrl.key, -1)}
+                  >
                     -{ctrl.c.label}
                   </button>
                 </div>
@@ -935,22 +852,22 @@ function TeamColumn({
               return (
                 <div class="grid grid-cols-2 gap-1 mb-1">
                   <ControlWidget
-                    teamNumber={teamNumber}
+                    teamNumber={props.teamNumber}
                     controlKey={ctrl.key}
                     control={ctrl.c}
                     team={team()}
-                    onCycle={onCycle}
-                    onToggle={onToggle}
-                    onSelect={onSelectControl}
+                    onCycle={props.onCycle}
+                    onToggle={props.onToggle}
+                    onSelect={props.onSelectControl}
                   />
                   <ControlWidget
-                    teamNumber={teamNumber}
+                    teamNumber={props.teamNumber}
                     controlKey={ctrl.nextKey}
                     control={ctrl.nextC}
                     team={team()}
-                    onCycle={onCycle}
-                    onToggle={onToggle}
-                    onSelect={onSelectControl}
+                    onCycle={props.onCycle}
+                    onToggle={props.onToggle}
+                    onSelect={props.onSelectControl}
                   />
                 </div>
               );
@@ -958,13 +875,13 @@ function TeamColumn({
             return (
               <div class="mb-1">
                 <ControlWidget
-                  teamNumber={teamNumber}
+                  teamNumber={props.teamNumber}
                   controlKey={ctrl.key}
                   control={ctrl.c}
                   team={team()}
-                  onCycle={onCycle}
-                  onToggle={onToggle}
-                  onSelect={onSelectControl}
+                  onCycle={props.onCycle}
+                  onToggle={props.onToggle}
+                  onSelect={props.onSelectControl}
                 />
               </div>
             );
@@ -974,7 +891,7 @@ function TeamColumn({
     );
   }
   return (
-    <div class="flex-1 space-y-2" id={`t${teamNumber}a`}>
+    <div class="flex-1 space-y-2" id={`t${props.teamNumber}a`}>
       <Name />
       <Controls />
     </div>
@@ -985,7 +902,7 @@ interface ControlWidgetProps {
   teamNumber: number;
   controlKey: string;
   control: ScoreboardControlDef;
-  team: ScoreboardTeamState;
+  team: RemoteControlScoreboardTeam;
   onCycle: (teamNumber: number, key: string) => void;
   onToggle: (teamNumber: number) => void;
   onSelect: (teamNumber: number, key: string, value: string) => void;
@@ -1048,6 +965,28 @@ function ControlWidget({
     );
   }
   return null;
+}
+
+interface TeamScorePickerProps {
+  setNumber: number;
+  team: RemoteControlScoreboardTeam;
+  onChange: (value: string) => void;
+}
+
+function TeamScorePicker(props: TeamScorePickerProps) {
+  return (
+    <div class="h-8 rounded bg-zinc-800 border border-zinc-700">
+      <select
+        value={props.team[makeSecondaryScoreKey(props.setNumber)] ?? ""}
+        onChange={(event) => props.onChange(event.target.value)}
+      >
+        <option value="">-</option>
+        <For each={Array.from({ length: 31 }, (_, scoreValue) => scoreValue)}>
+          {(scoreValue) => <option value={String(scoreValue)}>{scoreValue}</option>}
+        </For>
+      </select>
+    </div>
+  );
 }
 
 render(() => <App />, document.getElementById("app")!);

@@ -848,22 +848,13 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     var title: String
     var timer: String
     var timerDirection: String
-    // periphery: ignore
     var duration: Int?
     var period: String
     var periodLabel: String
     var infoBoxText: String = ""
-    // periphery: ignore
-    var primaryScoreResetOnPeriod: Bool?
-    // periphery: ignore
-    var secondaryScoreResetOnPeriod: Bool?
-    // periphery: ignore
-    var changePossessionOnScore: Bool?
+    var primaryScoreResetOnPeriod: Bool
+    var changePossessionOnScore: Bool
     var scoringMode: String?
-    // periphery: ignore
-    var minSetScore: Int?
-    // periphery: ignore
-    var maxSetScore: Int?
     var showTitle: Bool?
     var showStats: Bool?
     var showMoreStats: Bool?

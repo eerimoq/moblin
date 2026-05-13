@@ -29,23 +29,43 @@ export interface RemoteControlGolfScoreboard {
   players: RemoteControlGolfPlayer[];
 }
 
-export interface ScoreboardTeamState {
+export interface RemoteControlScoreboardTeam {
   name: string;
   bgColor: string;
   textColor: string;
   primaryScore: string;
   secondaryScore: string;
-  secondaryScore1: string;
-  secondaryScore2: string;
-  secondaryScore3: string;
-  secondaryScore4: string;
-  secondaryScore5: string;
+  secondaryScore1?: string;
+  secondaryScore2?: string;
+  secondaryScore3?: string;
+  secondaryScore4?: string;
+  secondaryScore5?: string;
   stat1: string;
   stat2: string;
   stat3: string;
   stat4: string;
   possession: boolean;
-  [key: string]: string | boolean;
+  [key: string]: string | boolean | undefined;
+}
+
+export function createScoreboardTeam(): RemoteControlScoreboardTeam {
+  return {
+    name: "",
+    bgColor: "#000000",
+    textColor: "#ffffff",
+    primaryScore: "0",
+    secondaryScore: "0",
+    secondaryScore1: "",
+    secondaryScore2: "",
+    secondaryScore3: "",
+    secondaryScore4: "",
+    secondaryScore5: "",
+    stat1: "",
+    stat2: "",
+    stat3: "",
+    stat4: "",
+    possession: false,
+  };
 }
 
 export interface ScoreboardGlobalState {
@@ -62,8 +82,6 @@ export interface ScoreboardGlobalState {
   showMoreStats: boolean;
   showClock: boolean;
   changePossessionOnScore: boolean;
-  maxSetScore: number;
-  minSetScore: number;
   [key: string]: string | boolean | number;
 }
 
@@ -77,12 +95,12 @@ export interface ScoreboardControlDef {
 export interface ScoreboardMatchConfig {
   sportId: string;
   layout: string;
-  team1: ScoreboardTeamState;
-  team2: ScoreboardTeamState;
+  team1: RemoteControlScoreboardTeam;
+  team2: RemoteControlScoreboardTeam;
   global: ScoreboardGlobalState;
   controls: Record<string, ScoreboardControlDef>;
   [key: string]:
-    | ScoreboardTeamState
+    | RemoteControlScoreboardTeam
     | ScoreboardGlobalState
     | Record<string, ScoreboardControlDef>
     | string;
@@ -98,7 +116,7 @@ export interface ResponseData {
 export interface EventData {
   state?: { data: Record<string, unknown> };
   log?: { entry: string };
-  scoreboard?: { config: Partial<ScoreboardMatchConfig> };
+  scoreboard?: { config: ScoreboardMatchConfig };
   golfScoreboard?: { data: RemoteControlGolfScoreboard };
 }
 
@@ -293,6 +311,36 @@ export class WebSocketConnection {
         filter: { topRight: true },
       },
     });
+  }
+
+  setScoreboardDuration(minutes: number): void {
+    this.sendRequest({
+      setScoreboardDuration: { minutes: minutes },
+    });
+  }
+
+  sendGetScoreboardSports(): void {
+    this.sendRequest({ getScoreboardSports: {} });
+  }
+
+  sendToggleClock(): void {
+    this.sendRequest({ toggleScoreboardClock: {} });
+  }
+
+  sendSetScoreboardClock(time: string): void {
+    this.sendRequest({ setScoreboardClock: { time } });
+  }
+
+  sendUpdateScoreboard(config: ScoreboardMatchConfig): void {
+    this.sendRequest({
+      updateScoreboard: {
+        config: config,
+      },
+    });
+  }
+
+  sendSetScoreboardSport(sportId: string): void {
+    this.sendRequest({ setScoreboardSport: { sportId } });
   }
 
   sendRequest(data: unknown): void {

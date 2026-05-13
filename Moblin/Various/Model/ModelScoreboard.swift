@@ -34,7 +34,6 @@ private let basketballConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "QTR",
         primaryScoreResetOnPeriod: false,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
     ),
     controls: [
@@ -74,7 +73,6 @@ private let genericConfig = RemoteControlScoreboardMatchConfig(
         period: "",
         periodLabel: "",
         primaryScoreResetOnPeriod: false,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
         showTitle: false,
         showStats: false
@@ -106,7 +104,6 @@ private let genericSetsConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "SET",
         primaryScoreResetOnPeriod: true,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
         showTitle: false,
         showStats: false,
@@ -151,7 +148,6 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "PER",
         primaryScoreResetOnPeriod: false,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
     ),
     controls: [
@@ -184,7 +180,6 @@ private let footballConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "HALF",
         primaryScoreResetOnPeriod: false,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
     ),
     controls: [
@@ -213,11 +208,8 @@ private let tennisConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "SET",
         primaryScoreResetOnPeriod: true,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
         scoringMode: "tennis",
-        minSetScore: 3,
-        maxSetScore: 15,
         showStats: false
     ),
     controls: [
@@ -253,10 +245,7 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "SET",
         primaryScoreResetOnPeriod: true,
-        secondaryScoreResetOnPeriod: false,
-        changePossessionOnScore: true,
-        minSetScore: 15,
-        maxSetScore: 40
+        changePossessionOnScore: true
     ),
     controls: [
         "primaryScore": .init(type: "counter", label: "Pt", periodReset: true),
@@ -440,7 +429,7 @@ extension Model {
                     period: "1",
                     periodLabel: "SET",
                     primaryScoreResetOnPeriod: false,
-                    secondaryScoreResetOnPeriod: false
+                    changePossessionOnScore: false
                 ),
                 controls: [:]
             )
