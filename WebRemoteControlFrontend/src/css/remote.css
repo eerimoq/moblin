@@ -154,6 +154,22 @@ details summary {
   height: 36px;
 }
 
+input.conf-input {
+  border: 1px solid var(--btn-border);
+}
+
+input.clock-time {
+  border: 1px solid var(--btn-border);
+}
+
+.select-arrow {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a1a1aa'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 22px;
+  border: 1px solid var(--btn-border);
+}
+
 .status-text {
   font-weight: 800;
   text-transform: uppercase;

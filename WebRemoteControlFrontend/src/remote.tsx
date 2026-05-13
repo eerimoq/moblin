@@ -466,7 +466,7 @@ function App() {
               type="text"
               placeholder="0:00"
               value={scoreboardState.global.timer}
-              class="btn-top font-mono text-lg text-indigo-400 bg-black rounded"
+              class="btn-top clock-time font-mono text-lg text-indigo-400 bg-black rounded"
               onFocus={() => setActiveInputId("clock")}
               onBlur={(event) => {
                 setActiveInputId(null);
@@ -474,7 +474,7 @@ function App() {
               }}
             />
             <select
-              class="btn-top bg-black rounded"
+              class="btn-top select-arrow bg-black rounded"
               value={scoreboardState.global.duration}
               onChange={(event) => connection.setScoreboardDuration(parseInt(event.target.value))}
             >
@@ -483,7 +483,7 @@ function App() {
               </For>
             </select>
             <select
-              class="btn-top bg-black rounded"
+              class="btn-top select-arrow bg-black rounded"
               value={scoreboardState.global.timerDirection}
               onChange={(event) => setClockDirection(event.target.value)}
             >
@@ -554,7 +554,7 @@ function App() {
         <div class="card grid grid-cols-4 gap-2 mt-1">
           <Show when={sports().length > 0}>
             <select
-              class="col-span-2 btn h-9 text-[10px] bg-black"
+              class="col-span-2 select-arrow btn h-9 text-[10px] bg-black"
               value={scoreboardState.sportId}
               onChange={(event) => switchSport(event.target.value)}
             >
@@ -565,7 +565,7 @@ function App() {
             </select>
           </Show>
           <select
-            class="col-span-2 btn h-9 text-[10px] bg-black"
+            class="col-span-2 select-arrow btn h-9 text-[10px] bg-black"
             value={scoreboardState.layout}
             onChange={(event) => switchLayout(event.target.value)}
           >
