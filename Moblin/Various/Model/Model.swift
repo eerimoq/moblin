@@ -3128,7 +3128,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setBlurFaces(on: Bool) {
         database.face.blurFaces = on
-        toggleFilterQuickButton(type: .blurFaces)
+        setFilterQuickButton(type: .blurFaces, on: on)
         updateFaceFilterSettings()
     }
 
@@ -3146,7 +3146,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setPrivacy(on: Bool) {
         database.face.blurBackground = on
-        toggleFilterQuickButton(type: .privacy)
+        setFilterQuickButton(type: .privacy, on: on)
         updateFaceFilterSettings()
     }
 
@@ -3158,7 +3158,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func setMoblinInMouth(on: Bool) {
         database.face.showMoblin = on
-        toggleFilterQuickButton(type: .moblinInMouth)
+        setFilterQuickButton(type: .moblinInMouth, on: on)
         updateFaceFilterSettings()
     }
 
