@@ -641,7 +641,11 @@ final class WhipStream: @unchecked Sendable {
         let audioSettings = secondaryAudioSettings
         processorControlQueue.async {
             if let videoSettings, let audioSettings {
-                self.processor.startSecondaryEncoding(self, videoSettings: videoSettings, audioSettings: audioSettings)
+                self.processor.startSecondaryEncoding(
+                    self,
+                    videoSettings: videoSettings,
+                    audioSettings: audioSettings
+                )
             } else {
                 self.processor.startEncoding(self)
             }

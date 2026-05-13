@@ -296,8 +296,8 @@ final class Processor: @unchecked Sendable {
     }
 
     func startSecondaryEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate,
-                                 videoSettings: VideoEncoderSettings,
-                                 audioSettings: AudioEncoderSettings)
+                                videoSettings: VideoEncoderSettings,
+                                audioSettings: AudioEncoderSettings)
     {
         video.startSecondaryEncoding(delegate, settings: videoSettings)
         audio.startSecondaryEncoding(delegate, settings: audioSettings)

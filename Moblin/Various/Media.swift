@@ -1,6 +1,7 @@
 import AVFoundation
 import Network
 import SwiftUI
+import VideoToolbox
 
 private func isMuted(level: Float) -> Bool {
     level.isNaN
@@ -655,7 +656,7 @@ final class Media: NSObject, @unchecked Sendable {
             return
         }
         let videoBitrate: UInt32 = 500_000
-        let audioBitrate = 64_000
+        let audioBitrate = 64000
         let videoWidth: Int32 = 854
         let videoHeight: Int32 = 480
         var videoSettings = VideoEncoderSettings()

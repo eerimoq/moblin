@@ -47,9 +47,7 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         case enabled,
              url,
              previewFps,
-             reliableChatAndEvents,
-             secondaryStreamEnabled,
-             secondaryStreamUrl
+             reliableChatAndEvents
     }
 
     func encode(to encoder: any Encoder) throws {
