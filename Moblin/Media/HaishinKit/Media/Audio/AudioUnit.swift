@@ -91,6 +91,7 @@ func makeChannelMap(
 
 final class AudioUnit: NSObject, @unchecked Sendable {
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
+    var secondaryEncoder: AudioEncoder?
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -111,6 +112,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                 return
             }
             encoder.setInputSourceFormat(inputSourceFormat)
+            secondaryEncoder?.setInputSourceFormat(inputSourceFormat)
         }
     }
 
@@ -148,6 +150,22 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         processorPipelineQueue.async {
             self.inputSourceFormat = nil
         }
+    }
+
+    func startSecondaryEncoding(_ delegate: any AudioEncoderDelegate, settings: AudioEncoderSettings) {
+        let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
+        encoder.setSettings(settings: settings)
+        encoder.delegate = delegate
+        if let inputSourceFormat {
+            encoder.setInputSourceFormat(inputSourceFormat)
+        }
+        encoder.startRunning()
+        secondaryEncoder = encoder
+    }
+
+    func stopSecondaryEncoding() {
+        secondaryEncoder?.stopRunning()
+        secondaryEncoder = nil
     }
 
     func setSpeechToText(enabled: Bool) {
@@ -274,6 +292,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         }
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
+        secondaryEncoder?.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
     }
 

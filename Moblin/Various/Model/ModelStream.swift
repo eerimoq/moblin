@@ -188,6 +188,7 @@ extension Model {
         case .whip:
             startNetStreamWhip()
         }
+        startSecondaryWhipStreamIfEnabled()
         updateSpeed(now: .now)
         streamBecameBrokenTime = nil
     }
@@ -241,6 +242,14 @@ extension Model {
                               videoBitrate: Double(stream.bitrate))
     }
 
+    private func startSecondaryWhipStreamIfEnabled() {
+        let streamer = database.remoteControl.streamer
+        guard streamer.secondaryStreamEnabled, !streamer.secondaryStreamUrl.isEmpty else {
+            return
+        }
+        media.secondaryWhipStartStream(url: streamer.secondaryStreamUrl)
+    }
+
     func stopNetStream() {
         moblink.streamer?.stopTunnels()
         reconnectTimer.stop()
@@ -248,6 +257,7 @@ extension Model {
         media.srtStopStream()
         media.ristStopStream()
         media.whipStopStream()
+        media.secondaryWhipStopStream()
         streamStartTime = nil
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)

@@ -42,12 +42,16 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
     @Published var url: String = ""
     @Published var previewFps: Float = 1.0
     @Published var reliableChatAndEvents: Bool = false
+    @Published var secondaryStreamEnabled: Bool = false
+    @Published var secondaryStreamUrl: String = ""
 
     enum CodingKeys: CodingKey {
         case enabled,
              url,
              previewFps,
-             reliableChatAndEvents
+             reliableChatAndEvents,
+             secondaryStreamEnabled,
+             secondaryStreamUrl
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -56,6 +60,8 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         try container.encode(.url, url)
         try container.encode(.previewFps, previewFps)
         try container.encode(.reliableChatAndEvents, reliableChatAndEvents)
+        try container.encode(.secondaryStreamEnabled, secondaryStreamEnabled)
+        try container.encode(.secondaryStreamUrl, secondaryStreamUrl)
     }
 
     init() {}
@@ -66,6 +72,8 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
         url = container.decode(.url, String.self, "")
         previewFps = container.decode(.previewFps, Float.self, 1.0)
         reliableChatAndEvents = container.decode(.reliableChatAndEvents, Bool.self, false)
+        secondaryStreamEnabled = container.decode(.secondaryStreamEnabled, Bool.self, false)
+        secondaryStreamUrl = container.decode(.secondaryStreamUrl, String.self, "")
     }
 }
 

@@ -58,6 +58,8 @@ final class Media: NSObject, @unchecked Sendable {
     private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
     private var whipStream: WhipStream?
+    private var secondaryWhipStream: WhipStream?
+    private var secondaryWhipStreamHandler: SecondaryWhipStreamHandler?
     private var srtlaClient: SrtlaClient?
     private var processor: Processor?
     private var srtTotalByteCount: Int64 = 0
@@ -113,11 +115,14 @@ final class Media: NSObject, @unchecked Sendable {
         rtmpStopStream()
         ristStopStream()
         whipStopStream()
+        secondaryWhipStopStream()
         rtmpStreams.removeAll()
         srtStreamNew = nil
         srtStreamOld = nil
         ristStream = nil
         whipStream = nil
+        secondaryWhipStream = nil
+        secondaryWhipStreamHandler = nil
         processor = nil
     }
 
@@ -643,6 +648,38 @@ final class Media: NSObject, @unchecked Sendable {
 
     func whipStopStream() {
         whipStream?.stop()
+    }
+
+    func secondaryWhipStartStream(url: String) {
+        guard let processor else {
+            return
+        }
+        var videoSettings = VideoEncoderSettings()
+        videoSettings.videoSize = CMVideoDimensions(width: 854, height: 480)
+        videoSettings.bitrate = 500_000
+        videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_AutoLevel as String
+        var audioSettings = AudioEncoderSettings()
+        audioSettings.bitrate = 64_000
+        audioSettings.format = .opus
+        let handler = SecondaryWhipStreamHandler()
+        secondaryWhipStreamHandler = handler
+        secondaryWhipStream = WhipStream(processor: processor, delegate: handler)
+        secondaryWhipStream?.start(
+            url: url,
+            headers: [],
+            iceServers: [defaultStunServer],
+            videoCodec: .h264avc,
+            audioCodec: .opus,
+            videoBitrate: Double(videoSettings.bitrate),
+            secondaryVideoSettings: videoSettings,
+            secondaryAudioSettings: audioSettings
+        )
+    }
+
+    func secondaryWhipStopStream() {
+        secondaryWhipStream?.stop()
+        secondaryWhipStream = nil
+        secondaryWhipStreamHandler = nil
     }
 
     func setTorch(on: Bool) {
@@ -1267,5 +1304,22 @@ extension Media: WhipStreamDelegate {
                            completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
+    }
+}
+
+private final class SecondaryWhipStreamHandler: WhipStreamDelegate {
+    func whipStreamOnConnected() {
+        logger.info("secondary-whip: Connected")
+    }
+
+    func whipStreamOnDisconnected(reason: String) {
+        logger.info("secondary-whip: Disconnected: \(reason)")
+    }
+
+    func whipStreamPerform(request: URLRequest,
+                           queue: DispatchQueue,
+                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+    {
+        httpRequest(request: request, queue: queue, completion: completion)
     }
 }
