@@ -192,6 +192,17 @@ struct StreamSettingsView: View {
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
 
+    private func isValidPreviewStreamUrl(value: String) -> String? {
+        if value.isEmpty {
+            return nil
+        }
+        return isValidUrl(url: value, allowedSchemes: ["whip", "whips"])
+    }
+
+    private func submitPreviewStreamUrl(value: String) {
+        stream.previewStreamUrl = value
+    }
+
     var body: some View {
         Form {
             Section {
@@ -329,6 +340,18 @@ struct StreamSettingsView: View {
                 }
             }
             if database.showAllSettings {
+                if database.debug.previewStream {
+                    Section("Preview") {
+                        Toggle("Enabled", isOn: $stream.previewStreamEnabled)
+                        TextEditNavigationView(
+                            title: String(localized: "URL"),
+                            value: stream.previewStreamUrl,
+                            onChange: isValidPreviewStreamUrl,
+                            onSubmit: submitPreviewStreamUrl,
+                            placeholder: "whip://your-server/live"
+                        )
+                    }
+                }
                 Section {
                     NavigationLink {
                         TextEditView(

@@ -49,6 +49,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraManAlwaysMove: Bool = false
     @Published var enhancedMoblinSrt: Bool = false
     @Published var videoBitrateChange: Bool = false
+    @Published var previewStream: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel,
@@ -89,7 +90,8 @@ class SettingsDebug: Codable, ObservableObject {
              cameraManSpeed,
              cameraManAlwaysMove,
              enhancedMoblinSrt,
-             videoBitrateChangeEnabled
+             videoBitrateChangeEnabled,
+             previewStream
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -126,6 +128,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.cameraManAlwaysMove, cameraManAlwaysMove)
         try container.encode(.enhancedMoblinSrt, enhancedMoblinSrt)
         try container.encode(.videoBitrateChangeEnabled, videoBitrateChange)
+        try container.encode(.previewStream, previewStream)
     }
 
     init() {}
@@ -176,5 +179,6 @@ class SettingsDebug: Codable, ObservableObject {
         cameraManAlwaysMove = container.decode(.cameraManAlwaysMove, Bool.self, false)
         enhancedMoblinSrt = container.decode(.enhancedMoblinSrt, Bool.self, false)
         videoBitrateChange = container.decode(.videoBitrateChangeEnabled, Bool.self, false)
+        previewStream = container.decode(.previewStream, Bool.self, false)
     }
 }

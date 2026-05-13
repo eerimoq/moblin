@@ -91,6 +91,7 @@ func makeChannelMap(
 
 final class AudioUnit: NSObject, @unchecked Sendable {
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
+    var previewEncoder: AudioEncoder?
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -111,6 +112,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
                 return
             }
             encoder.setInputSourceFormat(inputSourceFormat)
+            previewEncoder?.setInputSourceFormat(inputSourceFormat)
         }
     }
 
@@ -147,6 +149,26 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         encoder.stopRunning()
         processorPipelineQueue.async {
             self.inputSourceFormat = nil
+        }
+    }
+
+    func startPreviewEncoding(_ delegate: any AudioEncoderDelegate, settings: AudioEncoderSettings) {
+        let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
+        encoder.setSettings(settings: settings)
+        encoder.delegate = delegate
+        encoder.startRunning()
+        processorPipelineQueue.async {
+            if let inputSourceFormat = self.inputSourceFormat {
+                encoder.setInputSourceFormat(inputSourceFormat)
+            }
+            self.previewEncoder = encoder
+        }
+    }
+
+    func stopPreviewEncoding() {
+        processorPipelineQueue.async {
+            self.previewEncoder?.stopRunning()
+            self.previewEncoder = nil
         }
     }
 
@@ -275,6 +297,7 @@ final class AudioUnit: NSObject, @unchecked Sendable {
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
+        previewEncoder?.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
     }
 
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,

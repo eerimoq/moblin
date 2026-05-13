@@ -177,6 +177,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var fillFrame = true
     let session = makeCaptureSession()
     let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
+    var previewEncoder: VideoEncoder?
     weak var processor: Processor?
     private var effects: [VideoEffect] = []
     private var pendingAfterAttachEffects: [VideoEffect]?
@@ -469,6 +470,19 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     func stopEncoding() {
         encoder.stopRunning()
         processor?.delegate.streamVideoEncoderResolution(resolution: canvasSize)
+    }
+
+    func startPreviewEncoding(_ delegate: any VideoEncoderDelegate, settings: VideoEncoderSettings) {
+        let encoder = VideoEncoder(lockQueue: processorPipelineQueue)
+        encoder.settings.mutate { $0 = settings }
+        encoder.delegate = delegate
+        encoder.startRunning()
+        previewEncoder = encoder
+    }
+
+    func stopPreviewEncoding() {
+        previewEncoder?.stopRunning()
+        previewEncoder = nil
     }
 
     func setSize(capture: CGSize, canvas: CGSize) {
@@ -1459,6 +1473,11 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             }
         }
         encoder.encodeImageBuffer(
+            modImageBuffer,
+            presentationTimeStamp: modSampleBuffer.presentationTimeStamp,
+            duration: modSampleBuffer.duration
+        )
+        previewEncoder?.encodeImageBuffer(
             modImageBuffer,
             presentationTimeStamp: modSampleBuffer.presentationTimeStamp,
             duration: modSampleBuffer.duration

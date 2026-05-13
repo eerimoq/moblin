@@ -295,6 +295,19 @@ final class Processor: @unchecked Sendable {
         }
     }
 
+    func startPreviewEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate,
+                              _ videoSettings: VideoEncoderSettings,
+                              _ audioSettings: AudioEncoderSettings)
+    {
+        video.startPreviewEncoding(delegate, settings: videoSettings)
+        audio.startPreviewEncoding(delegate, settings: audioSettings)
+    }
+
+    func stopPreviewEncoding() {
+        video.stopPreviewEncoding()
+        audio.stopPreviewEncoding()
+    }
+
     func startRunning() {
         video.startRunning()
         audio.startRunning()

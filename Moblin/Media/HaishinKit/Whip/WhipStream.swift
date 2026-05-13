@@ -415,10 +415,11 @@ protocol WhipStreamDelegate: AnyObject {
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
                            completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+    func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
+    func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
 }
 
 final class WhipStream: @unchecked Sendable {
-    private let processor: Processor
     private weak var delegate: (any WhipStreamDelegate)?
     private var peerConnection: PeerConnection?
     private var videoTrack: RtcTrack?
@@ -435,8 +436,7 @@ final class WhipStream: @unchecked Sendable {
     private var timeStampRebaser = TimeStampRebaser()
     private let connectTimer = SimpleTimer(queue: whipQueue)
 
-    init(processor: Processor, delegate: any WhipStreamDelegate) {
-        self.processor = processor
+    init(delegate: any WhipStreamDelegate) {
         self.delegate = delegate
     }
 
@@ -626,13 +626,13 @@ final class WhipStream: @unchecked Sendable {
 
     private func startEncoding() {
         processorControlQueue.async {
-            self.processor.startEncoding(self)
+            self.delegate?.whipStreamStartEncoding(self)
         }
     }
 
     private func stopEncoding() {
         processorControlQueue.async {
-            self.processor.stopEncoding(self)
+            self.delegate?.whipStreamStopEncoding(self)
         }
     }
 

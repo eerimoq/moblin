@@ -1,6 +1,7 @@
 import AVFoundation
 import Network
 import SwiftUI
+import VideoToolbox
 
 private func isMuted(level: Float) -> Bool {
     level.isNaN
@@ -13,6 +14,8 @@ private func becameMuted(old: Float, new: Float) -> Bool {
 private func becameUnmuted(old: Float, new: Float) -> Bool {
     isMuted(level: old) && !isMuted(level: new)
 }
+
+private let previewVideoBitrate: UInt32 = 500_000
 
 protocol MediaDelegate: AnyObject {
     func mediaOnSrtConnected()
@@ -58,8 +61,10 @@ final class Media: NSObject, @unchecked Sendable {
     private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
     private var whipStream: WhipStream?
+    private var previewStream: WhipStream?
+    private var previewStreamHandler: PreviewStreamHandler?
     private var srtlaClient: SrtlaClient?
-    private var processor: Processor?
+    private(set) var processor: Processor?
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtTransportBitrate: Int64 = 0
@@ -71,7 +76,7 @@ final class Media: NSObject, @unchecked Sendable {
     private var experimental: Bool = false
     private var overheadBandwidth: Int32 = 25
     private var maximumBandwidthFollowInput: Bool = false
-    private let delegate: any MediaDelegate
+    let delegate: any MediaDelegate
     private var adaptiveBitrate: AdaptiveBitrate?
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoEncoderSettings()
@@ -113,11 +118,14 @@ final class Media: NSObject, @unchecked Sendable {
         rtmpStopStream()
         ristStopStream()
         whipStopStream()
+        stopPreviewStream()
         rtmpStreams.removeAll()
         srtStreamNew = nil
         srtStreamOld = nil
         ristStream = nil
         whipStream = nil
+        previewStream = nil
+        previewStreamHandler = nil
         processor = nil
     }
 
@@ -166,7 +174,7 @@ final class Media: NSObject, @unchecked Sendable {
         case .rist:
             ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
         case .whip:
-            whipStream = WhipStream(processor: processor, delegate: self)
+            whipStream = WhipStream(delegate: self)
         }
         self.processor = processor
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
@@ -643,6 +651,26 @@ final class Media: NSObject, @unchecked Sendable {
 
     func whipStopStream() {
         whipStream?.stop()
+    }
+
+    func startPreviewStream(url: String) {
+        let handler = PreviewStreamHandler(media: self)
+        previewStreamHandler = handler
+        previewStream = WhipStream(delegate: handler)
+        previewStream?.start(
+            url: url,
+            headers: [],
+            iceServers: [defaultStunServer],
+            videoCodec: .h264avc,
+            audioCodec: .opus,
+            videoBitrate: Double(previewVideoBitrate)
+        )
+    }
+
+    func stopPreviewStream() {
+        previewStream?.stop()
+        previewStream = nil
+        previewStreamHandler = nil
     }
 
     func setTorch(on: Bool) {
@@ -1267,5 +1295,51 @@ extension Media: WhipStreamDelegate {
                            completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
+    }
+
+    func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        processor?.startEncoding(delegate)
+    }
+
+    func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        processor?.stopEncoding(delegate)
+    }
+}
+
+private final class PreviewStreamHandler: WhipStreamDelegate {
+    private let media: Media
+
+    init(media: Media) {
+        self.media = media
+    }
+
+    func whipStreamOnConnected() {
+        logger.info("preview-stream: Connected")
+    }
+
+    func whipStreamOnDisconnected(reason: String) {
+        logger.info("preview-stream: Disconnected: \(reason)")
+    }
+
+    func whipStreamPerform(request: URLRequest,
+                           queue: DispatchQueue,
+                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+    {
+        media.delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
+    }
+
+    func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        var videoSettings = VideoEncoderSettings()
+        videoSettings.videoSize = CMVideoDimensions(width: 640, height: 360)
+        videoSettings.bitrate = previewVideoBitrate
+        videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_AutoLevel as String
+        var audioSettings = AudioEncoderSettings()
+        audioSettings.bitrate = 64000
+        audioSettings.format = .opus
+        media.processor?.startPreviewEncoding(delegate, videoSettings, audioSettings)
+    }
+
+    func whipStreamStopEncoding(_: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        media.processor?.stopPreviewEncoding()
     }
 }

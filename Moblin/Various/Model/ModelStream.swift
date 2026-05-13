@@ -188,6 +188,7 @@ extension Model {
         case .whip:
             startNetStreamWhip()
         }
+        startPreviewStreamIfEnabled()
         updateSpeed(now: .now)
         streamBecameBrokenTime = nil
     }
@@ -241,6 +242,16 @@ extension Model {
                               videoBitrate: Double(stream.bitrate))
     }
 
+    private func startPreviewStreamIfEnabled() {
+        guard database.debug.previewStream,
+              stream.previewStreamEnabled,
+              !stream.previewStreamUrl.isEmpty
+        else {
+            return
+        }
+        media.startPreviewStream(url: stream.previewStreamUrl)
+    }
+
     func stopNetStream() {
         moblink.streamer?.stopTunnels()
         reconnectTimer.stop()
@@ -248,6 +259,7 @@ extension Model {
         media.srtStopStream()
         media.ristStopStream()
         media.whipStopStream()
+        media.stopPreviewStream()
         streamStartTime = nil
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)
