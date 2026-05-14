@@ -249,7 +249,9 @@ extension Model {
             makeErrorToast(title: String(localized: "Preview stream not configured"))
             return
         }
-        media.startPreviewStream(url: stream.previewStreamUrl)
+        media.startPreviewStream(url: stream.previewStreamUrl,
+                                 resolution: stream.previewStreamResolution,
+                                 bitrate: stream.previewStreamBitrate)
         setIsPreviewStreaming(value: true)
     }
 

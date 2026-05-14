@@ -15,8 +15,6 @@ private func becameUnmuted(old: Float, new: Float) -> Bool {
     isMuted(level: old) && !isMuted(level: new)
 }
 
-private let previewVideoBitrate: UInt32 = 500_000
-
 protocol MediaDelegate: AnyObject {
     func mediaOnSrtConnected()
     func mediaOnSrtDisconnected(_ reason: String)
@@ -653,8 +651,8 @@ final class Media: NSObject, @unchecked Sendable {
         whipStream?.stop()
     }
 
-    func startPreviewStream(url: String) {
-        let handler = PreviewStreamHandler(media: self)
+    func startPreviewStream(url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
+        let handler = PreviewStreamHandler(media: self, resolution: resolution, bitrate: bitrate)
         previewStreamHandler = handler
         previewStream = WhipStream(delegate: handler)
         previewStream?.start(
@@ -663,7 +661,7 @@ final class Media: NSObject, @unchecked Sendable {
             iceServers: [defaultStunServer],
             videoCodec: .h264avc,
             audioCodec: .opus,
-            videoBitrate: Double(previewVideoBitrate)
+            videoBitrate: Double(bitrate)
         )
     }
 
@@ -1308,9 +1306,13 @@ extension Media: WhipStreamDelegate {
 
 private final class PreviewStreamHandler: WhipStreamDelegate {
     private let media: Media
+    private let resolution: SettingsStreamResolution
+    private let bitrate: UInt32
 
-    init(media: Media) {
+    init(media: Media, resolution: SettingsStreamResolution, bitrate: UInt32) {
         self.media = media
+        self.resolution = resolution
+        self.bitrate = bitrate
     }
 
     func whipStreamOnConnected() {
@@ -1330,8 +1332,8 @@ private final class PreviewStreamHandler: WhipStreamDelegate {
 
     func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
         var videoSettings = VideoEncoderSettings()
-        videoSettings.videoSize = CMVideoDimensions(width: 640, height: 360)
-        videoSettings.bitrate = previewVideoBitrate
+        videoSettings.videoSize = resolution.dimensions(portrait: false)
+        videoSettings.bitrate = bitrate
         videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_AutoLevel as String
         var audioSettings = AudioEncoderSettings()
         audioSettings.bitrate = 64000
