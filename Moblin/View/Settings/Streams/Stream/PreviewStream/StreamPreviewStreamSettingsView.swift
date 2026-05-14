@@ -1,19 +1,25 @@
 import SwiftUI
 
+private func resolutions() -> [SettingsStreamResolution] {
+    [.r854x480, .r640x360, .r426x240]
+}
+
+private func videoBitrates() -> [UInt32] {
+    [2_000_000, 1_500_000, 1_000_000, 500_000, 250_000]
+}
+
 struct StreamPreviewStreamSettingsView: View {
     let model: Model
     @ObservedObject var previewStream: SettingsStreamPreviewStream
 
-    private func resolutions() -> [SettingsStreamResolution] {
-        [.r854x480, .r640x360, .r426x240]
-    }
-
-    private func videoBitrates() -> [UInt32] {
-        [2_000_000, 1_500_000, 1_000_000, 500_000, 250_000]
-    }
-
     var body: some View {
         Form {
+            Section {
+                Text("""
+                A low-quality low-latency stream sent to a WHIP server. Can be used to \
+                preview the stream from another device.
+                """)
+            }
             Section {
                 NavigationLink {
                     UrlSettingsView(
