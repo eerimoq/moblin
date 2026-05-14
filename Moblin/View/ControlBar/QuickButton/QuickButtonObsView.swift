@@ -148,6 +148,67 @@ private struct ObsScenesView: View {
     }
 }
 
+private struct ObsScenesFFmpegView: View {
+    let model: Model
+    @ObservedObject var obsQuickButton: QuickButtonObs
+    @State var url: String = ""
+    @State var itemName: String = ""
+    @State var showingAlert: Bool = false
+
+    private var trimmedUrl: String {
+        url.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var isUrlValid: Bool {
+        let trimmed = trimmedUrl
+        guard !trimmed.isEmpty else {
+            return false
+        }
+        // Accept any URL whose scheme parses — FFmpeg sources commonly use
+        // `rtmp://`, `srt://`, `rtsp://`, `http(s)://`, and listen-mode URLs
+        // like `udp://@:1234` that have no host.
+        return URL(string: trimmed)?.scheme != nil
+    }
+
+    var body: some View {
+        if !obsQuickButton.sceneFFmpeg.isEmpty {
+            Section {
+                ForEach(obsQuickButton.sceneFFmpeg) { item in
+                    HStack {
+                        Text(item.name)
+                        Spacer()
+                        Button {
+                            url = ""
+                            itemName = item.name
+                            showingAlert = true
+                        } label: {
+                            Image(systemName: "gear")
+                        }
+                    }
+                }
+            } header: {
+                Text("Scene FFmpeg inputs")
+            }
+            .alert("Update URL", isPresented: $showingAlert) {
+                TextField("srtla://…", text: $url)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                    .keyboardType(.URL)
+                Button("Update") {
+                    model.updateObsFFmpegUrl(itemName: itemName, url: trimmedUrl)
+                    showingAlert = false
+                }
+                .disabled(!isUrlValid)
+                Button("Cancel", role: .cancel) {
+                    showingAlert = false
+                }
+            } message: {
+                Text("Enter new URL")
+            }
+        }
+    }
+}
+
 private struct ObsSceneAudioInputsView: View {
     let model: Model
     @ObservedObject var obsQuickButton: QuickButtonObs
@@ -276,6 +337,7 @@ private struct ObsConnectedView: View {
         ObsSnapshotView(obsQuickButton: obsQuickButton)
         ObsScenesView(model: model, obsQuickButton: obsQuickButton)
         ObsSceneAudioInputsView(model: model, obsQuickButton: obsQuickButton)
+        ObsScenesFFmpegView(model: model, obsQuickButton: obsQuickButton)
         if !stream.obsSourceName.isEmpty {
             ObsFixSourceView(model: model, stream: stream, obsQuickButton: obsQuickButton)
             ObsAudioSyncView(model: model, stream: stream, obsQuickButton: obsQuickButton)

@@ -192,6 +192,7 @@ struct GetSceneItemList: Codable {
 
 struct GetSceneItemListItem: Decodable {
     let sourceName: String
+    let inputKind: String?
     let sceneItemEnabled: Bool
 }
 
@@ -238,6 +239,26 @@ struct GetInputListResponse: Decodable {
 struct SetCurrentProgramSceneRequest: Codable {
     // periphery:ignore
     let sceneName: String
+}
+
+struct SetItemUrlRequest: Encodable {
+    struct InputSettings: Encodable {
+        let input: String
+        let isLocalFile: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case input
+            case isLocalFile = "is_local_file"
+        }
+    }
+
+    let inputName: String
+    let inputSettings: InputSettings
+
+    init(inputName: String, url: String) {
+        self.inputName = inputName
+        inputSettings = InputSettings(input: url, isLocalFile: false)
+    }
 }
 
 struct GetStreamStatusResponse: Codable {
@@ -609,6 +630,21 @@ class ObsWebSocket {
         let request = SetCurrentProgramSceneRequest(sceneName: name)
         performRequestNoResponse(
             type: .setCurrentProgramScene,
+            request: request,
+            onSuccess: onSuccess,
+            onError: { requestError in
+                self.onRequestError(requestError: requestError, onError: onError)
+            }
+        )
+    }
+    
+    func setSceneItemUrl(name: String, url: String,
+                         onSuccess: @escaping () -> Void = {},
+                         onError: @escaping (String) -> Void = { _ in })
+    {
+        let request = SetItemUrlRequest(inputName: name, url: url)
+        performRequestNoResponse(
+            type: .setInputSettings,
             request: request,
             onSuccess: onSuccess,
             onError: { requestError in
