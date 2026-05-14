@@ -19,7 +19,7 @@ private let srtExamples: [(LocalizedStringKey, String)] = [
 ]
 
 @MainActor
-private let whipExamples: [(LocalizedStringKey, String)] = [
+let whipExamples: [(LocalizedStringKey, String)] = [
     ("MediaMTX WHIP", "whip://120.12.32.12:8889/mystream/whip"),
     ("MESHCAST.IO WHIP", "whips://de1.meshcast.io/whip/mystream"),
 ]

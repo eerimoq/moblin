@@ -1,18 +1,8 @@
 import SwiftUI
 
 struct StreamPreviewStreamSettingsView: View {
+    let model: Model
     @ObservedObject var previewStream: SettingsStreamPreviewStream
-
-    private func isValidPreviewStreamUrl(value: String) -> String? {
-        if value.isEmpty {
-            return nil
-        }
-        return isValidUrl(url: value, allowedSchemes: ["whip", "whips"])
-    }
-
-    private func submitUrl(value: String) {
-        previewStream.url = value
-    }
 
     private func resolutions() -> [SettingsStreamResolution] {
         [.r854x480, .r640x360, .r426x240]
@@ -25,13 +15,20 @@ struct StreamPreviewStreamSettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextEditNavigationView(
-                    title: String(localized: "URL"),
-                    value: previewStream.url,
-                    onChange: isValidPreviewStreamUrl,
-                    onSubmit: submitUrl,
-                    placeholder: "whip://your-server/live"
-                )
+                NavigationLink {
+                    UrlSettingsView(
+                        model: model,
+                        disabled: false,
+                        url: $previewStream.url,
+                        value: previewStream.url,
+                        placeholder: "whip://your-server/live",
+                        allowedSchemes: ["whip", "whips"],
+                        examples: whipExamples,
+                        onSubmitted: {}
+                    )
+                } label: {
+                    TextItemLocalizedView(name: "URL", value: previewStream.url, sensitive: true)
+                }
                 Picker("Resolution", selection: $previewStream.resolution) {
                     ForEach(resolutions(), id: \.self) {
                         Text($0.shortString())
