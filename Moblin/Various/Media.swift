@@ -1337,7 +1337,6 @@ private final class PreviewStreamHandler: @unchecked Sendable {
                 return
             }
             logger.info("preview-stream: Reconnecting due to: \(reason)")
-            stop()
             start()
         }
     }
