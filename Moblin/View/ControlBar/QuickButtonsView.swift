@@ -141,6 +141,7 @@ struct QuickButtonsInnerView: View {
     let nameSize: CGFloat
     let nameWidth: CGFloat
     @State private var presentingRecordConfirm = false
+    @State private var presentingPreviewStreamConfirm = false
     @State private var presentingStartWorkoutTypePicker = false
     @State private var presentingStopWorkoutConfirm = false
 
@@ -426,6 +427,10 @@ struct QuickButtonsInnerView: View {
 
     private func gimbalTrackingAction() {
         model.toggleGimbalTracking()
+    }
+
+    private func previewStreamAction() {
+        model.togglePreviewStream()
     }
 
     var body: some View {
@@ -989,6 +994,19 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             gimbalTrackingAction()
+                        }
+                    case .previewStream:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            presentingPreviewStreamConfirm = true
+                        }
+                        .confirmationDialog("", isPresented: $presentingPreviewStreamConfirm) {
+                            Button(state.isOn ? "Stop preview stream" : "Start preview stream") {
+                                previewStreamAction()
+                            }
                         }
                     }
                 }

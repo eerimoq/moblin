@@ -65,6 +65,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case interactiveBrowserWidgets = "Interactive browser widgets"
     case macros = "Macros"
     case gimbalTracking = "Gimbal tracking"
+    case previewStream = "Preview stream"
 
     init(from decoder: any Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
@@ -202,6 +203,8 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
             String(localized: "Macros")
         case .gimbalTracking:
             String(localized: "Gimbal tracking")
+        case .previewStream:
+            String(localized: "Preview stream")
         }
     }
 

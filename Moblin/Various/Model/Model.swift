@@ -367,6 +367,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var lockScreen = false
     @Published var isLive = false
     @Published var isRecording = false
+    @Published var isPreviewStreaming = false
     @Published var browsers: [Browser] = []
     @Published var interactiveBrowsers: Bool = false
     @Published var showingGrid = false
@@ -1505,6 +1506,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             suspendRecording()
         }
         showBackgroundStreamingDisabledToast = stopStream()
+        stopPreviewStream()
         stopRtmpServer()
         stopSrtlaServer()
         stopRtspClient()

@@ -1889,6 +1889,11 @@ private func addMissingQuickButtonsPageThree(database: Database) {
                                  isOn: true,
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .previewStream,
+                                 imageOn: "video.circle.fill",
+                                 imageOff: "video.circle",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
 }
 
 @MainActor

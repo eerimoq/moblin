@@ -188,7 +188,6 @@ extension Model {
         case .whip:
             startNetStreamWhip()
         }
-        startPreviewStreamIfEnabled()
         updateSpeed(now: .now)
         streamBecameBrokenTime = nil
     }
@@ -242,14 +241,38 @@ extension Model {
                               videoBitrate: Double(stream.bitrate))
     }
 
-    private func startPreviewStreamIfEnabled() {
-        guard database.debug.previewStream,
-              stream.previewStreamEnabled,
-              !stream.previewStreamUrl.isEmpty
-        else {
+    private func startPreviewStream() {
+        guard !isPreviewStreaming else {
+            return
+        }
+        guard stream.previewStreamEnabled, !stream.previewStreamUrl.isEmpty else {
+            makeErrorToast(title: String(localized: "Preview stream not configured"))
             return
         }
         media.startPreviewStream(url: stream.previewStreamUrl)
+        setIsPreviewStreaming(value: true)
+    }
+
+    func stopPreviewStream() {
+        guard isPreviewStreaming else {
+            return
+        }
+        media.stopPreviewStream()
+        setIsPreviewStreaming(value: false)
+    }
+
+    func togglePreviewStream() {
+        if isPreviewStreaming {
+            stopPreviewStream()
+        } else {
+            startPreviewStream()
+        }
+    }
+
+    func setIsPreviewStreaming(value: Bool) {
+        isPreviewStreaming = value
+        setQuickButton(type: .previewStream, isOn: value)
+        updateQuickButtonStates()
     }
 
     func stopNetStream() {
@@ -259,7 +282,6 @@ extension Model {
         media.srtStopStream()
         media.ristStopStream()
         media.whipStopStream()
-        media.stopPreviewStream()
         streamStartTime = nil
         updateStreamUptime(now: .now)
         updateSpeed(now: .now)
