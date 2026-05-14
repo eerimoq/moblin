@@ -59,7 +59,6 @@ final class Media: NSObject, @unchecked Sendable {
     private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
     private var whipStream: WhipStream?
-    private var previewStream: WhipStream?
     private var previewStreamHandler: PreviewStreamHandler?
     private var srtlaClient: SrtlaClient?
     private(set) var processor: Processor?
@@ -122,8 +121,6 @@ final class Media: NSObject, @unchecked Sendable {
         srtStreamOld = nil
         ristStream = nil
         whipStream = nil
-        previewStream = nil
-        previewStreamHandler = nil
         processor = nil
     }
 
@@ -652,22 +649,18 @@ final class Media: NSObject, @unchecked Sendable {
     }
 
     func startPreviewStream(url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
-        let handler = PreviewStreamHandler(media: self, resolution: resolution, bitrate: bitrate)
-        previewStreamHandler = handler
-        previewStream = WhipStream(delegate: handler)
-        previewStream?.start(
-            url: url,
-            headers: [],
-            iceServers: [defaultStunServer],
-            videoCodec: .h264avc,
-            audioCodec: .opus,
-            videoBitrate: Double(bitrate)
-        )
+        logger.info("preview-stream: Start")
+        previewStreamHandler?.stop()
+        previewStreamHandler = PreviewStreamHandler(media: self,
+                                                    url: url,
+                                                    resolution: resolution,
+                                                    bitrate: bitrate)
+        previewStreamHandler?.start()
     }
 
     func stopPreviewStream() {
-        previewStream?.stop()
-        previewStream = nil
+        logger.info("preview-stream: Stop")
+        previewStreamHandler?.stop()
         previewStreamHandler = nil
     }
 
@@ -1304,23 +1297,59 @@ extension Media: WhipStreamDelegate {
     }
 }
 
-private final class PreviewStreamHandler: WhipStreamDelegate {
+private final class PreviewStreamHandler: @unchecked Sendable {
     private let media: Media
+    private let url: String
     private let resolution: SettingsStreamResolution
     private let bitrate: UInt32
+    private var previewStream: WhipStream?
+    private let reconnectTimer = SimpleTimer(queue: .main)
 
-    init(media: Media, resolution: SettingsStreamResolution, bitrate: UInt32) {
+    init(media: Media, url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
         self.media = media
+        self.url = url
         self.resolution = resolution
         self.bitrate = bitrate
     }
 
-    func whipStreamOnConnected() {
-        logger.info("preview-stream: Connected")
+    func start() {
+        stop()
+        previewStream = WhipStream(delegate: self)
+        previewStream?.start(
+            url: url,
+            headers: [],
+            iceServers: [defaultStunServer],
+            videoCodec: .h264avc,
+            audioCodec: .opus,
+            videoBitrate: Double(bitrate)
+        )
     }
 
+    func stop() {
+        reconnectTimer.stop()
+        previewStream?.stop()
+        previewStream = nil
+    }
+
+    private func reconnectSoon(reason: String) {
+        reconnectTimer.startSingleShot(timeout: 5) { [weak self] in
+            guard let self else {
+                return
+            }
+            logger.info("preview-stream: Reconnecting due to: \(reason)")
+            stop()
+            start()
+        }
+    }
+}
+
+extension PreviewStreamHandler: WhipStreamDelegate {
+    func whipStreamOnConnected() {}
+
     func whipStreamOnDisconnected(reason: String) {
-        logger.info("preview-stream: Disconnected: \(reason)")
+        DispatchQueue.main.async {
+            self.reconnectSoon(reason: reason)
+        }
     }
 
     func whipStreamPerform(request: URLRequest,
