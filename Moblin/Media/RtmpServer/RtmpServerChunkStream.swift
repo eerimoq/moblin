@@ -431,17 +431,17 @@ class RtmpServerChunkStream: @unchecked Sendable {
             client.stopInternal(reason: "Unsupported video codec \(control & 0xF)")
             return
         }
-        guard format == .avc else {
-            client.stopInternal(reason: "Unsupported video codec \(format.toString()).")
-            return
-        }
+        // Codec IDs 7 (AVC) and 12 (legacy HEVC, as used by e.g. DJI Osmo Pocket 4) share the
+        // same FLV video tag layout: a 1-byte packet type, a 24-bit composition time offset,
+        // and a payload that is either a DecoderConfigurationRecord (packet type 0) or
+        // length-prefixed NAL units (packet type 1).
         switch FlvAvcPacketType(rawValue: messageBody[1]) {
         case .seq:
-            processMessageVideoTypeSeq(client: client)
+            processMessageVideoTypeSeq(client: client, codec: format)
         case .nal:
             processMessageVideoTypeNal(client: client)
         default:
-            logger.info("rtmp-server: Unsupported video H.264/AVC packet type \(messageBody[1])")
+            logger.info("rtmp-server: Unsupported video \(format.toString()) packet type \(messageBody[1])")
         }
     }
 
@@ -485,17 +485,22 @@ class RtmpServerChunkStream: @unchecked Sendable {
         }
     }
 
-    private func processMessageVideoTypeSeq(client: RtmpServerClient) {
+    private func processMessageVideoTypeSeq(client: RtmpServerClient, codec: FlvVideoCodec) {
         guard checkMessageBodyBigEnough(client: client, minimumSize: FlvTagType.video.headerSize) else {
             return
         }
-        let avcC = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
-        let videoConfig = MpegTsVideoConfigAvc(avcC: avcC)
-        let status = videoConfig.makeFormatDescription(&formatDescription)
+        let configRecord = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
+        let status: OSStatus
+        switch codec {
+        case .avc:
+            status = MpegTsVideoConfigAvc(avcC: configRecord).makeFormatDescription(&formatDescription)
+        case .hevc:
+            status = MpegTsVideoConfigHevc(hvcC: configRecord).makeFormatDescription(&formatDescription)
+        }
         if status == noErr {
             setupVideoEncoderIfNeeded(formatDescription: formatDescription)
         } else {
-            client.stopInternal(reason: "H.264/AVC format description error \(status)")
+            client.stopInternal(reason: "\(codec.toString()) format description error \(status)")
         }
     }
 

@@ -110,6 +110,104 @@ class DjiConfirmStartStreamingMessagePayload {
     }
 }
 
+/// Start-streaming payload used by the DJI Osmo Pocket 4. Reverse-engineered from
+/// PacketLogger captures of the official DJI Mimo app: the camera expects a small
+/// binary header (resolution / bitrate / fps) followed by a length-prefixed JSON
+/// object that carries the codec choice, the Enhanced-RTMP flag, watermark and the
+/// RTMP URL.
+///
+///     01 B5 00  [res]  [br LE]  02 01  [fps]  00 00 00  [json len LE]  [JSON]
+///
+/// JSON example:
+/// `{"codec":"HEVC","EnhancedRTMP":false,"supportStopLive":false,"watermark":0,
+///   "rtmpAddress":"rtmp://...","orientation":"landscape"}`
+///
+/// `EnhancedRTMP=false` makes the camera publish HEVC via legacy FLV codec-ID 12,
+/// which the patched `RtmpServerChunkStream` accepts.
+class DjiStartStreamingMessagePayloadPocket4 {
+    private static let header = Data([0x01, 0xB5, 0x00])
+    private static let middle = Data([0x02, 0x01])
+    private static let padding = Data([0x00, 0x00, 0x00])
+
+    var rtmpUrl: String
+    var resolution: SettingsDjiDeviceResolution
+    var bitrateKbps: UInt16
+    var fps: Int
+
+    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16) {
+        self.rtmpUrl = rtmpUrl
+        self.resolution = resolution
+        self.fps = fps
+        self.bitrateKbps = bitrateKbps
+    }
+
+    func encode() -> Data {
+        let resolutionByte: UInt8 = switch resolution {
+        case .r480p:
+            0x47
+        case .r720p:
+            0x04
+        case .r1080p:
+            0x0A
+        }
+        let fpsByte: UInt8 = switch fps {
+        case 25:
+            2
+        case 30:
+            3
+        default:
+            0
+        }
+        // Build the JSON manually with the same field order observed in the DJI
+        // Mimo capture. Standard JSON parsers don't care about order, but matching
+        // the reference output byte-for-byte makes future debugging trivial.
+        let escapedUrl = Self.jsonEscape(rtmpUrl)
+        let jsonString = "{\"codec\":\"HEVC\"," +
+            "\"EnhancedRTMP\":false," +
+            "\"supportStopLive\":false," +
+            "\"watermark\":0," +
+            "\"rtmpAddress\":\"\(escapedUrl)\"," +
+            "\"orientation\":\"landscape\"}"
+        let jsonData = Data(jsonString.utf8)
+        let writer = ByteWriter()
+        writer.writeBytes(Self.header)
+        writer.writeUInt8(resolutionByte)
+        writer.writeUInt16Le(bitrateKbps)
+        writer.writeBytes(Self.middle)
+        writer.writeUInt8(fpsByte)
+        writer.writeBytes(Self.padding)
+        writer.writeUInt16Le(UInt16(truncatingIfNeeded: jsonData.count))
+        writer.writeBytes(jsonData)
+        return writer.data
+    }
+
+    private static func jsonEscape(_ value: String) -> String {
+        var result = ""
+        result.reserveCapacity(value.count)
+        for scalar in value.unicodeScalars {
+            switch scalar {
+            case "\"":
+                result.append("\\\"")
+            case "\\":
+                result.append("\\\\")
+            case "\n":
+                result.append("\\n")
+            case "\r":
+                result.append("\\r")
+            case "\t":
+                result.append("\\t")
+            default:
+                if scalar.value < 0x20 {
+                    result.append(String(format: "\\u%04x", scalar.value))
+                } else {
+                    result.append(String(scalar))
+                }
+            }
+        }
+        return result
+    }
+}
+
 class DjiStopStreamingMessagePayload {
     static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])
 
