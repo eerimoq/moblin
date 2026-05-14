@@ -253,6 +253,8 @@ extension DjiDevice: CBPeripheralDelegate {
             processStreaming(message: message)
         case .stoppingStream:
             processStoppingStream(response: message)
+        case .connecting:
+            break
         default:
             logger.info("dji-device: Received message in unexpected state '\(state)'")
         }
@@ -340,6 +342,8 @@ extension DjiDevice: CBPeripheralDelegate {
             setState(state: .configuring)
         case .osmoPocket3:
             sendStartStreaming()
+        case .osmoPocket4:
+            sendStartStreaming()
         case .unknown:
             sendStartStreaming()
         }
@@ -356,17 +360,36 @@ extension DjiDevice: CBPeripheralDelegate {
         guard let rtmpUrl, let resolution else {
             return
         }
-        let payload = DjiStartStreamingMessagePayload(
-            rtmpUrl: rtmpUrl,
-            resolution: resolution,
-            fps: fps,
-            bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF),
-            oa5: model.hasNewProtocol()
-        )
-        writeMessage(message: DjiMessage(target: startStreamingTarget,
-                                         id: startStreamingTransactionId,
-                                         type: startStreamingType,
-                                         payload: payload.encode()))
+        let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
+        switch model {
+        case .osmoPocket4:
+            // The Pocket 4 uses a JSON-wrapped start-streaming payload that's
+            // completely different from the legacy binary format used by every
+            // other DJI camera Moblin supports. Reverse-engineered from a
+            // PacketLogger capture of the official DJI Mimo app.
+            let payload = DjiStartStreamingMessagePayloadPocket4(
+                rtmpUrl: rtmpUrl,
+                resolution: resolution,
+                fps: fps,
+                bitrateKbps: bitrateKbps
+            )
+            writeMessage(message: DjiMessage(target: startStreamingTarget,
+                                             id: startStreamingTransactionId,
+                                             type: startStreamingType,
+                                             payload: payload.encode()))
+        default:
+            let payload = DjiStartStreamingMessagePayload(
+                rtmpUrl: rtmpUrl,
+                resolution: resolution,
+                fps: fps,
+                bitrateKbps: bitrateKbps,
+                oa5: model.hasNewProtocol()
+            )
+            writeMessage(message: DjiMessage(target: startStreamingTarget,
+                                             id: startStreamingTransactionId,
+                                             type: startStreamingType,
+                                             payload: payload.encode()))
+        }
         // Patch for OA5P: Send the confirmation payload to actually start the stream.
         // This is an exact copy of the stop-streaming command, but the last data-bit in
         // the payload is set to 1 instead of 2.

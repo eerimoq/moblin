@@ -257,7 +257,7 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
                 .disabled(device.isStarted)
             }
-            if device.model == .osmoPocket3 {
+            if device.model == .osmoPocket3 || device.model == .osmoPocket4 {
                 Picker("FPS", selection: $device.fps) {
                     ForEach(djiDeviceFpss, id: \.self) {
                         Text(String($0))

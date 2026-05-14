@@ -2,6 +2,7 @@ import AVFoundation
 @testable import Moblin
 import Testing
 
+@MainActor
 struct TextEffectSuite {
     @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func time() {

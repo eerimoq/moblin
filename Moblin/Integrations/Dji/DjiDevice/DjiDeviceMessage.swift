@@ -110,6 +110,69 @@ class DjiConfirmStartStreamingMessagePayload {
     }
 }
 
+private struct StartStreamingPayload: Codable {
+    let codec: String
+    let EnhancedRTMP: Bool
+    let supportStopLive: Bool
+    let watermark: Int
+    let rtmpAddress: String
+    let orientation: String
+}
+
+class DjiStartStreamingMessagePayloadPocket4 {
+    private static let header = Data([0x01, 0xB5, 0x00])
+    private static let middle = Data([0x02, 0x01])
+    private static let padding = Data([0x00, 0x00, 0x00])
+
+    var rtmpUrl: String
+    var resolution: SettingsDjiDeviceResolution
+    var bitrateKbps: UInt16
+    var fps: Int
+
+    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16) {
+        self.rtmpUrl = rtmpUrl
+        self.resolution = resolution
+        self.fps = fps
+        self.bitrateKbps = bitrateKbps
+    }
+
+    func encode() -> Data {
+        let resolutionByte: UInt8 = switch resolution {
+        case .r480p:
+            0x47
+        case .r720p:
+            0x04
+        case .r1080p:
+            0x0A
+        }
+        let fpsByte: UInt8 = switch fps {
+        case 25:
+            2
+        case 30:
+            3
+        default:
+            0
+        }
+        let payload = StartStreamingPayload(codec: "HEVC",
+                                            EnhancedRTMP: false,
+                                            supportStopLive: false,
+                                            watermark: 0,
+                                            rtmpAddress: rtmpUrl,
+                                            orientation: "landscape")
+        let data = (try? JSONEncoder().encode(payload)) ?? Data()
+        let writer = ByteWriter()
+        writer.writeBytes(Self.header)
+        writer.writeUInt8(resolutionByte)
+        writer.writeUInt16Le(bitrateKbps)
+        writer.writeBytes(Self.middle)
+        writer.writeUInt8(fpsByte)
+        writer.writeBytes(Self.padding)
+        writer.writeUInt16Le(UInt16(truncatingIfNeeded: data.count))
+        writer.writeBytes(data)
+        return writer.data
+    }
+}
+
 class DjiStopStreamingMessagePayload {
     static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])
 
