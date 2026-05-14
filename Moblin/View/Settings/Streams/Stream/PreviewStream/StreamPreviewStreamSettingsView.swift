@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreamPreviewStreamSettingsView: View {
-    @ObservedObject var stream: SettingsStream
+    @ObservedObject var previewStream: SettingsStreamPreviewStream
 
     private func isValidPreviewStreamUrl(value: String) -> String? {
         if value.isEmpty {
@@ -11,7 +11,7 @@ struct StreamPreviewStreamSettingsView: View {
     }
 
     private func submitUrl(value: String) {
-        stream.previewStreamUrl = value
+        previewStream.url = value
     }
 
     private func resolutions() -> [SettingsStreamResolution] {
@@ -25,20 +25,19 @@ struct StreamPreviewStreamSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Toggle("Enabled", isOn: $stream.previewStreamEnabled)
                 TextEditNavigationView(
                     title: String(localized: "URL"),
-                    value: stream.previewStreamUrl,
+                    value: previewStream.url,
                     onChange: isValidPreviewStreamUrl,
                     onSubmit: submitUrl,
                     placeholder: "whip://your-server/live"
                 )
-                Picker("Resolution", selection: $stream.previewStreamResolution) {
+                Picker("Resolution", selection: $previewStream.resolution) {
                     ForEach(resolutions(), id: \.self) {
                         Text($0.shortString())
                     }
                 }
-                Picker("Video bitrate", selection: $stream.previewStreamBitrate) {
+                Picker("Video bitrate", selection: $previewStream.bitrate) {
                     ForEach(videoBitrates(), id: \.self) {
                         Text(formatBytesPerSecond(speed: Int64($0)))
                     }

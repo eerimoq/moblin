@@ -776,6 +776,42 @@ class SettingsStreamRecording: Codable, ObservableObject {
     }
 }
 
+class SettingsStreamPreviewStream: Codable, ObservableObject {
+    @Published var url: String = ""
+    @Published var resolution: SettingsStreamResolution = .r640x360
+    @Published var bitrate: UInt32 = 500_000
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case url,
+             resolution,
+             bitrate
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.url, url)
+        try container.encode(.resolution, resolution)
+        try container.encode(.bitrate, bitrate)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        url = container.decode(.url, String.self, "")
+        resolution = container.decode(.resolution, SettingsStreamResolution.self, .r640x360)
+        bitrate = container.decode(.bitrate, UInt32.self, 500_000)
+    }
+
+    func clone() -> SettingsStreamPreviewStream {
+        let new = SettingsStreamPreviewStream()
+        new.url = url
+        new.resolution = resolution
+        new.bitrate = bitrate
+        return new
+    }
+}
+
 enum SettingsStreamReplayTransitionType: String, Codable, CaseIterable {
     case fade
     case stingers
@@ -1177,10 +1213,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     @Published var goLiveNotificationDiscordMessage: String = ""
     @Published var goLiveNotificationDiscordWebhookUrl: String = ""
     @Published var multiStreaming: SettingsStreamMultiStreaming = .init()
-    @Published var previewStreamEnabled: Bool = false
-    @Published var previewStreamUrl: String = ""
-    @Published var previewStreamResolution: SettingsStreamResolution = .r640x360
-    @Published var previewStreamBitrate: UInt32 = 500_000
+    var previewStream: SettingsStreamPreviewStream = .init()
 
     static func == (lhs: SettingsStream, rhs: SettingsStream) -> Bool {
         lhs.id == rhs.id
@@ -1272,10 +1305,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
              goLiveNotificationDiscordMessage,
              goLiveNotificationDiscordWebhookUrl,
              multiStreaming,
-             previewStreamEnabled,
-             previewStreamUrl,
-             previewStreamResolution,
-             previewStreamBitrate
+             previewStream
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1362,10 +1392,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.goLiveNotificationDiscordMessage, goLiveNotificationDiscordMessage)
         try container.encode(.goLiveNotificationDiscordWebhookUrl, goLiveNotificationDiscordWebhookUrl)
         try container.encode(.multiStreaming, multiStreaming)
-        try container.encode(.previewStreamEnabled, previewStreamEnabled)
-        try container.encode(.previewStreamUrl, previewStreamUrl)
-        try container.encode(.previewStreamResolution, previewStreamResolution)
-        try container.encode(.previewStreamBitrate, previewStreamBitrate)
+        try container.encode(.previewStream, previewStream)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -1479,14 +1506,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
             ""
         )
         multiStreaming = container.decode(.multiStreaming, SettingsStreamMultiStreaming.self, .init())
-        previewStreamEnabled = container.decode(.previewStreamEnabled, Bool.self, false)
-        previewStreamUrl = container.decode(.previewStreamUrl, String.self, "")
-        previewStreamResolution = container.decode(
-            .previewStreamResolution,
-            SettingsStreamResolution.self,
-            .r640x360
-        )
-        previewStreamBitrate = container.decode(.previewStreamBitrate, UInt32.self, 500_000)
+        previewStream = container.decode(.previewStream, SettingsStreamPreviewStream.self, .init())
     }
 
     func clone() -> SettingsStream {
@@ -1561,10 +1581,7 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.goLiveNotificationDiscordMessage = goLiveNotificationDiscordMessage
         new.goLiveNotificationDiscordWebhookUrl = goLiveNotificationDiscordWebhookUrl
         new.multiStreaming = multiStreaming.clone()
-        new.previewStreamEnabled = previewStreamEnabled
-        new.previewStreamUrl = previewStreamUrl
-        new.previewStreamResolution = previewStreamResolution
-        new.previewStreamBitrate = previewStreamBitrate
+        new.previewStream = previewStream.clone()
         return new
     }
 

@@ -245,13 +245,13 @@ extension Model {
         guard !isPreviewStreaming else {
             return
         }
-        guard stream.previewStreamEnabled, !stream.previewStreamUrl.isEmpty else {
+        guard !stream.previewStream.url.isEmpty else {
             makeErrorToast(title: String(localized: "Preview stream not configured"))
             return
         }
-        media.startPreviewStream(url: stream.previewStreamUrl,
-                                 resolution: stream.previewStreamResolution,
-                                 bitrate: stream.previewStreamBitrate)
+        media.startPreviewStream(url: stream.previewStream.url,
+                                 resolution: stream.previewStream.resolution,
+                                 bitrate: stream.previewStream.bitrate)
         setIsPreviewStreaming(value: true)
     }
 

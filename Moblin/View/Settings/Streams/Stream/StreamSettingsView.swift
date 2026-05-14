@@ -272,7 +272,7 @@ struct StreamSettingsView: View {
                     }
                     if database.debug.previewStream {
                         NavigationLink {
-                            StreamPreviewStreamSettingsView(stream: stream)
+                            StreamPreviewStreamSettingsView(previewStream: stream.previewStream)
                         } label: {
                             IconAndTextSettingView(image: "video.circle", text: "Preview stream")
                         }
