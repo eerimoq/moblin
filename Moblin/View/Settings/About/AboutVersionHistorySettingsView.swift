@@ -8,6 +8,22 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.5.0", date: "2026-05-14", changes: [
+        "• Major re-implementation of the web remote control frontend.",
+        "  • Now using SolidJS.",
+        "  • Various UI changes.",
+        "• Korean translation updated. ✍️ Winter1l",
+        "• Various improvements to the web remote control frontend. 🧑‍🏭 3l3ktr0l4mpe",
+        "• Improved Mac screen capture.",
+        "• Golf scoreboard design tweaks in frontend.",
+        "• Disable widget positioning and size buttons when hitting min/max.",
+        "• Widget size slider can go to maximum.",
+        "• New gimbal tracking quick button icon.",
+        "• Fix moblin in mouth, blur background and blur faces quick button states when using filters.",
+        "• German translation updated. ✍️ MaurisonX",
+        "• Remove live activity as it makes UserDefaults corrupt when starting the app early in the iOS boot sequence. 🐛 Houses and others",
+        "  • Technically speaking, it's kinda an Apple bug... sadge...",
+    ]),
     Version(version: "33.4.0", date: "2026-05-03", changes: [
         "• Enable adaptive bitrate and use CBR for RTMP by default.",
         "• German translation updated. ✍️ MaurisonX",
