@@ -192,25 +192,6 @@ struct StreamSettingsView: View {
     @ObservedObject var database: Database
     @ObservedObject var stream: SettingsStream
 
-    private func isValidPreviewStreamUrl(value: String) -> String? {
-        if value.isEmpty {
-            return nil
-        }
-        return isValidUrl(url: value, allowedSchemes: ["whip", "whips"])
-    }
-
-    private func submitPreviewStreamUrl(value: String) {
-        stream.previewStreamUrl = value
-    }
-
-    private func previewStreamResolutions() -> [SettingsStreamResolution] {
-        [.r854x480, .r640x360, .r426x240]
-    }
-
-    private func previewStreamBitrates() -> [UInt32] {
-        [2_000_000, 1_500_000, 1_000_000, 500_000, 250_000]
-    }
-
     var body: some View {
         Form {
             Section {
@@ -289,6 +270,13 @@ struct StreamSettingsView: View {
                     } label: {
                         IconAndTextSettingView(image: "camera.aperture", text: "Snapshot")
                     }
+                    if database.debug.previewStream {
+                        NavigationLink {
+                            StreamPreviewStreamSettingsView(stream: stream)
+                        } label: {
+                            IconAndTextSettingView(image: "video.circle", text: "Preview stream")
+                        }
+                    }
                 }
                 if isPhone() || isPad() {
                     Toggle(isOn: $stream.portrait) {
@@ -348,28 +336,6 @@ struct StreamSettingsView: View {
                 }
             }
             if database.showAllSettings {
-                if database.debug.previewStream {
-                    Section("Preview") {
-                        Toggle("Enabled", isOn: $stream.previewStreamEnabled)
-                        TextEditNavigationView(
-                            title: String(localized: "URL"),
-                            value: stream.previewStreamUrl,
-                            onChange: isValidPreviewStreamUrl,
-                            onSubmit: submitPreviewStreamUrl,
-                            placeholder: "whip://your-server/live"
-                        )
-                        Picker("Resolution", selection: $stream.previewStreamResolution) {
-                            ForEach(previewStreamResolutions(), id: \.self) {
-                                Text($0.shortString())
-                            }
-                        }
-                        Picker("Video bitrate", selection: $stream.previewStreamBitrate) {
-                            ForEach(previewStreamBitrates(), id: \.self) {
-                                Text(formatBytesPerSecond(speed: Int64($0)))
-                            }
-                        }
-                    }
-                }
                 Section {
                     NavigationLink {
                         TextEditView(
