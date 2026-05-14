@@ -192,6 +192,7 @@ struct GetSceneItemList: Codable {
 
 struct GetSceneItemListItem: Decodable {
     let sourceName: String
+    let inputKind: String?
     let sceneItemEnabled: Bool
 }
 
@@ -240,6 +241,15 @@ struct SetCurrentProgramSceneRequest: Codable {
     let sceneName: String
 }
 
+struct SetItemUrlInputSettings: Encodable {
+    let input: String
+}
+
+struct SetItemUrlRequest: Encodable {
+    let inputName: String
+    let inputSettings: SetItemUrlInputSettings
+}
+
 struct GetStreamStatusResponse: Codable {
     let outputActive: Bool
 }
@@ -282,10 +292,31 @@ struct GetInputAudioSyncOffsetResponse: Codable {
 struct InputSettings: Codable {}
 
 struct SetInputSettings: Codable {
-    // periphery:ignore
     let inputName: String
-    // periphery:ignore
     let inputSettings: InputSettings
+}
+
+struct GetInputSettingsRequest: Codable {
+    let inputName: String
+}
+
+struct ObsFFmpegInputRawSettings: Decodable {
+    let input: String?
+    let isLocalFile: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case input
+        case isLocalFile = "is_local_file"
+    }
+}
+
+struct GetInputSettingsResponse: Decodable {
+    let inputSettings: ObsFFmpegInputRawSettings
+}
+
+struct ObsMediaSourceSettings {
+    let input: String
+    let isLocalFile: Bool
 }
 
 struct SetInputMute: Codable {
@@ -617,6 +648,23 @@ class ObsWebSocket {
         )
     }
 
+    func setMediaSourceSettings(name: String,
+                                input: String,
+                                onSuccess: @escaping () -> Void = {},
+                                onError: @escaping (String) -> Void = { _ in })
+    {
+        let request = SetItemUrlRequest(inputName: name,
+                                        inputSettings: SetItemUrlInputSettings(input: input))
+        performRequestNoResponse(
+            type: .setInputSettings,
+            request: request,
+            onSuccess: onSuccess,
+            onError: { requestError in
+                self.onRequestError(requestError: requestError, onError: onError)
+            }
+        )
+    }
+
     func getStreamStatus(onSuccess: @escaping (ObsStreamStatus) -> Void,
                          onError: @escaping (String) -> Void)
     {
@@ -799,6 +847,56 @@ class ObsWebSocket {
                 self.onRequestError(requestError: requestError, onError: onError)
             }
         )
+    }
+
+    func getMediaSourcesSettingsBatch(
+        inputNames: [String],
+        onSuccess: @escaping ([ObsMediaSourceSettings?]) -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        var requests: [String] = []
+        for inputName in inputNames {
+            guard let (request, _) = try? packRequest(
+                type: .getInputSettings,
+                request: GetInputSettingsRequest(inputName: inputName)
+            ) else {
+                onError("Failed to create OBS message")
+                return
+            }
+            guard let request = String(bytes: request, encoding: .utf8) else {
+                onError("Failed to create OBS message")
+                return
+            }
+            requests.append(request)
+        }
+        guard isConnected() else {
+            onError("Not connected to server")
+            return
+        }
+        let requestId = getNextId()
+        batchRequests[requestId] = BatchRequest(onComplete: { results in
+            onSuccess(results.map { status, response in
+                guard status.result, let response else {
+                    return nil
+                }
+                do {
+                    let response = try JSONDecoder().decode(GetInputSettingsResponse.self, from: response)
+                    return ObsMediaSourceSettings(
+                        input: response.inputSettings.input ?? "",
+                        isLocalFile: response.inputSettings.isLocalFile ?? false
+                    )
+                } catch {
+                    return nil
+                }
+            })
+        })
+        let requestBatch = """
+        {
+          "requestId": \(requestId),
+          "requests": [\(requests.joined(separator: ","))]
+        }
+        """
+        send(op: .requestBatch, data: requestBatch.utf8Data)
     }
 
     func getInputMuteBatch(inputNames: [String],
