@@ -52,9 +52,11 @@ export function ConfirmDialog({
           class="relative w-full max-w-sm mx-4 rounded-2xl border border-zinc-600 bg-zinc-800 shadow-2xl shadow-black/60 ring-1 ring-white/10"
           onClick={(e) => e.stopPropagation()}
         >
-          <div class="px-6 pt-6 pb-4">
-            <p class="text-base text-zinc-100 leading-relaxed">{message()}</p>
-          </div>
+          <Show when={message().length > 0}>
+            <div class="px-6 pt-6 pb-4">
+              <p class="text-base text-zinc-100 leading-relaxed">{message()}</p>
+            </div>
+          </Show>
           <div class="flex items-center justify-end gap-2 border-t border-zinc-700 px-6 py-4">
             <Button
               class={`py-2 px-4 rounded-lg font-medium hover:bg-zinc-600 ${okTextClass}`}

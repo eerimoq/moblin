@@ -16,6 +16,7 @@ import {
 import {
   GitHubLink,
   Button,
+  ConfirmDialog,
   Picker,
   Section,
   Toggle,
@@ -129,6 +130,9 @@ function App() {
   const [recordingOn, setRecordingOn] = createSignal(false);
   const [mutedOn, setMutedOn] = createSignal(false);
   const [previewStreamOn, setPreviewStreamOn] = createSignal(false);
+  const [pendingLive, setPendingLive] = createSignal<boolean | null>(null);
+  const [pendingRecording, setPendingRecording] = createSignal<boolean | null>(null);
+  const [pendingPreviewStream, setPendingPreviewStream] = createSignal<boolean | null>(null);
   const [debugLoggingOn, setDebugLoggingOn] = createSignal(false);
   const [zoomValue, setZoomValue] = createSignal("");
   const [zoomPresets, setZoomPresets] = createSignal<ZoomPreset[]>([]);
@@ -351,15 +355,37 @@ function App() {
           <div class="space-y-3">
             <Toggle
               id="controlLive"
-              checked={liveOn()}
-              onChange={(event) => connection.setLive(event.target.checked)}
+              checked={pendingLive() !== null ? pendingLive()! : liveOn()}
+              onChange={(event) => setPendingLive(event.target.checked)}
               label="Live"
+            />
+            <ConfirmDialog
+              open={() => pendingLive() !== null}
+              message={() => (pendingLive() ? "Go live?" : "End?")}
+              onOk={() => {
+                const value = pendingLive();
+                setPendingLive(null);
+                if (value !== null) connection.setLive(value);
+              }}
+              onCancel={() => setPendingLive(null)}
+              okTextClass="text-zinc-300"
             />
             <Toggle
               id="controlRecording"
-              checked={recordingOn()}
-              onChange={(event) => connection.setRecording(event.target.checked)}
+              checked={pendingRecording() !== null ? pendingRecording()! : recordingOn()}
+              onChange={(event) => setPendingRecording(event.target.checked)}
               label="Recording"
+            />
+            <ConfirmDialog
+              open={() => pendingRecording() !== null}
+              message={() => pendingRecording() ? "Start recording?" : "Stop recording?"}
+              onOk={() => {
+                const value = pendingRecording();
+                setPendingRecording(null);
+                if (value !== null) connection.setRecording(value);
+              }}
+              onCancel={() => setPendingRecording(null)}
+              okTextClass="text-zinc-300"
             />
             <Toggle
               id="controlMuted"
@@ -369,9 +395,20 @@ function App() {
             />
             <Toggle
               id="controlPreviewStream"
-              checked={previewStreamOn()}
-              onChange={(event) => connection.setPreviewStream(event.target.checked)}
+              checked={pendingPreviewStream() !== null ? pendingPreviewStream()! : previewStreamOn()}
+              onChange={(event) => setPendingPreviewStream(event.target.checked)}
               label="Preview stream"
+            />
+            <ConfirmDialog
+              open={() => pendingPreviewStream() !== null}
+              message={() => pendingPreviewStream() ? "Start preview stream?" : "Stop preview stream?"}
+              onOk={() => {
+                const value = pendingPreviewStream();
+                setPendingPreviewStream(null);
+                if (value !== null) connection.setPreviewStream(value);
+              }}
+              onCancel={() => setPendingPreviewStream(null)}
+              okTextClass="text-zinc-300"
             />
             <div class="flex items-center space-x-4">
               <label class="text-sm text-zinc-200 w-24 shrink-0">Zoom</label>
