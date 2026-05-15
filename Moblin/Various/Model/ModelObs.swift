@@ -7,7 +7,10 @@ struct ObsSceneInput: Identifiable {
 }
 
 struct ObsSceneFFmpeg: Identifiable {
-    var id: String { name }
+    var id: String {
+        name
+    }
+
     var name: String
 }
 

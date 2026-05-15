@@ -241,23 +241,23 @@ struct SetCurrentProgramSceneRequest: Codable {
     let sceneName: String
 }
 
-struct SetItemUrlRequest: Encodable {
-    struct InputSettings: Encodable {
-        let input: String
-        let isLocalFile: Bool
+struct SetItemUrlInputSettings: Encodable {
+    let input: String
+    let isLocalFile: Bool
 
-        enum CodingKeys: String, CodingKey {
-            case input
-            case isLocalFile = "is_local_file"
-        }
+    enum CodingKeys: String, CodingKey {
+        case input
+        case isLocalFile = "is_local_file"
     }
+}
 
+struct SetItemUrlRequest: Encodable {
     let inputName: String
-    let inputSettings: InputSettings
+    let inputSettings: SetItemUrlInputSettings
 
     init(inputName: String, url: String) {
         self.inputName = inputName
-        inputSettings = InputSettings(input: url, isLocalFile: false)
+        inputSettings = SetItemUrlInputSettings(input: url, isLocalFile: false)
     }
 }
 
@@ -637,7 +637,7 @@ class ObsWebSocket {
             }
         )
     }
-    
+
     func setSceneItemUrl(name: String, url: String,
                          onSuccess: @escaping () -> Void = {},
                          onError: @escaping (String) -> Void = { _ in })
