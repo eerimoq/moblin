@@ -649,7 +649,6 @@ final class Media: NSObject, @unchecked Sendable {
     }
 
     func startPreviewStream(url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
-        logger.info("preview-stream: Start")
         previewStreamHandler?.stop()
         previewStreamHandler = PreviewStreamHandler(media: self,
                                                     url: url,
@@ -659,7 +658,6 @@ final class Media: NSObject, @unchecked Sendable {
     }
 
     func stopPreviewStream() {
-        logger.info("preview-stream: Stop")
         previewStreamHandler?.stop()
         previewStreamHandler = nil
     }
