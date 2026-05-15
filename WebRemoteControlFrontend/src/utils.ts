@@ -171,16 +171,16 @@ export interface RemoteControlSettingsSrtConnectionPriority {
 
 export interface RemoteControlSettingsSrt {
   connectionPrioritiesEnabled: boolean;
-  connectionPriorities: [RemoteControlSettingsSrtConnectionPriority];
+  connectionPriorities: RemoteControlSettingsSrtConnectionPriority[];
 }
 
 export interface RemoteControlSettings {
-  scenes: [NamedItem];
-  autoSceneSwitchers?: [NamedItem];
-  bitratePresets: [BitratePreset];
-  mics: [NamedItem];
+  scenes: NamedItem[];
+  autoSceneSwitchers?: NamedItem[];
+  bitratePresets: BitratePreset[];
+  mics: NamedItem[];
   srt: RemoteControlSettingsSrt;
-  gimbalPresets: [GimbalPreset];
+  gimbalPresets: GimbalPreset[];
 }
 
 export interface ResponseData {
@@ -192,11 +192,11 @@ export interface ResponseData {
 
 export interface RemoteControlAssistantStreamerState {
   scene?: string;
-  autoSceneSwitcher?: unknown;
+  autoSceneSwitcher?: { id?: string };
   mic?: string;
   bitrate?: string;
   zoom?: number;
-  zoomPresets?: [ZoomPreset];
+  zoomPresets?: ZoomPreset[];
   zoomPreset?: string;
   debugLogging?: boolean;
   streaming?: boolean;
@@ -205,7 +205,17 @@ export interface RemoteControlAssistantStreamerState {
   muted?: boolean;
   torchOn?: boolean;
   batteryCharging?: boolean;
-  filters?: [object | boolean];
+  filters?: (object | boolean)[];
+}
+
+export function convertFilters(filters: (object | boolean)[]): [string, boolean][] {
+  let result: [string, boolean][] = [];
+  for (let index = 0; index < filters.length; index += 2) {
+    const name = Object.keys(filters[index] as object)[0];
+    const on = filters[index + 1] as boolean;
+    result.push([name, on]);
+  }
+  return result;
 }
 
 export interface EventData {

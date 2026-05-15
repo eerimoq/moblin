@@ -5,6 +5,7 @@ import { render } from "solid-js/web";
 import {
   BitratePreset,
   connectionStatus,
+  convertFilters,
   EventData,
   GimbalPreset,
   NamedItem,
@@ -237,13 +238,10 @@ function App() {
         setCurrentZoomPresetId(state.zoomPreset ?? null);
       }
       if (state.autoSceneSwitcher !== undefined) {
-        const switcher = state.autoSceneSwitcher as { id: string } | null;
-        setCurrentAutoSwitcherId(switcher ? (switcher.id ?? "") : "");
+        setCurrentAutoSwitcherId(state.autoSceneSwitcher.id ?? "");
       }
       if (state.filters !== undefined) {
-        for (let filterIndex = 0; filterIndex < state.filters.length; filterIndex += 2) {
-          const name = Object.keys(state.filters[filterIndex] as object)[0];
-          const on = state.filters[filterIndex + 1] as boolean;
+        for (const [name, on] of convertFilters(state.filters)) {
           setFilterStates(name, on);
         }
       }
