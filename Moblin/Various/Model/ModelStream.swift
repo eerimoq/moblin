@@ -241,7 +241,7 @@ extension Model {
                               videoBitrate: Double(stream.bitrate))
     }
 
-    private func startPreviewStream() {
+    func startPreviewStream() {
         guard !isPreviewStreaming else {
             return
         }

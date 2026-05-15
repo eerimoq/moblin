@@ -14,6 +14,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetBitratePreset(id: UUID)
     func remoteControlStreamerSetRecord(on: Bool)
     func remoteControlStreamerSetStream(on: Bool)
+    func remoteControlStreamerSetPreviewStream(on: Bool)
     func remoteControlStreamerSetDebugLogging(on: Bool)
     func remoteControlStreamerSetZoom(x: Float)
     func remoteControlStreamerSetZoomPreset(id: UUID)
@@ -243,6 +244,9 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setStream(on: on):
             delegate.remoteControlStreamerSetStream(on: on)
+            sendEmptyOkResponse(id: id)
+        case let .setPreviewStream(on: on):
+            delegate.remoteControlStreamerSetPreviewStream(on: on)
             sendEmptyOkResponse(id: id)
         case let .setZoom(x: x):
             delegate.remoteControlStreamerSetZoom(x: x)

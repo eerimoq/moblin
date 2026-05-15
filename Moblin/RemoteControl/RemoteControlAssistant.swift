@@ -128,6 +128,10 @@ class RemoteControlAssistant: NSObject, @unchecked Sendable {
         performRequestNoResponseData(data: .setStream(on: on), onSuccess: onSuccess)
     }
 
+    func setPreviewStream(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setPreviewStream(on: on), onSuccess: onSuccess)
+    }
+
     func setZoom(x: Float, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setZoom(x: x), onSuccess: onSuccess)
     }

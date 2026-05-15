@@ -707,6 +707,14 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
         updateQuickButtonStates()
     }
 
+    func remoteControlStreamerSetPreviewStream(on: Bool) {
+        if on {
+            startPreviewStream()
+        } else {
+            stopPreviewStream()
+        }
+    }
+
     func remoteControlStreamerSetDebugLogging(on: Bool) {
         database.debug.debugLogging = on
         setDebugLogging(on: on)
