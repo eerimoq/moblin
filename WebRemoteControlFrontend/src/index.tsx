@@ -128,6 +128,7 @@ function App() {
   const [liveOn, setLiveOn] = createSignal(false);
   const [recordingOn, setRecordingOn] = createSignal(false);
   const [mutedOn, setMutedOn] = createSignal(false);
+  const [previewStreamOn, setPreviewStreamOn] = createSignal(false);
   const [debugLoggingOn, setDebugLoggingOn] = createSignal(false);
   const [zoomValue, setZoomValue] = createSignal("");
   const [zoomPresets, setZoomPresets] = createSignal<ZoomPreset[]>([]);
@@ -216,6 +217,7 @@ function App() {
       if (sd.streaming !== undefined) setLiveOn(sd.streaming as boolean);
       if (sd.recording !== undefined) setRecordingOn(sd.recording as boolean);
       if (sd.muted !== undefined) setMutedOn(sd.muted as boolean);
+      if (sd.previewStream !== undefined) setPreviewStreamOn(sd.previewStream as boolean);
       if (sd.debugLogging !== undefined) setDebugLoggingOn(sd.debugLogging as boolean);
       if (sd.zoom !== undefined) setZoomValue(String(sd.zoom));
       if (sd.scene !== undefined) {
@@ -364,6 +366,12 @@ function App() {
               checked={mutedOn()}
               onChange={(event) => connection.setMuted(event.target.checked)}
               label="Muted"
+            />
+            <Toggle
+              id="controlPreviewStream"
+              checked={previewStreamOn()}
+              onChange={(event) => connection.setPreviewStream(event.target.checked)}
+              label="Preview stream"
             />
             <div class="flex items-center space-x-4">
               <label class="text-sm text-zinc-200 w-24 shrink-0">Zoom</label>

@@ -393,6 +393,22 @@ private struct MutedView: View {
     }
 }
 
+private struct PreviewStreamView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        Toggle("Preview stream", isOn: $remoteControl.previewStream)
+            .onChange(of: remoteControl.previewStream) {
+                guard remoteControl.previewStream != model.remoteControlAssistantStreamerState.previewStream
+                else {
+                    return
+                }
+                model.remoteControlAssistantSetPreviewStream(on: $0)
+            }
+    }
+}
+
 private struct ZoomView: View {
     let model: Model
     @ObservedObject var remoteControl: RemoteControl
@@ -663,6 +679,7 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 LiveView(model: model, remoteControl: remoteControl)
                 RecordingView(model: model, remoteControl: remoteControl)
                 MutedView(model: model, remoteControl: remoteControl)
+                PreviewStreamView(model: model, remoteControl: remoteControl)
                 ZoomView(model: model, remoteControl: remoteControl)
                 ScenePickerView(model: model, remoteControl: remoteControl)
                 AutoSceneSwitcherPickerView(model: model, remoteControl: remoteControl)

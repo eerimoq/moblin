@@ -20,6 +20,7 @@ class RemoteControl: ObservableObject {
     @Published var recording: Bool = false
     @Published var streaming: Bool = false
     @Published var muted: Bool = false
+    @Published var previewStream: Bool = false
     @Published var presentingPreview = true
     @Published var presentingPreviewFullScreen = false
     @Published var presentingStreamers = false
@@ -216,6 +217,14 @@ extension Model {
 
     func remoteControlAssistantSetMute(on: Bool) {
         remoteControlAssistant?.setMute(on: on) {
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
+        }
+    }
+
+    func remoteControlAssistantSetPreviewStream(on: Bool) {
+        remoteControlAssistant?.setPreviewStream(on: on) {
             DispatchQueue.main.async {
                 self.updateRemoteControlAssistantStatus()
             }
@@ -510,6 +519,7 @@ extension Model {
         state.streaming = isLive
         state.recording = isRecording
         state.muted = isMuteOn
+        state.previewStream = isPreviewStreaming
         state.torchOn = streamOverlay.isTorchOn
         state.batteryCharging = isBatteryCharging()
         state.filters = [:]
@@ -991,6 +1001,10 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
             remoteControlAssistantStreamerState.muted = muted
             remoteControl.muted = muted
         }
+        if let previewStream = state.previewStream {
+            remoteControlAssistantStreamerState.previewStream = previewStream
+            remoteControl.previewStream = previewStream
+        }
         if let filters = state.filters {
             for (filter, on) in filters {
                 remoteControlAssistantStreamerState.filters?[filter] = on
@@ -1100,6 +1114,10 @@ extension Model: @preconcurrency RemoteControlWebDelegate {
 
     func remoteControlWebSetStream(on: Bool) {
         remoteControlStreamerSetStream(on: on)
+    }
+
+    func remoteControlWebSetPreviewStream(on: Bool) {
+        remoteControlStreamerSetPreviewStream(on: on)
     }
 
     func remoteControlWebSetZoom(x: Float) {

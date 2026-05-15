@@ -803,6 +803,7 @@ struct RemoteControlAssistantStreamerState: Codable {
     var debugLogging: Bool?
     var streaming: Bool?
     var recording: Bool?
+    var previewStream: Bool?
     var muted: Bool?
     // periphery:ignore
     var torchOn: Bool?

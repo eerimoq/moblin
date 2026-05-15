@@ -217,6 +217,10 @@ export class WebSocketConnection {
     this.sendRequest({ setMute: { on } });
   }
 
+  setPreviewStream(on: boolean): void {
+    this.sendRequest({ setPreviewStream: { on } });
+  }
+
   setDebugLogging(on: boolean): void {
     this.sendRequest({ setDebugLogging: { on } });
   }
