@@ -805,21 +805,15 @@ struct RemoteControlAssistantStreamerState: Codable {
     var recording: Bool?
     var previewStream: Bool?
     var muted: Bool?
-    // periphery:ignore
     var torchOn: Bool?
-    // periphery:ignore
     var batteryCharging: Bool?
     var filters: [RemoteControlFilter: Bool]?
 }
 
 struct RemoteControlScoreboardControl: Codable {
-    // periphery: ignore
     var type: String
-    // periphery: ignore
     var label: String
-    // periphery: ignore
     var options: [String]?
-    // periphery: ignore
     var periodReset: Bool?
 }
 
@@ -873,7 +867,6 @@ struct RemoteControlScoreboardMatchConfig: Codable {
     var team1: RemoteControlScoreboardTeam
     var team2: RemoteControlScoreboardTeam
     var global: RemoteControlScoreboardGlobalStats
-    // periphery: ignore
     var controls: [String: RemoteControlScoreboardControl]
 
     func periodFull() -> String {
