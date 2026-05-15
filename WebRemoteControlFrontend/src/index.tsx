@@ -378,7 +378,7 @@ function App() {
             />
             <ConfirmDialog
               open={() => pendingRecording() !== null}
-              message={() => pendingRecording() ? "Start recording?" : "Stop recording?"}
+              message={() => (pendingRecording() ? "Start recording?" : "Stop recording?")}
               onOk={() => {
                 const value = pendingRecording();
                 setPendingRecording(null);
@@ -395,13 +395,17 @@ function App() {
             />
             <Toggle
               id="controlPreviewStream"
-              checked={pendingPreviewStream() !== null ? pendingPreviewStream()! : previewStreamOn()}
+              checked={
+                pendingPreviewStream() !== null ? pendingPreviewStream()! : previewStreamOn()
+              }
               onChange={(event) => setPendingPreviewStream(event.target.checked)}
               label="Preview stream"
             />
             <ConfirmDialog
               open={() => pendingPreviewStream() !== null}
-              message={() => pendingPreviewStream() ? "Start preview stream?" : "Stop preview stream?"}
+              message={() =>
+                pendingPreviewStream() ? "Start preview stream?" : "Stop preview stream?"
+              }
               onOk={() => {
                 const value = pendingPreviewStream();
                 setPendingPreviewStream(null);
