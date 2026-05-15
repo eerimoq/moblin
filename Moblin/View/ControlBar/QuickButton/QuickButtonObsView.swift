@@ -151,59 +151,44 @@ private struct ObsScenesView: View {
 private struct ObsScenesFFmpegView: View {
     let model: Model
     @ObservedObject var obsQuickButton: QuickButtonObs
-    @State var url: String = ""
-    @State var itemName: String = ""
-    @State var showingAlert: Bool = false
 
-    private var trimmedUrl: String {
-        url.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private var isUrlValid: Bool {
-        let trimmed = trimmedUrl
-        guard !trimmed.isEmpty else {
-            return false
-        }
+    private func validate(_ value: String) -> String? {
+        let trimmed = value.trim()
         // Accept any URL whose scheme parses — FFmpeg sources commonly use
         // `rtmp://`, `srt://`, `rtsp://`, `http(s)://`, and listen-mode URLs
-        // like `udp://@:1234` that have no host.
-        return URL(string: trimmed)?.scheme != nil
+        // like `udp://@:1234` that have no host. Returning a non-nil string
+        // here both shows an inline hint and blocks `TextEditView` from
+        // submitting (including its on-dismiss auto-submit).
+        guard !trimmed.isEmpty, URL(string: trimmed)?.scheme != nil else {
+            return String(localized: "Incorrect URL")
+        }
+        return nil
     }
 
     var body: some View {
         if !obsQuickButton.sceneFFmpeg.isEmpty {
             Section {
                 ForEach(obsQuickButton.sceneFFmpeg) { item in
-                    HStack {
-                        Text(item.name)
-                        Spacer()
-                        Button {
-                            url = ""
-                            itemName = item.name
-                            showingAlert = true
-                        } label: {
-                            Image(systemName: "gear")
+                    NavigationLink {
+                        TextEditView(
+                            title: String(localized: "Enter new URL"),
+                            value: "",
+                            keyboardType: .URL,
+                            placeholder: "srtla://…",
+                            onChange: validate
+                        ) { value in
+                            let trimmed = value.trim()
+                            guard validate(trimmed) == nil else {
+                                return
+                            }
+                            model.updateObsFFmpegUrl(itemName: item.name, url: trimmed)
                         }
+                    } label: {
+                        Text(item.name)
                     }
                 }
             } header: {
                 Text("Scene FFmpeg inputs")
-            }
-            .alert("Update URL", isPresented: $showingAlert) {
-                TextField("srtla://…", text: $url)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .keyboardType(.URL)
-                Button("Update") {
-                    model.updateObsFFmpegUrl(itemName: itemName, url: trimmedUrl)
-                    showingAlert = false
-                }
-                .disabled(!isUrlValid)
-                Button("Cancel", role: .cancel) {
-                    showingAlert = false
-                }
-            } message: {
-                Text("Enter new URL")
             }
         }
     }
