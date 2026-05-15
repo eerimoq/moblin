@@ -361,21 +361,20 @@ extension DjiDevice: CBPeripheralDelegate {
             return
         }
         let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
-        let encoded: Data
-        switch model {
+        let encoded: Data = switch model {
         case .osmoPocket4:
             // The Pocket 4 uses a JSON-wrapped start-streaming payload that's
             // completely different from the legacy binary format used by every
             // other DJI camera Moblin supports. Reverse-engineered from a
             // PacketLogger capture of the official DJI Mimo app.
-            encoded = DjiStartStreamingMessagePayloadPocket4(
+            DjiStartStreamingMessagePayloadPocket4(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
                 bitrateKbps: bitrateKbps
             ).encode()
         default:
-            encoded = DjiStartStreamingMessagePayload(
+            DjiStartStreamingMessagePayload(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,

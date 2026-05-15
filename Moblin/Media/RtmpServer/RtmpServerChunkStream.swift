@@ -490,12 +490,11 @@ class RtmpServerChunkStream: @unchecked Sendable {
             return
         }
         let configRecord = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
-        let status: OSStatus
-        switch codec {
+        let status: OSStatus = switch codec {
         case .avc:
-            status = MpegTsVideoConfigAvc(avcC: configRecord).makeFormatDescription(&formatDescription)
+            MpegTsVideoConfigAvc(avcC: configRecord).makeFormatDescription(&formatDescription)
         case .hevc:
-            status = MpegTsVideoConfigHevc(hvcC: configRecord).makeFormatDescription(&formatDescription)
+            MpegTsVideoConfigHevc(hvcC: configRecord).makeFormatDescription(&formatDescription)
         }
         if status == noErr {
             setupVideoEncoderIfNeeded(formatDescription: formatDescription)
