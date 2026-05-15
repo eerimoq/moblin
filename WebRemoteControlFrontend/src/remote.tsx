@@ -13,6 +13,7 @@ import {
   confirmOk,
   showConfirm,
   createScoreboardTeam,
+  RemoteControlResponseGetStatus,
 } from "./utils.ts";
 import { ConfirmDialog, ConnectingOverlay } from "./components.tsx";
 
@@ -115,16 +116,12 @@ function App() {
     connection.sendUpdateScoreboard(scoreboardState);
   }
 
-  function handleGetStatus(status: Record<string, unknown>): void {
-    const s = status as {
-      general?: { batteryLevel: number };
-      topRight?: { bitrate?: { message: string } };
-    };
-    if (s.general !== undefined) {
-      setBatteryLevel(`${s.general.batteryLevel}%`);
+  function handleGetStatus(status: RemoteControlResponseGetStatus): void {
+    if (status.general !== undefined) {
+      setBatteryLevel(`${status.general.batteryLevel}%`);
     }
-    if (s.topRight && s.topRight.bitrate !== undefined) {
-      setBitrateMessage(s.topRight.bitrate.message);
+    if (status.topRight && status.topRight.bitrate !== undefined) {
+      setBitrateMessage(status.topRight.bitrate.message);
     }
   }
 

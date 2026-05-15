@@ -106,15 +106,110 @@ export interface ScoreboardMatchConfig {
     | string;
 }
 
+export interface RemoteControlStatusGeneral {
+  batteryCharging?: boolean;
+  batteryLevel?: number;
+  flame?: string;
+  wiFiSsid?: string;
+  isLive?: boolean;
+  isRecording?: boolean;
+  isMuted?: boolean;
+}
+
+export interface RemoteControlStatusItem {
+  message: string;
+  ok: boolean;
+}
+
+export interface RemoteControlStatusTopLeft {
+  stream?: RemoteControlStatusItem;
+  camera?: RemoteControlStatusItem;
+  mic?: RemoteControlStatusItem;
+  zoom?: RemoteControlStatusItem;
+  obs?: RemoteControlStatusItem;
+  events?: RemoteControlStatusItem;
+  chat?: RemoteControlStatusItem;
+  viewers?: RemoteControlStatusItem;
+}
+
+export interface RemoteControlStatusTopRightAudioInfo {
+  // audioLevel: RemoteControlStatusTopRightAudioLevel
+  numberOfAudioChannels: number;
+}
+
+export interface RemoteControlStatusTopRight {
+  audioInfo?: RemoteControlStatusTopRightAudioInfo;
+  audioLevel?: RemoteControlStatusItem;
+  rtmpServer?: RemoteControlStatusItem;
+  remoteControl?: RemoteControlStatusItem;
+  gameController?: RemoteControlStatusItem;
+  bitrate?: RemoteControlStatusItem;
+  uptime?: RemoteControlStatusItem;
+  location?: RemoteControlStatusItem;
+  srtla?: RemoteControlStatusItem;
+  srtlaRtts?: RemoteControlStatusItem;
+  recording?: RemoteControlStatusItem;
+  replay?: RemoteControlStatusItem;
+  browserWidgets?: RemoteControlStatusItem;
+  moblink?: RemoteControlStatusItem;
+  djiDevices?: RemoteControlStatusItem;
+  systemMonitor?: RemoteControlStatusItem;
+}
+
+export interface RemoteControlResponseGetStatus {
+  general?: RemoteControlStatusGeneral;
+  topLeft: RemoteControlStatusTopLeft;
+  topRight: RemoteControlStatusTopRight;
+}
+
+export interface RemoteControlSettingsSrtConnectionPriority {
+  id: string;
+  name: string;
+  priority: number;
+  enabled: boolean;
+}
+
+export interface RemoteControlSettingsSrt {
+  connectionPrioritiesEnabled: boolean;
+  connectionPriorities: [RemoteControlSettingsSrtConnectionPriority];
+}
+
+export interface RemoteControlSettings {
+  scenes: [NamedItem];
+  autoSceneSwitchers?: [NamedItem];
+  bitratePresets: [BitratePreset];
+  mics: [NamedItem];
+  srt: RemoteControlSettingsSrt;
+  gimbalPresets: [GimbalPreset];
+}
+
 export interface ResponseData {
-  getStatus?: Record<string, unknown>;
-  getSettings?: { data: Record<string, unknown> };
+  getStatus?: RemoteControlResponseGetStatus;
+  getSettings?: { data: RemoteControlSettings };
   getScoreboardSports?: { names: string[] };
   getGolfScoreboard?: { data: RemoteControlGolfScoreboard };
 }
 
+export interface RemoteControlAssistantStreamerState {
+  scene?: string;
+  autoSceneSwitcher?: unknown;
+  mic?: string;
+  bitrate?: string;
+  zoom?: number;
+  zoomPresets?: [ZoomPreset];
+  zoomPreset?: string;
+  debugLogging?: boolean;
+  streaming?: boolean;
+  recording?: boolean;
+  previewStream?: boolean;
+  muted?: boolean;
+  torchOn?: boolean;
+  batteryCharging?: boolean;
+  filters?: [object | boolean];
+}
+
 export interface EventData {
-  state?: { data: Record<string, unknown> };
+  state?: { data: RemoteControlAssistantStreamerState };
   log?: { entry: string };
   scoreboard?: { config: ScoreboardMatchConfig };
   golfScoreboard?: { data: RemoteControlGolfScoreboard };

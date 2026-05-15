@@ -8,6 +8,13 @@ import {
   EventData,
   GimbalPreset,
   NamedItem,
+  RemoteControlAssistantStreamerState,
+  RemoteControlResponseGetStatus,
+  RemoteControlSettings,
+  RemoteControlSettingsSrtConnectionPriority,
+  RemoteControlStatusGeneral,
+  RemoteControlStatusTopLeft,
+  RemoteControlStatusTopRight,
   ResponseData,
   SrtPriority,
   WebSocketConnection,
@@ -63,30 +70,6 @@ const allFilterKeys = [
   "moblinInMouth",
   "cameraMan",
 ];
-
-const statusKeyToName = {
-  camera: "Camera",
-  chat: "Chat",
-  mic: "Mic",
-  stream: "Stream",
-  zoom: "Zoom",
-  obs: "OBS",
-  events: "Events",
-  viewers: "Viewers",
-  audioLevel: "Audio",
-  location: "Location",
-  moblink: "Moblink",
-  remoteControl: "Remote control",
-  rtmpServer: "RTMP/SRT(LA) servers",
-  gameController: "Game controller",
-  bitrate: "Bitrate",
-  uptime: "Uptime",
-  srtla: "Bonding",
-  srtlaRtts: "Bonding RTT:s",
-  recording: "Recording",
-  browserWidgets: "Browser widgets",
-  djiDevices: "DJI devices",
-};
 
 function formatBytesPerSecond(bps: number): string {
   if (bps >= 1000000) return (bps / 1000000).toFixed(1) + " Mbps";
@@ -146,7 +129,9 @@ function App() {
   const [bitratePresets, setBitratePresets] = createSignal<BitratePreset[]>([]);
   const [currentBitrateId, setCurrentBitrateId] = createSignal("");
   const [srtEnabled, setSrtEnabled] = createSignal(false);
-  const [srtPriorities, setSrtPriorities] = createStore<SrtPriority[]>([]);
+  const [srtPriorities, setSrtPriorities] = createStore<
+    RemoteControlSettingsSrtConnectionPriority[]
+  >([]);
   const [gimbalPresets, setGimbalPresets] = createSignal<GimbalPreset[]>([]);
   const [filterStates, setFilterStates] = createStore<Record<string, boolean>>({});
   let logContainer: HTMLDivElement | undefined;
@@ -188,19 +173,19 @@ function App() {
       if (data.getStatus !== undefined) {
         this.handleGetStatusResponse(data.getStatus);
       } else if (data.getSettings !== undefined) {
-        this.handleGetSettingsResponse(data.getSettings);
+        this.handleGetSettingsResponse(data.getSettings.data);
       }
     }
 
-    handleGetStatusResponse(status: Record<string, unknown>): void {
+    handleGetStatusResponse(status: RemoteControlResponseGetStatus): void {
       updateStatus(status);
       this.statusTimerId = setTimeout(() => {
         this.sendGetStatusRequest();
       }, 1000);
     }
 
-    handleGetSettingsResponse(settingsData: { data: Record<string, unknown> }): void {
-      populateSettings(settingsData.data);
+    handleGetSettingsResponse(settings: RemoteControlSettings): void {
+      populateSettings(settings);
       this.settingsTimerId = setTimeout(() => {
         this.sendGetSettingsRequest();
       }, 10000);
@@ -208,7 +193,7 @@ function App() {
 
     handleEvent(data: EventData): void {
       if (data.state !== undefined) {
-        this.handleStateEvent(data.state);
+        this.handleStateEvent(data.state.data);
       } else if (data.log !== undefined) {
         const entry = document.createElement("div");
         entry.textContent = data.log.entry;
@@ -216,39 +201,49 @@ function App() {
       }
     }
 
-    handleStateEvent(state: { data: Record<string, unknown> }): void {
-      const sd = state.data;
-      if (sd.streaming !== undefined) setLiveOn(sd.streaming as boolean);
-      if (sd.recording !== undefined) setRecordingOn(sd.recording as boolean);
-      if (sd.muted !== undefined) setMutedOn(sd.muted as boolean);
-      if (sd.previewStream !== undefined) setPreviewStreamOn(sd.previewStream as boolean);
-      if (sd.debugLogging !== undefined) setDebugLoggingOn(sd.debugLogging as boolean);
-      if (sd.zoom !== undefined) setZoomValue(String(sd.zoom));
-      if (sd.scene !== undefined) {
-        setCurrentSceneId(sd.scene as string);
+    handleStateEvent(state: RemoteControlAssistantStreamerState): void {
+      if (state.streaming !== undefined) {
+        setLiveOn(state.streaming);
       }
-      if (sd.mic !== undefined) {
-        setCurrentMicId(sd.mic as string);
+      if (state.recording !== undefined) {
+        setRecordingOn(state.recording);
       }
-      if (sd.bitrate !== undefined) {
-        setCurrentBitrateId(sd.bitrate as string);
+      if (state.muted !== undefined) {
+        setMutedOn(state.muted);
       }
-      if (sd.zoomPreset !== undefined) {
-        setCurrentZoomPresetId(sd.zoomPreset as string);
+      if (state.previewStream !== undefined) {
+        setPreviewStreamOn(state.previewStream);
       }
-      if (sd.zoomPresets !== undefined) {
-        setZoomPresets(sd.zoomPresets as ZoomPreset[]);
-        setCurrentZoomPresetId((sd.zoomPreset as string | undefined) ?? null);
+      if (state.debugLogging !== undefined) {
+        setDebugLoggingOn(state.debugLogging);
       }
-      if (sd.autoSceneSwitcher !== undefined) {
-        const switcher = sd.autoSceneSwitcher as { id: string } | null;
+      if (state.zoom !== undefined) {
+        setZoomValue(String(state.zoom));
+      }
+      if (state.scene !== undefined) {
+        setCurrentSceneId(state.scene);
+      }
+      if (state.mic !== undefined) {
+        setCurrentMicId(state.mic);
+      }
+      if (state.bitrate !== undefined) {
+        setCurrentBitrateId(state.bitrate);
+      }
+      if (state.zoomPreset !== undefined) {
+        setCurrentZoomPresetId(state.zoomPreset);
+      }
+      if (state.zoomPresets !== undefined) {
+        setZoomPresets(state.zoomPresets);
+        setCurrentZoomPresetId(state.zoomPreset ?? null);
+      }
+      if (state.autoSceneSwitcher !== undefined) {
+        const switcher = state.autoSceneSwitcher as { id: string } | null;
         setCurrentAutoSwitcherId(switcher ? (switcher.id ?? "") : "");
       }
-      if (sd.filters !== undefined) {
-        const filters = sd.filters as unknown[];
-        for (let filterIndex = 0; filterIndex < filters.length; filterIndex += 2) {
-          const name = Object.keys(filters[filterIndex] as object)[0];
-          const on = filters[filterIndex + 1] as boolean;
+      if (state.filters !== undefined) {
+        for (let filterIndex = 0; filterIndex < state.filters.length; filterIndex += 2) {
+          const name = Object.keys(state.filters[filterIndex] as object)[0];
+          const on = state.filters[filterIndex + 1] as boolean;
           setFilterStates(name, on);
         }
       }
@@ -257,55 +252,130 @@ function App() {
 
   const connection = new IndexConnection();
 
-  function overlayStatusRows(overlay: Record<string, { message: string }>): StatusRow[] {
-    return Object.keys(overlay)
-      .sort()
-      .filter((key) => statusKeyToName[key as keyof typeof statusKeyToName])
-      .map((key) => [statusKeyToName[key as keyof typeof statusKeyToName], overlay[key].message]);
+  function updateStatus(status: RemoteControlResponseGetStatus): void {
+    updateStatusGeneral(status.general);
+    updateStatusTopLeft(status.topLeft);
+    updateStatusTopRight(status.topRight);
   }
 
-  function updateStatus(status: Record<string, unknown>): void {
-    const general = status.general as {
-      batteryLevel: number;
-      isMuted: boolean;
-      flame: string;
-      wiFiSsid: string;
-    };
-    const genRows: StatusRow[] = [
-      ["Battery level", String(general.batteryLevel)],
-      ["Muted", String(general.isMuted)],
-      ["Flame", general.flame],
-      ["WiFi", general.wiFiSsid],
-    ];
-    setGeneralRows(genRows);
-    const topLeft = (status.topLeft ?? {}) as Record<string, { message: string }>;
-    setTopLeftRows(overlayStatusRows(topLeft));
-    const topRight = (status.topRight ?? {}) as Record<string, { message: string }>;
-    setTopRightRows(overlayStatusRows(topRight));
-  }
-
-  function populateSettings(data: Record<string, unknown>): void {
-    setShowControl(true);
-    setScenes((data.scenes as NamedItem[]) ?? []);
-    let baseAutoSceneSwitchers: NamedItem[] = [{ id: "", name: "-- None --" }];
-    setAutoSwitchers(baseAutoSceneSwitchers.concat(data.autoSceneSwitchers as NamedItem[]) ?? []);
-    setMics((data.mics as NamedItem[]) ?? []);
-    setBitratePresets((data.bitratePresets as BitratePreset[]) ?? []);
-    const srt = data.srt as
-      | {
-          connectionPriorities: SrtPriority[];
-          connectionPrioritiesEnabled: boolean;
-        }
-      | undefined;
-    if (srt && srt.connectionPriorities && srt.connectionPriorities.length > 0) {
-      setShowSrt(true);
-      setSrtEnabled(srt.connectionPrioritiesEnabled);
-      setSrtPriorities(srt.connectionPriorities);
+  function updateStatusGeneral(general?: RemoteControlStatusGeneral): void {
+    if (general === undefined) {
+      return;
     }
-    const gimbalPresetList = data.gimbalPresets as GimbalPreset[] | undefined;
-    if (gimbalPresetList && gimbalPresetList.length > 0) {
+    let rows: StatusRow[] = [];
+    if (general.batteryLevel !== undefined) {
+      rows.push(["Battery level", `${general.batteryLevel}%`]);
+    }
+    if (general.isMuted !== undefined) {
+      rows.push(["Muted", general.isMuted ? "Yes" : "No"]);
+    }
+    if (general.flame !== undefined) {
+      rows.push(["Flame", general.flame]);
+    }
+    if (general.wiFiSsid !== undefined) {
+      rows.push(["WiFi", general.wiFiSsid]);
+    }
+    setGeneralRows(rows);
+  }
+
+  function updateStatusTopLeft(topLeft: RemoteControlStatusTopLeft): void {
+    let rows: StatusRow[] = [];
+    if (topLeft.stream !== undefined) {
+      rows.push(["Stream", topLeft.stream.message]);
+    }
+    if (topLeft.camera !== undefined) {
+      rows.push(["Camera", topLeft.camera.message]);
+    }
+    if (topLeft.mic !== undefined) {
+      rows.push(["Mic", topLeft.mic.message]);
+    }
+    if (topLeft.zoom !== undefined) {
+      rows.push(["Zoom", topLeft.zoom.message]);
+    }
+    if (topLeft.obs !== undefined) {
+      rows.push(["OBS", topLeft.obs.message]);
+    }
+    if (topLeft.events !== undefined) {
+      rows.push(["Events", topLeft.events.message]);
+    }
+    if (topLeft.chat !== undefined) {
+      rows.push(["Chat", topLeft.chat.message]);
+    }
+    if (topLeft.viewers !== undefined) {
+      rows.push(["Viewers", topLeft.viewers.message]);
+    }
+    setTopLeftRows(rows);
+  }
+
+  function updateStatusTopRight(topRight: RemoteControlStatusTopRight): void {
+    let rows: StatusRow[] = [];
+    if (topRight.audioLevel !== undefined) {
+      rows.push(["Audio", topRight.audioLevel.message]);
+    }
+    if (topRight.rtmpServer !== undefined) {
+      rows.push(["Ingests", topRight.rtmpServer.message]);
+    }
+    if (topRight.remoteControl !== undefined) {
+      rows.push(["Remote control", topRight.remoteControl.message]);
+    }
+    if (topRight.gameController !== undefined) {
+      rows.push(["Game controller", topRight.gameController.message]);
+    }
+    if (topRight.bitrate !== undefined) {
+      rows.push(["Bitrate", topRight.bitrate.message]);
+    }
+    if (topRight.uptime !== undefined) {
+      rows.push(["Uptime", topRight.uptime.message]);
+    }
+    if (topRight.location !== undefined) {
+      rows.push(["Location", topRight.location.message]);
+    }
+    if (topRight.srtla !== undefined) {
+      rows.push(["Bonding", topRight.srtla.message]);
+    }
+    if (topRight.srtlaRtts !== undefined) {
+      rows.push(["Bonding RTT:s", topRight.srtlaRtts.message]);
+    }
+    if (topRight.recording !== undefined) {
+      rows.push(["Recording", topRight.recording.message]);
+    }
+    if (topRight.replay !== undefined) {
+      rows.push(["Replay", topRight.replay.message]);
+    }
+    if (topRight.browserWidgets !== undefined) {
+      rows.push(["Browser widgets", topRight.browserWidgets.message]);
+    }
+    if (topRight.moblink !== undefined) {
+      rows.push(["Moblink", topRight.moblink.message]);
+    }
+    if (topRight.djiDevices !== undefined) {
+      rows.push(["DJI devices", topRight.djiDevices.message]);
+    }
+    if (topRight.systemMonitor !== undefined) {
+      rows.push(["System monitor", topRight.systemMonitor.message]);
+    }
+    setTopRightRows(rows);
+  }
+
+  function populateSettings(data: RemoteControlSettings): void {
+    setShowControl(true);
+    setScenes(data.scenes);
+    let baseAutoSceneSwitchers: NamedItem[] = [{ id: "", name: "-- None --" }];
+    setAutoSwitchers(baseAutoSceneSwitchers.concat(data.autoSceneSwitchers ?? []));
+    setMics(data.mics);
+    setBitratePresets(data.bitratePresets);
+    if (data.srt.connectionPriorities.length > 0) {
+      setShowSrt(true);
+      setSrtEnabled(data.srt.connectionPrioritiesEnabled);
+      setSrtPriorities(data.srt.connectionPriorities);
+    } else {
+      setShowSrt(false);
+    }
+    if (data.gimbalPresets.length > 0) {
       setShowGimbal(true);
-      setGimbalPresets(gimbalPresetList);
+      setGimbalPresets(data.gimbalPresets);
+    } else {
+      setShowGimbal(false);
     }
     setShowFilters(true);
   }
