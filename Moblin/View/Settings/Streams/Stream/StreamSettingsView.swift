@@ -270,13 +270,11 @@ struct StreamSettingsView: View {
                     } label: {
                         IconAndTextSettingView(image: "camera.aperture", text: "Snapshot")
                     }
-                    if database.debug.previewStream {
-                        NavigationLink {
-                            StreamPreviewStreamSettingsView(model: model,
-                                                            previewStream: stream.previewStream)
-                        } label: {
-                            IconAndTextSettingView(image: "video.circle", text: "Preview stream")
-                        }
+                    NavigationLink {
+                        StreamPreviewStreamSettingsView(model: model,
+                                                        previewStream: stream.previewStream)
+                    } label: {
+                        IconAndTextSettingView(image: "video.circle", text: "Preview stream")
                     }
                 }
                 if isPhone() || isPad() {

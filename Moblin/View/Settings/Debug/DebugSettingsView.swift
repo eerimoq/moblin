@@ -110,7 +110,6 @@ struct DebugSettingsView: View {
                     }
                 }
                 Toggle(String("Enhanced Moblin SRT"), isOn: $debug.enhancedMoblinSrt)
-                Toggle("Preview stream", isOn: $debug.previewStream)
             } header: {
                 Text("Experimental")
             }
