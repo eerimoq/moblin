@@ -194,10 +194,6 @@ private func toDjiFps(fps: Int) -> UInt8 {
         2
     case 30:
         3
-    case 50:
-        4
-    case 60:
-        5
     default:
         0
     }
