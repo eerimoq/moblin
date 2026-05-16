@@ -653,7 +653,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var appStoreUpdateListenerTask: Task<Void, any Error>?
     var products: [String: Product] = [:]
     var streamTotalBytes: UInt64 = 0
-    var streamLog: Deque<String> = []
+    var fileLog: Deque<String> = []
     private var ipMonitor = IPMonitor()
     var faceEffect = FaceEffect()
     var movieEffect = MovieEffect()
@@ -1111,7 +1111,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateOrientationLock()
         updateFaceFilterSettings()
         initMediaPlayers()
-        removeUnusedLogs()
         autoStartDjiDevices()
         autoStartCatPrinters()
         autoStartWorkoutDevices()
@@ -1289,14 +1288,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         geographyManager.start()
     }
 
-    private func removeUnusedLogs() {
-        for logId in logsStorage.ids()
-            where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
-        {
-            logsStorage.remove(id: logId)
-        }
-    }
-
     func setExternalDisplayContent() {
         switch database.externalDisplayContent {
         case .stream:
@@ -1465,6 +1456,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopAll()
         }
         stopLiveActivity()
+        flushFileLogToFile()
     }
 
     private func stopAll() {
@@ -1496,6 +1488,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopRemoteControlAssistant()
         fixedHorizonEffect.stop()
         cameraLevel.stop()
+        flushFileLogToFile()
     }
 
     func externalMonitorConnected(windowScene: UIWindowScene) {
@@ -1704,6 +1697,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handle30sTimer() {
         updateDjiDevicesStatus()
         updateBatteryLevel()
+        flushFileLogToFile()
     }
 
     func stopPeriodicTimers(keepChatRunning: Bool, keepBatteryLevelRunning: Bool) {

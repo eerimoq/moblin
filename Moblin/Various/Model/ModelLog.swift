@@ -10,15 +10,11 @@ extension Model {
             self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
             self.remoteControlLog(entry: message)
-            if self.streamLog.count >= 100_000 {
-                self.streamLog.removeFirst()
+            if self.fileLog.count >= 500 {
+                self.flushFileLogToFile()
             }
-            self.streamLog.append(message)
+            self.fileLog.append(message)
         }
-    }
-
-    func makeStreamShareLogUrl(logId: UUID) -> URL {
-        logsStorage.makePath(id: logId)
     }
 
     func clearLog() {
@@ -34,5 +30,10 @@ extension Model {
             .appendingPathExtension("txt")
         try? data.write(to: url, atomically: true, encoding: .utf8)
         return url
+    }
+
+    func flushFileLogToFile() {
+        logsStorage.write(lines: fileLog)
+        fileLog.removeAll()
     }
 }

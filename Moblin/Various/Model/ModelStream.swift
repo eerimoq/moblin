@@ -87,7 +87,6 @@ extension Model {
         if database.location.resetWhenGoingLive {
             resetLocationData()
         }
-        streamLog.removeAll()
         setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0
@@ -134,9 +133,6 @@ extension Model {
         makeStreamEndedToast()
         streamState = .disconnected
         if let streamingHistoryStream {
-            if let logId = streamingHistoryStream.logId {
-                logsStorage.write(id: logId, data: streamLog.joined(separator: "\n").utf8Data)
-            }
             streamingHistoryStream.stopTime = Date()
             streamingHistoryStream.totalBytes = streamTotalBytes
             streamingHistory.append(stream: streamingHistoryStream)
