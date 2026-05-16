@@ -31,7 +31,11 @@ struct FilesLocationView: View {
     }
 
     private func openInFinder(path: URL) {
-        UIApplication.shared.open(path)
+        UIApplication.shared.open(path, options: [:]) { success in
+            if !success {
+                copyPathToClipboard(path: path)
+            }
+        }
     }
 
     private func copyPathToClipboard(path: URL) {
