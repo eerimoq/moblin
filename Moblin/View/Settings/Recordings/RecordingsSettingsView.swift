@@ -10,7 +10,7 @@ private let ffmpegAudioAndVideoSlowlyDesynchronizingCommand = """
 ffmpeg -i input.mp4 -af "asetrate=48002.2,aresample=48000" -c:v copy -c:a aac output.mp4
 """
 
-private struct RecordingsLocationView: View {
+struct FilesLocationView: View {
     let model: Model
     let text: Text
     let path: URL
@@ -108,21 +108,21 @@ struct RecordingsSettingsView: View {
 
     var body: some View {
         Form {
-            RecordingsLocationView(model: model,
-                                   text: Text("Default recordings directory"),
-                                   path: model.recordingsStorage.defaultStorageDirectory())
+            FilesLocationView(model: model,
+                              text: Text("Default recordings directory"),
+                              path: model.recordingsStorage.defaultStorageDirectory())
             if let path = model.stream.recording.recordingPath {
                 if let path = makeRecordingPath(recordingPath: path) {
-                    RecordingsLocationView(model: model,
-                                           text: Text("Current recordings directory"),
-                                           path: path)
+                    FilesLocationView(model: model,
+                                      text: Text("Current recordings directory"),
+                                      path: path)
                 } else {
                     Text("Current recordings directory unavailable")
                 }
             }
-            RecordingsLocationView(model: model,
-                                   text: Text("Replays directory"),
-                                   path: model.replaysStorage.defaultStorageDirectory())
+            FilesLocationView(model: model,
+                              text: Text("Replays directory"),
+                              path: model.replaysStorage.defaultStorageDirectory())
             Section {
                 TextButtonView("Help") {
                     presentingHelp = true

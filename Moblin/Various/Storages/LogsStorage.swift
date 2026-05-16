@@ -20,6 +20,10 @@ class LogsStorage {
         closeCurrentFile()
     }
 
+    func storageDirectory() -> URL {
+        logsUrl
+    }
+
     func write(lines: [String]) {
         guard !lines.isEmpty else {
             return

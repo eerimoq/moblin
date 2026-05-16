@@ -527,12 +527,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var remoteControlAssistantLog: Deque<LogEntry> = []
     nonisolated let imageStorage = ImageStorage()
     var replayTransitionsStorage = ReplayTransitionsStorage()
-    var logsStorage = LogsStorage()
-    var mediaStorage = MediaPlayerStorage()
-    var alertMediaStorage = AlertMediaStorage()
-    var vTuberStorage = VTuberStorage()
-    var pngTuberStorage = PngTuberStorage()
-    var reconnectTimer = SimpleTimer(queue: .main)
+    let logsStorage = LogsStorage()
+    let mediaStorage = MediaPlayerStorage()
+    let alertMediaStorage = AlertMediaStorage()
+    let vTuberStorage = VTuberStorage()
+    let pngTuberStorage = PngTuberStorage()
+    let reconnectTimer = SimpleTimer(queue: .main)
     var logId = 1
     private var serversSpeed: Int64 = 0
     var adsEndDate: Date?
