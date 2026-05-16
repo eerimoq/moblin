@@ -4,25 +4,15 @@ import Foundation
 private let maximumFileLogLines = 100
 
 func createFileLog() -> [String] {
-    var log: [String] = []
+    var log = ["", "Version: \(appVersion())", ""]
     log.reserveCapacity(maximumFileLogLines)
     return log
 }
 
 extension Model {
-    func debugLog(message: String) {
-        DispatchQueue.main.async {
-            if self.log.count > self.database.debug.maximumLogLines {
-                self.log.removeFirst()
-            }
-            self.log.append(LogEntry(id: self.logId, message: message))
-            self.logId += 1
-            self.remoteControlLog(entry: message)
-            if self.fileLog.count >= maximumFileLogLines {
-                self.writeFileLogToFile()
-            }
-            self.fileLog.append(message)
-        }
+    func setupLogging() {
+        logger.handler = debugLog(message:)
+        logger.debugEnabled = database.debug.debugLogging
     }
 
     func clearLog() {
@@ -47,5 +37,20 @@ extension Model {
 
     func flushFileLogToFile() {
         logsStorage.flush()
+    }
+
+    private func debugLog(message: String) {
+        DispatchQueue.main.async {
+            if self.log.count > self.database.debug.maximumLogLines {
+                self.log.removeFirst()
+            }
+            self.log.append(LogEntry(id: self.logId, message: message))
+            self.logId += 1
+            self.remoteControlLog(entry: message)
+            if self.fileLog.count >= maximumFileLogLines {
+                self.writeFileLogToFile()
+            }
+            self.fileLog.append(message)
+        }
     }
 }

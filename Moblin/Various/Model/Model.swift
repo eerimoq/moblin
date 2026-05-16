@@ -980,8 +980,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         let webPCoder = SDImageWebPCoder.shared
         SDImageCodersManager.shared.addCoder(webPCoder)
         UIDevice.current.isBatteryMonitoringEnabled = true
-        logger.handler = debugLog(message:)
-        logger.debugEnabled = database.debug.debugLogging
+        setupLogging()
         updateCameraLists()
         updateBatteryLevel()
         setPixelFormat()

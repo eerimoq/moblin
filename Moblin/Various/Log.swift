@@ -12,16 +12,16 @@ class EasyLogger {
 
     func debug(_ messsge: String) {
         if debugEnabled {
-            let formattedMessage = "\(makeTimestamp()) \(messsge)"
-            print(formattedMessage)
-            handler?(formattedMessage)
+            log(messsge)
         }
     }
 
     func info(_ messsge: String) {
-        let formattedMessage = "\(makeTimestamp()) \(messsge)"
-        print(formattedMessage)
-        handler?(formattedMessage)
+        log(messsge)
+    }
+
+    private func log(_ messsge: String) {
+        handler?("\(makeTimestamp()) \(messsge)")
     }
 }
 
