@@ -653,7 +653,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private var appStoreUpdateListenerTask: Task<Void, any Error>?
     var products: [String: Product] = [:]
     var streamTotalBytes: UInt64 = 0
-    var streamLog: Deque<String> = []
+    var fileLog = createFileLog()
     private var ipMonitor = IPMonitor()
     var faceEffect = FaceEffect()
     var movieEffect = MovieEffect()
@@ -1111,7 +1111,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         updateOrientationLock()
         updateFaceFilterSettings()
         initMediaPlayers()
-        removeUnusedLogs()
         autoStartDjiDevices()
         autoStartCatPrinters()
         autoStartWorkoutDevices()
@@ -1158,6 +1157,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         setGimbalTracking(on: database.gimbal.tracking)
         removeDeadMacrosSettings()
+        DispatchQueue.main.async {
+            self.writeFileLogToFile()
+            self.flushFileLogToFile()
+        }
     }
 
     func reloadIngests() {
@@ -1287,14 +1290,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func startGeographyManager() {
         geographyManager.setEnabled(value: isGeographyNeeded())
         geographyManager.start()
-    }
-
-    private func removeUnusedLogs() {
-        for logId in logsStorage.ids()
-            where !streamingHistory.database.streams.contains(where: { $0.logId == logId })
-        {
-            logsStorage.remove(id: logId)
-        }
     }
 
     func setExternalDisplayContent() {
@@ -1465,6 +1460,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             stopAll()
         }
         stopLiveActivity()
+        writeFileLogToFile()
+        flushFileLogToFile()
     }
 
     private func stopAll() {
@@ -1496,6 +1493,8 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         stopRemoteControlAssistant()
         fixedHorizonEffect.stop()
         cameraLevel.stop()
+        writeFileLogToFile()
+        flushFileLogToFile()
     }
 
     func externalMonitorConnected(windowScene: UIWindowScene) {
@@ -1704,6 +1703,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handle30sTimer() {
         updateDjiDevicesStatus()
         updateBatteryLevel()
+        writeFileLogToFile()
     }
 
     func stopPeriodicTimers(keepChatRunning: Bool, keepBatteryLevelRunning: Bool) {

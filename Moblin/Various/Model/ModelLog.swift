@@ -1,6 +1,14 @@
 import Collections
 import Foundation
 
+private let maximumFileLogLines = 100
+
+func createFileLog() -> [String] {
+    var log: [String] = []
+    log.reserveCapacity(maximumFileLogLines)
+    return log
+}
+
 extension Model {
     func debugLog(message: String) {
         DispatchQueue.main.async {
@@ -10,15 +18,11 @@ extension Model {
             self.log.append(LogEntry(id: self.logId, message: message))
             self.logId += 1
             self.remoteControlLog(entry: message)
-            if self.streamLog.count >= 100_000 {
-                self.streamLog.removeFirst()
+            if self.fileLog.count >= maximumFileLogLines {
+                self.writeFileLogToFile()
             }
-            self.streamLog.append(message)
+            self.fileLog.append(message)
         }
-    }
-
-    func makeStreamShareLogUrl(logId: UUID) -> URL {
-        logsStorage.makePath(id: logId)
     }
 
     func clearLog() {
@@ -34,5 +38,14 @@ extension Model {
             .appendingPathExtension("txt")
         try? data.write(to: url, atomically: true, encoding: .utf8)
         return url
+    }
+
+    func writeFileLogToFile() {
+        logsStorage.write(lines: fileLog)
+        fileLog.removeAll(keepingCapacity: true)
+    }
+
+    func flushFileLogToFile() {
+        logsStorage.flush()
     }
 }

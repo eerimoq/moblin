@@ -65,22 +65,13 @@ private struct StreamingHistoryStreamSettingsSettingsView: View {
 }
 
 struct StreamingHistoryStreamSettingsView: View {
-    @EnvironmentObject var model: Model
     let stream: StreamingHistoryStream
 
     var body: some View {
-        VStack {
-            if let logId = stream.logId {
-                HStack {
-                    Spacer()
-                    ShareLink("Share log", item: model.makeStreamShareLogUrl(logId: logId))
-                }
-            }
-            Form {
-                StreamingHistoryStreamSettingsGeneralView(stream: stream)
-                StreamingHistoryStreamSettingsDeviceHealthView(stream: stream)
-                StreamingHistoryStreamSettingsSettingsView(stream: stream)
-            }
+        Form {
+            StreamingHistoryStreamSettingsGeneralView(stream: stream)
+            StreamingHistoryStreamSettingsDeviceHealthView(stream: stream)
+            StreamingHistoryStreamSettingsSettingsView(stream: stream)
         }
         .navigationTitle("Stream summary")
     }
