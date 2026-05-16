@@ -112,7 +112,7 @@ let djiDeviceBitrates: [UInt32] = [
     2_000_000,
 ]
 
-let djiDeviceFpss: [Int] = [25, 30]
+let djiDeviceFpss: [Int] = [25, 30, 50, 60]
 
 class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My device")

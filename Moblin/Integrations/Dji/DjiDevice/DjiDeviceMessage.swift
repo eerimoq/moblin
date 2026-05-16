@@ -67,35 +67,19 @@ class DjiStartStreamingMessagePayload {
     }
 
     func encode() -> Data {
-        let resolutionByte: UInt8 = switch resolution {
-        case .r480p:
-            0x47
-        case .r720p:
-            0x04
-        case .r1080p:
-            0x0A
-        }
-        let fpsByte: UInt8 = switch fps {
-        case 25:
-            2
-        case 30:
-            3
-        default:
-            0
-        }
-        let byte1: UInt8 = if oa5 {
+        let oa5Byte: UInt8 = if oa5 {
             0x2A
         } else {
             0x2E
         }
         let writer = ByteWriter()
         writer.writeBytes(DjiStartStreamingMessagePayload.payload1)
-        writer.writeUInt8(byte1)
+        writer.writeUInt8(oa5Byte)
         writer.writeBytes(DjiStartStreamingMessagePayload.payload2)
-        writer.writeUInt8(resolutionByte)
+        writer.writeUInt8(toDjiResolution(resolution: resolution))
         writer.writeUInt16Le(bitrateKbps)
         writer.writeBytes(DjiStartStreamingMessagePayload.payload3)
-        writer.writeUInt8(fpsByte)
+        writer.writeUInt8(toDjiFps(fps: fps))
         writer.writeBytes(DjiStartStreamingMessagePayload.payload4)
         writer.writeBytes(djiPackUrl(url: rtmpUrl))
         return writer.data
@@ -137,22 +121,6 @@ class DjiStartStreamingMessagePayloadPocket4 {
     }
 
     func encode() -> Data {
-        let resolutionByte: UInt8 = switch resolution {
-        case .r480p:
-            0x47
-        case .r720p:
-            0x04
-        case .r1080p:
-            0x0A
-        }
-        let fpsByte: UInt8 = switch fps {
-        case 25:
-            2
-        case 30:
-            3
-        default:
-            0
-        }
         let payload = StartStreamingPayload(codec: "HEVC",
                                             EnhancedRTMP: false,
                                             supportStopLive: false,
@@ -162,10 +130,10 @@ class DjiStartStreamingMessagePayloadPocket4 {
         let data = (try? JSONEncoder().encode(payload)) ?? Data()
         let writer = ByteWriter()
         writer.writeBytes(Self.header)
-        writer.writeUInt8(resolutionByte)
+        writer.writeUInt8(toDjiResolution(resolution: resolution))
         writer.writeUInt16Le(bitrateKbps)
         writer.writeBytes(Self.middle)
-        writer.writeUInt8(fpsByte)
+        writer.writeUInt8(toDjiFps(fps: fps))
         writer.writeBytes(Self.padding)
         writer.writeUInt16Le(UInt16(truncatingIfNeeded: data.count))
         writer.writeBytes(data)
@@ -217,5 +185,31 @@ class DjiConfigureMessagePayload {
         writer.writeBytes(DjiConfigureMessagePayload.payload2)
         writer.writeUInt8(imageStabilizationByte)
         return writer.data
+    }
+}
+
+private func toDjiFps(fps: Int) -> UInt8 {
+    switch fps {
+    case 25:
+        2
+    case 30:
+        3
+    case 50:
+        4
+    case 60:
+        5
+    default:
+        0
+    }
+}
+
+private func toDjiResolution(resolution: SettingsDjiDeviceResolution) -> UInt8 {
+    switch resolution {
+    case .r480p:
+        0x47
+    case .r720p:
+        0x04
+    case .r1080p:
+        0x0A
     }
 }
