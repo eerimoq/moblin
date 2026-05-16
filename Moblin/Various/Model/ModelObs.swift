@@ -6,12 +6,13 @@ struct ObsSceneInput: Identifiable {
     var muted: Bool?
 }
 
-struct ObsSceneFFmpeg: Identifiable {
+struct ObsSceneMediaInput: Identifiable {
     var id: String {
         name
     }
 
     var name: String
+    var url: String
 }
 
 class QuickButtonObs: ObservableObject {
@@ -22,7 +23,7 @@ class QuickButtonObs: ObservableObject {
     @Published var streamingState: ObsOutputState = .stopped
     @Published var recordingState: ObsOutputState = .stopped
     @Published var sceneInputs: [ObsSceneInput] = []
-    @Published var sceneFFmpeg: [ObsSceneFFmpeg] = []
+    @Published var sceneMediaInputs: [ObsSceneMediaInput] = []
     @Published var audioVolume: String = noValue
     @Published var currentScenePicker: String = ""
     @Published var currentScene: String = ""
@@ -105,25 +106,45 @@ extension Model {
             if updateAudioInputs {
                 self.updateObsAudioInputs(sceneName: list.current)
             }
-            self.updateObsFFmpegInputs(sceneName: list.current)
+            self.updateObsMediaInputs(sceneName: list.current)
             self.updateStatusObsText()
         }, onError: { _ in
         })
     }
 
-    func updateObsFFmpegInputs(sceneName: String) {
+    func updateObsMediaInputs(sceneName: String) {
         obsWebSocket?.getSceneItemList(sceneName: sceneName) { sceneItems in
-            self.obsQuickButton.sceneFFmpeg = Array(
-                sceneItems
-                    .filter { $0.inputKind == "ffmpeg_source" }
-                    .map { ObsSceneFFmpeg(name: $0.sourceName) }
+            let names = sceneItems
+                .filter { $0.inputKind == "ffmpeg_source" }
+                .map(\.sourceName)
+            guard !names.isEmpty else {
+                return
+            }
+            self.obsWebSocket?.getFFmpegInputSettingsBatch(
+                inputNames: names,
+                onSuccess: { settings in
+                    var inputs: [ObsSceneMediaInput] = []
+                    for (index, name) in names.enumerated() {
+                        guard let setting = settings[index] else {
+                            continue
+                        }
+                        guard !setting.isLocalFile else {
+                            continue
+                        }
+                        inputs.append(ObsSceneMediaInput(name: name, url: setting.url))
+                    }
+                    self.obsQuickButton.sceneMediaInputs = inputs
+                },
+                onError: { _ in
+                    self.obsQuickButton.sceneMediaInputs = []
+                }
             )
         } onError: { _ in
-            self.obsQuickButton.sceneFFmpeg = []
+            self.obsQuickButton.sceneMediaInputs = []
         }
     }
 
-    func updateObsFFmpegUrl(itemName: String, url: String) {
+    func updateObsMediaInputUrl(itemName: String, url: String) {
         obsWebSocket?.setSceneItemUrl(name: itemName, url: url)
     }
 
@@ -172,6 +193,7 @@ extension Model {
     }
 
     func setObsScene(name: String) {
+        updateObsMediaInputs(sceneName: name)
         obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
             self.obsQuickButton.currentScene = name
             self.updateObsAudioInputs(sceneName: name)
@@ -485,6 +507,7 @@ extension Model: @preconcurrency ObsWebsocketDelegate {
         obsQuickButton.currentScenePicker = sceneName
         obsQuickButton.currentScene = sceneName
         updateObsAudioInputs(sceneName: sceneName)
+        updateObsMediaInputs(sceneName: sceneName)
         updateStatusObsText()
     }
 

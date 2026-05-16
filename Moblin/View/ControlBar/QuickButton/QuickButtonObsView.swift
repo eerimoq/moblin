@@ -148,13 +148,13 @@ private struct ObsScenesView: View {
     }
 }
 
-private struct ObsScenesFFmpegView: View {
+private struct ObsSceneMediaInputsView: View {
     let model: Model
     @ObservedObject var obsQuickButton: QuickButtonObs
 
     private func validate(_ value: String) -> String? {
         let trimmed = value.trim()
-        // Accept any URL whose scheme parses — FFmpeg sources commonly use
+        // Accept any URL whose scheme parses — media sources commonly use
         // `rtmp://`, `srt://`, `rtsp://`, `http(s)://`, and listen-mode URLs
         // like `udp://@:1234` that have no host. Returning a non-nil string
         // here both shows an inline hint and blocks `TextEditView` from
@@ -166,13 +166,13 @@ private struct ObsScenesFFmpegView: View {
     }
 
     var body: some View {
-        if !obsQuickButton.sceneFFmpeg.isEmpty {
+        if !obsQuickButton.sceneMediaInputs.isEmpty {
             Section {
-                ForEach(obsQuickButton.sceneFFmpeg) { item in
+                ForEach(obsQuickButton.sceneMediaInputs) { item in
                     NavigationLink {
                         TextEditView(
-                            title: String(localized: "Enter new URL"),
-                            value: "",
+                            title: String(localized: "Media source settings"),
+                            value: item.url,
                             keyboardType: .URL,
                             placeholder: "srtla://…",
                             onChange: validate
@@ -181,14 +181,14 @@ private struct ObsScenesFFmpegView: View {
                             guard validate(trimmed) == nil else {
                                 return
                             }
-                            model.updateObsFFmpegUrl(itemName: item.name, url: trimmed)
+                            model.updateObsMediaInputUrl(itemName: item.name, url: trimmed)
                         }
                     } label: {
                         Text(item.name)
                     }
                 }
             } header: {
-                Text("Scene FFmpeg inputs")
+                Text("Scene media sources")
             }
         }
     }
@@ -322,7 +322,7 @@ private struct ObsConnectedView: View {
         ObsSnapshotView(obsQuickButton: obsQuickButton)
         ObsScenesView(model: model, obsQuickButton: obsQuickButton)
         ObsSceneAudioInputsView(model: model, obsQuickButton: obsQuickButton)
-        ObsScenesFFmpegView(model: model, obsQuickButton: obsQuickButton)
+        ObsSceneMediaInputsView(model: model, obsQuickButton: obsQuickButton)
         if !stream.obsSourceName.isEmpty {
             ObsFixSourceView(model: model, stream: stream, obsQuickButton: obsQuickButton)
             ObsAudioSyncView(model: model, stream: stream, obsQuickButton: obsQuickButton)

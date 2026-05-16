@@ -309,6 +309,30 @@ struct SetInputSettings: Codable {
     let inputSettings: InputSettings
 }
 
+struct GetInputSettingsRequest: Codable {
+    // periphery:ignore
+    let inputName: String
+}
+
+struct ObsFFmpegInputRawSettings: Decodable {
+    let input: String?
+    let isLocalFile: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case input
+        case isLocalFile = "is_local_file"
+    }
+}
+
+struct GetInputSettingsResponse: Decodable {
+    let inputSettings: ObsFFmpegInputRawSettings
+}
+
+struct ObsFFmpegInputSettings {
+    let url: String
+    let isLocalFile: Bool
+}
+
 struct SetInputMute: Codable {
     // periphery:ignore
     let inputName: String
@@ -835,6 +859,60 @@ class ObsWebSocket {
                 self.onRequestError(requestError: requestError, onError: onError)
             }
         )
+    }
+
+    func getFFmpegInputSettingsBatch(
+        inputNames: [String],
+        onSuccess: @escaping ([ObsFFmpegInputSettings?]) -> Void,
+        onError: @escaping (String) -> Void
+    ) {
+        guard !inputNames.isEmpty else {
+            onSuccess([])
+            return
+        }
+        var requests: [String] = []
+        for inputName in inputNames {
+            guard let (request, _) = try? packRequest(
+                type: .getInputSettings,
+                request: GetInputSettingsRequest(inputName: inputName)
+            ) else {
+                onError("Failed to create OBS message")
+                return
+            }
+            guard let request = String(bytes: request, encoding: .utf8) else {
+                onError("Failed to create OBS message")
+                return
+            }
+            requests.append(request)
+        }
+        guard isConnected() else {
+            onError("Not connected to server")
+            return
+        }
+        let requestId = getNextId()
+        batchRequests[requestId] = BatchRequest(onComplete: { results in
+            onSuccess(results.map { status, response in
+                guard status.result, let response else {
+                    return nil
+                }
+                do {
+                    let response = try JSONDecoder().decode(GetInputSettingsResponse.self, from: response)
+                    return ObsFFmpegInputSettings(
+                        url: response.inputSettings.input ?? "",
+                        isLocalFile: response.inputSettings.isLocalFile ?? false
+                    )
+                } catch {
+                    return nil
+                }
+            })
+        })
+        let requestBatch = """
+        {
+          "requestId": \(requestId),
+          "requests": [\(requests.joined(separator: ","))]
+        }
+        """
+        send(op: .requestBatch, data: requestBatch.utf8Data)
     }
 
     func getInputMuteBatch(inputNames: [String],
