@@ -243,12 +243,6 @@ struct SetCurrentProgramSceneRequest: Codable {
 
 struct SetItemUrlInputSettings: Encodable {
     let input: String
-    let isLocalFile: Bool
-
-    enum CodingKeys: String, CodingKey {
-        case input
-        case isLocalFile = "is_local_file"
-    }
 }
 
 struct SetItemUrlRequest: Encodable {
@@ -257,7 +251,7 @@ struct SetItemUrlRequest: Encodable {
 
     init(inputName: String, url: String) {
         self.inputName = inputName
-        inputSettings = SetItemUrlInputSettings(input: url, isLocalFile: false)
+        inputSettings = SetItemUrlInputSettings(input: url)
     }
 }
 
