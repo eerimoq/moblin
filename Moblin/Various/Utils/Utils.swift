@@ -407,6 +407,19 @@ func formatFilenameDateAndTime(date: Date? = nil) -> String {
     filenameDateFormatter.string(from: date ?? Date()).replacing(/\s+/, with: "_")
 }
 
+private let filenameDateFormatterIsoish: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .gregorian)
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.timeZone = .gmt
+    formatter.dateFormat = "yyyy-MM-dd_HHmmss-SSS"
+    return formatter
+}()
+
+func formatFilenameDateAndTimeIsoish(date: Date? = nil) -> String {
+    filenameDateFormatterIsoish.string(from: date ?? Date()).replacing(/\s+/, with: "_")
+}
+
 func extractSrtStreamId(url: String) -> String? {
     URL(string: url)?.dictionaryFromQuery()["streamid"]
 }

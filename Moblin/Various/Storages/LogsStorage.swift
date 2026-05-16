@@ -70,7 +70,7 @@ class LogsStorage {
     private func openNewFile() {
         closeCurrentFile()
         var files = logFiles()
-        let newFileUrl = logsUrl.appendingPathComponent("Log_\(formatFilenameDateAndTime()).txt")
+        let newFileUrl = logsUrl.appendingPathComponent("Log_\(formatFilenameDateAndTimeIsoish()).txt")
         while files.count >= maximumNumberOfLogFiles {
             try? fileManager.removeItem(at: files.removeFirst())
         }
