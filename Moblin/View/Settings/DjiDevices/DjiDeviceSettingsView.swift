@@ -1,5 +1,63 @@
+import CoreLocation
 import NetworkExtension
 import SwiftUI
+
+private final class WiFiSsidFetcher: NSObject, CLLocationManagerDelegate, ObservableObject {
+    enum Failure: Error {
+        case notConnected
+        case locationDenied
+    }
+
+    private let manager = CLLocationManager()
+    private var pending: ((Result<String, Failure>) -> Void)?
+
+    override init() {
+        super.init()
+        manager.delegate = self
+    }
+
+    func fetch(completion: @escaping (Result<String, Failure>) -> Void) {
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            performFetch(completion: completion)
+        case .notDetermined:
+            pending = completion
+            manager.requestWhenInUseAuthorization()
+        case .denied, .restricted:
+            completion(.failure(.locationDenied))
+        @unknown default:
+            completion(.failure(.locationDenied))
+        }
+    }
+
+    private func performFetch(completion: @escaping (Result<String, Failure>) -> Void) {
+        NEHotspotNetwork.fetchCurrent { network in
+            DispatchQueue.main.async {
+                if let ssid = network?.ssid, !ssid.isEmpty {
+                    completion(.success(ssid))
+                } else {
+                    completion(.failure(.notConnected))
+                }
+            }
+        }
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        guard let pending else {
+            return
+        }
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            self.pending = nil
+            performFetch(completion: pending)
+        case .denied, .restricted:
+            self.pending = nil
+            pending(.failure(.locationDenied))
+        default:
+            break
+        }
+    }
+}
 
 private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
     "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
@@ -71,7 +129,83 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
 }
 
 private struct DjiDeviceWiFiSettingsView: View {
+    @EnvironmentObject var model: Model
+    @ObservedObject var djiDevices: SettingsDjiDevices
     @ObservedObject var device: SettingsDjiDevice
+    @StateObject private var ssidFetcher = WiFiSsidFetcher()
+
+    private func reusedPassword(forSsid ssid: String) -> String? {
+        djiDevices.devices
+            .first(where: { $0.id != device.id && $0.wifiSsid == ssid && !$0.wifiPassword.isEmpty })?
+            .wifiPassword
+    }
+
+    private func selectMatchingRtmpUrl() {
+        guard device.rtmpUrlType == .server else {
+            return
+        }
+        guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId) else {
+            return
+        }
+        guard let wifiStatus = model.statusOther.ipStatuses.first(where: {
+            $0.interfaceType == .wifi && $0.ipType == .ipv4
+        }) else {
+            return
+        }
+        device.serverRtmpUrl = rtmpStreamUrl(
+            address: wifiStatus.ipType.formatAddress(wifiStatus.ip),
+            port: model.database.rtmpServer.port,
+            streamKey: stream.streamKey
+        )
+    }
+
+    private func applyImportedSsid(_ ssid: String) {
+        if device.wifiSsid != ssid {
+            device.wifiPassword = ""
+        }
+        device.wifiSsid = ssid
+        selectMatchingRtmpUrl()
+        if device.wifiPassword.isEmpty, let reused = reusedPassword(forSsid: ssid) {
+            device.wifiPassword = reused
+            model.makeToast(
+                title: String(localized: "Imported \(ssid)"),
+                subTitle: String(localized: "Password reused from another DJI device.")
+            )
+            return
+        }
+        if device.wifiPassword.isEmpty {
+            model.makeToast(
+                title: String(localized: "Imported \(ssid)"),
+                subTitle: String(
+                    localized:
+                    "Enter the Wi-Fi password manually — iOS does not expose it to apps."
+                )
+            )
+        } else {
+            model.makeToast(title: String(localized: "Imported \(ssid)"))
+        }
+    }
+
+    private func importCurrentWifi() {
+        ssidFetcher.fetch { result in
+            switch result {
+            case let .success(ssid):
+                applyImportedSsid(ssid)
+            case .failure(.notConnected):
+                model.makeErrorToast(
+                    title: String(localized: "Not connected to a Wi-Fi network")
+                )
+            case .failure(.locationDenied):
+                model.makeErrorToast(
+                    title: String(localized: "Location permission required"),
+                    subTitle: String(
+                        localized:
+                        "iOS requires location access to read the Wi-Fi SSID. Enable it in Settings → Moblin → Location"
+                    )
+                )
+            }
+        }
+    }
 
     var body: some View {
         Section {
@@ -99,6 +233,10 @@ private struct DjiDeviceWiFiSettingsView: View {
                 TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
             }
             .disabled(device.isStarted)
+            TextButtonView("Use current Wi-Fi") {
+                importCurrentWifi()
+            }
+            .disabled(device.isStarted)
             if device.wifiSsid.isEmpty {
                 Text("⚠️ Enter the SSID of the network the DJI device should connect to.")
             }
@@ -108,16 +246,24 @@ private struct DjiDeviceWiFiSettingsView: View {
             Text("The DJI device will connect to and stream RTMP over this WiFi.")
         }
         .onAppear {
-            NEHotspotNetwork.fetchCurrent(completionHandler: { network in
+            guard device.wifiSsid.isEmpty else {
+                return
+            }
+            NEHotspotNetwork.fetchCurrent { network in
                 guard let ssid = network?.ssid else {
                     return
                 }
                 DispatchQueue.main.async {
                     if device.wifiSsid.isEmpty {
                         device.wifiSsid = ssid
+                        if device.wifiPassword.isEmpty,
+                           let reused = reusedPassword(forSsid: ssid)
+                        {
+                            device.wifiPassword = reused
+                        }
                     }
                 }
-            })
+            }
         }
     }
 }
@@ -327,7 +473,7 @@ struct DjiDeviceSettingsView: View {
                 NameEditView(name: $device.name, existingNames: djiDevices.devices)
             }
             DjiDeviceSelectDeviceSettingsView(device: device)
-            DjiDeviceWiFiSettingsView(device: device)
+            DjiDeviceWiFiSettingsView(djiDevices: djiDevices, device: device)
             DjiDeviceRtmpSettingsView(
                 device: device,
                 status: model.statusOther,
