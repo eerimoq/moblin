@@ -300,18 +300,13 @@ struct GetInputSettingsRequest: Codable {
     let inputName: String
 }
 
-struct ObsFFmpegInputRawSettings: Decodable {
-    let input: String?
-    let isLocalFile: Bool?
-
-    enum CodingKeys: String, CodingKey {
-        case input
-        case isLocalFile = "is_local_file"
-    }
+struct ObsMediaSourceInputSettings: Decodable {
+    let input: String
+    let is_local_file: Bool
 }
 
 struct GetInputSettingsResponse: Decodable {
-    let inputSettings: ObsFFmpegInputRawSettings
+    let inputSettings: ObsMediaSourceInputSettings
 }
 
 struct ObsMediaSourceSettings {
@@ -320,14 +315,11 @@ struct ObsMediaSourceSettings {
 }
 
 struct SetInputMute: Codable {
-    // periphery:ignore
     let inputName: String
-    // periphery:ignore
     let inputMuted: Bool
 }
 
 struct GetInputMute: Codable {
-    // periphery:ignore
     let inputName: String
 }
 
@@ -869,12 +861,7 @@ class ObsWebSocket {
             }
             requests.append(request)
         }
-        guard isConnected() else {
-            onError("Not connected to server")
-            return
-        }
-        let requestId = getNextId()
-        batchRequests[requestId] = BatchRequest(onComplete: { results in
+        executeBatchRequest(requests: requests, onError: onError) { results in
             onSuccess(results.map { status, response in
                 guard status.result, let response else {
                     return nil
@@ -882,21 +869,14 @@ class ObsWebSocket {
                 do {
                     let response = try JSONDecoder().decode(GetInputSettingsResponse.self, from: response)
                     return ObsMediaSourceSettings(
-                        input: response.inputSettings.input ?? "",
-                        isLocalFile: response.inputSettings.isLocalFile ?? false
+                        input: response.inputSettings.input,
+                        isLocalFile: response.inputSettings.is_local_file
                     )
                 } catch {
                     return nil
                 }
             })
-        })
-        let requestBatch = """
-        {
-          "requestId": \(requestId),
-          "requests": [\(requests.joined(separator: ","))]
         }
-        """
-        send(op: .requestBatch, data: requestBatch.utf8Data)
     }
 
     func getInputMuteBatch(inputNames: [String],
@@ -918,32 +898,19 @@ class ObsWebSocket {
             }
             requests.append(request)
         }
-        guard isConnected() else {
-            onError("Not connected to server")
-            return
-        }
-        let requestId = getNextId()
-        batchRequests[requestId] = BatchRequest(onComplete: { results in
+        executeBatchRequest(requests: requests, onError: onError) { results in
             onSuccess(results.map { status, response in
-                if status.result, let response {
-                    do {
-                        let response = try JSONDecoder().decode(GetInputMuteResponse.self, from: response)
-                        return response.inputMuted
-                    } catch {
-                        return nil
-                    }
-                } else {
+                guard status.result, let response else {
+                    return nil
+                }
+                do {
+                    let response = try JSONDecoder().decode(GetInputMuteResponse.self, from: response)
+                    return response.inputMuted
+                } catch {
                     return nil
                 }
             })
-        })
-        let requestBatch = """
-        {
-          "requestId": \(requestId),
-          "requests": [\(requests.joined(separator: ","))]
         }
-        """
-        send(op: .requestBatch, data: requestBatch.utf8Data)
     }
 
     private func onRequestError(
@@ -964,6 +931,26 @@ class ObsWebSocket {
             }
             onError("Operation failed with \(code)\(message)")
         }
+    }
+
+    private func executeBatchRequest(
+        requests: [String],
+        onError: @escaping (String) -> Void,
+        onComplete: @escaping ([(ResponseRequestStatus, Data?)]) -> Void
+    ) {
+        guard isConnected() else {
+            onError("Not connected to server")
+            return
+        }
+        let requestId = getNextId()
+        batchRequests[requestId] = BatchRequest(onComplete: onComplete)
+        let requestBatch = """
+        {
+          "requestId": \(requestId),
+          "requests": [\(requests.joined(separator: ","))]
+        }
+        """
+        send(op: .requestBatch, data: requestBatch.utf8Data)
     }
 
     private func performRequestNoDataNoResponse(
