@@ -30,6 +30,14 @@ struct FilesLocationView: View {
         UIApplication.shared.open(sharedUrl)
     }
 
+    private func openInFinder(path: URL) {
+        UIApplication.shared.open(path) { success in
+            if !success {
+                copyPathToClipboard(path: path)
+            }
+        }
+    }
+
     private func copyPathToClipboard(path: URL) {
         UIPasteboard.general.string = path.path()
         let subTitle: String? = if isMac() {
@@ -42,7 +50,9 @@ struct FilesLocationView: View {
 
     var body: some View {
         ExternalButtonView {
-            if let sharedUrl = makeSharedUrl(path: path) {
+            if isMac() {
+                openInFinder(path: path)
+            } else if let sharedUrl = makeSharedUrl(path: path) {
                 openInFilesApp(sharedUrl: sharedUrl)
             } else {
                 copyPathToClipboard(path: path)
