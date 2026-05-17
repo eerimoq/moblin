@@ -1,5 +1,34 @@
 import SwiftUI
 
+struct WidgetPomodoroTimerQuickButtonControlsView: View {
+    let model: Model
+    @ObservedObject var pomodoroTimer: SettingsWidgetPomodoroTimer
+
+    var body: some View {
+        HStack(spacing: 13) {
+            Spacer()
+            Button {
+                pomodoroTimer.reset()
+            } label: {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.title)
+            }
+            Button {
+                if pomodoroTimer.isRunning {
+                    pomodoroTimer.pause()
+                } else {
+                    pomodoroTimer.start()
+                }
+            } label: {
+                Image(systemName: pomodoroTimer.isRunning ? "stop" : "play")
+                    .font(.title)
+                    .frame(width: 35)
+            }
+        }
+        .buttonStyle(.borderless)
+    }
+}
+
 struct WidgetPomodoroTimerSettingsView: View {
     let model: Model
     let widget: SettingsWidget
