@@ -852,30 +852,35 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
 class SettingsWidgetMap: Codable {
     var northUp: Bool = false
     var delay: Double = 0.0
+    var scale: Double = 1000
 
     init() {}
 
     enum CodingKeys: CodingKey {
         case northUp
         case delay
+        case scale
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.northUp, northUp)
         try container.encode(.delay, delay)
+        try container.encode(.scale, scale)
     }
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         northUp = container.decode(.northUp, Bool.self, false)
         delay = container.decode(.delay, Double.self, 0.0)
+        scale = container.decode(.scale, Double.self, 1000)
     }
 
     func clone() -> SettingsWidgetMap {
         let new = SettingsWidgetMap()
         new.northUp = northUp
         new.delay = delay
+        new.scale = scale
         return new
     }
 }

@@ -4,6 +4,7 @@ struct WidgetMapSettingsView: View {
     @EnvironmentObject var model: Model
     let widget: SettingsWidget
     @State var delay: Double
+    @State var scale: Double
 
     var body: some View {
         Section {
@@ -26,6 +27,31 @@ struct WidgetMapSettingsView: View {
             } label: {
                 Label("Location", systemImage: "location")
             }
+        }
+        Section {
+            HStack {
+                Slider(
+                    value: $scale,
+                    in: 100 ... 100_000,
+                    step: 100,
+                    label: {
+                        EmptyView()
+                    },
+                    onEditingChanged: { begin in
+                        guard !begin else {
+                            return
+                        }
+                        widget.map.scale = scale
+                        model.resetSelectedScene(changeScene: false)
+                    }
+                )
+                Text(String(Int(scale)))
+                    .frame(width: 65)
+            }
+        } header: {
+            Text("Scale")
+        } footer: {
+            Text("The map scale in meters. A higher value shows a larger area.")
         }
         Section {
             HStack {
