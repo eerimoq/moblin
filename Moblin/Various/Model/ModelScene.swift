@@ -1571,8 +1571,8 @@ extension Model {
             sceneWidget.layout.size = 33
         case .pomodoroTimer:
             sceneWidget.layout.alignment = .topRight
-            sceneWidget.layout.x = 1.3
-            sceneWidget.layout.y = 5
+            sceneWidget.layout.x = 0.78
+            sceneWidget.layout.y = 1.388
             sceneWidget.layout.size = 20
         default:
             break

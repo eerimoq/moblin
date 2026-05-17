@@ -58,6 +58,8 @@ private struct PomodoroTimerView: View {
                     .font(.system(size: phaseSize, weight: .semibold))
                     .foregroundStyle(phaseColor())
                 Text(settings.phase.toString())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
                     .font(.system(size: phaseSize, weight: .semibold))
                     .foregroundStyle(phaseColor())
                 Spacer()
