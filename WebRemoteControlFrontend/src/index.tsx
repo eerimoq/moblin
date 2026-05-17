@@ -136,6 +136,7 @@ function App() {
   const [previewImageSrc, setPreviewImageSrc] = createSignal<string | null>(null);
   const [whepUrl, setWhepUrl] = createSignal(localStorage.getItem("whepUrl") ?? "");
   const [whepConnected, setWhepConnected] = createSignal(false);
+  const whepIceGatheringTimeoutMs = 5000;
   let videoRef: HTMLVideoElement | undefined;
   let peerConnectionRef: RTCPeerConnection | undefined;
   let logContainer: HTMLDivElement | undefined;
@@ -143,7 +144,9 @@ function App() {
   async function connectWhep(url: string): Promise<void> {
     disconnectWhep();
     if (!url) return;
-    const pc = new RTCPeerConnection();
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    });
     peerConnectionRef = pc;
     pc.addTransceiver("video", { direction: "recvonly" });
     pc.addTransceiver("audio", { direction: "recvonly" });
@@ -159,7 +162,7 @@ function App() {
         resolve();
         return;
       }
-      const timer = setTimeout(resolve, 5000);
+      const timer = setTimeout(resolve, whepIceGatheringTimeoutMs);
       const check = () => {
         if (pc.iceGatheringState === "complete") {
           clearTimeout(timer);
