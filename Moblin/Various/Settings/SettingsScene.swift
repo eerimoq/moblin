@@ -2031,8 +2031,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     @Published var isRunning: Bool = false
     @Published var phase: PomodoroPhase = .focus
     @Published var secondsRemaining: Int = 25 * 60
-    @Published var sessionsCompleted: Int = 0
-    private var timerHandle: Timer?
+    private var timer = SimpleTimer(queue: .main)
 
     enum CodingKeys: CodingKey {
         case workDuration,
@@ -2071,26 +2070,24 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     }
 
     func start() {
-        guard !isRunning else { return }
+        guard !isRunning else {
+            return
+        }
         isRunning = true
-        let timer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+        timer.startPeriodic(interval: 1.0) { [weak self] in
             self?.tick()
         }
-        RunLoop.main.add(timer, forMode: .common)
-        timerHandle = timer
     }
 
     func pause() {
         isRunning = false
-        timerHandle?.invalidate()
-        timerHandle = nil
+        timer.stop()
     }
 
     func reset() {
         pause()
         phase = .focus
         secondsRemaining = workDuration * 60
-        sessionsCompleted = 0
     }
 
     func totalSecondsForCurrentPhase() -> Int {
@@ -2111,11 +2108,11 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     }
 
     private func advancePhase() {
-        if phase == .focus {
-            sessionsCompleted += 1
+        switch phase {
+        case .focus:
             phase = .shortBreak
             secondsRemaining = breakDuration * 60
-        } else {
+        case .shortBreak:
             phase = .focus
             secondsRemaining = workDuration * 60
         }

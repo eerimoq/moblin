@@ -10,13 +10,11 @@ private struct PomodoroTimerView: View {
         toPixels(sceneWidget.layout.size, canvasSize.minimum())
     }
 
-    private var phaseColor: Color {
-        settings.phase == .focus ? settings.focusColorColor : settings.breakColorColor
-    }
-
     private var progress: Double {
         let total = settings.totalSecondsForCurrentPhase()
-        guard total > 0 else { return 1.0 }
+        guard total > 0 else {
+            return 1.0
+        }
         return Double(settings.secondsRemaining) / Double(total)
     }
 
@@ -26,7 +24,16 @@ private struct PomodoroTimerView: View {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 
-    private var phaseLabel: String {
+    private func phaseColor() -> Color {
+        switch settings.phase {
+        case .focus:
+            settings.focusColorColor
+        case .shortBreak:
+            settings.breakColorColor
+        }
+    }
+
+    private func phaseLabel() -> String {
         switch settings.phase {
         case .focus:
             String(localized: "Focus")
@@ -35,51 +42,57 @@ private struct PomodoroTimerView: View {
         }
     }
 
-    var body: some View {
-        let w = width
-        let padding = w * 0.06
-        let cornerRadius = w * 0.08
-        let barHeight = w * 0.07
-        let barCornerRadius = barHeight / 2
-        let sessionDotSize = w * 0.055
+    private func phaseIcon() -> String {
+        switch settings.phase {
+        case .focus:
+            // "sun.max"
+            // "bolt.circle"
+            // "pencil.and.scribble"
+            "text.book.closed"
+            // "arrowtriangle.right.circle"
+        case .shortBreak:
+            // "cup.and.saucer"
+            // "figure.play"
+            "moon.zzz"
+        }
+    }
 
-        VStack(alignment: .leading, spacing: w * 0.04) {
-            HStack(spacing: w * 0.06) {
-                Image(systemName: "timer")
-                    .font(.system(size: w * 0.12, weight: .semibold))
-                    .foregroundStyle(phaseColor)
-                Text(phaseLabel)
-                    .font(.system(size: w * 0.12, weight: .semibold))
-                    .foregroundStyle(phaseColor)
+    var body: some View {
+        let padding = width * 0.06
+        let cornerRadius = width * 0.08
+        let barHeight = width * 0.07
+        let barCornerRadius = barHeight / 2
+        let phaseSize = width * 0.15
+        let timerSize = width * 0.18
+        let spacing = width * 0.04
+        let spacing2 = width * 0.06
+        let width = 1.6 * width
+        VStack(alignment: .leading, spacing: spacing) {
+            HStack(spacing: spacing2) {
+                Image(systemName: phaseIcon())
+                    .font(.system(size: phaseSize, weight: .semibold))
+                    .foregroundStyle(phaseColor())
+                Text(phaseLabel())
+                    .font(.system(size: phaseSize, weight: .semibold))
+                    .foregroundStyle(phaseColor())
                 Spacer()
                 Text(timeString)
-                    .font(.system(size: w * 0.18, weight: .bold, design: .monospaced))
+                    .font(.system(size: timerSize, weight: .bold, design: .monospaced))
                     .foregroundStyle(settings.foregroundColorColor)
             }
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: barCornerRadius)
                     .fill(settings.foregroundColorColor.opacity(0.2))
-                    .frame(width: w - padding * 2, height: barHeight)
+                    .frame(width: width - padding * 2, height: barHeight)
                 RoundedRectangle(cornerRadius: barCornerRadius)
-                    .fill(phaseColor)
-                    .frame(width: max(0, (w - padding * 2) * progress), height: barHeight)
+                    .fill(phaseColor())
+                    .frame(width: max(0, (width - padding * 2) * progress), height: barHeight)
             }
-            .frame(width: w - padding * 2, height: barHeight)
-            HStack(spacing: sessionDotSize * 0.5) {
-                ForEach(0 ..< settings.sessionsCompleted, id: \.self) { _ in
-                    Circle()
-                        .fill(settings.focusColorColor)
-                        .frame(width: sessionDotSize, height: sessionDotSize)
-                }
-                if settings.isRunning {
-                    Circle()
-                        .fill(settings.foregroundColorColor.opacity(0.4))
-                        .frame(width: sessionDotSize, height: sessionDotSize)
-                }
-            }
+            .frame(width: width - padding * 2, height: barHeight)
         }
-        .padding(padding)
-        .frame(width: w)
+        .padding(.top, padding / 2)
+        .padding([.horizontal, .bottom], padding)
+        .frame(width: width)
         .background(settings.backgroundColorColor)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
     }

@@ -82,11 +82,6 @@ struct WidgetPomodoroTimerSettingsView: View {
                 Text(String(format: "%02d:%02d", minutes, seconds))
                     .font(.system(.body, design: .monospaced))
             }
-            HStack {
-                Text("Sessions completed")
-                Spacer()
-                Text("\(pomodoroTimer.sessionsCompleted)")
-            }
         } header: {
             Text("Controls")
         }
