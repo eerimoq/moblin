@@ -2008,6 +2008,171 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
     }
 }
 
+enum PomodoroPhase: String, Codable {
+    case focus = "Focus"
+    case shortBreak = "Break"
+
+    func toString() -> String {
+        switch self {
+        case .focus:
+            String(localized: "Focus")
+        case .shortBreak:
+            String(localized: "Break")
+        }
+    }
+}
+
+enum PomodoroFocusIcon: String, Codable, CaseIterable {
+    case sun = "sun.max"
+    case bolt = "bolt.circle"
+    case book = "text.book.closed"
+    case play = "arrowtriangle.right.circle"
+    case mic = "microphone.slash"
+
+    func toString() -> String {
+        switch self {
+        case .sun:
+            String(localized: "Sun")
+        case .bolt:
+            String(localized: "Bolt")
+        case .book:
+            String(localized: "Book")
+        case .play:
+            String(localized: "Play")
+        case .mic:
+            String(localized: "Mic")
+        }
+    }
+}
+
+enum PomodoroBreakIcon: String, Codable, CaseIterable {
+    case cup = "cup.and.saucer"
+    case mic = "microphone"
+
+    func toString() -> String {
+        switch self {
+        case .cup:
+            String(localized: "Cup")
+        case .mic:
+            String(localized: "Mic")
+        }
+    }
+}
+
+class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
+    nonisolated(unsafe) static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
+    nonisolated(unsafe) static let baseForegroundColor = RgbColor.white
+    nonisolated(unsafe) static let baseFocusColor = RgbColor(red: 122, green: 181, blue: 255)
+    nonisolated(unsafe) static let baseBreakColor = RgbColor(red: 103, green: 208, blue: 69)
+    @Published var focusDuration: Int = 30
+    @Published var breakDuration: Int = 5
+    @Published var focusIcon: PomodoroFocusIcon = .sun
+    @Published var breakIcon: PomodoroBreakIcon = .cup
+    var backgroundColor: RgbColor = baseBackgroundColor
+    @Published var backgroundColorColor: Color = baseBackgroundColor.color()
+    var foregroundColor: RgbColor = baseForegroundColor
+    @Published var foregroundColorColor: Color = baseForegroundColor.color()
+    var focusColor: RgbColor = baseFocusColor
+    @Published var focusColorColor: Color = baseFocusColor.color()
+    var breakColor: RgbColor = baseBreakColor
+    @Published var breakColorColor: Color = baseBreakColor.color()
+    @Published var isRunning: Bool = false
+    @Published var phase: PomodoroPhase = .focus
+    @Published var secondsRemaining: Int = 30 * 60
+    private var timer = SimpleTimer(queue: .main)
+
+    enum CodingKeys: CodingKey {
+        case focusDuration
+        case breakDuration
+        case focusIcon
+        case breakIcon
+        case backgroundColor
+        case foregroundColor
+        case focusColor
+        case breakColor
+    }
+
+    init() {}
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.focusDuration, focusDuration)
+        try container.encode(.breakDuration, breakDuration)
+        try container.encode(.focusIcon, focusIcon)
+        try container.encode(.breakIcon, breakIcon)
+        try container.encode(.backgroundColor, backgroundColor)
+        try container.encode(.foregroundColor, foregroundColor)
+        try container.encode(.focusColor, focusColor)
+        try container.encode(.breakColor, breakColor)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        focusDuration = container.decode(.focusDuration, Int.self, 30)
+        breakDuration = container.decode(.breakDuration, Int.self, 5)
+        focusIcon = container.decode(.focusIcon, PomodoroFocusIcon.self, .sun)
+        breakIcon = container.decode(.breakIcon, PomodoroBreakIcon.self, .cup)
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.baseBackgroundColor)
+        backgroundColorColor = backgroundColor.color()
+        foregroundColor = container.decode(.foregroundColor, RgbColor.self, Self.baseForegroundColor)
+        foregroundColorColor = foregroundColor.color()
+        focusColor = container.decode(.focusColor, RgbColor.self, Self.baseFocusColor)
+        focusColorColor = focusColor.color()
+        breakColor = container.decode(.breakColor, RgbColor.self, Self.baseBreakColor)
+        breakColorColor = breakColor.color()
+        secondsRemaining = focusDuration * 60
+    }
+
+    func start() {
+        guard !isRunning else {
+            return
+        }
+        isRunning = true
+        timer.startPeriodic(interval: 1.0) { [weak self] in
+            self?.tick()
+        }
+    }
+
+    func pause() {
+        isRunning = false
+        timer.stop()
+    }
+
+    func reset() {
+        pause()
+        phase = .focus
+        secondsRemaining = focusDuration * 60
+    }
+
+    func totalSecondsForCurrentPhase() -> Int {
+        switch phase {
+        case .focus:
+            focusDuration * 60
+        case .shortBreak:
+            breakDuration * 60
+        }
+    }
+
+    private func tick() {
+        if secondsRemaining > 0 {
+            secondsRemaining -= 1
+        } else {
+            advancePhase()
+        }
+    }
+
+    private func advancePhase() {
+        switch phase {
+        case .focus:
+            phase = .shortBreak
+            secondsRemaining = breakDuration * 60
+        case .shortBreak:
+            phase = .focus
+            secondsRemaining = focusDuration * 60
+        }
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named, @unchecked Sendable {
     static let baseName = String(localized: "My widget")
     @Published var name: String
@@ -2029,6 +2194,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
     var slideshow: SettingsWidgetSlideshow = .init()
     var wheelOfLuck: SettingsWidgetWheelOfLuck = .init()
     var bingoCard: SettingsWidgetBingoCard = .init()
+    var pomodoroTimer: SettingsWidgetPomodoroTimer = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -2060,6 +2226,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         case slideshow
         case wheelOfLuck
         case bingoCard
+        case pomodoroTimer
         case enabled
         case effects
     }
@@ -2085,6 +2252,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.slideshow, slideshow)
         try container.encode(.wheelOfLuck, wheelOfLuck)
         try container.encode(.bingoCard, bingoCard)
+        try container.encode(.pomodoroTimer, pomodoroTimer)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -2110,6 +2278,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         slideshow = container.decode(.slideshow, SettingsWidgetSlideshow.self, .init())
         wheelOfLuck = container.decode(.wheelOfLuck, SettingsWidgetWheelOfLuck.self, .init())
         bingoCard = container.decode(.bingoCard, SettingsWidgetBingoCard.self, .init())
+        pomodoroTimer = container.decode(.pomodoroTimer, SettingsWidgetPomodoroTimer.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
         migrateFromOlderVersions()
@@ -2174,6 +2343,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .scoreboard,
             .wheelOfLuck,
             .bingoCard,
+            .pomodoroTimer,
         ].contains(type)
     }
 
@@ -2190,6 +2360,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .snapshot,
             .slideshow,
             .bingoCard,
+            .pomodoroTimer,
         ].contains(type)
     }
 
@@ -2210,6 +2381,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .scoreboard,
             .wheelOfLuck,
             .bingoCard,
+            .pomodoroTimer,
         ].contains(type)
     }
 }
@@ -3294,6 +3466,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case wheelOfLuck = "Wheel of luck"
     case bingoCard = "Bingo card"
     case crop = "Crop"
+    case pomodoroTimer = "Pomodoro timer"
 
     func toString() -> String {
         switch self {
@@ -3331,6 +3504,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "Bingo card")
         case .crop:
             String(localized: "Crop")
+        case .pomodoroTimer:
+            String(localized: "Pomodoro timer")
         }
     }
 
@@ -3370,6 +3545,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             "burn"
         case .bingoCard:
             "square.grid.3x3.square"
+        case .pomodoroTimer:
+            "timer"
         }
     }
 
@@ -3415,6 +3592,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "A wheel of luck widget shows a wheel of luck that you can spin.")
         case .bingoCard:
             String(localized: "A bingo card widget shows an interactive bingo card.")
+        case .pomodoroTimer:
+            String(localized: "A Pomodoro timer widget shows a focus and break timer.")
         }
     }
 }

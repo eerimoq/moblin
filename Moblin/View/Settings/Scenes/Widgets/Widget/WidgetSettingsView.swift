@@ -289,6 +289,12 @@ struct WidgetSettingsView: View {
                 WidgetWheelOfLuckSettingsView(model: model, widget: widget, wheelOfLuck: widget.wheelOfLuck)
             case .bingoCard:
                 WidgetBingoCardSettingsView(model: model, widget: widget, bingoCard: widget.bingoCard)
+            case .pomodoroTimer:
+                WidgetPomodoroTimerSettingsView(
+                    model: model,
+                    widget: widget,
+                    pomodoroTimer: widget.pomodoroTimer
+                )
             }
         }
         .navigationTitle("\(widget.type.toString()) widget")
