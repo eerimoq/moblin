@@ -18,24 +18,6 @@ extension NWEndpoint.Port {
     }
 }
 
-final class NWConnectionWithId: Hashable, Equatable, @unchecked Sendable {
-    let id: String
-    let connection: NWConnection
-
-    init(connection: NWConnection) {
-        self.connection = connection
-        id = UUID().uuidString
-    }
-
-    static func == (lhs: NWConnectionWithId, rhs: NWConnectionWithId) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
-
 extension NWConnection.ContentContext {
     func webSocketOperation() -> NWProtocolWebSocket.Opcode? {
         let definitions = protocolMetadata(definition: NWProtocolWebSocket.definition) as? Network

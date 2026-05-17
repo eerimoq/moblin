@@ -15,7 +15,7 @@ private struct RequestResponse {
 }
 
 private class Relay {
-    let webSocket: NWConnectionWithId
+    let webSocket: NWConnection
     private var nextId: Int = 0
     private var identified = false
     private var challenge = ""
@@ -33,7 +33,7 @@ private class Relay {
     private var pingTimer = SimpleTimer(queue: .main)
     var pongReceived = true
 
-    init(webSocket: NWConnectionWithId, password: String, streamer: MoblinkStreamer) {
+    init(webSocket: NWConnection, password: String, streamer: MoblinkStreamer) {
         self.password = password
         self.webSocket = webSocket
         self.streamer = streamer
@@ -52,7 +52,7 @@ private class Relay {
 
     func stop() {
         stopPingTimer()
-        webSocket.connection.cancel()
+        webSocket.cancel()
         reportTunnelRemoved()
         requests.removeAll()
     }
@@ -103,10 +103,10 @@ private class Relay {
             }
             if pongReceived {
                 pongReceived = false
-                webSocket.connection.sendWebSocket(data: nil, opcode: .ping)
+                webSocket.sendWebSocket(data: nil, opcode: .ping)
             } else {
                 logger.info("moblink-streamer: \(name): Ping timeout")
-                webSocket.connection.cancel()
+                webSocket.cancel()
             }
         }
     }
@@ -121,7 +121,7 @@ private class Relay {
         }
         reportTunnelRemoved()
         executeStartTunnel(address: address, port: port) { id, name, port in
-            switch self.webSocket.connection.endpoint {
+            switch self.webSocket.endpoint {
             case let .hostPort(host: host, port: _):
                 let endpoint = NWEndpoint.hostPort(
                     host: host,
@@ -222,7 +222,7 @@ private class Relay {
             return
         }
         // logger.info("moblink-streamer: Sending \(text)")
-        webSocket.connection.sendWebSocket(data: text.data(using: .utf8), opcode: .text)
+        webSocket.sendWebSocket(data: text.data(using: .utf8), opcode: .text)
     }
 }
 
@@ -331,10 +331,9 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
 
     private func handleNewConnection(connection: NWConnection) {
         logger.debug("moblink-streamer: Relay connected")
-        let webSocket = NWConnectionWithId(connection: connection)
         connection.start(queue: .main)
-        receivePacket(webSocket: webSocket)
-        let relay = Relay(webSocket: webSocket, password: password, streamer: self)
+        receivePacket(webSocket: connection)
+        let relay = Relay(webSocket: connection, password: password, streamer: self)
         relay.start()
         relays.append(relay)
         guard let destinationAddress, let destinationPort else {
@@ -351,22 +350,22 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
         relays.removeAll(where: { $0.relayId == relayId })
     }
 
-    private func handlePong(webSocket: NWConnectionWithId) {
-        if let relay = relays.first(where: { $0.webSocket == webSocket }) {
+    private func handlePong(webSocket: NWConnection) {
+        if let relay = relays.first(where: { $0.webSocket === webSocket }) {
             relay.pongReceived = true
         }
     }
 
-    private func handleDisconnected(webSocket: NWConnectionWithId) {
+    private func handleDisconnected(webSocket: NWConnection) {
         logger.debug("moblink-streamer: Relay disconnected")
-        if let relay = relays.first(where: { $0.webSocket == webSocket }) {
+        if let relay = relays.first(where: { $0.webSocket === webSocket }) {
             relay.stop()
         }
-        relays.removeAll(where: { $0.webSocket == webSocket })
+        relays.removeAll(where: { $0.webSocket === webSocket })
     }
 
-    private func receivePacket(webSocket: NWConnectionWithId) {
-        webSocket.connection.receiveMessage { data, context, _, _ in
+    private func receivePacket(webSocket: NWConnection) {
+        webSocket.receiveMessage { data, context, _, _ in
             switch context?.webSocketOperation() {
             case .text:
                 if let data, !data.isEmpty {
@@ -376,7 +375,7 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
                     self.handleDisconnected(webSocket: webSocket)
                 }
             case .ping:
-                webSocket.connection.sendWebSocket(data: data, opcode: .pong)
+                webSocket.sendWebSocket(data: data, opcode: .pong)
                 self.receivePacket(webSocket: webSocket)
             case .pong:
                 self.handlePong(webSocket: webSocket)
@@ -387,9 +386,9 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
         }
     }
 
-    private func handleMessage(webSocket: NWConnectionWithId, packet: Data) {
+    private func handleMessage(webSocket: NWConnection, packet: Data) {
         if let text = String(bytes: packet, encoding: .utf8) {
-            guard let relay = relays.first(where: { $0.webSocket == webSocket }) else {
+            guard let relay = relays.first(where: { $0.webSocket === webSocket }) else {
                 return
             }
             relay.handleStringMessage(message: text)
