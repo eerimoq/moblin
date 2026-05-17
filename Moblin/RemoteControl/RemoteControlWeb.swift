@@ -36,6 +36,8 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebGetRecordingUrl(filename: String) -> URL?
     func remoteControlWebGetRecordingThumbnail(filename: String) -> Data?
     func remoteControlWebDeleteRecording(filename: String)
+    func remoteControlWebStartPreview()
+    func remoteControlWebStopPreview()
 }
 
 private struct StaticFile {
@@ -91,6 +93,7 @@ class RemoteControlWeb: @unchecked Sendable {
     private let websocketRetryTimer = SimpleTimer(queue: .main)
     private weak var delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
+    private var connectionsRequestingPreview: Set<ObjectIdentifier> = []
 
     init(delegate: any RemoteControlWebDelegate) {
         self.delegate = delegate
@@ -129,6 +132,12 @@ class RemoteControlWeb: @unchecked Sendable {
     func sendGolfScoreboardUpdate(data: RemoteControlGolfScoreboard) {
         for connection in connections {
             send(connection: connection, message: .event(data: .golfScoreboard(data: data)))
+        }
+    }
+
+    func sendPreview(preview: Data) {
+        for connection in connections where connectionsRequestingPreview.contains(ObjectIdentifier(connection)) {
+            send(connection: connection, message: .preview(preview: preview))
         }
     }
 
@@ -308,6 +317,13 @@ class RemoteControlWeb: @unchecked Sendable {
     private func handleDisconnected(connection: NWConnection) {
         connection.cancel()
         connections.removeAll(where: { $0 === connection })
+        let id = ObjectIdentifier(connection)
+        if connectionsRequestingPreview.contains(id) {
+            connectionsRequestingPreview.remove(id)
+            if connectionsRequestingPreview.isEmpty {
+                delegate?.remoteControlWebStopPreview()
+            }
+        }
     }
 
     private func handleWebsocketMessage(connection: NWConnection, packet: Data) {
@@ -428,6 +444,20 @@ class RemoteControlWeb: @unchecked Sendable {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .triggerReaction(reaction: reaction):
             delegate.remoteControlWebTriggerReaction(reaction: reaction)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .startPreview:
+            let connectionId = ObjectIdentifier(connection)
+            connectionsRequestingPreview.insert(connectionId)
+            if connectionsRequestingPreview.count == 1 {
+                delegate.remoteControlWebStartPreview()
+            }
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .stopPreview:
+            let connectionId = ObjectIdentifier(connection)
+            connectionsRequestingPreview.remove(connectionId)
+            if connectionsRequestingPreview.isEmpty {
+                delegate.remoteControlWebStopPreview()
+            }
             sendEmptyOkResponse(connection: connection, id: id)
         default:
             break

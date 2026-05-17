@@ -493,6 +493,10 @@ extension Model {
             && database.remoteControl.streamer.previewFps > 0
     }
 
+    func isRemoteControlWebPreviewActive() -> Bool {
+        isRemoteControlWebRequestingPreview
+    }
+
     private func createRemoteControlStateChanged() -> RemoteControlAssistantStreamerState {
         var state = RemoteControlAssistantStreamerState()
         if sceneSelector.sceneIndex < enabledScenes.count {
@@ -775,6 +779,13 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
             return
         }
         remoteControlStreamer?.sendPreview(preview: preview)
+    }
+
+    func sendPreviewToRemoteControlWeb(preview: Data) {
+        guard isRemoteControlWebPreviewActive() else {
+            return
+        }
+        remoteControlWeb?.sendPreview(preview: preview)
     }
 
     func remoteControlStreamerTwitchEventSubNotification(message: String) {
@@ -1243,5 +1254,15 @@ extension Model: @preconcurrency RemoteControlWebDelegate {
         let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
         try? FileManager.default.removeItem(at: url)
         recordingThumbnailsCache.removeValue(forKey: filename)
+    }
+
+    func remoteControlWebStartPreview() {
+        isRemoteControlWebRequestingPreview = true
+        setLowFpsImage()
+    }
+
+    func remoteControlWebStopPreview() {
+        isRemoteControlWebRequestingPreview = false
+        setLowFpsImage()
     }
 }
