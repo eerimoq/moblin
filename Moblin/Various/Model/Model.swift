@@ -578,6 +578,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var remoteControlWeb: RemoteControlWeb?
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
+    var isRemoteControlWebRequestingPreview = false
     var remoteControlAssistantRequestingStatusFilter: RemoteControlStartStatusFilter?
     var remoteControlAssistantPreviewUsers: Set<RemoteControlAssistantPreviewUser> = .init()
     var remoteControlAssistantStatusRequested: Bool = false
@@ -2312,6 +2313,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
         if isRemoteControlStreamerPreviewActive() {
             fps = database.remoteControl.streamer.previewFps
+        }
+        if isRemoteControlWebPreviewActive() {
+            fps = max(fps, 1.0)
         }
         media.setLowFpsImage(fps: fps)
         lowFpsImageFps = max(UInt64(fps), 1)

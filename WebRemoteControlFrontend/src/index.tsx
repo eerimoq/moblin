@@ -133,6 +133,7 @@ function App() {
   >([]);
   const [gimbalPresets, setGimbalPresets] = createSignal<GimbalPreset[]>([]);
   const [filterStates, setFilterStates] = createStore<Record<string, boolean>>({});
+  const [previewImageSrc, setPreviewImageSrc] = createSignal<string | null>(null);
   let logContainer: HTMLDivElement | undefined;
 
   class IndexConnection extends WebSocketConnection {
@@ -153,6 +154,7 @@ function App() {
       this.sendStartStatusRequest();
       this.sendGetStatusRequest();
       this.sendGetSettingsRequest();
+      this.sendStartPreview();
     }
 
     reconnectSoon(): void {
@@ -243,6 +245,10 @@ function App() {
           setFilterStates(name, on);
         }
       }
+    }
+
+    handlePreview(preview: string): void {
+      setPreviewImageSrc(`data:image/jpeg;base64,${preview}`);
     }
   }
 
@@ -400,6 +406,14 @@ function App() {
         </a>
         <GitHubLink />
       </div>
+    );
+  }
+
+  function VideoPreview() {
+    return (
+      <Show when={previewImageSrc() !== null}>
+        <img src={previewImageSrc()!} alt="Video preview" class="w-full rounded-lg" />
+      </Show>
     );
   }
 
@@ -654,6 +668,7 @@ function App() {
       <Title title="Moblin Remote Control" />
       <Links />
       <ConnectingOverlay status={status} />
+      <VideoPreview />
       <Status />
       <Control />
       <SrtConnectionPriorities />

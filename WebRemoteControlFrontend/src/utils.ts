@@ -230,6 +230,7 @@ interface IncomingMessage {
   response?: { id: number; result: ResponseResult; data: ResponseData };
   event?: { data: EventData };
   pong?: unknown;
+  preview?: { preview: string };
 }
 
 export interface NamedItem {
@@ -394,6 +395,8 @@ export class WebSocketConnection {
       this.handleResponse(message.response.id, message.response.result, message.response.data);
     } else if (message.event !== undefined) {
       this.handleEvent(message.event.data);
+    } else if (message.preview !== undefined) {
+      this.handlePreview(message.preview.preview);
     }
   }
 
@@ -404,6 +407,16 @@ export class WebSocketConnection {
   handleResponse(_id: number, _result: ResponseResult, _data?: ResponseData): void {}
 
   handleEvent(_data: EventData): void {}
+
+  handlePreview(_preview: string): void {}
+
+  sendStartPreview(): void {
+    this.sendRequest({ startPreview: {} });
+  }
+
+  sendStopPreview(): void {
+    this.sendRequest({ stopPreview: {} });
+  }
 
   sendGetStatusRequest(): void {
     this.sendRequest({ getStatus: {} });

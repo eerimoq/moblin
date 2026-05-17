@@ -698,6 +698,7 @@ extension Model {
                 }
             }
             sendPreviewToRemoteControlAssistant(preview: image)
+            sendPreviewToRemoteControlWeb(preview: image)
         }
     }
 
