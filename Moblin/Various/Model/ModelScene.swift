@@ -83,6 +83,10 @@ extension Model {
         bingoCardEffects[id]
     }
 
+    func getPomodoroTimerEffect(id: UUID) -> PomodoroTimerEffect? {
+        pomodoroTimerEffects[id]
+    }
+
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
         scoreboardEffects[id]
     }
@@ -661,6 +665,7 @@ extension Model {
         resetSlideshowVideoEffects(widgets: widgets)
         resetWheelOfLuckEffects(widgets: widgets)
         resetBingoCardEffects(widgets: widgets)
+        resetPomodoroTimerEffects(widgets: widgets)
         browsers = browserEffects.map { widgetId, browser in
             let name = getWidgetName(id: widgetId) ?? "Unknown"
             return Browser(name: name, browserEffect: browser)
@@ -855,6 +860,13 @@ extension Model {
         }
     }
 
+    private func resetPomodoroTimerEffects(widgets: [SettingsWidget]) {
+        pomodoroTimerEffects.removeAll()
+        for widget in widgets where widget.type == .pomodoroTimer {
+            pomodoroTimerEffects[widget.id] = PomodoroTimerEffect(canvasSize: media.getCanvasSize())
+        }
+    }
+
     private func isQuickButtonOn(type: SettingsQuickButtonType) -> Bool {
         database.quickButtons.first(where: { $0.type == type })?.isOn ?? false
     }
@@ -1002,6 +1014,8 @@ extension Model {
                 addSceneWheelOfLuckEffects(sceneWidget, widget, &effects)
             case .bingoCard:
                 addSceneBingoCardEffects(sceneWidget, widget, &effects)
+            case .pomodoroTimer:
+                addScenePomodoroTimerEffects(sceneWidget, widget, &effects)
             }
         }
     }
@@ -1268,6 +1282,19 @@ extension Model {
             return
         }
         effect.setSettings(settings: widget.bingoCard)
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effects.append(effect)
+    }
+
+    private func addScenePomodoroTimerEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = pomodoroTimerEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
+        effect.setSettings(settings: widget.pomodoroTimer)
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         effects.append(effect)
     }
@@ -1542,6 +1569,11 @@ extension Model {
             sceneWidget.layout.x = 1.3
             sceneWidget.layout.y = 33
             sceneWidget.layout.size = 33
+        case .pomodoroTimer:
+            sceneWidget.layout.alignment = .topRight
+            sceneWidget.layout.x = 1.3
+            sceneWidget.layout.y = 5
+            sceneWidget.layout.size = 20
         default:
             break
         }

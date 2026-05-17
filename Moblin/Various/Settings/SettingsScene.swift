@@ -2008,6 +2008,120 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
     }
 }
 
+enum PomodoroPhase: String, Codable {
+    case focus = "Focus"
+    case shortBreak = "Break"
+}
+
+class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
+    nonisolated(unsafe) static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
+    nonisolated(unsafe) static let baseForegroundColor = RgbColor.white
+    nonisolated(unsafe) static let baseFocusColor = RgbColor(red: 220, green: 80, blue: 50)
+    nonisolated(unsafe) static let baseBreakColor = RgbColor(red: 50, green: 160, blue: 80)
+    var workDuration: Int = 25
+    var breakDuration: Int = 5
+    var backgroundColor: RgbColor = baseBackgroundColor
+    @Published var backgroundColorColor: Color = baseBackgroundColor.color()
+    var foregroundColor: RgbColor = baseForegroundColor
+    @Published var foregroundColorColor: Color = baseForegroundColor.color()
+    var focusColor: RgbColor = baseFocusColor
+    @Published var focusColorColor: Color = baseFocusColor.color()
+    var breakColor: RgbColor = baseBreakColor
+    @Published var breakColorColor: Color = baseBreakColor.color()
+    @Published var isRunning: Bool = false
+    @Published var phase: PomodoroPhase = .focus
+    @Published var secondsRemaining: Int = 25 * 60
+    @Published var sessionsCompleted: Int = 0
+    private var timerHandle: Timer?
+
+    enum CodingKeys: CodingKey {
+        case workDuration,
+             breakDuration,
+             backgroundColor,
+             foregroundColor,
+             focusColor,
+             breakColor
+    }
+
+    init() {}
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.workDuration, workDuration)
+        try container.encode(.breakDuration, breakDuration)
+        try container.encode(.backgroundColor, backgroundColor)
+        try container.encode(.foregroundColor, foregroundColor)
+        try container.encode(.focusColor, focusColor)
+        try container.encode(.breakColor, breakColor)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        workDuration = container.decode(.workDuration, Int.self, 25)
+        breakDuration = container.decode(.breakDuration, Int.self, 5)
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.baseBackgroundColor)
+        backgroundColorColor = backgroundColor.color()
+        foregroundColor = container.decode(.foregroundColor, RgbColor.self, Self.baseForegroundColor)
+        foregroundColorColor = foregroundColor.color()
+        focusColor = container.decode(.focusColor, RgbColor.self, Self.baseFocusColor)
+        focusColorColor = focusColor.color()
+        breakColor = container.decode(.breakColor, RgbColor.self, Self.baseBreakColor)
+        breakColorColor = breakColor.color()
+        secondsRemaining = workDuration * 60
+    }
+
+    func start() {
+        guard !isRunning else { return }
+        isRunning = true
+        let timer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.tick()
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        timerHandle = timer
+    }
+
+    func pause() {
+        isRunning = false
+        timerHandle?.invalidate()
+        timerHandle = nil
+    }
+
+    func reset() {
+        pause()
+        phase = .focus
+        secondsRemaining = workDuration * 60
+        sessionsCompleted = 0
+    }
+
+    func totalSecondsForCurrentPhase() -> Int {
+        switch phase {
+        case .focus:
+            workDuration * 60
+        case .shortBreak:
+            breakDuration * 60
+        }
+    }
+
+    private func tick() {
+        if secondsRemaining > 0 {
+            secondsRemaining -= 1
+        } else {
+            advancePhase()
+        }
+    }
+
+    private func advancePhase() {
+        if phase == .focus {
+            sessionsCompleted += 1
+            phase = .shortBreak
+            secondsRemaining = breakDuration * 60
+        } else {
+            phase = .focus
+            secondsRemaining = workDuration * 60
+        }
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named, @unchecked Sendable {
     static let baseName = String(localized: "My widget")
     @Published var name: String
@@ -2029,6 +2143,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
     var slideshow: SettingsWidgetSlideshow = .init()
     var wheelOfLuck: SettingsWidgetWheelOfLuck = .init()
     var bingoCard: SettingsWidgetBingoCard = .init()
+    var pomodoroTimer: SettingsWidgetPomodoroTimer = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -2060,6 +2175,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         case slideshow
         case wheelOfLuck
         case bingoCard
+        case pomodoroTimer
         case enabled
         case effects
     }
@@ -2085,6 +2201,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.slideshow, slideshow)
         try container.encode(.wheelOfLuck, wheelOfLuck)
         try container.encode(.bingoCard, bingoCard)
+        try container.encode(.pomodoroTimer, pomodoroTimer)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -2110,6 +2227,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         slideshow = container.decode(.slideshow, SettingsWidgetSlideshow.self, .init())
         wheelOfLuck = container.decode(.wheelOfLuck, SettingsWidgetWheelOfLuck.self, .init())
         bingoCard = container.decode(.bingoCard, SettingsWidgetBingoCard.self, .init())
+        pomodoroTimer = container.decode(.pomodoroTimer, SettingsWidgetPomodoroTimer.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
         migrateFromOlderVersions()
@@ -2174,6 +2292,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .scoreboard,
             .wheelOfLuck,
             .bingoCard,
+            .pomodoroTimer,
         ].contains(type)
     }
 
@@ -2190,6 +2309,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .snapshot,
             .slideshow,
             .bingoCard,
+            .pomodoroTimer,
         ].contains(type)
     }
 
@@ -2210,6 +2330,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .scoreboard,
             .wheelOfLuck,
             .bingoCard,
+            .pomodoroTimer,
         ].contains(type)
     }
 }
@@ -3294,6 +3415,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case wheelOfLuck = "Wheel of luck"
     case bingoCard = "Bingo card"
     case crop = "Crop"
+    case pomodoroTimer = "Pomodoro timer"
 
     func toString() -> String {
         switch self {
@@ -3331,6 +3453,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "Bingo card")
         case .crop:
             String(localized: "Crop")
+        case .pomodoroTimer:
+            String(localized: "Pomodoro timer")
         }
     }
 
@@ -3370,6 +3494,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             "burn"
         case .bingoCard:
             "square.grid.3x3.square"
+        case .pomodoroTimer:
+            "timer"
         }
     }
 
@@ -3415,6 +3541,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "A wheel of luck widget shows a wheel of luck that you can spin.")
         case .bingoCard:
             String(localized: "A bingo card widget shows an interactive bingo card.")
+        case .pomodoroTimer:
+            String(localized: "A Pomodoro timer widget shows a focus and break timer.")
         }
     }
 }
