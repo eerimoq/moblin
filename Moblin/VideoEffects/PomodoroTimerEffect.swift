@@ -50,7 +50,7 @@ private struct PomodoroTimerView: View {
         let phaseSize = width * 0.15
         let timerSize = width * 0.18
         let spacing = width * 0.04
-        let width = 1.6 * width
+        let width = settings.widthScaleFactor * 1.6 * width
         VStack(alignment: .leading, spacing: spacing) {
             HStack(spacing: spacing) {
                 Image(systemName: phaseIcon())

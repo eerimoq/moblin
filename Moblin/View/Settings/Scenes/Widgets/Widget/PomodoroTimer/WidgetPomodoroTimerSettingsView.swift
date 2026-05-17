@@ -88,6 +88,14 @@ struct WidgetPomodoroTimerSettingsView: View {
                 }
                 updateEffect()
             }
+            Picker("Width scale factor", selection: $pomodoroTimer.widthScaleFactor) {
+                ForEach([1.0, 2.0, 3.0, 4.0, 5.0], id: \.self) {
+                    Text("\(Int($0))x")
+                }
+            }
+            .onChange(of: pomodoroTimer.widthScaleFactor) { _ in
+                updateEffect()
+            }
         } header: {
             Text("Durations")
         }

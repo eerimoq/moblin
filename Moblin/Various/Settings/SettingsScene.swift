@@ -2071,6 +2071,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     nonisolated(unsafe) static let baseBreakColor = RgbColor(red: 103, green: 208, blue: 69)
     @Published var focusDuration: Int = 30
     @Published var breakDuration: Int = 5
+    @Published var widthScaleFactor: Double = 1.0
     @Published var focusIcon: PomodoroFocusIcon = .sun
     @Published var breakIcon: PomodoroBreakIcon = .cup
     var backgroundColor: RgbColor = baseBackgroundColor
@@ -2089,6 +2090,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     enum CodingKeys: CodingKey {
         case focusDuration
         case breakDuration
+        case widthScaleFactor
         case focusIcon
         case breakIcon
         case backgroundColor
@@ -2103,6 +2105,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.focusDuration, focusDuration)
         try container.encode(.breakDuration, breakDuration)
+        try container.encode(.widthScaleFactor, widthScaleFactor)
         try container.encode(.focusIcon, focusIcon)
         try container.encode(.breakIcon, breakIcon)
         try container.encode(.backgroundColor, backgroundColor)
@@ -2115,6 +2118,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         focusDuration = container.decode(.focusDuration, Int.self, 30)
         breakDuration = container.decode(.breakDuration, Int.self, 5)
+        widthScaleFactor = container.decode(.widthScaleFactor, Double.self, 1.0)
         focusIcon = container.decode(.focusIcon, PomodoroFocusIcon.self, .sun)
         breakIcon = container.decode(.breakIcon, PomodoroBreakIcon.self, .cup)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.baseBackgroundColor)
