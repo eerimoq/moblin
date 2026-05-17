@@ -280,6 +280,8 @@ class RemoteControlWeb: @unchecked Sendable {
         response.send(data: thumbnail, status: .ok, contentType: "image/jpeg")
     }
 
+private let whepProxyTimeoutInterval: TimeInterval = 10
+
     private func handleWhepProxy(request: HttpServerRequest, response: HttpServerResponse) {
         guard request.method == "POST" else {
             response.send(status: .methodNotAllowed)
@@ -292,12 +294,17 @@ class RemoteControlWeb: @unchecked Sendable {
             response.send(status: .badRequest)
             return
         }
-        var urlRequest = URLRequest(url: targetUrl, timeoutInterval: 10)
+        var urlRequest = URLRequest(url: targetUrl, timeoutInterval: whepProxyTimeoutInterval)
         urlRequest.httpMethod = "POST"
         urlRequest.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
         urlRequest.httpBody = request.body
-        URLSession.shared.dataTask(with: urlRequest) { data, httpResponse, _ in
+        URLSession.shared.dataTask(with: urlRequest) { data, httpResponse, error in
             DispatchQueue.main.async {
+                if let error {
+                    logger.info("remote-control-web: WHEP proxy request failed: \(error)")
+                    response.send(status: .badRequest)
+                    return
+                }
                 guard let data,
                       let httpResponse = httpResponse as? HTTPURLResponse,
                       (200 ... 299).contains(httpResponse.statusCode)

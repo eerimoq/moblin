@@ -157,6 +157,10 @@ function App() {
     };
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
+    if (peerConnectionRef !== pc) {
+      pc.close();
+      return;
+    }
     await new Promise<void>((resolve) => {
       if (pc.iceGatheringState === "complete") {
         resolve();
@@ -172,6 +176,10 @@ function App() {
       };
       pc.addEventListener("icegatheringstatechange", check);
     });
+    if (peerConnectionRef !== pc) {
+      pc.close();
+      return;
+    }
     try {
       const response = await fetch(`/whep-proxy?url=${encodeURIComponent(url)}`, {
         method: "POST",
@@ -182,11 +190,21 @@ function App() {
         disconnectWhep();
         return;
       }
+      if (peerConnectionRef !== pc) {
+        pc.close();
+        return;
+      }
       const sdpAnswer = await response.text();
       await pc.setRemoteDescription({ type: "answer", sdp: sdpAnswer });
-      setWhepConnected(true);
+      if (peerConnectionRef === pc) {
+        setWhepConnected(true);
+      }
     } catch {
-      disconnectWhep();
+      if (peerConnectionRef === pc) {
+        disconnectWhep();
+      } else {
+        pc.close();
+      }
     }
   }
 
