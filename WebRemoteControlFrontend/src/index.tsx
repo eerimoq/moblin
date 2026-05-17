@@ -103,9 +103,7 @@ function StatusTable({ rows }: StatusTableProps) {
 
 function App() {
   const [status, setStatus] = createSignal<string>(connectionStatus.connecting);
-  const [generalRows, setGeneralRows] = createSignal<StatusRow[]>([]);
-  const [topLeftRows, setTopLeftRows] = createSignal<StatusRow[]>([]);
-  const [topRightRows, setTopRightRows] = createSignal<StatusRow[]>([]);
+  const [statusRows, setStatusRows] = createSignal<StatusRow[]>([]);
   const [showControl, setShowControl] = createSignal(false);
   const [showSrt, setShowSrt] = createSignal(false);
   const [showGimbal, setShowGimbal] = createSignal(false);
@@ -251,14 +249,16 @@ function App() {
   const connection = new IndexConnection();
 
   function updateStatus(status: RemoteControlResponseGetStatus): void {
-    updateStatusGeneral(status.general);
-    updateStatusTopLeft(status.topLeft);
-    updateStatusTopRight(status.topRight);
+    let rows: StatusRow[] = [];
+    rows.push(...updateStatusGeneral(status.general));
+    rows.push(...updateStatusTopLeft(status.topLeft));
+    rows.push(...updateStatusTopRight(status.topRight));
+    setStatusRows(rows);
   }
 
-  function updateStatusGeneral(general?: RemoteControlStatusGeneral): void {
+  function updateStatusGeneral(general?: RemoteControlStatusGeneral): StatusRow[] {
     if (general === undefined) {
-      return;
+      return [];
     }
     let rows: StatusRow[] = [];
     if (general.batteryLevel !== undefined) {
@@ -273,10 +273,10 @@ function App() {
     if (general.wiFiSsid !== undefined) {
       rows.push(["WiFi", general.wiFiSsid]);
     }
-    setGeneralRows(rows);
+    return rows;
   }
 
-  function updateStatusTopLeft(topLeft: RemoteControlStatusTopLeft): void {
+  function updateStatusTopLeft(topLeft: RemoteControlStatusTopLeft): StatusRow[] {
     let rows: StatusRow[] = [];
     if (topLeft.stream !== undefined) {
       rows.push(["Stream", topLeft.stream.message]);
@@ -302,10 +302,10 @@ function App() {
     if (topLeft.viewers !== undefined) {
       rows.push(["Viewers", topLeft.viewers.message]);
     }
-    setTopLeftRows(rows);
+    return rows;
   }
 
-  function updateStatusTopRight(topRight: RemoteControlStatusTopRight): void {
+  function updateStatusTopRight(topRight: RemoteControlStatusTopRight): StatusRow[] {
     let rows: StatusRow[] = [];
     if (topRight.audioLevel !== undefined) {
       rows.push(["Audio", topRight.audioLevel.message]);
@@ -352,7 +352,7 @@ function App() {
     if (topRight.systemMonitor !== undefined) {
       rows.push(["System monitor", topRight.systemMonitor.message]);
     }
-    setTopRightRows(rows);
+    return rows;
   }
 
   function populateSettings(data: RemoteControlSettings): void {
@@ -406,12 +406,7 @@ function App() {
   function Status() {
     return (
       <Section title="Status">
-        <h3 class="text-base font-medium text-zinc-300 mb-1">General</h3>
-        <StatusTable rows={generalRows} />
-        <h3 class="text-base font-medium text-zinc-300 mt-3 mb-1">Top left</h3>
-        <StatusTable rows={topLeftRows} />
-        <h3 class="text-base font-medium text-zinc-300 mt-3 mb-1">Top right</h3>
-        <StatusTable rows={topRightRows} />
+        <StatusTable rows={statusRows} />
       </Section>
     );
   }
