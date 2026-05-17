@@ -2030,9 +2030,9 @@ enum PomodoroPhase: String, Codable {
 enum PomodoroFocusIcon: String, Codable, CaseIterable {
     case sun = "sun.max"
     case bolt = "bolt.circle"
+    case cap = "graduationcap"
     case book = "text.book.closed"
     case play = "arrowtriangle.right.circle"
-    case mic = "microphone.slash"
 
     func toString() -> String {
         switch self {
@@ -2040,12 +2040,12 @@ enum PomodoroFocusIcon: String, Codable, CaseIterable {
             String(localized: "Sun")
         case .bolt:
             String(localized: "Bolt")
+        case .cap:
+            String(localized: "Cap")
         case .book:
             String(localized: "Book")
         case .play:
             String(localized: "Play")
-        case .mic:
-            String(localized: "Mic")
         }
     }
 }
