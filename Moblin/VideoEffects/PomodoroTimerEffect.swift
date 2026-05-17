@@ -50,10 +50,9 @@ private struct PomodoroTimerView: View {
         let phaseSize = width * 0.15
         let timerSize = width * 0.18
         let spacing = width * 0.04
-        let spacing2 = width * 0.06
         let width = 1.6 * width
         VStack(alignment: .leading, spacing: spacing) {
-            HStack(spacing: spacing2) {
+            HStack(spacing: spacing) {
                 Image(systemName: phaseIcon())
                     .font(.system(size: phaseSize, weight: .semibold))
                     .foregroundStyle(phaseColor())
@@ -62,8 +61,9 @@ private struct PomodoroTimerView: View {
                     .minimumScaleFactor(0.5)
                     .font(.system(size: phaseSize, weight: .semibold))
                     .foregroundStyle(phaseColor())
-                Spacer()
+                Spacer(minLength: 0)
                 Text(timeString)
+                    .lineLimit(1)
                     .font(.system(size: timerSize, weight: .bold, design: .monospaced))
                     .foregroundStyle(settings.foregroundColorColor)
             }
