@@ -21,6 +21,7 @@ class EasyLogger {
     }
 
     private func log(_ messsge: String) {
+        print(messsge)
         handler?("\(makeTimestamp()) \(messsge)")
     }
 }
