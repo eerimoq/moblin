@@ -1,5 +1,6 @@
 import { createSignal, For, Show } from "solid-js";
-import type { Accessor } from "solid-js";import { createStore } from "solid-js/store";
+import type { Accessor } from "solid-js";
+import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
 import {
   BitratePreset,

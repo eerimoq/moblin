@@ -136,7 +136,10 @@ class RemoteControlWeb: @unchecked Sendable {
     }
 
     func sendPreview(preview: Data) {
-        for connection in connections where connectionsRequestingPreview.contains(ObjectIdentifier(connection)) {
+        for connection in connections {
+            guard connectionsRequestingPreview.contains(ObjectIdentifier(connection)) else {
+                continue
+            }
             send(connection: connection, message: .preview(preview: preview))
         }
     }
