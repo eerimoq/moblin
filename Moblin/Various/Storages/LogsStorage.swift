@@ -82,17 +82,17 @@ class LogsStorage {
         setCurrentFile(url: newFileUrl)
     }
 
-    private func setCurrentFile(url: URL) {
-        currentFileHandle = try? FileHandle(forWritingTo: url)
-        _ = try? currentFileHandle?.seekToEnd()
-        currentFileUrl = url
-        currentFileSize = url.fileSize
-    }
-
     private func closeCurrentFile() {
         try? currentFileHandle?.close()
         currentFileHandle = nil
         currentFileUrl = nil
         currentFileSize = 0
+    }
+
+    private func setCurrentFile(url: URL) {
+        currentFileHandle = try? FileHandle(forWritingTo: url)
+        _ = try? currentFileHandle?.seekToEnd()
+        currentFileUrl = url
+        currentFileSize = url.fileSize
     }
 }
