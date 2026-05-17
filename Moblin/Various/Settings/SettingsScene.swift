@@ -2161,7 +2161,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         }
     }
 
-    private func advancePhase() {
+    func advancePhase() {
         switch phase {
         case .focus:
             phase = .shortBreak

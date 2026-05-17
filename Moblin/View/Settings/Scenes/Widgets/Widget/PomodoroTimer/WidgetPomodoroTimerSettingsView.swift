@@ -8,6 +8,12 @@ struct WidgetPomodoroTimerQuickButtonControlsView: View {
         HStack(spacing: 13) {
             Spacer()
             Button {
+                pomodoroTimer.advancePhase()
+            } label: {
+                Image(systemName: "forward.end")
+                    .font(.title)
+            }
+            Button {
                 pomodoroTimer.reset()
             } label: {
                 Image(systemName: "arrow.counterclockwise")
