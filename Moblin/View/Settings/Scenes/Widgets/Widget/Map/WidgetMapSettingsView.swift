@@ -42,8 +42,6 @@ struct WidgetMapSettingsView: View {
                         model.resetSelectedScene(changeScene: false)
                     }
                 )
-                Text(format(distance: size))
-                    .frame(width: 100)
             }
         } header: {
             Text("Size")
