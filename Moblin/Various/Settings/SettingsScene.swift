@@ -2120,7 +2120,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         focusColorColor = focusColor.color()
         breakColor = container.decode(.breakColor, RgbColor.self, Self.baseBreakColor)
         breakColorColor = breakColor.color()
-        secondsRemaining = focusDuration * 60
+        reset()
     }
 
     func start() {

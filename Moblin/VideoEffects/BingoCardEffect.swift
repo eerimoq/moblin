@@ -69,10 +69,10 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
-        self.sceneWidget.layout = sceneWidget.layout
         processorPipelineQueue.async {
             self.sceneWidgetPipeline.layout = sceneWidget.layout
         }
+        self.sceneWidget.layout = sceneWidget.layout
     }
 
     func setSettings(settings: SettingsWidgetBingoCard) {

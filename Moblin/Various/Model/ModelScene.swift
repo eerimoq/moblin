@@ -1268,8 +1268,8 @@ extension Model {
         guard let effect = wheelOfLuckEffects[widget.id], !effects.contains(effect) else {
             return
         }
-        effect.setSettings(settings: widget.wheelOfLuck)
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.setSettings(settings: widget.wheelOfLuck)
         effects.append(effect)
     }
 
@@ -1281,8 +1281,8 @@ extension Model {
         guard let effect = bingoCardEffects[widget.id], !effects.contains(effect) else {
             return
         }
-        effect.setSettings(settings: widget.bingoCard)
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.setSettings(settings: widget.bingoCard)
         effects.append(effect)
     }
 
@@ -1294,8 +1294,8 @@ extension Model {
         guard let effect = pomodoroTimerEffects[widget.id], !effects.contains(effect) else {
             return
         }
-        effect.setSettings(settings: widget.pomodoroTimer)
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.setSettings(settings: widget.pomodoroTimer)
         effects.append(effect)
     }
 
