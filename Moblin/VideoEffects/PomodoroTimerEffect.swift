@@ -33,15 +33,6 @@ private struct PomodoroTimerView: View {
         }
     }
 
-    private func phaseLabel() -> String {
-        switch settings.phase {
-        case .focus:
-            String(localized: "Focus")
-        case .shortBreak:
-            String(localized: "Break")
-        }
-    }
-
     private func phaseIcon() -> String {
         switch settings.phase {
         case .focus:
@@ -66,7 +57,7 @@ private struct PomodoroTimerView: View {
                 Image(systemName: phaseIcon())
                     .font(.system(size: phaseSize, weight: .semibold))
                     .foregroundStyle(phaseColor())
-                Text(phaseLabel())
+                Text(settings.phase.toString())
                     .font(.system(size: phaseSize, weight: .semibold))
                     .foregroundStyle(phaseColor())
                 Spacer()
@@ -117,9 +108,6 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
     }
 
     func setSettings(settings: SettingsWidgetPomodoroTimer) {
-        guard settings !== self.settings else {
-            return
-        }
         self.settings = settings
         DispatchQueue.main.async {
             self.setupRenderer()

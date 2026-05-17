@@ -11,118 +11,75 @@ struct WidgetPomodoroTimerSettingsView: View {
 
     var body: some View {
         Section {
-            HStack {
-                Text("Work duration")
-                Spacer()
-                Stepper(
-                    "\(pomodoroTimer.workDuration) min",
-                    value: Binding(
-                        get: { pomodoroTimer.workDuration },
-                        set: { value in
-                            pomodoroTimer.workDuration = max(1, value)
-                            if pomodoroTimer.phase == .focus, !pomodoroTimer.isRunning {
-                                pomodoroTimer.secondsRemaining = pomodoroTimer.workDuration * 60
-                            }
-                            updateEffect()
-                        }
-                    ),
-                    in: 1 ... 120
-                )
-            }
-            HStack {
-                Text("Break duration")
-                Spacer()
-                Stepper(
-                    "\(pomodoroTimer.breakDuration) min",
-                    value: Binding(
-                        get: { pomodoroTimer.breakDuration },
-                        set: { value in
-                            pomodoroTimer.breakDuration = max(1, value)
-                            if pomodoroTimer.phase == .shortBreak, !pomodoroTimer.isRunning {
-                                pomodoroTimer.secondsRemaining = pomodoroTimer.breakDuration * 60
-                            }
-                            updateEffect()
-                        }
-                    ),
-                    in: 1 ... 60
-                )
-            }
-        } header: {
-            Text("Timer")
-        }
-        Section {
-            HStack {
-                Spacer()
-                if pomodoroTimer.isRunning {
-                    TextButtonView("Pause") {
-                        pomodoroTimer.pause()
-                        updateEffect()
-                    }
-                } else {
-                    TextButtonView("Start") {
-                        pomodoroTimer.start()
-                        updateEffect()
-                    }
-                }
-                Spacer()
-                TextButtonView("Reset") {
-                    pomodoroTimer.reset()
+            if pomodoroTimer.isRunning {
+                TextButtonView("Pause") {
+                    pomodoroTimer.pause()
                     updateEffect()
                 }
-                Spacer()
+            } else {
+                TextButtonView("Start") {
+                    pomodoroTimer.start()
+                    updateEffect()
+                }
             }
-            HStack {
-                let phaseLabel = pomodoroTimer.phase == .focus
-                    ? String(localized: "Focus")
-                    : String(localized: "Break")
-                let minutes = pomodoroTimer.secondsRemaining / 60
-                let seconds = pomodoroTimer.secondsRemaining % 60
-                Text("Phase: \(phaseLabel)")
-                Spacer()
-                Text(String(format: "%02d:%02d", minutes, seconds))
-                    .font(.system(.body, design: .monospaced))
-            }
-        } header: {
-            Text("Controls")
         }
         Section {
-            HStack {
-                Text("Focus icon")
-                Spacer()
-                Picker("", selection: Binding(
-                    get: { pomodoroTimer.focusIcon },
-                    set: { value in
-                        pomodoroTimer.focusIcon = value
-                        updateEffect()
-                    }
-                )) {
-                    ForEach(PomodoroFocusIcon.allCases, id: \.self) { icon in
-                        HStack {
-                            Image(systemName: icon.rawValue)
-                            Text(icon.toString())
-                        }
-                        .tag(icon)
-                    }
+            TextButtonView("Reset") {
+                pomodoroTimer.reset()
+                updateEffect()
+            }
+            .tint(.red)
+        }
+        Section {
+            Picker("Focus", selection: $pomodoroTimer.focusDuration) {
+                ForEach([1, 2, 3, 5, 10, 15, 20, 30, 45, 60, 90, 120], id: \.self) {
+                    Text("\($0) min")
                 }
             }
-            HStack {
-                Text("Break icon")
-                Spacer()
-                Picker("", selection: Binding(
-                    get: { pomodoroTimer.breakIcon },
-                    set: { value in
-                        pomodoroTimer.breakIcon = value
-                        updateEffect()
-                    }
-                )) {
-                    ForEach(PomodoroBreakIcon.allCases, id: \.self) { icon in
-                        HStack {
-                            Image(systemName: icon.rawValue)
-                            Text(icon.toString())
-                        }
-                        .tag(icon)
-                    }
+            .onChange(of: pomodoroTimer.focusDuration) { _ in
+                if pomodoroTimer.phase == .focus, !pomodoroTimer.isRunning {
+                    pomodoroTimer.secondsRemaining = pomodoroTimer.focusDuration * 60
                 }
+                updateEffect()
+            }
+            Picker("Break", selection: $pomodoroTimer.breakDuration) {
+                ForEach([1, 2, 3, 5, 7, 10, 15, 20, 30], id: \.self) {
+                    Text("\($0) min")
+                }
+            }
+            .onChange(of: pomodoroTimer.breakDuration) { _ in
+                if pomodoroTimer.phase == .shortBreak, !pomodoroTimer.isRunning {
+                    pomodoroTimer.secondsRemaining = pomodoroTimer.breakDuration * 60
+                }
+                updateEffect()
+            }
+        } header: {
+            Text("Durations")
+        }
+        Section {
+            Picker("Focus", selection: $pomodoroTimer.focusIcon) {
+                ForEach(PomodoroFocusIcon.allCases, id: \.self) { icon in
+                    HStack {
+                        Image(systemName: icon.rawValue)
+                        Text(icon.toString())
+                    }
+                    .tag(icon)
+                }
+            }
+            .onChange(of: pomodoroTimer.focusIcon) { _ in
+                updateEffect()
+            }
+            Picker("Break", selection: $pomodoroTimer.breakIcon) {
+                ForEach(PomodoroBreakIcon.allCases, id: \.self) { icon in
+                    HStack {
+                        Image(systemName: icon.rawValue)
+                        Text(icon.toString())
+                    }
+                    .tag(icon)
+                }
+            }
+            .onChange(of: pomodoroTimer.breakIcon) { _ in
+                updateEffect()
             }
         } header: {
             Text("Icons")

@@ -2011,44 +2011,50 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
 enum PomodoroPhase: String, Codable {
     case focus = "Focus"
     case shortBreak = "Break"
-}
-
-enum PomodoroFocusIcon: String, Codable, CaseIterable {
-    case textBookClosed = "text.book.closed"
-    case sunMax = "sun.max"
-    case boltCircle = "bolt.circle"
-    case pencilAndScribble = "pencil.and.scribble"
-    case arrowtriangleRightCircle = "arrowtriangle.right.circle"
 
     func toString() -> String {
         switch self {
-        case .textBookClosed:
-            String(localized: "Book")
-        case .sunMax:
+        case .focus:
+            String(localized: "Focus")
+        case .shortBreak:
+            String(localized: "Break")
+        }
+    }
+}
+
+enum PomodoroFocusIcon: String, Codable, CaseIterable {
+    case sun = "sun.max"
+    case bolt = "bolt.circle"
+    case book = "text.book.closed"
+    case play = "arrowtriangle.right.circle"
+    case mic = "microphone.slash"
+
+    func toString() -> String {
+        switch self {
+        case .sun:
             String(localized: "Sun")
-        case .boltCircle:
+        case .bolt:
             String(localized: "Bolt")
-        case .pencilAndScribble:
-            String(localized: "Pencil")
-        case .arrowtriangleRightCircle:
+        case .book:
+            String(localized: "Book")
+        case .play:
             String(localized: "Play")
+        case .mic:
+            String(localized: "Mic")
         }
     }
 }
 
 enum PomodoroBreakIcon: String, Codable, CaseIterable {
-    case moonZzz = "moon.zzz"
-    case cupAndSaucer = "cup.and.saucer"
-    case figurePlay = "figure.play"
+    case cup = "cup.and.saucer"
+    case mic = "microphone"
 
     func toString() -> String {
         switch self {
-        case .moonZzz:
-            String(localized: "Moon")
-        case .cupAndSaucer:
+        case .cup:
             String(localized: "Cup")
-        case .figurePlay:
-            String(localized: "Figure")
+        case .mic:
+            String(localized: "Mic")
         }
     }
 }
@@ -2056,12 +2062,12 @@ enum PomodoroBreakIcon: String, Codable, CaseIterable {
 class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     nonisolated(unsafe) static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
     nonisolated(unsafe) static let baseForegroundColor = RgbColor.white
-    nonisolated(unsafe) static let baseFocusColor = RgbColor(red: 220, green: 80, blue: 50)
-    nonisolated(unsafe) static let baseBreakColor = RgbColor(red: 50, green: 160, blue: 80)
-    var workDuration: Int = 25
-    var breakDuration: Int = 5
-    var focusIcon: PomodoroFocusIcon = .textBookClosed
-    var breakIcon: PomodoroBreakIcon = .moonZzz
+    nonisolated(unsafe) static let baseFocusColor = RgbColor(red: 122, green: 181, blue: 255)
+    nonisolated(unsafe) static let baseBreakColor = RgbColor(red: 103, green: 208, blue: 69)
+    @Published var focusDuration: Int = 30
+    @Published var breakDuration: Int = 5
+    @Published var focusIcon: PomodoroFocusIcon = .sun
+    @Published var breakIcon: PomodoroBreakIcon = .cup
     var backgroundColor: RgbColor = baseBackgroundColor
     @Published var backgroundColorColor: Color = baseBackgroundColor.color()
     var foregroundColor: RgbColor = baseForegroundColor
@@ -2072,25 +2078,25 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     @Published var breakColorColor: Color = baseBreakColor.color()
     @Published var isRunning: Bool = false
     @Published var phase: PomodoroPhase = .focus
-    @Published var secondsRemaining: Int = 25 * 60
+    @Published var secondsRemaining: Int = 30 * 60
     private var timer = SimpleTimer(queue: .main)
 
     enum CodingKeys: CodingKey {
-        case workDuration,
-             breakDuration,
-             focusIcon,
-             breakIcon,
-             backgroundColor,
-             foregroundColor,
-             focusColor,
-             breakColor
+        case focusDuration
+        case breakDuration
+        case focusIcon
+        case breakIcon
+        case backgroundColor
+        case foregroundColor
+        case focusColor
+        case breakColor
     }
 
     init() {}
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(.workDuration, workDuration)
+        try container.encode(.focusDuration, focusDuration)
         try container.encode(.breakDuration, breakDuration)
         try container.encode(.focusIcon, focusIcon)
         try container.encode(.breakIcon, breakIcon)
@@ -2102,10 +2108,10 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        workDuration = container.decode(.workDuration, Int.self, 25)
+        focusDuration = container.decode(.focusDuration, Int.self, 30)
         breakDuration = container.decode(.breakDuration, Int.self, 5)
-        focusIcon = container.decode(.focusIcon, PomodoroFocusIcon.self, .textBookClosed)
-        breakIcon = container.decode(.breakIcon, PomodoroBreakIcon.self, .moonZzz)
+        focusIcon = container.decode(.focusIcon, PomodoroFocusIcon.self, .sun)
+        breakIcon = container.decode(.breakIcon, PomodoroBreakIcon.self, .cup)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.baseBackgroundColor)
         backgroundColorColor = backgroundColor.color()
         foregroundColor = container.decode(.foregroundColor, RgbColor.self, Self.baseForegroundColor)
@@ -2114,7 +2120,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         focusColorColor = focusColor.color()
         breakColor = container.decode(.breakColor, RgbColor.self, Self.baseBreakColor)
         breakColorColor = breakColor.color()
-        secondsRemaining = workDuration * 60
+        secondsRemaining = focusDuration * 60
     }
 
     func start() {
@@ -2135,13 +2141,13 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     func reset() {
         pause()
         phase = .focus
-        secondsRemaining = workDuration * 60
+        secondsRemaining = focusDuration * 60
     }
 
     func totalSecondsForCurrentPhase() -> Int {
         switch phase {
         case .focus:
-            workDuration * 60
+            focusDuration * 60
         case .shortBreak:
             breakDuration * 60
         }
@@ -2162,7 +2168,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
             secondsRemaining = breakDuration * 60
         case .shortBreak:
             phase = .focus
-            secondsRemaining = workDuration * 60
+            secondsRemaining = focusDuration * 60
         }
     }
 }
