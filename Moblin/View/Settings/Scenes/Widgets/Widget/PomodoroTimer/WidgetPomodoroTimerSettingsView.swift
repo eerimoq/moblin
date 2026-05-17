@@ -1,5 +1,34 @@
 import SwiftUI
 
+struct WidgetPomodoroTimerQuickButtonControlsView: View {
+    let model: Model
+    @ObservedObject var widget: SettingsWidget
+
+    private func updateEffect() {
+        model.getPomodoroTimerEffect(id: widget.id)?.setSettings(settings: widget.pomodoroTimer)
+    }
+
+    var body: some View {
+        if widget.pomodoroTimer.isRunning {
+            Button {
+                widget.pomodoroTimer.pause()
+                updateEffect()
+            } label: {
+                Image(systemName: "pause.fill")
+                    .font(.title)
+            }
+        } else {
+            Button {
+                widget.pomodoroTimer.start()
+                updateEffect()
+            } label: {
+                Image(systemName: "play.fill")
+                    .font(.title)
+            }
+        }
+    }
+}
+
 struct WidgetPomodoroTimerSettingsView: View {
     let model: Model
     let widget: SettingsWidget

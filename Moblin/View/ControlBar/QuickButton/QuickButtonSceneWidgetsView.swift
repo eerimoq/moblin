@@ -43,6 +43,8 @@ private struct WidgetView: View {
             WidgetScoreboardQuickButtonControlsView(model: model,
                                                     widget: widget,
                                                     scoreboard: widget.scoreboard)
+        case .pomodoroTimer:
+            WidgetPomodoroTimerQuickButtonControlsView(model: model, widget: widget)
         default:
             EmptyView()
         }
