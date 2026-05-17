@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, onMount, Show } from "solid-js";
 import type { Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import { render } from "solid-js/web";
@@ -134,7 +134,76 @@ function App() {
   const [gimbalPresets, setGimbalPresets] = createSignal<GimbalPreset[]>([]);
   const [filterStates, setFilterStates] = createStore<Record<string, boolean>>({});
   const [previewImageSrc, setPreviewImageSrc] = createSignal<string | null>(null);
+  const [whepUrl, setWhepUrl] = createSignal(localStorage.getItem("whepUrl") ?? "");
+  const [whepConnected, setWhepConnected] = createSignal(false);
+  let videoRef: HTMLVideoElement | undefined;
+  let peerConnectionRef: RTCPeerConnection | undefined;
   let logContainer: HTMLDivElement | undefined;
+
+  async function connectWhep(url: string): Promise<void> {
+    disconnectWhep();
+    if (!url) return;
+    const pc = new RTCPeerConnection();
+    peerConnectionRef = pc;
+    pc.addTransceiver("video", { direction: "recvonly" });
+    pc.addTransceiver("audio", { direction: "recvonly" });
+    pc.ontrack = (event: RTCTrackEvent) => {
+      if (videoRef && event.streams[0]) {
+        videoRef.srcObject = event.streams[0];
+      }
+    };
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    await new Promise<void>((resolve) => {
+      if (pc.iceGatheringState === "complete") {
+        resolve();
+        return;
+      }
+      const timer = setTimeout(resolve, 5000);
+      const check = () => {
+        if (pc.iceGatheringState === "complete") {
+          clearTimeout(timer);
+          pc.removeEventListener("icegatheringstatechange", check);
+          resolve();
+        }
+      };
+      pc.addEventListener("icegatheringstatechange", check);
+    });
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/sdp" },
+        body: pc.localDescription!.sdp,
+      });
+      if (!response.ok) {
+        disconnectWhep();
+        return;
+      }
+      const sdpAnswer = await response.text();
+      await pc.setRemoteDescription({ type: "answer", sdp: sdpAnswer });
+      setWhepConnected(true);
+    } catch {
+      disconnectWhep();
+    }
+  }
+
+  function disconnectWhep(): void {
+    if (peerConnectionRef) {
+      peerConnectionRef.close();
+      peerConnectionRef = undefined;
+    }
+    if (videoRef) {
+      videoRef.srcObject = null;
+    }
+    setWhepConnected(false);
+  }
+
+  onMount(() => {
+    const url = whepUrl();
+    if (url) {
+      void connectWhep(url);
+    }
+  });
 
   class IndexConnection extends WebSocketConnection {
     statusTimerId: ReturnType<typeof setTimeout> | undefined;
@@ -410,10 +479,59 @@ function App() {
   }
 
   function VideoPreview() {
+    const [editingWhepUrl, setEditingWhepUrl] = createSignal(whepUrl());
+
+    function applyWhepUrl(): void {
+      const url = editingWhepUrl().trim();
+      localStorage.setItem("whepUrl", url);
+      setWhepUrl(url);
+      if (url) {
+        void connectWhep(url);
+      } else {
+        disconnectWhep();
+      }
+    }
+
     return (
-      <Show when={previewImageSrc() !== null}>
-        <img src={previewImageSrc()!} alt="Video preview" class="w-full rounded-lg" />
-      </Show>
+      <Section title="Video Preview">
+        <div class="space-y-3">
+          <div class="flex items-center space-x-2">
+            <label class="text-sm text-zinc-200 w-24 shrink-0">WHEP URL</label>
+            <input
+              type="text"
+              class="bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 flex-1"
+              placeholder="Leave empty to use MJPEG preview"
+              value={editingWhepUrl()}
+              onInput={(e) => setEditingWhepUrl(e.target.value)}
+              onBlur={applyWhepUrl}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") applyWhepUrl();
+              }}
+            />
+          </div>
+          <Show when={whepUrl() !== ""}>
+            <div class="relative">
+              <video
+                ref={(el) => {
+                  videoRef = el;
+                }}
+                autoplay
+                muted
+                playsinline
+                class="w-full rounded-lg"
+              />
+              <Show when={!whepConnected()}>
+                <div class="absolute inset-0 flex items-center justify-center bg-zinc-900/80 rounded-lg text-sm text-zinc-400">
+                  Connecting...
+                </div>
+              </Show>
+            </div>
+          </Show>
+          <Show when={whepUrl() === "" && previewImageSrc() !== null}>
+            <img src={previewImageSrc()!} alt="Video preview" class="w-full rounded-lg" />
+          </Show>
+        </div>
+      </Section>
     );
   }
 
