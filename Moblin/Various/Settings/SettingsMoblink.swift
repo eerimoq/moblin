@@ -5,8 +5,8 @@ class SettingsMoblinkStreamer: Codable, ObservableObject {
     @Published var port: UInt16 = 7777
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             port
+        case enabled
+        case port
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -31,10 +31,10 @@ class SettingsMoblinkRelay: Codable, ObservableObject {
     @Published var manual: Bool = false
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             name,
-             url,
-             manual
+        case enabled
+        case name
+        case url
+        case manual
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -62,9 +62,9 @@ class SettingsMoblink: Codable {
     var password = "1234"
 
     enum CodingKeys: CodingKey {
-        case server,
-             client,
-             password
+        case server
+        case client
+        case password
     }
 
     func encode(to encoder: any Encoder) throws {

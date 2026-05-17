@@ -9,12 +9,12 @@ class DeepLinkCreatorStreamVideo: Codable, ObservableObject {
     @Published var maxKeyFrameInterval: Int32 = 2
 
     enum CodingKeys: CodingKey {
-        case resolution,
-             fps,
-             bitrate,
-             codec,
-             bFrames,
-             maxKeyFrameInterval
+        case resolution
+        case fps
+        case bitrate
+        case codec
+        case bFrames
+        case maxKeyFrameInterval
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -72,9 +72,9 @@ class DeepLinkCreatorStreamSrt: Codable, ObservableObject {
     @Published var dnsLookupStrategy: SettingsDnsLookupStrategy = .system
 
     enum CodingKeys: CodingKey {
-        case latency,
-             adaptiveBitrateEnabled,
-             dnsLookupStrategy
+        case latency
+        case adaptiveBitrateEnabled
+        case dnsLookupStrategy
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -99,8 +99,8 @@ class DeepLinkCreatorStreamObs: Codable, ObservableObject {
     @Published var webSocketPassword: String = ""
 
     enum CodingKeys: CodingKey {
-        case webSocketUrl,
-             webSocketPassword
+        case webSocketUrl
+        case webSocketPassword
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -123,8 +123,8 @@ class DeepLinkCreatorStreamTwitch: Codable, ObservableObject {
     @Published var channelId: String = ""
 
     enum CodingKeys: CodingKey {
-        case channelName,
-             channelId
+        case channelName
+        case channelId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -176,16 +176,16 @@ class DeepLinkCreatorStream: Codable, Identifiable, ObservableObject, Named {
     @Published var kick: DeepLinkCreatorStreamKick = .init()
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             url,
-             selected,
-             video,
-             audio,
-             srt,
-             obs,
-             twitch,
-             kick
+        case id
+        case name
+        case url
+        case selected
+        case video
+        case audio
+        case srt
+        case obs
+        case twitch
+        case kick
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -226,10 +226,10 @@ class DeepLinkCreatorQuickButton: Codable, Identifiable, ObservableObject {
     @Published var page: Int = 1
 
     enum CodingKeys: CodingKey {
-        case id,
-             type,
-             enabled,
-             page
+        case id
+        case type
+        case enabled
+        case page
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -258,10 +258,10 @@ class DeepLinkCreatorQuickButtons: Codable, ObservableObject {
     @Published var buttons: [DeepLinkCreatorQuickButton] = []
 
     enum CodingKeys: CodingKey {
-        case twoColumns,
-             showName,
-             enableScroll,
-             buttons
+        case twoColumns
+        case showName
+        case enableScroll
+        case buttons
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -311,11 +311,11 @@ class DeepLinkCreator: Codable, ObservableObject {
     @Published var webBrowser: DeepLinkCreatorWebBrowser = .init()
 
     enum CodingKeys: CodingKey {
-        case streams,
-             quickButtonsEnabled,
-             quickButtons,
-             webBrowserEnabled,
-             webBrowser
+        case streams
+        case quickButtonsEnabled
+        case quickButtons
+        case webBrowserEnabled
+        case webBrowser
     }
 
     func encode(to encoder: any Encoder) throws {

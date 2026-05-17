@@ -257,16 +257,16 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case name,
-             id,
-             type,
-             imageType,
-             systemImageNameOn,
-             systemImageNameOff,
-             isOn,
-             enabled,
-             backgroundColor,
-             page
+        case name
+        case id
+        case type
+        case imageType
+        case systemImageNameOn
+        case systemImageNameOff
+        case isOn
+        case enabled
+        case backgroundColor
+        case page
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -306,12 +306,12 @@ class SettingsQuickButtons: Codable, ObservableObject {
     @Published var stealthModeShowStatus: Bool = false
 
     enum CodingKeys: CodingKey {
-        case twoColumns,
-             bigButtons,
-             showName,
-             enableScroll,
-             blackScreenShowChat,
-             blackScreenShowStatus
+        case twoColumns
+        case bigButtons
+        case showName
+        case enableScroll
+        case blackScreenShowChat
+        case blackScreenShowStatus
     }
 
     func encode(to encoder: any Encoder) throws {

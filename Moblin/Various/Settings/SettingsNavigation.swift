@@ -5,8 +5,8 @@ class SettingsNavigation: Codable, ObservableObject {
     @Published var followHeading: Bool = false
 
     enum CodingKeys: CodingKey {
-        case followUser,
-             followHeading
+        case followUser
+        case followHeading
     }
 
     func encode(to encoder: any Encoder) throws {

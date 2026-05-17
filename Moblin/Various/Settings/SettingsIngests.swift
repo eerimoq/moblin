@@ -10,10 +10,10 @@ class SettingsRtmpServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var latency: Int32 = defaultRtmpLatency
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             streamKey,
-             latency
+        case id
+        case name
+        case streamKey
+        case latency
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -58,9 +58,9 @@ class SettingsRtmpServer: Codable, ObservableObject {
     @Published var streams: [SettingsRtmpServerStream] = []
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             port,
-             streams
+        case enabled
+        case port
+        case streams
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -97,9 +97,9 @@ class SettingsSrtlaServerStream: Codable, Identifiable, ObservableObject, Named 
     @Published var streamId: String = ""
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             streamId
+        case id
+        case name
+        case streamId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -138,10 +138,10 @@ class SettingsSrtlaServer: Codable, ObservableObject {
     @Published var streams: [SettingsSrtlaServerStream] = []
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             srtPort,
-             srtlaPort,
-             streams
+        case enabled
+        case srtPort
+        case srtlaPort
+        case streams
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -187,10 +187,10 @@ class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     var connected: Bool = false
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             virtualDestinationPort,
-             latency
+        case id
+        case name
+        case virtualDestinationPort
+        case latency
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -234,9 +234,9 @@ class SettingsRistServer: Codable, ObservableObject {
     @Published var streams: [SettingsRistServerStream] = []
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             port,
-             streams
+        case enabled
+        case port
+        case streams
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -288,12 +288,12 @@ class SettingsRtspClientStream: Codable, Identifiable, ObservableObject, Named {
     @Published var transport: SettingsRtspTransport = .rtpRtspTcp
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             url,
-             enabled,
-             latency,
-             transport
+        case id
+        case name
+        case url
+        case enabled
+        case latency
+        case transport
     }
 
     func latencySeconds() -> Double {
@@ -356,11 +356,11 @@ class SettingsWhipServerStream: Codable, Identifiable, ObservableObject, Named {
     @Published var syncTimestamps: Bool = true
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             streamKey,
-             latency,
-             syncTimestamps
+        case id
+        case name
+        case streamKey
+        case latency
+        case syncTimestamps
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -407,9 +407,9 @@ class SettingsWhipServer: Codable, ObservableObject {
     @Published var streams: [SettingsWhipServerStream] = []
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             port,
-             streams
+        case enabled
+        case port
+        case streams
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -449,12 +449,12 @@ class SettingsWhepClientStream: Codable, Identifiable, ObservableObject, Named {
     @Published var syncTimestamps: Bool = true
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             url,
-             enabled,
-             latency,
-             syncTimestamps
+        case id
+        case name
+        case url
+        case enabled
+        case latency
+        case syncTimestamps
     }
 
     func latencySeconds() -> Double {

@@ -147,21 +147,21 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             function,
-             sceneId,
-             sceneIds,
-             autoSceneSwitcherId,
-             zoomX,
-             gimbalPresetId,
-             delay,
-             macroId,
-             djiDevices,
-             filters,
-             record,
-             mute,
-             torch,
-             reaction
+        case id
+        case function
+        case sceneId
+        case sceneIds
+        case autoSceneSwitcherId
+        case zoomX
+        case gimbalPresetId
+        case delay
+        case macroId
+        case djiDevices
+        case filters
+        case record
+        case mute
+        case torch
+        case reaction
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -218,9 +218,9 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             actions
+        case id
+        case name
+        case actions
     }
 
     func encode(to encoder: any Encoder) throws {
