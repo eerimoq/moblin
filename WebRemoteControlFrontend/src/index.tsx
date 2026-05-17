@@ -173,7 +173,7 @@ function App() {
       pc.addEventListener("icegatheringstatechange", check);
     });
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`/whep-proxy?url=${encodeURIComponent(url)}`, {
         method: "POST",
         headers: { "Content-Type": "application/sdp" },
         body: pc.localDescription!.sdp,

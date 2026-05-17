@@ -161,6 +161,11 @@ class RemoteControlWeb: @unchecked Sendable {
             prefixMatch: true,
             handler: handleRecordingsThumbnail
         ))
+        routes.append(HttpServerRoute(
+            path: "/whep-proxy",
+            prefixMatch: true,
+            handler: handleWhepProxy
+        ))
         server = HttpServer(queue: .main,
                             routes: routes,
                             service: .init(name: "moblin", type: "_http._tcp"))
@@ -273,6 +278,36 @@ class RemoteControlWeb: @unchecked Sendable {
             return
         }
         response.send(data: thumbnail, status: .ok, contentType: "image/jpeg")
+    }
+
+    private func handleWhepProxy(request: HttpServerRequest, response: HttpServerResponse) {
+        guard request.method == "POST" else {
+            response.send(status: .methodNotAllowed)
+            return
+        }
+        guard let components = URLComponents(string: "http://localhost" + request.path),
+              let urlString = components.queryItems?.first(where: { $0.name == "url" })?.value,
+              let targetUrl = URL(string: urlString)
+        else {
+            response.send(status: .badRequest)
+            return
+        }
+        var urlRequest = URLRequest(url: targetUrl, timeoutInterval: 10)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
+        urlRequest.httpBody = request.body
+        URLSession.shared.dataTask(with: urlRequest) { data, httpResponse, _ in
+            DispatchQueue.main.async {
+                guard let data,
+                      let httpResponse = httpResponse as? HTTPURLResponse,
+                      (200 ... 299).contains(httpResponse.statusCode)
+                else {
+                    response.send(status: .badRequest)
+                    return
+                }
+                response.send(data: data, status: .ok, contentType: "application/sdp")
+            }
+        }.resume()
     }
 
     private func handleWebsocketStateUpdate(_ newState: NWListener.State) {
