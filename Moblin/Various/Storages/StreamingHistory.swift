@@ -102,10 +102,10 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case totalTime,
-             totalBytes,
-             totalStreams,
-             streams
+        case totalTime
+        case totalBytes
+        case totalStreams
+        case streams
     }
 
     func encode(to encoder: any Encoder) throws {

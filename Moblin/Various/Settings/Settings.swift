@@ -45,10 +45,10 @@ class SettingsColorLut: Codable, Identifiable, ObservableObject, @unchecked Send
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             type,
-             name,
-             enabled
+        case id
+        case type
+        case name
+        case enabled
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -99,13 +99,13 @@ class SettingsColor: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case space,
-             lutEnabled,
-             lut,
-             bundledLuts,
-             diskLuts,
-             diskLutsPng,
-             diskLutsCube
+        case space
+        case lutEnabled
+        case lut
+        case bundledLuts
+        case diskLuts
+        case diskLutsPng
+        case diskLutsCube
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -161,31 +161,31 @@ class SettingsShow: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case chat,
-             viewers,
-             uptime,
-             stream,
-             speed,
-             audioLevel,
-             zoom,
-             zoomPresets,
-             microphone,
-             audioBar,
-             cameras,
-             obsStatus,
-             rtmpSpeed,
-             gameController,
-             location,
-             remoteControl,
-             browserWidgets,
-             bonding,
-             events,
-             djiDevices,
-             bondingRtts,
-             moblink,
-             catPrinter,
-             heartRateDevice,
-             cpu
+        case chat
+        case viewers
+        case uptime
+        case stream
+        case speed
+        case audioLevel
+        case zoom
+        case zoomPresets
+        case microphone
+        case audioBar
+        case cameras
+        case obsStatus
+        case rtmpSpeed
+        case gameController
+        case location
+        case remoteControl
+        case browserWidgets
+        case bonding
+        case events
+        case djiDevices
+        case bondingRtts
+        case moblink
+        case catPrinter
+        case heartRateDevice
+        case cpu
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -263,9 +263,9 @@ class SettingsZoomPreset: Codable, Identifiable, Equatable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             x
+        case id
+        case name
+        case x
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -291,9 +291,9 @@ class SettingsZoomSwitchTo: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case level,
-             x,
-             enabled
+        case level
+        case x
+        case enabled
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -321,11 +321,11 @@ class SettingsZoom: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case back,
-             front,
-             switchToBack,
-             switchToFront,
-             speed
+        case back
+        case front
+        case switchToBack
+        case switchToFront
+        case speed
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -357,8 +357,8 @@ class SettingsBitratePreset: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             bitrate
+        case id
+        case bitrate
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -408,9 +408,9 @@ class SettingsTesla: Codable {
     var enabled: Bool = true
 
     enum CodingKeys: CodingKey {
-        case vin,
-             privateKey,
-             enabled
+        case vin
+        case privateKey
+        case enabled
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -458,11 +458,11 @@ class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named, @unch
     @Published var playlist: [SettingsMediaPlayerFile] = []
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             playerId,
-             autoSelectMic,
-             playlist
+        case id
+        case name
+        case playerId
+        case autoSelectMic
+        case playlist
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -545,9 +545,9 @@ class SettingsReplay: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case start,
-             stop,
-             speed
+        case start
+        case stop
+        case speed
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -574,11 +574,11 @@ class SettingsCyclingPowerDevice: Codable, Identifiable, ObservableObject, Named
     @Published var bluetoothPeripheralId: UUID?
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId
+        case id
+        case name
+        case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -631,11 +631,11 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var bluetoothPeripheralId: UUID?
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId
+        case id
+        case name
+        case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -694,14 +694,14 @@ class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, N
     @Published var rgbLightBrightness: Double = 100.0
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId,
-             rgbLightEnabled,
-             rgbLightColor,
-             rgbLightBrightness
+        case id
+        case name
+        case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
+        case rgbLightEnabled
+        case rgbLightColor
+        case rgbLightBrightness
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -804,8 +804,8 @@ class WebBrowserSettings: Codable, ObservableObject {
     @Published var bookmarks: [WebBrowserBookmarkSettings] = []
 
     enum CodingKeys: CodingKey {
-        case home,
-             bookmarks
+        case home
+        case bookmarks
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -880,8 +880,8 @@ class SettingsDisconnectProtection: Codable, ObservableObject {
     @Published var fallbackSceneId: UUID?
 
     enum CodingKeys: CodingKey {
-        case liveSceneId,
-             fallbackSceneId
+        case liveSceneId
+        case fallbackSceneId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -918,8 +918,8 @@ class SettingsWiFiAware: Codable, ObservableObject {
     @Published var role: SettingsWiFiAwareRole = .sender
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             role
+        case enabled
+        case role
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -964,9 +964,9 @@ class SettingsFace: Codable, ObservableObject {
     @Published var pixellateStrength: Float = 0.3
 
     enum CodingKeys: CodingKey {
-        case privacyMode,
-             blurStrength,
-             pixellateStrength
+        case privacyMode
+        case blurStrength
+        case pixellateStrength
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1030,12 +1030,12 @@ class SettingsBeauty: Codable, ObservableObject {
     @Published var settings: SettingsBeautySettings = .smoothness
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             smoothRadius,
-             smoothStrength,
-             shapePosition,
-             shapeRadius,
-             shapeStrength
+        case enabled
+        case smoothRadius
+        case smoothStrength
+        case shapePosition
+        case shapeRadius
+        case shapeStrength
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1173,84 +1173,84 @@ class Database: Codable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case streams,
-             scenes,
-             widgets,
-             show,
-             zoom,
-             tapToFocus,
-             bitratePresets,
-             iconImage,
-             videoStabilizationMode,
-             chat,
-             batteryPercentage,
-             mic,
-             mics,
-             debug,
-             quickButtons,
-             globalButtons,
-             rtmpServer,
-             networkInterfaceNames,
-             lowBitrateWarning,
-             vibrate,
-             gameControllers,
-             remoteControl,
-             startStopRecordingConfirmations,
-             color,
-             mirrorFrontCameraOnStream,
-             streamButtonColor,
-             location,
-             watch,
-             audio,
-             macros,
-             webBrowser,
-             deepLinkCreator,
-             srtlaServer,
-             mediaPlayers,
-             showAllSettings,
-             portrait,
-             djiDevices,
-             alertsMediaGallery,
-             catPrinters,
-             verboseStatuses,
-             scoreboardPlayers,
-             keyboard,
-             tesla,
-             srtlaRelay,
-             pixellateStrength,
-             moblink,
-             sceneSwitchTransition,
-             forceSceneSwitchTransition,
-             cameraControlsEnabled,
-             externalDisplayContent,
-             cyclingPowerDevices,
-             cyclingPowerDevicesMigrated,
-             heartRateDevices,
-             phoneCoolerDevices,
-             remoteSceneId,
-             sceneNumericInput,
-             goPro,
-             replay,
-             portraitVideoOffsetFromTop,
-             autoSceneSwitchers,
-             fixedHorizon,
-             whirlpoolAngle,
-             pinchScale,
-             selfieStick,
-             bigButtons,
-             verticalButtons,
-             bigAudioLevelMeter,
-             ristServer,
-             disconnectProtection,
-             rtspClient,
-             whipServer,
-             whepClient,
-             navigation,
-             wiFiAware,
-             face,
-             beauty,
-             talkBack,
-             gimbal
+        case streams
+        case scenes
+        case widgets
+        case show
+        case zoom
+        case tapToFocus
+        case bitratePresets
+        case iconImage
+        case videoStabilizationMode
+        case chat
+        case batteryPercentage
+        case mic
+        case mics
+        case debug
+        case quickButtons
+        case globalButtons
+        case rtmpServer
+        case networkInterfaceNames
+        case lowBitrateWarning
+        case vibrate
+        case gameControllers
+        case remoteControl
+        case startStopRecordingConfirmations
+        case color
+        case mirrorFrontCameraOnStream
+        case streamButtonColor
+        case location
+        case watch
+        case audio
+        case macros
+        case webBrowser
+        case deepLinkCreator
+        case srtlaServer
+        case mediaPlayers
+        case showAllSettings
+        case portrait
+        case djiDevices
+        case alertsMediaGallery
+        case catPrinters
+        case verboseStatuses
+        case scoreboardPlayers
+        case keyboard
+        case tesla
+        case srtlaRelay
+        case pixellateStrength
+        case moblink
+        case sceneSwitchTransition
+        case forceSceneSwitchTransition
+        case cameraControlsEnabled
+        case externalDisplayContent
+        case cyclingPowerDevices
+        case cyclingPowerDevicesMigrated
+        case heartRateDevices
+        case phoneCoolerDevices
+        case remoteSceneId
+        case sceneNumericInput
+        case goPro
+        case replay
+        case portraitVideoOffsetFromTop
+        case autoSceneSwitchers
+        case fixedHorizon
+        case whirlpoolAngle
+        case pinchScale
+        case selfieStick
+        case bigButtons
+        case verticalButtons
+        case bigAudioLevelMeter
+        case ristServer
+        case disconnectProtection
+        case rtspClient
+        case whipServer
+        case whepClient
+        case navigation
+        case wiFiAware
+        case face
+        case beauty
+        case talkBack
+        case gimbal
     }
 
     func encode(to encoder: any Encoder) throws {

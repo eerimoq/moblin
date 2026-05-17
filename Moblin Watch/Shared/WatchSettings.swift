@@ -11,11 +11,11 @@ class WatchSettingsChat: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case fontSize,
-             timestampEnabled,
-             notificationOnMessage,
-             notificationRate,
-             badges
+        case fontSize
+        case timestampEnabled
+        case notificationOnMessage
+        case notificationRate
+        case badges
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -45,9 +45,9 @@ class WatchSettingsShow: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case thermalState,
-             audioLevel,
-             speed
+        case thermalState
+        case audioLevel
+        case speed
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -73,9 +73,9 @@ class WatchSettings: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case chat,
-             show,
-             viaRemoteControl
+        case chat
+        case show
+        case viaRemoteControl
     }
 
     func encode(to encoder: any Encoder) throws {

@@ -77,12 +77,12 @@ class SettingsLocation: Codable, ObservableObject {
     @Published var distanceFilter: SettingsLocationDistanceFilter = .none
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             privacyRegions,
-             distance,
-             resetWhenGoingLive,
-             desiredAccuracy,
-             distanceFilter
+        case enabled
+        case privacyRegions
+        case distance
+        case resetWhenGoingLive
+        case desiredAccuracy
+        case distanceFilter
     }
 
     func encode(to encoder: any Encoder) throws {

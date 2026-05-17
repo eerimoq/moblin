@@ -308,15 +308,15 @@ class SettingsGameControllerButton: Codable, Identifiable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             text,
-             function,
-             sceneId,
-             widgetId,
-             gimbalPresetId,
-             gimbalMotion,
-             macroId
+        case id
+        case name
+        case text
+        case function
+        case sceneId
+        case widgetId
+        case gimbalPresetId
+        case gimbalMotion
+        case macroId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -452,10 +452,10 @@ class SettingsGameController: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             buttons,
-             leftThumbStickFunction,
-             rightThumbStickFunction
+        case id
+        case buttons
+        case leftThumbStickFunction
+        case rightThumbStickFunction
     }
 
     func encode(to encoder: any Encoder) throws {

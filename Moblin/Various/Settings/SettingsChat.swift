@@ -65,15 +65,15 @@ class SettingsChatFilter: Identifiable, Codable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             enabled,
-             value,
-             messageWords,
-             showOnScreen,
-             textToSpeech,
-             chatBot,
-             poll,
-             print
+        case id
+        case enabled
+        case value
+        case messageWords
+        case showOnScreen
+        case textToSpeech
+        case chatBot
+        case poll
+        case print
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -116,12 +116,12 @@ class SettingsChatBotPermissionsCommand: Codable, ObservableObject, @unchecked S
     var latestExecutionTime: ContinuousClock.Instant?
 
     enum CodingKeys: CodingKey {
-        case moderatorsEnabled,
-             subscribersEnabled,
-             minimumSubscriberTier,
-             othersEnabled,
-             sendChatMessages,
-             cooldown
+        case moderatorsEnabled
+        case subscribersEnabled
+        case minimumSubscriberTier
+        case othersEnabled
+        case sendChatMessages
+        case cooldown
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -172,26 +172,26 @@ class SettingsChatBotPermissions: Codable {
     var migrated: Bool = false
 
     enum CodingKeys: CodingKey {
-        case tts,
-             fix,
-             map,
-             alert,
-             fax,
-             snapshot,
-             filter,
-             zoom,
-             tesla,
-             audio,
-             reaction,
-             scene,
-             stream,
-             widget,
-             location,
-             ai,
-             twitch,
-             gimbal,
-             macro,
-             migrated
+        case tts
+        case fix
+        case map
+        case alert
+        case fax
+        case snapshot
+        case filter
+        case zoom
+        case tesla
+        case audio
+        case reaction
+        case scene
+        case stream
+        case widget
+        case location
+        case ai
+        case twitch
+        case gimbal
+        case macro
+        case migrated
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -258,8 +258,8 @@ class SettingsChatBotAlias: Codable, ObservableObject, Identifiable {
     @Published var replacement: String = "!moblin"
 
     enum CodingKeys: CodingKey {
-        case alias,
-             replacement
+        case alias
+        case replacement
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -292,13 +292,13 @@ class SettingsChatPredefinedMessage: Codable, Identifiable, ObservableObject {
     @Published var redTag: Bool = false
 
     enum CodingKeys: CodingKey {
-        case id,
-             text,
-             blueTag,
-             greenTag,
-             yellowTag,
-             orangeTag,
-             redTag
+        case id
+        case text
+        case blueTag
+        case greenTag
+        case yellowTag
+        case orangeTag
+        case redTag
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -354,11 +354,11 @@ class SettingsChatPredefinedMessagesFilter: Codable, ObservableObject {
     @Published var orangeTag: Bool = false
 
     enum CodingKeys: CodingKey {
-        case redTag,
-             greenTag,
-             blueTag,
-             yellowTag,
-             orangeTag
+        case redTag
+        case greenTag
+        case blueTag
+        case yellowTag
+        case orangeTag
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -392,9 +392,9 @@ class SettingsChatNickname: Codable, Identifiable, ObservableObject {
     @Published var nickname: String = ""
 
     enum CodingKeys: CodingKey {
-        case id,
-             user,
-             nickname
+        case id
+        case user
+        case nickname
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -450,10 +450,10 @@ class SettingsOpenAi: Codable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case baseUrl,
-             apiKey,
-             model,
-             role
+        case baseUrl
+        case apiKey
+        case model
+        case role
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -601,56 +601,56 @@ class SettingsChat: Codable, ObservableObject {
     @Published var sharedChatIcons: Bool = true
 
     enum CodingKeys: CodingKey {
-        case fontSize,
-             usernameColor,
-             messageColor,
-             backgroundColor,
-             backgroundColorEnabled,
-             shadowColor,
-             shadowColorEnabled,
-             boldUsername,
-             boldMessage,
-             animatedEmotes,
-             timestampColor,
-             timestampColorEnabled,
-             height,
-             width,
-             maximumAge,
-             maximumAgeEnabled,
-             meInUsernameColor,
-             enabled,
-             usernamesToIgnore,
-             textToSpeechEnabled,
-             textToSpeechDefaultLanguage,
-             textToSpeechDetectLanguagePerMessage,
-             textToSpeechSayUsername,
-             textToSpeechRate,
-             textToSpeechSayVolume,
-             textToSpeechLanguageVoices,
-             textToSpeechSubscribersOnly,
-             textToSpeechFilter,
-             textToSpeechFilterMentions,
-             ttsMonster,
-             mirrored,
-             botEnabled,
-             botCommandPermissions,
-             botSendLowBatteryWarning,
-             botCommandAi,
-             badges,
-             showFirstTimeChatterMessage,
-             showNewFollowerMessage,
-             bottomPoints,
-             newMessagesAtTop,
-             textToSpeechPauseBetweenMessages,
-             showDeletedMessages,
-             aliases,
-             predefinedMessages,
-             predefinedMessagesFilter,
-             sendMessagesTo,
-             nicknames,
-             displayStyle,
-             background,
-             sharedChatIcons
+        case fontSize
+        case usernameColor
+        case messageColor
+        case backgroundColor
+        case backgroundColorEnabled
+        case shadowColor
+        case shadowColorEnabled
+        case boldUsername
+        case boldMessage
+        case animatedEmotes
+        case timestampColor
+        case timestampColorEnabled
+        case height
+        case width
+        case maximumAge
+        case maximumAgeEnabled
+        case meInUsernameColor
+        case enabled
+        case usernamesToIgnore
+        case textToSpeechEnabled
+        case textToSpeechDefaultLanguage
+        case textToSpeechDetectLanguagePerMessage
+        case textToSpeechSayUsername
+        case textToSpeechRate
+        case textToSpeechSayVolume
+        case textToSpeechLanguageVoices
+        case textToSpeechSubscribersOnly
+        case textToSpeechFilter
+        case textToSpeechFilterMentions
+        case ttsMonster
+        case mirrored
+        case botEnabled
+        case botCommandPermissions
+        case botSendLowBatteryWarning
+        case botCommandAi
+        case badges
+        case showFirstTimeChatterMessage
+        case showNewFollowerMessage
+        case bottomPoints
+        case newMessagesAtTop
+        case textToSpeechPauseBetweenMessages
+        case showDeletedMessages
+        case aliases
+        case predefinedMessages
+        case predefinedMessagesFilter
+        case sendMessagesTo
+        case nicknames
+        case displayStyle
+        case background
+        case sharedChatIcons
     }
 
     func encode(to encoder: any Encoder) throws {

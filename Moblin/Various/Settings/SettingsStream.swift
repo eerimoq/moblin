@@ -232,11 +232,11 @@ class SettingsStreamSrtConnectionPriority: Codable, Identifiable {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             priority,
-             enabled,
-             relayId
+        case id
+        case name
+        case priority
+        case enabled
+        case relayId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -326,8 +326,8 @@ class SettingsStreamSrtAdaptiveBitrateFastIrlSettings: Codable {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case packetsInFlight,
-             minimumBitrate
+        case packetsInFlight
+        case minimumBitrate
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -361,12 +361,12 @@ class SettingsStreamSrtAdaptiveBitrateCustomSettings: Codable {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case packetsInFlight,
-             pifDiffIncreaseFactor,
-             rttDiffHighDecreaseFactor,
-             rttDiffHighAllowedSpike,
-             rttDiffHighMinimumDecrease,
-             minimumBitrate
+        case packetsInFlight
+        case pifDiffIncreaseFactor
+        case rttDiffHighDecreaseFactor
+        case rttDiffHighAllowedSpike
+        case rttDiffHighMinimumDecrease
+        case minimumBitrate
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -436,10 +436,10 @@ class SettingsStreamSrtAdaptiveBitrate: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case algorithm,
-             fastIrlSettings,
-             customSettings,
-             belaboxSettings
+        case algorithm
+        case fastIrlSettings
+        case customSettings
+        case belaboxSettings
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -497,18 +497,18 @@ class SettingsStreamSrt: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case latency,
-             maximumBandwidthFollowInput,
-             overheadBandwidth,
-             adaptiveBitrateEnabled,
-             adaptiveBitrate,
-             connectionPriorities,
-             mpegtsPacketsPerPacket,
-             dnsLookupStrategy,
-             implementation,
-             bigPackets,
-             bigPacketsMigrated,
-             implemenationMigrated
+        case latency
+        case maximumBandwidthFollowInput
+        case overheadBandwidth
+        case adaptiveBitrateEnabled
+        case adaptiveBitrate
+        case connectionPriorities
+        case mpegtsPacketsPerPacket
+        case dnsLookupStrategy
+        case implementation
+        case bigPackets
+        case bigPacketsMigrated
+        case implemenationMigrated
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -628,8 +628,8 @@ class SettingsStreamWhip: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case headers,
-             httpTransport
+        case headers
+        case httpTransport
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -683,18 +683,18 @@ class SettingsStreamRecording: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case overrideStream,
-             resolution,
-             fps,
-             videoCodec,
-             videoBitrate,
-             maxKeyFrameInterval,
-             audioBitrate,
-             autoStartRecording,
-             autoStopRecording,
-             cleanRecordings,
-             cleanSnapshots,
-             recordingPath
+        case overrideStream
+        case resolution
+        case fps
+        case videoCodec
+        case videoBitrate
+        case maxKeyFrameInterval
+        case audioBitrate
+        case autoStartRecording
+        case autoStopRecording
+        case cleanRecordings
+        case cleanSnapshots
+        case recordingPath
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -784,9 +784,9 @@ class SettingsStreamPreviewStream: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case url,
-             resolution,
-             bitrate
+        case url
+        case resolution
+        case bitrate
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -860,18 +860,18 @@ class SettingsStreamReplay: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             fade,
-             transitionType,
-             inStinger,
-             outStinger,
-             postTriggerDelay,
-             x,
-             y,
-             size,
-             alignment,
-             positioningLock,
-             enterForegroundCountAtLatestUsage
+        case enabled
+        case fade
+        case transitionType
+        case inStinger
+        case outStinger
+        case postTriggerDelay
+        case x
+        case y
+        case size
+        case alignment
+        case positioningLock
+        case enterForegroundCountAtLatestUsage
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -948,9 +948,9 @@ class SettingsStreamMultiStreamingDestination: Codable, Identifiable, Observable
     init() {}
 
     enum CodingKeys: CodingKey {
-        case name,
-             url,
-             enabled
+        case name
+        case url
+        case enabled
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1017,14 +1017,14 @@ class SettingsTwitchAlerts: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case follows,
-             subscriptions,
-             giftSubscriptions,
-             resubscriptions,
-             rewards,
-             raids,
-             cheers,
-             minimumCheerBits
+        case follows
+        case subscriptions
+        case giftSubscriptions
+        case resubscriptions
+        case rewards
+        case raids
+        case cheers
+        case minimumCheerBits
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1081,13 +1081,13 @@ class SettingsKickAlerts: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case subscriptions,
-             giftedSubscriptions,
-             rewards,
-             hosts,
-             bans,
-             kicks,
-             minimumKicks
+        case subscriptions
+        case giftedSubscriptions
+        case rewards
+        case hosts
+        case bans
+        case kicks
+        case minimumKicks
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1224,88 +1224,88 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
     }
 
     enum CodingKeys: CodingKey {
-        case name,
-             id,
-             enabled,
-             url,
-             twitchChannelName,
-             twitchChannelId,
-             twitchShowFollows,
-             twitchChatAlerts,
-             twitchToastAlerts,
-             twitchAccessToken,
-             twitchLoggedIn,
-             twitchRewards,
-             twitchSendMessagesTo,
-             kickChannelName,
-             kickChannelId,
-             kickChatroomChannelId,
-             kickSlug,
-             kickAccessToken,
-             kickLoggedIn,
-             kickSendMessagesTo,
-             kickChatAlerts,
-             kickToastAlerts,
-             youTubeVideoId,
-             youTubeHandle,
-             youTubeScheduleStreamTitle,
-             youTubeScheduleStreamVisibility,
-             youTubeScheduleStreamAutoStop,
-             afreecaTvChannelName,
-             afreecaTvStreamId,
-             openStreamingPlatformUrl,
-             openStreamingPlatformChannelId,
-             obsWebSocketEnabled,
-             obsWebSocketUrl,
-             obsWebSocketPassword,
-             obsSourceName,
-             obsMainScene,
-             obsBrbScene,
-             obsBrbSceneVideoSourceBroken,
-             obsAutoStartStream,
-             obsAutoStopStream,
-             obsAutoStartRecording,
-             obsAutoStopRecording,
-             streamingDirectlyToObs,
-             discordSnapshotWebhook,
-             discordChatBotSnapshotWebhook,
-             discordSnapshotWebhookOnlyWhenLive,
-             resolution,
-             fps,
-             autoFps,
-             bitrate,
-             bitrateRateControl,
-             codec,
-             h264Profile,
-             bFrames,
-             adaptiveEncoderResolution,
-             adaptiveEncoderResolutionThreashold,
-             adaptiveBitrate,
-             srt,
-             rtmp,
-             rist,
-             whip,
-             captureSessionPresetEnabled,
-             captureSessionPreset,
-             maxKeyFrameInterval,
-             audioCodec,
-             audioBitrate,
-             chat,
-             recording,
-             realtimeIrlEnabled,
-             realtimeIrlBaseUrl,
-             realtimeIrlPushKey,
-             portrait,
-             backgroundStreaming,
-             backgroundStreamingPiP,
-             estimatedViewerDelay,
-             ntpPoolAddress,
-             timecodesEnabled,
-             replay,
-             goLiveNotificationDiscordMessage,
-             goLiveNotificationDiscordWebhookUrl,
-             multiStreaming,
-             previewStream
+        case name
+        case id
+        case enabled
+        case url
+        case twitchChannelName
+        case twitchChannelId
+        case twitchShowFollows
+        case twitchChatAlerts
+        case twitchToastAlerts
+        case twitchAccessToken
+        case twitchLoggedIn
+        case twitchRewards
+        case twitchSendMessagesTo
+        case kickChannelName
+        case kickChannelId
+        case kickChatroomChannelId
+        case kickSlug
+        case kickAccessToken
+        case kickLoggedIn
+        case kickSendMessagesTo
+        case kickChatAlerts
+        case kickToastAlerts
+        case youTubeVideoId
+        case youTubeHandle
+        case youTubeScheduleStreamTitle
+        case youTubeScheduleStreamVisibility
+        case youTubeScheduleStreamAutoStop
+        case afreecaTvChannelName
+        case afreecaTvStreamId
+        case openStreamingPlatformUrl
+        case openStreamingPlatformChannelId
+        case obsWebSocketEnabled
+        case obsWebSocketUrl
+        case obsWebSocketPassword
+        case obsSourceName
+        case obsMainScene
+        case obsBrbScene
+        case obsBrbSceneVideoSourceBroken
+        case obsAutoStartStream
+        case obsAutoStopStream
+        case obsAutoStartRecording
+        case obsAutoStopRecording
+        case streamingDirectlyToObs
+        case discordSnapshotWebhook
+        case discordChatBotSnapshotWebhook
+        case discordSnapshotWebhookOnlyWhenLive
+        case resolution
+        case fps
+        case autoFps
+        case bitrate
+        case bitrateRateControl
+        case codec
+        case h264Profile
+        case bFrames
+        case adaptiveEncoderResolution
+        case adaptiveEncoderResolutionThreashold
+        case adaptiveBitrate
+        case srt
+        case rtmp
+        case rist
+        case whip
+        case captureSessionPresetEnabled
+        case captureSessionPreset
+        case maxKeyFrameInterval
+        case audioCodec
+        case audioBitrate
+        case chat
+        case recording
+        case realtimeIrlEnabled
+        case realtimeIrlBaseUrl
+        case realtimeIrlPushKey
+        case portrait
+        case backgroundStreaming
+        case backgroundStreamingPiP
+        case estimatedViewerDelay
+        case ntpPoolAddress
+        case timecodesEnabled
+        case replay
+        case goLiveNotificationDiscordMessage
+        case goLiveNotificationDiscordWebhookUrl
+        case multiStreaming
+        case previewStream
     }
 
     func encode(to encoder: any Encoder) throws {

@@ -141,23 +141,23 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId,
-             wifiSsid,
-             wifiPassword,
-             rtmpUrlType,
-             serverRtmpStreamId,
-             serverRtmpUrl,
-             customRtmpUrl,
-             autoRestartStream,
-             imageStabilization,
-             resolution,
-             fps,
-             bitrate,
-             isStarted,
-             model
+        case id
+        case name
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
+        case wifiSsid
+        case wifiPassword
+        case rtmpUrlType
+        case serverRtmpStreamId
+        case serverRtmpUrl
+        case customRtmpUrl
+        case autoRestartStream
+        case imageStabilization
+        case resolution
+        case fps
+        case bitrate
+        case isStarted
+        case model
     }
 
     func encode(to encoder: any Encoder) throws {

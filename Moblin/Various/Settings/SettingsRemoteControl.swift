@@ -9,11 +9,11 @@ class SettingsRemoteControlAssistant: Codable, ObservableObject, Identifiable, N
     var relay: SettingsRemoteControlServerRelay = .init()
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             port,
-             relay
+        case id
+        case name
+        case enabled
+        case port
+        case relay
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -44,10 +44,10 @@ class SettingsRemoteControlStreamer: Codable, ObservableObject {
     @Published var reliableChatAndEvents: Bool = false
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             url,
-             previewFps,
-             reliableChatAndEvents
+        case enabled
+        case url
+        case previewFps
+        case reliableChatAndEvents
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -75,9 +75,9 @@ class SettingsRemoteControlServerRelay: Codable, ObservableObject {
     @Published var bridgeId: String = UUID().uuidString.lowercased()
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             baseUrl,
-             bridgeId
+        case enabled
+        case baseUrl
+        case bridgeId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -107,9 +107,9 @@ class SettingsRemoteControlWeb: Codable, ObservableObject {
     @Published var deviceName: String = ""
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             port,
-             deviceName
+        case enabled
+        case port
+        case deviceName
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -139,13 +139,13 @@ class SettingsRemoteControl: Codable, ObservableObject {
     var hasMigratedAssistant: Bool = true
 
     enum CodingKeys: CodingKey {
-        case client,
-             server,
-             web,
-             password,
-             streamers,
-             selectedStreamer,
-             hasMigratedAssistant
+        case client
+        case server
+        case web
+        case password
+        case streamers
+        case selectedStreamer
+        case hasMigratedAssistant
     }
 
     func encode(to encoder: any Encoder) throws {

@@ -10,10 +10,10 @@ class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject, Nam
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             ssid,
-             password
+        case id
+        case name
+        case ssid
+        case password
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -45,12 +45,12 @@ class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject, Named {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             type,
-             serverStreamId,
-             serverUrl,
-             customUrl
+        case id
+        case name
+        case type
+        case serverStreamId
+        case serverUrl
+        case customUrl
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -90,10 +90,10 @@ class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject, Na
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             isHero12Or13,
-             resolution
+        case id
+        case name
+        case isHero12Or13
+        case resolution
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -124,12 +124,12 @@ class SettingsGoPro: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case launchLiveStream,
-             selectedLaunchLiveStream,
-             wifiCredentials,
-             selectedWifiCredentials,
-             rtmpUrls,
-             selectedRtmpUrl
+        case launchLiveStream
+        case selectedLaunchLiveStream
+        case wifiCredentials
+        case selectedWifiCredentials
+        case rtmpUrls
+        case selectedRtmpUrl
     }
 
     func encode(to encoder: any Encoder) throws {

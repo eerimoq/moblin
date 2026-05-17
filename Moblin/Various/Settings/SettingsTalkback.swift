@@ -5,8 +5,8 @@ class SettingsTalkback: Codable, ObservableObject {
     @Published var micId: String = ""
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             micId
+        case enabled
+        case micId
     }
 
     func encode(to encoder: any Encoder) throws {

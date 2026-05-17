@@ -9,14 +9,14 @@ class SettingsKeyboardKey: Codable, Identifiable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             key,
-             function,
-             sceneId,
-             widgetId,
-             gimbalPresetId,
-             gimbalMotion,
-             macroId
+        case id
+        case key
+        case function
+        case sceneId
+        case widgetId
+        case gimbalPresetId
+        case gimbalMotion
+        case macroId
     }
 
     func encode(to encoder: any Encoder) throws {

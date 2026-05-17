@@ -9,11 +9,11 @@ class SettingsGimbalPreset: Codable, Identifiable, ObservableObject, Named, @unc
     @Published var zoomX: Float = 1
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             x,
-             y,
-             zoomX
+        case id
+        case name
+        case x
+        case y
+        case zoomX
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -49,22 +49,22 @@ class SettingsGimbal: Codable, ObservableObject {
     @Published var presets: [SettingsGimbalPreset] = []
 
     enum CodingKeys: CodingKey {
-        case zoomSpeed,
-             naturalZoom,
-             tracking,
-             functionShutter,
-             shutterSceneId,
-             shutterWidgetId,
-             shutterGimbalPresetId,
-             shutterMotion,
-             shutterMacroId,
-             functionFlip,
-             flipSceneId,
-             flipWidgetId,
-             flipGimbalPresetId,
-             flipMotion,
-             flipMacroId,
-             presets
+        case zoomSpeed
+        case naturalZoom
+        case tracking
+        case functionShutter
+        case shutterSceneId
+        case shutterWidgetId
+        case shutterGimbalPresetId
+        case shutterMotion
+        case shutterMacroId
+        case functionFlip
+        case flipSceneId
+        case flipWidgetId
+        case flipGimbalPresetId
+        case flipMotion
+        case flipMacroId
+        case presets
     }
 
     func encode(to encoder: any Encoder) throws {

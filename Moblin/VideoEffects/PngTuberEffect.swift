@@ -42,15 +42,15 @@ private class PngTuberImage: Decodable {
     let zIndex: Int
 
     enum CodingKeys: CodingKey {
-        case costumeLayers,
-             identification,
-             imageData,
-             offset,
-             parentId,
-             pos,
-             showBlink,
-             showTalk,
-             zindex
+        case costumeLayers
+        case identification
+        case imageData
+        case offset
+        case parentId
+        case pos
+        case showBlink
+        case showTalk
+        case zindex
     }
 
     required init(from decoder: any Decoder) throws {

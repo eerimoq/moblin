@@ -6,13 +6,13 @@ class SettingsSelfieStick: Codable, ObservableObject {
     @Published var functionData: SettingsControllerFunctionData = .init()
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             function,
-             sceneId,
-             widgetId,
-             gimbalPresetId,
-             gimbalMotion,
-             macroId
+        case enabled
+        case function
+        case sceneId
+        case widgetId
+        case gimbalPresetId
+        case gimbalMotion
+        case macroId
     }
 
     func encode(to encoder: any Encoder) throws {

@@ -75,8 +75,8 @@ class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
     @Published var toColor: Color
 
     enum CodingKeys: CodingKey {
-        case from,
-             to
+        case from
+        case to
     }
 
     init() {
@@ -111,14 +111,14 @@ class SettingsVideoEffectShape: Codable, ObservableObject {
     var cropHeight: Double = 1.0
 
     enum CodingKeys: CodingKey {
-        case cornerRadius,
-             borderWidth,
-             borderColor,
-             cropEnabled,
-             cropX,
-             cropY,
-             cropWidth,
-             cropHeight
+        case cornerRadius
+        case borderWidth
+        case borderColor
+        case cropEnabled
+        case cropX
+        case cropY
+        case cropWidth
+        case cropHeight
     }
 
     init() {
@@ -175,9 +175,9 @@ class SettingsVideoEffectDewarp360: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case pan,
-             tilt,
-             zoom
+        case pan
+        case tilt
+        case zoom
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -284,15 +284,15 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var opacity: SettingsVideoEffectOpacity = .init()
 
     enum CodingKeys: CodingKey {
-        case id,
-             enabled,
-             type,
-             removeBackground,
-             shape,
-             dewarp360,
-             anamorphicLens,
-             lut,
-             opacity
+        case id
+        case enabled
+        case type
+        case removeBackground
+        case shape
+        case dewarp360
+        case anamorphicLens
+        case lut
+        case opacity
     }
 
     init() {}
@@ -508,9 +508,9 @@ class SettingsWidgetTextTimer: Codable, Identifiable, ObservableObject {
     @Published var endTime: Double = 0
 
     enum CodingKeys: CodingKey {
-        case id,
-             delta,
-             endTime
+        case id
+        case delta
+        case endTime
     }
 
     init() {}
@@ -561,9 +561,9 @@ class SettingsWidgetTextStopwatch: Codable, Identifiable, ObservableObject {
     @Published var running: Bool = false
 
     enum CodingKeys: CodingKey {
-        case id,
-             totalElapsed,
-             running
+        case id
+        case totalElapsed
+        case running
     }
 
     init() {}
@@ -654,32 +654,32 @@ class SettingsWidgetText: Codable, ObservableObject {
     @Published var cornerRadius: Int = defaultCornerRadius
 
     enum CodingKeys: CodingKey {
-        case formatString,
-             backgroundColor,
-             clearBackgroundColor,
-             foregroundColor,
-             clearForegroundColor,
-             fontSize,
-             fontDesign,
-             fontWeight,
-             fontMonospacedDigits,
-             alignment,
-             horizontalAlignment,
-             verticalAlignment,
-             delay,
-             timers,
-             stopwatches,
-             needsWeather,
-             needsGeography,
-             needsSubtitles,
-             subtitles,
-             checkboxes,
-             ratings,
-             lapTimes,
-             needsGForce,
-             widthEnabled,
-             width,
-             cornerRadius
+        case formatString
+        case backgroundColor
+        case clearBackgroundColor
+        case foregroundColor
+        case clearForegroundColor
+        case fontSize
+        case fontDesign
+        case fontWeight
+        case fontMonospacedDigits
+        case alignment
+        case horizontalAlignment
+        case verticalAlignment
+        case delay
+        case timers
+        case stopwatches
+        case needsWeather
+        case needsGeography
+        case needsSubtitles
+        case subtitles
+        case checkboxes
+        case ratings
+        case lapTimes
+        case needsGForce
+        case widthEnabled
+        case width
+        case cornerRadius
     }
 
     init() {
@@ -811,14 +811,14 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case url,
-             width,
-             height,
-             audioOnly,
-             mode,
-             fps,
-             styleSheet,
-             moblinAccess
+        case url
+        case width
+        case height
+        case audioOnly
+        case mode
+        case fps
+        case styleSheet
+        case moblinAccess
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -856,8 +856,8 @@ class SettingsWidgetMap: Codable {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case northUp,
-             delay
+        case northUp
+        case delay
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -951,23 +951,23 @@ class SettingsWidgetAlertsAlert: Codable, ObservableObject, @unchecked Sendable 
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             enabled,
-             mediaType,
-             imageId,
-             imageLoopCount,
-             soundId,
-             videoName,
-             textColor,
-             accentColor,
-             fontSize,
-             fontDesign,
-             fontWeight,
-             textToSpeechEnabled,
-             textToSpeechDelay,
-             textToSpeechLanguageVoices,
-             positionType,
-             facePosition
+        case id
+        case enabled
+        case mediaType
+        case imageId
+        case imageLoopCount
+        case soundId
+        case videoName
+        case textColor
+        case accentColor
+        case fontSize
+        case fontDesign
+        case fontWeight
+        case textToSpeechEnabled
+        case textToSpeechDelay
+        case textToSpeechLanguageVoices
+        case positionType
+        case facePosition
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1133,11 +1133,11 @@ class SettingsWidgetAlertsTwitch: Codable {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case follows,
-             subscriptions,
-             raids,
-             cheers,
-             cheerBits
+        case follows
+        case subscriptions
+        case raids
+        case cheers
+        case cheerBits
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1193,11 +1193,11 @@ class SettingsWidgetAlertsKick: Codable {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case subscriptions,
-             giftedSubscriptions,
-             hosts,
-             rewards,
-             kickGifts
+        case subscriptions
+        case giftedSubscriptions
+        case hosts
+        case rewards
+        case kickGifts
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1256,10 +1256,10 @@ class SettingsWidgetAlertsChatBotCommand: Codable, Identifiable, @unchecked Send
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             alert,
-             imageType
+        case id
+        case name
+        case alert
+        case imageType
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1410,14 +1410,14 @@ class SettingsWidgetAlerts: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case twitch,
-             kick,
-             chatBot,
-             speechToText,
-             needsSubtitles,
-             ai,
-             aiEnabled,
-             ttsMonster
+        case twitch
+        case kick
+        case chatBot
+        case speechToText
+        case needsSubtitles
+        case ai
+        case aiEnabled
+        case ttsMonster
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1514,25 +1514,25 @@ class SettingsWidgetVTuber: Codable, ObservableObject {
     @Published var armsAngle: Double = 72.0
 
     enum CodingKeys: CodingKey {
-        case id,
-             cameraPosition,
-             backCameraId,
-             frontCameraId,
-             rtmpCameraId,
-             srtlaCameraId,
-             ristCameraId,
-             rtspCameraId,
-             whipCameraId,
-             whepCameraId,
-             mediaPlayerCameraId,
-             externalCameraId,
-             externalCameraName,
-             cameraPositionY,
-             cameraFieldOfView,
-             modelName,
-             mirror,
-             sensitivity,
-             armsAngle
+        case id
+        case cameraPosition
+        case backCameraId
+        case frontCameraId
+        case rtmpCameraId
+        case srtlaCameraId
+        case ristCameraId
+        case rtspCameraId
+        case whipCameraId
+        case whepCameraId
+        case mediaPlayerCameraId
+        case externalCameraId
+        case externalCameraName
+        case cameraPositionY
+        case cameraFieldOfView
+        case modelName
+        case mirror
+        case sensitivity
+        case armsAngle
     }
 
     init() {}
@@ -1600,22 +1600,22 @@ class SettingsWidgetPngTuber: Codable, ObservableObject {
     @Published var sensitivity: SettingsSensitivity = .init()
 
     enum CodingKeys: CodingKey {
-        case id,
-             cameraPosition,
-             backCameraId,
-             frontCameraId,
-             rtmpCameraId,
-             srtlaCameraId,
-             ristCameraId,
-             rtspCameraId,
-             whipCameraId,
-             whepCameraId,
-             mediaPlayerCameraId,
-             externalCameraId,
-             externalCameraName,
-             modelName,
-             mirror,
-             sensitivity
+        case id
+        case cameraPosition
+        case backCameraId
+        case frontCameraId
+        case rtmpCameraId
+        case srtlaCameraId
+        case ristCameraId
+        case rtspCameraId
+        case whipCameraId
+        case whepCameraId
+        case mediaPlayerCameraId
+        case externalCameraId
+        case externalCameraName
+        case modelName
+        case mirror
+        case sensitivity
     }
 
     init() {}
@@ -1674,8 +1674,8 @@ class SettingsWidgetSnapshot: Codable, ObservableObject {
     @Published var showtime: Int = 5
 
     enum CodingKeys: CodingKey {
-        case id,
-             showtime
+        case id
+        case showtime
     }
 
     init() {}
@@ -1715,20 +1715,20 @@ class SettingsWidgetChat: Codable, ObservableObject {
     @Published var height: Float = 1
 
     enum CodingKeys: CodingKey {
-        case id,
-             fontSize,
-             usernameColor,
-             messageColor,
-             backgroundColor,
-             backgroundColorEnabled,
-             shadowColor,
-             shadowColorEnabled,
-             boldUsername,
-             boldMessage,
-             badges,
-             displayStyle,
-             sharedChatIcons,
-             height
+        case id
+        case fontSize
+        case usernameColor
+        case messageColor
+        case backgroundColor
+        case backgroundColorEnabled
+        case shadowColor
+        case shadowColorEnabled
+        case boldUsername
+        case boldMessage
+        case badges
+        case displayStyle
+        case sharedChatIcons
+        case height
     }
 
     init() {}
@@ -1800,9 +1800,9 @@ class SettingsWidgetSlideshowSlide: Codable, ObservableObject, Identifiable {
     @Published var time: Int = 15
 
     enum CodingKeys: CodingKey {
-        case id,
-             widgetId,
-             time
+        case id
+        case widgetId
+        case time
     }
 
     init() {}
@@ -1827,8 +1827,8 @@ class SettingsWidgetSlideshow: Codable, ObservableObject {
     @Published var slides: [SettingsWidgetSlideshowSlide] = []
 
     enum CodingKeys: CodingKey {
-        case id,
-             slides
+        case id
+        case slides
     }
 
     init() {}
@@ -1856,9 +1856,9 @@ class SettingsWidgetWheelOfLuckOption: Codable, ObservableObject, Identifiable, 
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             text,
-             weight
+        case id
+        case text
+        case weight
     }
 
     init() {}
@@ -1885,8 +1885,8 @@ class SettingsWidgetWheelOfLuck: Codable, ObservableObject {
     @Published var text: String = ""
 
     enum CodingKeys: CodingKey {
-        case advanced,
-             options
+        case advanced
+        case options
     }
 
     init() {}
@@ -1953,9 +1953,9 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
     @Published var squaresText: String = ""
 
     enum CodingKeys: CodingKey {
-        case backgroundColor,
-             foregroundColor,
-             squares
+        case backgroundColor
+        case foregroundColor
+        case squares
     }
 
     init() {}
@@ -2041,27 +2041,27 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
     }
 
     enum CodingKeys: CodingKey {
-        case name,
-             id,
-             type,
-             text,
-             browser,
-             crop,
-             map,
-             scene,
-             qrCode,
-             alerts,
-             videoSource,
-             scoreboard,
-             vTuber,
-             pngTuber,
-             snapshot,
-             chat,
-             slideshow,
-             wheelOfLuck,
-             bingoCard,
-             enabled,
-             effects
+        case name
+        case id
+        case type
+        case text
+        case browser
+        case crop
+        case map
+        case scene
+        case qrCode
+        case alerts
+        case videoSource
+        case scoreboard
+        case vTuber
+        case pngTuber
+        case snapshot
+        case chat
+        case slideshow
+        case wheelOfLuck
+        case bingoCard
+        case enabled
+        case effects
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -2261,17 +2261,17 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
     }
 
     enum CodingKeys: CodingKey {
-        case widgetId,
-             id,
-             x,
-             y,
-             width,
-             height,
-             size,
-             alignment,
-             positioningLock,
-             migrated,
-             migrated2
+        case widgetId
+        case id
+        case x
+        case y
+        case width
+        case height
+        case size
+        case alignment
+        case positioningLock
+        case migrated
+        case migrated2
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -2519,30 +2519,30 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     @Published var borderColorColor: Color = .clear
 
     enum CodingKeys: CodingKey {
-        case cornerRadius,
-             cameraPosition,
-             backCameraId,
-             frontCameraId,
-             rtmpCameraId,
-             srtlaCameraId,
-             ristCameraId,
-             rtspCameraId,
-             whipCameraId,
-             whepCameraId,
-             mediaPlayerCameraId,
-             externalCameraId,
-             externalCameraName,
-             cropEnabled,
-             cropX,
-             cropY,
-             cropWidth,
-             cropHeight,
-             rotation,
-             trackFaceEnabled,
-             trackFaceZoom,
-             mirror,
-             borderWidth,
-             borderColor
+        case cornerRadius
+        case cameraPosition
+        case backCameraId
+        case frontCameraId
+        case rtmpCameraId
+        case srtlaCameraId
+        case ristCameraId
+        case rtspCameraId
+        case whipCameraId
+        case whepCameraId
+        case mediaPlayerCameraId
+        case externalCameraId
+        case externalCameraName
+        case cropEnabled
+        case cropX
+        case cropY
+        case cropWidth
+        case cropHeight
+        case rotation
+        case trackFaceEnabled
+        case trackFaceZoom
+        case mirror
+        case borderWidth
+        case borderColor
     }
 
     init() {
@@ -2689,8 +2689,8 @@ class SettingsWidgetScoreboardPlayer: Codable, Identifiable, ObservableObject, N
     @Published var name: String = baseName
 
     enum CodingKeys: CodingKey {
-        case id,
-             name
+        case id
+        case name
     }
 
     init() {}
@@ -2742,12 +2742,12 @@ class SettingsWidgetPadelScoreboard: Codable, ObservableObject {
     var scoreChanges: [SettingsWidgetScoreboardScoreIncrement] = []
 
     enum CodingKeys: CodingKey {
-        case type,
-             homePlayer1,
-             homePlayer2,
-             awayPlayer1,
-             awayPlayer2,
-             score
+        case type
+        case homePlayer1
+        case homePlayer2
+        case awayPlayer1
+        case awayPlayer2
+        case score
     }
 
     init() {}
@@ -2780,9 +2780,9 @@ class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObjec
     var scores: [Int] = defaultScores
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             scores
+        case id
+        case name
+        case scores
     }
 
     init(name: String = "Player") {
@@ -2844,11 +2844,11 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
     @Published var players: [SettingsWidgetGolfScoreboardPlayer] = defaultPlayers
 
     enum CodingKeys: CodingKey {
-        case eventName,
-             numberOfHoles,
-             currentHole,
-             pars,
-             players
+        case eventName
+        case numberOfHoles
+        case currentHole
+        case pars
+        case players
     }
 
     init() {}
@@ -2905,11 +2905,11 @@ class SettingsWidgetGenericScoreboard: Codable, ObservableObject {
     var scoreChanges: [SettingsWidgetScoreboardScoreIncrement] = []
 
     enum CodingKeys: CodingKey {
-        case home,
-             away,
-             title,
-             period,
-             clock
+        case home
+        case away
+        case title
+        case period
+        case clock
     }
 
     init() {}
@@ -2941,9 +2941,9 @@ class SettingsWidgetModularScoreboardTeam: Codable, ObservableObject {
     @Published var backgroundColorColor: Color = .clear
 
     enum CodingKeys: CodingKey {
-        case name,
-             textColor,
-             backgroundColor
+        case name
+        case textColor
+        case backgroundColor
     }
 
     init(name: String, textColor: RgbColor, backgroundColor: RgbColor) {
@@ -2992,8 +2992,8 @@ class SettingsWidgetScoreboardClock: Codable, ObservableObject {
     @Published var isStopped: Bool = true
 
     enum CodingKeys: CodingKey {
-        case maximum,
-             direction
+        case maximum
+        case direction
     }
 
     init() {
@@ -3083,21 +3083,21 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     @Published var showClock: Bool = true
 
     enum CodingKeys: CodingKey {
-        case home,
-             away,
-             title,
-             period,
-             infoBoxText,
-             clock,
-             layout,
-             width,
-             rowHeight,
-             isBold,
-             showTitle,
-             stacked,
-             showMoreStats,
-             showGlobalStatsBlock,
-             showClock
+        case home
+        case away
+        case title
+        case period
+        case infoBoxText
+        case clock
+        case layout
+        case width
+        case rowHeight
+        case isBold
+        case showTitle
+        case stacked
+        case showMoreStats
+        case showGlobalStatsBlock
+        case showClock
     }
 
     init() {}
@@ -3186,14 +3186,14 @@ class SettingsWidgetScoreboard: Codable, ObservableObject, @unchecked Sendable {
     var modular: SettingsWidgetModularScoreboard = .init()
 
     enum CodingKeys: CodingKey {
-        case type,
-             textColor,
-             primaryBackgroundColor,
-             secondaryBackgroundColor,
-             padel,
-             golf,
-             generic,
-             modular
+        case type
+        case textColor
+        case primaryBackgroundColor
+        case secondaryBackgroundColor
+        case padel
+        case golf
+        case generic
+        case modular
     }
 
     init() {
@@ -3443,30 +3443,30 @@ class SettingsScene: Codable, Identifiable, Equatable, ObservableObject, Named {
     }
 
     enum CodingKeys: CodingKey {
-        case name,
-             id,
-             enabled,
-             cameraType,
-             cameraPosition,
-             backCameraId,
-             frontCameraId,
-             rtmpCameraId,
-             srtlaCameraId,
-             ristCameraId,
-             rtspCameraId,
-             whipCameraId,
-             whepCameraId,
-             mediaPlayerCameraId,
-             externalCameraId,
-             externalCameraName,
-             widgets,
-             videoSourceRotation,
-             videoStabilizationMode,
-             overrideVideoStabilizationMode,
-             fillFrame,
-             overrideMic,
-             micId,
-             quickSwitchGroup
+        case name
+        case id
+        case enabled
+        case cameraType
+        case cameraPosition
+        case backCameraId
+        case frontCameraId
+        case rtmpCameraId
+        case srtlaCameraId
+        case ristCameraId
+        case rtspCameraId
+        case whipCameraId
+        case whepCameraId
+        case mediaPlayerCameraId
+        case externalCameraId
+        case externalCameraName
+        case widgets
+        case videoSourceRotation
+        case videoStabilizationMode
+        case overrideVideoStabilizationMode
+        case fillFrame
+        case overrideMic
+        case micId
+        case quickSwitchGroup
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -3563,9 +3563,9 @@ class SettingsAutoSceneSwitcherScene: Codable, Identifiable, ObservableObject {
     @Published var time: Int = 15
 
     enum CodingKeys: CodingKey {
-        case id,
-             sceneId,
-             time
+        case id
+        case sceneId
+        case time
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -3593,10 +3593,10 @@ class SettingsAutoSceneSwitcher: Codable, Identifiable, ObservableObject, Named 
     @Published var scenes: [SettingsAutoSceneSwitcherScene] = []
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             shuffle,
-             scenes
+        case id
+        case name
+        case shuffle
+        case scenes
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -3623,7 +3623,8 @@ class SettingsAutoSceneSwitchers: Codable, Identifiable, ObservableObject {
     @Published var switchers: [SettingsAutoSceneSwitcher] = []
 
     enum CodingKeys: CodingKey {
-        case switcherId, switchers
+        case switcherId
+        case switchers
     }
 
     func encode(to encoder: any Encoder) throws {

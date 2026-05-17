@@ -96,10 +96,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
     }
 
     enum CodingKeys: CodingKey {
-        case name,
-             inputUid,
-             dataSourceID,
-             builtInOrientation
+        case name
+        case inputUid
+        case dataSourceID
+        case builtInOrientation
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -127,9 +127,9 @@ class SettingsMics: Codable, ObservableObject {
     var defaultMic: String = ""
 
     enum CodingKeys: CodingKey {
-        case all,
-             autoSwitch,
-             defaultMic
+        case all
+        case autoSwitch
+        case defaultMic
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -161,8 +161,8 @@ class SettingsAudio: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case audioOutputToInputChannelsMap,
-             gainDb
+        case audioOutputToInputChannelsMap
+        case gainDb
     }
 
     func encode(to encoder: any Encoder) throws {

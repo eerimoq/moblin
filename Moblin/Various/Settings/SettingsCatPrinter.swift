@@ -16,16 +16,16 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId,
-             printChat,
-             faxMeowSound,
-             printSnapshots,
-             printTwitch,
-             printKick
+        case id
+        case name
+        case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
+        case printChat
+        case faxMeowSound
+        case printSnapshots
+        case printTwitch
+        case printKick
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -64,8 +64,8 @@ class SettingsCatPrinters: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case devices,
-             backgroundPrinting
+        case devices
+        case backgroundPrinting
     }
 
     func encode(to encoder: any Encoder) throws {
