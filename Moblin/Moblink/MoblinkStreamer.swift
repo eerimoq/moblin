@@ -69,7 +69,7 @@ private class Relay {
             }
         } catch {
             logger.info("moblink-streamer: \(name): Failed to process message with error \(error)")
-            webSocket.connection.cancel()
+            webSocket.cancel()
         }
     }
 
