@@ -90,7 +90,7 @@ struct WidgetPomodoroTimerSettingsView: View {
             }
             Picker("Width scale factor", selection: $pomodoroTimer.widthScaleFactor) {
                 ForEach([1.0, 2.0, 3.0, 4.0, 5.0], id: \.self) {
-                    Text("\(Int($0))x")
+                    Text("\(Int($0))x").tag($0)
                 }
             }
             .onChange(of: pomodoroTimer.widthScaleFactor) { _ in
