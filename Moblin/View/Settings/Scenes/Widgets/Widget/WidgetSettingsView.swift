@@ -261,7 +261,7 @@ struct WidgetSettingsView: View {
             case .crop:
                 WidgetCropSettingsView(widget: widget)
             case .map:
-                WidgetMapSettingsView(widget: widget, delay: widget.map.delay)
+                WidgetMapSettingsView(widget: widget, delay: widget.map.delay, size: widget.map.size)
             case .scene:
                 WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene.sceneId)
             case .slideshow:

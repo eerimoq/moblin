@@ -119,7 +119,7 @@ final class MapEffect: VideoEffect, @unchecked Sendable {
             camera.heading = newLocation.course
         }
         camera.centerCoordinate = newLocation.coordinate
-        camera.centerCoordinateDistance = 1000
+        camera.centerCoordinateDistance = widget.size
         var dotOffsetRatio = 0.0
         if newLocation.speed > 4, zoomOutFactor == nil {
             camera.centerCoordinateDistance += 150 * (newLocation.speed - 4)
