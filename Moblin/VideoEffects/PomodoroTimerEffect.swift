@@ -45,15 +45,9 @@ private struct PomodoroTimerView: View {
     private func phaseIcon() -> String {
         switch settings.phase {
         case .focus:
-            // "sun.max"
-            // "bolt.circle"
-            // "pencil.and.scribble"
-            "text.book.closed"
-            // "arrowtriangle.right.circle"
+            settings.focusIcon.rawValue
         case .shortBreak:
-            // "cup.and.saucer"
-            // "figure.play"
-            "moon.zzz"
+            settings.breakIcon.rawValue
         }
     }
 

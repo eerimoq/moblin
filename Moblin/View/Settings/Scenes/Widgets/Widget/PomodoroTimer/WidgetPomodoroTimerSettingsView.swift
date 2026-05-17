@@ -86,6 +86,48 @@ struct WidgetPomodoroTimerSettingsView: View {
             Text("Controls")
         }
         Section {
+            HStack {
+                Text("Focus icon")
+                Spacer()
+                Picker("", selection: Binding(
+                    get: { pomodoroTimer.focusIcon },
+                    set: { value in
+                        pomodoroTimer.focusIcon = value
+                        updateEffect()
+                    }
+                )) {
+                    ForEach(PomodoroFocusIcon.allCases, id: \.self) { icon in
+                        HStack {
+                            Image(systemName: icon.rawValue)
+                            Text(icon.toString())
+                        }
+                        .tag(icon)
+                    }
+                }
+            }
+            HStack {
+                Text("Break icon")
+                Spacer()
+                Picker("", selection: Binding(
+                    get: { pomodoroTimer.breakIcon },
+                    set: { value in
+                        pomodoroTimer.breakIcon = value
+                        updateEffect()
+                    }
+                )) {
+                    ForEach(PomodoroBreakIcon.allCases, id: \.self) { icon in
+                        HStack {
+                            Image(systemName: icon.rawValue)
+                            Text(icon.toString())
+                        }
+                        .tag(icon)
+                    }
+                }
+            }
+        } header: {
+            Text("Icons")
+        }
+        Section {
             ColorPicker("Background", selection: $pomodoroTimer.backgroundColorColor, supportsOpacity: true)
                 .onChange(of: pomodoroTimer.backgroundColorColor) { _ in
                     guard let color = pomodoroTimer.backgroundColorColor.toRgb() else {

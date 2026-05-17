@@ -2013,6 +2013,46 @@ enum PomodoroPhase: String, Codable {
     case shortBreak = "Break"
 }
 
+enum PomodoroFocusIcon: String, Codable, CaseIterable {
+    case textBookClosed = "text.book.closed"
+    case sunMax = "sun.max"
+    case boltCircle = "bolt.circle"
+    case pencilAndScribble = "pencil.and.scribble"
+    case arrowtriangleRightCircle = "arrowtriangle.right.circle"
+
+    func toString() -> String {
+        switch self {
+        case .textBookClosed:
+            String(localized: "Book")
+        case .sunMax:
+            String(localized: "Sun")
+        case .boltCircle:
+            String(localized: "Bolt")
+        case .pencilAndScribble:
+            String(localized: "Pencil")
+        case .arrowtriangleRightCircle:
+            String(localized: "Play")
+        }
+    }
+}
+
+enum PomodoroBreakIcon: String, Codable, CaseIterable {
+    case moonZzz = "moon.zzz"
+    case cupAndSaucer = "cup.and.saucer"
+    case figurePlay = "figure.play"
+
+    func toString() -> String {
+        switch self {
+        case .moonZzz:
+            String(localized: "Moon")
+        case .cupAndSaucer:
+            String(localized: "Cup")
+        case .figurePlay:
+            String(localized: "Figure")
+        }
+    }
+}
+
 class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     nonisolated(unsafe) static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
     nonisolated(unsafe) static let baseForegroundColor = RgbColor.white
@@ -2020,6 +2060,8 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     nonisolated(unsafe) static let baseBreakColor = RgbColor(red: 50, green: 160, blue: 80)
     var workDuration: Int = 25
     var breakDuration: Int = 5
+    var focusIcon: PomodoroFocusIcon = .textBookClosed
+    var breakIcon: PomodoroBreakIcon = .moonZzz
     var backgroundColor: RgbColor = baseBackgroundColor
     @Published var backgroundColorColor: Color = baseBackgroundColor.color()
     var foregroundColor: RgbColor = baseForegroundColor
@@ -2036,6 +2078,8 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     enum CodingKeys: CodingKey {
         case workDuration,
              breakDuration,
+             focusIcon,
+             breakIcon,
              backgroundColor,
              foregroundColor,
              focusColor,
@@ -2048,6 +2092,8 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.workDuration, workDuration)
         try container.encode(.breakDuration, breakDuration)
+        try container.encode(.focusIcon, focusIcon)
+        try container.encode(.breakIcon, breakIcon)
         try container.encode(.backgroundColor, backgroundColor)
         try container.encode(.foregroundColor, foregroundColor)
         try container.encode(.focusColor, focusColor)
@@ -2058,6 +2104,8 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         workDuration = container.decode(.workDuration, Int.self, 25)
         breakDuration = container.decode(.breakDuration, Int.self, 5)
+        focusIcon = container.decode(.focusIcon, PomodoroFocusIcon.self, .textBookClosed)
+        breakIcon = container.decode(.breakIcon, PomodoroBreakIcon.self, .moonZzz)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.baseBackgroundColor)
         backgroundColorColor = backgroundColor.color()
         foregroundColor = container.decode(.foregroundColor, RgbColor.self, Self.baseForegroundColor)
