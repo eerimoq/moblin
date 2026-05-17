@@ -21,6 +21,7 @@ class RtmpServerChunkStream: @unchecked Sendable {
     private var audioDecoder: AVAudioConverter?
     private var pcmAudioFormat: AVAudioFormat?
     private var pcmAudioBuffer: AVAudioPCMBuffer?
+    private var mpgaDecoder: MiniMp3Decoder?
 
     init(client: RtmpServerClient, streamId: UInt16) {
         self.client = client
@@ -305,24 +306,27 @@ class RtmpServerChunkStream: @unchecked Sendable {
             client.stopInternal(reason: "Failed to parse audio settings \(control)")
             return
         }
-        guard codec == .aac else {
-            client.stopInternal(reason: "Unsupported audio codec \(codec). Only AAC is supported.")
-            return
-        }
-        guard FlvSoundRate(rawValue: (control & 0x0C) >> 2) != nil,
-              FlvSoundSize(rawValue: (control & 0x02) >> 1) != nil,
-              FlvSoundType(rawValue: control & 0x01) != nil
-        else {
-            client.stopInternal(reason: "Failed to parse audio settings \(control)")
-            return
-        }
-        switch FlvAacPacketType(rawValue: messageBody[1]) {
-        case .seq:
-            processMessageAudioTypeSeq(client: client, codec: codec)
-        case .raw:
-            processMessageAudioTypeRaw(client: client, codec: codec)
+        switch codec {
+        case .aac:
+            guard FlvSoundRate(rawValue: (control & 0x0C) >> 2) != nil,
+                  FlvSoundSize(rawValue: (control & 0x02) >> 1) != nil,
+                  FlvSoundType(rawValue: control & 0x01) != nil
+            else {
+                client.stopInternal(reason: "Failed to parse audio settings \(control)")
+                return
+            }
+            switch FlvAacPacketType(rawValue: messageBody[1]) {
+            case .seq:
+                processMessageAudioTypeSeq(client: client, codec: codec)
+            case .raw:
+                processMessageAudioTypeRaw(client: client, codec: codec)
+            default:
+                break
+            }
+        case .mp3, .mp3_8k:
+            processMessageAudioTypeMp3(client: client, codec: codec)
         default:
-            break
+            logger.info("rtmp-server: client: Unsupported audio codec \(codec)")
         }
     }
 
@@ -363,7 +367,7 @@ class RtmpServerChunkStream: @unchecked Sendable {
         }
         audioDecoder = AVAudioConverter(from: audioFormat, to: pcmAudioFormat)
         if audioDecoder == nil {
-            logger.info("rtmp-server: client: Failed to create audio decdoer")
+            logger.info("rtmp-server: client: Failed to create audio decoder")
         }
     }
 
@@ -411,6 +415,44 @@ class RtmpServerChunkStream: @unchecked Sendable {
             .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
         client.updateTargetLatencies()
         client.handleAudioBuffer(sampleBuffer: sampleBuffer)
+    }
+
+    private func processMessageAudioTypeMp3(client: RtmpServerClient, codec: FlvAudioCodec) {
+        if mpgaDecoder == nil {
+            mpgaDecoder = MiniMp3Decoder()
+        }
+        guard let decoder = mpgaDecoder else {
+            return
+        }
+        let payload = messageBody[codec.headerSize...]
+        guard !payload.isEmpty else {
+            return
+        }
+        let pcmBuffers = decoder.decodeAll(Data(payload))
+        guard !pcmBuffers.isEmpty else {
+            logger.info("rtmp-server: client: MP3 decode returned no frames")
+            return
+        }
+        let samplesPerFrame = Double(pcmBuffers[0].frameLength)
+        let sampleRate = decoder.outputFormat?.sampleRate ?? 48000
+        // The RTMP message timestamp is for the first frame in the payload.
+        let baseTimestamp = mediaTimestamp
+        for (index, pcmBuf) in pcmBuffers.enumerated() {
+            let offsetMs = Double(index) * samplesPerFrame / sampleRate * 1000
+            let framePts = baseTimestamp + offsetMs
+            let audioTimestamp = framePts - mediaTimestampZero
+            let presentationTimeStamp = CMTimeMake(
+                value: Int64(audioTimestamp + getBasePresentationTimeStamp(client)) + Int64(client.latency),
+                timescale: 1000
+            )
+            guard let sampleBuffer = pcmBuf.makeSampleBuffer(presentationTimeStamp) else {
+                continue
+            }
+            client.targetLatenciesSynchronizer
+                .setLatestAudioPresentationTimeStamp(sampleBuffer.presentationTimeStamp.seconds)
+            client.updateTargetLatencies()
+            client.handleAudioBuffer(sampleBuffer: sampleBuffer)
+        }
     }
 
     private func processMessageVideo() {
