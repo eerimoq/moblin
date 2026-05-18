@@ -20,11 +20,12 @@ class EasyLogger {
         log(messsge)
     }
 
-    private func log(_ messsge: String) {
+    private func log(_ message: String) {
+        let message = "\(makeTimestamp()) \(message)"
         #if DEBUG
-        print(messsge)
+        print(message)
         #endif
-        handler?("\(makeTimestamp()) \(messsge)")
+        handler?(message)
     }
 }
 
