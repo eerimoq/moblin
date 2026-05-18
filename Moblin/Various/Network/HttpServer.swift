@@ -236,13 +236,9 @@ private class HttpServerConnection: @unchecked Sendable {
         if !content.isEmpty {
             lines.append("Content-Type: \(contentType ?? request.getContentType())")
         }
-        for header in extraHeaders {
-            lines.append("\(header.name): \(header.value)")
-        }
-        lines.append("Connection: close")
-        lines.append("")
-        lines.append("")
-        sendAndClose(data: lines.joined(separator: "\r\n").utf8Data + content)
+        appendExtraHeaders(headers: extraHeaders, lines: &lines)
+        let headerData = appendCloseHeaderAndFinalize(lines: &lines)
+        sendAndClose(data: headerData + content)
     }
 
     func sendFileAndClose(fileUrl: URL,
@@ -261,13 +257,8 @@ private class HttpServerConnection: @unchecked Sendable {
         lines.append("\(request.version) \(HttpServerStatus.ok.code()) \(HttpServerStatus.ok.text())")
         lines.append("Content-Type: \(contentType)")
         lines.append("Content-Length: \(fileSize)")
-        for header in extraHeaders {
-            lines.append("\(header.name): \(header.value)")
-        }
-        lines.append("Connection: close")
-        lines.append("")
-        lines.append("")
-        let headerData = lines.joined(separator: "\r\n").utf8Data
+        appendExtraHeaders(headers: extraHeaders, lines: &lines)
+        let headerData = appendCloseHeaderAndFinalize(lines: &lines)
         connection.send(content: headerData, completion: .contentProcessed { error in
             if error != nil {
                 self.closeFileAndConnection(fileHandle: fileHandle)
@@ -306,6 +297,19 @@ private class HttpServerConnection: @unchecked Sendable {
             self.connection.cancel()
         })
     }
+}
+
+private func appendExtraHeaders(headers: [SettingsHttpHeader], lines: inout [String]) {
+    for header in headers {
+        lines.append("\(header.name): \(header.value)")
+    }
+}
+
+private func appendCloseHeaderAndFinalize(lines: inout [String]) -> Data {
+    lines.append("Connection: close")
+    lines.append("")
+    lines.append("")
+    return lines.joined(separator: "\r\n").utf8Data
 }
 
 class HttpServerRoute {
