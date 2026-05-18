@@ -17,7 +17,8 @@ import { BasicLinks, ConfirmDialog, Title, ConnectingOverlay } from "./component
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
 const MAX_HOLES = DEFAULT_PARS_18.length;
-const HOLE_SCORES = [9, 8, 7, 6, 5, 4, 3, 2, 1];
+const HOLE_SCORES = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+const HOLE_PARS = [7, 6, 5, 4, 3, 2];
 
 function totalRelativeToPar(
   players: RemoteControlGolfPlayer[],
@@ -296,7 +297,7 @@ function App() {
                 class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
                 onChange={(event) => changeCurrentPar(parseInt(event.target.value))}
               >
-                <For each={HOLE_SCORES}>
+                <For each={HOLE_PARS}>
                   {(parValue) => <option value={String(parValue)}>{parValue}</option>}
                 </For>
               </select>
