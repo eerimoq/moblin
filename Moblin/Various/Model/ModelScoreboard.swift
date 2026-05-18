@@ -519,14 +519,15 @@ extension Model {
             .scoreboard.golf
             ?? SettingsWidgetGolfScoreboard()
         let players = golf.players.map {
-            RemoteControlGolfPlayer(name: $0.name, scores: $0.scores)
+            RemoteControlGolfPlayer(name: $0.name, scores: $0.scores, color: $0.color)
         }
         return RemoteControlGolfScoreboard(
             title: golf.title,
             numberOfHoles: golf.numberOfHoles,
             pars: golf.pars,
             currentHole: golf.currentHole,
-            players: players
+            players: players,
+            playerColors: golf.playerColors
         )
     }
 
@@ -541,13 +542,16 @@ extension Model {
         golf.numberOfHoles = remoteScorecard.numberOfHoles
         golf.currentHole = remoteScorecard.currentHole
         golf.setPars(remoteScorecard.pars)
+        golf.playerColors = remoteScorecard.playerColors
         for (index, remotePlayer) in remoteScorecard.players.enumerated() {
             if index < golf.players.count {
                 golf.players[index].name = remotePlayer.name
                 golf.players[index].scores = remotePlayer.scores
+                golf.players[index].color = remotePlayer.color
             } else {
                 let player = SettingsWidgetGolfScoreboardPlayer(name: remotePlayer.name)
                 player.scores = remotePlayer.scores
+                player.color = remotePlayer.color
                 golf.players.append(player)
             }
         }

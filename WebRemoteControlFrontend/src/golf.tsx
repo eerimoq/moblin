@@ -11,8 +11,10 @@ import {
   EventData,
   RemoteControlGolfScoreboard,
   RemoteControlGolfPlayer,
+  rgbColorToHex,
+  hexToRgbColor,
 } from "./utils.ts";
-import { BasicLinks, ConfirmDialog, Title, ConnectingOverlay } from "./components.tsx";
+import { BasicLinks, ConfirmDialog, Title, ConnectingOverlay, Toggle } from "./components.tsx";
 
 const DEFAULT_PARS_18 = [4, 4, 3, 4, 5, 4, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 4, 5];
 const DEFAULT_PARS_9 = [4, 4, 3, 4, 5, 4, 3, 4, 4];
@@ -87,6 +89,7 @@ function App() {
     pars: [...DEFAULT_PARS_18],
     currentHole: 0,
     players: [],
+    playerColors: false,
   });
 
   const [status, setStatus] = createSignal<string>(connectionStatus.connecting);
@@ -128,7 +131,12 @@ function App() {
       numberOfHoles: state.numberOfHoles,
       pars: state.pars,
       currentHole: state.currentHole,
-      players: state.players.map((player) => ({ name: player.name, scores: player.scores })),
+      players: state.players.map((player) => ({
+        name: player.name,
+        scores: player.scores,
+        color: player.color,
+      })),
+      playerColors: state.playerColors,
     });
   }
 
@@ -138,7 +146,12 @@ function App() {
   }
 
   function setPlayerName(playerIndex: number, name: string): void {
-    setState("players", playerIndex, "name", name || `Player ${playerIndex + 1}`);
+    setState("players", playerIndex, "name", name || "Name");
+    sendUpdate();
+  }
+
+  function setPlayerColor(playerIndex: number, hex: string): void {
+    setState("players", playerIndex, "color", hexToRgbColor(hex));
     sendUpdate();
   }
 
@@ -152,7 +165,11 @@ function App() {
     const playerNumber = state.players.length + 1;
     setState("players", (players) => [
       ...players,
-      { name: `Player ${playerNumber}`, scores: Array(MAX_HOLES).fill(-1) as number[] },
+      {
+        name: `Player ${playerNumber}`,
+        scores: Array(MAX_HOLES).fill(-1) as number[],
+        color: hexToRgbColor("#ffffff"),
+      },
     ]);
     sendUpdate();
   }
@@ -222,7 +239,15 @@ function App() {
     return (
       <div class="card">
         <div class="flex items-center justify-between mb-2">
-          <div class="text-xs text-zinc-500"></div>
+          <Toggle
+            id="colors"
+            checked={state.playerColors}
+            onChange={(event) => {
+              setState("playerColors", event.target.checked);
+              sendUpdate();
+            }}
+            label="Player colors"
+          />
           <div class="flex gap-1">
             <button
               class="btn-xs border-zinc-700 text-zinc-400"
@@ -244,7 +269,14 @@ function App() {
           <For each={state.players}>
             {(player, playerIndex) => (
               <div class="flex items-center gap-2">
-                <span class="text-xs text-zinc-500 w-16 shrink-0">Player {playerIndex() + 1}</span>
+                {state.playerColors && (
+                  <input
+                    type="color"
+                    value={rgbColorToHex(player.color)}
+                    class="h-7 w-8 cursor-pointer rounded border border-zinc-700 bg-zinc-800 p-0.5"
+                    onChange={(event) => setPlayerColor(playerIndex(), event.target.value)}
+                  />
+                )}
                 <input
                   type="text"
                   class="flex-1 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"

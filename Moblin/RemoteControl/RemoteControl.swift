@@ -893,6 +893,7 @@ struct RemoteControlScoreboardMatchConfig: Codable {
 struct RemoteControlGolfPlayer: Codable {
     var name: String
     var scores: [Int]
+    var color: RgbColor
 }
 
 struct RemoteControlGolfScoreboard: Codable {
@@ -901,6 +902,40 @@ struct RemoteControlGolfScoreboard: Codable {
     var pars: [Int]
     var currentHole: Int
     var players: [RemoteControlGolfPlayer]
+    var playerColors: Bool
+
+    enum CodingKeys: CodingKey {
+        case title
+        case numberOfHoles
+        case pars
+        case currentHole
+        case players
+        case playerColors
+    }
+
+    init(title: String,
+         numberOfHoles: Int,
+         pars: [Int], currentHole: Int,
+         players: [RemoteControlGolfPlayer],
+         playerColors: Bool)
+    {
+        self.title = title
+        self.numberOfHoles = numberOfHoles
+        self.pars = pars
+        self.currentHole = currentHole
+        self.players = players
+        self.playerColors = playerColors
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        title = try container.decode(String.self, forKey: .title)
+        numberOfHoles = try container.decode(Int.self, forKey: .numberOfHoles)
+        pars = try container.decode([Int].self, forKey: .pars)
+        currentHole = try container.decode(Int.self, forKey: .currentHole)
+        players = try container.decode([RemoteControlGolfPlayer].self, forKey: .players)
+        playerColors = try container.decode(Bool.self, forKey: .playerColors)
+    }
 }
 
 struct RemoteControlAuthentication: Codable {

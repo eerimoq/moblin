@@ -4,12 +4,20 @@ private let playerHeight = 35.0
 
 private struct PlayerNameView: View {
     let player: SettingsWidgetGolfScoreboardPlayer
+    let playerColor: Bool
 
     var body: some View {
-        Text(player.name.uppercased())
-            .font(.system(size: 25))
-            .padding(.leading, 8)
-            .frame(height: playerHeight)
+        HStack(spacing: 6) {
+            if playerColor {
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(player.color.color())
+                    .frame(width: 18, height: 18)
+            }
+            Text(player.name.uppercased())
+                .font(.system(size: 25))
+        }
+        .frame(height: playerHeight)
+        .padding(.leading, 8)
     }
 }
 
@@ -84,7 +92,7 @@ struct ScoreboardEffectGolfView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(golf.players) {
-                        PlayerNameView(player: $0)
+                        PlayerNameView(player: $0, playerColor: golf.playerColors)
                     }
                 }
                 Spacer()

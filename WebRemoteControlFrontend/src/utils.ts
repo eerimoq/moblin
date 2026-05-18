@@ -16,9 +16,26 @@ interface ResponseResult {
   ok: boolean;
 }
 
+export interface RgbColor {
+  red: number;
+  green: number;
+  blue: number;
+  opacity?: number;
+}
+
+export function rgbColorToHex(color: RgbColor): string {
+  return `#${color.red.toString(16).padStart(2, "0")}${color.green.toString(16).padStart(2, "0")}${color.blue.toString(16).padStart(2, "0")}`;
+}
+
+export function hexToRgbColor(hex: string): RgbColor {
+  const n = parseInt(hex.slice(1), 16);
+  return { red: (n >> 16) & 0xff, green: (n >> 8) & 0xff, blue: n & 0xff };
+}
+
 export interface RemoteControlGolfPlayer {
   name: string;
   scores: number[];
+  color: RgbColor;
 }
 
 export interface RemoteControlGolfScoreboard {
@@ -27,6 +44,7 @@ export interface RemoteControlGolfScoreboard {
   pars: number[];
   currentHole: number;
   players: RemoteControlGolfPlayer[];
+  playerColors: boolean;
 }
 
 export interface RemoteControlScoreboardTeam {

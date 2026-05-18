@@ -2953,11 +2953,13 @@ class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObjec
     var id: UUID = .init()
     @Published var name: String = "Player"
     var scores: [Int] = defaultScores
+    var color: RgbColor = .white
 
     enum CodingKeys: CodingKey {
         case id
         case name
         case scores
+        case color
     }
 
     init(name: String = "Player") {
@@ -2969,6 +2971,7 @@ class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObjec
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.scores, scores)
+        try container.encode(.color, color)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -2976,6 +2979,7 @@ class SettingsWidgetGolfScoreboardPlayer: Codable, Identifiable, ObservableObjec
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "Player")
         scores = container.decode(.scores, [Int].self, Self.defaultScores)
+        color = container.decode(.color, RgbColor.self, .white)
     }
 
     func totalRelativeToPar(pars: [Int], numberOfHoles: Int) -> Int {
@@ -3017,6 +3021,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
     @Published var currentHole: Int = 0
     @Published var pars: [Int] = defaultPars
     @Published var players: [SettingsWidgetGolfScoreboardPlayer] = defaultPlayers
+    @Published var playerColors: Bool = false
 
     enum CodingKeys: CodingKey {
         case eventName
@@ -3024,6 +3029,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
         case currentHole
         case pars
         case players
+        case playerColors
     }
 
     init() {}
@@ -3035,6 +3041,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
         try container.encode(.currentHole, currentHole)
         try container.encode(.pars, pars)
         try container.encode(.players, players)
+        try container.encode(.playerColors, playerColors)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -3044,6 +3051,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
         currentHole = container.decode(.currentHole, Int.self, 0)
         setPars(container.decode(.pars, [Int].self, Self.defaultPars))
         players = container.decode(.players, [SettingsWidgetGolfScoreboardPlayer].self, Self.defaultPlayers)
+        playerColors = container.decode(.playerColors, Bool.self, false)
     }
 
     func setPars(_ pars: [Int]) {
