@@ -96,9 +96,6 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
         super.init()
-        DispatchQueue.main.async {
-            self.setup()
-        }
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
@@ -108,11 +105,13 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
         self.sceneWidget.layout = sceneWidget.layout
     }
 
+    @MainActor
     func setSettings(settings: SettingsWidgetPomodoroTimer) {
-        self.settings = settings
-        DispatchQueue.main.async {
-            self.setupRenderer()
+        guard settings !== self.settings else {
+            return
         }
+        self.settings = settings
+        setup()
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
@@ -124,11 +123,7 @@ final class PomodoroTimerEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func setup() {
-        setupRenderer()
-    }
-
-    @MainActor
-    private func setupRenderer() {
+        cancellable?.cancel()
         renderer = ImageRenderer(content: PomodoroTimerView(settings: settings,
                                                             sceneWidget: sceneWidget,
                                                             canvasSize: canvasSize))

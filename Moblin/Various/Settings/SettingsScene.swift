@@ -1982,12 +1982,6 @@ class SettingsWidgetBingoCard: Codable, ObservableObject {
         squaresText = squares.map(\.text).joined(separator: "\n")
     }
 
-    func update(other: SettingsWidgetBingoCard) {
-        backgroundColorColor = other.backgroundColorColor
-        foregroundColorColor = other.foregroundColorColor
-        squares = other.squares
-    }
-
     func squaresTextChanged() {
         let lines = squaresText.split(separator: "\n", omittingEmptySubsequences: false)
         squares.truncate(length: lines.count, create: { .init(text: "", checked: false) })

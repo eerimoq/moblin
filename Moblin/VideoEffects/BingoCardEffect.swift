@@ -63,9 +63,6 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
         super.init()
-        DispatchQueue.main.async {
-            self.setup()
-        }
     }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
@@ -75,8 +72,13 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
         self.sceneWidget.layout = sceneWidget.layout
     }
 
+    @MainActor
     func setSettings(settings: SettingsWidgetBingoCard) {
-        self.settings.update(other: settings)
+        guard settings !== self.settings else {
+            return
+        }
+        self.settings = settings
+        setup()
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
@@ -88,6 +90,7 @@ final class BingoCardEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     private func setup() {
+        cancellable?.cancel()
         renderer = ImageRenderer(content: BingoView(settings: settings,
                                                     sceneWidget: sceneWidget,
                                                     canvasSize: canvasSize))
