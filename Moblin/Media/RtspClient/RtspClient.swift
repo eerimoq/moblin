@@ -496,6 +496,12 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
     }
 
     private func decodeFrame() {
+        guard data.count > 4 else {
+            return
+        }
+        guard HevcNalUnit(data: data, offset: 4)?.header.type != nil else {
+            return
+        }
         tryDecodeFrame()
     }
 }
