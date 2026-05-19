@@ -563,6 +563,9 @@ class SrtSender: @unchecked Sendable {
                 packetsInFlightBySequenceNumber.removeValue(forKey: packetsInFlight[index].sequenceNumber)
             }
             packetsInFlight.removeFirst(lastAcknowledgedPacketIndex)
+        } else {
+            packetsInFlightBySequenceNumber.removeAll(keepingCapacity: true)
+            packetsInFlight.removeAll(keepingCapacity: true)
         }
     }
 
