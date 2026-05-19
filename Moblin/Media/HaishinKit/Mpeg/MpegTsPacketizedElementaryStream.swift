@@ -193,10 +193,11 @@ struct MpegTsPacketizedElementaryStream {
             adaptationField.programClockReference = TSProgramClockReference.encode(programClockReference, 0)
         }
         packet.adaptationField = adaptationField
-        payloadOffset = min(packet.maximumPayloadSize(), payload.count)
+        let maximumPayloadSize = packet.maximumPayloadSize()
+        payloadOffset = min(maximumPayloadSize, payload.count)
         packet.payload = payload[0 ..< payloadOffset]
-        if payloadOffset > payload.count {
-            packet.setAdaptionFieldStuffing(size: payloadOffset - payload.count)
+        if payloadOffset < maximumPayloadSize {
+            packet.setAdaptionFieldStuffing(size: maximumPayloadSize - payloadOffset)
         }
         packets.append(packet)
     }
