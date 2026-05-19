@@ -88,6 +88,9 @@ class RtspTransportRtpRtspTcp: RtspTransport, @unchecked Sendable {
         }
         rtpChannel = UInt8(match.output.1)
         rtcpChannel = UInt8(match.output.2)
+        guard rtpChannel != nil, rtcpChannel != nil else {
+            throw "Invalid interleaving channels in \(value)."
+        }
     }
 
     private func receiveMessage() {
@@ -234,10 +237,11 @@ class RtspTransportRtpUdp: RtspTransport, @unchecked Sendable {
         guard let match = value.firstMatch(of: /server_port=(\d+)-(\d+)/) else {
             throw "Missing server_port in UDP transport response: \(value)"
         }
-        guard let rtcpPortValue = UInt16(match.output.2),
+        guard UInt16(match.output.1) != nil,
+              let rtcpPortValue = UInt16(match.output.2),
               let nwPort = NWEndpoint.Port(rawValue: rtcpPortValue)
         else {
-            throw "Invalid RTCP server port in: \(value)"
+            throw "Invalid RTP or RTCP server port in: \(value)"
         }
         remoteRtcpPort = nwPort
     }
