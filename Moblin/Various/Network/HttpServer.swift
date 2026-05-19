@@ -39,6 +39,9 @@ private class HttpRequestParser: HttpParser {
             if line.isEmpty {
                 let contentLengthHeader = headers.first(where: { $0.name == "content-length:" })
                 let contentLength = Int(contentLengthHeader?.value ?? "0") ?? 0
+                guard contentLength >= 0 else {
+                    return (true, nil)
+                }
                 let body = data.advanced(by: nextLineOffset)
                 guard body.count >= contentLength else {
                     return (false, nil)
@@ -59,7 +62,6 @@ class HttpServerRequest {
     let method: String
     let path: String
     let version: String
-    // periphery:ignore
     let headers: [SettingsHttpHeader]
     let body: Data
 

@@ -37,9 +37,10 @@ class HttpResponseParser: HttpParser {
         var contentLength = 0
         while let (line, nextLineOffset) = getLine(data: data, offset: offset) {
             let parts = line.lowercased().split(separator: " ")
-            if parts.count == 2, parts.first == "content-length:", let length = parts.last,
-               let length = Int(length)
-            {
+            if parts.count == 2, parts.first == "content-length:", let length = parts.last {
+                guard let length = Int(length), length >= 0 else {
+                    return (true, nil)
+                }
                 contentLength = length
             } else if line.isEmpty {
                 let body = data.advanced(by: nextLineOffset)
