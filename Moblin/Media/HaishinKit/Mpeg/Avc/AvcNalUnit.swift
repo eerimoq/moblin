@@ -15,6 +15,17 @@ enum AvcNalUnitType: UInt8 {
     case eoseq = 10
     case eostream = 11
     case fill = 12
+
+    static func isPicture(type: UInt8) -> Bool {
+        switch AvcNalUnitType(rawValue: type) {
+        case .slice:
+            true
+        case .idr:
+            true
+        default:
+            false
+        }
+    }
 }
 
 struct AvcNalUnit: NalUnit {

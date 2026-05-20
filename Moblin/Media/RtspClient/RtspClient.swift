@@ -446,12 +446,7 @@ private class RtpProcessorVideoH264: RtpVideoProcessor {
         guard data.count > 4 else {
             return
         }
-        switch AvcNalUnit(data: data, offset: 4)?.header.type {
-        case .idr:
-            break
-        case .slice:
-            break
-        default:
+        guard AvcNalUnitType.isPicture(type: data[4] & 0x1F) else {
             return
         }
         tryDecodeFrame()
@@ -499,7 +494,7 @@ private class RtpProcessorVideoH265: RtpVideoProcessor {
         guard data.count > 4 else {
             return
         }
-        guard HevcNalUnit(data: data, offset: 4)?.header.type != nil else {
+        guard HevcNalUnitType.isPicture(type: (data[4] >> 1) & 0x3F) else {
             return
         }
         tryDecodeFrame()
