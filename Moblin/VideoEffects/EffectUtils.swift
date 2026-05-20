@@ -1,6 +1,8 @@
 import CoreImage
 import Vision
 
+nonisolated(unsafe) var highQualityDownsampling = false
+
 func toPixels(_ percentage: Double, _ total: Double) -> Double {
     (percentage * total) / 100
 }
@@ -64,7 +66,7 @@ extension CIImage {
     }
 
     func scaled(x: Double, y: Double) -> CIImage {
-        transformed(by: CGAffineTransform(scaleX: x, y: y))
+        transformed(by: CGAffineTransform(scaleX: x, y: y), highQualityDownsample: highQualityDownsampling)
     }
 
     func scaledTo(size: CGSize) -> CIImage {

@@ -57,6 +57,9 @@ final class CameraManEffect: VideoEffect, @unchecked Sendable {
         return image
             .cropped(to: cropRect)
             .transformed(by: CGAffineTransform(translationX: -cropX, y: -cropY))
-            .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+            .transformed(
+                by: CGAffineTransform(scaleX: scaleX, y: scaleY),
+                highQualityDownsample: highQualityDownsampling
+            )
     }
 }

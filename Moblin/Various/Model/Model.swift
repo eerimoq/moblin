@@ -820,6 +820,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         allowVideoRangePixelFormat = database.debug.allowVideoRangePixelFormat
     }
 
+    func setHighQualityDownsampling() {
+        highQualityDownsampling = database.debug.highQualityDownsampling
+    }
+
     func makeToast(
         title: String,
         subTitle: String? = nil,
@@ -968,6 +972,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         faxReceiver.delegate = self
         fixAlertMediasNoUpdate()
         setAllowVideoRangePixelFormat()
+        setHighQualityDownsampling()
         setExternalDisplayContent()
         portraitVideoOffsetFromTop = database.portraitVideoOffsetFromTop
         loadTextWidgetStopwatches()
