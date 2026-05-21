@@ -1471,7 +1471,7 @@ class Database: Codable, ObservableObject {
             for widget in widgets where widget.type == .scoreboard {
                 for scene in scenes {
                     for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
-                        sceneWidget.layout.size = 18.5
+                        sceneWidget.layout.size = defaultScoreboardSize
                     }
                 }
             }

@@ -35,6 +35,8 @@ struct WidgetInScene: Identifiable {
     let sceneWidget: SettingsSceneWidget
 }
 
+let defaultScoreboardSize = 18.52
+
 extension Model {
     func getTextEffects(id: UUID) -> [TextEffect] {
         var effects: [TextEffect] = []
@@ -1552,7 +1554,7 @@ extension Model {
             sceneWidget.layout.x = 20
             sceneWidget.layout.y = 5
         case .scoreboard:
-            sceneWidget.layout.size = 18.5
+            sceneWidget.layout.size = defaultScoreboardSize
             sceneWidget.layout.x = 0.78
             sceneWidget.layout.y = 1.388
             switch widget.scoreboard.sport {
