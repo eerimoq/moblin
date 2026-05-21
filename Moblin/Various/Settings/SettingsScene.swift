@@ -2364,6 +2364,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .slideshow,
             .bingoCard,
             .pomodoroTimer,
+            .scoreboard,
         ].contains(type)
     }
 

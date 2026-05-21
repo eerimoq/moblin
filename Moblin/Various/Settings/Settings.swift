@@ -1140,6 +1140,7 @@ class Database: Codable, ObservableObject {
     var beauty: SettingsBeauty = .init()
     var talkback: SettingsTalkback = .init()
     var gimbal: SettingsGimbal = .init()
+    var scoreboardSizeMigrated: Bool = false
 
     @MainActor
     static func fromString(settings: String) throws -> Database {
@@ -1251,6 +1252,7 @@ class Database: Codable, ObservableObject {
         case beauty
         case talkBack
         case gimbal
+        case scoreboardSizeMigrated
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1332,6 +1334,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.beauty, beauty)
         try container.encode(.talkBack, talkback)
         try container.encode(.gimbal, gimbal)
+        try container.encode(.scoreboardSizeMigrated, scoreboardSizeMigrated)
     }
 
     init() {}
@@ -1463,6 +1466,17 @@ class Database: Codable, ObservableObject {
         beauty = container.decode(.beauty, SettingsBeauty.self, .init())
         talkback = container.decode(.talkBack, SettingsTalkback.self, .init())
         gimbal = container.decode(.gimbal, SettingsGimbal.self, .init())
+        scoreboardSizeMigrated = container.decode(.scoreboardSizeMigrated, Bool.self, false)
+        if !scoreboardSizeMigrated {
+            for widget in widgets where widget.type == .scoreboard {
+                for scene in scenes {
+                    for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
+                        sceneWidget.layout.size = 18.5
+                    }
+                }
+            }
+            scoreboardSizeMigrated = true
+        }
     }
 }
 

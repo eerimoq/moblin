@@ -3,7 +3,7 @@ import SwiftUI
 private let nameCellWidth = 150.0
 private let numberCellWidth = 28.0
 private let totalCellWidth = 100.0
-private let fontSize = 17.0
+private let scorecardFontSize = 17.0
 private let leftAlignPadding = 8.0
 
 private func scoreCellColor(strokes: Int, par: Int) -> Color {
@@ -30,19 +30,20 @@ private struct HeaderCellView: View {
     let text: String
     let width: Double
     var leftAlign: Bool = false
+    let scale: Double
 
     var body: some View {
         HStack {
             Text(text)
-                .font(.system(size: fontSize - 1))
+                .font(.system(size: (scorecardFontSize - 1) * scale))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .padding(.leading, leftAlign ? leftAlignPadding : 0)
+                .padding(.leading, leftAlign ? leftAlignPadding * scale : 0)
             if leftAlign {
                 Spacer()
             }
         }
-        .frame(width: width, height: 20)
+        .frame(width: width, height: 20 * scale)
         .overlay(Rectangle()
             .stroke(Color.gray.opacity(0.4), lineWidth: 0.5))
     }
@@ -54,19 +55,20 @@ private struct CellView: View {
     var background: Color = .clear
     var bold: Bool = false
     var leftAlign: Bool = false
+    let scale: Double
 
     var body: some View {
         HStack {
             Text(text)
-                .font(.system(size: fontSize))
+                .font(.system(size: scorecardFontSize * scale))
                 .bold(bold)
                 .lineLimit(1)
-                .padding(.leading, leftAlign ? leftAlignPadding : 0)
+                .padding(.leading, leftAlign ? leftAlignPadding * scale : 0)
             if leftAlign {
                 Spacer()
             }
         }
-        .frame(width: width, height: 22)
+        .frame(width: width, height: 22 * scale)
         .background(background)
         .overlay(Rectangle()
             .stroke(Color.gray.opacity(0.4), lineWidth: 0.5))
@@ -78,38 +80,44 @@ struct ScoreboardEffectGolfFullScorecardView: View {
     let primaryBackgroundColor: Color
     let secondaryBackgroundColor: Color
     @ObservedObject var golf: SettingsWidgetGolfScoreboard
+    let scale: Double
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
-                HeaderCellView(text: "", width: nameCellWidth)
+                HeaderCellView(text: "", width: nameCellWidth * scale, scale: scale)
                 ForEach(0 ..< golf.numberOfHoles, id: \.self) { holeIndex in
-                    HeaderCellView(text: "\(holeIndex + 1)", width: numberCellWidth)
+                    HeaderCellView(text: "\(holeIndex + 1)", width: numberCellWidth * scale, scale: scale)
                 }
-                HeaderCellView(text: "", width: totalCellWidth)
+                HeaderCellView(text: "", width: totalCellWidth * scale, scale: scale)
             }
             .background(secondaryBackgroundColor)
             ForEach(golf.players) { player in
                 HStack(spacing: 0) {
-                    CellView(text: player.name.uppercased(), width: nameCellWidth, leftAlign: true)
+                    CellView(text: player.name.uppercased(),
+                             width: nameCellWidth * scale,
+                             leftAlign: true,
+                             scale: scale)
                     ForEach(0 ..< golf.numberOfHoles, id: \.self) { holeIndex in
                         let score = holeIndex < player.scores.count ? player.scores[holeIndex] : -1
                         let par = holeIndex < golf.pars.count ? golf.pars[holeIndex] : 4
                         CellView(text: score >= 0 ? "\(score)" : "",
-                                 width: numberCellWidth,
-                                 background: scoreCellColor(strokes: score, par: par))
+                                 width: numberCellWidth * scale,
+                                 background: scoreCellColor(strokes: score, par: par),
+                                 scale: scale)
                     }
                     let strokes = player.totalStrokes(numberOfHoles: golf.numberOfHoles)
                     let relative = player.totalRelativeToPar(pars: golf.pars,
                                                              numberOfHoles: golf.numberOfHoles)
                     CellView(text: "\(strokes) (\(formatScore(relative)))",
-                             width: totalCellWidth,
-                             bold: true)
+                             width: totalCellWidth * scale,
+                             bold: true,
+                             scale: scale)
                 }
             }
             .background(primaryBackgroundColor)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .clipShape(RoundedRectangle(cornerRadius: 5 * scale))
         .foregroundStyle(textColor)
     }
 }

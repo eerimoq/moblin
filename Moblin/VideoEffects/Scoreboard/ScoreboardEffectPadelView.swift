@@ -58,6 +58,7 @@ struct ScoreboardEffectPadelView: View {
     let secondaryBackgroundColor: Color
     let padel: SettingsWidgetPadelScoreboard
     let players: [SettingsWidgetScoreboardPlayer]
+    let scale: Double
 
     private func scoreFontSize() -> Double {
         switch padel.type {
@@ -71,7 +72,7 @@ struct ScoreboardEffectPadelView: View {
     var body: some View {
         let scoreboard = padelScoreboardSettingsToEffect(padel, players)
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .center, spacing: 18) {
+            HStack(alignment: .center, spacing: 18 * scale) {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
                         Spacer(minLength: 0)
@@ -88,7 +89,7 @@ struct ScoreboardEffectPadelView: View {
                         Spacer(minLength: 0)
                     }
                 }
-                .font(.system(size: 25))
+                .font(.system(size: 25 * scale))
                 ForEach(scoreboard.score) { score in
                     VStack {
                         TeamScoreView(score: score.home)
@@ -96,17 +97,17 @@ struct ScoreboardEffectPadelView: View {
                         TeamScoreView(score: score.away)
                             .bold(score.isAwayWin())
                     }
-                    .frame(width: 28)
-                    .font(.system(size: scoreFontSize()))
+                    .frame(width: 28 * scale)
+                    .font(.system(size: scoreFontSize() * scale))
                 }
             }
-            .padding(.leading, 3)
-            .padding(.trailing, 18)
-            .padding(.top, 3)
+            .padding(.leading, 3 * scale)
+            .padding(.trailing, 18 * scale)
+            .padding(.top, 3 * scale)
             .background(primaryBackgroundColor)
-            PoweredByMoblinView(backgroundColor: secondaryBackgroundColor)
+            PoweredByMoblinView(backgroundColor: secondaryBackgroundColor, scale: scale)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .clipShape(RoundedRectangle(cornerRadius: 5 * scale))
         .foregroundStyle(textColor)
     }
 }
