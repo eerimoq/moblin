@@ -189,7 +189,6 @@ extension Model {
         }
     }
 
-    @MainActor
     private func createEventImage(
         username: String,
         message: String,

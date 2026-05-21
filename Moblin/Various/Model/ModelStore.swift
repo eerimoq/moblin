@@ -77,7 +77,6 @@ extension Model {
         }
     }
 
-    @MainActor
     func updateProductFromAppStore() async {
         logger.debug("store: Update my products from App Store")
         let myProductIds = await getMyProductIds()

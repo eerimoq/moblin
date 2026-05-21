@@ -309,7 +309,6 @@ extension Model {
         updateMicsListAsync()
     }
 
-    @MainActor
     private func handleSystemVolumeDidChange(volume: Float, reason: String, sequenceNumber: Int) {
         // For some reason two similar notifications are received. Not sure how to distinguish
         // them from each other.
@@ -335,7 +334,6 @@ extension Model {
         }
     }
 
-    @MainActor
     private func executeSelfieStickAction() {
         handleControllerFunction(buttonId: "s:button",
                                  function: database.selfieStick.function,
