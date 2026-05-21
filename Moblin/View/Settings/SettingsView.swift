@@ -68,7 +68,7 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StoreSettingsView(store: model.store)
+                    StoreSettingsView(model: model, store: model.store)
                 } label: {
                     Label {
                         Text("Store (support us) ❤️")

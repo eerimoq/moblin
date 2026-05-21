@@ -159,7 +159,7 @@ private struct MenuView: View {
             }
         case .store:
             NavigationStack {
-                StoreSettingsView(store: model.store)
+                StoreSettingsView(model: model, store: model.store)
                     .navigationBarTitleDisplayMode(.inline)
             }
         case .chat:

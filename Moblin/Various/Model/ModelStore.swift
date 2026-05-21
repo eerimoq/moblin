@@ -127,6 +127,11 @@ extension Model {
         products[id]
     }
 
+    func restorePurchases() async throws {
+        try await AppStore.sync()
+        await updateProductFromAppStore()
+    }
+
     func purchaseProduct(id: String) async throws {
         guard let product = findProduct(id: id) else {
             throw "Product not found"
