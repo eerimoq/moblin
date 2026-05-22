@@ -221,6 +221,7 @@ export interface RemoteControlAssistantStreamerState {
   recording?: boolean;
   previewStream?: boolean;
   muted?: boolean;
+  stealthMode?: boolean;
   torchOn?: boolean;
   batteryCharging?: boolean;
   filters?: (object | boolean)[];
@@ -339,6 +340,10 @@ export class WebSocketConnection {
 
   setMuted(on: boolean): void {
     this.sendRequest({ setMute: { on } });
+  }
+
+  setStealthMode(on: boolean): void {
+    this.sendRequest({ setStealthMode: { on } });
   }
 
   setPreviewStream(on: boolean): void {

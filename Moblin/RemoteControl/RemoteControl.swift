@@ -19,6 +19,7 @@ enum RemoteControlRequest: Codable {
     case setZoom(x: Float)
     case setZoomPreset(id: UUID)
     case setMute(on: Bool)
+    case setStealthMode(on: Bool)
     case setTorch(on: Bool)
     case setDebugLogging(on: Bool)
     case setScene(id: UUID)
@@ -807,6 +808,7 @@ struct RemoteControlAssistantStreamerState: Codable {
     var recording: Bool?
     var previewStream: Bool?
     var muted: Bool?
+    var stealthMode: Bool?
     var torchOn: Bool?
     var batteryCharging: Bool?
     var filters: [RemoteControlFilter: Bool]?

@@ -111,6 +111,7 @@ function App() {
   const [liveOn, setLiveOn] = createSignal(false);
   const [recordingOn, setRecordingOn] = createSignal(false);
   const [mutedOn, setMutedOn] = createSignal(false);
+  const [stealthModeOn, setStealthModeOn] = createSignal(false);
   const [previewStreamOn, setPreviewStreamOn] = createSignal(false);
   const [pendingLive, setPendingLive] = createSignal<boolean | null>(null);
   const [pendingRecording, setPendingRecording] = createSignal<boolean | null>(null);
@@ -211,6 +212,9 @@ function App() {
       }
       if (state.muted !== undefined) {
         setMutedOn(state.muted);
+      }
+      if (state.stealthMode !== undefined) {
+        setStealthModeOn(state.stealthMode);
       }
       if (state.previewStream !== undefined) {
         setPreviewStreamOn(state.previewStream);
@@ -469,6 +473,12 @@ function App() {
               checked={mutedOn()}
               onChange={(event) => connection.setMuted(event.target.checked)}
               label="Muted"
+            />
+            <Toggle
+              id="controlStealthMode"
+              checked={stealthModeOn()}
+              onChange={(event) => connection.setStealthMode(event.target.checked)}
+              label="Stealth mode"
             />
             <Toggle
               id="controlPreviewStream"

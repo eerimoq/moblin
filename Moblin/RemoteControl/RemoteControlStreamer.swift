@@ -18,6 +18,7 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetZoom(x: Float)
     func remoteControlStreamerSetZoomPreset(id: UUID)
     func remoteControlStreamerSetMute(on: Bool)
+    func remoteControlStreamerSetStealthMode(on: Bool)
     func remoteControlStreamerSetTorch(on: Bool)
     func remoteControlStreamerReloadBrowserWidgets()
     func remoteControlStreamerSetSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
@@ -256,6 +257,9 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setMute(on: on):
             delegate.remoteControlStreamerSetMute(on: on)
+            sendEmptyOkResponse(id: id)
+        case let .setStealthMode(on: on):
+            delegate.remoteControlStreamerSetStealthMode(on: on)
             sendEmptyOkResponse(id: id)
         case let .setTorch(on: on):
             delegate.remoteControlStreamerSetTorch(on: on)
