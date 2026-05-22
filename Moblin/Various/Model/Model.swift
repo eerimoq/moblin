@@ -2149,6 +2149,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setIsMuted(value: Bool) {
         setMuteOn(value: value)
     }
+    
+    func setStealthMode(on: Bool) {
+        showStealthMode = on
+    }
 
     func updateScreenAutoOff() {
         UIApplication.shared.isIdleTimerDisabled = (showingRemoteControl || isLive)
