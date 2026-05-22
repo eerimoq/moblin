@@ -17,6 +17,7 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetZoomPreset(id: UUID)
     func remoteControlWebSetDebugLogging(on: Bool)
     func remoteControlWebSetMute(on: Bool)
+    func remoteControlWebSetStealthMode(on: Bool)
     func remoteControlWebSetTorch(on: Bool)
     func remoteControlWebReloadBrowserWidgets()
     func remoteControlWebSetSrtConnectionPrioritiesEnabled(enabled: Bool)
@@ -391,6 +392,9 @@ class RemoteControlWeb: @unchecked Sendable {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setMute(on: on):
             delegate.remoteControlWebSetMute(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setStealthMode(on: on):
+            delegate.remoteControlWebSetStealthMode(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setTorch(on: on):
             delegate.remoteControlWebSetTorch(on: on)

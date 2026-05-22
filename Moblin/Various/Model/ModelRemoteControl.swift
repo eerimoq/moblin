@@ -20,6 +20,7 @@ class RemoteControl: ObservableObject {
     @Published var recording: Bool = false
     @Published var streaming: Bool = false
     @Published var muted: Bool = false
+    @Published var stealthMode: Bool = false
     @Published var previewStream: Bool = false
     @Published var presentingPreview = true
     @Published var presentingPreviewFullScreen = false
@@ -221,6 +222,10 @@ extension Model {
                 self.updateRemoteControlAssistantStatus()
             }
         }
+    }
+
+    func remoteControlAssistantSetStealthMode(on: Bool) {
+        remoteControlAssistant?.setStealthMode(on: on) {}
     }
 
     func remoteControlAssistantSetPreviewStream(on: Bool) {
@@ -523,6 +528,7 @@ extension Model {
         state.streaming = isLive
         state.recording = isRecording
         state.muted = isMuteOn
+        state.stealthMode = showStealthMode
         state.previewStream = isPreviewStreaming
         state.torchOn = streamOverlay.isTorchOn
         state.batteryCharging = isBatteryCharging()
@@ -744,6 +750,11 @@ extension Model: @preconcurrency RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetMute(on: Bool) {
         setMuteOn(value: on)
+    }
+
+    func remoteControlStreamerSetStealthMode(on: Bool) {
+        setStealthMode(on: on)
+        updateQuickButtonStates()
     }
 
     func remoteControlStreamerSetTorch(on: Bool) {
@@ -1012,6 +1023,10 @@ extension Model: @preconcurrency RemoteControlAssistantDelegate {
             remoteControlAssistantStreamerState.muted = muted
             remoteControl.muted = muted
         }
+        if let stealthMode = state.stealthMode {
+            remoteControlAssistantStreamerState.stealthMode = stealthMode
+            remoteControl.stealthMode = stealthMode
+        }
         if let previewStream = state.previewStream {
             remoteControlAssistantStreamerState.previewStream = previewStream
             remoteControl.previewStream = previewStream
@@ -1145,6 +1160,10 @@ extension Model: @preconcurrency RemoteControlWebDelegate {
 
     func remoteControlWebSetMute(on: Bool) {
         remoteControlStreamerSetMute(on: on)
+    }
+
+    func remoteControlWebSetStealthMode(on: Bool) {
+        remoteControlStreamerSetStealthMode(on: on)
     }
 
     func remoteControlWebSetTorch(on: Bool) {
