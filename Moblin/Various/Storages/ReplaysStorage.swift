@@ -71,17 +71,17 @@ class ReplaysDatabase: Codable, ObservableObject {
     }
 }
 
+private let storage = SimpleStringStorage(key: "replays")
+
 final class ReplaysStorage {
     private var realDatabase = ReplaysDatabase()
     var database: ReplaysDatabase {
         realDatabase
     }
 
-    @AppStorage("replays") var storage = ""
-
     func load() {
         do {
-            try tryLoadAndMigrate(settings: storage)
+            try tryLoadAndMigrate(settings: storage.get())
         } catch {
             logger.info("replays-storage: Failed to load with error \(error). Using default.")
             realDatabase = ReplaysDatabase()
@@ -118,7 +118,7 @@ final class ReplaysStorage {
 
     func store() {
         do {
-            storage = try realDatabase.toString()
+            try storage.set(realDatabase.toString())
         } catch {
             logger.info("replays-storage: Failed to store.")
         }

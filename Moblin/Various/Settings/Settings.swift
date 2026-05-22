@@ -2048,18 +2048,18 @@ private let exportFiles = [
     URL.documentsDirectory.appending(component: "faceBackgroundImage.img"),
 ]
 
+private let storage = SimpleStringStorage(key: "settings")
+
 final class Settings: @unchecked Sendable {
     private var realDatabase = Database()
     var database: Database {
         realDatabase
     }
 
-    @AppStorage("settings") var storage = ""
-
     @MainActor
     func load() {
         do {
-            try tryLoadAndMigrate(settings: storage)
+            try tryLoadAndMigrate(settings: storage.get())
         } catch {
             logger.info("settings: Failed to load with error \(error). Using default.")
             realDatabase = createDefault()
@@ -2076,7 +2076,7 @@ final class Settings: @unchecked Sendable {
     func store() {
         do {
             let database = extractSensitiveData(fromDatabase: realDatabase)
-            storage = try realDatabase.toString()
+            try storage.set(realDatabase.toString())
             insertSensitiveData(toDatabase: realDatabase, fromDatabase: database)
         } catch {
             logger.info("settings: Failed to store.")
@@ -2131,7 +2131,7 @@ final class Settings: @unchecked Sendable {
     @MainActor
     func exportToFile(onCompleted: @MainActor @escaping (URL?) -> Void) {
         store()
-        let settingsJson = [UInt8](storage.utf8)
+        let settingsJson = [UInt8](storage.get().utf8)
         let name = UIDevice.current.name
         DispatchQueue.global().async {
             let url = FileManager.default.temporaryDirectory

@@ -358,9 +358,19 @@ class CameraLevel: ObservableObject {
     }
 }
 
+private let enterForegroundCountStorage = SimpleIntStorage(key: "enterForegroundCount")
+
 @MainActor
 final class Model: NSObject, ObservableObject, @unchecked Sendable {
-    @AppStorage("enterForegroundCount") var enterForegroundCount = 0
+    var enterForegroundCount: Int {
+        get {
+            enterForegroundCountStorage.get()
+        }
+        set {
+            enterForegroundCountStorage.set(newValue)
+        }
+    }
+
     @Published var showingPanel: ShowingPanel = .none
     @Published var panelHidden = false
     @Published var showStealthMode = false

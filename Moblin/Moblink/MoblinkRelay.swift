@@ -1,13 +1,12 @@
 import Foundation
 import Network
-import SwiftUI
 
 private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
-private let relayIdKey = "srtlaRelayId"
+private let relayIdStorage = SimpleStringStorage(key: "srtlaRelayId")
 private nonisolated(unsafe) var relayId: String = ""
 
 func moblinkRelayLoadRelayId() {
-    relayId = UserDefaults.standard.string(forKey: relayIdKey) ?? ""
+    relayId = relayIdStorage.get()
     if relayId.isEmpty {
         moblinkRelayResetId()
     }
@@ -19,7 +18,7 @@ func getMoblinkRelayId() -> String {
 
 func moblinkRelayResetId() {
     relayId = UUID().uuidString
-    UserDefaults.standard.set(relayId, forKey: relayIdKey)
+    relayIdStorage.set(relayId)
 }
 
 enum MoblinkRelayState: String {

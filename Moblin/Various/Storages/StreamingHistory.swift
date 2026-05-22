@@ -136,17 +136,17 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
     }
 }
 
+private let storage = SimpleStringStorage(key: "streamingHistory")
+
 final class StreamingHistory {
     private var realDatabase = StreamingHistoryDatabase()
     var database: StreamingHistoryDatabase {
         realDatabase
     }
 
-    @AppStorage("streamingHistory") var storage = ""
-
     func load() {
         do {
-            try tryLoadAndMigrate(settings: storage)
+            try tryLoadAndMigrate(settings: storage.get())
         } catch {
             logger.info("streaming-history: Failed to load with error \(error). Using default.")
             realDatabase = StreamingHistoryDatabase()
@@ -160,7 +160,7 @@ final class StreamingHistory {
 
     func store() {
         do {
-            storage = try realDatabase.toString()
+            try storage.set(realDatabase.toString())
         } catch {
             logger.info("streaming-history: Failed to store.")
         }

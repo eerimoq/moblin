@@ -76,7 +76,7 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
         #if targetEnvironment(macCatalyst)
         model.storeSettings()
         model.replaysStorage.store()
-        exit(0)
+        exit(EXIT_SUCCESS)
         #endif
     }
 

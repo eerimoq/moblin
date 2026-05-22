@@ -2,7 +2,6 @@ import Collections
 import CryptoKit
 import Foundation
 import Network
-import SwiftUI
 
 protocol MoblinkStreamerDelegate: AnyObject {
     func moblinkStreamerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
@@ -226,6 +225,8 @@ private class Relay {
     }
 }
 
+private let idStorage = SimpleStringStorage(key: "moblinkServerId")
+
 class MoblinkStreamer: NSObject, @unchecked Sendable {
     private let port: UInt16
     private let password: String
@@ -237,15 +238,14 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
     private var relays: [Relay] = []
     private var destinationAddress: String?
     private var destinationPort: UInt16?
-    @AppStorage("moblinkServerId") var id = ""
 
     init(port: UInt16, password: String, name: String) {
         self.port = port
         self.password = password
         self.name = name
         super.init()
-        if id.isEmpty {
-            id = UUID().uuidString
+        if idStorage.get().isEmpty {
+            idStorage.set(UUID().uuidString)
         }
     }
 
@@ -304,7 +304,7 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
             parameters.defaultProtocolStack.applicationProtocols.append(options)
             server = try NWListener(using: parameters, on: NWEndpoint.Port(rawValue: port)!)
             server?.service = NWListener.Service(
-                name: id,
+                name: idStorage.get(),
                 type: moblinkBonjourType,
                 domain: moblinkBonjourDomain,
                 txtRecord: NWTXTRecord(["name": name])
