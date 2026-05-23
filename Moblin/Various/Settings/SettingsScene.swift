@@ -2159,6 +2159,15 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     @Published var isRunning: Bool = false
     @Published var phase: PomodoroPhase = .focus
     @Published var secondsRemaining: Int = 30 * 60
+    @Published var focusToBreakSoundEnabled: Bool = false
+    var focusToBreakSoundId: UUID?
+    @Published var breakToFocusSoundEnabled: Bool = false
+    var breakToFocusSoundId: UUID?
+    @Published var sendFocusToBreakChatMessage: Bool = false
+    @Published var focusToBreakChatMessage: String = ""
+    @Published var sendBreakToFocusChatMessage: Bool = false
+    @Published var breakToFocusChatMessage: String = ""
+    var onPhaseChanged: ((PomodoroPhase) -> Void)?
     private var timer = SimpleTimer(queue: .main)
 
     enum CodingKeys: CodingKey {
@@ -2171,6 +2180,14 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         case foregroundColor
         case focusColor
         case breakColor
+        case focusToBreakSoundEnabled
+        case focusToBreakSoundId
+        case breakToFocusSoundEnabled
+        case breakToFocusSoundId
+        case sendFocusToBreakChatMessage
+        case focusToBreakChatMessage
+        case sendBreakToFocusChatMessage
+        case breakToFocusChatMessage
     }
 
     init() {}
@@ -2186,6 +2203,14 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         try container.encode(.foregroundColor, foregroundColor)
         try container.encode(.focusColor, focusColor)
         try container.encode(.breakColor, breakColor)
+        try container.encode(.focusToBreakSoundEnabled, focusToBreakSoundEnabled)
+        try container.encode(.focusToBreakSoundId, focusToBreakSoundId)
+        try container.encode(.breakToFocusSoundEnabled, breakToFocusSoundEnabled)
+        try container.encode(.breakToFocusSoundId, breakToFocusSoundId)
+        try container.encode(.sendFocusToBreakChatMessage, sendFocusToBreakChatMessage)
+        try container.encode(.focusToBreakChatMessage, focusToBreakChatMessage)
+        try container.encode(.sendBreakToFocusChatMessage, sendBreakToFocusChatMessage)
+        try container.encode(.breakToFocusChatMessage, breakToFocusChatMessage)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -2203,6 +2228,14 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
         focusColorColor = focusColor.color()
         breakColor = container.decode(.breakColor, RgbColor.self, Self.baseBreakColor)
         breakColorColor = breakColor.color()
+        focusToBreakSoundEnabled = container.decode(.focusToBreakSoundEnabled, Bool.self, false)
+        focusToBreakSoundId = container.decode(.focusToBreakSoundId, UUID?.self, nil)
+        breakToFocusSoundEnabled = container.decode(.breakToFocusSoundEnabled, Bool.self, false)
+        breakToFocusSoundId = container.decode(.breakToFocusSoundId, UUID?.self, nil)
+        sendFocusToBreakChatMessage = container.decode(.sendFocusToBreakChatMessage, Bool.self, false)
+        focusToBreakChatMessage = container.decode(.focusToBreakChatMessage, String.self, "")
+        sendBreakToFocusChatMessage = container.decode(.sendBreakToFocusChatMessage, Bool.self, false)
+        breakToFocusChatMessage = container.decode(.breakToFocusChatMessage, String.self, "")
         reset()
     }
 
@@ -2253,6 +2286,7 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
             phase = .focus
             secondsRemaining = focusDuration * 60
         }
+        onPhaseChanged?(phase)
     }
 }
 

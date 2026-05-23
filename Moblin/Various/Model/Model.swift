@@ -530,6 +530,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var wheelOfLuckEffects: [UUID: WheelOfLuckEffect] = [:]
     var bingoCardEffects: [UUID: BingoCardEffect] = [:]
     var pomodoroTimerEffects: [UUID: PomodoroTimerEffect] = [:]
+    var pomodoroAudioPlayer: AudioPlayer?
     var enabledSnapshotEffects: [SnapshotEffect] = []
     var enabledChatEffects: [ChatEffect] = []
     var speechToTextAlertMatchOffset = 0

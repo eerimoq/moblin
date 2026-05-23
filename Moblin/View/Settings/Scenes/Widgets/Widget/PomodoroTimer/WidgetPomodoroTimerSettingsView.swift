@@ -1,4 +1,63 @@
+import AVFAudio
 import SwiftUI
+
+@MainActor
+private func loadPomodoroSound(model: Model, soundId: UUID) -> AudioPlayer? {
+    let url: URL? = if let bundledSound = model.database.alertsMediaGallery.bundledSounds
+        .first(where: { $0.id == soundId })
+    {
+        Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
+    } else {
+        model.alertMediaStorage.makePath(id: soundId)
+    }
+    guard let url else {
+        return nil
+    }
+    return try? AudioPlayer(contentsOf: url)
+}
+
+private func getPomodoroSoundName(model: Model, soundId: UUID?) -> String {
+    guard let soundId else {
+        return String(localized: "None")
+    }
+    return model.getAllAlertSounds().first(where: { $0.id == soundId })?.name ?? String(localized: "None")
+}
+
+@MainActor
+private var pomodoroSoundPreviewPlayer: AudioPlayer?
+
+private struct PomodoroSoundSelectorView: View {
+    @EnvironmentObject var model: Model
+    @Binding var soundId: UUID?
+
+    var body: some View {
+        Form {
+            Section {
+                Picker("", selection: $soundId) {
+                    ForEach(model.getAllAlertSounds()) { sound in
+                        HStack {
+                            Text(sound.name)
+                            Spacer()
+                            Button {
+                                pomodoroSoundPreviewPlayer = loadPomodoroSound(model: model, soundId: sound.id)
+                                pomodoroSoundPreviewPlayer?.play()
+                            } label: {
+                                Image(systemName: "play.fill")
+                            }
+                        }
+                        .tag(sound.id as UUID?)
+                    }
+                }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            }
+        }
+        .onDisappear {
+            pomodoroSoundPreviewPlayer = nil
+        }
+        .navigationTitle("Sound")
+    }
+}
 
 struct WidgetPomodoroTimerQuickButtonControlsView: View {
     let model: Model
@@ -139,6 +198,54 @@ struct WidgetPomodoroTimerSettingsView: View {
                 }
         } header: {
             Text("Colors")
+        }
+        Section {
+            Toggle("Focus to break", isOn: $pomodoroTimer.focusToBreakSoundEnabled)
+            if pomodoroTimer.focusToBreakSoundEnabled {
+                NavigationLink {
+                    PomodoroSoundSelectorView(soundId: $pomodoroTimer.focusToBreakSoundId)
+                        .environmentObject(model)
+                } label: {
+                    TextValueView(
+                        name: "Sound",
+                        value: getPomodoroSoundName(model: model, soundId: pomodoroTimer.focusToBreakSoundId)
+                    )
+                }
+            }
+            Toggle("Break to focus", isOn: $pomodoroTimer.breakToFocusSoundEnabled)
+            if pomodoroTimer.breakToFocusSoundEnabled {
+                NavigationLink {
+                    PomodoroSoundSelectorView(soundId: $pomodoroTimer.breakToFocusSoundId)
+                        .environmentObject(model)
+                } label: {
+                    TextValueView(
+                        name: "Sound",
+                        value: getPomodoroSoundName(model: model, soundId: pomodoroTimer.breakToFocusSoundId)
+                    )
+                }
+            }
+        } header: {
+            Text("Sounds")
+        }
+        Section {
+            Toggle("Focus to break", isOn: $pomodoroTimer.sendFocusToBreakChatMessage)
+            if pomodoroTimer.sendFocusToBreakChatMessage {
+                TextEditNavigationView(
+                    title: String(localized: "Message"),
+                    value: pomodoroTimer.focusToBreakChatMessage,
+                    onSubmit: { pomodoroTimer.focusToBreakChatMessage = $0 }
+                )
+            }
+            Toggle("Break to focus", isOn: $pomodoroTimer.sendBreakToFocusChatMessage)
+            if pomodoroTimer.sendBreakToFocusChatMessage {
+                TextEditNavigationView(
+                    title: String(localized: "Message"),
+                    value: pomodoroTimer.breakToFocusChatMessage,
+                    onSubmit: { pomodoroTimer.breakToFocusChatMessage = $0 }
+                )
+            }
+        } header: {
+            Text("Chat messages")
         }
     }
 }

@@ -870,7 +870,48 @@ extension Model {
         pomodoroTimerEffects.removeAll()
         for widget in widgets where widget.type == .pomodoroTimer {
             pomodoroTimerEffects[widget.id] = PomodoroTimerEffect(canvasSize: media.getCanvasSize())
+            let pomodoroTimer = widget.pomodoroTimer
+            pomodoroTimer.onPhaseChanged = { [weak self, weak pomodoroTimer] newPhase in
+                guard let pomodoroTimer else {
+                    return
+                }
+                self?.onPomodoroTimerPhaseChanged(pomodoroTimer, newPhase: newPhase)
+            }
         }
+    }
+
+    private func onPomodoroTimerPhaseChanged(_ settings: SettingsWidgetPomodoroTimer, newPhase: PomodoroPhase) {
+        switch newPhase {
+        case .focus:
+            if settings.breakToFocusSoundEnabled, let soundId = settings.breakToFocusSoundId {
+                playPomodoroSound(soundId: soundId)
+            }
+            if settings.sendBreakToFocusChatMessage, !settings.breakToFocusChatMessage.isEmpty {
+                sendChatMessage(message: settings.breakToFocusChatMessage)
+            }
+        case .shortBreak:
+            if settings.focusToBreakSoundEnabled, let soundId = settings.focusToBreakSoundId {
+                playPomodoroSound(soundId: soundId)
+            }
+            if settings.sendFocusToBreakChatMessage, !settings.focusToBreakChatMessage.isEmpty {
+                sendChatMessage(message: settings.focusToBreakChatMessage)
+            }
+        }
+    }
+
+    private func playPomodoroSound(soundId: UUID) {
+        let url: URL? = if let bundledSound = database.alertsMediaGallery.bundledSounds
+            .first(where: { $0.id == soundId })
+        {
+            Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
+        } else {
+            alertMediaStorage.makePath(id: soundId)
+        }
+        guard let url else {
+            return
+        }
+        pomodoroAudioPlayer = try? AudioPlayer(contentsOf: url)
+        pomodoroAudioPlayer?.play()
     }
 
     private func isQuickButtonOn(type: SettingsQuickButtonType) -> Bool {
