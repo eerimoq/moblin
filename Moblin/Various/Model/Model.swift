@@ -1926,6 +1926,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         database.alertsMediaGallery.bundledSounds + database.alertsMediaGallery.customSounds
     }
 
+    func getAlertSoundUrl(soundId: UUID) -> URL? {
+        if let bundledSound = database.alertsMediaGallery.bundledSounds.first(where: { $0.id == soundId }) {
+            return Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
+        }
+        return alertMediaStorage.makePath(id: soundId)
+    }
+
     func getAlertsEffect(id: UUID) -> AlertsEffect? {
         for (alertsEffectId, alertsEffect) in alertsEffects where id == alertsEffectId {
             return alertsEffect

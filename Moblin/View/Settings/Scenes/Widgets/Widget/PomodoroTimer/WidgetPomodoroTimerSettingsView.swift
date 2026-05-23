@@ -1,21 +1,6 @@
 import AVFAudio
 import SwiftUI
 
-@MainActor
-private func loadPomodoroSound(model: Model, soundId: UUID) -> AudioPlayer? {
-    let url: URL? = if let bundledSound = model.database.alertsMediaGallery.bundledSounds
-        .first(where: { $0.id == soundId })
-    {
-        Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
-    } else {
-        model.alertMediaStorage.makePath(id: soundId)
-    }
-    guard let url else {
-        return nil
-    }
-    return try? AudioPlayer(contentsOf: url)
-}
-
 private func getPomodoroSoundName(model: Model, soundId: UUID?) -> String {
     guard let soundId else {
         return String(localized: "None")
@@ -23,12 +8,10 @@ private func getPomodoroSoundName(model: Model, soundId: UUID?) -> String {
     return model.getAllAlertSounds().first(where: { $0.id == soundId })?.name ?? String(localized: "None")
 }
 
-@MainActor
-private var pomodoroSoundPreviewPlayer: AudioPlayer?
-
 private struct PomodoroSoundSelectorView: View {
     @EnvironmentObject var model: Model
     @Binding var soundId: UUID?
+    @State private var previewPlayer: AudioPlayer?
 
     var body: some View {
         Form {
@@ -39,8 +22,11 @@ private struct PomodoroSoundSelectorView: View {
                             Text(sound.name)
                             Spacer()
                             Button {
-                                pomodoroSoundPreviewPlayer = loadPomodoroSound(model: model, soundId: sound.id)
-                                pomodoroSoundPreviewPlayer?.play()
+                                guard let url = model.getAlertSoundUrl(soundId: sound.id) else {
+                                    return
+                                }
+                                previewPlayer = try? AudioPlayer(contentsOf: url)
+                                previewPlayer?.play()
                             } label: {
                                 Image(systemName: "play.fill")
                             }
@@ -53,7 +39,7 @@ private struct PomodoroSoundSelectorView: View {
             }
         }
         .onDisappear {
-            pomodoroSoundPreviewPlayer = nil
+            previewPlayer = nil
         }
         .navigationTitle("Sound")
     }

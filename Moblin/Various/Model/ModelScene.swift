@@ -900,14 +900,7 @@ extension Model {
     }
 
     private func playPomodoroSound(soundId: UUID) {
-        let url: URL? = if let bundledSound = database.alertsMediaGallery.bundledSounds
-            .first(where: { $0.id == soundId })
-        {
-            Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
-        } else {
-            alertMediaStorage.makePath(id: soundId)
-        }
-        guard let url else {
+        guard let url = getAlertSoundUrl(soundId: soundId) else {
             return
         }
         pomodoroAudioPlayer = try? AudioPlayer(contentsOf: url)
