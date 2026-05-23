@@ -38,6 +38,7 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case anamorphicLens
     case lut
     case opacity
+    case mask
 
     func toString() -> String {
         switch self {
@@ -61,6 +62,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
             String(localized: "LUT")
         case .opacity:
             String(localized: "Opacity")
+        case .mask:
+            String(localized: "Mask")
         }
     }
 }
@@ -272,6 +275,30 @@ class SettingsVideoEffectOpacity: Codable, ObservableObject {
     }
 }
 
+class SettingsVideoEffectMask: Codable, ObservableObject {
+    @Published var points: [MaskEffectPoint] = MaskEffect.defaultPoints
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case points
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.points, points)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        points = container.decode(.points, [MaskEffectPoint].self, MaskEffect.defaultPoints)
+    }
+
+    func toSettings() -> MaskEffectSettings {
+        .init(points: points)
+    }
+}
+
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var enabled: Bool = true
@@ -282,6 +309,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var anamorphicLens: SettingsVideoEffectAnamorphicLens = .init()
     var lut: SettingsVideoEffectLut = .init()
     var opacity: SettingsVideoEffectOpacity = .init()
+    var mask: SettingsVideoEffectMask = .init()
 
     enum CodingKeys: CodingKey {
         case id
@@ -293,6 +321,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         case anamorphicLens
         case lut
         case opacity
+        case mask
     }
 
     init() {}
@@ -308,6 +337,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         try container.encode(.anamorphicLens, anamorphicLens)
         try container.encode(.lut, lut)
         try container.encode(.opacity, opacity)
+        try container.encode(.mask, mask)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -329,6 +359,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         )
         lut = container.decode(.lut, SettingsVideoEffectLut.self, .init())
         opacity = container.decode(.opacity, SettingsVideoEffectOpacity.self, .init())
+        mask = container.decode(.mask, SettingsVideoEffectMask.self, .init())
     }
 
     @MainActor
@@ -367,6 +398,10 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         case .opacity:
             let effect = OpacityEffect()
             effect.setOpacity(opacity: opacity.opacity)
+            return effect
+        case .mask:
+            let effect = MaskEffect()
+            effect.setSettings(settings: mask.toSettings())
             return effect
         }
     }

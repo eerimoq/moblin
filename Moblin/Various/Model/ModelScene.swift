@@ -117,6 +117,10 @@ extension Model {
         getWidgetVideoEffect(widget, effect)
     }
 
+    func getWidgetMaskEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> MaskEffect? {
+        getWidgetVideoEffect(widget, effect)
+    }
+
     func getWidgetRemoveBackgroundEffect(_ widget: SettingsWidget,
                                          _ effect: SettingsVideoEffect) -> RemoveBackgroundEffect?
     {
