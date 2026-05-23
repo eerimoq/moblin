@@ -145,6 +145,10 @@ func formatDate(_ dateString: String) -> String? {
         .formatted(date: .abbreviated, time: .omitted)
 }
 
+func formatDate(_ date: Date) -> String {
+    date.formatted(date: .numeric, time: .omitted)
+}
+
 extension Duration {
     func format() -> String {
         durationFormatter.string(from: Double(components.seconds))!

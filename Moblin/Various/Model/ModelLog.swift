@@ -4,7 +4,12 @@ import Foundation
 private let maximumFileLogLines = 100
 
 func createFileLog() -> [String] {
-    var log = ["", "Version: \(appVersion())", ""]
+    var log = [
+        "",
+        "Version: \(appVersion())",
+        "Date: \(formatDate(.now))",
+        "",
+    ]
     log.reserveCapacity(maximumFileLogLines)
     return log
 }
