@@ -359,6 +359,8 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             return nil
         case .chat:
             return nil
+        case .chatEmoteCombo:
+            return nil
         case .wheelOfLuck:
             return nil
         case .bingoCard:

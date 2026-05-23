@@ -73,6 +73,10 @@ extension Model {
         chatEffects[id]
     }
 
+    func getChatEmoteComboEffect(id: UUID) -> ChatEmoteComboEffect? {
+        chatEmoteComboEffects[id]
+    }
+
     func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
         qrCodeEffects[id]
     }
@@ -668,6 +672,7 @@ extension Model {
         resetPngTuberVideoEffects(widgets: widgets)
         resetSnapshotVideoEffects(widgets: widgets)
         resetChatVideoEffects(widgets: widgets)
+        resetChatEmoteComboVideoEffects(widgets: widgets)
         resetSlideshowVideoEffects(widgets: widgets)
         resetWheelOfLuckEffects(widgets: widgets)
         resetBingoCardEffects(widgets: widgets)
@@ -827,6 +832,15 @@ extension Model {
         }
     }
 
+    private func resetChatEmoteComboVideoEffects(widgets: [SettingsWidget]) {
+        chatEmoteComboEffects.removeAll()
+        for widget in widgets where widget.type == .chatEmoteCombo {
+            let effect = ChatEmoteComboEffect()
+            effect.setSettings(settings: widget.chatEmoteCombo)
+            chatEmoteComboEffects[widget.id] = effect
+        }
+    }
+
     private func resetSlideshowVideoEffects(widgets: [SettingsWidget]) {
         slideshowEffects.removeAll()
         for widget in widgets where widget.type == .slideshow {
@@ -963,6 +977,7 @@ extension Model {
         enabledAlertsEffects.removeAll()
         enabledSnapshotEffects.removeAll()
         enabledChatEffects.removeAll()
+        enabledChatEmoteComboEffects.removeAll()
         var scene = scene
         if let remoteSceneWidget = remoteSceneWidgets.first {
             scene = scene.clone()
@@ -981,6 +996,9 @@ extension Model {
             effect.setSceneWidget(sceneWidget: nil)
         }
         for effect in chatEffects.values where !effects.contains(effect) {
+            effect.stop()
+        }
+        for effect in chatEmoteComboEffects.values where !effects.contains(effect) {
             effect.stop()
         }
         for (id, scoreboardEffect) in scoreboardEffects where !effects.contains(scoreboardEffect) {
@@ -1053,6 +1071,8 @@ extension Model {
                 addSceneSnapshotEffects(sceneWidget, widget, &effects)
             case .chat:
                 addSceneChatEffects(sceneWidget, widget, &effects)
+            case .chatEmoteCombo:
+                addSceneChatEmoteComboEffects(sceneWidget, widget, &effects)
             case .wheelOfLuck:
                 addSceneWheelOfLuckEffects(sceneWidget, widget, &effects)
             case .bingoCard:
@@ -1300,6 +1320,20 @@ extension Model {
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         effect.start()
         enabledChatEffects.append(effect)
+        effects.append(effect)
+    }
+
+    private func addSceneChatEmoteComboEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = chatEmoteComboEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.start()
+        enabledChatEmoteComboEffects.append(effect)
         effects.append(effect)
     }
 

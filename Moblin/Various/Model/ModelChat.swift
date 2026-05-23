@@ -347,6 +347,9 @@ extension Model {
         if !enabledChatEffects.isEmpty {
             chatWidgetChat.appendMessage(post: post)
         }
+        for effect in enabledChatEmoteComboEffects {
+            effect.appendMessage(post: post)
+        }
     }
 
     func reloadChatMessages() {
