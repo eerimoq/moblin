@@ -47,7 +47,7 @@ class BufferedVideo {
         {
             sampleBuffers.insert(sampleBuffer, at: sampleBuffers.index(after: index))
         } else {
-            sampleBuffers.insert(sampleBuffer, at: 0)
+            sampleBuffers.prepend(sampleBuffer)
         }
     }
 
