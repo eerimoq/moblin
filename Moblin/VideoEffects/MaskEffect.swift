@@ -10,15 +10,15 @@ struct MaskEffectSettings {
     var points: [MaskEffectPoint]
     var inverted: Bool
     var smooth: Bool
+    var tension: Double
     var backgroundType: SettingsMaskBackgroundType
     var backgroundRgbColor: RgbColor
     var backgroundRgbColor2: RgbColor
 }
 
-private let catmullRomTension: CGFloat = 1.0 / 6.0
 private let checkerboardSquareCount: Float = 20.0
 
-func makeCatmullRomPath(_ points: [CGPoint]) -> CGMutablePath {
+func makeCatmullRomPath(_ points: [CGPoint], tension: CGFloat) -> CGMutablePath {
     let numberOfPoints = points.count
     let path = CGMutablePath()
     path.move(to: points[0])
@@ -28,12 +28,12 @@ func makeCatmullRomPath(_ points: [CGPoint]) -> CGMutablePath {
         let point2 = points[(i + 1) % numberOfPoints]
         let point3 = points[(i + 2) % numberOfPoints]
         let cpoint1 = CGPoint(
-            x: point1.x + (point2.x - point0.x) * catmullRomTension,
-            y: point1.y + (point2.y - point0.y) * catmullRomTension
+            x: point1.x + (point2.x - point0.x) * tension,
+            y: point1.y + (point2.y - point0.y) * tension
         )
         let cpoint2 = CGPoint(
-            x: point2.x - (point3.x - point1.x) * catmullRomTension,
-            y: point2.y - (point3.y - point1.y) * catmullRomTension
+            x: point2.x - (point3.x - point1.x) * tension,
+            y: point2.y - (point3.y - point1.y) * tension
         )
         path.addCurve(to: point2, control1: cpoint1, control2: cpoint2)
     }
@@ -56,6 +56,7 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
     private var cachedPoints: [MaskEffectPoint] = []
     private var cachedInverted: Bool = false
     private var cachedSmooth: Bool = false
+    private var cachedTension: Double = -1
 
     func setSettings(settings: MaskEffectSettings) {
         processorPipelineQueue.async {
@@ -68,7 +69,8 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         _ extent: CGRect,
         _ points: [MaskEffectPoint],
         _ inverted: Bool,
-        _ smooth: Bool
+        _ smooth: Bool,
+        _ catmullRomTension: Double
     ) -> CIImage? {
         guard points.count >= 3 else {
             return nil
@@ -100,7 +102,7 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         }
         let path: CGPath
         if smooth {
-            path = makeCatmullRomPath(screenPoints)
+            path = makeCatmullRomPath(screenPoints, tension: catmullRomTension)
         } else {
             let mutablePath = CGMutablePath()
             mutablePath.move(to: screenPoints[0])
@@ -144,17 +146,19 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         let points = settings.points
         let inverted = settings.inverted
         let smooth = settings.smooth
+        let tension = settings.tension
         let extent = image.extent
         let maskImage: CIImage
         if let cachedMaskImage,
            cachedExtent == extent,
            cachedPoints == points,
            cachedInverted == inverted,
-           cachedSmooth == smooth
+           cachedSmooth == smooth,
+           cachedTension == tension
         {
             maskImage = cachedMaskImage
         } else {
-            guard let newMaskImage = makeMaskImage(extent, points, inverted, smooth) else {
+            guard let newMaskImage = makeMaskImage(extent, points, inverted, smooth, tension) else {
                 return image
             }
             cachedMaskImage = newMaskImage
@@ -162,6 +166,7 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
             cachedPoints = points
             cachedInverted = inverted
             cachedSmooth = smooth
+            cachedTension = tension
             maskImage = newMaskImage
         }
         let blender = CIFilter.blendWithMask()

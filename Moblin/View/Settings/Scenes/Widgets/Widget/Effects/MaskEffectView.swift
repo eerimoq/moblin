@@ -44,7 +44,7 @@ private struct MaskCanvasView: View {
         let pts = mask.points.map { canvasPoint($0, size) }
         let path: Path
         if mask.smooth, pts.count >= 3 {
-            path = Path(makeCatmullRomPath(pts))
+            path = Path(makeCatmullRomPath(pts, tension: mask.tension))
         } else {
             var p = Path()
             p.move(to: pts[0])
@@ -207,6 +207,15 @@ struct MaskEffectView: View {
                 .onChange(of: mask.smooth) { _ in
                     updateWidget()
                 }
+            if mask.smooth {
+                HStack {
+                    Text("Tension")
+                    Slider(value: $mask.tension, in: 0 ... 0.5)
+                        .onChange(of: mask.tension) { _ in
+                            updateWidget()
+                        }
+                }
+            }
         }
         Section {
             Picker("Type", selection: $mask.backgroundType) {

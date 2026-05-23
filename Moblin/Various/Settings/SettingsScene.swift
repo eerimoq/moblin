@@ -327,11 +327,13 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         .init(x: 75.0, y: 50.0),
         .init(x: 50.0, y: 25.0),
     ]
+    private static let defaultTension: Double = 1.0 / 6.0
     private static let defaultBackgroundColor = RgbColor(red: 0, green: 0, blue: 0)
     private static let defaultBackgroundColor2 = RgbColor(red: 255, green: 255, blue: 255)
     @Published var points: [SettingsVideoEffectMaskEffectPoint] = defaultPoints
     @Published var inverted: Bool = false
     @Published var smooth: Bool = true
+    @Published var tension: Double = defaultTension
     @Published var backgroundType: SettingsMaskBackgroundType = .transparent
     var backgroundColor: RgbColor = defaultBackgroundColor
     @Published var backgroundColorColor: Color
@@ -347,6 +349,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         case points
         case inverted
         case smooth
+        case tension
         case backgroundType
         case backgroundColor
         case backgroundColor2
@@ -357,6 +360,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         try container.encode(.points, points)
         try container.encode(.inverted, inverted)
         try container.encode(.smooth, smooth)
+        try container.encode(.tension, tension)
         try container.encode(.backgroundType, backgroundType)
         try container.encode(.backgroundColor, backgroundColor)
         try container.encode(.backgroundColor2, backgroundColor2)
@@ -367,6 +371,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         points = container.decode(.points, [SettingsVideoEffectMaskEffectPoint].self, Self.defaultPoints)
         inverted = container.decode(.inverted, Bool.self, false)
         smooth = container.decode(.smooth, Bool.self, true)
+        tension = container.decode(.tension, Double.self, Self.defaultTension)
         backgroundType = container.decode(.backgroundType, SettingsMaskBackgroundType.self, .transparent)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.defaultBackgroundColor)
         backgroundColor2 = container.decode(.backgroundColor2, RgbColor.self, Self.defaultBackgroundColor2)
@@ -379,6 +384,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
             points: points.map { MaskEffectPoint(x: $0.x / 100, y: $0.y / 100) },
             inverted: inverted,
             smooth: smooth,
+            tension: tension,
             backgroundType: backgroundType,
             backgroundRgbColor: backgroundColor,
             backgroundRgbColor2: backgroundColor2
