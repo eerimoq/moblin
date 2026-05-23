@@ -208,5 +208,38 @@ struct MaskEffectView: View {
                     updateWidget()
                 }
         }
+        Section {
+            Picker("Type", selection: $mask.backgroundType) {
+                ForEach(SettingsMaskBackgroundType.allCases, id: \.self) { type in
+                    Text(type.toString())
+                        .tag(type)
+                }
+            }
+            .onChange(of: mask.backgroundType) { _ in
+                updateWidget()
+            }
+            if mask.backgroundType != .transparent {
+                ColorPicker("Color", selection: $mask.backgroundColorColor, supportsOpacity: false)
+                    .onChange(of: mask.backgroundColorColor) { _ in
+                        guard let color = mask.backgroundColorColor.toRgb() else {
+                            return
+                        }
+                        mask.backgroundColor = color
+                        updateWidget()
+                    }
+            }
+            if mask.backgroundType == .checkerboard {
+                ColorPicker("Color 2", selection: $mask.backgroundColorColor2, supportsOpacity: false)
+                    .onChange(of: mask.backgroundColorColor2) { _ in
+                        guard let color = mask.backgroundColorColor2.toRgb() else {
+                            return
+                        }
+                        mask.backgroundColor2 = color
+                        updateWidget()
+                    }
+            }
+        } header: {
+            Text("Background")
+        }
     }
 }

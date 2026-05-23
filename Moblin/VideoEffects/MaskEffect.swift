@@ -1,4 +1,5 @@
 import CoreImage
+import CoreImage.CIFilterBuiltins
 
 struct MaskEffectPoint: Equatable {
     var x: Double
@@ -9,9 +10,13 @@ struct MaskEffectSettings {
     var points: [MaskEffectPoint]
     var inverted: Bool
     var smooth: Bool
+    var backgroundType: SettingsMaskBackgroundType
+    var backgroundRgbColor: RgbColor
+    var backgroundRgbColor2: RgbColor
 }
 
 private let catmullRomTension: CGFloat = 1.0 / 6.0
+private let checkerboardSquareCount: Float = 20.0
 
 func makeCatmullRomPath(_ points: [CGPoint]) -> CGMutablePath {
     let numberOfPoints = points.count
@@ -34,6 +39,14 @@ func makeCatmullRomPath(_ points: [CGPoint]) -> CGMutablePath {
     }
     path.closeSubpath()
     return path
+}
+
+private func makeCiColor(_ color: RgbColor) -> CIColor {
+    CIColor(
+        red: CGFloat(color.red) / 255.0,
+        green: CGFloat(color.green) / 255.0,
+        blue: CGFloat(color.blue) / 255.0
+    )
 }
 
 final class MaskEffect: VideoEffect, @unchecked Sendable {
@@ -105,6 +118,25 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         return CIImage(cgImage: cgImage).translated(x: extent.minX, y: extent.minY)
     }
 
+    private func makeBackgroundImage(_ extent: CGRect, _ type: SettingsMaskBackgroundType,
+                                     _ color: RgbColor, _ color2: RgbColor) -> CIImage
+    {
+        switch type {
+        case .transparent:
+            return CIImage.empty()
+        case .solid:
+            return CIImage(color: makeCiColor(color)).cropped(to: extent)
+        case .checkerboard:
+            let filter = CIFilter.checkerboardGenerator()
+            filter.color0 = makeCiColor(color)
+            filter.color1 = makeCiColor(color2)
+            filter.width = Float(min(extent.width, extent.height)) / checkerboardSquareCount
+            filter.sharpness = 1.0
+            filter.center = CGPoint(x: extent.midX, y: extent.midY)
+            return (filter.outputImage?.cropped(to: extent)) ?? CIImage.empty()
+        }
+    }
+
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         guard let settings else {
             return image
@@ -135,7 +167,12 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         let blender = CIFilter.blendWithMask()
         blender.inputImage = image
         blender.maskImage = maskImage
-        blender.backgroundImage = CIImage.empty()
+        blender.backgroundImage = makeBackgroundImage(
+            extent,
+            settings.backgroundType,
+            settings.backgroundRgbColor,
+            settings.backgroundRgbColor2
+        )
         return blender.outputImage ?? image
     }
 }

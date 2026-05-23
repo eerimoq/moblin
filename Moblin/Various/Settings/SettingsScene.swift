@@ -275,6 +275,23 @@ class SettingsVideoEffectOpacity: Codable, ObservableObject {
     }
 }
 
+enum SettingsMaskBackgroundType: String, Codable, CaseIterable {
+    case transparent = "Transparent"
+    case solid = "Solid"
+    case checkerboard = "Checkerboard"
+
+    func toString() -> String {
+        switch self {
+        case .transparent:
+            String(localized: "Transparent")
+        case .solid:
+            String(localized: "Solid")
+        case .checkerboard:
+            String(localized: "Checkerboard")
+        }
+    }
+}
+
 struct SettingsVideoEffectMaskEffectPoint: Codable, Equatable, Identifiable {
     var id: UUID = .init()
     var x: Double
@@ -311,16 +328,29 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         .init(x: 0.2, y: 1.0),
         .init(x: 0.0, y: 0.65),
     ]
+    private static let defaultBackgroundColor = RgbColor(red: 0, green: 0, blue: 0)
+    private static let defaultBackgroundColor2 = RgbColor(red: 255, green: 255, blue: 255)
     @Published var points: [SettingsVideoEffectMaskEffectPoint] = defaultPoints
     @Published var inverted: Bool = false
-    @Published var smooth: Bool = false
+    @Published var smooth: Bool = true
+    @Published var backgroundType: SettingsMaskBackgroundType = .transparent
+    var backgroundColor: RgbColor = defaultBackgroundColor
+    @Published var backgroundColorColor: Color
+    var backgroundColor2: RgbColor = defaultBackgroundColor2
+    @Published var backgroundColorColor2: Color
 
-    init() {}
+    init() {
+        backgroundColorColor = backgroundColor.color()
+        backgroundColorColor2 = backgroundColor2.color()
+    }
 
     enum CodingKeys: CodingKey {
         case points
         case inverted
         case smooth
+        case backgroundType
+        case backgroundColor
+        case backgroundColor2
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -328,19 +358,32 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         try container.encode(.points, points)
         try container.encode(.inverted, inverted)
         try container.encode(.smooth, smooth)
+        try container.encode(.backgroundType, backgroundType)
+        try container.encode(.backgroundColor, backgroundColor)
+        try container.encode(.backgroundColor2, backgroundColor2)
     }
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         points = container.decode(.points, [SettingsVideoEffectMaskEffectPoint].self, Self.defaultPoints)
         inverted = container.decode(.inverted, Bool.self, false)
-        smooth = container.decode(.smooth, Bool.self, false)
+        smooth = container.decode(.smooth, Bool.self, true)
+        backgroundType = container.decode(.backgroundType, SettingsMaskBackgroundType.self, .transparent)
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.defaultBackgroundColor)
+        backgroundColor2 = container.decode(.backgroundColor2, RgbColor.self, Self.defaultBackgroundColor2)
+        backgroundColorColor = backgroundColor.color()
+        backgroundColorColor2 = backgroundColor2.color()
     }
 
     func toSettings() -> MaskEffectSettings {
-        MaskEffectSettings(points: points.map { MaskEffectPoint(x: $0.x, y: $0.y) },
-                           inverted: inverted,
-                           smooth: smooth)
+        MaskEffectSettings(
+            points: points.map { MaskEffectPoint(x: $0.x, y: $0.y) },
+            inverted: inverted,
+            smooth: smooth,
+            backgroundType: backgroundType,
+            backgroundRgbColor: backgroundColor,
+            backgroundRgbColor2: backgroundColor2
+        )
     }
 }
 
