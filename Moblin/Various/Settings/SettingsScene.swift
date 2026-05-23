@@ -315,18 +315,17 @@ struct SettingsVideoEffectMaskEffectPoint: Codable, Equatable, Identifiable {
 
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        x = container.decode(.x, Double.self, 0.5)
-        y = container.decode(.y, Double.self, 0.5)
+        x = container.decode(.x, Double.self, 50.0)
+        y = container.decode(.y, Double.self, 50.0)
     }
 }
 
 class SettingsVideoEffectMask: Codable, ObservableObject {
     private static let defaultPoints: [SettingsVideoEffectMaskEffectPoint] = [
-        .init(x: 0.5, y: 0.0),
-        .init(x: 1.0, y: 0.65),
-        .init(x: 0.8, y: 1.0),
-        .init(x: 0.2, y: 1.0),
-        .init(x: 0.0, y: 0.65),
+        .init(x: 25.0, y: 50.0),
+        .init(x: 50.0, y: 75.0),
+        .init(x: 75.0, y: 50.0),
+        .init(x: 50.0, y: 25.0),
     ]
     private static let defaultBackgroundColor = RgbColor(red: 0, green: 0, blue: 0)
     private static let defaultBackgroundColor2 = RgbColor(red: 255, green: 255, blue: 255)
@@ -377,7 +376,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
 
     func toSettings() -> MaskEffectSettings {
         MaskEffectSettings(
-            points: points.map { MaskEffectPoint(x: $0.x, y: $0.y) },
+            points: points.map { MaskEffectPoint(x: $0.x / 100, y: $0.y / 100) },
             inverted: inverted,
             smooth: smooth,
             backgroundType: backgroundType,

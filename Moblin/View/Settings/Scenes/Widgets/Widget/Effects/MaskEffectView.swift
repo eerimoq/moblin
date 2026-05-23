@@ -13,13 +13,13 @@ private struct MaskCanvasView: View {
     @State private var panStartLocation: CGPoint?
 
     private func canvasPoint(_ point: SettingsVideoEffectMaskEffectPoint, _ size: CGSize) -> CGPoint {
-        CGPoint(x: point.x * size.width, y: point.y * size.height)
+        CGPoint(x: point.x / 100 * size.width, y: point.y / 100 * size.height)
     }
 
     private func normalizedPoint(_ location: CGPoint, _ size: CGSize) -> SettingsVideoEffectMaskEffectPoint {
         SettingsVideoEffectMaskEffectPoint(
-            x: (location.x / size.width).clamped(to: 0 ... 1),
-            y: (location.y / size.height).clamped(to: 0 ... 1)
+            x: (location.x / size.width * 100).clamped(to: 0 ... 100),
+            y: (location.y / size.height * 100).clamped(to: 0 ... 100)
         )
     }
 
@@ -108,12 +108,12 @@ private struct MaskCanvasView: View {
                                 mask.points[index] = normalizedPoint(value.location, size)
                                 updateWidget()
                             } else if let startPoints = panStartPoints, let startLocation = panStartLocation {
-                                let dx = (value.location.x - startLocation.x) / size.width
-                                let dy = (value.location.y - startLocation.y) / size.height
+                                let dx = (value.location.x - startLocation.x) / size.width * 100
+                                let dy = (value.location.y - startLocation.y) / size.height * 100
                                 mask.points = startPoints.map { point in
                                     SettingsVideoEffectMaskEffectPoint(
-                                        x: (point.x + dx).clamped(to: 0 ... 1),
-                                        y: (point.y + dy).clamped(to: 0 ... 1)
+                                        x: (point.x + dx).clamped(to: 0 ... 100),
+                                        y: (point.y + dy).clamped(to: 0 ... 100)
                                     )
                                 }
                                 updateWidget()
@@ -172,9 +172,9 @@ struct MaskEffectView: View {
                     DraggableItemPrefixView()
                     Text("")
                     Spacer()
-                    Text(String(format: "X: %.02f", point.x))
+                    Text(String(format: "X: %.0f", point.x))
                     Spacer()
-                    Text(String(format: "Y: %.02f", point.y))
+                    Text(String(format: "Y: %.0f", point.y))
                     Spacer()
                 }
                 .contextMenuDeleteButton {
@@ -189,7 +189,7 @@ struct MaskEffectView: View {
             }
             .onDelete(perform: deletePoint)
             AddButtonView {
-                mask.points.append(.init(x: 0.5, y: 0.5))
+                mask.points.append(.init(x: 50.0, y: 50.0))
                 updateWidget()
             }
             .disabled(mask.points.count >= maskMaxPoints)
