@@ -159,7 +159,7 @@ struct MaskEffectView: View {
         mask.backgroundImageId = id
         model.imageStorage.write(id: id, data: data)
         DispatchQueue.main.async {
-            loadBackgroundImage()
+            backgroundImage = UIImage(data: data)
         }
         if let ciImage = CIImage(data: data, options: [.applyOrientationProperty: true]) {
             model.getWidgetMaskEffect(widget, effect)?.setBackgroundImage(ciImage)

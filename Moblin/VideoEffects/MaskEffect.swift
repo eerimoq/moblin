@@ -117,6 +117,9 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
 
     private func makeScaledBackground(_ bgImage: CIImage, to extent: CGRect) -> CIImage {
         let bg = bgImage.extent
+        guard !bg.isEmpty else {
+            return CIImage.empty()
+        }
         let scaleX = extent.width / bg.width
         let scaleY = extent.height / bg.height
         let scale = max(scaleX, scaleY)
@@ -159,7 +162,8 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         let blender = CIFilter.blendWithMask()
         blender.inputImage = image
         blender.maskImage = maskImage
-        blender.backgroundImage = backgroundImage.map { makeScaledBackground($0, to: extent) } ?? CIImage.empty()
+        blender.backgroundImage = backgroundImage
+            .map { makeScaledBackground($0, to: extent) } ?? CIImage.empty()
         return blender.outputImage ?? image
     }
 }

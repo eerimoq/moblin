@@ -454,9 +454,11 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             if let id = mask.backgroundImageId {
                 DispatchQueue.global().async {
                     guard let data = model.imageStorage.read(id: id) else {
+                        logger.info("mask: failed to read background image \(id)")
                         return
                     }
                     guard let ciImage = CIImage(data: data, options: [.applyOrientationProperty: true]) else {
+                        logger.info("mask: failed to decode background image \(id)")
                         return
                     }
                     effect.setBackgroundImage(ciImage)
