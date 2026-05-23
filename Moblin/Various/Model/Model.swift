@@ -530,6 +530,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var wheelOfLuckEffects: [UUID: WheelOfLuckEffect] = [:]
     var bingoCardEffects: [UUID: BingoCardEffect] = [:]
     var pomodoroTimerEffects: [UUID: PomodoroTimerEffect] = [:]
+    var pomodoroAudioPlayer: AudioPlayer?
     var enabledSnapshotEffects: [SnapshotEffect] = []
     var enabledChatEffects: [ChatEffect] = []
     var speechToTextAlertMatchOffset = 0
@@ -1923,6 +1924,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     func getAllAlertSounds() -> [SettingsAlertsMediaGalleryItem] {
         database.alertsMediaGallery.bundledSounds + database.alertsMediaGallery.customSounds
+    }
+
+    func getAlertSoundUrl(soundId: UUID) -> URL? {
+        if let bundledSound = database.alertsMediaGallery.bundledSounds.first(where: { $0.id == soundId }) {
+            return Bundle.main.url(forResource: "Alerts.bundle/\(bundledSound.name)", withExtension: "mp3")
+        }
+        return alertMediaStorage.makePath(id: soundId)
     }
 
     func getAlertsEffect(id: UUID) -> AlertsEffect? {

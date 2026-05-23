@@ -870,7 +870,44 @@ extension Model {
         pomodoroTimerEffects.removeAll()
         for widget in widgets where widget.type == .pomodoroTimer {
             pomodoroTimerEffects[widget.id] = PomodoroTimerEffect(canvasSize: media.getCanvasSize())
+            let pomodoroTimer = widget.pomodoroTimer
+            pomodoroTimer.onPhaseChanged = { [weak self, weak pomodoroTimer] in
+                guard let pomodoroTimer else {
+                    return
+                }
+                self?.onPomodoroTimerPhaseChanged(pomodoroTimer, newPhase: $0)
+            }
         }
+    }
+
+    private func onPomodoroTimerPhaseChanged(
+        _ settings: SettingsWidgetPomodoroTimer,
+        newPhase: PomodoroPhase
+    ) {
+        switch newPhase {
+        case .focus:
+            if let soundId = settings.breakToFocusSoundId {
+                playPomodoroSound(soundId: soundId)
+            }
+            if !settings.breakToFocusChatMessage.isEmpty {
+                sendChatMessage(message: settings.breakToFocusChatMessage)
+            }
+        case .shortBreak:
+            if let soundId = settings.focusToBreakSoundId {
+                playPomodoroSound(soundId: soundId)
+            }
+            if !settings.focusToBreakChatMessage.isEmpty {
+                sendChatMessage(message: settings.focusToBreakChatMessage)
+            }
+        }
+    }
+
+    private func playPomodoroSound(soundId: UUID) {
+        guard let url = getAlertSoundUrl(soundId: soundId) else {
+            return
+        }
+        pomodoroAudioPlayer = try? AudioPlayer(contentsOf: url)
+        pomodoroAudioPlayer?.play()
     }
 
     private func isQuickButtonOn(type: SettingsQuickButtonType) -> Bool {
