@@ -8,6 +8,8 @@ protocol MacScreenCaptureDelegate: AnyObject {
     func macScreenCaptureDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer)
 }
 
+private let macScreenCaptureLatency = 0.15
+
 @available(macCatalyst 18.2, *)
 class MacScreenCapture: NSObject, @unchecked Sendable {
     static let shared = MacScreenCapture()
@@ -43,7 +45,7 @@ class MacScreenCapture: NSObject, @unchecked Sendable {
             try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: processorPipelineQueue)
             try await stream.startCapture()
             self.stream = stream
-            delegate?.macScreenCaptureDidStart(latency: 0.1)
+            delegate?.macScreenCaptureDidStart(latency: macScreenCaptureLatency)
         } catch {
             logger.info("mac-screen-capture: Failed to start: \(error.localizedDescription)")
         }
@@ -87,7 +89,8 @@ class MacScreenCapture: NSObject, @unchecked Sendable {
 @available(macCatalyst 18.2, *)
 extension MacScreenCapture: SCStreamOutput {
     func stream(_: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of _: SCStreamOutputType) {
-        let presentationTimeStamp = sampleBuffer.presentationTimeStamp + CMTime(seconds: 0.1)
+        let presentationTimeStamp = sampleBuffer
+            .presentationTimeStamp + CMTime(seconds: macScreenCaptureLatency)
         var sampleBuffer = sampleBuffer
         if sampleBuffer.imageBuffer != nil {
             latestSampleBufferWithImageBuffer = sampleBuffer
