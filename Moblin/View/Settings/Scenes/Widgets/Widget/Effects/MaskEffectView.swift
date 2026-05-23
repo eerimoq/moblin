@@ -125,30 +125,16 @@ struct MaskEffectView: View {
         model.getWidgetMaskEffect(widget, effect)?.setSettings(settings: mask.toSettings())
     }
 
-    private func addPoint() {
-        mask.points.append(.init(x: 0.5, y: 0.5))
-        updateWidget()
-    }
-
-    private func removePoint(at offsets: IndexSet) {
-        mask.points.remove(atOffsets: offsets)
-        updateWidget()
-    }
-
-    private func resetPoints() {
-        mask.points = MaskEffect.defaultPoints
-        updateWidget()
-    }
-
     var body: some View {
         Section {
             MaskCanvasView(mask: mask, updateWidget: updateWidget)
         } header: {
             Text("Polygon")
         } footer: {
-            Text(
-                "Drag handles to adjust polygon vertices. Drag anywhere else to move the polygon. The visible area is inside the polygon, or outside when inverted."
-            )
+            Text("""
+            Drag handles to adjust polygon vertices. Drag anywhere else to move the polygon. \
+            The visible area is inside the polygon, or outside when inverted.
+            """)
         }
         Section {
             ForEach(Array(mask.points.enumerated()), id: \.offset) { index, point in
@@ -159,12 +145,13 @@ struct MaskEffectView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            .onDelete(perform: removePoint)
-            Button(action: addPoint) {
-                HStack {
-                    Image(systemName: "plus")
-                    Text("Add point")
-                }
+            .onDelete { offsets in
+                mask.points.remove(atOffsets: offsets)
+                updateWidget()
+            }
+            AddButtonView {
+                mask.points.append(.init(x: 0.5, y: 0.5))
+                updateWidget()
             }
             .disabled(mask.points.count >= maskMaxPoints)
         } header: {
@@ -177,9 +164,6 @@ struct MaskEffectView: View {
                 .onChange(of: mask.inverted) { _ in
                     updateWidget()
                 }
-            Button(action: resetPoints) {
-                Text("Reset to default")
-            }
         }
     }
 }
