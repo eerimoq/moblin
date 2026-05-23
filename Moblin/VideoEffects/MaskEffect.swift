@@ -7,10 +7,11 @@ struct MaskEffectPoint: Codable, Equatable {
 
 struct MaskEffectSettings {
     var points: [MaskEffectPoint]
+    var inverted: Bool
 }
 
 final class MaskEffect: VideoEffect, @unchecked Sendable {
-    private var settings: MaskEffectSettings = .init(points: MaskEffect.defaultPoints)
+    private var settings: MaskEffectSettings = .init(points: MaskEffect.defaultPoints, inverted: false)
 
     static let defaultPoints: [MaskEffectPoint] = [
         .init(x: 0.5, y: 0.0),
@@ -26,7 +27,7 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
-    private func makeMaskImage(_ extent: CGRect, _ points: [MaskEffectPoint]) -> CIImage? {
+    private func makeMaskImage(_ extent: CGRect, _ points: [MaskEffectPoint], _ inverted: Bool) -> CIImage? {
         guard points.count >= 3 else {
             return nil
         }
@@ -47,9 +48,11 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         ) else {
             return nil
         }
-        context.setFillColor(gray: 0.0, alpha: 1.0)
+        let backgroundGray: CGFloat = inverted ? 1.0 : 0.0
+        let polygonGray: CGFloat = inverted ? 0.0 : 1.0
+        context.setFillColor(gray: backgroundGray, alpha: 1.0)
         context.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        context.setFillColor(gray: 1.0, alpha: 1.0)
+        context.setFillColor(gray: polygonGray, alpha: 1.0)
         let path = CGMutablePath()
         let first = points[0]
         path.move(to: CGPoint(x: first.x * Double(width), y: (1.0 - first.y) * Double(height)))
@@ -67,10 +70,11 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         let points = settings.points
+        let inverted = settings.inverted
         guard points.count >= 3 else {
             return image
         }
-        guard let maskImage = makeMaskImage(image.extent, points) else {
+        guard let maskImage = makeMaskImage(image.extent, points, inverted) else {
             return image
         }
         let blender = CIFilter.blendWithMask()

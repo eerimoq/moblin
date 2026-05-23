@@ -127,7 +127,7 @@ struct MaskEffectView: View {
         } header: {
             Text("Polygon")
         } footer: {
-            Text("Drag handles to adjust polygon vertices. The visible area is inside the polygon.")
+            Text("Drag handles to adjust polygon vertices. The visible area is inside the polygon, or outside when inverted.")
         }
         Section {
             ForEach(Array(mask.points.enumerated()), id: \.offset) { index, point in
@@ -152,6 +152,10 @@ struct MaskEffectView: View {
             SwipeLeftToDeleteHelpView(kind: String(localized: "a point"))
         }
         Section {
+            Toggle("Inverted", isOn: $mask.inverted)
+                .onChange(of: mask.inverted) { _ in
+                    updateWidget()
+                }
             Button(action: resetPoints) {
                 Text("Reset to default")
             }
