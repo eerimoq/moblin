@@ -313,29 +313,34 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
     ]
     @Published var points: [SettingsVideoEffectMaskEffectPoint] = defaultPoints
     @Published var inverted: Bool = false
+    @Published var smooth: Bool = false
 
     init() {}
 
     enum CodingKeys: CodingKey {
         case points
         case inverted
+        case smooth
     }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.points, points)
         try container.encode(.inverted, inverted)
+        try container.encode(.smooth, smooth)
     }
 
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         points = container.decode(.points, [SettingsVideoEffectMaskEffectPoint].self, Self.defaultPoints)
         inverted = container.decode(.inverted, Bool.self, false)
+        smooth = container.decode(.smooth, Bool.self, false)
     }
 
     func toSettings() -> MaskEffectSettings {
         MaskEffectSettings(points: points.map { MaskEffectPoint(x: $0.x, y: $0.y) },
-                           inverted: inverted)
+                           inverted: inverted,
+                           smooth: smooth)
     }
 }
 

@@ -41,13 +41,19 @@ private struct MaskCanvasView: View {
         guard mask.points.count >= 2 else {
             return
         }
-        var path = Path()
-        let first = canvasPoint(mask.points[0], size)
-        path.move(to: first)
-        for point in mask.points.dropFirst() {
-            path.addLine(to: canvasPoint(point, size))
+        let pts = mask.points.map { canvasPoint($0, size) }
+        let path: Path
+        if mask.smooth, pts.count >= 3 {
+            path = Path(makeCatmullRomPath(pts))
+        } else {
+            var p = Path()
+            p.move(to: pts[0])
+            for pt in pts.dropFirst() {
+                p.addLine(to: pt)
+            }
+            p.closeSubpath()
+            path = p
         }
-        path.closeSubpath()
         context.fill(path, with: .color(.white.opacity(0.25)))
         context.stroke(path, with: .color(.white), lineWidth: 1.5)
     }
@@ -195,6 +201,10 @@ struct MaskEffectView: View {
         Section {
             Toggle("Inverted", isOn: $mask.inverted)
                 .onChange(of: mask.inverted) { _ in
+                    updateWidget()
+                }
+            Toggle("Smooth", isOn: $mask.smooth)
+                .onChange(of: mask.smooth) { _ in
                     updateWidget()
                 }
         }
