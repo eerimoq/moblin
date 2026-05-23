@@ -6,14 +6,14 @@ struct MaskEffectPoint: Equatable {
     var y: Double
 }
 
-struct MaskEffectSettings {
+struct MaskEffectSettings: Equatable {
     var points: [MaskEffectPoint]
     var inverted: Bool
     var smooth: Bool
     var tension: Double
     var backgroundType: SettingsMaskBackgroundType
-    var backgroundRgbColor: RgbColor
-    var backgroundRgbColor2: RgbColor
+    var backgroundColor: RgbColor
+    var backgroundColor2: RgbColor
 }
 
 private let checkerboardSquareCount: Float = 20.0
@@ -51,28 +51,22 @@ private func makeCiColor(_ color: RgbColor) -> CIColor {
 
 final class MaskEffect: VideoEffect, @unchecked Sendable {
     private var settings: MaskEffectSettings?
-    private var cachedMaskImage: CIImage?
+    private var cachedSettings: MaskEffectSettings?
     private var cachedExtent: CGRect = .zero
-    private var cachedPoints: [MaskEffectPoint] = []
-    private var cachedInverted: Bool = false
-    private var cachedSmooth: Bool = false
-    private var cachedTension: Double = -1
+    private var cachedMaskImage: CIImage?
+    private var cachedBackgroundImage: CIImage?
 
     func setSettings(settings: MaskEffectSettings) {
         processorPipelineQueue.async {
             self.settings = settings
+            self.cachedSettings = nil
             self.cachedMaskImage = nil
+            self.cachedBackgroundImage = nil
         }
     }
 
-    private func makeMaskImage(
-        _ extent: CGRect,
-        _ points: [MaskEffectPoint],
-        _ inverted: Bool,
-        _ smooth: Bool,
-        _ catmullRomTension: Double
-    ) -> CIImage? {
-        guard points.count >= 3 else {
+    private func makeMaskImage(_ extent: CGRect, _ settings: MaskEffectSettings) -> CIImage? {
+        guard settings.points.count >= 3 else {
             return nil
         }
         let width = Int(extent.width)
@@ -92,17 +86,17 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         ) else {
             return nil
         }
-        let backgroundGray: CGFloat = inverted ? 1.0 : 0.0
-        let polygonGray: CGFloat = inverted ? 0.0 : 1.0
+        let backgroundGray: CGFloat = settings.inverted ? 1.0 : 0.0
+        let polygonGray: CGFloat = settings.inverted ? 0.0 : 1.0
         context.setFillColor(gray: backgroundGray, alpha: 1.0)
         context.fill(CGRect(x: 0, y: 0, width: width, height: height))
         context.setFillColor(gray: polygonGray, alpha: 1.0)
-        let screenPoints = points.map {
+        let screenPoints = settings.points.map {
             CGPoint(x: $0.x * Double(width), y: (1.0 - $0.y) * Double(height))
         }
         let path: CGPath
-        if smooth {
-            path = makeCatmullRomPath(screenPoints, tension: catmullRomTension)
+        if settings.smooth {
+            path = makeCatmullRomPath(screenPoints, tension: settings.tension)
         } else {
             let mutablePath = CGMutablePath()
             mutablePath.move(to: screenPoints[0])
@@ -120,18 +114,18 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         return CIImage(cgImage: cgImage).translated(x: extent.minX, y: extent.minY)
     }
 
-    private func makeBackgroundImage(_ extent: CGRect, _ type: SettingsMaskBackgroundType,
-                                     _ color: RgbColor, _ color2: RgbColor) -> CIImage
+    private func makeBackgroundImage(_ extent: CGRect,
+                                     _ settings: MaskEffectSettings) -> CIImage
     {
-        switch type {
+        switch settings.backgroundType {
         case .transparent:
             return CIImage.empty()
         case .solid:
-            return CIImage(color: makeCiColor(color)).cropped(to: extent)
+            return CIImage(color: makeCiColor(settings.backgroundColor)).cropped(to: extent)
         case .checkerboard:
             let filter = CIFilter.checkerboardGenerator()
-            filter.color0 = makeCiColor(color)
-            filter.color1 = makeCiColor(color2)
+            filter.color0 = makeCiColor(settings.backgroundColor)
+            filter.color1 = makeCiColor(settings.backgroundColor2)
             filter.width = Float(min(extent.width, extent.height)) / checkerboardSquareCount
             filter.sharpness = 1.0
             filter.center = CGPoint(x: extent.midX, y: extent.midY)
@@ -143,41 +137,29 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         guard let settings else {
             return image
         }
-        let points = settings.points
-        let inverted = settings.inverted
-        let smooth = settings.smooth
-        let tension = settings.tension
         let extent = image.extent
         let maskImage: CIImage
-        if let cachedMaskImage,
-           cachedExtent == extent,
-           cachedPoints == points,
-           cachedInverted == inverted,
-           cachedSmooth == smooth,
-           cachedTension == tension
+        let backgroundImage: CIImage
+        if let cachedMaskImage, let cachedBackgroundImage, cachedSettings == settings,
+           cachedExtent == extent
         {
             maskImage = cachedMaskImage
+            backgroundImage = cachedBackgroundImage
         } else {
-            guard let newMaskImage = makeMaskImage(extent, points, inverted, smooth, tension) else {
+            guard let newMaskImage = makeMaskImage(extent, settings) else {
                 return image
             }
             cachedMaskImage = newMaskImage
+            cachedSettings = settings
             cachedExtent = extent
-            cachedPoints = points
-            cachedInverted = inverted
-            cachedSmooth = smooth
-            cachedTension = tension
             maskImage = newMaskImage
+            backgroundImage = makeBackgroundImage(extent, settings)
+            cachedBackgroundImage = backgroundImage
         }
         let blender = CIFilter.blendWithMask()
         blender.inputImage = image
         blender.maskImage = maskImage
-        blender.backgroundImage = makeBackgroundImage(
-            extent,
-            settings.backgroundType,
-            settings.backgroundRgbColor,
-            settings.backgroundRgbColor2
-        )
+        blender.backgroundImage = backgroundImage
         return blender.outputImage ?? image
     }
 }

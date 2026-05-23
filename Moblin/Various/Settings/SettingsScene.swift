@@ -386,8 +386,8 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
             smooth: smooth,
             tension: tension,
             backgroundType: backgroundType,
-            backgroundRgbColor: backgroundColor,
-            backgroundRgbColor2: backgroundColor2
+            backgroundColor: backgroundColor,
+            backgroundColor2: backgroundColor2
         )
     }
 }
