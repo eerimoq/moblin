@@ -62,6 +62,13 @@ private struct EffectView: View {
                         effect: effect,
                         opacity: effect.opacity
                     )
+                case .mask:
+                    MaskEffectView(
+                        model: model,
+                        widget: widget,
+                        effect: effect,
+                        mask: effect.mask
+                    )
                 default:
                     EmptyView()
                 }

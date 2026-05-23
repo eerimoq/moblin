@@ -38,6 +38,7 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     case anamorphicLens
     case lut
     case opacity
+    case mask
 
     func toString() -> String {
         switch self {
@@ -61,6 +62,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
             String(localized: "LUT")
         case .opacity:
             String(localized: "Opacity")
+        case .mask:
+            String(localized: "Mask")
         }
     }
 }
@@ -272,6 +275,70 @@ class SettingsVideoEffectOpacity: Codable, ObservableObject {
     }
 }
 
+struct SettingsVideoEffectMaskEffectPoint: Codable, Equatable, Identifiable {
+    var id: UUID = .init()
+    var x: Double
+    var y: Double
+
+    init(x: Double, y: Double) {
+        self.x = x
+        self.y = y
+    }
+
+    enum CodingKeys: CodingKey {
+        case x
+        case y
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.x, x)
+        try container.encode(.y, y)
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        x = container.decode(.x, Double.self, 0.5)
+        y = container.decode(.y, Double.self, 0.5)
+    }
+}
+
+class SettingsVideoEffectMask: Codable, ObservableObject {
+    private static let defaultPoints: [SettingsVideoEffectMaskEffectPoint] = [
+        .init(x: 0.5, y: 0.0),
+        .init(x: 1.0, y: 0.65),
+        .init(x: 0.8, y: 1.0),
+        .init(x: 0.2, y: 1.0),
+        .init(x: 0.0, y: 0.65),
+    ]
+    @Published var points: [SettingsVideoEffectMaskEffectPoint] = defaultPoints
+    @Published var inverted: Bool = false
+
+    init() {}
+
+    enum CodingKeys: CodingKey {
+        case points
+        case inverted
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.points, points)
+        try container.encode(.inverted, inverted)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        points = container.decode(.points, [SettingsVideoEffectMaskEffectPoint].self, Self.defaultPoints)
+        inverted = container.decode(.inverted, Bool.self, false)
+    }
+
+    func toSettings() -> MaskEffectSettings {
+        MaskEffectSettings(points: points.map { MaskEffectPoint(x: $0.x, y: $0.y) },
+                           inverted: inverted)
+    }
+}
+
 class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var id: UUID = .init()
     @Published var enabled: Bool = true
@@ -282,6 +349,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
     var anamorphicLens: SettingsVideoEffectAnamorphicLens = .init()
     var lut: SettingsVideoEffectLut = .init()
     var opacity: SettingsVideoEffectOpacity = .init()
+    var mask: SettingsVideoEffectMask = .init()
 
     enum CodingKeys: CodingKey {
         case id
@@ -293,6 +361,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         case anamorphicLens
         case lut
         case opacity
+        case mask
     }
 
     init() {}
@@ -308,6 +377,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         try container.encode(.anamorphicLens, anamorphicLens)
         try container.encode(.lut, lut)
         try container.encode(.opacity, opacity)
+        try container.encode(.mask, mask)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -329,6 +399,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         )
         lut = container.decode(.lut, SettingsVideoEffectLut.self, .init())
         opacity = container.decode(.opacity, SettingsVideoEffectOpacity.self, .init())
+        mask = container.decode(.mask, SettingsVideoEffectMask.self, .init())
     }
 
     @MainActor
@@ -367,6 +438,10 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         case .opacity:
             let effect = OpacityEffect()
             effect.setOpacity(opacity: opacity.opacity)
+            return effect
+        case .mask:
+            let effect = MaskEffect()
+            effect.setSettings(settings: mask.toSettings())
             return effect
         }
     }
