@@ -41,6 +41,7 @@ func makeCatmullRomPath(_ pts: [CGPoint]) -> CGMutablePath {
 
 final class MaskEffect: VideoEffect, @unchecked Sendable {
     private var settings: MaskEffectSettings?
+    private var backgroundImage: CIImage?
     private var cachedMaskImage: CIImage?
     private var cachedExtent: CGRect = .zero
     private var cachedPoints: [MaskEffectPoint] = []
@@ -51,6 +52,12 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         processorPipelineQueue.async {
             self.settings = settings
             self.cachedMaskImage = nil
+        }
+    }
+
+    func setBackgroundImage(_ image: CIImage?) {
+        processorPipelineQueue.async {
+            self.backgroundImage = image
         }
     }
 
@@ -108,6 +115,20 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         return CIImage(cgImage: cgImage).translated(x: extent.minX, y: extent.minY)
     }
 
+    private func makeScaledBackground(_ bgImage: CIImage, to extent: CGRect) -> CIImage {
+        let bg = bgImage.extent
+        let scaleX = extent.width / bg.width
+        let scaleY = extent.height / bg.height
+        let scale = max(scaleX, scaleY)
+        let scaledW = bg.width * scale
+        let scaledH = bg.height * scale
+        let offsetX = extent.minX - (scaledW - extent.width) / 2
+        let offsetY = extent.minY - (scaledH - extent.height) / 2
+        let transform = CGAffineTransform(scaleX: scale, y: scale)
+            .concatenating(CGAffineTransform(translationX: offsetX, y: offsetY))
+        return bgImage.transformed(by: transform).cropped(to: extent)
+    }
+
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         guard let settings else {
             return image
@@ -138,7 +159,7 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         let blender = CIFilter.blendWithMask()
         blender.inputImage = image
         blender.maskImage = maskImage
-        blender.backgroundImage = CIImage.empty()
+        blender.backgroundImage = backgroundImage.map { makeScaledBackground($0, to: extent) } ?? CIImage.empty()
         return blender.outputImage ?? image
     }
 }

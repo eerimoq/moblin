@@ -314,6 +314,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
     @Published var points: [SettingsVideoEffectMaskEffectPoint] = defaultPoints
     @Published var inverted: Bool = false
     @Published var smooth: Bool = false
+    @Published var backgroundImageId: UUID?
 
     init() {}
 
@@ -321,6 +322,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         case points
         case inverted
         case smooth
+        case backgroundImageId
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -328,6 +330,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         try container.encode(.points, points)
         try container.encode(.inverted, inverted)
         try container.encode(.smooth, smooth)
+        try container.encode(.backgroundImageId, backgroundImageId)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -335,6 +338,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         points = container.decode(.points, [SettingsVideoEffectMaskEffectPoint].self, Self.defaultPoints)
         inverted = container.decode(.inverted, Bool.self, false)
         smooth = container.decode(.smooth, Bool.self, false)
+        backgroundImageId = container.decode(.backgroundImageId, UUID?.self, nil)
     }
 
     func toSettings() -> MaskEffectSettings {
@@ -447,6 +451,17 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
         case .mask:
             let effect = MaskEffect()
             effect.setSettings(settings: mask.toSettings())
+            if let id = mask.backgroundImageId {
+                DispatchQueue.global().async {
+                    guard let data = model.imageStorage.read(id: id) else {
+                        return
+                    }
+                    guard let ciImage = CIImage(data: data, options: [.applyOrientationProperty: true]) else {
+                        return
+                    }
+                    effect.setBackgroundImage(ciImage)
+                }
+            }
             return effect
         }
     }

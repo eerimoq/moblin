@@ -1791,6 +1791,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             if database.color.diskLutsCube.contains(where: { $0.id == id }) {
                 used = true
             }
+            for widget in database.widgets {
+                for effect in widget.effects where effect.mask.backgroundImageId == id {
+                    used = true
+                }
+            }
             if !used {
                 logger.info("Removing unused image \(id)")
                 imageStorage.remove(id: id)

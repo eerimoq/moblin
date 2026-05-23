@@ -1,3 +1,4 @@
+import PhotosUI
 import SwiftUI
 
 private let maskPointHandleRadius: CGFloat = 12
@@ -137,9 +138,41 @@ struct MaskEffectView: View {
     let effect: SettingsVideoEffect
     @ObservedObject var mask: SettingsVideoEffectMask
     @State private var previewImage: UIImage?
+    @State private var backgroundImage: UIImage?
+    @State private var presentingPicker: Bool = false
+    @State private var selectedImageItem: PhotosPickerItem?
 
     private func updateWidget() {
         model.getWidgetMaskEffect(widget, effect)?.setSettings(settings: mask.toSettings())
+    }
+
+    private func loadBackgroundImage() {
+        if let id = mask.backgroundImageId, let data = model.imageStorage.tryRead(id: id) {
+            backgroundImage = UIImage(data: data)
+        } else {
+            backgroundImage = nil
+        }
+    }
+
+    private func applyBackgroundImage(_ data: Data) {
+        let id = mask.backgroundImageId ?? UUID()
+        mask.backgroundImageId = id
+        model.imageStorage.write(id: id, data: data)
+        DispatchQueue.main.async {
+            loadBackgroundImage()
+        }
+        if let ciImage = CIImage(data: data, options: [.applyOrientationProperty: true]) {
+            model.getWidgetMaskEffect(widget, effect)?.setBackgroundImage(ciImage)
+        }
+    }
+
+    private func clearBackgroundImage() {
+        if let id = mask.backgroundImageId {
+            model.imageStorage.remove(id: id)
+        }
+        mask.backgroundImageId = nil
+        backgroundImage = nil
+        model.getWidgetMaskEffect(widget, effect)?.setBackgroundImage(nil)
     }
 
     private func deletePoint(at offsets: IndexSet) {
@@ -165,6 +198,7 @@ struct MaskEffectView: View {
             model.takeVideoSourcePreviewImage(widget: widget) { image in
                 previewImage = image
             }
+            loadBackgroundImage()
         }
         Section {
             ForEach(mask.points) { point in
@@ -207,6 +241,53 @@ struct MaskEffectView: View {
                 .onChange(of: mask.smooth) { _ in
                     updateWidget()
                 }
+        }
+        Section {
+            Button {
+                presentingPicker = true
+            } label: {
+                if let backgroundImage {
+                    HCenter {
+                        Image(uiImage: backgroundImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxHeight: 200)
+                    }
+                } else {
+                    Text("Select background image")
+                }
+            }
+            .photosPicker(isPresented: $presentingPicker,
+                          selection: $selectedImageItem,
+                          matching: .images)
+            .onChange(of: selectedImageItem) { imageItem in
+                imageItem?.loadTransferable(type: Data.self) { result in
+                    switch result {
+                    case let .success(data?):
+                        applyBackgroundImage(data)
+                    case .success(nil):
+                        logger.info("mask: background image is nil")
+                    case let .failure(error):
+                        logger.info("mask: background image error: \(error)")
+                    }
+                }
+            }
+            .onAppear {
+                model.checkPhotoLibraryAuthorization()
+            }
+            if mask.backgroundImageId != nil {
+                Button(role: .destructive) {
+                    clearBackgroundImage()
+                } label: {
+                    HCenter {
+                        Text("Remove background image")
+                    }
+                }
+            }
+        } header: {
+            Text("Background")
+        } footer: {
+            Text("Optionally show an image instead of transparency outside the mask area.")
         }
     }
 }
