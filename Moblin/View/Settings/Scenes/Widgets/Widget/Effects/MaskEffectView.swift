@@ -7,6 +7,8 @@ private struct MaskCanvasView: View {
     @ObservedObject var mask: SettingsVideoEffectMask
     let updateWidget: () -> Void
     @State private var dragIndex: Int?
+    @State private var panStartPoints: [MaskEffectPoint]?
+    @State private var panStartLocation: CGPoint?
 
     private func canvasPoint(_ point: MaskEffectPoint, _ size: CGSize) -> CGPoint {
         CGPoint(x: point.x * size.width, y: point.y * size.height)
@@ -78,16 +80,33 @@ private struct MaskCanvasView: View {
                 .gesture(
                     DragGesture(minimumDistance: 0)
                         .onChanged { value in
-                            if dragIndex == nil {
-                                dragIndex = closestPointIndex(value.startLocation, size)
+                            if dragIndex == nil, panStartPoints == nil {
+                                if let index = closestPointIndex(value.startLocation, size) {
+                                    dragIndex = index
+                                } else {
+                                    panStartPoints = mask.points
+                                    panStartLocation = value.startLocation
+                                }
                             }
                             if let index = dragIndex {
                                 mask.points[index] = normalizedPoint(value.location, size)
+                                updateWidget()
+                            } else if let startPoints = panStartPoints, let startLocation = panStartLocation {
+                                let dx = (value.location.x - startLocation.x) / size.width
+                                let dy = (value.location.y - startLocation.y) / size.height
+                                mask.points = startPoints.map { point in
+                                    MaskEffectPoint(
+                                        x: (point.x + dx).clamped(to: 0 ... 1),
+                                        y: (point.y + dy).clamped(to: 0 ... 1)
+                                    )
+                                }
                                 updateWidget()
                             }
                         }
                         .onEnded { _ in
                             dragIndex = nil
+                            panStartPoints = nil
+                            panStartLocation = nil
                         }
                 )
             }
@@ -127,7 +146,9 @@ struct MaskEffectView: View {
         } header: {
             Text("Polygon")
         } footer: {
-            Text("Drag handles to adjust polygon vertices. The visible area is inside the polygon, or outside when inverted.")
+            Text(
+                "Drag handles to adjust polygon vertices. Drag anywhere else to move the polygon. The visible area is inside the polygon, or outside when inverted."
+            )
         }
         Section {
             ForEach(Array(mask.points.enumerated()), id: \.offset) { index, point in
