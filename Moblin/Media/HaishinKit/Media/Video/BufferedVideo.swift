@@ -150,6 +150,10 @@ class BufferedVideo {
         currentSampleBuffer = sampleBuffer
     }
 
+    func getLatestSampleBuffer() -> CMSampleBuffer? {
+        currentSampleBuffer
+    }
+
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
         currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
     }

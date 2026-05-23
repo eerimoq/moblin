@@ -108,6 +108,18 @@ extension Model {
         }
     }
 
+    func takeVideoSourcePreviewImage(widget: SettingsWidget,
+                                     onComplete: @escaping @MainActor (UIImage?) -> Void)
+    {
+        guard widget.type == .videoSource,
+              let videoSourceId = getVideoSourceId(cameraId: widget.videoSource.toCameraId())
+        else {
+            onComplete(nil)
+            return
+        }
+        media.takeVideoSourceSnapshot(videoSourceId: videoSourceId, onComplete: onComplete)
+    }
+
     func setCleanSnapshots() {
         media.setCleanSnapshots(enabled: stream.recording.cleanSnapshots)
     }

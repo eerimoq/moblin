@@ -413,6 +413,24 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
+    func takeVideoSourceSnapshot(videoSourceId: UUID, onComplete: @escaping @MainActor (UIImage?) -> Void) {
+        processorPipelineQueue.async {
+            guard let sampleBuffer = self.bufferedVideos[videoSourceId]?.getLatestSampleBuffer(),
+                  let imageBuffer = sampleBuffer.imageBuffer
+            else {
+                DispatchQueue.main.async { onComplete(nil) }
+                return
+            }
+            let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+            guard let cgImage = self.context.createCGImage(ciImage, from: ciImage.extent) else {
+                DispatchQueue.main.async { onComplete(nil) }
+                return
+            }
+            let uiImage = UIImage(cgImage: cgImage)
+            DispatchQueue.main.async { onComplete(uiImage) }
+        }
+    }
+
     func setCleanRecordings(enabled: Bool) {
         processorPipelineQueue.async {
             self.cleanRecordings = enabled

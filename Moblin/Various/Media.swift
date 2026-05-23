@@ -730,6 +730,12 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.takeSnapshot(age: age, onComplete: onComplete)
     }
 
+    func takeVideoSourceSnapshot(videoSourceId: UUID,
+                                 onComplete: @escaping @MainActor (UIImage?) -> Void)
+    {
+        processor?.takeVideoSourceSnapshot(videoSourceId: videoSourceId, onComplete: onComplete)
+    }
+
     func setCleanRecordings(enabled: Bool) {
         processor?.setCleanRecordings(enabled: enabled)
     }

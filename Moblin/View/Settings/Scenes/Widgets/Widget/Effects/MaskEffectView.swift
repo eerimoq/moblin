@@ -6,6 +6,8 @@ private let maskMaxPoints = 20
 private struct MaskCanvasView: View {
     @ObservedObject var mask: SettingsVideoEffectMask
     let updateWidget: () -> Void
+    let previewImage: UIImage?
+    let isPortrait: Bool
     @State private var dragIndex: Int?
     @State private var panStartPoints: [SettingsVideoEffectMaskEffectPoint]?
     @State private var panStartLocation: CGPoint?
@@ -68,11 +70,19 @@ private struct MaskCanvasView: View {
         GeometryReader { reader in
             let size = reader.size
             ZStack {
-                Image("GamlaLinkoping")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: size.width, height: size.height)
-                    .clipped()
+                if let previewImage {
+                    Image(uiImage: previewImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: size.width, height: size.height)
+                        .clipped()
+                } else {
+                    Image("GamlaLinkoping")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: size.width, height: size.height)
+                        .clipped()
+                }
                 Canvas { context, canvasSize in
                     drawPolygon(context, canvasSize)
                     drawHandles(context, canvasSize)
@@ -111,7 +121,7 @@ private struct MaskCanvasView: View {
                 )
             }
         }
-        .aspectRatio(16 / 9, contentMode: .fit)
+        .aspectRatio(isPortrait ? 9 / 16 : 16 / 9, contentMode: .fit)
     }
 }
 
@@ -120,6 +130,7 @@ struct MaskEffectView: View {
     let widget: SettingsWidget
     let effect: SettingsVideoEffect
     @ObservedObject var mask: SettingsVideoEffectMask
+    @State private var previewImage: UIImage?
 
     private func updateWidget() {
         model.getWidgetMaskEffect(widget, effect)?.setSettings(settings: mask.toSettings())
@@ -132,7 +143,10 @@ struct MaskEffectView: View {
 
     var body: some View {
         Section {
-            MaskCanvasView(mask: mask, updateWidget: updateWidget)
+            MaskCanvasView(mask: mask,
+                           updateWidget: updateWidget,
+                           previewImage: previewImage,
+                           isPortrait: model.stream.portrait)
         } header: {
             Text("Shape")
         } footer: {
@@ -140,6 +154,11 @@ struct MaskEffectView: View {
             Drag handles to adjust polygon vertices. Drag anywhere else to move the polygon. \
             The visible area is inside the polygon, or outside when inverted.
             """)
+        }
+        .onAppear {
+            model.takeVideoSourcePreviewImage(widget: widget) { image in
+                previewImage = image
+            }
         }
         Section {
             ForEach(mask.points) { point in

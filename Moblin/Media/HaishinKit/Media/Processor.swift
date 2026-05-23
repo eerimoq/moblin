@@ -228,6 +228,10 @@ final class Processor: @unchecked Sendable {
         video.takeSnapshot(age: age, onComplete: onComplete)
     }
 
+    func takeVideoSourceSnapshot(videoSourceId: UUID, onComplete: @escaping @MainActor (UIImage?) -> Void) {
+        video.takeVideoSourceSnapshot(videoSourceId: videoSourceId, onComplete: onComplete)
+    }
+
     func setCleanRecordings(enabled: Bool) {
         video.setCleanRecordings(enabled: enabled)
     }
