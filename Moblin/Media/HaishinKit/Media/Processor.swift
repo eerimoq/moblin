@@ -144,8 +144,8 @@ final class Processor: @unchecked Sendable {
         }
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
-        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
+        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency, trackDrift: trackDrift)
     }
 
     func removeBufferedVideo(cameraId: UUID) {

@@ -437,9 +437,12 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         }
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
         processorPipelineQueue.async {
-            self.addBufferedVideoInternal(cameraId: cameraId, name: name, latency: latency)
+            self.addBufferedVideoInternal(cameraId: cameraId,
+                                          name: name,
+                                          latency: latency,
+                                          trackDrift: trackDrift)
         }
     }
 
@@ -1229,13 +1232,18 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         bufferedVideo.appendSampleBuffer(sampleBuffer)
     }
 
-    private func addBufferedVideoInternal(cameraId: UUID, name: String, latency: Double) {
+    private func addBufferedVideoInternal(cameraId: UUID,
+                                          name: String,
+                                          latency: Double,
+                                          trackDrift: Bool = true)
+    {
         bufferedVideos[cameraId] = BufferedVideo(
             cameraId: cameraId,
             name: name,
             update: true,
             latency: latency,
-            processor: processor
+            processor: processor,
+            trackDrift: trackDrift
         )
     }
 
@@ -2159,7 +2167,8 @@ extension VideoUnit: MacScreenCaptureDelegate {
         addBufferedVideo(
             cameraId: screenCaptureCameraId,
             name: screenCaptureCameraName,
-            latency: latency
+            latency: latency,
+            trackDrift: false
         )
     }
 
