@@ -1,6 +1,7 @@
 import SwiftUI
 
 private let maskPointHandleRadius: CGFloat = 12
+private let maskMaxPoints = 20
 
 private struct MaskCanvasView: View {
     @ObservedObject var mask: SettingsVideoEffectMask
@@ -144,7 +145,7 @@ struct MaskEffectView: View {
                     Text("Add point")
                 }
             }
-            .disabled(mask.points.count >= 20)
+            .disabled(mask.points.count >= maskMaxPoints)
         } header: {
             Text("Points")
         } footer: {
