@@ -1,7 +1,6 @@
 import CoreImage
 
-struct MaskEffectPoint: Equatable, Identifiable {
-    let id: UUID = .init()
+struct MaskEffectPoint: Equatable {
     var x: Double
     var y: Double
 }
@@ -12,28 +11,26 @@ struct MaskEffectSettings {
     var smooth: Bool
 }
 
-// Catmull-Rom tension: 1/6 gives a standard smooth spline.
 private let catmullRomTension: CGFloat = 1.0 / 6.0
 
-// Build a smooth closed Catmull-Rom spline path through the given screen-space points.
-func makeCatmullRomPath(_ pts: [CGPoint]) -> CGMutablePath {
-    let n = pts.count
+func makeCatmullRomPath(_ points: [CGPoint]) -> CGMutablePath {
+    let numberOfPoints = points.count
     let path = CGMutablePath()
-    path.move(to: pts[0])
-    for i in 0 ..< n {
-        let p0 = pts[(i - 1 + n) % n]
-        let p1 = pts[i]
-        let p2 = pts[(i + 1) % n]
-        let p3 = pts[(i + 2) % n]
-        let cp1 = CGPoint(
-            x: p1.x + (p2.x - p0.x) * catmullRomTension,
-            y: p1.y + (p2.y - p0.y) * catmullRomTension
+    path.move(to: points[0])
+    for i in 0 ..< numberOfPoints {
+        let point0 = points[(i - 1 + numberOfPoints) % numberOfPoints]
+        let point1 = points[i]
+        let point2 = points[(i + 1) % numberOfPoints]
+        let point3 = points[(i + 2) % numberOfPoints]
+        let cpoint1 = CGPoint(
+            x: point1.x + (point2.x - point0.x) * catmullRomTension,
+            y: point1.y + (point2.y - point0.y) * catmullRomTension
         )
-        let cp2 = CGPoint(
-            x: p2.x - (p3.x - p1.x) * catmullRomTension,
-            y: p2.y - (p3.y - p1.y) * catmullRomTension
+        let cpoint2 = CGPoint(
+            x: point2.x - (point3.x - point1.x) * catmullRomTension,
+            y: point2.y - (point3.y - point1.y) * catmullRomTension
         )
-        path.addCurve(to: p2, control1: cp1, control2: cp2)
+        path.addCurve(to: point2, control1: cpoint1, control2: cpoint2)
     }
     path.closeSubpath()
     return path
