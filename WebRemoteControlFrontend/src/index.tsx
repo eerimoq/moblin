@@ -135,6 +135,14 @@ function App() {
   const [gimbalPresets, setGimbalPresets] = createSignal<GimbalPreset[]>([]);
   const [filterStates, setFilterStates] = createStore<Record<string, boolean>>({});
   const [previewImageSrc, setPreviewImageSrc] = createSignal<string | null>(null);
+  const [previewRequested, setPreviewRequested] = createSignal(true);
+  const [previewSessionId, setPreviewSessionId] = createSignal(0);
+  const [previewHintSessionId, setPreviewHintSessionId] = createSignal<number | null>(null);
+  const [previewAspectRatio, setPreviewAspectRatio] = createSignal("16 / 9");
+  const previewHintText = window.matchMedia("(pointer: coarse)").matches
+    ? "Tap preview to hide"
+    : "Click preview to hide";
+  let previewHintTimerId: ReturnType<typeof setTimeout> | undefined;
   let logContainer: HTMLDivElement | undefined;
 
   class IndexConnection extends WebSocketConnection {
@@ -155,7 +163,9 @@ function App() {
       this.sendStartStatusRequest();
       this.sendGetStatusRequest();
       this.sendGetSettingsRequest();
-      this.sendStartPreview();
+      if (previewRequested()) {
+        this.sendStartPreview();
+      }
     }
 
     reconnectSoon(): void {
@@ -252,6 +262,12 @@ function App() {
     }
 
     handlePreview(preview: string): void {
+      if (!previewRequested()) {
+        return;
+      }
+      if (previewImageSrc() === null) {
+        showPreviewHintTemporarily();
+      }
       setPreviewImageSrc(`data:image/jpeg;base64,${preview}`);
     }
   }
@@ -393,6 +409,26 @@ function App() {
     if (!isNaN(value)) connection.setZoom(value);
   }
 
+  function showPreviewHintTemporarily(): void {
+    const sessionId = previewSessionId();
+    clearPreviewHintTimer();
+    setPreviewHintSessionId(sessionId);
+    previewHintTimerId = setTimeout(() => {
+      if (previewHintSessionId() === sessionId) {
+        setPreviewHintSessionId(null);
+      }
+      previewHintTimerId = undefined;
+    }, 6000);
+  }
+
+  function clearPreviewHintTimer(): void {
+    setPreviewHintSessionId(null);
+    if (previewHintTimerId !== undefined) {
+      clearTimeout(previewHintTimerId);
+      previewHintTimerId = undefined;
+    }
+  }
+
   function Links() {
     return (
       <div class="text-center space-x-4">
@@ -414,10 +450,65 @@ function App() {
   }
 
   function VideoPreview() {
+    function hidePreview(): void {
+      clearPreviewHintTimer();
+      setPreviewSessionId((id) => id + 1);
+      setPreviewRequested(false);
+      setPreviewImageSrc(null);
+      connection.sendStopPreview();
+    }
+
+    function showPreview(): void {
+      clearPreviewHintTimer();
+      setPreviewSessionId((id) => id + 1);
+      setPreviewImageSrc(null);
+      setPreviewRequested(true);
+      connection.sendStartPreview();
+    }
+
     return (
-      <Show when={previewImageSrc() !== null}>
-        <img src={previewImageSrc()!} alt="Video preview" class="w-full rounded-lg" />
-      </Show>
+      <div
+        class="relative flex min-h-32 items-center justify-center overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900"
+        style={{ "aspect-ratio": previewAspectRatio() }}
+      >
+        <Show
+          when={previewRequested()}
+          fallback={
+            <Button
+              class="bg-zinc-700 px-4 py-2 text-zinc-200 hover:bg-zinc-600"
+              onClick={showPreview}
+            >
+              Show preview
+            </Button>
+          }
+        >
+          <Show
+            when={previewImageSrc() !== null}
+            fallback={<div class="text-sm text-zinc-400">Loading preview...</div>}
+          >
+            <button type="button" class="absolute inset-0 cursor-pointer" onClick={hidePreview}>
+              <img
+                src={previewImageSrc()!}
+                alt="Video preview"
+                class="h-full w-full object-contain"
+                onLoad={(event) => {
+                  const image = event.currentTarget;
+                  if (image.naturalWidth > 0 && image.naturalHeight > 0) {
+                    setPreviewAspectRatio(`${image.naturalWidth} / ${image.naturalHeight}`);
+                  }
+                }}
+              />
+              <Show when={previewHintSessionId() === previewSessionId()}>
+                <div class="pointer-events-none absolute right-2 bottom-2 left-2 flex justify-center">
+                  <div class="rounded border border-zinc-600 bg-black/70 px-3 py-1 text-sm text-zinc-100 shadow-lg backdrop-blur-sm">
+                    {previewHintText}
+                  </div>
+                </div>
+              </Show>
+            </button>
+          </Show>
+        </Show>
+      </div>
     );
   }
 
