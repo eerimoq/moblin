@@ -332,7 +332,6 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
     private static let defaultBackgroundColor2 = RgbColor(red: 255, green: 255, blue: 255)
     @Published var points: [SettingsVideoEffectMaskEffectPoint] = defaultPoints
     @Published var inverted: Bool = false
-    @Published var smooth: Bool = true
     @Published var tension: Double = defaultTension
     @Published var backgroundType: SettingsMaskBackgroundType = .transparent
     var backgroundColor: RgbColor = defaultBackgroundColor
@@ -348,7 +347,6 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
     enum CodingKeys: CodingKey {
         case points
         case inverted
-        case smooth
         case tension
         case backgroundType
         case backgroundColor
@@ -359,7 +357,6 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.points, points)
         try container.encode(.inverted, inverted)
-        try container.encode(.smooth, smooth)
         try container.encode(.tension, tension)
         try container.encode(.backgroundType, backgroundType)
         try container.encode(.backgroundColor, backgroundColor)
@@ -370,7 +367,6 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         points = container.decode(.points, [SettingsVideoEffectMaskEffectPoint].self, Self.defaultPoints)
         inverted = container.decode(.inverted, Bool.self, false)
-        smooth = container.decode(.smooth, Bool.self, true)
         tension = container.decode(.tension, Double.self, Self.defaultTension)
         backgroundType = container.decode(.backgroundType, SettingsMaskBackgroundType.self, .transparent)
         backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.defaultBackgroundColor)
@@ -383,7 +379,6 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         MaskEffectSettings(
             points: points.map { MaskEffectPoint(x: $0.x / 100, y: $0.y / 100) },
             inverted: inverted,
-            smooth: smooth,
             tension: tension,
             backgroundType: backgroundType,
             backgroundColor: backgroundColor,

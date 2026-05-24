@@ -9,7 +9,6 @@ struct MaskEffectPoint: Equatable {
 struct MaskEffectSettings: Equatable {
     var points: [MaskEffectPoint]
     var inverted: Bool
-    var smooth: Bool
     var tension: Double
     var backgroundType: SettingsMaskBackgroundType
     var backgroundColor: RgbColor
@@ -94,18 +93,7 @@ final class MaskEffect: VideoEffect, @unchecked Sendable {
         let screenPoints = settings.points.map {
             CGPoint(x: $0.x * Double(width), y: (1.0 - $0.y) * Double(height))
         }
-        let path: CGPath
-        if settings.smooth {
-            path = makeCatmullRomPath(screenPoints, tension: settings.tension)
-        } else {
-            let mutablePath = CGMutablePath()
-            mutablePath.move(to: screenPoints[0])
-            for pt in screenPoints.dropFirst() {
-                mutablePath.addLine(to: pt)
-            }
-            mutablePath.closeSubpath()
-            path = mutablePath
-        }
+        let path = makeCatmullRomPath(screenPoints, tension: settings.tension)
         context.addPath(path)
         context.fillPath()
         guard let cgImage = context.makeImage() else {

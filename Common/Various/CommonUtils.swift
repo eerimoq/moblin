@@ -264,16 +264,16 @@ func appVersion() -> String {
     Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
 }
 
-func formatOneDecimal(_ value: Float) -> String {
-    String(format: "%.01f", value)
+func formatOneDecimal(_ value: some BinaryFloatingPoint) -> String {
+    String(format: "%.01f", Double(value))
 }
 
-func formatTwoDecimals(_ value: Double) -> String {
-    String(format: "%.02f", value)
+func formatTwoDecimals(_ value: some BinaryFloatingPoint) -> String {
+    String(format: "%.02f", Double(value))
 }
 
-func formatThreeDecimals(_ value: Double) -> String {
-    String(format: "%.03f", value)
+func formatThreeDecimals(_ value: some BinaryFloatingPoint) -> String {
+    String(format: "%.03f", Double(value))
 }
 
 extension Comparable {
