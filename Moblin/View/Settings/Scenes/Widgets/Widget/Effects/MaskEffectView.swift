@@ -305,6 +305,22 @@ private struct MaskEditorView: View {
         return value.clamped(to: 0 ... 100)
     }
 
+    private func adjustX(delta: Double) {
+        guard let selectedPointIndex else {
+            return
+        }
+        mask.points[selectedPointIndex].x = (mask.points[selectedPointIndex].x + delta).clamped(to: 0 ... 100)
+        updateWidget()
+    }
+
+    private func adjustY(delta: Double) {
+        guard let selectedPointIndex else {
+            return
+        }
+        mask.points[selectedPointIndex].y = (mask.points[selectedPointIndex].y + delta).clamped(to: 0 ... 100)
+        updateWidget()
+    }
+
     var body: some View {
         if let selectedPointIndex {
             Group {
@@ -313,12 +329,40 @@ private struct MaskEditorView: View {
                     TextField("", text: $xText)
                         .multilineTextAlignment(.trailing)
                         .onSubmit { commitX() }
+                    Button {
+                        adjustX(delta: -0.1)
+                    } label: {
+                        Image(systemName: "minus.circle")
+                    }
+                    .buttonStyle(.borderless)
+                    .font(.title)
+                    Button {
+                        adjustX(delta: 0.1)
+                    } label: {
+                        Image(systemName: "plus.circle")
+                    }
+                    .buttonStyle(.borderless)
+                    .font(.title)
                 }
                 HStack {
                     Text("Y")
                     TextField("", text: $yText)
                         .multilineTextAlignment(.trailing)
                         .onSubmit { commitY() }
+                    Button {
+                        adjustY(delta: -0.1)
+                    } label: {
+                        Image(systemName: "minus.circle")
+                    }
+                    .buttonStyle(.borderless)
+                    .font(.title)
+                    Button {
+                        adjustY(delta: 0.1)
+                    } label: {
+                        Image(systemName: "plus.circle")
+                    }
+                    .buttonStyle(.borderless)
+                    .font(.title)
                 }
                 Button(role: .destructive) {
                     mask.points.remove(at: selectedPointIndex)
