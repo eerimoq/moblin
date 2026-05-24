@@ -267,7 +267,7 @@ private struct MaskEditorView: View {
     @State private var xText: String = ""
     @State private var yText: String = ""
 
-    private func updateXY() {
+    private func updateXYText() {
         guard let selectedPointIndex else {
             return
         }
@@ -277,21 +277,51 @@ private struct MaskEditorView: View {
     }
 
     private func commitX() {
-        guard let selectedPointIndex,
-              let x = parseNumber(text: xText),
-              x != mask.points[selectedPointIndex].x
-        else {
+        guard let x = parseNumber(text: xText) else {
+            return
+        }
+        setX(x)
+    }
+
+    private func commitY() {
+        guard let y = parseNumber(text: yText) else {
+            return
+        }
+        setY(value: y)
+    }
+
+    private func adjustX(delta: Double) {
+        guard let selectedPointIndex else {
+            return
+        }
+        setX(mask.points[selectedPointIndex].x + delta)
+    }
+
+    private func adjustY(delta: Double) {
+        guard let selectedPointIndex else {
+            return
+        }
+        setY(value: mask.points[selectedPointIndex].y + delta)
+    }
+
+    private func setX(_ value: Double) {
+        guard let selectedPointIndex else {
+            return
+        }
+        let x = value.clamped(to: 0 ... 100)
+        guard x != mask.points[selectedPointIndex].x else {
             return
         }
         mask.points[selectedPointIndex].x = x
         updateWidget()
     }
 
-    private func commitY() {
-        guard let selectedPointIndex,
-              let y = parseNumber(text: yText),
-              y != mask.points[selectedPointIndex].y
-        else {
+    private func setY(value: Double) {
+        guard let selectedPointIndex else {
+            return
+        }
+        let y = value.clamped(to: 0 ... 100)
+        guard y != mask.points[selectedPointIndex].y else {
             return
         }
         mask.points[selectedPointIndex].y = y
@@ -305,102 +335,94 @@ private struct MaskEditorView: View {
         return value.clamped(to: 0 ... 100)
     }
 
-    private func adjustX(delta: Double) {
-        guard let selectedPointIndex else {
-            return
+    private func pointSettings(_ selectedPointIndex: Int) -> some View {
+        Group {
+            HStack {
+                Text("X")
+                TextField("", text: $xText)
+                    .multilineTextAlignment(.trailing)
+                    .onSubmit { commitX() }
+                Button {
+                    adjustX(delta: -0.1)
+                } label: {
+                    Image(systemName: "minus.circle")
+                }
+                .buttonStyle(.borderless)
+                .font(.title)
+                Button {
+                    adjustX(delta: 0.1)
+                } label: {
+                    Image(systemName: "plus.circle")
+                }
+                .buttonStyle(.borderless)
+                .font(.title)
+            }
+            HStack {
+                Text("Y")
+                TextField("", text: $yText)
+                    .multilineTextAlignment(.trailing)
+                    .onSubmit { commitY() }
+                Button {
+                    adjustY(delta: -0.1)
+                } label: {
+                    Image(systemName: "minus.circle")
+                }
+                .buttonStyle(.borderless)
+                .font(.title)
+                Button {
+                    adjustY(delta: 0.1)
+                } label: {
+                    Image(systemName: "plus.circle")
+                }
+                .buttonStyle(.borderless)
+                .font(.title)
+            }
+            Button(role: .destructive) {
+                mask.points.remove(at: selectedPointIndex)
+                self.selectedPointIndex = nil
+                updateWidget()
+            } label: {
+                HCenter {
+                    Text("Delete point")
+                }
+            }
+            .disabled(mask.points.count <= maskMinimumPoints)
         }
-        mask.points[selectedPointIndex].x = (mask.points[selectedPointIndex].x + delta).clamped(to: 0 ... 100)
-        updateWidget()
+        .onChange(of: self.selectedPointIndex) { _ in
+            updateXYText()
+        }
+        .onChange(of: mask.points) { _ in
+            updateXYText()
+        }
+        .onAppear {
+            updateXYText()
+        }
     }
 
-    private func adjustY(delta: Double) {
-        guard let selectedPointIndex else {
-            return
+    private func edgeSettings(_ selectedEdgeIndex: Int) -> some View {
+        Button {
+            let point1 = mask.points[selectedEdgeIndex]
+            let point2 = mask.points[(selectedEdgeIndex + 1) % mask.points.count]
+            let newPoint = SettingsVideoEffectMaskEffectPoint(
+                x: (point1.x + point2.x) / 2,
+                y: (point1.y + point2.y) / 2
+            )
+            mask.points.insert(newPoint, at: selectedEdgeIndex + 1)
+            self.selectedEdgeIndex = nil
+            selectedPointIndex = selectedEdgeIndex + 1
+            updateWidget()
+        } label: {
+            HCenter {
+                Text("Create point")
+            }
         }
-        mask.points[selectedPointIndex].y = (mask.points[selectedPointIndex].y + delta).clamped(to: 0 ... 100)
-        updateWidget()
     }
 
     var body: some View {
         if let selectedPointIndex {
-            Group {
-                HStack {
-                    Text("X")
-                    TextField("", text: $xText)
-                        .multilineTextAlignment(.trailing)
-                        .onSubmit { commitX() }
-                    Button {
-                        adjustX(delta: -0.1)
-                    } label: {
-                        Image(systemName: "minus.circle")
-                    }
-                    .buttonStyle(.borderless)
-                    .font(.title)
-                    Button {
-                        adjustX(delta: 0.1)
-                    } label: {
-                        Image(systemName: "plus.circle")
-                    }
-                    .buttonStyle(.borderless)
-                    .font(.title)
-                }
-                HStack {
-                    Text("Y")
-                    TextField("", text: $yText)
-                        .multilineTextAlignment(.trailing)
-                        .onSubmit { commitY() }
-                    Button {
-                        adjustY(delta: -0.1)
-                    } label: {
-                        Image(systemName: "minus.circle")
-                    }
-                    .buttonStyle(.borderless)
-                    .font(.title)
-                    Button {
-                        adjustY(delta: 0.1)
-                    } label: {
-                        Image(systemName: "plus.circle")
-                    }
-                    .buttonStyle(.borderless)
-                    .font(.title)
-                }
-                Button(role: .destructive) {
-                    mask.points.remove(at: selectedPointIndex)
-                    self.selectedPointIndex = nil
-                    updateWidget()
-                } label: {
-                    HCenter {
-                        Text("Delete point")
-                    }
-                }
-                .disabled(mask.points.count <= maskMinimumPoints)
-            }
-            .onChange(of: self.selectedPointIndex) { _ in
-                updateXY()
-            }
-            .onChange(of: mask.points) { _ in
-                updateXY()
-            }
-            .onAppear {
-                updateXY()
-            }
+            pointSettings(selectedPointIndex)
         } else if let selectedEdgeIndex {
-            Button {
-                let point1 = mask.points[selectedEdgeIndex]
-                let point2 = mask.points[(selectedEdgeIndex + 1) % mask.points.count]
-                let newPoint = SettingsVideoEffectMaskEffectPoint(
-                    x: (point1.x + point2.x) / 2,
-                    y: (point1.y + point2.y) / 2
-                )
-                mask.points.insert(newPoint, at: selectedEdgeIndex + 1)
-                self.selectedEdgeIndex = nil
-                selectedPointIndex = selectedEdgeIndex + 1
-                updateWidget()
-            } label: {
-                HCenter {
-                    Text("Create point")
-                }
-            }
+            edgeSettings(selectedEdgeIndex)
         }
     }
 }
