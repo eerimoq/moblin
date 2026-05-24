@@ -285,6 +285,12 @@ struct WidgetSettingsView: View {
                 WidgetSnapshotSettingsView(model: model, widget: widget, snapshot: widget.snapshot)
             case .chat:
                 WidgetChatSettingsView(model: model, database: database, widget: widget, chat: widget.chat)
+            case .chatEmoteCombo:
+                WidgetChatEmoteComboSettingsView(
+                    model: model,
+                    widget: widget,
+                    chatEmoteCombo: widget.chatEmoteCombo
+                )
             case .wheelOfLuck:
                 WidgetWheelOfLuckSettingsView(model: model, widget: widget, wheelOfLuck: widget.wheelOfLuck)
             case .bingoCard:

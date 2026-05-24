@@ -2322,6 +2322,30 @@ class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
     }
 }
 
+class SettingsWidgetChatEmoteCombo: Codable, ObservableObject {
+    @Published var minimumCombo: Int = 3
+    @Published var resetAfter: Int = 5
+
+    enum CodingKeys: CodingKey {
+        case minimumCombo
+        case resetAfter
+    }
+
+    init() {}
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.minimumCombo, minimumCombo)
+        try container.encode(.resetAfter, resetAfter)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        minimumCombo = container.decode(.minimumCombo, Int.self, 3)
+        resetAfter = container.decode(.resetAfter, Int.self, 5)
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named, @unchecked Sendable {
     static let baseName = String(localized: "My widget")
     @Published var name: String
@@ -2340,6 +2364,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
     var pngTuber: SettingsWidgetPngTuber = .init()
     var snapshot: SettingsWidgetSnapshot = .init()
     var chat: SettingsWidgetChat = .init()
+    var chatEmoteCombo: SettingsWidgetChatEmoteCombo = .init()
     var slideshow: SettingsWidgetSlideshow = .init()
     var wheelOfLuck: SettingsWidgetWheelOfLuck = .init()
     var bingoCard: SettingsWidgetBingoCard = .init()
@@ -2372,6 +2397,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         case pngTuber
         case snapshot
         case chat
+        case chatEmoteCombo
         case slideshow
         case wheelOfLuck
         case bingoCard
@@ -2398,6 +2424,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.pngTuber, pngTuber)
         try container.encode(.snapshot, snapshot)
         try container.encode(.chat, chat)
+        try container.encode(.chatEmoteCombo, chatEmoteCombo)
         try container.encode(.slideshow, slideshow)
         try container.encode(.wheelOfLuck, wheelOfLuck)
         try container.encode(.bingoCard, bingoCard)
@@ -2424,6 +2451,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         pngTuber = container.decode(.pngTuber, SettingsWidgetPngTuber.self, .init())
         snapshot = container.decode(.snapshot, SettingsWidgetSnapshot.self, .init())
         chat = container.decode(.chat, SettingsWidgetChat.self, .init())
+        chatEmoteCombo = container.decode(.chatEmoteCombo, SettingsWidgetChatEmoteCombo.self, .init())
         slideshow = container.decode(.slideshow, SettingsWidgetSlideshow.self, .init())
         wheelOfLuck = container.decode(.wheelOfLuck, SettingsWidgetWheelOfLuck.self, .init())
         bingoCard = container.decode(.bingoCard, SettingsWidgetBingoCard.self, .init())
@@ -2488,6 +2516,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .pngTuber,
             .snapshot,
             .chat,
+            .chatEmoteCombo,
             .slideshow,
             .scoreboard,
             .wheelOfLuck,
@@ -2507,6 +2536,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .vTuber,
             .pngTuber,
             .snapshot,
+            .chatEmoteCombo,
             .slideshow,
             .bingoCard,
             .pomodoroTimer,
@@ -2527,6 +2557,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .pngTuber,
             .snapshot,
             .chat,
+            .chatEmoteCombo,
             .slideshow,
             .scoreboard,
             .wheelOfLuck,
@@ -3615,6 +3646,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case map = "Map"
     case snapshot = "Snapshot"
     case chat = "Chat"
+    case chatEmoteCombo = "Chat emote combo"
     case scene = "Scene"
     case slideshow = "Slideshow"
     case vTuber = "VTuber"
@@ -3644,6 +3676,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "Snapshot")
         case .chat:
             String(localized: "Chat")
+        case .chatEmoteCombo:
+            String(localized: "Chat emote combo")
         case .scene:
             String(localized: "Scene")
         case .slideshow:
@@ -3683,6 +3717,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             "camera.aperture"
         case .chat:
             "message"
+        case .chatEmoteCombo:
+            "hands.clap"
         case .scene:
             "photo.on.rectangle"
         case .slideshow:
@@ -3726,6 +3762,10 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "A snapshot widget shows snapshots when taken.")
         case .chat:
             String(localized: "A chat widget shows your chat.")
+        case .chatEmoteCombo:
+            String(
+                localized: "A chat emote combo widget shows an emote streak when chatters spam the same emote."
+            )
         case .scene:
             String(localized: "A scene widget shows a scene's widgets.")
         case .slideshow:

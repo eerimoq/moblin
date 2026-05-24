@@ -343,9 +343,12 @@ extension Model {
                     newQuickButtonChatAlertsPosts.append(post)
                 }
             }
-        }
-        if !enabledChatEffects.isEmpty {
-            chatWidgetChat.appendMessage(post: post)
+            if !enabledChatEffects.isEmpty {
+                chatWidgetChat.appendMessage(post: post)
+            }
+            for effect in enabledChatEmoteComboEffects {
+                effect.appendMessage(post: post)
+            }
         }
     }
 

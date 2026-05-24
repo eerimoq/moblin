@@ -526,6 +526,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pngTuberEffects: [UUID: PngTuberEffect] = [:]
     var snapshotEffects: [UUID: SnapshotEffect] = [:]
     var chatEffects: [UUID: ChatEffect] = [:]
+    var chatEmoteComboEffects: [UUID: ChatEmoteComboEffect] = [:]
     var slideshowEffects: [UUID: SlideshowEffect] = [:]
     var wheelOfLuckEffects: [UUID: WheelOfLuckEffect] = [:]
     var bingoCardEffects: [UUID: BingoCardEffect] = [:]
@@ -533,6 +534,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pomodoroAudioPlayer: AudioPlayer?
     var enabledSnapshotEffects: [SnapshotEffect] = []
     var enabledChatEffects: [ChatEffect] = []
+    var enabledChatEmoteComboEffects: [ChatEmoteComboEffect] = []
     var speechToTextAlertMatchOffset = 0
     var isMuteOn = false
     var log: Deque<LogEntry> = []
