@@ -77,9 +77,6 @@ private struct MaskCanvasView: View {
     }
 
     private func drawPolygon(_ context: GraphicsContext, _ size: CGSize) {
-        guard mask.points.count >= 3 else {
-            return
-        }
         let pts = mask.points.map { canvasPoint($0, size) }
         let path = Path(makeCatmullRomPath(pts, tension: mask.tension))
         context.fill(path, with: .color(.white.opacity(0.25)))
@@ -87,29 +84,27 @@ private struct MaskCanvasView: View {
     }
 
     private func drawHighlightedEdge(_ context: GraphicsContext, _ size: CGSize) {
-        guard let edgeIdx = selectedEdgeIndex, mask.points.count >= 2 else {
+        guard let edgeIdx = selectedEdgeIndex else {
             return
         }
-        let pts = mask.points.map { canvasPoint($0, size) }
-        let n = pts.count
-        let path: Path
-        let point0 = pts[(edgeIdx - 1 + n) % n]
-        let point1 = pts[edgeIdx]
-        let point2 = pts[(edgeIdx + 1) % n]
-        let point3 = pts[(edgeIdx + 2) % n]
+        let points = mask.points.map { canvasPoint($0, size) }
+        let numberOfPoints = points.count
+        let point0 = points[(edgeIdx - 1 + numberOfPoints) % numberOfPoints]
+        let point1 = points[edgeIdx]
+        let point2 = points[(edgeIdx + 1) % numberOfPoints]
+        let point3 = points[(edgeIdx + 2) % numberOfPoints]
         let tension = CGFloat(mask.tension)
-        let cp1 = CGPoint(
+        let control1 = CGPoint(
             x: point1.x + (point2.x - point0.x) * tension,
             y: point1.y + (point2.y - point0.y) * tension
         )
-        let cp2 = CGPoint(
+        let control2 = CGPoint(
             x: point2.x - (point3.x - point1.x) * tension,
             y: point2.y - (point3.y - point1.y) * tension
         )
-        var p = Path()
-        p.move(to: point1)
-        p.addCurve(to: point2, control1: cp1, control2: cp2)
-        path = p
+        var path = Path()
+        path.move(to: point1)
+        path.addCurve(to: point2, control1: control1, control2: control2)
         context.stroke(path, with: .color(.yellow), lineWidth: 3)
     }
 
@@ -192,15 +187,12 @@ private struct MaskCanvasView: View {
     }
 
     private func resizeShape(scale: Double) {
-        guard !mask.points.isEmpty else {
-            return
-        }
-        let cx = mask.points.map(\.x).reduce(0, +) / Double(mask.points.count)
-        let cy = mask.points.map(\.y).reduce(0, +) / Double(mask.points.count)
-        mask.points = mask.points.map { point in
+        let centerX = mask.points.map(\.x).reduce(0, +) / Double(mask.points.count)
+        let centerY = mask.points.map(\.y).reduce(0, +) / Double(mask.points.count)
+        mask.points = mask.points.map {
             SettingsVideoEffectMaskEffectPoint(
-                x: (cx + (point.x - cx) * scale).clamped(to: 0 ... 100),
-                y: (cy + (point.y - cy) * scale).clamped(to: 0 ... 100)
+                x: (centerX + ($0.x - centerX) * scale).clamped(to: 0 ... 100),
+                y: (centerY + ($0.y - centerY) * scale).clamped(to: 0 ... 100)
             )
         }
         updateWidget()
@@ -276,41 +268,34 @@ private struct MaskEditorView: View {
     @State private var yText: String = ""
 
     private func updateXY() {
-        guard let index = selectedPointIndex, index < mask.points.count else {
+        guard let selectedPointIndex else {
             return
         }
-        let point = mask.points[index]
+        let point = mask.points[selectedPointIndex]
         xText = formatOneDecimal(point.x)
         yText = formatOneDecimal(point.y)
     }
 
     private func commitX() {
-        guard let index = getSelectedPointIndex(),
+        guard let selectedPointIndex,
               let x = parseNumber(text: xText),
-              x != mask.points[index].x
+              x != mask.points[selectedPointIndex].x
         else {
             return
         }
-        mask.points[index].x = x
+        mask.points[selectedPointIndex].x = x
         updateWidget()
     }
 
     private func commitY() {
-        guard let index = getSelectedPointIndex(),
+        guard let selectedPointIndex,
               let y = parseNumber(text: yText),
-              y != mask.points[index].y
+              y != mask.points[selectedPointIndex].y
         else {
             return
         }
-        mask.points[index].y = y
+        mask.points[selectedPointIndex].y = y
         updateWidget()
-    }
-
-    private func getSelectedPointIndex() -> Int? {
-        guard let index = selectedPointIndex, index < mask.points.count else {
-            return nil
-        }
-        return index
     }
 
     private func parseNumber(text: String) -> Double? {
@@ -321,7 +306,7 @@ private struct MaskEditorView: View {
     }
 
     var body: some View {
-        if let pointIndex = selectedPointIndex {
+        if let selectedPointIndex {
             Group {
                 HStack {
                     Text("X")
@@ -336,8 +321,8 @@ private struct MaskEditorView: View {
                         .onSubmit { commitY() }
                 }
                 Button(role: .destructive) {
-                    mask.points.remove(at: pointIndex)
-                    selectedPointIndex = nil
+                    mask.points.remove(at: selectedPointIndex)
+                    self.selectedPointIndex = nil
                     updateWidget()
                 } label: {
                     HCenter {
@@ -346,7 +331,7 @@ private struct MaskEditorView: View {
                 }
                 .disabled(mask.points.count <= maskMinimumPoints)
             }
-            .onChange(of: selectedPointIndex) { _ in
+            .onChange(of: self.selectedPointIndex) { _ in
                 updateXY()
             }
             .onChange(of: mask.points) { _ in
@@ -355,18 +340,17 @@ private struct MaskEditorView: View {
             .onAppear {
                 updateXY()
             }
-        } else if let edgeIndex = selectedEdgeIndex {
+        } else if let selectedEdgeIndex {
             Button {
-                let count = mask.points.count
-                let point1 = mask.points[edgeIndex]
-                let point2 = mask.points[(edgeIndex + 1) % count]
+                let point1 = mask.points[selectedEdgeIndex]
+                let point2 = mask.points[(selectedEdgeIndex + 1) % mask.points.count]
                 let newPoint = SettingsVideoEffectMaskEffectPoint(
                     x: (point1.x + point2.x) / 2,
                     y: (point1.y + point2.y) / 2
                 )
-                mask.points.insert(newPoint, at: edgeIndex + 1)
-                selectedEdgeIndex = nil
-                selectedPointIndex = edgeIndex + 1
+                mask.points.insert(newPoint, at: selectedEdgeIndex + 1)
+                self.selectedEdgeIndex = nil
+                selectedPointIndex = selectedEdgeIndex + 1
                 updateWidget()
             } label: {
                 HCenter {
