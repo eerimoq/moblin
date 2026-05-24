@@ -9,6 +9,7 @@ private let maskMinimumPoints = 3
 private struct MaskCanvasView: View {
     @ObservedObject var mask: SettingsVideoEffectMask
     let updateWidget: () -> Void
+    let refreshPreviewImage: () -> Void
     let previewImage: UIImage?
     let isPortrait: Bool
     @Binding var selectedPointIndex: Int?
@@ -17,7 +18,6 @@ private struct MaskCanvasView: View {
     @State private var pendingDragIndex: Int?
     @State private var panStartPoints: [SettingsVideoEffectMaskEffectPoint]?
     @State private var panStartLocation: CGPoint?
-    @State private var pinchStartPoints: [SettingsVideoEffectMaskEffectPoint]?
 
     private func canvasPoint(_ point: SettingsVideoEffectMaskEffectPoint, _ size: CGSize) -> CGPoint {
         CGPoint(x: point.x / 100 * size.width, y: point.y / 100 * size.height)
@@ -191,17 +191,13 @@ private struct MaskCanvasView: View {
         }
     }
 
-    private func pinchChanged(value: CGFloat) {
-        if pinchStartPoints == nil {
-            pinchStartPoints = mask.points
-        }
-        guard let startPoints = pinchStartPoints else {
+    private func resizeShape(scale: Double) {
+        guard !mask.points.isEmpty else {
             return
         }
-        let cx = startPoints.map(\.x).reduce(0, +) / Double(startPoints.count)
-        let cy = startPoints.map(\.y).reduce(0, +) / Double(startPoints.count)
-        let scale = Double(value)
-        mask.points = startPoints.map { point in
+        let cx = mask.points.map(\.x).reduce(0, +) / Double(mask.points.count)
+        let cy = mask.points.map(\.y).reduce(0, +) / Double(mask.points.count)
+        mask.points = mask.points.map { point in
             SettingsVideoEffectMaskEffectPoint(
                 x: (cx + (point.x - cx) * scale).clamped(to: 0 ... 100),
                 y: (cy + (point.y - cy) * scale).clamped(to: 0 ... 100)
@@ -210,54 +206,64 @@ private struct MaskCanvasView: View {
         updateWidget()
     }
 
-    private func pinchEnded() {
-        pinchStartPoints = nil
-    }
-
     var body: some View {
-        GeometryReader { reader in
-            let size = reader.size
-            ZStack {
-                if let previewImage {
-                    Image(uiImage: previewImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: size.width, height: size.height)
-                        .clipped()
-                } else {
-                    Image("GamlaLinkoping")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: size.width, height: size.height)
-                        .clipped()
+        VStack(spacing: 10) {
+            GeometryReader { reader in
+                let size = reader.size
+                ZStack {
+                    if let previewImage {
+                        Image(uiImage: previewImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: size.width, height: size.height)
+                            .clipped()
+                    } else {
+                        Image("GamlaLinkoping")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: size.width, height: size.height)
+                            .clipped()
+                    }
+                    Canvas { context, canvasSize in
+                        drawPolygon(context, canvasSize)
+                        drawHighlightedEdge(context, canvasSize)
+                        drawHandles(context, canvasSize)
+                    }
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged {
+                                gestureChanged(value: $0, size: size)
+                            }
+                            .onEnded {
+                                gestureEnded(value: $0, size: size)
+                            }
+                    )
                 }
-                Canvas { context, canvasSize in
-                    drawPolygon(context, canvasSize)
-                    drawHighlightedEdge(context, canvasSize)
-                    drawHandles(context, canvasSize)
-                }
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged {
-                            gestureChanged(value: $0, size: size)
-                        }
-                        .onEnded {
-                            gestureEnded(value: $0, size: size)
-                        }
-                )
-                // Does not work well. Hangs sometimes. Gets stuck.
-                // .gesture(
-                //     MagnificationGesture()
-                //         .onChanged { value in
-                //             pinchChanged(value: value)
-                //         }
-                //         .onEnded { _ in
-                //             pinchEnded()
-                //         }
-                // )
             }
+            .aspectRatio(isPortrait ? 9 / 16 : 16 / 9, contentMode: .fit)
+            HStack(spacing: 12) {
+                Button {
+                    resizeShape(scale: 1 / 1.1)
+                } label: {
+                    Image(systemName: "square.resize.down")
+                }
+                .buttonStyle(.borderless)
+                Button {
+                    resizeShape(scale: 1.1)
+                } label: {
+                    Image(systemName: "square.resize.up")
+                }
+                .buttonStyle(.borderless)
+                Spacer()
+                Button {
+                    refreshPreviewImage()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .buttonStyle(.borderless)
+            }
+            .font(.title)
         }
-        .aspectRatio(isPortrait ? 9 / 16 : 16 / 9, contentMode: .fit)
     }
 }
 
@@ -384,11 +390,18 @@ struct MaskEffectView: View {
         model.getWidgetMaskEffect(widget, effect)?.setSettings(settings: mask.toSettings())
     }
 
+    private func refreshPreviewImage() {
+        model.takeVideoSourcePreviewImage(widget: widget) { image in
+            previewImage = image
+        }
+    }
+
     var body: some View {
         Section {
             MaskCanvasView(
                 mask: mask,
                 updateWidget: updateWidget,
+                refreshPreviewImage: refreshPreviewImage,
                 previewImage: previewImage,
                 isPortrait: model.stream.portrait,
                 selectedPointIndex: $selectedPointIndex,
