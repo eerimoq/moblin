@@ -1064,6 +1064,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                                        _ info: VideoEffectInfo) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         var image = CIImage(cvPixelBuffer: imageBuffer)
+        let originalImage = image
         if videoOrientation != .portrait, imageBuffer.isPortrait() {
             image = image.oriented(.left)
         }
@@ -1080,6 +1081,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             if effectOutputImage.extent == extent {
                 image = effectOutputImage
             }
+        }
+        guard image !== originalImage else {
+            return (nil, nil)
         }
         guard let outputImageBuffer = createPixelBuffer(sampleBuffer: sampleBuffer) else {
             return (nil, nil)
