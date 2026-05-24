@@ -198,8 +198,8 @@ private struct MaskCanvasView: View {
         guard let startPoints = pinchStartPoints else {
             return
         }
-        let cx = startPoints.map { $0.x }.reduce(0, +) / Double(startPoints.count)
-        let cy = startPoints.map { $0.y }.reduce(0, +) / Double(startPoints.count)
+        let cx = startPoints.map(\.x).reduce(0, +) / Double(startPoints.count)
+        let cy = startPoints.map(\.y).reduce(0, +) / Double(startPoints.count)
         let scale = Double(value)
         mask.points = startPoints.map { point in
             SettingsVideoEffectMaskEffectPoint(
@@ -245,15 +245,16 @@ private struct MaskCanvasView: View {
                             gestureEnded(value: $0, size: size)
                         }
                 )
-                .simultaneousGesture(
-                    MagnificationGesture()
-                        .onChanged { value in
-                            pinchChanged(value: value)
-                        }
-                        .onEnded { _ in
-                            pinchEnded()
-                        }
-                )
+                // Does not work well. Hangs sometimes. Gets stuck.
+                // .gesture(
+                //     MagnificationGesture()
+                //         .onChanged { value in
+                //             pinchChanged(value: value)
+                //         }
+                //         .onEnded { _ in
+                //             pinchEnded()
+                //         }
+                // )
             }
         }
         .aspectRatio(isPortrait ? 9 / 16 : 16 / 9, contentMode: .fit)
