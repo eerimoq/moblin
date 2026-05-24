@@ -78,6 +78,16 @@ function formatBytesPerSecond(bps: number): string {
   return bps + " bps";
 }
 
+const showPreviewKey = "show-preview";
+
+function storeShowPreview(value: boolean) {
+  return window.localStorage.setItem(showPreviewKey, value ? "true" : "false");
+}
+
+function loadShowPreview(): boolean {
+  return window.localStorage.getItem(showPreviewKey) !== "false";
+}
+
 interface StatusTableProps {
   rows: Accessor<StatusRow[]>;
 }
@@ -135,6 +145,9 @@ function App() {
   const [gimbalPresets, setGimbalPresets] = createSignal<GimbalPreset[]>([]);
   const [filterStates, setFilterStates] = createStore<Record<string, boolean>>({});
   const [previewImageSrc, setPreviewImageSrc] = createSignal<string | null>(null);
+  const [showingPreview, setShowingPreview] = createSignal(loadShowPreview());
+  const [showingTapToHidePreviewMessage, setShowingTapToHidePreviewMessage] = createSignal(false);
+  let showTapToHidePreviewMessageTimerId: ReturnType<typeof setTimeout> | undefined;
   let logContainer: HTMLDivElement | undefined;
 
   class IndexConnection extends WebSocketConnection {
@@ -155,7 +168,9 @@ function App() {
       this.sendStartStatusRequest();
       this.sendGetStatusRequest();
       this.sendGetSettingsRequest();
-      this.sendStartPreview();
+      if (showingPreview()) {
+        this.sendStartPreview();
+      }
     }
 
     reconnectSoon(): void {
@@ -252,6 +267,12 @@ function App() {
     }
 
     handlePreview(preview: string): void {
+      if (!showingPreview()) {
+        return;
+      }
+      if (previewImageSrc() === null) {
+        showTapToHidePreviewMessage();
+      }
       setPreviewImageSrc(`data:image/jpeg;base64,${preview}`);
     }
   }
@@ -393,6 +414,23 @@ function App() {
     if (!isNaN(value)) connection.setZoom(value);
   }
 
+  function showTapToHidePreviewMessage(): void {
+    setShowingTapToHidePreviewMessage(true);
+    clearTapToHidePreviewMessageTimer();
+    showTapToHidePreviewMessageTimerId = setTimeout(() => {
+      console.log("timeout", showingTapToHidePreviewMessage());
+      setShowingTapToHidePreviewMessage(false);
+      showTapToHidePreviewMessageTimerId = undefined;
+    }, 6000);
+  }
+
+  function clearTapToHidePreviewMessageTimer(): void {
+    if (showTapToHidePreviewMessageTimerId !== undefined) {
+      clearTimeout(showTapToHidePreviewMessageTimerId);
+      showTapToHidePreviewMessageTimerId = undefined;
+    }
+  }
+
   function Links() {
     return (
       <div class="text-center space-x-4">
@@ -414,9 +452,61 @@ function App() {
   }
 
   function VideoPreview() {
+    function hidePreview(): void {
+      clearTapToHidePreviewMessageTimer();
+      setShowingTapToHidePreviewMessage(false);
+      storeShowPreview(false);
+      setShowingPreview(false);
+      connection.sendStopPreview();
+    }
+
+    function showPreview(): void {
+      showTapToHidePreviewMessage();
+      storeShowPreview(true);
+      setShowingPreview(true);
+      connection.sendStartPreview();
+    }
+
     return (
-      <Show when={previewImageSrc() !== null}>
-        <img src={previewImageSrc()!} alt="Video preview" class="w-full rounded-lg" />
+      <Show
+        when={showingPreview()}
+        fallback={
+          <div class="flex justify-center">
+            <Button
+              class="bg-zinc-700 px-4 py-2 text-zinc-200 hover:bg-zinc-600"
+              onClick={showPreview}
+            >
+              Show preview
+            </Button>
+          </div>
+        }
+      >
+        <Show
+          when={previewImageSrc() !== null}
+          fallback={
+            <div class="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-center text-sm text-zinc-400">
+              Loading preview...
+            </div>
+          }
+        >
+          <button
+            type="button"
+            class="relative w-full cursor-pointer overflow-hidden rounded-lg border border-zinc-700 bg-black"
+            classList={{
+              "flex items-center justify-center": true,
+            }}
+            onClick={hidePreview}
+          >
+            <img src={previewImageSrc()!} alt="Video preview" class={"h-full object-contain"} />
+            <Show when={showingTapToHidePreviewMessage()}>
+              <div class="pointer-events-none absolute right-2 bottom-2 left-2 flex justify-center">
+                <div class="rounded border border-zinc-600 bg-black/70 px-3 py-1 text-sm text-zinc-100 shadow-lg backdrop-blur-sm">
+                  {"Tap the preview to hide"}
+                </div>
+              </div>
+            </Show>
+          </button>
+        </Show>
       </Show>
     );
   }
