@@ -42,7 +42,7 @@ private enum RelayState: String {
 
 protocol MoblinkRelayDelegate: AnyObject {
     func moblinkRelayNewState(state: MoblinkRelayState)
-    func moblinkRelayGetStatus() -> (Int?, MoblinkThermalState?)
+    func moblinkRelayGetStatus() -> (Int?, MoblinkThermalState?, Int?)
 }
 
 private class Relay: NSObject {
@@ -234,14 +234,16 @@ private class Relay: NSObject {
     private func handleStatus(id: Int) {
         var batteryPercentage: Int?
         var thermalState: MoblinkThermalState?
+        var temperatureCelsius: Int?
         if isMain, let delegate {
-            (batteryPercentage, thermalState) = delegate.moblinkRelayGetStatus()
+            (batteryPercentage, thermalState, temperatureCelsius) = delegate.moblinkRelayGetStatus()
         }
         send(message: .response(id: id,
                                 result: .ok,
                                 data: .status(
                                     batteryPercentage: batteryPercentage,
-                                    thermalState: thermalState
+                                    thermalState: thermalState,
+                                    temperatureCelsius: temperatureCelsius
                                 )))
     }
 
