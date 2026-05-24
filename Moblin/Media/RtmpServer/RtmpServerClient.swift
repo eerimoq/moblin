@@ -31,7 +31,7 @@ class RtmpServerClient: @unchecked Sendable {
     private var connection: NWConnection
     private var state: ClientState
     private var chunkState: ChunkState
-    private var chunkSizeToClient = 128
+    var chunkSizeToClient = 128
     var chunkSizeFromClient = 128
     var windowAcknowledgementSize = 2_500_000
     private var chunkStreams: [UInt16: RtmpServerChunkStream]
@@ -115,6 +115,9 @@ class RtmpServerClient: @unchecked Sendable {
     }
 
     private func handleData(data: Data) {
+        guard connectionState != .idle else {
+            return
+        }
         switch state {
         case .uninitialized:
             handleDataUninitialized(data: data)
@@ -326,13 +329,16 @@ class RtmpServerClient: @unchecked Sendable {
         connection.receive(minimumIncompleteLength: receiveSize, maximumLength: max(
             receiveSize,
             8192
-        )) { data, _, _, error in
+        )) { data, _, isComplete, error in
             if let data {
                 self.processReceivedData(data: data)
-                self.receiveDataFromNetwork()
             }
-            if let error {
+            if isComplete {
+                self.stopInternal(reason: error.map { "Error \($0)" } ?? "Connection closed")
+            } else if let error {
                 self.stopInternal(reason: "Error \(error)")
+            } else {
+                self.receiveDataFromNetwork()
             }
         }
     }

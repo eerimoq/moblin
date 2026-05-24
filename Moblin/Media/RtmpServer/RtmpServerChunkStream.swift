@@ -171,6 +171,7 @@ class RtmpServerChunkStream: @unchecked Sendable {
             chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
             message: RtmpSetChunkSizeMessage(1024)
         ))
+        client.chunkSizeToClient = 1024
         client.sendMessage(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: streamId,
