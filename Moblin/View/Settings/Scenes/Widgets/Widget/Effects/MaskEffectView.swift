@@ -84,15 +84,15 @@ private struct MaskCanvasView: View {
     }
 
     private func drawHighlightedEdge(_ context: GraphicsContext, _ size: CGSize) {
-        guard let edgeIdx = selectedEdgeIndex else {
+        guard let selectedEdgeIndex else {
             return
         }
         let points = mask.points.map { canvasPoint($0, size) }
         let numberOfPoints = points.count
-        let point0 = points[(edgeIdx - 1 + numberOfPoints) % numberOfPoints]
-        let point1 = points[edgeIdx]
-        let point2 = points[(edgeIdx + 1) % numberOfPoints]
-        let point3 = points[(edgeIdx + 2) % numberOfPoints]
+        let point0 = points[(selectedEdgeIndex - 1 + numberOfPoints) % numberOfPoints]
+        let point1 = points[selectedEdgeIndex]
+        let point2 = points[(selectedEdgeIndex + 1) % numberOfPoints]
+        let point3 = points[(selectedEdgeIndex + 2) % numberOfPoints]
         let tension = CGFloat(mask.tension)
         let control1 = CGPoint(
             x: point1.x + (point2.x - point0.x) * tension,
@@ -135,23 +135,23 @@ private struct MaskCanvasView: View {
                 panStartLocation = value.startLocation
             }
         }
-        if let pending = pendingDragIndex, dragIndex == nil {
+        if let pendingDragIndex, dragIndex == nil {
             let dist = hypot(
                 value.location.x - value.startLocation.x,
                 value.location.y - value.startLocation.y
             )
             if dist >= maskDragThreshold {
-                dragIndex = pending
-                pendingDragIndex = nil
+                dragIndex = pendingDragIndex
+                self.pendingDragIndex = nil
             }
         }
-        if let index = dragIndex {
-            mask.points[index] = normalizedPoint(value.location, size)
+        if let dragIndex {
+            mask.points[dragIndex] = normalizedPoint(value.location, size)
             updateWidget()
-        } else if let startPoints = panStartPoints, let startLocation = panStartLocation {
-            let dx = (value.location.x - startLocation.x) / size.width * 100
-            let dy = (value.location.y - startLocation.y) / size.height * 100
-            mask.points = startPoints.map { point in
+        } else if let panStartPoints, let panStartLocation {
+            let dx = (value.location.x - panStartLocation.x) / size.width * 100
+            let dy = (value.location.y - panStartLocation.y) / size.height * 100
+            mask.points = panStartPoints.map { point in
                 SettingsVideoEffectMaskEffectPoint(
                     x: (point.x + dx).clamped(to: 0 ... 100),
                     y: (point.y + dy).clamped(to: 0 ... 100)
@@ -277,14 +277,14 @@ private struct MaskEditorView: View {
     }
 
     private func commitX() {
-        guard let x = parseNumber(text: xText) else {
+        guard let x = Double(xText) else {
             return
         }
         setX(x)
     }
 
     private func commitY() {
-        guard let y = parseNumber(text: yText) else {
+        guard let y = Double(yText) else {
             return
         }
         setY(value: y)
@@ -326,13 +326,6 @@ private struct MaskEditorView: View {
         }
         mask.points[selectedPointIndex].y = y
         updateWidget()
-    }
-
-    private func parseNumber(text: String) -> Double? {
-        guard let value = Double(text) else {
-            return nil
-        }
-        return value.clamped(to: 0 ... 100)
     }
 
     private func pointSettings(_ selectedPointIndex: Int) -> some View {
@@ -437,7 +430,7 @@ struct MaskEffectView: View {
     @State private var selectedEdgeIndex: Int?
 
     private func updateWidget() {
-        model.getWidgetMaskEffect(widget, effect)?.setSettings(settings: mask.toSettings())
+        model.getWidgetMaskEffect(widget, effect)?.setSettings(settings: mask.toEffectSettings())
     }
 
     private func refreshPreviewImage() {
