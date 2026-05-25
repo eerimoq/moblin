@@ -126,6 +126,20 @@ struct WidgetPomodoroTimerSettingsView: View {
             Text("Durations")
         }
         Section {
+            TextEditNavigationView(
+                title: String(localized: "Focus"),
+                value: pomodoroTimer.focusName,
+                onSubmit: { pomodoroTimer.focusName = $0 }
+            )
+            TextEditNavigationView(
+                title: String(localized: "Break"),
+                value: pomodoroTimer.breakName,
+                onSubmit: { pomodoroTimer.breakName = $0 }
+            )
+        } header: {
+            Text("Names")
+        }
+        Section {
             Picker("Focus", selection: $pomodoroTimer.focusIcon) {
                 ForEach(PomodoroFocusIcon.allCases, id: \.self) { icon in
                     HStack {

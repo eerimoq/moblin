@@ -42,6 +42,15 @@ private struct PomodoroTimerView: View {
         }
     }
 
+    private func phaseName() -> String {
+        switch settings.phase {
+        case .focus:
+            settings.focusName
+        case .shortBreak:
+            settings.breakName
+        }
+    }
+
     var body: some View {
         let padding = width * 0.06
         let cornerRadius = width * 0.08
@@ -56,7 +65,7 @@ private struct PomodoroTimerView: View {
                 Image(systemName: phaseIcon())
                     .font(.system(size: phaseSize, weight: .semibold))
                     .foregroundStyle(phaseColor())
-                Text(settings.phase.toString())
+                Text(phaseName())
                     .lineLimit(1)
                     .font(.system(size: phaseSize, weight: .semibold))
                     .foregroundStyle(phaseColor())
