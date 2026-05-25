@@ -1967,7 +1967,7 @@ private func addMissingGoPro(database: Database) {
 private func addMissingGameControllerButtons(database: Database) {
     let template = SettingsGameController()
     for controller in database.gameControllers {
-        let existingNames = Set(controller.buttons.map { $0.name })
+        let existingNames = Set(controller.buttons.map(\.name))
         for templateButton in template.buttons where !existingNames.contains(templateButton.name) {
             controller.buttons.append(templateButton)
         }
