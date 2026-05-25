@@ -375,7 +375,7 @@ class SettingsVideoEffectMask: Codable, ObservableObject {
         backgroundColorColor2 = backgroundColor2.color()
     }
 
-    func toSettings() -> MaskEffectSettings {
+    func toEffectSettings() -> MaskEffectSettings {
         MaskEffectSettings(
             points: points.map { MaskEffectPoint(x: $0.x / 100, y: $0.y / 100) },
             inverted: inverted,
@@ -489,7 +489,7 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             return effect
         case .mask:
             let effect = MaskEffect()
-            effect.setSettings(settings: mask.toSettings())
+            effect.setSettings(settings: mask.toEffectSettings())
             return effect
         }
     }
@@ -2955,10 +2955,10 @@ class SettingsWidgetVideoSource: Codable, ObservableObject {
     }
 
     func toEffectSettings() -> VideoSourceEffectSettings {
-        .init(rotation: rotation,
-              trackFaceEnabled: trackFaceEnabled,
-              trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
-              mirror: mirror)
+        VideoSourceEffectSettings(rotation: rotation,
+                                  trackFaceEnabled: trackFaceEnabled,
+                                  trackFaceZoom: 1.5 + (1 - trackFaceZoom) * 4,
+                                  mirror: mirror)
     }
 
     func toCameraId() -> SettingsCameraId {
