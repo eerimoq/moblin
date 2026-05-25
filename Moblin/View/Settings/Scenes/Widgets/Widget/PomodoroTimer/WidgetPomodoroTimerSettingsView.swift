@@ -85,21 +85,9 @@ struct WidgetPomodoroTimerSettingsView: View {
 
     var body: some View {
         Section {
-            if pomodoroTimer.isRunning {
-                TextButtonView("Pause") {
-                    pomodoroTimer.pause()
-                }
-            } else {
-                TextButtonView("Start") {
-                    pomodoroTimer.start()
-                }
-            }
-        }
-        Section {
-            TextButtonView("Reset") {
-                pomodoroTimer.reset()
-            }
-            .tint(.red)
+            WidgetPomodoroTimerQuickButtonControlsView(model: model, pomodoroTimer: pomodoroTimer)
+        } header: {
+            Text("Controls")
         }
         Section {
             Picker("Focus", selection: $pomodoroTimer.focusDuration) {
