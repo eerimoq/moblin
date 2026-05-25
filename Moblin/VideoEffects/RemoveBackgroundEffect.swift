@@ -64,10 +64,10 @@ private func makeFilter(settings: FilterSettings) -> (any CIColorCubeWithColorSp
             let green = Float(y) / Float(size - 1)
             for x in 0 ..< size {
                 let red = Float(x) / Float(size - 1)
-                let hsv = rgbToHsv(red: red, green: green, blue: blue)
                 cube.append(red)
                 cube.append(green)
                 cube.append(blue)
+                let hsv = rgbToHsv(red: red, green: green, blue: blue)
                 let matchesGreenScreen = isHueInRange(hue: hsv.hue,
                                                       fromHue: settings.fromHue,
                                                       toHue: settings.toHue) &&
