@@ -135,10 +135,13 @@ function App() {
   const [gimbalPresets, setGimbalPresets] = createSignal<GimbalPreset[]>([]);
   const [filterStates, setFilterStates] = createStore<Record<string, boolean>>({});
   const [previewImageSrc, setPreviewImageSrc] = createSignal<string | null>(null);
-  const [previewRequested, setPreviewRequested] = createSignal(true);
+  const previewRequestedStorageKey = "moblin-web-remote-preview-requested";
+  const [previewRequested, setPreviewRequested] = createSignal(
+    window.localStorage.getItem(previewRequestedStorageKey) !== "false",
+  );
   const [previewSessionId, setPreviewSessionId] = createSignal(0);
   const [previewHintSessionId, setPreviewHintSessionId] = createSignal<number | null>(null);
-  const [previewAspectRatio, setPreviewAspectRatio] = createSignal("16 / 9");
+  const [previewPortrait, setPreviewPortrait] = createSignal(false);
   const previewHintText = window.matchMedia("(pointer: coarse)").matches
     ? "Tap preview to hide"
     : "Click preview to hide";
@@ -453,62 +456,73 @@ function App() {
     function hidePreview(): void {
       clearPreviewHintTimer();
       setPreviewSessionId((id) => id + 1);
+      window.localStorage.setItem(previewRequestedStorageKey, "false");
       setPreviewRequested(false);
-      setPreviewImageSrc(null);
       connection.sendStopPreview();
     }
 
     function showPreview(): void {
       clearPreviewHintTimer();
       setPreviewSessionId((id) => id + 1);
-      setPreviewImageSrc(null);
+      window.localStorage.setItem(previewRequestedStorageKey, "true");
       setPreviewRequested(true);
       connection.sendStartPreview();
     }
 
     return (
-      <div
-        class="relative flex min-h-32 items-center justify-center overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900"
-        style={{ "aspect-ratio": previewAspectRatio() }}
-      >
-        <Show
-          when={previewRequested()}
-          fallback={
+      <Show
+        when={previewRequested()}
+        fallback={
+          <div class="flex justify-center">
             <Button
               class="bg-zinc-700 px-4 py-2 text-zinc-200 hover:bg-zinc-600"
               onClick={showPreview}
             >
               Show preview
             </Button>
+          </div>
+        }
+      >
+        <Show
+          when={previewImageSrc() !== null}
+          fallback={
+            <div class="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2 text-center text-sm text-zinc-400">
+              Loading preview...
+            </div>
           }
         >
-          <Show
-            when={previewImageSrc() !== null}
-            fallback={<div class="text-sm text-zinc-400">Loading preview...</div>}
+          <button
+            type="button"
+            class="relative w-full cursor-pointer overflow-hidden rounded-lg border border-zinc-700 bg-black"
+            classList={{
+              "flex h-[min(60vh,520px)] items-center justify-center": previewPortrait(),
+              "block": !previewPortrait(),
+            }}
+            onClick={hidePreview}
           >
-            <button type="button" class="absolute inset-0 cursor-pointer" onClick={hidePreview}>
-              <img
-                src={previewImageSrc()!}
-                alt="Video preview"
-                class="h-full w-full object-contain"
-                onLoad={(event) => {
-                  const image = event.currentTarget;
-                  if (image.naturalWidth > 0 && image.naturalHeight > 0) {
-                    setPreviewAspectRatio(`${image.naturalWidth} / ${image.naturalHeight}`);
-                  }
-                }}
-              />
-              <Show when={previewHintSessionId() === previewSessionId()}>
-                <div class="pointer-events-none absolute right-2 bottom-2 left-2 flex justify-center">
-                  <div class="rounded border border-zinc-600 bg-black/70 px-3 py-1 text-sm text-zinc-100 shadow-lg backdrop-blur-sm">
-                    {previewHintText}
-                  </div>
+            <img
+              src={previewImageSrc()!}
+              alt="Video preview"
+              class={previewPortrait() ? "h-full w-full object-contain" : "w-full"}
+              onLoad={(event) => {
+                const image = event.currentTarget;
+                setPreviewPortrait(image.naturalHeight > image.naturalWidth);
+              }}
+            />
+            <Show when={previewPortrait()}>
+              <div class="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-black" />
+              <div class="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 bg-black" />
+            </Show>
+            <Show when={previewHintSessionId() === previewSessionId()}>
+              <div class="pointer-events-none absolute right-2 bottom-2 left-2 flex justify-center">
+                <div class="rounded border border-zinc-600 bg-black/70 px-3 py-1 text-sm text-zinc-100 shadow-lg backdrop-blur-sm">
+                  {previewHintText}
                 </div>
-              </Show>
-            </button>
-          </Show>
+              </div>
+            </Show>
+          </button>
         </Show>
-      </div>
+      </Show>
     );
   }
 
