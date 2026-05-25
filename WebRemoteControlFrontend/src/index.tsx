@@ -496,7 +496,7 @@ function App() {
             class="relative w-full cursor-pointer overflow-hidden rounded-lg border border-zinc-700 bg-black"
             classList={{
               "flex h-[min(60vh,520px)] items-center justify-center": previewPortrait(),
-              "block": !previewPortrait(),
+              block: !previewPortrait(),
             }}
             onClick={hidePreview}
           >
