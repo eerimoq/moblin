@@ -2150,6 +2150,11 @@ enum PomodoroFocusIcon: String, Codable, CaseIterable {
     case cap = "graduationcap"
     case book = "text.book.closed"
     case play = "arrowtriangle.right.circle"
+    case brain = "brain.head.profile"
+    case pencil
+    case flame
+    case timer
+    case target
 
     func toString() -> String {
         switch self {
@@ -2163,6 +2168,16 @@ enum PomodoroFocusIcon: String, Codable, CaseIterable {
             String(localized: "Book")
         case .play:
             String(localized: "Play")
+        case .brain:
+            String(localized: "Brain")
+        case .pencil:
+            String(localized: "Pencil")
+        case .flame:
+            String(localized: "Flame")
+        case .timer:
+            String(localized: "Timer")
+        case .target:
+            String(localized: "Target")
         }
     }
 }
@@ -2170,6 +2185,11 @@ enum PomodoroFocusIcon: String, Codable, CaseIterable {
 enum PomodoroBreakIcon: String, Codable, CaseIterable {
     case cup = "cup.and.saucer"
     case dance = "figure.dance"
+    case walk = "figure.walk"
+    case music = "music.note"
+    case leaf
+    case game = "gamecontroller"
+    case fork = "fork.knife"
 
     func toString() -> String {
         switch self {
@@ -2177,6 +2197,16 @@ enum PomodoroBreakIcon: String, Codable, CaseIterable {
             String(localized: "Cup")
         case .dance:
             String(localized: "Dance")
+        case .walk:
+            String(localized: "Walk")
+        case .music:
+            String(localized: "Music")
+        case .leaf:
+            String(localized: "Leaf")
+        case .game:
+            String(localized: "Controller")
+        case .fork:
+            String(localized: "Fork and knife")
         }
     }
 }
