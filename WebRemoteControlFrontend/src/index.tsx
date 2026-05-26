@@ -78,6 +78,10 @@ function formatBytesPerSecond(bps: number): string {
   return bps + " bps";
 }
 
+const tapToHidePreviewMessage = window.matchMedia("(pointer: coarse)").matches
+  ? "Tap the preview to hide"
+  : "Click the preview to hide";
+
 const showPreviewKey = "show-preview";
 
 function storeShowPreview(value: boolean) {
@@ -501,7 +505,7 @@ function App() {
             <Show when={showingTapToHidePreviewMessage()}>
               <div class="pointer-events-none absolute right-2 bottom-2 left-2 flex justify-center">
                 <div class="rounded border border-zinc-600 bg-black/70 px-3 py-1 text-sm text-zinc-100 shadow-lg backdrop-blur-sm">
-                  {"Tap the preview to hide"}
+                  {tapToHidePreviewMessage}
                 </div>
               </div>
             </Show>
