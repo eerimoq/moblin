@@ -531,6 +531,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var wheelOfLuckEffects: [UUID: WheelOfLuckEffect] = [:]
     var bingoCardEffects: [UUID: BingoCardEffect] = [:]
     var pomodoroTimerEffects: [UUID: PomodoroTimerEffect] = [:]
+    var streamStatisticsEffects: [UUID: StreamStatisticsEffect] = [:]
     var pomodoroAudioPlayer: AudioPlayer?
     var enabledSnapshotEffects: [SnapshotEffect] = []
     var enabledChatEffects: [ChatEffect] = []

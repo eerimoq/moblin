@@ -87,6 +87,7 @@ extension Model {
         if database.location.resetWhenGoingLive {
             resetLocationData()
         }
+        resetAllStreamStatisticsCounts()
         setIsLive(value: true)
         streaming = true
         streamTotalBytes = 0

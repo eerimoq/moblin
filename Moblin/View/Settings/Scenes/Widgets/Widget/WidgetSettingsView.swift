@@ -301,6 +301,12 @@ struct WidgetSettingsView: View {
                     widget: widget,
                     pomodoroTimer: widget.pomodoroTimer
                 )
+            case .streamStatistics:
+                WidgetStreamStatisticsSettingsView(
+                    model: model,
+                    widget: widget,
+                    streamStatistics: widget.streamStatistics
+                )
             }
         }
         .navigationTitle("\(widget.type.toString()) widget")

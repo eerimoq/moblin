@@ -367,6 +367,8 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             return nil
         case .pomodoroTimer:
             return nil
+        case .streamStatistics:
+            return nil
         }
     }
 

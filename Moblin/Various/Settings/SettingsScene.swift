@@ -2379,6 +2379,140 @@ class SettingsWidgetChatEmoteCombo: Codable, ObservableObject {
     }
 }
 
+enum SettingsWidgetStreamStatisticsItemType: String, Codable, CaseIterable {
+    case twitchFollowers = "Twitch followers"
+    case twitchSubscribers = "Twitch subscribers"
+    case twitchResubscribers = "Twitch resubscribers"
+    case twitchGiftedSubs = "Twitch gifted subs"
+    case twitchBits = "Twitch bits"
+    case twitchRaids = "Twitch raids"
+    case kickSubscribers = "Kick subscribers"
+    case kickGiftedSubs = "Kick gifted subs"
+
+    func defaultLabel() -> String {
+        switch self {
+        case .twitchFollowers:
+            String(localized: "Followers")
+        case .twitchSubscribers:
+            String(localized: "Subscribers")
+        case .twitchResubscribers:
+            String(localized: "Resubscribers")
+        case .twitchGiftedSubs:
+            String(localized: "Gifted subs")
+        case .twitchBits:
+            String(localized: "Bits")
+        case .twitchRaids:
+            String(localized: "Raids")
+        case .kickSubscribers:
+            String(localized: "Kick subscribers")
+        case .kickGiftedSubs:
+            String(localized: "Kick gifted subs")
+        }
+    }
+
+    func systemImage() -> String {
+        switch self {
+        case .twitchFollowers:
+            "heart"
+        case .twitchSubscribers:
+            "star"
+        case .twitchResubscribers:
+            "arrow.clockwise"
+        case .twitchGiftedSubs:
+            "gift"
+        case .twitchBits:
+            "bitcoinsign.circle"
+        case .twitchRaids:
+            "flag"
+        case .kickSubscribers:
+            "star"
+        case .kickGiftedSubs:
+            "gift"
+        }
+    }
+}
+
+class SettingsWidgetStreamStatisticsItem: Codable, Identifiable, ObservableObject {
+    var id: UUID = .init()
+    var type: SettingsWidgetStreamStatisticsItemType
+    @Published var label: String
+    @Published var show: Bool
+
+    enum CodingKeys: CodingKey {
+        case type
+        case label
+        case show
+    }
+
+    init(type: SettingsWidgetStreamStatisticsItemType) {
+        self.type = type
+        label = type.defaultLabel()
+        show = true
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.type, type)
+        try container.encode(.label, label)
+        try container.encode(.show, show)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = container.decode(.type, SettingsWidgetStreamStatisticsItemType.self, .twitchFollowers)
+        let defaultLabel = type.defaultLabel()
+        label = container.decode(.label, String.self, defaultLabel)
+        show = container.decode(.show, Bool.self, true)
+    }
+}
+
+class SettingsWidgetStreamStatistics: Codable, ObservableObject {
+    nonisolated(unsafe) static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
+    nonisolated(unsafe) static let baseForegroundColor = RgbColor.white
+    @Published var items: [SettingsWidgetStreamStatisticsItem] = SettingsWidgetStreamStatisticsItemType
+        .allCases.map { SettingsWidgetStreamStatisticsItem(type: $0) }
+    var backgroundColor: RgbColor = baseBackgroundColor
+    @Published var backgroundColorColor: Color = baseBackgroundColor.color()
+    var foregroundColor: RgbColor = baseForegroundColor
+    @Published var foregroundColorColor: Color = baseForegroundColor.color()
+    @Published var fontSize: Double = 30
+    @Published var width: Double = 25
+
+    enum CodingKeys: CodingKey {
+        case items
+        case backgroundColor
+        case foregroundColor
+        case fontSize
+        case width
+    }
+
+    init() {}
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.items, items)
+        try container.encode(.backgroundColor, backgroundColor)
+        try container.encode(.foregroundColor, foregroundColor)
+        try container.encode(.fontSize, fontSize)
+        try container.encode(.width, width)
+    }
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        items = container.decode(
+            .items,
+            [SettingsWidgetStreamStatisticsItem].self,
+            SettingsWidgetStreamStatisticsItemType.allCases.map { SettingsWidgetStreamStatisticsItem(type: $0) }
+        )
+        backgroundColor = container.decode(.backgroundColor, RgbColor.self, Self.baseBackgroundColor)
+        backgroundColorColor = backgroundColor.color()
+        foregroundColor = container.decode(.foregroundColor, RgbColor.self, Self.baseForegroundColor)
+        foregroundColorColor = foregroundColor.color()
+        fontSize = container.decode(.fontSize, Double.self, 30)
+        width = container.decode(.width, Double.self, 25)
+    }
+}
+
 class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named, @unchecked Sendable {
     static let baseName = String(localized: "My widget")
     @Published var name: String
@@ -2402,6 +2536,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
     var wheelOfLuck: SettingsWidgetWheelOfLuck = .init()
     var bingoCard: SettingsWidgetBingoCard = .init()
     var pomodoroTimer: SettingsWidgetPomodoroTimer = .init()
+    var streamStatistics: SettingsWidgetStreamStatistics = .init()
     @Published var enabled: Bool = true
     @Published var effects: [SettingsVideoEffect] = []
 
@@ -2435,6 +2570,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         case wheelOfLuck
         case bingoCard
         case pomodoroTimer
+        case streamStatistics
         case enabled
         case effects
     }
@@ -2462,6 +2598,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         try container.encode(.wheelOfLuck, wheelOfLuck)
         try container.encode(.bingoCard, bingoCard)
         try container.encode(.pomodoroTimer, pomodoroTimer)
+        try container.encode(.streamStatistics, streamStatistics)
         try container.encode(.enabled, enabled)
         try container.encode(.effects, effects)
     }
@@ -2489,6 +2626,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
         wheelOfLuck = container.decode(.wheelOfLuck, SettingsWidgetWheelOfLuck.self, .init())
         bingoCard = container.decode(.bingoCard, SettingsWidgetBingoCard.self, .init())
         pomodoroTimer = container.decode(.pomodoroTimer, SettingsWidgetPomodoroTimer.self, .init())
+        streamStatistics = container.decode(.streamStatistics, SettingsWidgetStreamStatistics.self, .init())
         enabled = container.decode(.enabled, Bool.self, true)
         effects = container.decode(.effects, [SettingsVideoEffect].self, [])
         migrateFromOlderVersions()
@@ -2555,6 +2693,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .wheelOfLuck,
             .bingoCard,
             .pomodoroTimer,
+            .streamStatistics,
         ].contains(type)
     }
 
@@ -2596,6 +2735,7 @@ class SettingsWidget: Codable, Identifiable, Equatable, ObservableObject, Named,
             .wheelOfLuck,
             .bingoCard,
             .pomodoroTimer,
+            .streamStatistics,
         ].contains(type)
     }
 }
@@ -3690,6 +3830,7 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
     case bingoCard = "Bingo card"
     case crop = "Crop"
     case pomodoroTimer = "Pomodoro timer"
+    case streamStatistics = "Stream statistics"
 
     func toString() -> String {
         switch self {
@@ -3731,6 +3872,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "Crop")
         case .pomodoroTimer:
             String(localized: "Pomodoro timer")
+        case .streamStatistics:
+            String(localized: "Stream statistics")
         }
     }
 
@@ -3774,6 +3917,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             "square.grid.3x3.square"
         case .pomodoroTimer:
             "timer"
+        case .streamStatistics:
+            "chart.bar"
         }
     }
 
@@ -3825,6 +3970,8 @@ enum SettingsWidgetType: String, Codable, CaseIterable {
             String(localized: "A bingo card widget shows an interactive bingo card.")
         case .pomodoroTimer:
             String(localized: "A Pomodoro timer widget shows a focus and break timer.")
+        case .streamStatistics:
+            String(localized: "A stream statistics widget shows live counts of events like follows and subscriptions.")
         }
     }
 }

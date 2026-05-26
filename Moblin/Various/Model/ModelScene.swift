@@ -93,6 +93,10 @@ extension Model {
         pomodoroTimerEffects[id]
     }
 
+    func getStreamStatisticsEffect(id: UUID) -> StreamStatisticsEffect? {
+        streamStatisticsEffects[id]
+    }
+
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
         scoreboardEffects[id]
     }
@@ -677,6 +681,7 @@ extension Model {
         resetWheelOfLuckEffects(widgets: widgets)
         resetBingoCardEffects(widgets: widgets)
         resetPomodoroTimerEffects(widgets: widgets)
+        resetStreamStatisticsEffects(widgets: widgets)
         browsers = browserEffects.map { widgetId, browser in
             let name = getWidgetName(id: widgetId) ?? "Unknown"
             return Browser(name: name, browserEffect: browser)
@@ -894,6 +899,25 @@ extension Model {
         }
     }
 
+    private func resetStreamStatisticsEffects(widgets: [SettingsWidget]) {
+        streamStatisticsEffects.removeAll()
+        for widget in widgets where widget.type == .streamStatistics {
+            streamStatisticsEffects[widget.id] = StreamStatisticsEffect(canvasSize: media.getCanvasSize())
+        }
+    }
+
+    func updateStreamStatisticsEffects(type: SettingsWidgetStreamStatisticsItemType, delta: Int = 1) {
+        for effect in streamStatisticsEffects.values {
+            effect.appendEvent(type: type, delta: delta)
+        }
+    }
+
+    func resetAllStreamStatisticsCounts() {
+        for effect in streamStatisticsEffects.values {
+            effect.resetCounts()
+        }
+    }
+
     private func onPomodoroTimerPhaseChanged(
         _ settings: SettingsWidgetPomodoroTimer,
         newPhase: PomodoroPhase
@@ -1076,6 +1100,8 @@ extension Model {
                 addSceneBingoCardEffects(sceneWidget, widget, &effects)
             case .pomodoroTimer:
                 addScenePomodoroTimerEffects(sceneWidget, widget, &effects)
+            case .streamStatistics:
+                addSceneStreamStatisticsEffects(sceneWidget, widget, &effects)
             }
         }
     }
@@ -1373,6 +1399,19 @@ extension Model {
         effects.append(effect)
     }
 
+    private func addSceneStreamStatisticsEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = streamStatisticsEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.setSettings(settings: widget.streamStatistics)
+        effects.append(effect)
+    }
+
     private func updateRemoteSceneSettings() {
         guard !remoteSceneSettingsUpdating else {
             return
@@ -1653,6 +1692,10 @@ extension Model {
             sceneWidget.layout.x = 0.78
             sceneWidget.layout.y = 1.388
             sceneWidget.layout.size = 20
+        case .streamStatistics:
+            sceneWidget.layout.alignment = .topLeft
+            sceneWidget.layout.x = 0.78
+            sceneWidget.layout.y = 1.388
         default:
             break
         }
