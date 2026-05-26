@@ -906,9 +906,13 @@ extension Model {
         }
     }
 
-    func updateStreamStatisticsEffects(type: SettingsWidgetStreamStatisticsItemType, delta: Int = 1) {
+    func updateStreamStatisticsEffects(
+        type: SettingsWidgetStreamStatisticsItemType,
+        delta: Int = 1,
+        username: String = ""
+    ) {
         for effect in streamStatisticsEffects.values {
-            effect.appendEvent(type: type, delta: delta)
+            effect.appendEvent(type: type, delta: delta, username: username)
         }
     }
 

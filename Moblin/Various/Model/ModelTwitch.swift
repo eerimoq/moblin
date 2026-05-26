@@ -561,7 +561,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchFollow, username: event.user_name, message: text)
-        updateStreamStatisticsEffects(type: .twitchFollowers)
+        updateStreamStatisticsEffects(type: .twitchFollowers, username: event.user_name)
     }
 
     func twitchEventSubChannelSubscribe(event: TwitchEventSubNotificationChannelSubscribeEvent) {
@@ -583,7 +583,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
-        updateStreamStatisticsEffects(type: .twitchSubscribers)
+        updateStreamStatisticsEffects(type: .twitchSubscribers, username: event.user_name)
     }
 
     func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
@@ -604,7 +604,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: text)
-        updateStreamStatisticsEffects(type: .twitchGiftedSubs, delta: event.total)
+        updateStreamStatisticsEffects(type: .twitchGiftedSubs, delta: event.total, username: user)
     }
 
     func twitchEventSubChannelSubscriptionMessage(
@@ -628,7 +628,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: text)
-        updateStreamStatisticsEffects(type: .twitchResubscribers)
+        updateStreamStatisticsEffects(type: .twitchResubscribers, username: event.user_name)
     }
 
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
@@ -676,7 +676,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
                 username: event.from_broadcaster_user_name,
                 message: text
             )
-            updateStreamStatisticsEffects(type: .twitchRaids)
+            updateStreamStatisticsEffects(type: .twitchRaids, username: event.from_broadcaster_user_name)
         }
     }
 
@@ -700,7 +700,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
         }
         let message = event.message.isEmpty ? text : "\(text) \(event.message)"
         printEventCatPrinters(event: .twitchCheer(amount: event.bits), username: user, message: message)
-        updateStreamStatisticsEffects(type: .twitchBits, delta: event.bits)
+        updateStreamStatisticsEffects(type: .twitchBits, delta: event.bits, username: user)
     }
 
     func twitchEventSubChannelHypeTrainBegin(event: TwitchEventSubChannelHypeTrainBeginEvent) {

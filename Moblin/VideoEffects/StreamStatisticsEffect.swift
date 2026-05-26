@@ -6,6 +6,7 @@ private struct StatRow: Identifiable {
     let icon: String
     let label: String
     let count: Int
+    let username: String
 }
 
 private class StreamStatisticsState: ObservableObject {
@@ -35,6 +36,12 @@ private struct StreamStatisticsView: View {
                             .foregroundStyle(state.foregroundColor)
                             .lineLimit(1)
                         Spacer(minLength: 0)
+                        if !row.username.isEmpty {
+                            Text(row.username)
+                                .font(.system(size: state.fontSize * 0.8, weight: .regular))
+                                .foregroundStyle(state.foregroundColor.opacity(0.7))
+                                .lineLimit(1)
+                        }
                         Text("\(row.count)")
                             .font(.system(size: state.fontSize, weight: .bold, design: .monospaced))
                             .foregroundStyle(state.foregroundColor)
@@ -60,6 +67,7 @@ final class StreamStatisticsEffect: VideoEffect, @unchecked Sendable {
     private var overlayImage: CIImage?
     private let state = StreamStatisticsState()
     private var counts: [SettingsWidgetStreamStatisticsItemType: Int] = [:]
+    private var latestUsers: [SettingsWidgetStreamStatisticsItemType: String] = [:]
 
     init(canvasSize: CGSize) {
         self.canvasSize = canvasSize
@@ -83,14 +91,18 @@ final class StreamStatisticsEffect: VideoEffect, @unchecked Sendable {
     }
 
     @MainActor
-    func appendEvent(type: SettingsWidgetStreamStatisticsItemType, delta: Int = 1) {
+    func appendEvent(type: SettingsWidgetStreamStatisticsItemType, delta: Int = 1, username: String = "") {
         counts[type, default: 0] += delta
+        if !username.isEmpty {
+            latestUsers[type] = username
+        }
         updateRows()
     }
 
     @MainActor
     func resetCounts() {
         counts.removeAll()
+        latestUsers.removeAll()
         updateRows()
     }
 
@@ -127,7 +139,8 @@ final class StreamStatisticsEffect: VideoEffect, @unchecked Sendable {
                     id: index,
                     icon: item.type.systemImage(),
                     label: item.label,
-                    count: counts[item.type, default: 0]
+                    count: counts[item.type, default: 0],
+                    username: latestUsers[item.type] ?? ""
                 )
             }
     }
