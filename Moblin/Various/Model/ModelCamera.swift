@@ -573,6 +573,7 @@ extension Model {
         }
         cameras += rtmpCameras()
         cameras += srtlaCameras()
+        cameras += srtClientCameras()
         cameras += ristCameras()
         cameras += rtspCameras()
         cameras += whipCameras()
@@ -622,6 +623,8 @@ extension Model {
     func cameraIdToSettingsCameraId(cameraId: CameraId) -> SettingsCameraId {
         if let id = getSrtlaStream(idString: cameraId)?.id {
             .srtla(id: id)
+        } else if let id = getSrtClientStream(idString: cameraId)?.id {
+            .srt(id: id)
         } else if let id = getRtmpStream(idString: cameraId)?.id {
             .rtmp(id: id)
         } else if let id = getRistStream(idString: cameraId)?.id {
@@ -656,6 +659,8 @@ extension Model {
     func cameraIdToSettingsCameraId(cameraId: UUID) -> SettingsCameraId? {
         if let id = getSrtlaStream(id: cameraId)?.id {
             .srtla(id: id)
+        } else if let id = getSrtClientStream(id: cameraId)?.id {
+            .srt(id: id)
         } else if let id = getRtmpStream(id: cameraId)?.id {
             .rtmp(id: id)
         } else if let id = getRistStream(id: cameraId)?.id {
@@ -687,6 +692,8 @@ extension Model {
         case let .rtmp(id):
             return id.uuidString
         case let .srtla(id):
+            return id.uuidString
+        case let .srt(id):
             return id.uuidString
         case let .rist(id: id):
             return id.uuidString
@@ -742,6 +749,8 @@ extension Model {
             return getRtmpStream(id: id)?.camera() ?? unknownSad
         case let .srtla(id):
             return getSrtlaStream(id: id)?.camera() ?? unknownSad
+        case let .srt(id):
+            return getSrtClientStream(id: id)?.camera() ?? unknownSad
         case let .rist(id):
             return getRistStream(id: id)?.camera() ?? unknownSad
         case let .rtsp(id):
@@ -855,6 +864,8 @@ extension Model {
         case let .rtmp(id: id):
             id
         case let .srtla(id: id):
+            id
+        case let .srt(id: id):
             id
         case let .rist(id: id):
             id

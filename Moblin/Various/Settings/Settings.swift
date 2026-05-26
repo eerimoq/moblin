@@ -14,6 +14,7 @@ enum SettingsCameraId {
     case front(id: CameraId)
     case rtmp(id: UUID)
     case srtla(id: UUID)
+    case srt(id: UUID)
     case rist(id: UUID)
     case rtsp(id: UUID)
     case whip(id: UUID)
@@ -1132,6 +1133,7 @@ class Database: Codable, ObservableObject {
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
+    var srtClient: SettingsSrtClient = .init()
     var whipServer: SettingsWhipServer = .init()
     var whepClient: SettingsWhepClient = .init()
     var navigation: SettingsNavigation = .init()
@@ -1244,6 +1246,7 @@ class Database: Codable, ObservableObject {
         case ristServer
         case disconnectProtection
         case rtspClient
+        case srtClient
         case whipServer
         case whepClient
         case navigation
@@ -1326,6 +1329,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
+        try container.encode(.srtClient, srtClient)
         try container.encode(.whipServer, whipServer)
         try container.encode(.whepClient, whepClient)
         try container.encode(.navigation, navigation)
@@ -1458,6 +1462,7 @@ class Database: Codable, ObservableObject {
             .init()
         )
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
+        srtClient = container.decode(.srtClient, SettingsSrtClient.self, .init())
         whipServer = container.decode(.whipServer, SettingsWhipServer.self, .init())
         whepClient = container.decode(.whepClient, SettingsWhepClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())

@@ -45,6 +45,9 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         if isSrtlaCameraOrMic(camera: name) {
             return false
         }
+        if isSrtClientCameraOrMic(camera: name) {
+            return false
+        }
         if isRistCameraOrMic(camera: name) {
             return false
         }
@@ -71,6 +74,10 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
         isSrtlaCameraOrMic(camera: name)
     }
 
+    func isSrtClient() -> Bool {
+        isSrtClientCameraOrMic(camera: name)
+    }
+
     func isRist() -> Bool {
         isRistCameraOrMic(camera: name)
     }
@@ -88,7 +95,7 @@ class SettingsMicsMic: Codable, Identifiable, Equatable, ObservableObject, @unch
     }
 
     func isNetwork() -> Bool {
-        isRtmp() || isSrtla() || isRist() || isRtsp() || isWhip() || isWhep()
+        isRtmp() || isSrtla() || isSrtClient() || isRist() || isRtsp() || isWhip() || isWhep()
     }
 
     func isMediaPlayer() -> Bool {

@@ -245,6 +245,11 @@ extension Model {
                         return true
                     }
                 }
+            case .srtClient:
+                if !activeBufferedVideoIds.contains(scene.videoSource.srtClientCameraId) {
+                    streamBecameBrokenTime = now
+                    return true
+                }
             case .rtmp:
                 if let rtmpStream = getRtmpStream(id: scene.videoSource.rtmpCameraId) {
                     if ingests.rtmp?.isStreamConnected(streamKey: rtmpStream.streamKey) == false {
