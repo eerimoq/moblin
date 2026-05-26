@@ -81,6 +81,9 @@ class SrtClient: @unchecked Sendable {
             srtClientQueue.async { self.connectSoon(delay: reconnectDelay) }
             return
         }
+        // Capture the socket handle into a local so the receive loop (on this thread)
+        // can use it independently from the management queue, allowing stop() to close
+        // it from srtClientQueue while srt_recvmsg() is blocking on this thread.
         let sock: SRTSOCKET
         srtClientQueue.sync {
             socket = srt_create_socket()

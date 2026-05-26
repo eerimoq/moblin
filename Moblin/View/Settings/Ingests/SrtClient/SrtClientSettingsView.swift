@@ -3,10 +3,9 @@ import SwiftUI
 struct SrtClientSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var srtClient: SettingsSrtClient
-    @State var numberOfEnabledStreams: Int = 0
 
     private func status() -> String {
-        String(numberOfEnabledStreams)
+        String(srtClient.streams.filter(\.enabled).count)
     }
 
     private func deleteStream(at indexes: IndexSet) {
@@ -48,9 +47,6 @@ struct SrtClientSettingsView: View {
                 Spacer()
                 GrayTextView(text: status())
             }
-        }
-        .onAppear {
-            numberOfEnabledStreams = srtClient.streams.filter(\.enabled).count
         }
     }
 }
