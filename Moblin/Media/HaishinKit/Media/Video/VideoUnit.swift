@@ -1536,7 +1536,8 @@ final class VideoUnit: NSObject, @unchecked Sendable {
 
     private func createLowFpsImage(imageBuffer: CVImageBuffer) {
         var ciImage = CIImage(cvPixelBuffer: imageBuffer)
-        let scale = 400.0 / Double(imageBuffer.width)
+        let scale = 400.0 /
+            (imageBuffer.isPortrait() ? Double(imageBuffer.height) : Double(imageBuffer.width))
         ciImage = ciImage.scaled(x: scale, y: scale)
         let cgImage = context.createCGImage(ciImage, from: ciImage.extent)!
         let image = UIImage(cgImage: cgImage)
