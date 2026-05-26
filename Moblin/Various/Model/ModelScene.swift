@@ -277,6 +277,8 @@ extension Model {
             attachBufferedCamera(cameraId: scene.videoSource.rtmpCameraId, scene: scene)
         case .srtla:
             attachBufferedCamera(cameraId: scene.videoSource.srtlaCameraId, scene: scene)
+        case .srtClient:
+            attachBufferedCamera(cameraId: scene.videoSource.srtClientCameraId, scene: scene)
         case .rist:
             attachBufferedCamera(cameraId: scene.videoSource.ristCameraId, scene: scene)
         case .rtsp:
@@ -461,6 +463,8 @@ extension Model {
             activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
         case .srtla:
             activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
+        case .srtClient:
+            activeBufferedVideoIds.contains(scene.videoSource.srtClientCameraId)
         case .rist:
             activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
         case .rtsp:

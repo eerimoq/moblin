@@ -178,6 +178,73 @@ class SettingsSrtlaServer: Codable, ObservableObject {
     }
 }
 
+private let defaultSrtClientLatency: Int32 = 2000
+
+class SettingsSrtClientStream: Codable, Identifiable, ObservableObject, Named {
+    static let baseName = String(localized: "My stream")
+    var id: UUID = .init()
+    @Published var name: String = baseName
+    @Published var url: String = ""
+    @Published var enabled: Bool = false
+    @Published var latency: Int32 = defaultSrtClientLatency
+
+    enum CodingKeys: CodingKey {
+        case id
+        case name
+        case url
+        case enabled
+        case latency
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.id, id)
+        try container.encode(.name, name)
+        try container.encode(.url, url)
+        try container.encode(.enabled, enabled)
+        try container.encode(.latency, latency)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = container.decode(.id, UUID.self, .init())
+        name = container.decode(.name, String.self, Self.baseName)
+        url = container.decode(.url, String.self, "")
+        enabled = container.decode(.enabled, Bool.self, false)
+        latency = container.decode(.latency, Int32.self, defaultSrtClientLatency)
+    }
+
+    func camera() -> String {
+        srtClientCamera(name: name)
+    }
+
+    func latencySeconds() -> Double {
+        Double(latency) / 1000
+    }
+}
+
+class SettingsSrtClient: Codable, ObservableObject {
+    @Published var streams: [SettingsSrtClientStream] = []
+
+    enum CodingKeys: CodingKey {
+        case streams
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.streams, streams)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streams = container.decode(.streams, [SettingsSrtClientStream].self, [])
+    }
+}
+
 class SettingsRistServerStream: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My stream")
     var id: UUID = .init()

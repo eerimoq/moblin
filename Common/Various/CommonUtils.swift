@@ -517,6 +517,7 @@ extension Data {
 
 private let cameraPositionRtmp = "(RTMP)"
 private let cameraPositionSrtla = "(SRT(LA))"
+private let cameraPositionSrtClient = "(SRT client)"
 private let cameraPositionRist = "(RIST)"
 private let cameraPositionRtsp = "(RTSP)"
 private let cameraPositionWhip = "(WHIP)"
@@ -537,6 +538,14 @@ func srtlaCamera(name: String) -> String {
 
 func isSrtlaCameraOrMic(camera: String) -> Bool {
     camera.hasSuffix(cameraPositionSrtla)
+}
+
+func srtClientCamera(name: String) -> String {
+    "\(name) \(cameraPositionSrtClient)"
+}
+
+func isSrtClientCameraOrMic(camera: String) -> Bool {
+    camera.hasSuffix(cameraPositionSrtClient)
 }
 
 func ristCamera(name: String) -> String {

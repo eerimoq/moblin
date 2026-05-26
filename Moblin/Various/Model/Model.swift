@@ -151,6 +151,7 @@ class Raid: ObservableObject {
 class Ingests: ObservableObject {
     var rtmp: RtmpServer?
     var srtla: SrtlaServer?
+    var srt: [SrtClient] = []
     var rist: RistServer?
     var rtsp: [RtspClient] = []
     var whip: WhipServer?
@@ -1185,6 +1186,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func reloadIngests() {
         reloadRtmpServer()
         reloadSrtlaServer()
+        reloadSrtClient()
         reloadRistServer()
         reloadRtspClient()
         reloadWhipServer()
@@ -2425,6 +2427,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         var numberOfClients = 0
         updateRtmpIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateSrtlaIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
+        updateSrtClientIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRistIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateRtspIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
         updateWhipIngestsSpeed(&anyServerEnabled, &speed, &total, &numberOfClients)
@@ -2481,6 +2484,20 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             speed += stats.speed
         }
         anyServerEnabled = true
+    }
+
+    private func updateSrtClientIngestsSpeed(_ anyServerEnabled: inout Bool,
+                                             _ speed: inout UInt64,
+                                             _ total: inout UInt64,
+                                             _ numberOfClients: inout Int)
+    {
+        for client in ingests.srt {
+            let stats = client.updateStats()
+            total += stats.total
+            speed += stats.speed
+            numberOfClients += 1
+            anyServerEnabled = true
+        }
     }
 
     private func updateRistIngestsSpeed(_ anyServerEnabled: inout Bool,
