@@ -186,14 +186,12 @@ class SettingsSrtClientStream: Codable, Identifiable, ObservableObject, Named {
     @Published var name: String = baseName
     @Published var url: String = ""
     @Published var enabled: Bool = false
-    @Published var latency: Int32 = defaultSrtClientLatency
 
     enum CodingKeys: CodingKey {
         case id
         case name
         case url
         case enabled
-        case latency
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -202,7 +200,6 @@ class SettingsSrtClientStream: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.name, name)
         try container.encode(.url, url)
         try container.encode(.enabled, enabled)
-        try container.encode(.latency, latency)
     }
 
     init() {}
@@ -213,15 +210,10 @@ class SettingsSrtClientStream: Codable, Identifiable, ObservableObject, Named {
         name = container.decode(.name, String.self, Self.baseName)
         url = container.decode(.url, String.self, "")
         enabled = container.decode(.enabled, Bool.self, false)
-        latency = container.decode(.latency, Int32.self, defaultSrtClientLatency)
     }
 
     func camera() -> String {
         srtClientCamera(name: name)
-    }
-
-    func latencySeconds() -> Double {
-        Double(latency) / 1000
     }
 }
 

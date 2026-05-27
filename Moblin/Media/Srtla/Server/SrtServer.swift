@@ -75,7 +75,7 @@ class SrtServer: @unchecked Sendable {
 
     private func open() throws {
         listenerSocket = srt_create_socket()
-        guard listenerSocket != SRT_ERROR else {
+        guard listenerSocket != SRT_INVALID_SOCK else {
             throw "Failed to create socket: \(lastSrtSocketError())"
         }
     }

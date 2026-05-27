@@ -178,6 +178,7 @@ extension Model {
         for mic in database.mics.mics {
             if mic.isRtmp()
                 || mic.isSrtla()
+                || mic.isSrtClient()
                 || mic.isRist()
                 || mic.isRtsp()
                 || mic.isWhip()
@@ -453,6 +454,7 @@ extension Model {
         listMediaPlayerMics(&mics)
         listRistMics(&mics)
         listSrtlaMics(&mics)
+        listSrtClientMics(&mics)
         listRtmpMics(&mics)
         listWhipMics(&mics)
         listWhepMics(&mics)
@@ -466,6 +468,7 @@ extension Model {
         listMediaPlayerMics(&mics)
         listRistMics(&mics)
         listSrtlaMics(&mics)
+        listSrtClientMics(&mics)
         listRtmpMics(&mics)
         listWhipMics(&mics)
         listWhepMics(&mics)
@@ -494,6 +497,16 @@ extension Model {
             mic.name = stream.camera()
             mic.inputUid = stream.id.uuidString
             mic.connected = isSrtlaStreamConnected(streamId: stream.streamId)
+            mics.append(mic)
+        }
+    }
+
+    private func listSrtClientMics(_ mics: inout [SettingsMicsMic]) {
+        for stream in database.srtClient.streams {
+            let mic = SettingsMicsMic()
+            mic.name = stream.camera()
+            mic.inputUid = stream.id.uuidString
+            mic.connected = isSrtClientStreamConnected(id: stream.id)
             mics.append(mic)
         }
     }

@@ -20,18 +20,17 @@ extension Model {
         }
     }
 
+    func isSrtClientStreamConnected(id _: UUID) -> Bool {
+        true
+    }
+
     func reloadSrtClient() {
         stopSrtClient()
         for stream in database.srtClient.streams where stream.enabled {
             guard let url = URL(string: stream.url) else {
                 continue
             }
-            let client = SrtClient(
-                cameraId: stream.id,
-                url: url,
-                latency: stream.latencySeconds(),
-                delegate: self
-            )
+            let client = SrtClient(cameraId: stream.id, url: url, delegate: self)
             client.start()
             ingests.srt.append(client)
         }
@@ -50,8 +49,8 @@ extension Model {
         }
         let camera = stream.camera()
         makeToast(title: String(localized: "\(camera) connected"))
-        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: stream.latencySeconds())
-        media.addBufferedAudio(cameraId: cameraId, name: camera, latency: stream.latencySeconds())
+        media.addBufferedVideo(cameraId: cameraId, name: camera, latency: srtClientLatency)
+        media.addBufferedAudio(cameraId: cameraId, name: camera, latency: srtClientLatency)
     }
 
     private func srtClientDisconnectedInternal(cameraId: UUID) {

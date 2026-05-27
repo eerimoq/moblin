@@ -116,10 +116,7 @@ class SrtStreamOfficial: @unchecked Sendable {
     private func sockaddrIn(_ host: String, port: UInt16) -> sockaddr_in {
         var addr = sockaddr_in()
         addr.sin_family = sa_family_t(AF_INET)
-        addr.sin_port = CFSwapInt16BigToHost(port)
-        if inet_pton(AF_INET, host, &addr.sin_addr) == 1 {
-            return addr
-        }
+        addr.sin_port = in_port_t(bigEndian: port)
         guard let hostent = gethostbyname(host), hostent.pointee.h_addrtype == AF_INET else {
             return addr
         }
