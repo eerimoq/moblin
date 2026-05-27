@@ -2144,7 +2144,8 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
             enqueueVideoPreview(device: input.device, sampleBuffer: sampleBuffer)
         }
         if isSceneVideoSource(device: input.device) {
-            var sampleBuffer = sampleBuffer
+            // Workaround for audio drift on iPhone 15 Pro Max running iOS 17. Probably issue on more models.
+            var sampleBuffer = syncTimeToAudio(processor: processor, sampleBuffer: sampleBuffer)
             if let bufferedVideo = appendBufferedBuiltinVideo(sampleBuffer, input.device) {
                 for bufferedVideoBuiltin in bufferedVideoBuiltins.values {
                     bufferedVideoBuiltin.updateSampleBuffer(sampleBuffer.presentationTimeStamp.seconds, true)
@@ -2164,6 +2165,20 @@ extension VideoUnit: AVCaptureVideoDataOutputSampleBufferDelegate {
 
 private func createBlackImage(width: Double, height: Double) -> CIImage {
     CIImage.black.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
+}
+
+private func syncTimeToAudio(processor: Processor?, sampleBuffer: CMSampleBuffer) -> CMSampleBuffer {
+    guard let processor,
+          let videoClock = processor.video.session.synchronizationClock,
+          let audioClock = processor.audio.session.synchronizationClock
+    else {
+        return sampleBuffer
+    }
+    let videoTimescale = sampleBuffer.presentationTimeStamp.timescale
+    let seconds = videoClock.convertTime(sampleBuffer.presentationTimeStamp, to: audioClock).seconds
+    let value = CMTimeValue(seconds * Double(videoTimescale))
+    let presentationTimeStamp = CMTime(value: value, timescale: videoTimescale)
+    return sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) ?? sampleBuffer
 }
 
 @available(iOS 18.0, *)
