@@ -49,6 +49,8 @@ enum TextFormatPart: Equatable {
     case gForce
     case gForceRecentMax
     case gForceMax
+    case latestSubscriber
+    case latestFollower
 }
 
 @MainActor
@@ -154,6 +156,10 @@ class TextFormatLoader {
                     loadItem(part: .gForceRecentMax, offsetBy: 17)
                 } else if formatFromIndex.hasPrefix("{gforcemax}") {
                     loadItem(part: .gForceMax, offsetBy: 11)
+                } else if formatFromIndex.hasPrefix("{latestsubscriber}") {
+                    loadItem(part: .latestSubscriber, offsetBy: 18)
+                } else if formatFromIndex.hasPrefix("{latestfollower}") {
+                    loadItem(part: .latestFollower, offsetBy: 16)
                 } else {
                     index = format.index(after: index)
                 }

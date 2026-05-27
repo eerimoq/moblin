@@ -546,6 +546,7 @@ extension Model {
 
 extension Model: @preconcurrency TwitchEventSubDelegate {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
+        latestFollower = event.user_name
         let text = String(localized: "just followed!")
         if stream.twitchToastAlerts.follows {
             makeToast(title: "\(event.user_name) \(text)")
@@ -582,6 +583,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
+        latestSubscriber = event.user_name
     }
 
     func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
@@ -602,6 +604,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: text)
+        latestSubscriber = user
     }
 
     func twitchEventSubChannelSubscriptionMessage(
@@ -625,6 +628,7 @@ extension Model: @preconcurrency TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: text)
+        latestSubscriber = event.user_name
     }
 
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(

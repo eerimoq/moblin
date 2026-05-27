@@ -130,7 +130,9 @@ struct TextEffectSuite {
                         cyclingCadence: "",
                         runningMetrics: [:],
                         browserTitle: "",
-                        gForce: gForce)
+                        gForce: gForce,
+                        latestSubscriber: "",
+                        latestFollower: "")
     }
 
     private func createLine(data: TextEffectPartData) -> [TextEffectLine] {

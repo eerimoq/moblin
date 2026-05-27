@@ -398,6 +398,7 @@ extension Model: @preconcurrency KickPusherDelegate {
         }
         playAlert(alert: .kickSubscription(event: event))
         printEventCatPrinters(event: .kickSubscription, username: event.username, message: text)
+        latestSubscriber = event.username
     }
 
     func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent) {
@@ -421,6 +422,7 @@ extension Model: @preconcurrency KickPusherDelegate {
         }
         playAlert(alert: .kickGiftedSubscriptions(event: event))
         printEventCatPrinters(event: .kickGiftedSubscriptions, username: user, message: text)
+        latestSubscriber = user
     }
 
     func kickPusherRewardRedeemed(event: KickPusherRewardRedeemedEvent) {

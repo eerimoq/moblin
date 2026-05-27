@@ -1537,7 +1537,9 @@ extension Model {
                 cyclingCadence: "\(cyclingCadence)",
                 runningMetrics: runningMetrics,
                 browserTitle: getBrowserTitle(),
-                gForce: gForceManager?.getLatest()
+                gForce: gForceManager?.getLatest(),
+                latestSubscriber: latestSubscriber,
+                latestFollower: latestFollower
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
         }

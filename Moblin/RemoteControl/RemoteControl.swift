@@ -568,6 +568,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var runningMetrics: [String: WorkoutDeviceRunningMetrics]
     var browserTitle: String
     var gForce: GForce?
+    var latestSubscriber: String
+    var latestFollower: String
 
     init(stats: TextEffectStats) {
         bitrate = stats.bitrate
@@ -603,6 +605,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         cyclingCadence = stats.cyclingCadence
         runningMetrics = stats.runningMetrics
         browserTitle = stats.browserTitle
+        latestSubscriber = stats.latestSubscriber
+        latestFollower = stats.latestFollower
     }
 
     func toStats() -> TextEffectStats {
@@ -640,7 +644,9 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
                         cyclingCadence: cyclingCadence,
                         runningMetrics: runningMetrics,
                         browserTitle: browserTitle,
-                        gForce: gForce)
+                        gForce: gForce,
+                        latestSubscriber: latestSubscriber,
+                        latestFollower: latestFollower)
     }
 }
 

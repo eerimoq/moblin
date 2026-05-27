@@ -921,6 +921,30 @@ private struct TeslaVariablesView: View {
     }
 }
 
+private struct StreamingVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(
+                    title: "{latestSubscriber}",
+                    description: String(localized: "Show latest subscriber"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{latestFollower}",
+                    description: String(localized: "Show latest follower"),
+                    text: $value
+                )
+            }
+            .navigationTitle("Streaming")
+        } label: {
+            Text("Streaming")
+        }
+    }
+}
+
 private struct DebugVariablesView: View {
     @Binding var value: String
 
@@ -982,6 +1006,7 @@ private struct TextSelectionView: View {
                 LanguageVariablesView(value: $value)
                 WorkoutVariablesView(model: model, value: $value)
                 TeslaVariablesView(value: $value)
+                StreamingVariablesView(value: $value)
                 DebugVariablesView(value: $value)
             } header: {
                 Text("Variables")

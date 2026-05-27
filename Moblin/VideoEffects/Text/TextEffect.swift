@@ -39,6 +39,8 @@ struct TextEffectStats {
     let runningMetrics: [String: WorkoutDeviceRunningMetrics]
     let browserTitle: String
     let gForce: GForce?
+    let latestSubscriber: String
+    let latestFollower: String
 }
 
 private class TextViewState: ObservableObject {
