@@ -50,6 +50,7 @@ private struct EffectView: View {
                     )
                 case .lut:
                     LutEffectView(
+                        model: model,
                         color: model.database.color,
                         widget: widget,
                         effect: effect,

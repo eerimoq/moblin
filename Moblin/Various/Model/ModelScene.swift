@@ -167,7 +167,7 @@ extension Model {
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         lutEffects.removeAll()
-        for lut in allLuts() {
+        for lut in database.color.allLuts() {
             let lutEffect = LutEffect()
             lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) {
                 self.makeErrorToast(title: $0, subTitle: $1)
@@ -966,7 +966,7 @@ extension Model {
         if database.color.lutEnabled, database.color.space == .appleLog {
             effects.append(lutEffect)
         }
-        for lut in allLuts() {
+        for lut in database.color.allLuts() {
             guard lut.enabled else {
                 continue
             }

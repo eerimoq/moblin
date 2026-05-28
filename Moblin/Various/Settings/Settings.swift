@@ -130,6 +130,10 @@ class SettingsColor: Codable, ObservableObject {
         diskLutsPng = container.decode(.diskLutsPng, [SettingsColorLut].self, [])
         diskLutsCube = container.decode(.diskLutsCube, [SettingsColorLut].self, [])
     }
+
+    func allLuts() -> [SettingsColorLut] {
+        bundledLuts + diskLutsCube + diskLutsPng
+    }
 }
 
 class SettingsShow: Codable, ObservableObject {

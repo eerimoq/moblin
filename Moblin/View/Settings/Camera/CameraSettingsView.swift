@@ -160,7 +160,7 @@ struct CameraSettingsLutsView: View {
 }
 
 private struct CameraSettingsAppleLogLutView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var color: SettingsColor
 
     var body: some View {
@@ -177,7 +177,7 @@ private struct CameraSettingsAppleLogLutView: View {
             }
             Section {
                 Picker("", selection: $color.lut) {
-                    ForEach(model.allLuts()) { lut in
+                    ForEach(color.allLuts()) { lut in
                         Text(lut.name)
                             .tag(lut.id)
                     }
@@ -254,7 +254,7 @@ struct CameraSettingsView: View {
                         }
                         .disabled(model.isLive || model.isRecording)
                         NavigationLink {
-                            CameraSettingsAppleLogLutView(color: color)
+                            CameraSettingsAppleLogLutView(model: model, color: color)
                         } label: {
                             Text("Apple Log LUT")
                         }

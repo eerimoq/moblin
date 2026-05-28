@@ -498,17 +498,13 @@ extension Model {
         lut.name = name
     }
 
-    func allLuts() -> [SettingsColorLut] {
-        database.color.bundledLuts + database.color.diskLutsCube + database.color.diskLutsPng
-    }
-
     func getLogLutById(id: UUID?) -> SettingsColorLut? {
-        allLuts().first { $0.id == id }
+        database.color.allLuts().first { $0.id == id }
     }
 
     func updateLutsButtonState() {
         var isOn = showingPanel == .luts
-        for lut in allLuts() where lut.enabled {
+        for lut in database.color.allLuts() where lut.enabled {
             isOn = true
         }
         setQuickButton(type: .luts, isOn: isOn)

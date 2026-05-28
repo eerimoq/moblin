@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LutEffectView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var color: SettingsColor
     let widget: SettingsWidget
     let effect: SettingsVideoEffect
@@ -19,7 +19,7 @@ struct LutEffectView: View {
             Picker("", selection: $lut.lut) {
                 Text("-- None --")
                     .tag(nil as UUID?)
-                ForEach(model.allLuts()) { lut in
+                ForEach(color.allLuts()) { lut in
                     Text(lut.name)
                         .tag(lut.id as UUID?)
                 }
