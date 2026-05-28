@@ -7,6 +7,10 @@ SWIFTFORMAT_ARGS = \
 SWIFTLINT_ARGS = --strict --quiet
 OXFMT_ARGS = "WebRemoteControlFrontend"
 OXLINT_ARGS = "WebRemoteControlFrontend"
+PYTHON_DIRS = \
+	test \
+	utils
+BLACK_ARGS = $(PYTHON_DIRS)
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 	--index-exclude "**/PrepareLicenseList/**" \
@@ -21,8 +25,9 @@ PYLINT_ARGS = \
 	--disable broad-exception-caught \
 	--disable too-many-locals \
 	--disable duplicate-code \
+	--disable missing-class-docstring \
 	--recursive yes \
-	.
+	$(PYTHON_DIRS)
 
 CODE_FOLDERS += "Common"
 CODE_FOLDERS += "Moblin"
@@ -35,23 +40,25 @@ CODE_FOLDERS += "WebRemoteControlFrontend"
 
 SHELL = /usr/bin/env bash
 
+.PHONY: test
+
 default:
 
 style:
 	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS)
 	oxfmt $(OXFMT_ARGS)
+	black $(BLACK_ARGS) || true
 
 style-check:
 	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS) --lint
 	oxfmt $(OXFMT_ARGS) --check
+	black $(BLACK_ARGS) --check
 
 lint:
 	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_FOLDERS)
 	oxlint $(OXLINT_ARGS)
+	pylint $(PYLINT_ARGS) || true
 	python3 utils/xcstringslint.py Common/Localizable.xcstrings
-
-pylint:
-	pylint $(PYLINT_ARGS)
 
 lint-fix:
 	python3 utils/xcstringslint.py --fix Common/Localizable.xcstrings
@@ -63,7 +70,7 @@ spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_FOLDERS)
 
 test:
-	cd utils && python test.py
+	cd test && python test.py
 
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings

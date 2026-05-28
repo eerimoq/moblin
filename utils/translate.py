@@ -25,27 +25,27 @@ LANGUAGES = [
     ("ko", "ko"),
     ("ru", "ru"),
     ("uk", "uk"),
-    ("sk", "sk")
+    ("sk", "sk"),
 ]
 
 
 def needs_translation(item):
-    state = item['stringUnit']['state']
+    state = item["stringUnit"]["state"]
 
-    return state not in ['translated', 'needs_review']
+    return state not in ["translated", "needs_review"]
 
 
 def main():
     localizable_xcstrings_path = Path(sys.argv[1])
-    localizable = json.loads(localizable_xcstrings_path.read_text(encoding='utf-8'))
+    localizable = json.loads(localizable_xcstrings_path.read_text(encoding="utf-8"))
 
     try:
-        for english, value in localizable['strings'].items():
-            localizations = value.get('localizations')
+        for english, value in localizable["strings"].items():
+            localizations = value.get("localizations")
 
             if localizations is None:
                 localizations = {}
-                value['localizations'] = localizations
+                value["localizations"] = localizations
 
             for xcode_languages, google_language in LANGUAGES:
                 translated = None
@@ -61,8 +61,12 @@ def main():
                             continue
 
                         if translated is None:
-                            print(f'Translating "{english}" to {", ".join(xcode_languages)}')
-                            translator = GoogleTranslator(source='en', target=google_language)
+                            print(
+                                f'Translating "{english}" to {", ".join(xcode_languages)}'
+                            )
+                            translator = GoogleTranslator(
+                                source="en", target=google_language
+                            )
 
                             try:
                                 translated = translator.translate(english)
@@ -70,18 +74,15 @@ def main():
                                 translated = english
 
                         localizations[xcode_language] = {
-                            'stringUnit': {
-                                'state': 'needs_review',
-                                'value': translated
-                            }
+                            "stringUnit": {"state": "needs_review", "value": translated}
                         }
     finally:
         localizable_xcstrings_path.write_text(
-            json.dumps(localizable,
-                       indent=2,
-                       ensure_ascii=False,
-                       separators=(',', ' : ')),
-            encoding='utf-8')
+            json.dumps(
+                localizable, indent=2, ensure_ascii=False, separators=(",", " : ")
+            ),
+            encoding="utf-8",
+        )
 
 
 main()
