@@ -29,14 +29,14 @@ PYLINT_ARGS = \
 	--recursive yes \
 	$(PYTHON_DIRS)
 
-CODE_FOLDERS += "Common"
-CODE_FOLDERS += "Moblin"
-CODE_FOLDERS += "Moblin Watch"
-CODE_FOLDERS += "Moblin Widget"
-CODE_FOLDERS += "Moblin Live Activity"
-CODE_FOLDERS += "Moblin Screen Recording"
-CODE_FOLDERS += "MoblinTests"
-CODE_FOLDERS += "WebRemoteControlFrontend"
+CODE_DIRS += "Common"
+CODE_DIRS += "Moblin"
+CODE_DIRS += "Moblin Watch"
+CODE_DIRS += "Moblin Widget"
+CODE_DIRS += "Moblin Live Activity"
+CODE_DIRS += "Moblin Screen Recording"
+CODE_DIRS += "MoblinTests"
+CODE_DIRS += "WebRemoteControlFrontend"
 
 SHELL = /usr/bin/env bash
 
@@ -45,17 +45,17 @@ SHELL = /usr/bin/env bash
 default:
 
 style:
-	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS)
+	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS)
 	oxfmt $(OXFMT_ARGS)
 	black $(BLACK_ARGS) || true
 
 style-check:
-	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS) --lint
+	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS) --lint
 	oxfmt $(OXFMT_ARGS) --check
 	black $(BLACK_ARGS) --check
 
 lint:
-	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_FOLDERS)
+	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
 	oxlint $(OXLINT_ARGS)
 	pylint $(PYLINT_ARGS) || true
 	python3 utils/xcstringslint.py Common/Localizable.xcstrings
@@ -67,7 +67,7 @@ periphery:
 	periphery scan $(PERIPHERY_ARGS)
 
 spell-check:
-	codespell $(CODESPELL_ARGS) $(CODE_FOLDERS)
+	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
 
 test:
 	cd test && python test.py
