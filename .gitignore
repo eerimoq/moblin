@@ -98,3 +98,5 @@ Config/User.xcconfig
 
 # Node.js
 node_modules/
+utils/all.*
+utils/logs

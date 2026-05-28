@@ -62,6 +62,9 @@ periphery:
 spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_FOLDERS)
 
+test:
+	cd utils && python test.py
+
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings
 
