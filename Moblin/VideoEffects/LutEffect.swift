@@ -2,6 +2,8 @@ import CoreImage
 import SwiftCube
 import SwiftUI
 
+private let loaderQueue = DispatchQueue(label: "com.eerimoq.mobs.lut-loader")
+
 private func interpolate3d(at point: SIMD3<Float>, in lut: [SIMD3<Float>], dimension: Int) -> SIMD3<Float> {
     let dimensionFloat = Float(dimension)
     let x = min(max(point.x * dimensionFloat - 1, 0), dimensionFloat - 1)
@@ -126,7 +128,7 @@ final class LutEffect: VideoEffect, @unchecked Sendable {
         imageStorage: ImageStorage,
         onError: @escaping @MainActor (String, String?) -> Void
     ) {
-        DispatchQueue.global().async {
+        loaderQueue.async {
             do {
                 try self.loadLut(lut: lut, imageStorage: imageStorage)
             } catch {
