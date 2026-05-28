@@ -9,6 +9,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Moblin:
+    def __enter__(self):
+        self._server = subprocess.Popen(["moblin_assistant",
+                                         "--port", REMOTE_CONTROL_PORT,
+                                         "run",
+                                         "--password", "1234"])
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._server.kill()
+
     def go_live(self):
         self._execute("go_live")
 
@@ -29,14 +39,9 @@ class RtmpFromMoblinToMediaMtx(systest.TestCase):
 
 def main():
     sequencer = systest.setup("all")
-    moblin = Moblin()
 
-    with subprocess.Popen(["moblin_assistant", 
-                           "--port", REMOTE_CONTROL_PORT, 
-                           "run", 
-                           "--password", "1234"]) as moblin_assistant_server:
+    with Moblin() as moblin:
         sequencer.run(RtmpFromMoblinToMediaMtx(moblin))
-        moblin_assistant_server.kill()
 
     sequencer.report_and_exit()
 
