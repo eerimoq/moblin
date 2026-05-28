@@ -26,6 +26,24 @@ class Moblin:
         subprocess.run(["moblin_assistant", "--port", REMOTE_CONTROL_PORT, command])
 
 
+class MediaMtx:
+    def __enter__(self):
+        self._server = subprocess.Popen(["mediamtx"])
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._server.kill()
+
+
+class Ffmpeg:
+    def __enter__(self):
+        self._server = subprocess.Popen(["ffmpeg"])
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._server.kill()
+
+
 class RtmpFromMoblinToMediaMtx(systest.TestCase):
     def __init__(self, moblin: Moblin):
         super(RtmpFromMoblinToMediaMtx, self).__init__()
