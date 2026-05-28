@@ -477,9 +477,9 @@ class SettingsVideoEffect: Codable, Identifiable, ObservableObject {
             return AnamorphicLensEffect(settings: anamorphicLens.clone())
         case .lut:
             let effect = LutEffect()
-            if let id = lut.lut, let lut = model.getLogLutById(id: id) {
-                effect.setLut(lut: lut.clone(), imageStorage: model.imageStorage) { title, subTitle in
-                    model.makeErrorToast(title: title, subTitle: subTitle)
+            if let lut = model.getLogLutById(id: lut.lut) {
+                effect.setLut(lut: lut.clone(), imageStorage: model.imageStorage) {
+                    model.makeErrorToast(title: $0, subTitle: $1)
                 }
             }
             return effect

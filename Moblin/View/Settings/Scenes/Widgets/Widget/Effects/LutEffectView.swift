@@ -8,15 +8,10 @@ struct LutEffectView: View {
     @ObservedObject var lut: SettingsVideoEffectLut
 
     private func updateWidget() {
-        let lut: SettingsColorLut? = if let id = self.lut.lut {
-            model.getLogLutById(id: id)
-        } else {
-            nil
+        let lut = model.getLogLutById(id: lut.lut)
+        model.getWidgetLutEffect(widget, effect)?.setLut(lut: lut, imageStorage: model.imageStorage) {
+            model.makeErrorToast(title: $0, subTitle: $1)
         }
-        model.getWidgetLutEffect(widget, effect)?
-            .setLut(lut: lut, imageStorage: model.imageStorage) { title, subTitle in
-                model.makeErrorToast(title: title, subTitle: subTitle)
-            }
     }
 
     var body: some View {

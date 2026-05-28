@@ -457,8 +457,8 @@ extension Model {
             media.unregisterEffect(lutEffect)
             return
         }
-        lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
-            self.makeErrorToast(title: title, subTitle: subTitle)
+        lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) {
+            self.makeErrorToast(title: $0, subTitle: $1)
         }
     }
 
@@ -502,7 +502,7 @@ extension Model {
         database.color.bundledLuts + database.color.diskLutsCube + database.color.diskLutsPng
     }
 
-    func getLogLutById(id: UUID) -> SettingsColorLut? {
+    func getLogLutById(id: UUID?) -> SettingsColorLut? {
         allLuts().first { $0.id == id }
     }
 
