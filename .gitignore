@@ -100,3 +100,4 @@ Config/User.xcconfig
 node_modules/
 test/all.*
 test/logs
+__pycache__
