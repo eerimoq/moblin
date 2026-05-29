@@ -22,7 +22,10 @@ private struct AuthenticationView: View {
             }
         }
         .sheet(isPresented: $presentingWebView) {
-            KickLoginView(presenting: $presentingWebView) { accessToken in
+            KickLoginView(
+                presenting: $presentingWebView,
+                webProxyServer: model.webProxyServer
+            ) { accessToken in
                 model.kickAuthOnComplete?(accessToken)
             }
         }

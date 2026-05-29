@@ -9,13 +9,19 @@ enum MoblinkThermalState: String, Codable {
     case red
 }
 
+enum MoblinkCapability: String, Codable {
+    case webProxy
+}
+
 enum MoblinkRequest: Codable {
     case startTunnel(address: String, port: UInt16)
+    case webProxyOpen(id: UUID, host: String, port: UInt16)
     case status
 }
 
 enum MoblinkResponse: Codable {
     case startTunnel(port: UInt16)
+    case webProxyOpen(id: UUID)
     case status(batteryPercentage: Int?, thermalState: MoblinkThermalState?)
 }
 
@@ -36,6 +42,8 @@ enum MoblinkMessageToRelay: Codable {
     case hello(apiVersion: String, authentication: MoblinkAuthentication)
     case identified(result: MoblinkResult)
     case request(id: Int, data: MoblinkRequest)
+    case webProxyData(id: UUID, data: Data)
+    case webProxyClose(id: UUID)
 
     func toJson() -> String? {
         do {
@@ -54,8 +62,10 @@ enum MoblinkMessageToRelay: Codable {
 }
 
 enum MoblinkMessageToStreamer: Codable {
-    case identify(id: UUID, name: String, authentication: String)
+    case identify(id: UUID, name: String, authentication: String, capabilities: [MoblinkCapability]? = nil)
     case response(id: Int, result: MoblinkResult, data: MoblinkResponse?)
+    case webProxyData(id: UUID, data: Data)
+    case webProxyClose(id: UUID)
 
     func toJson() throws -> String {
         guard let encoded = try String(bytes: JSONEncoder().encode(self), encoding: .utf8) else {

@@ -64,7 +64,8 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         url: URL,
         styleSheet: String,
         widget: SettingsWidgetBrowser,
-        moblinAccess: Bool
+        moblinAccess: Bool,
+        webProxyServer: WebProxyServer?
     ) {
         scale = screenScale()
         self.url = url
@@ -84,6 +85,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
             addScript(configuration, source, .atDocumentEnd)
         }
         addScript(configuration, videoScript(), .atDocumentStart)
+        webProxyServer?.configureWebView(configuration: configuration)
         server = BrowserEffectServer(configuration: configuration, moblinAccess: moblinAccess)
         webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height),
                             configuration: configuration)

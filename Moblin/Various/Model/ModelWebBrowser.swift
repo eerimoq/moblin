@@ -38,6 +38,7 @@ extension Model {
             let configuration = WKWebViewConfiguration()
             configuration.allowsInlineMediaPlayback = true
             configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
+            webProxyServer.configureWebView(configuration: configuration)
             webBrowser = WKWebView(frame: .zero, configuration: configuration)
             webBrowser?.navigationDelegate = self
             webBrowser?.isOpaque = false

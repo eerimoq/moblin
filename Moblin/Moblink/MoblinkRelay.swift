@@ -55,6 +55,8 @@ private class Relay: NSObject, @unchecked Sendable {
     private var streamerListener: NWListener?
     private var streamerConnection: NWConnection?
     private var destinationConnection: NWConnection?
+    private var webProxyConnections: [UUID: NWConnection] = [:]
+    private var webProxyOpenRequestIds: [UUID: Int] = [:]
     var state: RelayState = .none
     private var started = false
     private let reconnectTimer = SimpleTimer(queue: .main)
@@ -117,6 +119,7 @@ private class Relay: NSObject, @unchecked Sendable {
         webSocket.delegate = nil
         webSocket.stop()
         stopTunnel()
+        stopWebProxyConnections(notifyStreamer: false)
     }
 
     private func reconnect(reason: String) {
@@ -158,6 +161,10 @@ private class Relay: NSObject, @unchecked Sendable {
                 setState(state: .connected)
             case let .request(id: id, data: data):
                 handleRequest(id: id, data: data)
+            case let .webProxyData(id: id, data: data):
+                handleWebProxyData(id: id, data: data)
+            case let .webProxyClose(id: id):
+                closeWebProxyConnection(id: id, notifyStreamer: false)
             }
         } catch {
             logger.info("moblink-relay: \(name): Decode failed")
@@ -173,7 +180,7 @@ private class Relay: NSObject, @unchecked Sendable {
         guard let id = UUID(uuidString: id) else {
             return
         }
-        send(message: .identify(id: id, name: name, authentication: hash))
+        send(message: .identify(id: id, name: name, authentication: hash, capabilities: [.webProxy]))
     }
 
     private func handleIdentified(result: MoblinkResult) -> Bool {
@@ -194,6 +201,8 @@ private class Relay: NSObject, @unchecked Sendable {
         switch data {
         case let .startTunnel(address: address, port: port):
             handleStartTunnel(id: id, address: address, port: port)
+        case let .webProxyOpen(connectionId, host, port):
+            handleWebProxyOpen(requestId: id, connectionId: connectionId, host: host, port: port)
         case .status:
             handleStatus(id: id)
         }
@@ -242,6 +251,122 @@ private class Relay: NSObject, @unchecked Sendable {
                                     batteryPercentage: batteryPercentage,
                                     thermalState: thermalState
                                 )))
+    }
+
+    private func handleWebProxyOpen(requestId: Int, connectionId: UUID, host: String, port: UInt16) {
+        moblinkRelayQueue.async {
+            self.handleWebProxyOpenInternal(requestId: requestId,
+                                            connectionId: connectionId,
+                                            host: host,
+                                            port: port)
+        }
+    }
+
+    private func handleWebProxyOpenInternal(requestId: Int, connectionId: UUID, host: String, port: UInt16) {
+        logger.info("moblink-relay: \(name): Web proxy open \(host):\(port)")
+        closeWebProxyConnectionInternal(id: connectionId, notifyStreamer: false)
+        let parameters = NWParameters.tcp
+        parameters.requiredInterface = destinationInterface
+        parameters.prohibitExpensivePaths = false
+        parameters.prohibitConstrainedPaths = false
+        let connection = NWConnection(host: NWEndpoint.Host(host),
+                                      port: NWEndpoint.Port(integerLiteral: port),
+                                      using: parameters)
+        webProxyConnections[connectionId] = connection
+        webProxyOpenRequestIds[connectionId] = requestId
+        connection.stateUpdateHandler = { state in
+            switch state {
+            case .ready:
+                self.handleWebProxyReady(id: connectionId, connection: connection)
+            case .failed:
+                self.handleWebProxyFailed(id: connectionId, connection: connection)
+            default:
+                break
+            }
+        }
+        connection.start(queue: moblinkRelayQueue)
+    }
+
+    private func handleWebProxyReady(id: UUID, connection: NWConnection) {
+        guard let currentConnection = webProxyConnections[id],
+              currentConnection === connection,
+              let requestId = webProxyOpenRequestIds.removeValue(forKey: id)
+        else {
+            return
+        }
+        send(message: .response(id: requestId, result: .ok, data: .webProxyOpen(id: id)))
+        receiveWebProxyData(id: id, connection: connection)
+    }
+
+    private func handleWebProxyFailed(id: UUID, connection: NWConnection) {
+        guard let currentConnection = webProxyConnections[id],
+              currentConnection === connection
+        else {
+            return
+        }
+        if let requestId = webProxyOpenRequestIds.removeValue(forKey: id) {
+            send(message: .response(id: requestId, result: .unknownRequest, data: nil))
+        }
+        closeWebProxyConnectionInternal(id: id, notifyStreamer: true)
+    }
+
+    private func handleWebProxyData(id: UUID, data: Data) {
+        moblinkRelayQueue.async {
+            self.handleWebProxyDataInternal(id: id, data: data)
+        }
+    }
+
+    private func handleWebProxyDataInternal(id: UUID, data: Data) {
+        guard let connection = webProxyConnections[id] else {
+            return
+        }
+        connection.send(content: data, completion: .contentProcessed { error in
+            if error != nil {
+                self.closeWebProxyConnectionInternal(id: id, notifyStreamer: true)
+            }
+        })
+    }
+
+    private func receiveWebProxyData(id: UUID, connection: NWConnection) {
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 16 * 1024) { data, _, _, error in
+            guard let currentConnection = self.webProxyConnections[id],
+                  currentConnection === connection
+            else {
+                return
+            }
+            guard error == nil, let data, !data.isEmpty else {
+                self.closeWebProxyConnectionInternal(id: id, notifyStreamer: true)
+                return
+            }
+            self.send(message: .webProxyData(id: id, data: data))
+            self.receiveWebProxyData(id: id, connection: connection)
+        }
+    }
+
+    private func closeWebProxyConnection(id: UUID, notifyStreamer: Bool) {
+        moblinkRelayQueue.async {
+            self.closeWebProxyConnectionInternal(id: id, notifyStreamer: notifyStreamer)
+        }
+    }
+
+    private func closeWebProxyConnectionInternal(id: UUID, notifyStreamer: Bool) {
+        guard let connection = webProxyConnections.removeValue(forKey: id) else {
+            return
+        }
+        webProxyOpenRequestIds.removeValue(forKey: id)
+        connection.stateUpdateHandler = nil
+        connection.cancel()
+        if notifyStreamer {
+            send(message: .webProxyClose(id: id))
+        }
+    }
+
+    private func stopWebProxyConnections(notifyStreamer: Bool) {
+        moblinkRelayQueue.async {
+            for id in Array(self.webProxyConnections.keys) {
+                self.closeWebProxyConnectionInternal(id: id, notifyStreamer: notifyStreamer)
+            }
+        }
     }
 
     private func stopTunnel() {
@@ -343,6 +468,7 @@ extension Relay: WebSocketClientDelegate {
     func webSocketClientDisconnected(_: WebSocketClient) {
         setState(state: .connecting)
         stopTunnel()
+        stopWebProxyConnections(notifyStreamer: false)
     }
 
     func webSocketClientReceiveMessage(_: WebSocketClient, string: String) {

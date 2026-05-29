@@ -57,8 +57,8 @@ class HttpResponseParser: HttpParser {
 private class InterfaceTypeHttpClient: @unchecked Sendable {
     private nonisolated(unsafe) static var interfaceTypes: Atomic<[NWInterface.InterfaceType]> = .init([
         .cellular,
-        .wifi,
         .wiredEthernet,
+        .wifi,
     ])
     private var interfaceTypes: [NWInterface.InterfaceType] = []
     private var interfaceTypeIndex: Int = 0

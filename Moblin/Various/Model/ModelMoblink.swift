@@ -14,6 +14,8 @@ class Moblink: ObservableObject {
 
 extension Model {
     func stopMoblinkStreamer() {
+        webProxyServer.setMoblinkRelays([])
+        webProxyServer.setMoblinkRelayConnector(nil)
         moblink.streamer?.stop()
         moblink.streamer = nil
     }
@@ -26,6 +28,7 @@ extension Model {
                 password: database.moblink.password,
                 name: UIDevice.current.name
             )
+            webProxyServer.setMoblinkRelayConnector(moblink.streamer)
             moblink.streamer?.start(delegate: self)
         }
     }
@@ -193,6 +196,10 @@ extension Model: @preconcurrency MoblinkStreamerDelegate {
 
     func moblinkStreamerTunnelRemoved(endpoint: Network.NWEndpoint) {
         media.removeMoblink(endpoint: endpoint)
+    }
+
+    func moblinkStreamerWebProxyRelaysChanged(relays: [WebNetworkMoblinkRelay]) {
+        webProxyServer.setMoblinkRelays(relays)
     }
 }
 

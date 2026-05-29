@@ -34,9 +34,10 @@ private let redirectUri = "https://\(redirectHost)"
 
 private struct TwitchAuthView: UIViewRepresentable {
     let twitchAuth: TwitchAuth
+    let webProxyServer: WebProxyServer
 
     func makeUIView(context _: Context) -> WKWebView {
-        twitchAuth.getWebBrowser()
+        twitchAuth.getWebBrowser(webProxyServer: webProxyServer)
     }
 
     func updateUIView(_: WKWebView, context _: Context) {}
@@ -49,7 +50,7 @@ struct TwitchLoginView: View {
     var body: some View {
         ZStack {
             ScrollView {
-                TwitchAuthView(twitchAuth: model.twitchAuth)
+                TwitchAuthView(twitchAuth: model.twitchAuth, webProxyServer: model.webProxyServer)
                     .frame(height: 2500)
             }
             CloseButtonTopRightView {
@@ -64,9 +65,10 @@ class TwitchAuth: NSObject {
     private var webBrowser: WKWebView?
     private var onAccessToken: ((String) -> Void)?
 
-    func getWebBrowser() -> WKWebView {
+    func getWebBrowser(webProxyServer: WebProxyServer) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
+        webProxyServer.configureWebView(configuration: configuration)
         webBrowser = WKWebView(frame: .zero, configuration: configuration)
         webBrowser!.navigationDelegate = self
         webBrowser!.load(URLRequest(url: buildAuthUrl()!))

@@ -3,14 +3,49 @@ import CryptoKit
 import Foundation
 import Network
 
+private let moblinkRequestTimeout = 10.0
+
 protocol MoblinkStreamerDelegate: AnyObject {
     func moblinkStreamerTunnelAdded(endpoint: NWEndpoint, relayId: UUID, relayName: String)
     func moblinkStreamerTunnelRemoved(endpoint: NWEndpoint)
+    func moblinkStreamerWebProxyRelaysChanged(relays: [WebNetworkMoblinkRelay])
 }
 
 private struct RequestResponse {
     let onSuccess: (MoblinkResponse?) -> Void
     let onError: (String) -> Void
+}
+
+private final class MoblinkWebProxyConnection: WebNetworkMoblinkConnection {
+    let id: UUID
+    private weak var relay: Relay?
+    private weak var delegate: (any WebNetworkMoblinkConnectionDelegate)?
+
+    init(id: UUID, relay: Relay, delegate: any WebNetworkMoblinkConnectionDelegate) {
+        self.id = id
+        self.relay = relay
+        self.delegate = delegate
+    }
+
+    func send(data: Data) {
+        DispatchQueue.main.async {
+            self.relay?.sendWebProxyData(id: self.id, data: data)
+        }
+    }
+
+    func close() {
+        DispatchQueue.main.async {
+            self.relay?.closeWebProxyConnection(id: self.id, notifyRelay: true, notifyDelegate: false)
+        }
+    }
+
+    func receive(data: Data) {
+        delegate?.webNetworkMoblinkConnectionReceiveData(data: data)
+    }
+
+    func closeFromRelay() {
+        delegate?.webNetworkMoblinkConnectionClosed()
+    }
 }
 
 private class Relay {
@@ -20,6 +55,7 @@ private class Relay {
     private var challenge = ""
     private var salt = ""
     private var requests: [Int: RequestResponse] = [:]
+    private var requestTimers: [Int: SimpleTimer] = [:]
     private let password: String
     private var address: String?
     private var port: UInt16?
@@ -29,6 +65,8 @@ private class Relay {
     var name = ""
     var batteryPercentage: Int?
     var thermalState: MoblinkThermalState?
+    private var webProxyCapable = false
+    private var webProxyConnections: [UUID: MoblinkWebProxyConnection] = [:]
     private var pingTimer = SimpleTimer(queue: .main)
     var pongReceived = true
 
@@ -54,6 +92,8 @@ private class Relay {
         webSocket.cancel()
         reportTunnelRemoved()
         requests.removeAll()
+        stopRequestTimers()
+        closeWebProxyConnections(notifyRelay: false, notifyDelegate: true)
     }
 
     func handleStringMessage(message: String) {
@@ -61,10 +101,20 @@ private class Relay {
         do {
             let message = try MoblinkMessageToStreamer.fromJson(data: message)
             switch message {
-            case let .identify(id: relayId, name: name, authentication: authentication):
-                try handleIdentify(relayId: relayId, name: name, authentication: authentication)
+            case let .identify(id: relayId,
+                               name: name,
+                               authentication: authentication,
+                               capabilities: capabilities):
+                try handleIdentify(relayId: relayId,
+                                   name: name,
+                                   authentication: authentication,
+                                   capabilities: capabilities)
             case let .response(id: id, result: result, data: data):
                 try handleResponse(id: id, result: result, data: data)
+            case let .webProxyData(id: id, data: data):
+                handleWebProxyData(id: id, data: data)
+            case let .webProxyClose(id: id):
+                closeWebProxyConnection(id: id, notifyRelay: false, notifyDelegate: true)
             }
         } catch {
             logger.info("moblink-streamer: \(name): Failed to process message with error \(error)")
@@ -94,6 +144,59 @@ private class Relay {
         }
     }
 
+    func webProxyRelay() -> WebNetworkMoblinkRelay? {
+        guard identified, webProxyCapable else {
+            return nil
+        }
+        return .init(id: relayId, name: name)
+    }
+
+    func openWebProxyConnection(host: String,
+                                port: UInt16,
+                                delegate: any WebNetworkMoblinkConnectionDelegate,
+                                completion: @escaping ((any WebNetworkMoblinkConnection)?) -> Void)
+    {
+        guard identified, webProxyCapable else {
+            completion(nil)
+            return
+        }
+        let id = UUID()
+        let connection = MoblinkWebProxyConnection(id: id, relay: self, delegate: delegate)
+        webProxyConnections[id] = connection
+        performRequest(data: .webProxyOpen(id: id, host: host, port: port)) { response in
+            guard case let .webProxyOpen(responseId) = response,
+                  responseId == id,
+                  let currentConnection = self.webProxyConnections[id],
+                  currentConnection === connection
+            else {
+                self.closeWebProxyConnection(id: id, notifyRelay: false, notifyDelegate: false)
+                completion(nil)
+                return
+            }
+            completion(connection)
+        } onError: { error in
+            logger.info("moblink-streamer: \(self.name): Web proxy open failed with \(error)")
+            self.closeWebProxyConnection(id: id, notifyRelay: false, notifyDelegate: false)
+            completion(nil)
+        }
+    }
+
+    func sendWebProxyData(id: UUID, data: Data) {
+        send(message: .webProxyData(id: id, data: data))
+    }
+
+    func closeWebProxyConnection(id: UUID, notifyRelay: Bool, notifyDelegate: Bool) {
+        guard let connection = webProxyConnections.removeValue(forKey: id) else {
+            return
+        }
+        if notifyRelay {
+            send(message: .webProxyClose(id: id))
+        }
+        if notifyDelegate {
+            connection.closeFromRelay()
+        }
+    }
+
     private func startPingTimer() {
         pongReceived = true
         pingTimer.startPeriodic(interval: 10, initial: 0) { [weak self] in
@@ -112,6 +215,16 @@ private class Relay {
 
     private func stopPingTimer() {
         pingTimer.stop()
+    }
+
+    private func handleWebProxyData(id: UUID, data: Data) {
+        webProxyConnections[id]?.receive(data: data)
+    }
+
+    private func closeWebProxyConnections(notifyRelay: Bool, notifyDelegate: Bool) {
+        for id in Array(webProxyConnections.keys) {
+            closeWebProxyConnection(id: id, notifyRelay: notifyRelay, notifyDelegate: notifyDelegate)
+        }
     }
 
     private func startTunnelInternal() {
@@ -160,7 +273,11 @@ private class Relay {
         }
     }
 
-    private func handleIdentify(relayId: UUID, name: String, authentication: String) throws {
+    private func handleIdentify(relayId: UUID,
+                                name: String,
+                                authentication: String,
+                                capabilities: [MoblinkCapability]?) throws
+    {
         if authentication == remoteControlHashPassword(
             challenge: challenge,
             salt: salt,
@@ -170,9 +287,14 @@ private class Relay {
             self.relayId = relayId
             self.name = String(name.prefix(while: { $0 != "\n" }).trim().prefix(30))
             identified = true
+            webProxyCapable = capabilities?.contains(.webProxy) == true
+            if webProxyCapable {
+                logger.info("moblink-streamer: \(self.name): Web proxy relay supported")
+            }
             send(message: .identified(result: .ok))
             startTunnelInternal()
             updateStatus()
+            streamer?.updateWebProxyRelays()
         } else {
             send(message: .identified(result: .wrongPassword))
             throw "Relay sent wrong password"
@@ -183,10 +305,11 @@ private class Relay {
         guard identified else {
             throw "Relay not identified"
         }
-        guard let request = requests[id] else {
+        guard let request = requests.removeValue(forKey: id) else {
             logger.info("moblink-streamer: \(name): Unexpected id in response")
             return
         }
+        requestTimers.removeValue(forKey: id)?.stop()
         switch result {
         case .ok:
             request.onSuccess(data)
@@ -194,10 +317,13 @@ private class Relay {
             request.onError("Wrong password")
         case .notIdentified:
             logger.info("moblink-streamer: \(name): Not identified")
+            request.onError("Not identified")
         case .alreadyIdentified:
             logger.info("moblink-streamer: \(name): Already identified")
+            request.onError("Already identified")
         case .unknownRequest:
             logger.info("moblink-streamer: \(name): Unknown request")
+            request.onError("Unknown request")
         }
     }
 
@@ -208,7 +334,29 @@ private class Relay {
     ) {
         let id = getNextId()
         requests[id] = RequestResponse(onSuccess: onSuccess, onError: onError)
+        startRequestTimer(id: id)
         send(message: .request(id: id, data: data))
+    }
+
+    private func startRequestTimer(id: Int) {
+        let timer = SimpleTimer(queue: .main)
+        requestTimers[id] = timer
+        timer.startSingleShot(timeout: moblinkRequestTimeout) { [weak self] in
+            guard let self,
+                  let request = requests.removeValue(forKey: id)
+            else {
+                return
+            }
+            requestTimers.removeValue(forKey: id)
+            request.onError("Timeout")
+        }
+    }
+
+    private func stopRequestTimers() {
+        for timer in requestTimers.values {
+            timer.stop()
+        }
+        requestTimers.removeAll()
     }
 
     private func getNextId() -> Int {
@@ -265,6 +413,7 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
             relay.stop()
         }
         relays.removeAll()
+        updateWebProxyRelays()
         delegate = nil
     }
 
@@ -288,6 +437,11 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
         relays
             .sorted(by: { $0.name < $1.name })
             .map { ($0.name, $0.batteryPercentage, $0.thermalState) }
+    }
+
+    func updateWebProxyRelays() {
+        let webProxyRelays = relays.compactMap { $0.webProxyRelay() }
+        delegate?.moblinkStreamerWebProxyRelaysChanged(relays: webProxyRelays)
     }
 
     func updateStatus() {
@@ -348,6 +502,7 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
             relay.stop()
         }
         relays.removeAll(where: { $0.relayId == relayId })
+        updateWebProxyRelays()
     }
 
     private func handlePong(webSocket: NWConnection) {
@@ -362,6 +517,7 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
             relay.stop()
         }
         relays.removeAll(where: { $0.webSocket === webSocket })
+        updateWebProxyRelays()
     }
 
     private func receivePacket(webSocket: NWConnection) {
@@ -392,6 +548,24 @@ class MoblinkStreamer: NSObject, @unchecked Sendable {
                 return
             }
             relay.handleStringMessage(message: text)
+        }
+    }
+}
+
+extension MoblinkStreamer: WebNetworkMoblinkRelayConnector {
+    func openWebProxyConnection(
+        relayId: UUID,
+        host: String,
+        port: UInt16,
+        delegate: any WebNetworkMoblinkConnectionDelegate,
+        completion: @escaping ((any WebNetworkMoblinkConnection)?) -> Void
+    ) {
+        DispatchQueue.main.async {
+            guard let relay = self.relays.first(where: { $0.relayId == relayId }) else {
+                completion(nil)
+                return
+            }
+            relay.openWebProxyConnection(host: host, port: port, delegate: delegate, completion: completion)
         }
     }
 }

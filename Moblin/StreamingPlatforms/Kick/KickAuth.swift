@@ -7,6 +7,7 @@ private let sessionTokenCookieName = "session_token"
 
 struct KickLoginView: View {
     @Binding var presenting: Bool
+    let webProxyServer: WebProxyServer
     let onAccessToken: (String) -> Void
 
     var body: some View {
@@ -19,7 +20,7 @@ struct KickLoginView: View {
                     }
                 }
                 .padding()
-                KickWebView {
+                KickWebView(webProxyServer: webProxyServer) {
                     onAccessToken($0)
                     presenting = false
                 }
@@ -30,11 +31,13 @@ struct KickLoginView: View {
 }
 
 struct KickWebView: UIViewRepresentable {
+    let webProxyServer: WebProxyServer
     let onAccessToken: (String) -> Void
 
     func makeUIView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
+        webProxyServer.configureWebView(configuration: configuration)
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         return webView

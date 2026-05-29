@@ -591,6 +591,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var remoteControlAssistant: RemoteControlAssistant?
     var remoteControlRelay: RemoteControlRelay?
     var remoteControlWeb: RemoteControlWeb?
+    let webProxyServer = WebProxyServer()
     var isRemoteControlAssistantRequestingPreview = false
     var isRemoteControlAssistantRequestingStatus = false
     var isRemoteControlWebRequestingPreview = false
@@ -712,6 +713,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     override init() {
         super.init()
         settings.load()
+        setWebBrowserBonding()
         streamingHistory.load()
         replaysStorage.load()
         setCurrentStream()
@@ -2217,6 +2219,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func setDebugLogging(on: Bool) {
         logger.debugEnabled = on
         remoteControlStateChanged(state: RemoteControlAssistantStreamerState(debugLogging: on))
+    }
+
+    func setWebBrowserBonding() {
+        webProxyServer.setEnabled(database.debug.webBrowserBonding)
     }
 
     func isEventsConfigured() -> Bool {

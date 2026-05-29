@@ -55,7 +55,10 @@ struct StreamWizardKickSettingsView: View {
             }
         }
         .sheet(isPresented: $createStreamWizard.showKickAuth) {
-            KickLoginView(presenting: $createStreamWizard.showKickAuth) { accessToken in
+            KickLoginView(
+                presenting: $createStreamWizard.showKickAuth,
+                webProxyServer: model.webProxyServer
+            ) { accessToken in
                 model.kickAuthOnComplete?(accessToken)
             }
         }

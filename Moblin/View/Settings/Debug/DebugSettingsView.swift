@@ -117,6 +117,10 @@ struct DebugSettingsView: View {
                     .onChange(of: debug.highQualityDownsampling) { _ in
                         model.setHighQualityDownsampling()
                     }
+                Toggle("Web browser bonding", isOn: $debug.webBrowserBonding)
+                    .onChange(of: debug.webBrowserBonding) { _ in
+                        model.setWebBrowserBonding()
+                    }
             } header: {
                 Text("Experimental")
             }
