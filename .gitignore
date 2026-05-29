@@ -98,7 +98,9 @@ Config/User.xcconfig
 
 # Node.js
 node_modules/
-test/all.*
+test/*.log
+test/*.json
+test/*.png
+test/*.dot
 test/logs
 __pycache__
-test/mediamtx.log

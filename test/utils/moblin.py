@@ -4,7 +4,6 @@ import threading
 import time
 
 LOGGER = logging.getLogger(__name__)
-REMOTE_CONTROL_PORT = "2345"
 
 
 def _log_stream(stream):
@@ -20,19 +19,20 @@ def _log_output(stream):
 
 
 class Moblin:
-    def __init__(self):
+    def __init__(self, remote_control_port, remote_control_password):
+        self._remote_control_port = remote_control_port
+        self._remote_control_password = remote_control_password
         self._server = None
 
     def __enter__(self):
-        LOGGER.info("Starting")
         self._server = subprocess.Popen(
             [
                 "moblin_assistant",
                 "--port",
-                REMOTE_CONTROL_PORT,
+                str(self._remote_control_port),
                 "run",
                 "--password",
-                "1234",
+                self._remote_control_password,
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -42,24 +42,34 @@ class Moblin:
         _log_output(self._server.stderr)
         try:
             self._wait_until_streamer_is_connected()
-        finally:
+        except BaseException:
             self._server.kill()
-        LOGGER.info("Started")
+            self._server.wait()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         LOGGER.info("exit")
         self._server.kill()
+        self._server.wait()
+
+    def set_stream(self, name):
+        self._execute(f"set_stream {name}")
 
     def go_live(self):
         self._execute("go_live")
 
+    def end(self):
+        self._execute("end")
+
     def get_settings(self):
         self._execute("get_settings")
 
+    def wait_for_ingests(self, number_of_ingests):
+        pass
+
     def _execute(self, command):
         subprocess.run(
-            ["moblin_assistant", "--port", REMOTE_CONTROL_PORT, command],
+            ["moblin_assistant", "--port", str(self._remote_control_port), command],
             check=True,
             capture_output=True,
         )
@@ -69,8 +79,12 @@ class Moblin:
         while time.monotonic() < end_time:
             try:
                 self.get_settings()
-                break
+                LOGGER.info("Remote control streamer to connected")
+                return
             except Exception:
+                LOGGER.info(
+                    "Waiting for remote control streamer to connect to port %d",
+                    self._remote_control_port,
+                )
                 time.sleep(1)
-        else:
-            raise Exception("Timeout waiting for streamer to connect")
+        raise Exception("Timeout waiting for streamer to connect")
