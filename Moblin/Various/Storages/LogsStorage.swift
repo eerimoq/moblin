@@ -3,6 +3,7 @@ import Foundation
 
 private let maximumNumberOfLogFiles = 10
 private let maximumLogFileSizeBytes: UInt64 = 10 * 1024 * 1024
+private let queue = DispatchQueue(label: "com.eerimoq.Moblin.LogsStorage")
 
 class LogsStorage {
     private let fileManager: FileManager
@@ -16,10 +17,6 @@ class LogsStorage {
         logsUrl = createAndGetDirectory(name: "Logs")
     }
 
-    deinit {
-        closeCurrentFile()
-    }
-
     func storageDirectory() -> URL {
         logsUrl
     }
@@ -28,6 +25,18 @@ class LogsStorage {
         guard !lines.isEmpty else {
             return
         }
+        queue.async {
+            self.writeInternal(lines: lines)
+        }
+    }
+
+    func flush() {
+        queue.async {
+            self.flushInternal()
+        }
+    }
+
+    private func writeInternal(lines: [String]) {
         let blob = (lines.joined(separator: "\n") + "\n").utf8Data
         let blobSize = UInt64(blob.count)
         if currentFileHandle == nil {
@@ -50,7 +59,7 @@ class LogsStorage {
         currentFileSize += blobSize
     }
 
-    func flush() {
+    private func flushInternal() {
         try? currentFileHandle?.synchronize()
     }
 
