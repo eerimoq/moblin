@@ -71,7 +71,9 @@ spell-check:
 	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
 
 test:
-	cd test && python test.py
+	cd test && python main.py \
+		--moblin-ip-address 192.168.1.31 \
+		--tester-ip-address 192.168.1.181
 
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings
