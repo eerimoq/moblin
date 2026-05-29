@@ -23,6 +23,7 @@ PYLINT_ARGS = \
 	--disable missing-module-docstring \
 	--disable too-many-nested-blocks \
 	--disable broad-exception-caught \
+	--disable broad-exception-raised \
 	--disable too-many-locals \
 	--disable duplicate-code \
 	--disable missing-class-docstring \
