@@ -7,9 +7,9 @@
 # Global settings -> General
 
 # Verbosity of the program; available values are "error", "warn", "info", "debug".
-logLevel: debug
+logLevel: info
 # Destinations of log messages; available values are "stdout", "file" and "syslog".
-logDestinations: [stdout]
+logDestinations: [file]
 # When destination is "stdout" or "file", emit logs in structured format (JSONL).
 logStructured: false
 # When "file" is in logDestinations, this is the file which will receive logs.
@@ -149,10 +149,6 @@ authJWTClaimKey: mediamtx_permissions
 # Actions to exclude from JWT-based authentication.
 # Format is the same as the one of user permissions.
 authJWTExclude: []
-# Allow passing the JWT through query parameters of HTTP requests (i.e. ?jwt=JWT).
-# This is a security risk and will be disabled in the future.
-# RTSP and RTMP always allow JWT in query even if disabled, since there is no alternative.
-authJWTInHTTPQuery: true
 # Expected issuer (iss) claim in the JWT. Leave empty to skip validation.
 authJWTIssuer:
 # Expected audience (aud) claim in the JWT. Leave empty to skip validation.

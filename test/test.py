@@ -1,7 +1,7 @@
 import logging
 import systest
 from utils.moblin import Moblin
-from utils.media_mtx import MediaMtx
+from utils.mediamtx import MediaMtx
 
 LOGGER = logging.getLogger(__name__)
 
