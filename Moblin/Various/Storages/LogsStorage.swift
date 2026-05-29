@@ -10,6 +10,7 @@ class LogsStorage {
     private var currentFileHandle: FileHandle?
     private var currentFileUrl: URL?
     private var currentFileSize: UInt64 = 0
+    private let queue = DispatchQueue(label: "com.eerimoq.Moblin.LogsStorage")
 
     init() {
         fileManager = FileManager.default
@@ -17,7 +18,9 @@ class LogsStorage {
     }
 
     deinit {
-        closeCurrentFile()
+        queue.sync {
+            closeCurrentFile()
+        }
     }
 
     func storageDirectory() -> URL {
@@ -28,6 +31,18 @@ class LogsStorage {
         guard !lines.isEmpty else {
             return
         }
+        queue.async {
+            self.writeOnQueue(lines: lines)
+        }
+    }
+
+    func flush() {
+        queue.async {
+            try? self.currentFileHandle?.synchronize()
+        }
+    }
+
+    private func writeOnQueue(lines: [String]) {
         let blob = (lines.joined(separator: "\n") + "\n").utf8Data
         let blobSize = UInt64(blob.count)
         if currentFileHandle == nil {
@@ -48,10 +63,6 @@ class LogsStorage {
         }
         currentFileHandle.write(blob)
         currentFileSize += blobSize
-    }
-
-    func flush() {
-        try? currentFileHandle?.synchronize()
     }
 
     private func logFiles() -> [URL] {
