@@ -3,7 +3,7 @@ import Network
 
 private let queue = DispatchQueue(label: "com.eerimoq.http-proxy-server")
 
-private class HttpConnectRequestParser: HttpParser {
+class HttpConnectRequestParser: HttpParser {
     struct Result {
         let host: String
         let port: UInt16
