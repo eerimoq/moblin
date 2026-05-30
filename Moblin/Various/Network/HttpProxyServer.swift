@@ -1,0 +1,216 @@
+import Foundation
+import Network
+
+private let queue = DispatchQueue(label: "com.eerimoq.http-proxy-server")
+
+private class HttpConnectRequestParser: HttpParser {
+    struct Result {
+        let host: String
+        let port: UInt16
+        let version: String
+    }
+
+    func parse() -> (Bool, Result?) {
+        var offset = 0
+        guard let (startLine, nextOffset) = getLine(data: data, offset: offset) else {
+            return (false, nil)
+        }
+        offset = nextOffset
+        let parts = startLine.split(separator: " ")
+        guard parts.count == 3, parts[0] == "CONNECT" else {
+            return (true, nil)
+        }
+        let version = String(parts[2])
+        guard version.hasPrefix("HTTP/1.") else {
+            return (true, nil)
+        }
+        let hostPort = String(parts[1]).split(separator: ":", maxSplits: 1)
+        guard hostPort.count == 2, let port = UInt16(hostPort[1]) else {
+            return (true, nil)
+        }
+        let host = String(hostPort[0])
+        while let (line, nextOffset) = getLine(data: data, offset: offset) {
+            offset = nextOffset
+            if line.isEmpty {
+                return (true, Result(host: host, port: port, version: version))
+            }
+        }
+        return (false, nil)
+    }
+}
+
+private class Connection: @unchecked Sendable {
+    private let client: NWConnection
+    private var destination: NWConnection?
+    private var parser = HttpConnectRequestParser()
+    private var tunneling = false
+
+    init(connection: NWConnection) {
+        client = connection
+    }
+
+    func start() {
+        client.start(queue: queue)
+        receiveFromClient()
+    }
+
+    private func stop() {
+        client.cancel()
+        destination?.cancel()
+        destination = nil
+    }
+
+    private func receiveFromClient() {
+        client.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isComplete, error in
+            if let error {
+                logger.debug("http-proxy: Client receive error: \(error)")
+                self.stop()
+                return
+            }
+            if let data, !data.isEmpty {
+                if self.tunneling {
+                    self.handleDataTunneling(data: data)
+                } else {
+                    self.handleDataConnecting(data: data)
+                }
+            } else if isComplete {
+                self.stop()
+            } else {
+                self.receiveFromClient()
+            }
+        }
+    }
+
+    private func handleDataConnecting(data: Data) {
+        parser.append(data: data)
+        let (done, result) = parser.parse()
+        guard done else {
+            receiveFromClient()
+            return
+        }
+        guard let result else {
+            sendResponseAndStop("HTTP/1.1 400 Bad Request\r\n\r\n")
+            return
+        }
+        connectToDestination(host: result.host, port: result.port, version: result.version)
+    }
+
+    private func handleDataTunneling(data: Data) {
+        destination?.send(content: data, completion: .idempotent)
+        receiveFromClient()
+    }
+
+    private func connectToDestination(host: String, port: UInt16, version: String) {
+        let connection = NWConnection(
+            to: .hostPort(host: .init(host), port: .init(integerLiteral: port)),
+            using: .tcp
+        )
+        destination = connection
+        connection.stateUpdateHandler = { state in
+            switch state {
+            case .ready:
+                self.tunneling = true
+                self.sendResponse("\(version) 200 Connection Established\r\n\r\n")
+                self.receiveFromClient()
+                self.receiveFromDestination()
+            case let .failed(error):
+                logger.debug("http-proxy: Destination connection failed: \(error)")
+                self.sendResponseAndStop("HTTP/1.1 502 Bad Gateway\r\n\r\n")
+            default:
+                break
+            }
+        }
+        connection.start(queue: queue)
+    }
+
+    private func receiveFromDestination() {
+        destination?.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isComplete, error in
+            if let error {
+                logger.debug("http-proxy: Destination receive error: \(error)")
+                self.stop()
+                return
+            }
+            if let data, !data.isEmpty {
+                self.client.send(content: data, completion: .idempotent)
+            }
+            if isComplete {
+                self.stop()
+                return
+            }
+            self.receiveFromDestination()
+        }
+    }
+
+    private func sendResponse(_ response: String) {
+        client.send(content: response.utf8Data, completion: .idempotent)
+    }
+
+    private func sendResponseAndStop(_ response: String) {
+        client.send(content: response.utf8Data, completion: .contentProcessed { _ in
+            self.stop()
+        })
+    }
+}
+
+class HttpProxyServer: @unchecked Sendable {
+    private var listener: NWListener?
+    private let retryTimer: SimpleTimer
+    private var port: NWEndpoint.Port = .init(integerLiteral: 0)
+    private var started = false
+
+    init() {
+        retryTimer = SimpleTimer(queue: queue)
+    }
+
+    func start(port: NWEndpoint.Port) {
+        queue.async {
+            self.startInternal(port: port)
+        }
+    }
+
+    func stop() {
+        queue.async {
+            self.stopInternal()
+        }
+    }
+
+    private func startInternal(port: NWEndpoint.Port) {
+        self.port = port
+        started = true
+        setupListener()
+    }
+
+    private func stopInternal() {
+        started = false
+        retryTimer.stop()
+        listener?.cancel()
+        listener = nil
+    }
+
+    private func setupListener() {
+        let parameters = NWParameters.tcp
+        parameters.requiredLocalEndpoint = .hostPort(host: NWEndpoint.Host("127.0.0.1"), port: port)
+        listener = try? NWListener(using: parameters)
+        listener?.stateUpdateHandler = handleStateUpdate
+        listener?.newConnectionHandler = handleNewConnection
+        listener?.start(queue: queue)
+    }
+
+    private func handleStateUpdate(_ newState: NWListener.State) {
+        switch newState {
+        case .failed:
+            retryTimer.startSingleShot(timeout: 1) { [weak self] in
+                guard let self, started else {
+                    return
+                }
+                setupListener()
+            }
+        default:
+            break
+        }
+    }
+
+    private func handleNewConnection(_ connection: NWConnection) {
+        Connection(connection: connection).start()
+    }
+}
