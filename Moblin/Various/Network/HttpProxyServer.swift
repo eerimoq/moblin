@@ -8,6 +8,7 @@ private class HttpConnectRequestParser: HttpParser {
         let host: String
         let port: UInt16
         let version: String
+        let bodyOffset: Int
     }
 
     func parse() -> (Bool, Result?) {
@@ -32,7 +33,7 @@ private class HttpConnectRequestParser: HttpParser {
         while let (line, nextOffset) = getLine(data: data, offset: offset) {
             offset = nextOffset
             if line.isEmpty {
-                return (true, Result(host: host, port: port, version: version))
+                return (true, Result(host: host, port: port, version: version, bodyOffset: offset))
             }
         }
         return (false, nil)
@@ -44,6 +45,7 @@ private class Connection: @unchecked Sendable {
     private var destination: NWConnection?
     private var parser = HttpConnectRequestParser()
     private var tunneling = false
+    private var body: Data?
 
     init(connection: NWConnection) {
         client = connection
@@ -93,6 +95,9 @@ private class Connection: @unchecked Sendable {
             return
         }
         connectToDestination(host: result.host, port: result.port, version: result.version)
+        if result.bodyOffset < parser.data.count {
+            body = Data(parser.data[result.bodyOffset...])
+        }
     }
 
     private func handleDataTunneling(data: Data) {
@@ -111,6 +116,10 @@ private class Connection: @unchecked Sendable {
             case .ready:
                 self.tunneling = true
                 self.sendResponse("\(version) 200 Connection Established\r\n\r\n")
+                if let body = self.body {
+                    self.destination?.send(content: body, completion: .idempotent)
+                    self.body = nil
+                }
                 self.receiveFromClient()
                 self.receiveFromDestination()
             case let .failed(error):
