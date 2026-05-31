@@ -38,11 +38,7 @@ extension Model {
             let configuration = WKWebViewConfiguration()
             configuration.allowsInlineMediaPlayback = true
             configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
-            if #available(iOS 17, *), let endpoint = getProxyServerEndpoint() {
-                configuration.websiteDataStore.proxyConfigurations = [
-                    .init(httpCONNECTProxy: endpoint),
-                ]
-            }
+            configuration.setHttpProxy(endpoint: getHttpProxyServerEndpoint())
             webBrowser = WKWebView(frame: .zero, configuration: configuration)
             webBrowser?.navigationDelegate = self
             webBrowser?.isOpaque = false
@@ -56,11 +52,7 @@ extension Model {
     }
 
     func setWebBrowserProxy() {
-        if #available(iOS 17, *), let endpoint = getProxyServerEndpoint() {
-            webBrowser?.configuration.websiteDataStore.proxyConfigurations = [
-                .init(httpCONNECTProxy: endpoint),
-            ]
-        }
+        webBrowser?.configuration.setHttpProxy(endpoint: getHttpProxyServerEndpoint())
     }
 }
 

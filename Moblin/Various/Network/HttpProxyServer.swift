@@ -48,7 +48,9 @@ private class Connection: @unchecked Sendable {
     private var tunneling = false
     private var body: Data?
 
-    init(connection: NWConnection, networkInterfaceTypeSelector: NetworkInterfaceTypeSelector) {
+    init(_ connection: NWConnection,
+         _ networkInterfaceTypeSelector: NetworkInterfaceTypeSelector)
+    {
         client = connection
         self.networkInterfaceTypeSelector = networkInterfaceTypeSelector
     }
@@ -171,13 +173,12 @@ private class Connection: @unchecked Sendable {
 
 class HttpProxyServer: @unchecked Sendable {
     private var listener: NWListener?
-    private let retryTimer: SimpleTimer
+    private let retryTimer = SimpleTimer(queue: queue)
     private var port: NWEndpoint.Port = .init(integerLiteral: 0)
     private var started = false
     private let networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
 
     init() {
-        retryTimer = SimpleTimer(queue: queue)
         networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: queue)
     }
 
@@ -232,7 +233,6 @@ class HttpProxyServer: @unchecked Sendable {
     }
 
     private func handleNewConnection(_ connection: NWConnection) {
-        Connection(connection: connection,
-                   networkInterfaceTypeSelector: networkInterfaceTypeSelector).start()
+        Connection(connection, networkInterfaceTypeSelector).start()
     }
 }

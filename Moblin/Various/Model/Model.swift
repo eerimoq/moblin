@@ -702,7 +702,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var speechToTextLatestPosition: Int?
     var speechToTextLatestText: String?
     var speechToTextTextAligners: [String?: TextAligner] = [:]
-    var proxyServer: HttpProxyServer?
+    var httpProxyServer: HttpProxyServer?
 
     weak var processor: Processor? {
         didSet {
@@ -1083,7 +1083,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                                                name: UIApplication.willTerminateNotification,
                                                object: nil)
         updateOrientation()
-        reloadProxyServer()
+        reloadHttpProxyServer()
         reloadIngests()
         setupPictureInPicture()
         ipMonitor.pathUpdateHandler = handleIpStatusUpdate

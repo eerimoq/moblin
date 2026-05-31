@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import WebKit
 
 extension NWPath {
     // The list contains duplicates since iOS 26. Apple bug?
@@ -86,4 +87,19 @@ func getHttpsUrl(text: String) -> URL? {
         return url
     }
     return nil
+}
+
+extension WKWebViewConfiguration {
+    func setHttpProxy(endpoint: NWEndpoint?) {
+        guard #available(iOS 17, *) else {
+            return
+        }
+        if let endpoint {
+            websiteDataStore.proxyConfigurations = [
+                .init(httpCONNECTProxy: endpoint),
+            ]
+        } else {
+            websiteDataStore.proxyConfigurations = []
+        }
+    }
 }

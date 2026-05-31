@@ -119,7 +119,7 @@ struct DebugSettingsView: View {
                     }
                 Toggle("HTTP proxy", isOn: $debug.httpProxy)
                     .onChange(of: debug.httpProxy) { _ in
-                        model.proxyServerChanged()
+                        model.httpProxyServerChanged()
                     }
             } header: {
                 Text("Experimental")

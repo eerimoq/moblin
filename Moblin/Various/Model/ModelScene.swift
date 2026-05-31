@@ -744,7 +744,7 @@ extension Model {
                 styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
                 moblinAccess: widget.browser.moblinAccess,
-                proxyServer: getProxyServerEndpoint()
+                proxyServer: getHttpProxyServerEndpoint()
             )
             effect.effects = widget.getEffects(model: self)
             browserEffects[widget.id] = effect
