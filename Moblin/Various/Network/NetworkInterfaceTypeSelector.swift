@@ -40,4 +40,16 @@ class NetworkInterfaceTypeSelector: @unchecked Sendable {
         interfaceTypes.append(interfaceType)
         return interfaceType
     }
+
+    func getType() -> NWInterface.InterfaceType? {
+        interfaceTypes.first
+    }
+
+    func markBad(interfaceType: NWInterface.InterfaceType) {
+        guard interfaceType == interfaceTypes.first else {
+            return
+        }
+        interfaceTypes.removeFirst()
+        interfaceTypes.append(interfaceType)
+    }
 }

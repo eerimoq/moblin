@@ -117,6 +117,10 @@ struct DebugSettingsView: View {
                     .onChange(of: debug.highQualityDownsampling) { _ in
                         model.setHighQualityDownsampling()
                     }
+                Toggle("HTTP proxy", isOn: $debug.httpProxy)
+                    .onChange(of: debug.httpProxy) { _ in
+                        model.proxyServerChanged()
+                    }
             } header: {
                 Text("Experimental")
             }

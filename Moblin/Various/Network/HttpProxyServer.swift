@@ -42,13 +42,15 @@ class HttpConnectRequestParser: HttpParser {
 
 private class Connection: @unchecked Sendable {
     private let client: NWConnection
+    private let networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
     private var destination: NWConnection?
     private var parser = HttpConnectRequestParser()
     private var tunneling = false
     private var body: Data?
 
-    init(connection: NWConnection) {
+    init(connection: NWConnection, networkInterfaceTypeSelector: NetworkInterfaceTypeSelector) {
         client = connection
+        self.networkInterfaceTypeSelector = networkInterfaceTypeSelector
     }
 
     func start() {
@@ -64,8 +66,7 @@ private class Connection: @unchecked Sendable {
 
     private func receiveFromClient() {
         client.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isComplete, error in
-            if let error {
-                logger.debug("http-proxy: Client receive error: \(error)")
+            guard error == nil else {
                 self.stop()
                 return
             }
@@ -106,9 +107,15 @@ private class Connection: @unchecked Sendable {
     }
 
     private func connectToDestination(host: String, port: UInt16, version: String) {
+        let parameters: NWParameters = .tcp
+        parameters.prohibitExpensivePaths = false
+        let interfaceType = networkInterfaceTypeSelector.getType()
+        if let interfaceType {
+            parameters.requiredInterfaceType = interfaceType
+        }
         let connection = NWConnection(
             to: .hostPort(host: .init(host), port: .init(integerLiteral: port)),
-            using: .tcp
+            using: parameters
         )
         destination = connection
         connection.stateUpdateHandler = { state in
@@ -122,9 +129,11 @@ private class Connection: @unchecked Sendable {
                 }
                 self.receiveFromClient()
                 self.receiveFromDestination()
-            case let .failed(error):
-                logger.debug("http-proxy: Destination connection failed: \(error)")
+            case .failed:
                 self.sendResponseAndStop("HTTP/1.1 502 Bad Gateway\r\n\r\n")
+                if let interfaceType {
+                    self.networkInterfaceTypeSelector.markBad(interfaceType: interfaceType)
+                }
             default:
                 break
             }
@@ -134,15 +143,14 @@ private class Connection: @unchecked Sendable {
 
     private func receiveFromDestination() {
         destination?.receive(minimumIncompleteLength: 1, maximumLength: 65536) { data, _, isComplete, error in
-            if let error {
-                logger.debug("http-proxy: Destination receive error: \(error)")
+            guard error == nil else {
                 self.stop()
                 return
             }
             if let data, !data.isEmpty {
                 self.client.send(content: data, completion: .idempotent)
             }
-            if isComplete {
+            guard !isComplete else {
                 self.stop()
                 return
             }
@@ -166,9 +174,11 @@ class HttpProxyServer: @unchecked Sendable {
     private let retryTimer: SimpleTimer
     private var port: NWEndpoint.Port = .init(integerLiteral: 0)
     private var started = false
+    private let networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
 
     init() {
         retryTimer = SimpleTimer(queue: queue)
+        networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: queue)
     }
 
     func start(port: NWEndpoint.Port) {
@@ -220,6 +230,7 @@ class HttpProxyServer: @unchecked Sendable {
     }
 
     private func handleNewConnection(_ connection: NWConnection) {
-        Connection(connection: connection).start()
+        Connection(connection: connection,
+                   networkInterfaceTypeSelector: networkInterfaceTypeSelector).start()
     }
 }

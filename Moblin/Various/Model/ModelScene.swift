@@ -743,7 +743,8 @@ extension Model {
                 url: url,
                 styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
-                moblinAccess: widget.browser.moblinAccess
+                moblinAccess: widget.browser.moblinAccess,
+                proxyServer: getProxyServerEndpoint()
             )
             effect.effects = widget.getEffects(model: self)
             browserEffects[widget.id] = effect
