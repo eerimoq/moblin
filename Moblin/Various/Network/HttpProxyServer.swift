@@ -182,12 +182,14 @@ class HttpProxyServer: @unchecked Sendable {
     }
 
     func start(port: NWEndpoint.Port) {
+        logger.info("http-proxy: Start")
         queue.async {
             self.startInternal(port: port)
         }
     }
 
     func stop() {
+        logger.info("http-proxy: Stop")
         queue.async {
             self.stopInternal()
         }
