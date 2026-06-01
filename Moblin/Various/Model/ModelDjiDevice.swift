@@ -142,7 +142,7 @@ extension Model {
     ) {
         let rtmpUrl: String? = switch device.rtmpUrlType {
         case .server:
-            device.serverRtmpUrl
+            device.serverRtmpUrl ?? automaticServerRtmpUrl(device: device)
         case .custom:
             device.customRtmpUrl
         }
@@ -164,6 +164,19 @@ extension Model {
             model: device.model
         )
         startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
+    }
+
+    private func automaticServerRtmpUrl(device: SettingsDjiDevice) -> String? {
+        guard let stream = getRtmpStream(id: device.serverRtmpStreamId) else {
+            return nil
+        }
+        guard let wifiStatus = statusOther.ipStatuses
+            .first(where: { $0.interfaceType == .wifi && $0.ipType == .ipv4 })
+        else {
+            return nil
+        }
+        let address = wifiStatus.ipType.formatAddress(wifiStatus.ip)
+        return "rtmp://\(address):\(database.rtmpServer.port)\(rtmpServerApp)/\(stream.streamKey)"
     }
 
     private func startDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper, device: SettingsDjiDevice) {

@@ -128,6 +128,12 @@ private struct DjiDeviceRtmpSettingsView: View {
     @ObservedObject var status: StatusOther
     @ObservedObject var rtmpServer: SettingsRtmpServer
 
+    private func wifiIpAddress() -> String? {
+        status.ipStatuses
+            .first(where: { $0.interfaceType == .wifi && $0.ipType == .ipv4 })?
+            .ip
+    }
+
     private func serverUrls() -> [String] {
         guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId) else {
             return []
@@ -181,7 +187,7 @@ private struct DjiDeviceRtmpSettingsView: View {
                     }
                     .disabled(device.isStarted)
                     Picker("URL", selection: $device.serverRtmpUrl) {
-                        Text("-- None --")
+                        Text("Automatic")
                             .tag(nil as String?)
                         ForEach(serverUrls(), id: \.self) {
                             Text($0)
@@ -190,7 +196,9 @@ private struct DjiDeviceRtmpSettingsView: View {
                     }
                     .disabled(device.isStarted)
                     if device.serverRtmpUrl == nil {
-                        Text("⚠️ Select the URL the DJI device should stream to.")
+                        if wifiIpAddress() == nil {
+                            Text("⚠️ Not connected to a WiFi network.")
+                        }
                     }
                     if !rtmpServer.enabled {
                         Text("⚠️ The RTMP server is not enabled")
