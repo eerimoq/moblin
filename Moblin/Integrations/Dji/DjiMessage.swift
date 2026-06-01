@@ -1,6 +1,9 @@
 import CrcSwift
 import Foundation
 
+private let firstByte: UInt8 = 0x55
+private let version: UInt8 = 0x04
+
 private func djiCrc8(data: Data) -> UInt8 {
     CrcSwift.computeCrc8(
         data,
@@ -48,14 +51,14 @@ class DjiMessage {
 
     init(data: Data) throws {
         let reader = ByteReader(data: data)
-        guard try reader.readUInt8() == 0x55 else {
+        guard try reader.readUInt8() == firstByte else {
             throw "Bad first byte"
         }
         let length = try reader.readUInt8()
         guard data.count == length else {
             throw "Bad length"
         }
-        guard try reader.readUInt8() == 0x04 else {
+        guard try reader.readUInt8() == version else {
             throw "Bad version"
         }
         let hedaerCrc = try reader.readUInt8()
@@ -77,9 +80,9 @@ class DjiMessage {
 
     func encode() -> Data {
         let writer = ByteWriter()
-        writer.writeUInt8(0x55)
+        writer.writeUInt8(firstByte)
         writer.writeUInt8(UInt8(truncatingIfNeeded: 13 + payload.count))
-        writer.writeUInt8(0x04)
+        writer.writeUInt8(version)
         writer.writeUInt8(djiCrc8(data: writer.data))
         writer.writeUInt16Le(target)
         writer.writeUInt16Le(id)

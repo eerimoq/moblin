@@ -1,6 +1,6 @@
 import Foundation
 
-class DjiPairMessagePayload {
+struct DjiPairMessagePayload {
     static let payload = Data([
         0x20, 0x32, 0x38, 0x34, 0x61, 0x65, 0x35, 0x62,
         0x38, 0x64, 0x37, 0x36, 0x62, 0x33, 0x33, 0x37,
@@ -10,10 +10,6 @@ class DjiPairMessagePayload {
     ])
     var pairPinCode: String
 
-    init(pairPinCode: String) {
-        self.pairPinCode = pairPinCode
-    }
-
     func encode() -> Data {
         let writer = ByteWriter()
         writer.writeBytes(DjiPairMessagePayload.payload)
@@ -22,7 +18,7 @@ class DjiPairMessagePayload {
     }
 }
 
-class DjiPreparingToLivestreamMessagePayload {
+struct DjiPreparingToLivestreamMessagePayload {
     static let payload = Data([0x1A])
 
     func encode() -> Data {
@@ -30,14 +26,9 @@ class DjiPreparingToLivestreamMessagePayload {
     }
 }
 
-class DjiSetupWifiMessagePayload {
+struct DjiSetupWifiMessagePayload {
     var wifiSsid: String
     var wifiPassword: String
-
-    init(wifiSsid: String, wifiPassword: String) {
-        self.wifiSsid = wifiSsid
-        self.wifiPassword = wifiPassword
-    }
 
     func encode() -> Data {
         let writer = ByteWriter()
@@ -47,7 +38,7 @@ class DjiSetupWifiMessagePayload {
     }
 }
 
-class DjiStartStreamingMessagePayload {
+struct DjiStartStreamingMessagePayload {
     static let payload1 = Data([0x00])
     static let payload2 = Data([0x00])
     static let payload3 = Data([0x02, 0x00])
@@ -86,7 +77,7 @@ class DjiStartStreamingMessagePayload {
     }
 }
 
-class DjiConfirmStartStreamingMessagePayload {
+struct DjiConfirmStartStreamingMessagePayload {
     static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x01])
 
     func encode() -> Data {
@@ -103,7 +94,7 @@ private struct StartStreamingPayload: Codable {
     let orientation: String
 }
 
-class DjiStartStreamingMessagePayloadPocket4 {
+struct DjiStartStreamingMessagePayloadPocket4 {
     private static let header = Data([0x01, 0xB5, 0x00])
     private static let middle = Data([0x02, 0x01])
     private static let padding = Data([0x00, 0x00, 0x00])
@@ -141,7 +132,7 @@ class DjiStartStreamingMessagePayloadPocket4 {
     }
 }
 
-class DjiStopStreamingMessagePayload {
+struct DjiStopStreamingMessagePayload {
     static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])
 
     func encode() -> Data {
@@ -149,17 +140,12 @@ class DjiStopStreamingMessagePayload {
     }
 }
 
-class DjiConfigureMessagePayload {
+struct DjiConfigureMessagePayload {
     static let payload1 = Data([0x01, 0x01])
     static let payload2 = Data([0x00, 0x01])
 
     var imageStabilization: SettingsDjiDeviceImageStabilization
     var oa5: Bool
-
-    init(imageStabilization: SettingsDjiDeviceImageStabilization, oa5: Bool) {
-        self.imageStabilization = imageStabilization
-        self.oa5 = oa5
-    }
 
     func encode() -> Data {
         let imageStabilizationByte: UInt8 = switch imageStabilization {
@@ -185,6 +171,17 @@ class DjiConfigureMessagePayload {
         writer.writeBytes(DjiConfigureMessagePayload.payload2)
         writer.writeUInt8(imageStabilizationByte)
         return writer.data
+    }
+}
+
+struct DjiStatusMessagePayload {
+    let batteryPercentage: UInt8
+
+    init?(payload: Data) {
+        guard payload.count >= 21 else {
+            return nil
+        }
+        batteryPercentage = payload[20]
     }
 }
 

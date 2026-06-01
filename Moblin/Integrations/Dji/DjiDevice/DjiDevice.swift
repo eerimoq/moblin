@@ -22,6 +22,7 @@ private let preparingToLivestreamType: UInt32 = 0xE10240
 private let setupWifiType: UInt32 = 0x470740
 private let configureType: UInt32 = 0x8E0240
 private let startStreamingType: UInt32 = 0x780840
+private let statusType: UInt32 = 0x020D00
 
 private let fff4Id = CBUUID(string: "FFF4")
 private let fff5Id = CBUUID(string: "FFF5")
@@ -414,11 +415,10 @@ extension DjiDevice: CBPeripheralDelegate {
 
     private func processStreaming(message: DjiMessage) {
         switch message.type {
-        case 0x020D00:
-            guard message.payload.count >= 21 else {
-                return
+        case statusType:
+            if let payload = DjiStatusMessagePayload(payload: message.payload) {
+                batteryPercentage = Int(payload.batteryPercentage)
             }
-            batteryPercentage = Int(message.payload[20])
         default:
             break
         }
