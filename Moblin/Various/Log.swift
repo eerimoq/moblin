@@ -14,14 +14,14 @@ class EasyLogger {
         EasyLogger.timestampFormatter.string(from: Date())
     }
 
-    func debug(_ messsge: @autoclosure () -> String) {
+    func debug(_ message: @autoclosure () -> String) {
         if debugEnabled {
-            log(messsge())
+            log(message())
         }
     }
 
-    func info(_ messsge: String) {
-        log(messsge)
+    func info(_ message: String) {
+        log(message)
     }
 
     private func log(_ message: String) {
