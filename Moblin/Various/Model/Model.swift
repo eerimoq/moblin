@@ -392,6 +392,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var presentingPredefinedMessages: Bool = false
     @Published var presentingSettingsImportConfirmation = false
     var pendingSettingsImportAction: (() -> Void)?
+    @Published var presentingStreamImportCollisionConfirmation = false
+    var pendingStreamImportCollisionAction: ((_ replaceExisting: Bool) -> Void)?
+    var pendingStreamImportCollisionTitle: String = ""
     @Published var showDrawOnStream = false
     @Published var showLocalOverlays = true
     @Published var showBrowser = false
