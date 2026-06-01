@@ -1,7 +1,7 @@
 import NetworkExtension
 import SwiftUI
 
-private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
+func rtmpServerStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
     "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
 }
 
@@ -134,19 +134,19 @@ private struct DjiDeviceRtmpSettingsView: View {
         }
         var serverUrls: [String] = []
         for status in status.ipStatuses.filter({ $0.ipType == .ipv4 }) {
-            serverUrls.append(rtmpStreamUrl(
+            serverUrls.append(rtmpServerStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: rtmpServer.port,
                 streamKey: stream.streamKey
             ))
         }
-        serverUrls.append(rtmpStreamUrl(
+        serverUrls.append(rtmpServerStreamUrl(
             address: personalHotspotLocalAddress,
             port: rtmpServer.port,
             streamKey: stream.streamKey
         ))
         for status in status.ipStatuses.filter({ $0.ipType == .ipv6 }) {
-            serverUrls.append(rtmpStreamUrl(
+            serverUrls.append(rtmpServerStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: rtmpServer.port,
                 streamKey: stream.streamKey
@@ -181,7 +181,7 @@ private struct DjiDeviceRtmpSettingsView: View {
                     }
                     .disabled(device.isStarted)
                     Picker("URL", selection: $device.serverRtmpUrl) {
-                        Text("-- None --")
+                        Text("Automatic")
                             .tag(nil as String?)
                         ForEach(serverUrls(), id: \.self) {
                             Text($0)
@@ -189,8 +189,8 @@ private struct DjiDeviceRtmpSettingsView: View {
                         }
                     }
                     .disabled(device.isStarted)
-                    if device.serverRtmpUrl == nil {
-                        Text("⚠️ Select the URL the DJI device should stream to.")
+                    if device.serverRtmpUrl == nil, !status.isConnectedToIpv4WiFi() {
+                        Text("⚠️ Not connected to an IPv4 WiFi network.")
                     }
                     if !rtmpServer.enabled {
                         Text("⚠️ The RTMP server is not enabled")
@@ -289,6 +289,7 @@ private struct DjiDeviceAutoRestartSettingsView: View {
 
 private struct DjiDeviceStartStopButtonSettingsView: View {
     @EnvironmentObject var model: Model
+    @ObservedObject var status: StatusOther
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
@@ -298,7 +299,7 @@ private struct DjiDeviceStartStopButtonSettingsView: View {
                     model.startDjiDeviceLiveStream(device: device)
                 }
             }
-            .disabled(!device.canStartLive())
+            .disabled(!device.canStartLive(status.isConnectedToIpv4WiFi()))
         } else {
             Section {
                 TextButtonView("Stop live stream") {
@@ -340,7 +341,7 @@ struct DjiDeviceSettingsView: View {
                     Text(state())
                 }
             }
-            DjiDeviceStartStopButtonSettingsView(device: device)
+            DjiDeviceStartStopButtonSettingsView(status: model.statusOther, device: device)
         }
         .onAppear {
             model.setCurrentDjiDevice(device: device)

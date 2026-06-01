@@ -2,6 +2,7 @@ import SwiftUI
 
 private struct DeviceView: View {
     let model: Model
+    @ObservedObject var status: StatusOther
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
@@ -20,7 +21,7 @@ private struct DeviceView: View {
                 GrayTextView(text: formatDjiDeviceState(state: device.state))
             }
         }
-        .disabled(!device.canStartLive())
+        .disabled(!device.canStartLive(status.isConnectedToIpv4WiFi()))
     }
 }
 
@@ -32,8 +33,8 @@ struct QuickButtonDjiDevicesView: View {
         Form {
             Section {
                 List {
-                    ForEach(djiDevices.devices) { device in
-                        DeviceView(model: model, device: device)
+                    ForEach(djiDevices.devices) {
+                        DeviceView(model: model, status: model.statusOther, device: $0)
                     }
                 }
             }

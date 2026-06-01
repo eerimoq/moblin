@@ -186,6 +186,10 @@ class StatusOther: ObservableObject {
     @Published var ipStatuses: [IPMonitor.Status] = []
     @Published var thermalState = ProcessInfo.processInfo.thermalState
     @Published var digitalClock = noValue
+
+    func isConnectedToIpv4WiFi() -> Bool {
+        ipStatuses.first(where: { $0.interfaceType == .wifi && $0.ipType == .ipv4 }) != nil
+    }
 }
 
 enum PlatformStatus: Equatable {

@@ -11,7 +11,7 @@ class DjiDeviceWrapper {
 
 extension Model {
     func startDjiDeviceLiveStream(device: SettingsDjiDevice) {
-        guard device.canStartLive() else {
+        guard device.canStartLive(statusOther.isConnectedToIpv4WiFi()) else {
             return
         }
         if !djiDeviceWrappers.keys.contains(device.id) {
@@ -142,28 +142,43 @@ extension Model {
     ) {
         let rtmpUrl: String? = switch device.rtmpUrlType {
         case .server:
-            device.serverRtmpUrl
+            device.serverRtmpUrl ?? automaticServerRtmpUrl(device: device)
         case .custom:
             device.customRtmpUrl
-        }
-        guard let rtmpUrl else {
-            return
         }
         guard let deviceId = device.bluetoothPeripheralId else {
             return
         }
-        djiDeviceWrapper.device.startLiveStream(
-            wifiSsid: device.wifiSsid,
-            wifiPassword: device.wifiPassword,
-            rtmpUrl: rtmpUrl,
-            resolution: device.resolution,
-            fps: device.fps,
-            bitrate: device.bitrate,
-            imageStabilization: device.imageStabilization,
-            deviceId: deviceId,
-            model: device.model
-        )
+        if let rtmpUrl {
+            djiDeviceWrapper.device.startLiveStream(
+                wifiSsid: device.wifiSsid,
+                wifiPassword: device.wifiPassword,
+                rtmpUrl: rtmpUrl,
+                resolution: device.resolution,
+                fps: device.fps,
+                bitrate: device.bitrate,
+                imageStabilization: device.imageStabilization,
+                deviceId: deviceId,
+                model: device.model
+            )
+        }
         startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
+    }
+
+    private func automaticServerRtmpUrl(device: SettingsDjiDevice) -> String? {
+        guard let stream = getRtmpStream(id: device.serverRtmpStreamId) else {
+            return nil
+        }
+        guard let status = statusOther.ipStatuses
+            .first(where: { $0.interfaceType == .wifi && $0.ipType == .ipv4 })
+        else {
+            return nil
+        }
+        return rtmpServerStreamUrl(
+            address: status.ipType.formatAddress(status.ip),
+            port: database.rtmpServer.port,
+            streamKey: stream.streamKey
+        )
     }
 
     private func startDjiDeviceTimer(djiDeviceWrapper: DjiDeviceWrapper, device: SettingsDjiDevice) {

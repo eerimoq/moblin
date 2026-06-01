@@ -469,7 +469,7 @@ extension DjiDevice: CBPeripheralDelegate {
 }
 
 extension SettingsDjiDevice {
-    func canStartLive() -> Bool {
+    func canStartLive(_ isConnectedToIpv4WiFi: Bool) -> Bool {
         if bluetoothPeripheralId == nil {
             return false
         }
@@ -483,7 +483,7 @@ extension SettingsDjiDevice {
                     return false
                 }
             } else {
-                return false
+                return isConnectedToIpv4WiFi
             }
         case .custom:
             if customRtmpUrl.isEmpty {

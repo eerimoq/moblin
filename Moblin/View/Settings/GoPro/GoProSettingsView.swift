@@ -152,10 +152,6 @@ private struct GoProWifiCredentialsSettingsEntryView: View {
     }
 }
 
-private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
-    "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
-}
-
 private struct GoProRtmpUrlSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var goPro: SettingsGoPro
@@ -178,19 +174,19 @@ private struct GoProRtmpUrlSettingsView: View {
         }
         var serverUrls: [String] = []
         for status in status.ipStatuses.filter({ $0.ipType == .ipv4 }) {
-            serverUrls.append(rtmpStreamUrl(
+            serverUrls.append(rtmpServerStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: model.database.rtmpServer.port,
                 streamKey: stream.streamKey
             ))
         }
-        serverUrls.append(rtmpStreamUrl(
+        serverUrls.append(rtmpServerStreamUrl(
             address: personalHotspotLocalAddress,
             port: model.database.rtmpServer.port,
             streamKey: stream.streamKey
         ))
         for status in status.ipStatuses.filter({ $0.ipType == .ipv6 }) {
-            serverUrls.append(rtmpStreamUrl(
+            serverUrls.append(rtmpServerStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: model.database.rtmpServer.port,
                 streamKey: stream.streamKey
