@@ -1,36 +1,50 @@
 import Network
 
-private let proxyPort: UInt16 = 2000
-
 extension Model {
     func httpProxyServerChanged() {
         reloadHttpProxyServer()
-        setWebBrowserProxy()
-        setBrowserEffectsProxyServer()
     }
 
     func reloadHttpProxyServer() {
         stopHttpProxyServer()
         if database.debug.httpProxy {
             startHttpProxyServer()
+        } else {
+            proxyServerPortUpdated()
         }
     }
 
     func getHttpProxyServerEndpoint() -> NWEndpoint? {
-        if database.debug.httpProxy {
-            .hostPort(host: .init("127.0.0.1"), port: .init(integerLiteral: proxyPort))
+        if database.debug.httpProxy, let httpProxyPort {
+            .hostPort(host: .init("127.0.0.1"), port: httpProxyPort)
         } else {
             nil
         }
     }
 
+    private func proxyServerPortUpdated() {
+        setWebBrowserProxy()
+        setBrowserEffectsProxyServer()
+    }
+
     private func startHttpProxyServer() {
         httpProxyServer = HttpProxyServer()
-        httpProxyServer?.start(port: .init(integerLiteral: proxyPort))
+        httpProxyServer?.delegate = self
+        httpProxyServer?.start()
     }
 
     private func stopHttpProxyServer() {
         httpProxyServer?.stop()
         httpProxyServer = nil
+        httpProxyPort = nil
+    }
+}
+
+extension Model: @preconcurrency HttpProxyServerDelegate {
+    func httpProxyServerPortReady(port: NWEndpoint.Port) {
+        DispatchQueue.main.async {
+            self.httpProxyPort = port
+            self.proxyServerPortUpdated()
+        }
     }
 }

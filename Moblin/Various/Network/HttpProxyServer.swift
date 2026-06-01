@@ -5,8 +5,7 @@ private let queue = DispatchQueue(label: "com.eerimoq.http-proxy-server")
 
 class HttpConnectRequestParser: HttpParser {
     struct Result {
-        let host: String
-        let port: UInt16
+        let destination: NWEndpoint
         let version: String
         let bodyOffset: Int
     }
@@ -30,10 +29,11 @@ class HttpConnectRequestParser: HttpParser {
             return (true, nil)
         }
         let host = String(hostPort[0])
+        let destination: NWEndpoint = .hostPort(host: .init(host), port: .init(integerLiteral: port))
         while let (line, nextOffset) = getLine(data: data, offset: offset) {
             offset = nextOffset
             if line.isEmpty {
-                return (true, Result(host: host, port: port, version: version, bodyOffset: offset))
+                return (true, Result(destination: destination, version: version, bodyOffset: offset))
             }
         }
         return (false, nil)
@@ -97,7 +97,7 @@ private class Connection: @unchecked Sendable {
             sendResponseAndStop("HTTP/1.1 400 Bad Request\r\n\r\n")
             return
         }
-        connectToDestination(host: result.host, port: result.port, version: result.version)
+        connectToDestination(destination: result.destination, version: result.version)
         if result.bodyOffset < parser.data.count {
             body = Data(parser.data[result.bodyOffset...])
         }
@@ -108,18 +108,15 @@ private class Connection: @unchecked Sendable {
         receiveFromClient()
     }
 
-    private func connectToDestination(host: String, port: UInt16, version: String) {
+    private func connectToDestination(destination: NWEndpoint, version: String) {
         let parameters: NWParameters = .tcp
         parameters.prohibitExpensivePaths = false
         let interfaceType = networkInterfaceTypeSelector.getType()
         if let interfaceType {
             parameters.requiredInterfaceType = interfaceType
         }
-        let connection = NWConnection(
-            to: .hostPort(host: .init(host), port: .init(integerLiteral: port)),
-            using: parameters
-        )
-        destination = connection
+        let connection = NWConnection(to: destination, using: parameters)
+        self.destination = connection
         connection.stateUpdateHandler = { state in
             switch state {
             case .ready:
@@ -171,21 +168,25 @@ private class Connection: @unchecked Sendable {
     }
 }
 
+protocol HttpProxyServerDelegate: AnyObject {
+    func httpProxyServerPortReady(port: NWEndpoint.Port)
+}
+
 class HttpProxyServer: @unchecked Sendable {
     private var listener: NWListener?
     private let retryTimer = SimpleTimer(queue: queue)
-    private var port: NWEndpoint.Port = .init(integerLiteral: 0)
     private var started = false
     private let networkInterfaceTypeSelector: NetworkInterfaceTypeSelector
+    weak var delegate: HttpProxyServerDelegate?
 
     init() {
         networkInterfaceTypeSelector = NetworkInterfaceTypeSelector(queue: queue)
     }
 
-    func start(port: NWEndpoint.Port) {
+    func start() {
         logger.info("http-proxy: Start")
         queue.async {
-            self.startInternal(port: port)
+            self.startInternal()
         }
     }
 
@@ -196,8 +197,7 @@ class HttpProxyServer: @unchecked Sendable {
         }
     }
 
-    private func startInternal(port: NWEndpoint.Port) {
-        self.port = port
+    private func startInternal() {
         started = true
         setupListener()
     }
@@ -211,7 +211,7 @@ class HttpProxyServer: @unchecked Sendable {
 
     private func setupListener() {
         let parameters = NWParameters.tcp
-        parameters.requiredLocalEndpoint = .hostPort(host: NWEndpoint.Host("127.0.0.1"), port: port)
+        parameters.requiredLocalEndpoint = .hostPort(host: NWEndpoint.Host("127.0.0.1"), port: .any)
         listener = try? NWListener(using: parameters)
         listener?.stateUpdateHandler = handleStateUpdate
         listener?.newConnectionHandler = handleNewConnection
@@ -220,6 +220,10 @@ class HttpProxyServer: @unchecked Sendable {
 
     private func handleStateUpdate(_ newState: NWListener.State) {
         switch newState {
+        case .ready:
+            if let port = listener?.port {
+                delegate?.httpProxyServerPortReady(port: port)
+            }
         case .failed:
             retryTimer.startSingleShot(timeout: 1) { [weak self] in
                 guard let self, started else {
