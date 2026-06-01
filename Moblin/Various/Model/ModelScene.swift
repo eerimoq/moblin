@@ -662,6 +662,12 @@ extension Model {
         mapEffects[id]
     }
 
+    func setBrowserEffectsProxyServer() {
+        for effect in browserEffects.values {
+            effect.setProxyServer(endpoint: getHttpProxyServerEndpoint())
+        }
+    }
+
     private func resetVideoEffects(widgets: [SettingsWidget]) {
         createGlobalVideoEffects()
         resetImageEffects(widgets: widgets)

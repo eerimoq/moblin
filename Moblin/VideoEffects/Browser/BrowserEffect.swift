@@ -141,6 +141,12 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
         }
     }
 
+    @MainActor
+    func setProxyServer(endpoint: NWEndpoint?) {
+        webView.configuration.setHttpProxy(endpoint: endpoint)
+        reload()
+    }
+
     override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
         guard let snapshot else {
             return image

@@ -6,7 +6,7 @@ extension Model {
     func httpProxyServerChanged() {
         reloadHttpProxyServer()
         setWebBrowserProxy()
-        resetSelectedScene()
+        setBrowserEffectsProxyServer()
     }
 
     func reloadHttpProxyServer() {
