@@ -10,9 +10,9 @@ class EasyLogger {
                 .secondFraction(.fractional(3)))
     }
 
-    func debug(_ messsge: String) {
+    func debug(_ messsge: @autoclosure () -> String) {
         if debugEnabled {
-            log(messsge)
+            log(messsge())
         }
     }
 
