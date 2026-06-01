@@ -177,6 +177,10 @@ class TextEffectFormatter {
                 formatGForceRecentMax(stats: stats)
             case .gForceMax:
                 formatGForceMax(stats: stats)
+            case .latestSubscriber:
+                formatLatestSubscriber(stats: stats)
+            case .latestFollower:
+                formatLatestFollower(stats: stats)
             }
             partId += 1
         }
@@ -485,19 +489,27 @@ class TextEffectFormatter {
         appendTextPart(value: formatOptionalOneDecimal(value: stats.gForce?.max))
     }
 
+    private func formatLatestSubscriber(stats: TextEffectStats) {
+        appendTextPart(value: stats.latestSubscriber)
+    }
+
+    private func formatLatestFollower(stats: TextEffectStats) {
+        appendTextPart(value: stats.latestFollower)
+    }
+
     private func formatOptional(value: Int?) -> String {
         if let value {
-            return String(value)
+            String(value)
         } else {
-            return "-"
+            "-"
         }
     }
 
     private func formatOptionalOneDecimal(value: Double?) -> String {
         if let value {
-            return formatOneDecimal(Float(value))
+            formatOneDecimal(Float(value))
         } else {
-            return "-"
+            "-"
         }
     }
 

@@ -1,12 +1,12 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 
 protocol AudioEncoderDelegate: AnyObject {
     func audioEncoderOutputFormat(_ format: AVAudioFormat)
     func audioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer, _ presentationTimeStamp: CMTime)
 }
 
-class AudioEncoder {
-    weak var delegate: AudioEncoderDelegate?
+class AudioEncoder: @unchecked Sendable {
+    weak var delegate: (any AudioEncoderDelegate)?
     private var isRunning = false
     private let lockQueue: DispatchQueue
     private var ringBuffer: AudioEncoderRingBuffer?
@@ -58,19 +58,20 @@ class AudioEncoder {
         }
         ringBuffer = .init(&newInSourceFormat, numSamplesPerBuffer: samplesPerBuffer())
         audioConverter = makeAudioConverter(&newInSourceFormat)
-        sampleRate.mutate { $0 = newInSourceFormat.mSampleRate }
+        let newSampleRate = newInSourceFormat.mSampleRate
+        sampleRate.mutate { $0 = newSampleRate }
     }
 
     func getBitrate() -> Int {
-        return bitrate.value
+        bitrate.value
     }
 
     func getSampleRate() -> Double? {
-        return sampleRate.value
+        sampleRate.value
     }
 
     static func makeAudioFormat(_ basicDescription: inout AudioStreamBasicDescription) -> AVAudioFormat? {
-        return AVAudioFormat(
+        AVAudioFormat(
             streamDescription: &basicDescription,
             channelLayout: makeChannelLayout(basicDescription.mChannelsPerFrame)
         )
@@ -79,9 +80,9 @@ class AudioEncoder {
     private func samplesPerBuffer() -> Int {
         switch settings.format {
         case .aac:
-            return 1024
+            1024
         case .opus:
-            return 960
+            960
         }
     }
 

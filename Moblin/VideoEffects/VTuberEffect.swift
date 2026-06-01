@@ -1,9 +1,9 @@
 import SceneKit
 import SwiftUI
 import Vision
-import VRMSceneKit
+@preconcurrency import VRMSceneKit
 
-final class VTuberEffect: VideoEffect {
+final class VTuberEffect: VideoEffect, @unchecked Sendable {
     private var videoSourceId: UUID = .init()
     private var scene: VRMScene?
     private var mirror: Bool = false
@@ -157,6 +157,6 @@ final class VTuberEffect: VideoEffect {
     }
 
     override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
-        return .interval(videoSourceId, 0.1)
+        .interval(videoSourceId, 0.1)
     }
 }

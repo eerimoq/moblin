@@ -8,9 +8,9 @@ struct CustomLutView: View {
 
     func loadImage() -> UIImage? {
         if let data = model.imageStorage.tryRead(id: lut.id) {
-            return UIImage(data: data)
+            UIImage(data: data)
         } else {
-            return nil
+            nil
         }
     }
 
@@ -84,6 +84,7 @@ private struct CameraSettingsCubeLutsView: View {
 private struct CameraSettingsPngLutsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var color: SettingsColor
+    @State var presentingPicker: Bool = false
     @State var selectedImageItem: PhotosPickerItem?
 
     private func deleteLutPng(at offsets: IndexSet) {
@@ -104,11 +105,16 @@ private struct CameraSettingsPngLutsView: View {
                 }
                 .onDelete(perform: deleteLutPng)
             }
-            PhotosPicker(selection: $selectedImageItem, matching: .images) {
+            Button {
+                presentingPicker = true
+            } label: {
                 HCenter {
                     Text("Add")
                 }
             }
+            .photosPicker(isPresented: $presentingPicker,
+                          selection: $selectedImageItem,
+                          matching: .images)
             .onChange(of: selectedImageItem) { imageItem in
                 imageItem?.loadTransferable(type: Data.self) { result in
                     switch result {
@@ -154,7 +160,7 @@ struct CameraSettingsLutsView: View {
 }
 
 private struct CameraSettingsAppleLogLutView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     @ObservedObject var color: SettingsColor
 
     var body: some View {
@@ -171,7 +177,7 @@ private struct CameraSettingsAppleLogLutView: View {
             }
             Section {
                 Picker("", selection: $color.lut) {
-                    ForEach(model.allLuts()) { lut in
+                    ForEach(color.allLuts()) { lut in
                         Text(lut.name)
                             .tag(lut.id)
                     }
@@ -248,7 +254,7 @@ struct CameraSettingsView: View {
                         }
                         .disabled(model.isLive || model.isRecording)
                         NavigationLink {
-                            CameraSettingsAppleLogLutView(color: color)
+                            CameraSettingsAppleLogLutView(model: model, color: color)
                         } label: {
                             Text("Apple Log LUT")
                         }

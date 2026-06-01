@@ -73,11 +73,11 @@ class RtmpStreamInfo {
     }
 
     private func latestAckedSequence() -> Int64 {
-        return latestAckedSequenceHigh + Int64(latestAckedSequenceLow)
+        latestAckedSequenceHigh + Int64(latestAckedSequenceLow)
     }
 
     private func packetsInFlight() -> UInt32 {
         // Max just not to crash if server acks data that is not yet sent.
-        return UInt32(min(max(latestWrittenSequence - latestAckedSequence(), 0), Int64(UInt32.max)) / 1400)
+        UInt32(min(max(latestWrittenSequence - latestAckedSequence(), 0), Int64(UInt32.max)) / 1400)
     }
 }

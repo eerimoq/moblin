@@ -1,4 +1,4 @@
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 import Foundation
 
 // The actual values do not matter.
@@ -61,7 +61,7 @@ class DjiDevice: NSObject {
     private var cameraPeripheral: CBPeripheral?
     private var fff5Characteristic: CBCharacteristic?
     private var state: DjiDeviceState = .idle
-    weak var delegate: DjiDeviceDelegate?
+    weak var delegate: (any DjiDeviceDelegate)?
     private let startStreamingTimer = SimpleTimer(queue: .main)
     private let stopStreamingTimer = SimpleTimer(queue: .main)
     private var model: SettingsDjiDeviceModel = .unknown
@@ -106,7 +106,7 @@ class DjiDevice: NSObject {
     }
 
     func getBatteryPercentage() -> Int? {
-        return batteryPercentage
+        batteryPercentage
     }
 
     private func reset() {
@@ -157,7 +157,7 @@ class DjiDevice: NSObject {
     }
 
     func getState() -> DjiDeviceState {
-        return state
+        state
     }
 }
 
@@ -187,19 +187,19 @@ extension DjiDevice: CBCentralManagerDelegate {
         setState(state: .connecting)
     }
 
-    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: Error?) {}
+    func centralManager(_: CBCentralManager, didFailToConnect _: CBPeripheral, error _: (any Error)?) {}
 
     func centralManager(_: CBCentralManager, didConnect peripheral: CBPeripheral) {
         peripheral.discoverServices(nil)
     }
 
-    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: Error?) {
+    func centralManager(_: CBCentralManager, didDisconnectPeripheral _: CBPeripheral, error _: (any Error)?) {
         reset()
     }
 }
 
 extension DjiDevice: CBPeripheralDelegate {
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices _: (any Error)?) {
         guard let peripheralServices = peripheral.services else {
             return
         }
@@ -211,7 +211,7 @@ extension DjiDevice: CBPeripheralDelegate {
     func peripheral(
         _ peripheral: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
-        error _: Error?
+        error _: (any Error)?
     ) {
         for characteristic in service.characteristics ?? [] {
             if characteristic.uuid == fff5Id {
@@ -221,7 +221,11 @@ extension DjiDevice: CBPeripheralDelegate {
         }
     }
 
-    func peripheral(_: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error _: Error?) {
+    func peripheral(
+        _: CBPeripheral,
+        didUpdateValueFor characteristic: CBCharacteristic,
+        error _: (any Error)?
+    ) {
         guard let value = characteristic.value else {
             return
         }
@@ -249,6 +253,8 @@ extension DjiDevice: CBPeripheralDelegate {
             processStreaming(message: message)
         case .stoppingStream:
             processStoppingStream(response: message)
+        case .connecting:
+            break
         default:
             logger.info("dji-device: Received message in unexpected state '\(state)'")
         }
@@ -336,6 +342,8 @@ extension DjiDevice: CBPeripheralDelegate {
             setState(state: .configuring)
         case .osmoPocket3:
             sendStartStreaming()
+        case .osmoPocket4:
+            sendStartStreaming()
         case .unknown:
             sendStartStreaming()
         }
@@ -352,17 +360,36 @@ extension DjiDevice: CBPeripheralDelegate {
         guard let rtmpUrl, let resolution else {
             return
         }
-        let payload = DjiStartStreamingMessagePayload(
-            rtmpUrl: rtmpUrl,
-            resolution: resolution,
-            fps: fps,
-            bitrateKbps: UInt16((bitrate / 1000) & 0xFFFF),
-            oa5: model.hasNewProtocol()
-        )
-        writeMessage(message: DjiMessage(target: startStreamingTarget,
-                                         id: startStreamingTransactionId,
-                                         type: startStreamingType,
-                                         payload: payload.encode()))
+        let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
+        switch model {
+        case .osmoPocket4:
+            // The Pocket 4 uses a JSON-wrapped start-streaming payload that's
+            // completely different from the legacy binary format used by every
+            // other DJI camera Moblin supports. Reverse-engineered from a
+            // PacketLogger capture of the official DJI Mimo app.
+            let payload = DjiStartStreamingMessagePayloadPocket4(
+                rtmpUrl: rtmpUrl,
+                resolution: resolution,
+                fps: fps,
+                bitrateKbps: bitrateKbps
+            )
+            writeMessage(message: DjiMessage(target: startStreamingTarget,
+                                             id: startStreamingTransactionId,
+                                             type: startStreamingType,
+                                             payload: payload.encode()))
+        default:
+            let payload = DjiStartStreamingMessagePayload(
+                rtmpUrl: rtmpUrl,
+                resolution: resolution,
+                fps: fps,
+                bitrateKbps: bitrateKbps,
+                oa5: model.hasNewProtocol()
+            )
+            writeMessage(message: DjiMessage(target: startStreamingTarget,
+                                             id: startStreamingTransactionId,
+                                             type: startStreamingType,
+                                             payload: payload.encode()))
+        }
         // Patch for OA5P: Send the confirmation payload to actually start the stream.
         // This is an exact copy of the stop-streaming command, but the last data-bit in
         // the payload is set to 1 instead of 2.
@@ -419,7 +446,7 @@ extension DjiDevice: CBPeripheralDelegate {
     func peripheral(
         _: CBPeripheral,
         didUpdateNotificationStateFor characteristic: CBCharacteristic,
-        error _: Error?
+        error _: (any Error)?
     ) {
         guard state == .connecting else {
             return
@@ -451,7 +478,11 @@ extension SettingsDjiDevice {
         }
         switch rtmpUrlType {
         case .server:
-            if serverRtmpUrl.isEmpty {
+            if let serverRtmpUrl {
+                if serverRtmpUrl.isEmpty {
+                    return false
+                }
+            } else {
                 return false
             }
         case .custom:

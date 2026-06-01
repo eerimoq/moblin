@@ -48,51 +48,55 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var cameraManSpeed: Double = 1.0
     @Published var cameraManAlwaysMove: Bool = false
     @Published var enhancedMoblinSrt: Bool = false
-    @Published var videoBitrateChange: Bool = true
+    @Published var videoBitrateChange: Bool = false
+    @Published var highQualityDownsampling: Bool = false
+    @Published var httpProxy: Bool = false
 
     enum CodingKeys: CodingKey {
-        case logLevel,
-             logFilter,
-             debugLogging,
-             debugLoggingMigrated,
-             srtOverlay,
-             srtOverheadBandwidth,
-             cameraSwitchRemoveBlackish,
-             maximumBandwidthFollowInput,
-             bluetoothOutputOnly,
-             maximumLogLines,
-             pixelFormat,
-             beautyFilterSettings,
-             allowVideoRangePixelFormat,
-             blurSceneSwitch,
-             preferStereoMic,
-             twitchRewards,
-             removeWindNoise,
-             tesla,
-             reliableChat,
-             timecodesEnabled,
-             dnsLookupStrategy,
-             srtlaBatchSend,
-             dataRateLimitFactor,
-             bitrateDropFix,
-             relaxedBitrate,
-             externalDisplayChat,
-             videoSourceWidgetTrackFace,
-             srtlaBatchSendEnabled,
-             replay,
-             recordSegmentLength,
-             builtinAudioAndVideoDelay,
-             overrideSceneMic,
-             autoLowPowerMode,
-             builtinAudioAndVideoDelay70msMigrated,
-             cameraManMoveVertically,
-             cameraManSpeed,
-             cameraManAlwaysMove,
-             enhancedMoblinSrt,
-             videoBitrateChange
+        case logLevel
+        case logFilter
+        case debugLogging
+        case debugLoggingMigrated
+        case srtOverlay
+        case srtOverheadBandwidth
+        case cameraSwitchRemoveBlackish
+        case maximumBandwidthFollowInput
+        case bluetoothOutputOnly
+        case maximumLogLines
+        case pixelFormat
+        case beautyFilterSettings
+        case allowVideoRangePixelFormat
+        case blurSceneSwitch
+        case preferStereoMic
+        case twitchRewards
+        case removeWindNoise
+        case tesla
+        case reliableChat
+        case timecodesEnabled
+        case dnsLookupStrategy
+        case srtlaBatchSend
+        case dataRateLimitFactor
+        case bitrateDropFix
+        case relaxedBitrate
+        case externalDisplayChat
+        case videoSourceWidgetTrackFace
+        case srtlaBatchSendEnabled
+        case replay
+        case recordSegmentLength
+        case builtinAudioAndVideoDelay
+        case overrideSceneMic
+        case autoLowPowerMode
+        case builtinAudioAndVideoDelay70msMigrated
+        case cameraManMoveVertically
+        case cameraManSpeed
+        case cameraManAlwaysMove
+        case enhancedMoblinSrt
+        case videoBitrateChangeEnabled
+        case highQualityDownsampling
+        case httpProxy
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.logLevel, logLevel)
         try container.encode(.logFilter, logFilter)
@@ -125,12 +129,14 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.cameraManSpeed, cameraManSpeed)
         try container.encode(.cameraManAlwaysMove, cameraManAlwaysMove)
         try container.encode(.enhancedMoblinSrt, enhancedMoblinSrt)
-        try container.encode(.videoBitrateChange, videoBitrateChange)
+        try container.encode(.videoBitrateChangeEnabled, videoBitrateChange)
+        try container.encode(.highQualityDownsampling, highQualityDownsampling)
+        try container.encode(.httpProxy, httpProxy)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         logLevel = container.decode(.logLevel, SettingsLogLevel.self, .error)
         logFilter = container.decode(.logFilter, String.self, "")
@@ -175,6 +181,8 @@ class SettingsDebug: Codable, ObservableObject {
         cameraManSpeed = container.decode(.cameraManSpeed, Double.self, 1.0)
         cameraManAlwaysMove = container.decode(.cameraManAlwaysMove, Bool.self, false)
         enhancedMoblinSrt = container.decode(.enhancedMoblinSrt, Bool.self, false)
-        videoBitrateChange = container.decode(.videoBitrateChange, Bool.self, true)
+        videoBitrateChange = container.decode(.videoBitrateChangeEnabled, Bool.self, false)
+        highQualityDownsampling = container.decode(.highQualityDownsampling, Bool.self, false)
+        httpProxy = container.decode(.httpProxy, Bool.self, false)
     }
 }

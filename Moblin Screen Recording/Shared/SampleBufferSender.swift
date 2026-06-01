@@ -44,7 +44,7 @@ class SampleBufferSender: NSObject {
     }
 
     private func isConnected() -> Bool {
-        return fd != -1
+        fd != -1
     }
 
     private func tryConnect() -> Bool {
@@ -150,8 +150,8 @@ protocol VideoEncoderDelegate: AnyObject {
     func videoEncoderOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer)
 }
 
-class VideoEncoder {
-    weak var delegate: VideoEncoderDelegate?
+class VideoEncoder: @unchecked Sendable {
+    weak var delegate: (any VideoEncoderDelegate)?
     private var session: VTCompressionSession?
     private var formatDescription: CMFormatDescription? {
         didSet {
@@ -187,8 +187,8 @@ class VideoEncoder {
                 guard let sampleBuffer, status == noErr else {
                     return
                 }
-                self.formatDescription = sampleBuffer.formatDescription
-                self.delegate?.videoEncoderOutputSampleBuffer(sampleBuffer)
+                formatDescription = sampleBuffer.formatDescription
+                delegate?.videoEncoderOutputSampleBuffer(sampleBuffer)
             }
         )
     }

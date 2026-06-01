@@ -14,9 +14,9 @@ struct RistServerSettingsView: View {
 
     private func status() -> String {
         if ristServer.enabled {
-            return String(ristServer.streams.count)
+            String(ristServer.streams.count)
         } else {
-            return "0"
+            "0"
         }
     }
 

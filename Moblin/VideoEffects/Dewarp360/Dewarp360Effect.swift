@@ -5,7 +5,7 @@ enum Dewarp360EffectSettings {
     case animate(speed: Float = 1, pan: Float = 0, tilt: Float = 0, fieldOfView: Float = .pi / 2)
 }
 
-final class Dewarp360Effect: VideoEffect {
+final class Dewarp360Effect: VideoEffect, @unchecked Sendable {
     private let filter = Dewarp360Filter()
     private var settings: Dewarp360EffectSettings = .direct()
     private var currentPan: Float = 0

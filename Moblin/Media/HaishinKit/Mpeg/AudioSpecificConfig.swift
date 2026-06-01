@@ -35,31 +35,31 @@ enum AudioSpecificConfig {
         var sampleRate: Float64 {
             switch self {
             case .hz96000:
-                return 96000
+                96000
             case .hz88200:
-                return 88200
+                88200
             case .hz64000:
-                return 64000
+                64000
             case .hz48000:
-                return 48000
+                48000
             case .hz44100:
-                return 44100
+                44100
             case .hz32000:
-                return 32000
+                32000
             case .hz24000:
-                return 24000
+                24000
             case .hz22050:
-                return 22050
+                22050
             case .hz16000:
-                return 16000
+                16000
             case .hz12000:
-                return 12000
+                12000
             case .hz11025:
-                return 11025
+                11025
             case .hz8000:
-                return 8000
+                8000
             case .hz7350:
-                return 7350
+                7350
             }
         }
     }

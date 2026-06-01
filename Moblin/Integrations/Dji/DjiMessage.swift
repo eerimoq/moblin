@@ -2,7 +2,7 @@ import CrcSwift
 import Foundation
 
 private func djiCrc8(data: Data) -> UInt8 {
-    return CrcSwift.computeCrc8(
+    CrcSwift.computeCrc8(
         data,
         initialCrc: 0xEE,
         polynom: 0x31,
@@ -13,7 +13,7 @@ private func djiCrc8(data: Data) -> UInt8 {
 }
 
 private func djiCrc16(data: Data) -> UInt16 {
-    return CrcSwift.computeCrc16(
+    CrcSwift.computeCrc16(
         data,
         initialCrc: 0x496C,
         polynom: 0x1021,
@@ -91,6 +91,6 @@ class DjiMessage {
     }
 
     func format() -> String {
-        return "target: \(target), id: \(id), type: \(type) \(payload.hexString())"
+        "target: \(target), id: \(id), type: \(type) \(payload.hexString())"
     }
 }

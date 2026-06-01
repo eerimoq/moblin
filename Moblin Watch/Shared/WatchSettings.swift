@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 class WatchSettingsChat: Codable, ObservableObject {
@@ -10,14 +11,14 @@ class WatchSettingsChat: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case fontSize,
-             timestampEnabled,
-             notificationOnMessage,
-             notificationRate,
-             badges
+        case fontSize
+        case timestampEnabled
+        case notificationOnMessage
+        case notificationRate
+        case badges
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.fontSize, fontSize)
         try container.encode(.timestampEnabled, timestampEnabled)
@@ -26,7 +27,7 @@ class WatchSettingsChat: Codable, ObservableObject {
         try container.encode(.badges, badges)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         fontSize = container.decode(.fontSize, Float.self, 17.0)
         timestampEnabled = container.decode(.timestampEnabled, Bool.self, true)
@@ -44,19 +45,19 @@ class WatchSettingsShow: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case thermalState,
-             audioLevel,
-             speed
+        case thermalState
+        case audioLevel
+        case speed
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.thermalState, thermalState)
         try container.encode(.audioLevel, audioLevel)
         try container.encode(.speed, speed)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         thermalState = container.decode(.thermalState, Bool.self, true)
         audioLevel = container.decode(.audioLevel, Bool.self, true)
@@ -72,19 +73,19 @@ class WatchSettings: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case chat,
-             show,
-             viaRemoteControl
+        case chat
+        case show
+        case viaRemoteControl
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.chat, chat)
         try container.encode(.show, show)
         try container.encode(.viaRemoteControl, viaRemoteControl)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         chat = container.decode(.chat, WatchSettingsChat.self, .init())
         show = container.decode(.show, WatchSettingsShow.self, .init())

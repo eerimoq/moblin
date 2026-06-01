@@ -35,6 +35,8 @@ struct WidgetInScene: Identifiable {
     let sceneWidget: SettingsSceneWidget
 }
 
+let defaultScoreboardSize = 18.52
+
 extension Model {
     func getTextEffects(id: UUID) -> [TextEffect] {
         var effects: [TextEffect] = []
@@ -52,73 +54,85 @@ extension Model {
     }
 
     func getVideoSourceEffect(id: UUID) -> VideoSourceEffect? {
-        return videoSourceEffects[id]
+        videoSourceEffects[id]
     }
 
     func getVTuberEffect(id: UUID) -> VTuberEffect? {
-        return vTuberEffects[id]
+        vTuberEffects[id]
     }
 
     func getPngTuberEffect(id: UUID) -> PngTuberEffect? {
-        return pngTuberEffects[id]
+        pngTuberEffects[id]
     }
 
     func getSnapshotEffect(id: UUID) -> SnapshotEffect? {
-        return snapshotEffects[id]
+        snapshotEffects[id]
     }
 
     func getChatEffect(id: UUID) -> ChatEffect? {
-        return chatEffects[id]
+        chatEffects[id]
+    }
+
+    func getChatEmoteComboEffect(id: UUID) -> ChatEmoteComboEffect? {
+        chatEmoteComboEffects[id]
     }
 
     func getQrCodeEffect(id: UUID) -> QrCodeEffect? {
-        return qrCodeEffects[id]
+        qrCodeEffects[id]
     }
 
     func getWheelOfLuckEffect(id: UUID) -> WheelOfLuckEffect? {
-        return wheelOfLuckEffects[id]
+        wheelOfLuckEffects[id]
     }
 
     func getBingoCardEffect(id: UUID) -> BingoCardEffect? {
-        return bingoCardEffects[id]
+        bingoCardEffects[id]
+    }
+
+    func getPomodoroTimerEffect(id: UUID) -> PomodoroTimerEffect? {
+        pomodoroTimerEffects[id]
     }
 
     func getScoreboardEffect(id: UUID) -> ScoreboardEffect? {
-        return scoreboardEffects[id]
+        scoreboardEffects[id]
     }
 
     func getWidgetShapeEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> ShapeEffect? {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetAnamorphicLensEffect(_ widget: SettingsWidget,
                                        _ effect: SettingsVideoEffect) -> AnamorphicLensEffect?
     {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetDewarp360Effect(_ widget: SettingsWidget,
                                   _ effect: SettingsVideoEffect) -> Dewarp360Effect?
     {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetLutEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> LutEffect? {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetOpacityEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> OpacityEffect? {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
+    }
+
+    func getWidgetMaskEffect(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> MaskEffect? {
+        getWidgetVideoEffect(widget, effect)
     }
 
     func getWidgetRemoveBackgroundEffect(_ widget: SettingsWidget,
                                          _ effect: SettingsVideoEffect) -> RemoveBackgroundEffect?
     {
-        return getWidgetVideoEffect(widget, effect)
+        getWidgetVideoEffect(widget, effect)
     }
 
     private func getEffectWithPossibleEffects(id: UUID) -> VideoEffect? {
-        return getVideoSourceEffect(id: id)
+        getVideoSourceEffect(id: id)
             ?? getImageEffect(id: id)
             ?? getBrowserEffect(id: id)
             ?? getMapEffect(id: id)
@@ -127,7 +141,7 @@ extension Model {
     }
 
     private func getWidgetVideoEffect<T>(_ widget: SettingsWidget, _ effect: SettingsVideoEffect) -> T? {
-        guard let effectIndex = widget.effects.filter({ $0.enabled }).firstIndex(where: { $0 === effect }),
+        guard let effectIndex = widget.effects.filter(\.enabled).firstIndex(where: { $0 === effect }),
               let effect = getEffectWithPossibleEffects(id: widget.id),
               effectIndex < effect.effects.count
         else {
@@ -137,7 +151,7 @@ extension Model {
     }
 
     func isFixedHorizonEnabled(scene: SettingsScene) -> Bool {
-        return database.fixedHorizon && scene.videoSource.cameraPosition.isBuiltin()
+        database.fixedHorizon && scene.videoSource.cameraPosition.isBuiltin()
     }
 
     func resetSelectedScene(changeScene: Bool = true, attachCamera: Bool = true) {
@@ -153,10 +167,10 @@ extension Model {
             mirror: streamOverlay.isFrontCameraSelected && !database.mirrorFrontCameraOnStream
         )
         lutEffects.removeAll()
-        for lut in allLuts() {
+        for lut in database.color.allLuts() {
             let lutEffect = LutEffect()
-            lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) { title, subTitle in
-                self.makeErrorToastMain(title: title, subTitle: subTitle)
+            lutEffect.setLut(lut: lut.clone(), imageStorage: imageStorage) {
+                self.makeErrorToast(title: $0, subTitle: $1)
             }
             lutEffects[lut.id] = lutEffect
         }
@@ -164,7 +178,7 @@ extension Model {
     }
 
     func getSelectedScene() -> SettingsScene? {
-        return findEnabledScene(id: sceneSelector.selectedSceneId)
+        findEnabledScene(id: sceneSelector.selectedSceneId)
     }
 
     func showSceneSettings(scene: SettingsScene) {
@@ -228,11 +242,15 @@ extension Model {
     }
 
     func getSceneName(id: UUID?) -> String? {
-        return database.scenes.first { $0.id == id }?.name
+        database.scenes.first { $0.id == id }?.name
+    }
+
+    func getScene(id: UUID?) -> SettingsScene? {
+        database.scenes.first(where: { $0.id == id })
     }
 
     func getWidgetName(id: UUID?) -> String? {
-        return database.widgets.first { $0.id == id }?.name
+        database.widgets.first { $0.id == id }?.name
     }
 
     func removeDeadWidgetsFromScenes() {
@@ -259,6 +277,8 @@ extension Model {
             attachBufferedCamera(cameraId: scene.videoSource.rtmpCameraId, scene: scene)
         case .srtla:
             attachBufferedCamera(cameraId: scene.videoSource.srtlaCameraId, scene: scene)
+        case .srtClient:
+            attachBufferedCamera(cameraId: scene.videoSource.srtClientCameraId, scene: scene)
         case .rist:
             attachBufferedCamera(cameraId: scene.videoSource.ristCameraId, scene: scene)
         case .rtsp:
@@ -310,11 +330,11 @@ extension Model {
     }
 
     func findEnabledScene(id: UUID) -> SettingsScene? {
-        return enabledScenes.first(where: { $0.id == id })
+        enabledScenes.first(where: { $0.id == id })
     }
 
     func findEnabledSceneIndex(id: UUID) -> Int? {
-        return enabledScenes.firstIndex(where: { $0.id == id })
+        enabledScenes.firstIndex(where: { $0.id == id })
     }
 
     func isCaptureDeviceWidget(widget: SettingsWidget) -> Bool {
@@ -323,7 +343,7 @@ extension Model {
     }
 
     func getFillFrame(scene: SettingsScene) -> Bool {
-        return scene.fillFrame
+        scene.fillFrame
     }
 
     func widgetsInCurrentScene(onlyEnabled: Bool) -> [WidgetInScene] {
@@ -440,21 +460,23 @@ extension Model {
     func isSceneVideoSourceActive(scene: SettingsScene) -> Bool {
         switch scene.videoSource.cameraPosition {
         case .rtmp:
-            return activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.rtmpCameraId)
         case .srtla:
-            return activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.srtlaCameraId)
+        case .srtClient:
+            activeBufferedVideoIds.contains(scene.videoSource.srtClientCameraId)
         case .rist:
-            return activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.ristCameraId)
         case .rtsp:
-            return activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.rtspCameraId)
         case .whip:
-            return activeBufferedVideoIds.contains(scene.videoSource.whipCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.whipCameraId)
         case .whep:
-            return activeBufferedVideoIds.contains(scene.videoSource.whepCameraId)
+            activeBufferedVideoIds.contains(scene.videoSource.whepCameraId)
         case .external:
-            return isExternalCameraConnected(cameraId: scene.videoSource.externalCameraId)
+            isExternalCameraConnected(cameraId: scene.videoSource.externalCameraId)
         default:
-            return true
+            true
         }
     }
 
@@ -629,15 +651,21 @@ extension Model {
     }
 
     private func getImageEffect(id: UUID) -> ImageEffect? {
-        return imageEffects[id]
+        imageEffects[id]
     }
 
     private func getBrowserEffect(id: UUID) -> BrowserEffect? {
-        return browserEffects[id]
+        browserEffects[id]
     }
 
     private func getMapEffect(id: UUID) -> MapEffect? {
-        return mapEffects[id]
+        mapEffects[id]
+    }
+
+    func setBrowserEffectsProxyServer() {
+        for effect in browserEffects.values {
+            effect.setProxyServer(endpoint: getHttpProxyServerEndpoint())
+        }
     }
 
     private func resetVideoEffects(widgets: [SettingsWidget]) {
@@ -654,9 +682,11 @@ extension Model {
         resetPngTuberVideoEffects(widgets: widgets)
         resetSnapshotVideoEffects(widgets: widgets)
         resetChatVideoEffects(widgets: widgets)
+        resetChatEmoteComboVideoEffects(widgets: widgets)
         resetSlideshowVideoEffects(widgets: widgets)
         resetWheelOfLuckEffects(widgets: widgets)
         resetBingoCardEffects(widgets: widgets)
+        resetPomodoroTimerEffects(widgets: widgets)
         browsers = browserEffects.map { widgetId, browser in
             let name = getWidgetName(id: widgetId) ?? "Unknown"
             return Browser(name: name, browserEffect: browser)
@@ -664,7 +694,7 @@ extension Model {
     }
 
     private func createImageEffect(widget: SettingsWidget) -> ImageEffect {
-        return ImageEffect(imageStorage: imageStorage, widgetId: widget.id)
+        ImageEffect(imageStorage: imageStorage, widgetId: widget.id)
     }
 
     private func resetImageEffects(widgets: [SettingsWidget]) {
@@ -677,7 +707,7 @@ extension Model {
     }
 
     private func createTextEffect(widget: SettingsWidget) -> TextEffect {
-        return TextEffect(
+        TextEffect(
             format: widget.text.formatString,
             backgroundColor: widget.text.backgroundColor,
             foregroundColor: widget.text.foregroundColor,
@@ -693,9 +723,9 @@ extension Model {
                 .now.advanced(by: .seconds(utcTimeDeltaFromNow(to: $0.endTime)))
             },
             stopwatches: widget.text.stopwatches.map { $0.clone() },
-            checkboxes: widget.text.checkboxes.map { $0.checked },
-            ratings: widget.text.ratings.map { $0.rating },
-            lapTimes: widget.text.lapTimes.map { $0.lapTimes }
+            checkboxes: widget.text.checkboxes.map(\.checked),
+            ratings: widget.text.ratings.map(\.rating),
+            lapTimes: widget.text.lapTimes.map(\.lapTimes)
         )
     }
 
@@ -719,7 +749,8 @@ extension Model {
                 url: url,
                 styleSheet: widget.browser.styleSheet,
                 widget: widget.browser,
-                moblinAccess: widget.browser.moblinAccess
+                moblinAccess: widget.browser.moblinAccess,
+                proxyServer: getHttpProxyServerEndpoint()
             )
             effect.effects = widget.getEffects(model: self)
             browserEffects[widget.id] = effect
@@ -756,7 +787,7 @@ extension Model {
     private func resetScoreboardVideoEffects(widgets: [SettingsWidget]) {
         scoreboardEffects.removeAll()
         for widget in widgets where widget.type == .scoreboard {
-            scoreboardEffects[widget.id] = ScoreboardEffect()
+            scoreboardEffects[widget.id] = ScoreboardEffect(canvasSize: media.getCanvasSize())
         }
     }
 
@@ -812,6 +843,15 @@ extension Model {
         }
     }
 
+    private func resetChatEmoteComboVideoEffects(widgets: [SettingsWidget]) {
+        chatEmoteComboEffects.removeAll()
+        for widget in widgets where widget.type == .chatEmoteCombo {
+            let effect = ChatEmoteComboEffect(canvasSize: media.getCanvasSize())
+            effect.setSettings(settings: widget.chatEmoteCombo)
+            chatEmoteComboEffects[widget.id] = effect
+        }
+    }
+
     private func resetSlideshowVideoEffects(widgets: [SettingsWidget]) {
         slideshowEffects.removeAll()
         for widget in widgets where widget.type == .slideshow {
@@ -851,8 +891,52 @@ extension Model {
         }
     }
 
+    private func resetPomodoroTimerEffects(widgets: [SettingsWidget]) {
+        pomodoroTimerEffects.removeAll()
+        for widget in widgets where widget.type == .pomodoroTimer {
+            pomodoroTimerEffects[widget.id] = PomodoroTimerEffect(canvasSize: media.getCanvasSize())
+            let pomodoroTimer = widget.pomodoroTimer
+            pomodoroTimer.onPhaseChanged = { [weak self, weak pomodoroTimer] in
+                guard let pomodoroTimer else {
+                    return
+                }
+                self?.onPomodoroTimerPhaseChanged(pomodoroTimer, newPhase: $0)
+            }
+        }
+    }
+
+    private func onPomodoroTimerPhaseChanged(
+        _ settings: SettingsWidgetPomodoroTimer,
+        newPhase: PomodoroPhase
+    ) {
+        switch newPhase {
+        case .focus:
+            if let soundId = settings.breakToFocusSoundId {
+                playPomodoroSound(soundId: soundId)
+            }
+            if !settings.breakToFocusChatMessage.isEmpty {
+                sendChatMessage(message: settings.breakToFocusChatMessage)
+            }
+        case .shortBreak:
+            if let soundId = settings.focusToBreakSoundId {
+                playPomodoroSound(soundId: soundId)
+            }
+            if !settings.focusToBreakChatMessage.isEmpty {
+                sendChatMessage(message: settings.focusToBreakChatMessage)
+            }
+        }
+    }
+
+    private func playPomodoroSound(soundId: UUID) {
+        guard let url = getAlertSoundUrl(soundId: soundId) else {
+            return
+        }
+        pomodoroAudioPlayer = try? AudioPlayer(contentsOf: url)
+        pomodoroAudioPlayer?.play()
+    }
+
     private func isQuickButtonOn(type: SettingsQuickButtonType) -> Bool {
-        return database.quickButtons.first(where: { $0.type == type })?.isOn ?? false
+        database.quickButtons.first(where: { $0.type == type })?.isOn ?? false
     }
 
     private func isFaceEnabled() -> Bool {
@@ -881,7 +965,7 @@ extension Model {
     }
 
     private func findSceneWidget(scene: SettingsScene, widgetId: UUID) -> SettingsSceneWidget? {
-        return scene.widgets.first(where: { $0.widgetId == widgetId })
+        scene.widgets.first(where: { $0.widgetId == widgetId })
     }
 
     private func sceneUpdatedOn(scene: SettingsScene, attachCamera: Bool) {
@@ -889,7 +973,7 @@ extension Model {
         if database.color.lutEnabled, database.color.space == .appleLog {
             effects.append(lutEffect)
         }
-        for lut in allLuts() {
+        for lut in database.color.allLuts() {
             guard lut.enabled else {
                 continue
             }
@@ -904,6 +988,7 @@ extension Model {
         enabledAlertsEffects.removeAll()
         enabledSnapshotEffects.removeAll()
         enabledChatEffects.removeAll()
+        enabledChatEmoteComboEffects.removeAll()
         var scene = scene
         if let remoteSceneWidget = remoteSceneWidgets.first {
             scene = scene.clone()
@@ -994,10 +1079,14 @@ extension Model {
                 addSceneSnapshotEffects(sceneWidget, widget, &effects)
             case .chat:
                 addSceneChatEffects(sceneWidget, widget, &effects)
+            case .chatEmoteCombo:
+                addSceneChatEmoteComboEffects(sceneWidget, widget, &effects)
             case .wheelOfLuck:
                 addSceneWheelOfLuckEffects(sceneWidget, widget, &effects)
             case .bingoCard:
                 addSceneBingoCardEffects(sceneWidget, widget, &effects)
+            case .pomodoroTimer:
+                addScenePomodoroTimerEffects(sceneWidget, widget, &effects)
             }
         }
     }
@@ -1053,11 +1142,12 @@ extension Model {
         guard let effect = browserEffects[widget.crop.sourceWidgetId], !effects.contains(effect) else {
             return
         }
-        let sceneWidget: SettingsSceneWidget?
-        if findWidget(id: widget.crop.sourceWidgetId)?.enabled == true {
-            sceneWidget = findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId)
+        let sceneWidget: SettingsSceneWidget? = if findWidget(id: widget.crop.sourceWidgetId)?
+            .enabled == true
+        {
+            findSceneWidget(scene: scene, widgetId: widget.crop.sourceWidgetId)
         } else {
-            sceneWidget = nil
+            nil
         }
         effect.setSceneWidget(
             sceneWidget: sceneWidget?.clone(),
@@ -1241,6 +1331,20 @@ extension Model {
         effects.append(effect)
     }
 
+    private func addSceneChatEmoteComboEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = chatEmoteComboEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.setSettings(settings: widget.chatEmoteCombo)
+        enabledChatEmoteComboEffects.append(effect)
+        effects.append(effect)
+    }
+
     private func addSceneWheelOfLuckEffects(
         _ sceneWidget: SettingsSceneWidget,
         _ widget: SettingsWidget,
@@ -1249,8 +1353,8 @@ extension Model {
         guard let effect = wheelOfLuckEffects[widget.id], !effects.contains(effect) else {
             return
         }
-        effect.setSettings(settings: widget.wheelOfLuck)
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.setSettings(settings: widget.wheelOfLuck)
         effects.append(effect)
     }
 
@@ -1262,8 +1366,21 @@ extension Model {
         guard let effect = bingoCardEffects[widget.id], !effects.contains(effect) else {
             return
         }
-        effect.setSettings(settings: widget.bingoCard)
         effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.setSettings(settings: widget.bingoCard)
+        effects.append(effect)
+    }
+
+    private func addScenePomodoroTimerEffects(
+        _ sceneWidget: SettingsSceneWidget,
+        _ widget: SettingsWidget,
+        _ effects: inout [VideoEffect]
+    ) {
+        guard let effect = pomodoroTimerEffects[widget.id], !effects.contains(effect) else {
+            return
+        }
+        effect.setSceneWidget(sceneWidget: sceneWidget.clone())
+        effect.setSettings(settings: widget.pomodoroTimer)
         effects.append(effect)
     }
 
@@ -1283,11 +1400,11 @@ extension Model {
     }
 
     private func getLocalAndRemoteScenes() -> [SettingsScene] {
-        return database.scenes + remoteSceneScenes
+        database.scenes + remoteSceneScenes
     }
 
     private func getLocalAndRemoteWidgets() -> [SettingsWidget] {
-        return database.widgets + remoteSceneWidgets
+        database.widgets + remoteSceneWidgets
     }
 
     private func findWidgetCrops(scene: SettingsScene, sourceWidgetId: UUID) -> [WidgetCrop] {
@@ -1375,7 +1492,7 @@ extension Model {
                 lapTimes.lapTimes[lastIndex] = now - currentLapStartTime
             }
             for effect in getTextEffects(id: widget.id) {
-                effect.setLapTimes(lapTimes: widget.text.lapTimes.map { $0.lapTimes })
+                effect.setLapTimes(lapTimes: widget.text.lapTimes.map(\.lapTimes))
             }
         }
     }
@@ -1427,7 +1544,9 @@ extension Model {
                 cyclingCadence: "\(cyclingCadence)",
                 runningMetrics: runningMetrics,
                 browserTitle: getBrowserTitle(),
-                gForce: gForceManager?.getLatest()
+                gForce: gForceManager?.getLatest(),
+                latestSubscriber: latestSubscriber,
+                latestFollower: latestFollower
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
         }
@@ -1445,9 +1564,9 @@ extension Model {
 
     private func getBrowserTitle() -> String {
         if showBrowser {
-            return getWebBrowser().title ?? ""
+            getWebBrowser().title ?? ""
         } else {
-            return ""
+            ""
         }
     }
 
@@ -1516,12 +1635,23 @@ extension Model {
             sceneWidget.layout.alignment = .topRight
         case .chat:
             sceneWidget.layout.alignment = .bottomLeft
+        case .chatEmoteCombo:
+            sceneWidget.layout.x = 2
+            sceneWidget.layout.y = 25
+            sceneWidget.layout.size = 10
         case .alerts:
             sceneWidget.layout.x = 20
             sceneWidget.layout.y = 5
         case .scoreboard:
+            sceneWidget.layout.size = defaultScoreboardSize
             sceneWidget.layout.x = 0.78
             sceneWidget.layout.y = 1.388
+            switch widget.scoreboard.sport {
+            case .golfFullScorecard:
+                sceneWidget.layout.alignment = .bottomRight
+            default:
+                break
+            }
         case .wheelOfLuck:
             sceneWidget.layout.alignment = .topRight
             sceneWidget.layout.x = 1.3
@@ -1531,6 +1661,11 @@ extension Model {
             sceneWidget.layout.x = 1.3
             sceneWidget.layout.y = 33
             sceneWidget.layout.size = 33
+        case .pomodoroTimer:
+            sceneWidget.layout.alignment = .topRight
+            sceneWidget.layout.x = 0.78
+            sceneWidget.layout.y = 1.388
+            sceneWidget.layout.size = 20
         default:
             break
         }
@@ -1569,7 +1704,7 @@ extension Model {
     ) {
         let length = parts.filter { $0 == .checkbox }.count
         text.checkboxes.truncate(length: length, create: { .init() })
-        textEffect.setCheckboxes(checkboxes: text.checkboxes.map { $0.checked })
+        textEffect.setCheckboxes(checkboxes: text.checkboxes.map(\.checked))
     }
 
     private func updateRatings(
@@ -1579,7 +1714,7 @@ extension Model {
     ) {
         let length = parts.filter { $0 == .rating }.count
         text.ratings.truncate(length: length, create: { .init() })
-        textEffect.setRatings(ratings: text.ratings.map { $0.rating })
+        textEffect.setRatings(ratings: text.ratings.map(\.rating))
     }
 
     private func updateLapTimes(
@@ -1589,7 +1724,7 @@ extension Model {
     ) {
         let length = parts.filter { $0 == .lapTimes }.count
         text.lapTimes.truncate(length: length, create: { .init() })
-        textEffect.setLapTimes(lapTimes: text.lapTimes.map { $0.lapTimes })
+        textEffect.setLapTimes(lapTimes: text.lapTimes.map(\.lapTimes))
     }
 
     private func updateSubtitles(_ text: SettingsWidgetText, _: TextEffect?, _ parts: [TextFormatPart]) {
@@ -1612,9 +1747,9 @@ extension Model {
         text.needsWeather = parts.contains(where: {
             switch $0 {
             case .conditions, .temperature:
-                return true
+                true
             default:
-                return false
+                false
             }
         })
         startWeatherManager()
@@ -1624,9 +1759,9 @@ extension Model {
         text.needsGeography = parts.contains(where: {
             switch $0 {
             case .country, .countryFlag, .state, .city:
-                return true
+                true
             default:
-                return false
+                false
             }
         })
         startGeographyManager()
@@ -1636,9 +1771,9 @@ extension Model {
         text.needsGForce = parts.contains(where: {
             switch $0 {
             case .gForce, .gForceRecentMax, .gForceMax:
-                return true
+                true
             default:
-                return false
+                false
             }
         })
         startGForceManager()

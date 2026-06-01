@@ -1,17 +1,18 @@
 import AVFoundation
 import Network
 import SwiftUI
+import VideoToolbox
 
 private func isMuted(level: Float) -> Bool {
-    return level.isNaN
+    level.isNaN
 }
 
 private func becameMuted(old: Float, new: Float) -> Bool {
-    return !isMuted(level: old) && isMuted(level: new)
+    !isMuted(level: old) && isMuted(level: new)
 }
 
 private func becameUnmuted(old: Float, new: Float) -> Bool {
-    return isMuted(level: old) && !isMuted(level: new)
+    isMuted(level: old) && !isMuted(level: new)
 }
 
 protocol MediaDelegate: AnyObject {
@@ -27,7 +28,7 @@ protocol MediaDelegate: AnyObject {
     func mediaOnWhipDisconnected(_ reason: String)
     func mediaOnWhipPerform(request: URLRequest,
                             queue: DispatchQueue,
-                            completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+                            completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
     func mediaOnAudioMuteChange()
     func mediaOnAudioBuffer(_ sampleBuffer: CMSampleBuffer)
     func mediaOnLowFpsImage(_ lowFpsImage: Data?, _ frameNumber: UInt64)
@@ -45,10 +46,10 @@ protocol MediaDelegate: AnyObject {
     func mediaSetZoomX(x: Float)
     func mediaSetExposureBias(bias: Float)
     func mediaSelectedFps(auto: Bool)
-    func mediaError(error: Error)
+    func mediaError(error: any Error)
 }
 
-final class Media: NSObject {
+final class Media: NSObject, @unchecked Sendable {
     private var rtmpStreams: [RtmpStream] = []
     private var rtmpStream: RtmpStream? {
         rtmpStreams.first
@@ -58,8 +59,9 @@ final class Media: NSObject {
     private var srtStreamOld: SrtStreamOfficial?
     private var ristStream: RistStream?
     private var whipStream: WhipStream?
+    private var previewStreamHandler: PreviewStreamHandler?
     private var srtlaClient: SrtlaClient?
-    private var processor: Processor?
+    private(set) var processor: Processor?
     private var srtTotalByteCount: Int64 = 0
     private var srtPreviousTotalByteCount: Int64 = 0
     private var srtTransportBitrate: Int64 = 0
@@ -71,7 +73,7 @@ final class Media: NSObject {
     private var experimental: Bool = false
     private var overheadBandwidth: Int32 = 25
     private var maximumBandwidthFollowInput: Bool = false
-    private let delegate: MediaDelegate
+    let delegate: any MediaDelegate
     private var adaptiveBitrate: AdaptiveBitrate?
     var srtDroppedPacketsTotal: Int32 = 0
     private var videoEncoderSettings = VideoEncoderSettings()
@@ -84,7 +86,7 @@ final class Media: NSObject {
     private var canvasSize: CGSize = .init(width: 1920, height: 1080)
     private var limitAdaptiveBitrateByTransportBitrate: Bool = true
 
-    init(delegate: MediaDelegate) {
+    init(delegate: any MediaDelegate) {
         self.delegate = delegate
     }
 
@@ -93,11 +95,11 @@ final class Media: NSObject {
     }
 
     func srtlaConnectionStatistics() -> [BondingConnection]? {
-        return srtlaClient?.connectionStatistics()
+        srtlaClient?.connectionStatistics()
     }
 
     func ristBondingStatistics() -> [BondingConnection]? {
-        return ristStream?.connectionStatistics()
+        ristStream?.connectionStatistics()
     }
 
     func setConnectionPriorities(connectionPriorities: SettingsStreamSrtConnectionPriorities) {
@@ -113,6 +115,7 @@ final class Media: NSObject {
         rtmpStopStream()
         ristStopStream()
         whipStopStream()
+        stopPreviewStream()
         rtmpStreams.removeAll()
         srtStreamNew = nil
         srtStreamOld = nil
@@ -132,10 +135,7 @@ final class Media: NSObject {
         self.srtImplementation = srtImplementation
         self.limitAdaptiveBitrateByTransportBitrate = limitAdaptiveBitrateByTransportBitrate
         processor?.stop()
-        srtStopStream()
-        rtmpStopStream()
-        ristStopStream()
-        whipStopStream()
+        stopAllNetStreams()
         let processor = Processor(delegate: self)
         switch proto {
         case .rtmp:
@@ -151,10 +151,6 @@ final class Media: NSObject {
                 rtmpStream.setUrl(destination.url)
                 rtmpStreams.append(rtmpStream)
             }
-            srtStreamNew = nil
-            srtStreamOld = nil
-            ristStream = nil
-            whipStream = nil
         case .srt:
             switch srtImplementation {
             case .moblin:
@@ -163,30 +159,17 @@ final class Media: NSObject {
                     timecodesEnabled: timecodesEnabled,
                     delegate: self
                 )
-                srtStreamOld = nil
             case .official:
-                srtStreamNew = nil
                 srtStreamOld = SrtStreamOfficial(
                     processor: processor,
                     timecodesEnabled: timecodesEnabled,
                     delegate: self
                 )
             }
-            rtmpStreams.removeAll()
-            ristStream = nil
-            whipStream = nil
         case .rist:
             ristStream = RistStream(processor: processor, timecodesEnabled: timecodesEnabled, delegate: self)
-            srtStreamNew = nil
-            srtStreamOld = nil
-            rtmpStreams.removeAll()
-            whipStream = nil
         case .whip:
-            whipStream = WhipStream(processor: processor, delegate: self)
-            srtStreamNew = nil
-            srtStreamOld = nil
-            ristStream = nil
-            rtmpStreams.removeAll()
+            whipStream = WhipStream(delegate: self)
         }
         self.processor = processor
         processor.setVideoOrientation(value: portrait ? .portrait : .landscapeRight)
@@ -194,15 +177,15 @@ final class Media: NSObject {
     }
 
     func getAudioLevel() -> Float {
-        return currentAudioLevel
+        currentAudioLevel
     }
 
     func getNumberOfAudioChannels() -> Int {
-        return numberOfAudioChannels
+        numberOfAudioChannels
     }
 
     func getAudioSampleRate() -> Double {
-        return audioSampleRate
+        audioSampleRate
     }
 
     func srtStartStream(
@@ -310,9 +293,9 @@ final class Media: NSObject {
 
     func getNumberOfDestinations() -> Int {
         if rtmpStream != nil {
-            return rtmpStreams.count
+            rtmpStreams.count
         } else {
-            return 1
+            1
         }
     }
 
@@ -347,11 +330,11 @@ final class Media: NSObject {
     }
 
     private func getSrtStats() -> SrtPerformanceData? {
-        return srtStreamNew?.getPerformanceData() ?? srtStreamOld?.getPerformanceData()
+        srtStreamNew?.getPerformanceData() ?? srtStreamOld?.getPerformanceData()
     }
 
     private func isSrtStreamActive() -> Bool {
-        return srtStreamNew != nil || srtStreamOld != nil
+        srtStreamNew != nil || srtStreamOld != nil
     }
 
     private func updateAdaptiveBitrateSrtBela(overlay: Bool,
@@ -365,12 +348,11 @@ final class Media: NSObject {
         guard let adaptiveBitrate else {
             return nil
         }
-        let sndData: Int32?
-        if let srtStreamOld {
+        let sndData: Int32? = if let srtStreamOld {
             // This one blocks if srt_connect() has not returned.
-            sndData = srtStreamOld.getSndData()
+            srtStreamOld.getSndData()
         } else {
-            sndData = stats.pktFlightSize
+            stats.pktFlightSize
         }
         guard let sndData else {
             return nil
@@ -529,17 +511,17 @@ final class Media: NSObject {
 
     func streamTransportBitrate() -> Int64? {
         if !limitAdaptiveBitrateByTransportBitrate {
-            return nil
+            nil
         } else if let rtmpStream {
-            return Int64(8 * rtmpStream.info.bitrateStats.value.latestSpeed)
+            Int64(8 * rtmpStream.info.bitrateStats.value.latestSpeed)
         } else if isSrtStreamActive() {
-            return srtTransportBitrate
+            srtTransportBitrate
         } else if ristStream != nil {
-            return Int64(ristStream?.getSpeed() ?? 0)
+            Int64(ristStream?.getSpeed() ?? 0)
         } else if whipStream != nil {
-            return 0
+            0
         } else {
-            return 0
+            0
         }
     }
 
@@ -561,7 +543,7 @@ final class Media: NSObject {
     }
 
     private func queryContains(queryItems: [URLQueryItem], name: String) -> Bool {
-        return queryItems.contains(where: { parameter in parameter.name == name })
+        queryItems.contains(where: { parameter in parameter.name == name })
     }
 
     func makeLocalhostSrtUrl(
@@ -599,10 +581,6 @@ final class Media: NSObject {
         }
         urlComponents.queryItems = queryItems
         return urlComponents.url
-    }
-
-    private func makeStreamId(url: String) -> String? {
-        return URL(string: url)?.dictionaryFromQuery()["streamid"]
     }
 
     func rtmpStartStream(url: String,
@@ -670,6 +648,20 @@ final class Media: NSObject {
         whipStream?.stop()
     }
 
+    func startPreviewStream(url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
+        previewStreamHandler?.stop()
+        previewStreamHandler = PreviewStreamHandler(media: self,
+                                                    url: url,
+                                                    resolution: resolution,
+                                                    bitrate: bitrate)
+        previewStreamHandler?.start()
+    }
+
+    func stopPreviewStream() {
+        previewStreamHandler?.stop()
+        previewStreamHandler = nil
+    }
+
     func setTorch(on: Bool) {
         processor?.setTorch(value: on)
     }
@@ -718,10 +710,6 @@ final class Media: NSObject {
         processor?.setVideoPreview(cameraId: cameraId, drawable: drawable)
     }
 
-    func removeVideoPreview(cameraId: UUID) {
-        processor?.removeVideoPreview(cameraId: cameraId)
-    }
-
     func removeAllVideoPreviews() {
         processor?.removeAllVideoPreviews()
     }
@@ -738,8 +726,14 @@ final class Media: NSObject {
         processor?.setCameraControls(enabled: enabled)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void) {
         processor?.takeSnapshot(age: age, onComplete: onComplete)
+    }
+
+    func takeVideoSourceSnapshot(videoSourceId: UUID,
+                                 onComplete: @escaping @MainActor (UIImage?) -> Void)
+    {
+        processor?.takeVideoSourceSnapshot(videoSourceId: videoSourceId, onComplete: onComplete)
     }
 
     func setCleanRecordings(enabled: Bool) {
@@ -762,14 +756,14 @@ final class Media: NSObject {
     }
 
     func getCanvasSize() -> CGSize {
-        return canvasSize
+        canvasSize
     }
 
     func setFps(fps: Int, preferAutoFps: Bool) {
         processor?.setFps(value: Double(fps), preferAutoFps: preferAutoFps)
     }
 
-    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
+    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping @MainActor () -> Void) {
         processor?.setColorSpace(colorSpace: colorSpace, onComplete: onComplete)
     }
 
@@ -790,9 +784,9 @@ final class Media: NSObject {
 
     func getVideoStreamBitrate(bitrate: UInt32) -> UInt32 {
         if let adaptiveBitrate {
-            return adaptiveBitrate.getCurrentBitrate()
+            adaptiveBitrate.getCurrentBitrate()
         } else {
-            return bitrate
+            bitrate
         }
     }
 
@@ -901,16 +895,14 @@ final class Media: NSObject {
         return Float(device.videoZoomFactor)
     }
 
-    func attachCamera(params: VideoUnitAttachParams, onSuccess: (() -> Void)? = nil) {
+    func attachCamera(params: VideoUnitAttachParams, onSuccess: (@MainActor () -> Void)? = nil) {
         processor?.attachCamera(
             params: params,
             onError: {
                 self.delegate.mediaError(error: $0)
             },
             onSuccess: {
-                DispatchQueue.main.async {
-                    onSuccess?()
-                }
+                onSuccess?()
             }
         )
     }
@@ -966,8 +958,11 @@ final class Media: NSObject {
         processor?.setBufferedAudioTargetLatency(cameraId: cameraId, latency)
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
-        processor?.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
+        processor?.addBufferedVideo(cameraId: cameraId,
+                                    name: name,
+                                    latency: latency,
+                                    trackDrift: trackDrift)
     }
 
     func removeBufferedVideo(cameraId: UUID) {
@@ -994,7 +989,7 @@ final class Media: NSObject {
     }
 
     func getProcessor() -> Processor? {
-        return processor
+        processor
     }
 
     func startRecording(
@@ -1026,12 +1021,11 @@ final class Media: NSObject {
                                               videoBitrate: Int?,
                                               keyFrameInterval: Int?) -> [String: Any]
     {
-        var codec: AVVideoCodecType
-        switch videoCodec {
+        let codec = switch videoCodec {
         case .h264avc:
-            codec = AVVideoCodecType.h264
+            AVVideoCodecType.h264
         case .h265hevc:
-            codec = AVVideoCodecType.hevc
+            AVVideoCodecType.hevc
         }
         var settings: [String: Any] = [
             AVVideoCodecKey: codec,
@@ -1161,7 +1155,7 @@ extension Media: SrtlaDelegate {
                         guard let self else {
                             return false
                         }
-                        if let srtla = self.srtlaClient {
+                        if let srtla = srtlaClient {
                             srtlaClientQueue.async {
                                 srtla.handleLocalPacket(packet: data)
                             }
@@ -1180,7 +1174,7 @@ extension Media: SrtlaDelegate {
                     }
                 }
             } else {
-                self.srtStreamNew?.open(streamId: self.makeStreamId(url: self.srtUrl),
+                self.srtStreamNew?.open(streamId: extractSrtStreamId(url: self.srtUrl),
                                         latency: UInt16(self.latency),
                                         experimental: self.experimental)
             }
@@ -1296,8 +1290,93 @@ extension Media: WhipStreamDelegate {
 
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
     {
         delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
+    }
+
+    func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        processor?.startEncoding(delegate)
+    }
+
+    func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        processor?.stopEncoding(delegate)
+    }
+}
+
+private final class PreviewStreamHandler: @unchecked Sendable {
+    private let media: Media
+    private let url: String
+    private let resolution: SettingsStreamResolution
+    private let bitrate: UInt32
+    private var previewStream: WhipStream?
+    private let reconnectTimer = SimpleTimer(queue: .main)
+
+    init(media: Media, url: String, resolution: SettingsStreamResolution, bitrate: UInt32) {
+        self.media = media
+        self.url = url
+        self.resolution = resolution
+        self.bitrate = bitrate
+    }
+
+    func start() {
+        stop()
+        previewStream = WhipStream(delegate: self)
+        previewStream?.start(
+            url: url,
+            headers: [],
+            iceServers: [defaultStunServer],
+            videoCodec: .h264avc,
+            audioCodec: .opus,
+            videoBitrate: Double(bitrate)
+        )
+    }
+
+    func stop() {
+        reconnectTimer.stop()
+        previewStream?.stop()
+        previewStream = nil
+    }
+
+    private func reconnectSoon(reason: String) {
+        reconnectTimer.startSingleShot(timeout: 5) { [weak self] in
+            guard let self else {
+                return
+            }
+            logger.info("preview-stream: Reconnecting due to: \(reason)")
+            start()
+        }
+    }
+}
+
+extension PreviewStreamHandler: WhipStreamDelegate {
+    func whipStreamOnConnected() {}
+
+    func whipStreamOnDisconnected(reason: String) {
+        DispatchQueue.main.async {
+            self.reconnectSoon(reason: reason)
+        }
+    }
+
+    func whipStreamPerform(request: URLRequest,
+                           queue: DispatchQueue,
+                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+    {
+        media.delegate.mediaOnWhipPerform(request: request, queue: queue, completion: completion)
+    }
+
+    func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        var videoSettings = VideoEncoderSettings()
+        videoSettings.videoSize = resolution.dimensions(portrait: false)
+        videoSettings.bitrate = bitrate
+        videoSettings.profileLevel = kVTProfileLevel_H264_Baseline_AutoLevel as String
+        var audioSettings = AudioEncoderSettings()
+        audioSettings.bitrate = 64000
+        audioSettings.format = .opus
+        media.processor?.startPreviewEncoding(delegate, videoSettings, audioSettings)
+    }
+
+    func whipStreamStopEncoding(_: any AudioEncoderDelegate & VideoEncoderDelegate) {
+        media.processor?.stopPreviewEncoding()
     }
 }

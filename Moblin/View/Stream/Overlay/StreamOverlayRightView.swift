@@ -10,7 +10,7 @@ private struct CollapsedBondingView: View {
             Image(systemName: "phone.connection")
                 .frame(width: 17, height: 17)
                 .font(smallFont)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(color)
             if #available(iOS 17.0, *) {
                 if !bonding.pieChartPercentages.isEmpty {
@@ -21,7 +21,7 @@ private struct CollapsedBondingView: View {
                     .chartLegend(.hidden)
                     .scaledToFit()
                     .frame(width: 14, height: 14)
-                    .padding([.trailing], 2)
+                    .padding(.trailing, 2)
                 }
             }
         }
@@ -94,7 +94,7 @@ private struct CollapsedHypeTrainView: View {
         HStack(spacing: 1) {
             let train = Image(systemName: "train.side.front.car")
                 .frame(width: 17, height: 17)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(color)
             if #available(iOS 18.0, *) {
                 train
@@ -107,7 +107,7 @@ private struct CollapsedHypeTrainView: View {
             }
             Text(status)
                 .foregroundStyle(.white)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
         }
         .font(smallFont)
         .background(backgroundColor)
@@ -125,11 +125,11 @@ private struct CollapsedAdsRemainingTimerView: View {
         HStack(spacing: 1) {
             Image(systemName: "cup.and.saucer")
                 .frame(width: 17, height: 17)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(.white)
             Text(status.adsRemainingTimerStatus)
                 .foregroundStyle(.white)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
         }
         .font(smallFont)
         .background(backgroundColor)
@@ -167,13 +167,13 @@ private struct CollapsedBitrateView: View {
         HStack(spacing: 1) {
             Image(systemName: "speedometer")
                 .frame(width: 17, height: 17)
-                .padding([.leading], 2)
+                .padding(.leading, 2)
                 .foregroundStyle(bitrate.statusColor)
                 .background(bitrate.statusIconColor ?? .clear)
             if !bitrate.speedMbpsOneDecimal.isEmpty {
                 Text(bitrate.speedMbpsOneDecimal)
                     .foregroundStyle(.white)
-                    .padding([.trailing], 2)
+                    .padding(.trailing, 2)
             }
         }
         .font(smallFont)
@@ -209,18 +209,19 @@ private struct BitrateStatusView: View {
     }
 }
 
+@MainActor
 private func netStreamColor(model: Model) -> Color {
     if model.isStreaming() {
         switch model.streamState {
         case .connecting:
-            return .white
+            .white
         case .connected:
-            return .white
+            .white
         case .disconnected:
-            return .red
+            .red
         }
     } else {
-        return .white
+        .white
     }
 }
 
@@ -256,11 +257,11 @@ private struct CpuStatusView: View {
                 HStack(spacing: 1) {
                     Image(systemName: "cpu")
                         .frame(width: 17, height: 17)
-                        .padding([.leading], 2)
+                        .padding(.leading, 2)
                         .foregroundStyle(.white)
                     Text(systemMonitor.formatShort())
                         .foregroundStyle(.white)
-                        .padding([.trailing], 2)
+                        .padding(.trailing, 2)
                 }
                 .font(smallFont)
                 .background(backgroundColor)
@@ -311,7 +312,7 @@ private struct MoblinkStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func color() -> Color {
-        if model.isMoblinkRelayConfigured() && !model.areMoblinkRelaysOk() {
+        if model.isMoblinkRelayConfigured(), !model.areMoblinkRelaysOk() {
             return .red
         }
         if !moblink.streamerOk {
@@ -344,9 +345,9 @@ private struct RemoteControlStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func remoteControlColor() -> Color {
-        if model.isRemoteControlStreamerConfigured() && !model.isRemoteControlStreamerConnected() {
+        if model.isRemoteControlStreamerConfigured(), !model.isRemoteControlStreamerConnected() {
             return .red
-        } else if model.isRemoteControlAssistantConfigured() && !model.isRemoteControlAssistantConnected() {
+        } else if model.isRemoteControlAssistantConfigured(), !model.isRemoteControlAssistantConnected() {
             return .red
         }
         return .white
@@ -487,7 +488,7 @@ private struct CatPrinterStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func catPrinterColor() -> Color {
-        if model.isAnyCatPrinterConfigured() && !model.areAllCatPrintersConnected() {
+        if model.isAnyCatPrinterConfigured(), !model.areAllCatPrintersConnected() {
             return .red
         }
         return .white
@@ -513,7 +514,7 @@ private struct WorkoutDeviceStatusView: View {
     let textPlacement: StreamOverlayIconAndTextPlacement
 
     private func workoutDeviceColor() -> Color {
-        if model.isAnyWorkoutDeviceConfigured() && !model.areAllWorkoutDevicesConnected() {
+        if model.isAnyWorkoutDeviceConfigured(), !model.areAllWorkoutDevicesConnected() {
             return .red
         }
         return .white
@@ -704,11 +705,12 @@ private struct StatusesView: View {
 
 private struct AudioView: View {
     let model: Model
+    @ObservedObject var database: Database
     @ObservedObject var show: SettingsShow
 
     var body: some View {
         if show.audioLevel {
-            AudioLevelView(model: model)
+            AudioLevelView(model: model, big: database.bigAudioLevelMeter)
                 .padding(20)
                 .contentShape(Rectangle())
                 .padding(-20)
@@ -724,7 +726,7 @@ struct RightOverlayTopView: View {
         VStack(alignment: .trailing, spacing: 1) {
             VStack(alignment: .trailing, spacing: 1) {
                 if database.verboseStatuses {
-                    AudioView(model: model, show: database.show)
+                    AudioView(model: model, database: database, show: database.show)
                     StatusesView(
                         show: database.show,
                         status: model.statusTopRight,
@@ -776,7 +778,7 @@ private struct RightOverlayBottomVerticalView: View {
                                                                     show: model.camera.show)
                     }
                 }
-                if show.zoomPresets && zoom.hasZoom {
+                if show.zoomPresets, zoom.hasZoom {
                     StreamOverlayRightZoomPresetVSelctorView(model: model,
                                                              zoom: zoom,
                                                              width: width)
@@ -816,7 +818,7 @@ private struct RightOverlayBottomHorizontalView: View {
                                                             camera: model.camera,
                                                             show: model.camera.show)
             }
-            if show.zoomPresets && zoom.hasZoom {
+            if show.zoomPresets, zoom.hasZoom {
                 StreamOverlayRightZoomPresetSelctorView(model: model,
                                                         zoom: zoom,
                                                         width: width)
@@ -847,7 +849,7 @@ struct RightOverlayBottomView: View {
                 } else if streamOverlay.showingBeauty {
                     StreamOverlayRightBeautyView(model: model, beauty: database.beauty)
                 } else if streamOverlay.showingVideoPreview {
-                    if show.zoomPresets && zoom.hasZoom {
+                    if show.zoomPresets, zoom.hasZoom {
                         StreamOverlayRightZoomPresetSelctorView(model: model,
                                                                 zoom: zoom,
                                                                 width: width)

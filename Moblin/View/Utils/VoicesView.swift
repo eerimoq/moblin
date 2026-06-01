@@ -5,7 +5,7 @@ private func getVoice(appleVoices: [AVSpeechSynthesisVoice],
                       languageCode: String,
                       identifier: String) -> AVSpeechSynthesisVoice?
 {
-    return appleVoices.first(where: {
+    appleVoices.first(where: {
         $0.language.prefix(2) == languageCode && $0.identifier == identifier
     })
 }
@@ -50,7 +50,7 @@ private let testMessageByLanguage = [
 ]
 
 private func getTestMessage(_ languageCode: String) -> String {
-    return testMessageByLanguage[languageCode] ?? ""
+    testMessageByLanguage[languageCode] ?? ""
 }
 
 private enum Voice {
@@ -71,9 +71,9 @@ private struct VoicePickerItem: Identifiable, Equatable, Hashable {
     var id: String {
         switch voice {
         case let .apple(_, identifier):
-            return "apple:\(identifier)"
+            "apple:\(identifier)"
         case let .ttsMonster(_, voice_id):
-            return "tts-monster:\(voice_id)"
+            "tts-monster:\(voice_id)"
         }
     }
 
@@ -81,7 +81,7 @@ private struct VoicePickerItem: Identifiable, Equatable, Hashable {
     let voice: Voice
 
     static func == (lhs: VoicePickerItem, rhs: VoicePickerItem) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
@@ -267,7 +267,7 @@ struct VoicesView: View {
     let ttsMonsterApiToken: String
 
     private func languages() -> [Language] {
-        return textToSpeechLanguages(appleVoices: appleVoices).map {
+        textToSpeechLanguages(appleVoices: appleVoices).map {
             Language(name: $0.name,
                      code: $0.code,
                      selectedVoice: textToSpeechLanguageVoices[$0.code])

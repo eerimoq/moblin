@@ -9,7 +9,7 @@ private class ModelMock {
     private let connected = MessageQueue<Void>()
 
     func waitForStatus() async -> String {
-        return await status.get()
+        await status.get()
     }
 
     func waitForConnected() async {
@@ -89,7 +89,7 @@ private actor RtmpServerMock {
     }
 
     func getLocalPort() async -> UInt16 {
-        return await localPort.get()
+        await localPort.get()
     }
 
     func receive(count: Int) async -> Data {
@@ -159,7 +159,7 @@ struct RtmpStreamSuite {
                                     processor: processor,
                                     delegate: modelMock,
                                     queue: rtmpQueue)
-        rtmpStream.setUrl("rtmp://127.0.0.1:\(await server.getLocalPort())/live/\(streamKey)")
+        await rtmpStream.setUrl("rtmp://127.0.0.1:\(server.getLocalPort())/live/\(streamKey)")
         rtmpStream.connect()
         let c0c1 = await receiveC0C1(server: server)
         #expect(c0c1[0] == RtmpHandshake.protocolVersion)
@@ -266,7 +266,7 @@ struct RtmpStreamSuite {
                                     processor: processor,
                                     delegate: modelMock,
                                     queue: rtmpQueue)
-        rtmpStream.setUrl("rtmp://127.0.0.1:\(await server.getLocalPort())/live/\(streamKey)")
+        await rtmpStream.setUrl("rtmp://127.0.0.1:\(server.getLocalPort())/live/\(streamKey)")
         rtmpStream.connect()
         let c0c1 = await receiveC0C1(server: server)
         #expect(c0c1[0] == RtmpHandshake.protocolVersion)
@@ -371,7 +371,7 @@ struct RtmpStreamSuite {
 }
 
 private func receiveC0C1(server: RtmpServerMock) async -> Data {
-    return await server.receive(count: RtmpHandshake.sigSize + 1)
+    await server.receive(count: RtmpHandshake.sigSize + 1)
 }
 
 private func sendS0S1(server: RtmpServerMock) async {
@@ -379,7 +379,7 @@ private func sendS0S1(server: RtmpServerMock) async {
 }
 
 private func receiveC2(server: RtmpServerMock) async -> Data {
-    return await server.receive(count: RtmpHandshake.sigSize)
+    await server.receive(count: RtmpHandshake.sigSize)
 }
 
 private func sendS2(server: RtmpServerMock) async {
@@ -405,7 +405,7 @@ private func sendSetPeerBandwidth(server: RtmpServerMock, chunkStreamId: UInt16,
 }
 
 private func expectConnectCommandMessage(server: RtmpServerMock) async throws {
-    let reader = ByteReader(data: await server.receive(count: 273))
+    let reader = await ByteReader(data: server.receive(count: 273))
     var data = try reader.readBytes(128 + 12)
     #expect(try reader.readUInt8() == 0xC3)
     data += try reader.readBytes(128)

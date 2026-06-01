@@ -57,7 +57,7 @@ private enum Voice {
     case ttsMonster(voiceId: String)
 }
 
-class ChatTextToSpeech: NSObject {
+final class ChatTextToSpeech: NSObject, @unchecked Sendable {
     private var rate: Float = 0.4
     private var volume: Float = 0.6
     private var sayUsername: Bool = false
@@ -205,7 +205,7 @@ class ChatTextToSpeech: NSObject {
     func reset(running: Bool) {
         textToSpeechDispatchQueue.async {
             self.running = running
-            self.synthesizer.stopSpeaking(at: .word)
+            self.synthesizer.stopSpeaking(at: .immediate)
             self.audioPlayer?.stop()
             self.isSpeaking = false
             self.currentlyPlayingMessage = nil
@@ -237,7 +237,7 @@ class ChatTextToSpeech: NSObject {
     }
 
     private func skipCurrentMessageInternal() {
-        synthesizer.stopSpeaking(at: .word)
+        synthesizer.stopSpeaking(at: .immediate)
         synthesizer = createSpeechSynthesizer()
         synthesizer.delegate = self
         audioPlayer?.stop()
@@ -261,7 +261,7 @@ class ChatTextToSpeech: NSObject {
             return false
         }
         let probability = recognizer.languageHypotheses(withMaximum: 1).first?.value ?? 0.0
-        if probability < 0.7 && message.count > 30 {
+        if probability < 0.7, message.count > 30 {
             return true
         }
         if message.hasPrefix("!") {
@@ -315,7 +315,7 @@ class ChatTextToSpeech: NSObject {
     }
 
     private func getSays(_ language: String) -> String {
-        return saysByLanguage[language] ?? ""
+        saysByLanguage[language] ?? ""
     }
 
     private func getVoice(message: String) -> (Voice?, String)? {

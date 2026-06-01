@@ -34,7 +34,7 @@ protocol AlertsEffectDelegate: AnyObject {
 private struct Pipeline {
     var playing: Bool = false
     var messageImage: CIImage?
-    var images: AlertsEffectImages = AlertsEffectGifImages()
+    var images: any AlertsEffectImages = AlertsEffectGifImages()
     var x: Double = 0
     var y: Double = 0
     var landmarkSettings: AlertsEffectLandmarkSettings?
@@ -53,7 +53,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     private var volume: Float = 1.0
     private var synthesizer = createSpeechSynthesizer()
     private var alertsQueue: Deque<AlertsEffectAlert> = .init()
-    private weak var delegate: AlertsEffectDelegate?
+    private weak var delegate: (any AlertsEffectDelegate)?
     private var isPlaying: Bool = false
     private var delayAfterPlaying = 3.0
     private var settings: SettingsWidgetAlerts
@@ -78,7 +78,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     init(
         settings: SettingsWidgetAlerts,
-        delegate: AlertsEffectDelegate,
+        delegate: any AlertsEffectDelegate,
         mediaStorage: AlertMediaStorage,
         bundledImages: [SettingsAlertsMediaGalleryItem],
         bundledSounds: [SettingsAlertsMediaGalleryItem]
@@ -94,9 +94,9 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
 
     override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
         if pipeline.landmarkSettings != nil {
-            return .now(nil)
+            .now(nil)
         } else {
-            return .off
+            .off
         }
     }
 
@@ -113,7 +113,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     override func isEnabled() -> Bool {
-        return pipeline.playing
+        pipeline.playing
     }
 
     func setSettings(settings: SettingsWidgetAlerts) {
@@ -127,7 +127,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
     }
 
     func getSettings() -> SettingsWidgetAlerts {
-        return settings
+        settings
     }
 
     func setPosition(x: Double, y: Double) {
@@ -378,7 +378,7 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
                                _ y: Double,
                                _ rectangle: AlertsEffectBackgroundLandmarkRectangle) -> Bool
     {
-        return x > rectangle.topLeftX && x < rectangle.bottomRightX && y > rectangle.topLeftY && y < rectangle
+        x > rectangle.topLeftX && x < rectangle.bottomRightX && y > rectangle.topLeftY && y < rectangle
             .bottomRightY
     }
 
@@ -403,16 +403,15 @@ final class AlertsEffect: VideoEffect, @unchecked Sendable {
             let landmark = calculateLandmark(settings: settings)
             let centerX = settings.facePosition.x + settings.facePosition.width / 2
             let centerY = settings.facePosition.y + settings.facePosition.height / 2
-            let landmarkRectangle: AlertsEffectBackgroundLandmarkRectangle
-            switch landmark {
+            let landmarkRectangle: AlertsEffectBackgroundLandmarkRectangle = switch landmark {
             case .face:
-                landmarkRectangle = alertsEffectBackgroundFaceRectangle
+                alertsEffectBackgroundFaceRectangle
             case .leftEye:
-                landmarkRectangle = alertsEffectBackgroundLeftEyeRectangle
+                alertsEffectBackgroundLeftEyeRectangle
             case .rightEye:
-                landmarkRectangle = alertsEffectBackgroundRightEyeRectangle
+                alertsEffectBackgroundRightEyeRectangle
             case .mouth:
-                landmarkRectangle = alertsEffectBackgroundMouthRectangle
+                alertsEffectBackgroundMouthRectangle
             }
             let x = (centerX - landmarkRectangle.topLeftX) / landmarkRectangle.width()
             let y = (centerY - landmarkRectangle.topLeftY) / landmarkRectangle.height()
@@ -740,12 +739,11 @@ extension AlertsEffect {
     @MainActor
     private func playKickKicks(event: KickPusherKicksGiftedEvent) {
         for (index, kickGift) in settings.kick.kickGifts.enumerated() {
-            let matches: Bool
-            switch kickGift.comparisonOperator {
+            let matches: Bool = switch kickGift.comparisonOperator {
             case .equal:
-                matches = event.gift.amount == kickGift.amount
+                event.gift.amount == kickGift.amount
             case .greaterEqual:
-                matches = event.gift.amount >= kickGift.amount
+                event.gift.amount >= kickGift.amount
             }
             guard matches, kickGift.alert.enabled else {
                 continue

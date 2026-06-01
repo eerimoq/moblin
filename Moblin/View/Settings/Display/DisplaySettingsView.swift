@@ -29,6 +29,7 @@ struct DisplaySettingsView: View {
                     Text("Quick buttons")
                 }
                 Toggle("Big buttons", isOn: $database.bigButtons)
+                Toggle("Big audio level meter", isOn: $database.bigAudioLevelMeter)
                 Toggle("Vertical buttons", isOn: $database.verticalButtons)
                 if database.showAllSettings {
                     NavigationLink {

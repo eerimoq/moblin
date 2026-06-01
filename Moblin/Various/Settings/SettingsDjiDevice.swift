@@ -7,9 +7,9 @@ enum SettingsDjiDeviceUrlType: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .server:
-            return String(localized: "Server")
+            String(localized: "Server")
         case .custom:
-            return String(localized: "Custom")
+            String(localized: "Custom")
         }
     }
 }
@@ -24,15 +24,15 @@ enum SettingsDjiDeviceImageStabilization: String, CaseIterable, Codable {
     func toString() -> String {
         switch self {
         case .off:
-            return String(localized: "Off")
+            String(localized: "Off")
         case .rockSteady:
-            return String(localized: "RockSteady")
+            String(localized: "RockSteady")
         case .rockSteadyPlus:
-            return String(localized: "RockSteady+")
+            String(localized: "RockSteady+")
         case .horizonBalancing:
-            return String(localized: "HorizonBalancing")
+            String(localized: "HorizonBalancing")
         case .horizonSteady:
-            return String(localized: "HorizonSteady")
+            String(localized: "HorizonSteady")
         }
     }
 }
@@ -50,53 +50,58 @@ enum SettingsDjiDeviceModel: String, Codable {
     case osmoAction5Pro
     case osmoAction6
     case osmoPocket3
+    case osmoPocket4
     case osmo360
     case unknown
 
     func hasImageStabilizatin() -> Bool {
         switch self {
         case .osmoAction2:
-            return false
+            false
         case .osmoAction3:
-            return false
+            false
         case .osmoAction4:
-            return true
+            true
         case .osmoAction5Pro:
-            return true
+            true
         case .osmoAction6:
-            return true
+            true
         case .osmoPocket3:
-            return false
+            false
+        case .osmoPocket4:
+            false
         case .osmo360:
-            return true
+            true
         case .unknown:
-            return false
+            false
         }
     }
 
     func hasNewProtocol() -> Bool {
         switch self {
         case .osmoAction2:
-            return false
+            false
         case .osmoAction3:
-            return false
+            false
         case .osmoAction4:
-            return false
+            false
         case .osmoAction5Pro:
-            return true
+            true
         case .osmoAction6:
-            return true
+            true
         case .osmoPocket3:
-            return false
+            false
+        case .osmoPocket4:
+            true
         case .osmo360:
-            return true
+            true
         case .unknown:
-            return false
+            false
         }
     }
 }
 
-var djiDeviceBitrates: [UInt32] = [
+let djiDeviceBitrates: [UInt32] = [
     20_000_000,
     16_000_000,
     12_000_000,
@@ -107,7 +112,7 @@ var djiDeviceBitrates: [UInt32] = [
     2_000_000,
 ]
 
-var djiDeviceFpss: [Int] = [25, 30]
+let djiDeviceFpss: [Int] = [25, 30]
 
 class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My device")
@@ -119,7 +124,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var wifiPassword: String = ""
     @Published var rtmpUrlType: SettingsDjiDeviceUrlType = .server
     @Published var serverRtmpStreamId: UUID = .init()
-    @Published var serverRtmpUrl: String = ""
+    @Published var serverRtmpUrl: String?
     @Published var customRtmpUrl: String = ""
     @Published var autoRestartStream: Bool = false
     @Published var imageStabilization: SettingsDjiDeviceImageStabilization = .off
@@ -136,26 +141,26 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId,
-             wifiSsid,
-             wifiPassword,
-             rtmpUrlType,
-             serverRtmpStreamId,
-             serverRtmpUrl,
-             customRtmpUrl,
-             autoRestartStream,
-             imageStabilization,
-             resolution,
-             fps,
-             bitrate,
-             isStarted,
-             model
+        case id
+        case name
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
+        case wifiSsid
+        case wifiPassword
+        case rtmpUrlType
+        case serverRtmpStreamId
+        case serverRtmpUrl
+        case customRtmpUrl
+        case autoRestartStream
+        case imageStabilization
+        case resolution
+        case fps
+        case bitrate
+        case isStarted
+        case model
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -176,7 +181,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.model, model)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -186,7 +191,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
         wifiPassword = container.decode(.wifiPassword, String.self, "")
         rtmpUrlType = container.decode(.rtmpUrlType, SettingsDjiDeviceUrlType.self, .server)
         serverRtmpStreamId = container.decode(.serverRtmpStreamId, UUID.self, .init())
-        serverRtmpUrl = container.decode(.serverRtmpUrl, String.self, "")
+        serverRtmpUrl = container.decode(.serverRtmpUrl, String?.self, nil)
         customRtmpUrl = container.decode(.customRtmpUrl, String.self, "")
         autoRestartStream = container.decode(.autoRestartStream, Bool.self, false)
         imageStabilization = container.decode(
@@ -211,12 +216,12 @@ class SettingsDjiDevices: Codable, ObservableObject {
         case devices
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.devices, devices)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         devices = container.decode(.devices, [SettingsDjiDevice].self, [])
     }

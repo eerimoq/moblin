@@ -1,24 +1,19 @@
 import Network
 import SwiftUI
 
-private struct UrlsView: View {
-    @ObservedObject var status: StatusOther
-    let port: UInt16
-    let streamKey: String
-
-    private func formatUrl(ip: String) -> String {
-        return "rtmp://\(ip):\(port)\(rtmpServerApp)/\(streamKey)"
-    }
+struct IngestStreamItemView: View {
+    let name: String
+    let connected: Bool
 
     var body: some View {
-        NavigationLink {
-            Form {
-                UrlsIpv4View(status: status, formatUrl: formatUrl)
-                UrlsIpv6View(status: status, formatUrl: formatUrl)
+        HStack {
+            if connected {
+                Image(systemName: "cable.connector")
+            } else {
+                Image(systemName: "cable.connector.slash")
             }
-            .navigationTitle("URLs")
-        } label: {
-            Text("URLs")
+            Text(name)
+            Spacer()
         }
     }
 }
@@ -42,19 +37,6 @@ struct RtmpServerStreamSettingsView: View {
             return
         }
         stream.streamKey = streamKey
-    }
-
-    private func changeLatency(value: String) -> String? {
-        guard let latency = Int32(value) else {
-            return String(localized: "Not a number")
-        }
-        guard latency >= 5 else {
-            return String(localized: "Too small")
-        }
-        guard latency <= 10000 else {
-            return String(localized: "Too big")
-        }
-        return nil
     }
 
     private func submitLatency(value: String) {
@@ -84,7 +66,7 @@ struct RtmpServerStreamSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Latency"),
                         value: String(stream.latency),
-                        onChange: changeLatency,
+                        onChange: isValidIngestLatency,
                         onSubmit: submitLatency,
                         footers: [String(localized: "5 or more milliseconds. 2000 ms by default.")],
                         keyboardType: .numbersAndPunctuation,
@@ -95,7 +77,10 @@ struct RtmpServerStreamSettingsView: View {
                     Text("The higher, the lower risk of stuttering.")
                 }
                 Section {
-                    UrlsView(status: status, port: rtmpServer.port, streamKey: stream.streamKey)
+                    UrlsView(
+                        status: status,
+                        formatUrl: { "rtmp://\($0):\(rtmpServer.port)\(rtmpServerApp)/\(stream.streamKey)" }
+                    )
                 } header: {
                     Text("Publish URLs")
                 } footer: {
@@ -109,15 +94,8 @@ struct RtmpServerStreamSettingsView: View {
             }
             .navigationTitle("Stream")
         } label: {
-            HStack {
-                if model.isRtmpStreamConnected(streamKey: stream.streamKey) {
-                    Image(systemName: "cable.connector")
-                } else {
-                    Image(systemName: "cable.connector.slash")
-                }
-                Text(stream.name)
-                Spacer()
-            }
+            IngestStreamItemView(name: stream.name,
+                                 connected: model.isRtmpStreamConnected(streamKey: stream.streamKey))
         }
     }
 }

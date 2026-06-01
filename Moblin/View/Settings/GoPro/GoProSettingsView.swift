@@ -2,7 +2,7 @@ import NetworkExtension
 import SwiftUI
 
 func qrCodeHeight(_ metrics: GeometryProxy) -> Double {
-    return metrics.size.width * 0.5
+    metrics.size.width * 0.5
 }
 
 private struct GoProLaunchLiveStreamSettingsView: View {
@@ -59,11 +59,7 @@ private struct GoProLaunchLiveStreamSettingsEntryView: View {
         NavigationLink {
             GoProLaunchLiveStreamSettingsView(goPro: goPro, launchLiveStream: launchLiveStream)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(launchLiveStream.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: launchLiveStream.name)
         }
     }
 }
@@ -127,12 +123,17 @@ private struct GoProWifiCredentialsSettingsView: View {
             }
             .navigationTitle("WiFi credentials")
             .onAppear {
-                NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-                    if wifiCredentials.ssid.isEmpty, let network {
-                        wifiCredentials.ssid = network.ssid
-                        generate()
+                NEHotspotNetwork.fetchCurrent { network in
+                    guard let ssid = network?.ssid else {
+                        return
                     }
-                })
+                    DispatchQueue.main.async {
+                        if wifiCredentials.ssid.isEmpty {
+                            wifiCredentials.ssid = ssid
+                            generate()
+                        }
+                    }
+                }
             }
         }
     }
@@ -146,17 +147,13 @@ private struct GoProWifiCredentialsSettingsEntryView: View {
         NavigationLink {
             GoProWifiCredentialsSettingsView(goPro: goPro, wifiCredentials: wifiCredentials)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(wifiCredentials.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: wifiCredentials.name)
         }
     }
 }
 
 private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
-    return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
+    "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
 }
 
 private struct GoProRtmpUrlSettingsView: View {
@@ -301,11 +298,7 @@ private struct GoProRtmpUrlSettingsEntryView: View {
         NavigationLink {
             GoProRtmpUrlSettingsView(goPro: goPro, status: status, rtmpUrl: rtmpUrl)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(rtmpUrl.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: rtmpUrl.name)
         }
     }
 }

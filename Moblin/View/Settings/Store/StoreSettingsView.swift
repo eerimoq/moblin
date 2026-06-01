@@ -1,15 +1,33 @@
 import SwiftUI
 
 private struct StoreSettingsRestoreView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
+    @State var isRestoring = false
+    @State var showErrorAlert = false
 
     var body: some View {
         Section {
-            TextButtonView("Restore purchases") {
-                Task {
-                    await model.updateProductFromAppStore()
+            ZStack {
+                TextButtonView("Restore purchases") {
+                    isRestoring = true
+                    Task {
+                        do {
+                            try await model.restorePurchases()
+                        } catch {
+                            showErrorAlert = true
+                        }
+                        isRestoring = false
+                    }
+                }
+                .disabled(isRestoring)
+                .opacity(isRestoring ? 0.0 : 1.0)
+                if isRestoring {
+                    ProgressView()
                 }
             }
+        }
+        .alert("Restore purchases failed", isPresented: $showErrorAlert) {
+            Button("Ok") {}
         }
     }
 }
@@ -60,11 +78,12 @@ private struct StoreSettingsIconsToBuyView: View {
                             } label: {
                                 Text(icon.price)
                             }
-                            .padding([.leading], 10)
+                            .padding(.leading, 10)
                             .disabled(disabledPurchaseButtons.contains(icon.id))
                             .opacity(disabledPurchaseButtons.contains(icon.id) ? 0.0 : 1.0)
                             if disabledPurchaseButtons.contains(icon.id) {
-                                ProgressView().padding([.leading], 10)
+                                ProgressView()
+                                    .padding(.leading, 10)
                             }
                         }
                     }
@@ -125,6 +144,7 @@ private struct StoreSettingsMyIconsView: View {
 }
 
 struct StoreSettingsView: View {
+    let model: Model
     @ObservedObject var store: Store
     @State var disabledPurchaseButtons: Set<String> = []
 
@@ -139,7 +159,7 @@ struct StoreSettingsView: View {
                 StoreSettingsBoughtEverythingView()
             }
             StoreSettingsMyIconsView(store: store)
-            StoreSettingsRestoreView()
+            StoreSettingsRestoreView(model: model)
         }
         .navigationTitle("Store")
     }

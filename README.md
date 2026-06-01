@@ -90,6 +90,11 @@ TestFlight: https://testflight.apple.com/join/PDpxEaGh
   - QR code widget.
   - Scene widget.
   - Video soure widget (for multi cam).
+  - Scoreboard widget.
+    - Padel.
+    - Golf.
+    - Volleyball.
+    - ...
   - ...
 - Back, front or multi camera.
   - Front camera mirrored on screen for natural experience.
@@ -415,16 +420,18 @@ Roughly the steps to setup Moblin's developement environment.
 
 3. Done!
 
-## Modify Web remote control CSS files
+## Web remote control frontend
 
-1. Install tool.
+It's built with SolidJS.
 
-    `brew install tailwindcss`
+1. Install dependencies.
 
-2. Modify `Moblin/RemoteControl/Web/css/app.input.css`.
+   `make web-remote-control-frontend-prepare`
 
-3. Generate `Moblin/RemoteControl/Web/css/app.css`.
+2. Modify files in `WebRemoteControlFrontend/`.
 
-   `make generate-web-remote-control-css`
+3. Build to update files in `Moblin/RemoteControl/Web/*`.
+
+   `make web-remote-control-frontend-build`
 
 4. Done!

@@ -9,7 +9,7 @@ struct WatchMainView: View {
             if !model.viaRemoteControl {
                 ChatView(chatSettings: model.settings.chat, chat: model.chat)
             }
-            if model.scoreboardType != nil && !model.viaRemoteControl {
+            if model.scoreboardType != nil, !model.viaRemoteControl {
                 ScoreboardView()
             }
             ControlView()

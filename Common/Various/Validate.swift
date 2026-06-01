@@ -1,5 +1,18 @@
 import Foundation
 
+func isValidIngestLatency(value: String) -> String? {
+    guard let latency = Int32(value) else {
+        return String(localized: "Not a number")
+    }
+    guard latency >= 5 else {
+        return String(localized: "Too small")
+    }
+    guard latency <= 10000 else {
+        return String(localized: "Too big")
+    }
+    return nil
+}
+
 func isValidPort(value: String) -> String? {
     guard let port = UInt(value) else {
         return String(localized: "Not a number")
@@ -63,9 +76,9 @@ func isValidWhipUrl(url: String) -> String? {
     return nil
 }
 
-private func isValidIrlUrl(url: String) -> String? {
+private func isValidRtspUrl(url: String) -> String? {
     guard URL(string: url) != nil else {
-        return String(localized: "Malformed IRL URL")
+        return String(localized: "Malformed RTSP URL")
     }
     return nil
 }
@@ -122,8 +135,16 @@ func isValidUrl(url value: String,
         if let message = isValidWhipUrl(url: value) {
             return message
         }
-    case "irl":
-        if let message = isValidIrlUrl(url: value) {
+    case "http":
+        if let message = isValidHttpUrl(url: value) {
+            return message
+        }
+    case "https":
+        if let message = isValidHttpUrl(url: value) {
+            return message
+        }
+    case "rtsp":
+        if let message = isValidRtspUrl(url: value) {
             return message
         }
     case nil:

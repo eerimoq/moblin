@@ -1,4 +1,6 @@
 import Collections
+import Combine
+import DequeModule
 import Foundation
 import HealthKit
 import SwiftUI
@@ -37,11 +39,11 @@ enum ChatPostHighlightKind {
     static func fromWatchProtocol(kind: WatchProtocolChatHighlightKind) -> ChatPostHighlightKind {
         switch kind {
         case .reply:
-            return .reply
+            .reply
         case .redemption:
-            return .redemption
+            .redemption
         case .other:
-            return .other
+            .other
         }
     }
 }
@@ -53,7 +55,7 @@ struct ChatPostHighlight {
     let title: String
 
     static func fromWatchProtocol(highlight: WatchProtocolChatHighlight) -> ChatPostHighlight {
-        return ChatPostHighlight(
+        ChatPostHighlight(
             kind: ChatPostHighlightKind.fromWatchProtocol(kind: highlight.kind),
             barColor: highlight.barColor.color(),
             image: highlight.image,
@@ -73,11 +75,11 @@ struct WatchChatPost: Identifiable {
     var highlight: ChatPostHighlight?
 
     func isRedemption() -> Bool {
-        return highlight?.kind == .redemption
+        highlight?.kind == .redemption
     }
 }
 
-class WatchModel: NSObject, ObservableObject {
+class WatchModel: NSObject, ObservableObject, @unchecked Sendable {
     let chat = Chat()
     let preview = Preview()
     let control = Control()
@@ -410,7 +412,7 @@ class WatchModel: NSObject, ObservableObject {
         workoutBuilder.beginCollection(withStart: .now) { _, _ in }
     }
 
-    private func authorizeHealthKit(completion: @escaping () -> Void) {
+    private func authorizeHealthKit(completion: @escaping @Sendable () -> Void) {
         let typesToShare: Set = [
             HKQuantityType.workoutType(),
         ]
@@ -427,7 +429,7 @@ class WatchModel: NSObject, ObservableObject {
     }
 
     private func isWorkoutRunning() -> Bool {
-        return workoutSession?.state == .running
+        workoutSession?.state == .running
     }
 
     func setIsLive(value: Bool) {
@@ -493,23 +495,23 @@ class WatchModel: NSObject, ObservableObject {
     }
 
     func isShowingStatusThermalState() -> Bool {
-        return settings.show.thermalState
+        settings.show.thermalState
     }
 
     func isShowingStatusAudioLevel() -> Bool {
-        return settings.show.audioLevel
+        settings.show.audioLevel
     }
 
     func isShowingStatusBitrate() -> Bool {
-        return settings.show.speed && control.isLive
+        settings.show.speed && control.isLive
     }
 
     func isShowingStatusRecording() -> Bool {
-        return control.isRecording
+        control.isRecording
     }
 
     func isShowingWorkout() -> Bool {
-        return isWorkoutRunning()
+        isWorkoutRunning()
     }
 
     func createStreamMarker() {
@@ -522,13 +524,14 @@ extension WatchModel: WCSessionDelegate {
     func session(
         _: WCSession,
         activationDidCompleteWith _: WCSessionActivationState,
-        error _: Error?
+        error _: (any Error)?
     ) {}
 
     func session(_: WCSession, didReceiveMessage message: [String: Any]) {
-        guard let (type, data) = WatchMessageToWatch.unpack(message) else {
+        guard let (type, value) = WatchMessageToWatch.unpack(message) else {
             return
         }
+        nonisolated(unsafe) let data = value
         DispatchQueue.main.async {
             self.numberOfMessagesReceived += 1
             do {
@@ -583,7 +586,7 @@ extension WatchModel: WCSessionDelegate {
     func session(
         _: WCSession,
         didFinish _: WCSessionUserInfoTransfer,
-        error _: Error?
+        error _: (any Error)?
     ) {}
 }
 

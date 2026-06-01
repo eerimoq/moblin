@@ -4,7 +4,7 @@ import Foundation
 
 class YouTube {
     // periphery: ignore
-    var session: OIDExternalUserAgentSession?
+    var session: (any OIDExternalUserAgentSession)?
 }
 
 extension Model {
@@ -15,7 +15,7 @@ extension Model {
     }
 
     func updateViewersYouTube() -> StreamingPlatformStatus {
-        return StreamingPlatformStatus(platform: .youTube, status: youTubePlatformStatus)
+        StreamingPlatformStatus(platform: .youTube, status: youTubePlatformStatus)
     }
 
     func youTubeSignIn(stream: SettingsStream) {
@@ -100,19 +100,19 @@ extension Model {
     }
 
     func isYouTubeViewersConfigured() -> Bool {
-        return stream.youTubeAuthState != nil && !stream.youTubeVideoId.isEmpty
+        stream.youTubeAuthState != nil && !stream.youTubeVideoId.isEmpty
     }
 
     func isYouTubeLiveChatConfigured() -> Bool {
-        return database.chat.enabled && stream.youTubeVideoId != ""
+        database.chat.enabled && stream.youTubeVideoId != ""
     }
 
     func isYouTubeLiveChatConnected() -> Bool {
-        return youTubeLiveChat?.isConnected() ?? false
+        youTubeLiveChat?.isConnected() ?? false
     }
 
     func hasYouTubeLiveChatEmotes() -> Bool {
-        return youTubeLiveChat?.hasEmotes() ?? false
+        youTubeLiveChat?.hasEmotes() ?? false
     }
 
     func reloadYouTubeLiveChat() {

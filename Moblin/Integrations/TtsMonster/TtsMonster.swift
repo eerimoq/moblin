@@ -34,7 +34,7 @@ struct TtsMonsterVoicesResponse: Codable {
     let customVoices: [TtsMonsterVoice]
 
     func allVoices() -> [TtsMonsterVoice] {
-        return customVoices + voices
+        customVoices + voices
     }
 }
 

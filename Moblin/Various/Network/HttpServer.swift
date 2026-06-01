@@ -39,6 +39,9 @@ private class HttpRequestParser: HttpParser {
             if line.isEmpty {
                 let contentLengthHeader = headers.first(where: { $0.name == "content-length:" })
                 let contentLength = Int(contentLengthHeader?.value ?? "0") ?? 0
+                guard contentLength >= 0 else {
+                    return (true, nil)
+                }
                 let body = data.advanced(by: nextLineOffset)
                 guard body.count >= contentLength else {
                     return (false, nil)
@@ -59,7 +62,6 @@ class HttpServerRequest {
     let method: String
     let path: String
     let version: String
-    // periphery:ignore
     let headers: [SettingsHttpHeader]
     let body: Data
 
@@ -80,19 +82,19 @@ class HttpServerRequest {
     fileprivate func getContentType() -> String {
         switch path.split(separator: ".").last {
         case "html":
-            return "text/html"
+            "text/html"
         case "mjs":
-            return "text/javascript"
+            "text/javascript"
         case "css":
-            return "text/css"
+            "text/css"
         case "woff2":
-            return "font/woff2"
+            "font/woff2"
         case "ico":
-            return "image/vnd.microsoft.icon"
+            "image/vnd.microsoft.icon"
         case "png":
-            return "image/png"
+            "image/png"
         default:
-            return "text/html"
+            "text/html"
         }
     }
 }
@@ -108,34 +110,34 @@ enum HttpServerStatus {
     func code() -> Int {
         switch self {
         case .ok:
-            return 200
+            200
         case .created:
-            return 201
+            201
         case .noContent:
-            return 204
+            204
         case .badRequest:
-            return 400
+            400
         case .notFound:
-            return 404
+            404
         case .methodNotAllowed:
-            return 405
+            405
         }
     }
 
     func text() -> String {
         switch self {
         case .ok:
-            return "OK"
+            "OK"
         case .created:
-            return "Created"
+            "Created"
         case .noContent:
-            return "No Content"
+            "No Content"
         case .badRequest:
-            return "Bad Request"
+            "Bad Request"
         case .notFound:
-            return "Not Found"
+            "Not Found"
         case .methodNotAllowed:
-            return "Method Not Allowed"
+            "Method Not Allowed"
         }
     }
 }
@@ -177,7 +179,7 @@ class HttpServerResponse {
     }
 }
 
-private class HttpServerConnection {
+private class HttpServerConnection: @unchecked Sendable {
     private let connection: NWConnection
     private weak var server: HttpServer?
     private var parser = HttpRequestParser()
@@ -236,13 +238,9 @@ private class HttpServerConnection {
         if !content.isEmpty {
             lines.append("Content-Type: \(contentType ?? request.getContentType())")
         }
-        for header in extraHeaders {
-            lines.append("\(header.name): \(header.value)")
-        }
-        lines.append("Connection: close")
-        lines.append("")
-        lines.append("")
-        sendAndClose(data: lines.joined(separator: "\r\n").utf8Data + content)
+        appendExtraHeaders(headers: extraHeaders, lines: &lines)
+        let headerData = appendCloseHeaderAndFinalize(lines: &lines)
+        sendAndClose(data: headerData + content)
     }
 
     func sendFileAndClose(fileUrl: URL,
@@ -261,13 +259,8 @@ private class HttpServerConnection {
         lines.append("\(request.version) \(HttpServerStatus.ok.code()) \(HttpServerStatus.ok.text())")
         lines.append("Content-Type: \(contentType)")
         lines.append("Content-Length: \(fileSize)")
-        for header in extraHeaders {
-            lines.append("\(header.name): \(header.value)")
-        }
-        lines.append("Connection: close")
-        lines.append("")
-        lines.append("")
-        let headerData = lines.joined(separator: "\r\n").utf8Data
+        appendExtraHeaders(headers: extraHeaders, lines: &lines)
+        let headerData = appendCloseHeaderAndFinalize(lines: &lines)
         connection.send(content: headerData, completion: .contentProcessed { error in
             if error != nil {
                 self.closeFileAndConnection(fileHandle: fileHandle)
@@ -308,6 +301,19 @@ private class HttpServerConnection {
     }
 }
 
+private func appendExtraHeaders(headers: [SettingsHttpHeader], lines: inout [String]) {
+    for header in headers {
+        lines.append("\(header.name): \(header.value)")
+    }
+}
+
+private func appendCloseHeaderAndFinalize(lines: inout [String]) -> Data {
+    lines.append("Connection: close")
+    lines.append("")
+    lines.append("")
+    return lines.joined(separator: "\r\n").utf8Data
+}
+
 class HttpServerRoute {
     let path: String
     let prefixMatch: Bool
@@ -324,14 +330,14 @@ class HttpServerRoute {
 
     func matches(path: String) -> Bool {
         if prefixMatch {
-            return path.hasPrefix(self.path)
+            path.hasPrefix(self.path)
         } else {
-            return path == self.path
+            path == self.path
         }
     }
 }
 
-class HttpServer {
+class HttpServer: @unchecked Sendable {
     private let queue: DispatchQueue
     private let routes: [HttpServerRoute]
     private var listener: NWListener?
@@ -386,10 +392,10 @@ class HttpServer {
         switch newState {
         case .failed:
             retryTimer.startSingleShot(timeout: 1) { [weak self] in
-                guard let self, self.started else {
+                guard let self, started else {
                     return
                 }
-                self.setupListener()
+                setupListener()
             }
         default:
             break
@@ -411,6 +417,6 @@ class HttpServer {
     }
 
     fileprivate func findRoute(request: HttpServerRequest) -> HttpServerRoute? {
-        return routes.first(where: { $0.matches(path: request.path) })
+        routes.first(where: { $0.matches(path: request.path) })
     }
 }

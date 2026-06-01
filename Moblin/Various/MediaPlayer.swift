@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 
 protocol MediaPlayerDelegate: AnyObject {
     func mediaPlayerFileLoaded(playerId: UUID, name: String)
@@ -11,7 +11,7 @@ protocol MediaPlayerDelegate: AnyObject {
 private let mediaPlayerQueue = DispatchQueue(label: "com.eerimoq.moblin.media-player")
 let mediaPlayerLatency = 0.5
 
-class MediaPlayer {
+class MediaPlayer: @unchecked Sendable {
     private var asset: AVAsset?
     private var reader: AVAssetReader?
     private var videoTrackOutput: AVAssetReaderTrackOutput?
@@ -29,7 +29,7 @@ class MediaPlayer {
     private var outputTimer = SimpleTimer(queue: mediaPlayerQueue)
     private var active = false
     private var filename = ""
-    var delegate: MediaPlayerDelegate?
+    var delegate: (any MediaPlayerDelegate)?
 
     init(settings: SettingsMediaPlayer, mediaStorage: MediaPlayerStorage) {
         self.settings = settings.clone()
@@ -185,7 +185,7 @@ class MediaPlayer {
         }
     }
 
-    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
+    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
         guard error == nil, let videoTrack = tracks?.first, let asset, let reader else {
             return
         }
@@ -204,7 +204,7 @@ class MediaPlayer {
         }
     }
 
-    private func loadAudioTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
+    private func loadAudioTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
         guard let audioTrack = tracks?.first else {
             logger.info("media-player: No audio in file.")
             startReading()
@@ -326,5 +326,5 @@ class MediaPlayer {
 }
 
 private func outputPresentationTimeStamp() -> CMTime {
-    return currentPresentationTimeStamp() + CMTime(seconds: mediaPlayerLatency)
+    currentPresentationTimeStamp() + CMTime(seconds: mediaPlayerLatency)
 }

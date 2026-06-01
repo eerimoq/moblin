@@ -32,11 +32,11 @@ struct Icon: Identifiable {
     var price: String
 
     func imageNoBackground() -> String {
-        return "\(id)NoBackground"
+        "\(id)NoBackground"
     }
 
     func image() -> String {
-        return id
+        id
     }
 }
 
@@ -54,8 +54,9 @@ extension Model {
         }
     }
 
-    func listenForAppStoreTransactions() -> Task<Void, Error> {
-        return Task.detached {
+    @MainActor
+    func listenForAppStoreTransactions() -> Task<Void, any Error> {
+        Task {
             for await result in Transaction.updates {
                 guard let transaction = self.checkVerified(result: result) else {
                     logger.info("store: Updated transaction failed verification")
@@ -70,13 +71,12 @@ extension Model {
     private func checkVerified(result: VerificationResult<StoreKit.Transaction>) -> StoreKit.Transaction? {
         switch result {
         case .unverified:
-            return nil
+            nil
         case let .verified(safe):
-            return safe
+            safe
         }
     }
 
-    @MainActor
     func updateProductFromAppStore() async {
         logger.debug("store: Update my products from App Store")
         let myProductIds = await getMyProductIds()
@@ -124,7 +124,12 @@ extension Model {
     }
 
     private func findProduct(id: String) -> Product? {
-        return products[id]
+        products[id]
+    }
+
+    func restorePurchases() async throws {
+        try await AppStore.sync()
+        await updateProductFromAppStore()
     }
 
     func purchaseProduct(id: String) async throws {
@@ -149,7 +154,7 @@ extension Model {
     }
 
     private func isInMyIcons(id: String) -> Bool {
-        return store.myIcons.contains(where: { $0.id == id })
+        store.myIcons.contains(where: { $0.id == id })
     }
 
     func updateIconImageFromDatabase() {

@@ -1,9 +1,9 @@
 import AppIntents
 
 struct UnmuteIntent: AppIntent {
-    static var title: LocalizedStringResource = "Unmute"
-    static var description: IntentDescription? = IntentDescription("Unmutes audio.")
-    static var openAppWhenRun: Bool = false
+    static let title: LocalizedStringResource = "Unmute"
+    static let description: IntentDescription? = IntentDescription("Unmutes audio.")
+    static let openAppWhenRun: Bool = false
 
     @MainActor
     func perform() async throws -> some IntentResult {

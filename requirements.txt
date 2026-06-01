@@ -1,0 +1,5 @@
+systest
+black
+pylint
+deep_translator
+moblin_assistant

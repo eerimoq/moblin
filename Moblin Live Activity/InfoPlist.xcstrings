@@ -16,6 +16,12 @@
             "state" : "new",
             "value" : "Moblin Live Activity"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin 即時動態"
+          }
         }
       }
     },
@@ -34,6 +40,12 @@
             "state" : "new",
             "value" : "MoblinLiveActivity"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moblin即時動態"
+          }
         }
       }
     },
@@ -51,6 +63,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }
@@ -82,6 +100,12 @@
             "state" : "new",
             "value" : "Yes"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
         }
       }
     },
@@ -100,6 +124,12 @@
             "state" : "new",
             "value" : "Yes"
           }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
         }
       }
     },
@@ -117,6 +147,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Yes"
+          }
+        },
+        "zh-Hant-TW" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
           }
         }
       }

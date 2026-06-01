@@ -5,11 +5,11 @@ class SettingsMoblinkStreamer: Codable, ObservableObject {
     @Published var port: UInt16 = 7777
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             port
+        case enabled
+        case port
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.port, port)
@@ -17,7 +17,7 @@ class SettingsMoblinkStreamer: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         port = container.decode(.port, UInt16.self, 7777)
@@ -31,13 +31,13 @@ class SettingsMoblinkRelay: Codable, ObservableObject {
     @Published var manual: Bool = false
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             name,
-             url,
-             manual
+        case enabled
+        case name
+        case url
+        case manual
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.name, name)
@@ -47,7 +47,7 @@ class SettingsMoblinkRelay: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         name = container.decode(.name, String.self, randomName())
@@ -62,12 +62,12 @@ class SettingsMoblink: Codable {
     var password = "1234"
 
     enum CodingKeys: CodingKey {
-        case server,
-             client,
-             password
+        case server
+        case client
+        case password
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.server, streamer)
         try container.encode(.client, relay)
@@ -76,7 +76,7 @@ class SettingsMoblink: Codable {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         streamer = container.decode(.server, SettingsMoblinkStreamer.self, .init())
         relay = container.decode(.client, SettingsMoblinkRelay.self, .init())

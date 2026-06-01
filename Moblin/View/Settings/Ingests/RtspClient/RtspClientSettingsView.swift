@@ -6,7 +6,7 @@ struct RtspClientSettingsView: View {
     @State var numberOfEnabledStreams: Int = 0
 
     private func status() -> String {
-        return String(numberOfEnabledStreams)
+        String(numberOfEnabledStreams)
     }
 
     private func deleteStream(at indexes: IndexSet) {
@@ -50,7 +50,7 @@ struct RtspClientSettingsView: View {
             }
         }
         .onAppear {
-            numberOfEnabledStreams = rtspClient.streams.filter { $0.enabled }.count
+            numberOfEnabledStreams = rtspClient.streams.filter(\.enabled).count
         }
     }
 }

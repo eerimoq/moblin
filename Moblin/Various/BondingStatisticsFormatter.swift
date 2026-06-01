@@ -63,13 +63,13 @@ class BondingStatisticsFormatter {
 
     private func getNameColor(_ name: String) -> Color {
         if name == "Cellular" {
-            return colors[0]
+            colors[0]
         } else if name == "WiFi" {
-            return colors[1]
+            colors[1]
         } else if let index = networkInterfaceNames.firstIndex(where: { name == $0.name }) {
-            return colors[(index + 2) % colors.count]
+            colors[(index + 2) % colors.count]
         } else {
-            return colors[(2 + networkInterfaceNames.count) % colors.count]
+            colors[(2 + networkInterfaceNames.count) % colors.count]
         }
     }
 }

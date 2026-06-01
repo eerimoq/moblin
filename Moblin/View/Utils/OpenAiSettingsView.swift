@@ -17,6 +17,7 @@ struct OpenAiSettingsView: View {
                                    value: ai.model,
                                    onSubmit: { ai.model = $0 })
             MultiLineTextFieldNavigationView(title: String(localized: "Personality"),
+                                             placeholder: "You give fast and short answers.",
                                              value: ai.personality,
                                              onSubmit: { ai.personality = $0 })
         } header: {

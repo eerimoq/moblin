@@ -144,7 +144,7 @@ extension Model {
     }
 }
 
-extension Model: TeslaVehicleDelegate {
+extension Model: @preconcurrency TeslaVehicleDelegate {
     func teslaVehicleState(_: TeslaVehicle, state: TeslaVehicleState) {
         switch state {
         case .idle:

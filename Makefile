@@ -1,49 +1,79 @@
 SWIFTFORMAT_ARGS = \
 	--maxwidth 110 \
-	--swiftversion 5 \
+	--swiftversion 5.9 \
 	--exclude Moblin/Integrations/Tesla/Protobuf \
 	--disable docComments \
 	--ifdef no-indent
 SWIFTLINT_ARGS = --strict --quiet
-OXFMT_ARGS = "Moblin/RemoteControl/Web"
-OXLINT_ARGS = "Moblin/RemoteControl/Web"
+OXFMT_ARGS = "WebRemoteControlFrontend"
+OXLINT_ARGS = "WebRemoteControlFrontend"
+PYTHON_DIRS = \
+	test \
+	utils
+BLACK_ARGS = $(PYTHON_DIRS)
 PERIPHERY_ARGS = \
 	--index-exclude "Moblin/Integrations/Tesla/Protobuf/*" \
 	--index-exclude "**/PrepareLicenseList/**" \
 	--disable-update-check
 CODESPELL_ARGS = \
-	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift" \
+	--skip "*.xcstrings,libsrt.xcframework,VoicesView.swift,TextAlignerSuite.swift,Web,node_modules,package-lock.json" \
 	--ignore-words-list "inout,froms,soop,medias,deactive,upto,datas,ro"
+PYLINT_ARGS = \
+	--disable missing-function-docstring \
+	--disable missing-module-docstring \
+	--disable too-many-nested-blocks \
+	--disable broad-exception-caught \
+	--disable broad-exception-raised \
+	--disable too-many-locals \
+	--disable duplicate-code \
+	--disable missing-class-docstring \
+	--recursive yes \
+	$(PYTHON_DIRS)
 
-CODE_FOLDERS += "Common"
-CODE_FOLDERS += "Moblin"
-CODE_FOLDERS += "Moblin Watch"
-CODE_FOLDERS += "Moblin Widget"
-CODE_FOLDERS += "Moblin Live Activity"
-CODE_FOLDERS += "Moblin Screen Recording"
-CODE_FOLDERS += "MoblinTests"
+CODE_DIRS += "Common"
+CODE_DIRS += "Moblin"
+CODE_DIRS += "Moblin Watch"
+CODE_DIRS += "Moblin Widget"
+CODE_DIRS += "Moblin Live Activity"
+CODE_DIRS += "Moblin Screen Recording"
+CODE_DIRS += "MoblinTests"
+CODE_DIRS += "WebRemoteControlFrontend"
 
 SHELL = /usr/bin/env bash
 
-all:
+.PHONY: test
+
+default:
 
 style:
-	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS)
+	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS)
 	oxfmt $(OXFMT_ARGS)
+	black $(BLACK_ARGS) || true
 
 style-check:
-	swiftformat $(CODE_FOLDERS) $(SWIFTFORMAT_ARGS) --lint
+	swiftformat $(CODE_DIRS) $(SWIFTFORMAT_ARGS) --lint
 	oxfmt $(OXFMT_ARGS) --check
+	black $(BLACK_ARGS) --check
 
 lint:
-	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_FOLDERS)
+	swiftlint lint $(SWIFTLINT_ARGS) $(CODE_DIRS)
 	oxlint $(OXLINT_ARGS)
+	pylint $(PYLINT_ARGS) || true
+	python3 utils/xcstringslint.py Common/Localizable.xcstrings
+
+lint-fix:
+	python3 utils/xcstringslint.py --fix Common/Localizable.xcstrings
 
 periphery:
 	periphery scan $(PERIPHERY_ARGS)
 
 spell-check:
-	codespell $(CODESPELL_ARGS) $(CODE_FOLDERS)
+	codespell $(CODESPELL_ARGS) $(CODE_DIRS) $(PYTHON_DIRS)
+
+test:
+	cd test && python main.py \
+		--moblin-ip-address 192.168.1.31 \
+		--tester-ip-address 192.168.1.181
 
 machine-translate:
 	python3 utils/translate.py Common/Localizable.xcstrings
@@ -56,6 +86,11 @@ pack-exported-localizations:
 	    rm -rf $$f ; \
 	done
 
-generate-web-remote-control-css:
-	cd Moblin/RemoteControl/Web/ && \
-	tailwindcss -i <(echo '@import "tailwindcss";') -o css/app.css
+web-remote-control-frontend-prepare:
+	cd WebRemoteControlFrontend && \
+	npm install --loglevel warn
+
+web-remote-control-frontend-build:
+	cd WebRemoteControlFrontend && \
+	NODE_NO_WARNINGS=1 npx tsc --noEmit && \
+	NODE_NO_WARNINGS=1 npm run build --silent

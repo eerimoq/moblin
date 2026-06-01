@@ -29,7 +29,7 @@ private struct PasswordView: View {
                         }
                         .submitLabel(.done)
                         .onDisappear {
-                            if changed && !submitted {
+                            if changed, !submitted {
                                 submit()
                             }
                         }
@@ -60,7 +60,7 @@ private struct RemoteControlSettingsStreamerView: View {
     }
 
     private func formatStreamerPreviewFps(value: Float) -> String {
-        return String(Int(value))
+        String(Int(value))
     }
 
     var body: some View {
@@ -120,13 +120,13 @@ private struct RemoteControlSettingsStreamerView: View {
     }
 }
 
-private struct UrlsView: View {
+private struct RemoteControlUrlsView: View {
     @ObservedObject var relay: SettingsRemoteControlServerRelay
     @Binding var port: UInt16
     let status: StatusOther
 
     private func formatUrl(ip: String) -> String {
-        return "ws://\(ip):\(port)"
+        "ws://\(ip):\(port)"
     }
 
     var body: some View {
@@ -248,18 +248,14 @@ private struct StreamerView: View {
                     Text("Use a relay server when the assistant is behind CGNAT or similar.")
                 }
                 if streamer.enabled {
-                    UrlsView(relay: streamer.relay,
-                             port: $streamer.port,
-                             status: model.statusOther)
+                    RemoteControlUrlsView(relay: streamer.relay,
+                                          port: $streamer.port,
+                                          status: model.statusOther)
                 }
             }
             .navigationTitle("Streamer")
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(streamer.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: streamer.name)
         }
     }
 }
@@ -358,9 +354,9 @@ struct RemoteControlStreamersView: View {
 
 private func formatUrl(ip: String, port: UInt16) -> String {
     if port == 80 {
-        return "http://\(ip)"
+        "http://\(ip)"
     } else {
-        return "http://\(ip):\(port)"
+        "http://\(ip):\(port)"
     }
 }
 
@@ -369,7 +365,7 @@ private struct WebUrlsView: View {
     @ObservedObject var status: StatusOther
 
     private func format(ip: String) -> String {
-        return formatUrl(ip: ip, port: web.port)
+        formatUrl(ip: ip, port: web.port)
     }
 
     var body: some View {
@@ -404,7 +400,7 @@ struct RemoteControlWebDefaultUrlView: View {
     let path: String
 
     private func format(ip: String) -> String {
-        return formatUrl(ip: ip, port: web.port)
+        formatUrl(ip: ip, port: web.port)
     }
 
     var body: some View {

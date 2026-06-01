@@ -43,7 +43,7 @@ struct MpegTsPacket {
     }
 
     func maximumPayloadSize() -> Int {
-        return MpegTsPacket.size - MpegTsPacket.fixedHeaderSize - Int(adaptationField?.calcLength() ?? 0)
+        MpegTsPacket.size - MpegTsPacket.fixedHeaderSize - Int(adaptationField?.calcLength() ?? 0)
     }
 
     mutating func setAdaptionFieldStuffing(size: Int) {

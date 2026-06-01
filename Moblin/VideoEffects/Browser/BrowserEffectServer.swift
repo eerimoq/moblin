@@ -1,7 +1,7 @@
 import WebKit
 
 private func moblinScript() -> String {
-    return loadStringResource(name: "moblin", ext: "js")
+    loadStringResource(name: "moblin", ext: "js")
 }
 
 private enum PublishMessage: Codable {
@@ -45,7 +45,7 @@ private enum MessageToBrowser: Codable {
     case message(data: Message)
 
     func toJson() -> String? {
-        return try? String(bytes: JSONEncoder().encode(self), encoding: .utf8)
+        try? String(bytes: JSONEncoder().encode(self), encoding: .utf8)
     }
 }
 
@@ -57,18 +57,20 @@ private class Subscriptions {
     var chat: Chat?
 }
 
+@MainActor
 protocol BrowserEffectServerDelegate: AnyObject {
     func browserEffectServerVideoPlaying()
     func browserEffectServerVideoEnded()
 }
 
+@MainActor
 class BrowserEffectServer: NSObject {
     weak var webView: WKWebView?
     private let subscriptions = Subscriptions()
     private let pingTimer = SimpleTimer(queue: .main)
     private var gotPing = true
     private let moblinAccess: Bool
-    weak var delegate: BrowserEffectServerDelegate?
+    weak var delegate: (any BrowserEffectServerDelegate)?
 
     init(configuration: WKWebViewConfiguration, moblinAccess: Bool) {
         self.moblinAccess = moblinAccess

@@ -55,3 +55,24 @@ struct UrlsIpv6View: View {
         }
     }
 }
+
+struct UrlsView: View {
+    @ObservedObject var status: StatusOther
+    var title: String = .init(localized: "URLs")
+    var showIPv6: Bool = true
+    let formatUrl: (String) -> String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                UrlsIpv4View(status: status, formatUrl: formatUrl)
+                if showIPv6 {
+                    UrlsIpv6View(status: status, formatUrl: formatUrl)
+                }
+            }
+            .navigationTitle(title)
+        } label: {
+            Text(title)
+        }
+    }
+}

@@ -6,7 +6,7 @@ struct VTSessionProperty {
     let value: AnyObject
 }
 
-struct VTSessionPropertyKey {
+struct VTSessionPropertyKey: @unchecked Sendable {
     static let profileLevel = VTSessionPropertyKey(value: kVTCompressionPropertyKey_ProfileLevel)
     static let h264EntropyMode = VTSessionPropertyKey(value: kVTCompressionPropertyKey_H264EntropyMode)
     static let colorPrimaries = VTSessionPropertyKey(value: kVTCompressionPropertyKey_ColorPrimaries)

@@ -10,7 +10,7 @@ struct DjiDiscoveredDevice {
 }
 
 class DjiDeviceScanner: NSObject, ObservableObject {
-    static let shared = DjiDeviceScanner()
+    nonisolated(unsafe) static let shared = DjiDeviceScanner()
     @Published var discoveredDevices: [DjiDiscoveredDevice] = []
     private var centralManager: CBCentralManager?
 

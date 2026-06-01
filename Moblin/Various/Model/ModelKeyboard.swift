@@ -34,11 +34,9 @@ extension Model {
             return false
         }
         DispatchQueue.main.async {
-            self.handleControllerFunction(function: key.function,
-                                          sceneId: key.sceneId,
-                                          widgetId: key.widgetId,
-                                          gimbalPresetId: nil,
-                                          gimbalMotion: key.gimbalMotion,
+            self.handleControllerFunction(buttonId: "kb:\(key.key)",
+                                          function: key.function,
+                                          functionData: key.functionData,
                                           pressed: false)
         }
         return true
@@ -46,6 +44,6 @@ extension Model {
 
     @available(iOS 17.0, *)
     func handleKeyPress(press: KeyPress) -> KeyPress.Result {
-        return handleKeyPressCharacters(press.characters) ? .handled : .ignored
+        handleKeyPressCharacters(press.characters) ? .handled : .ignored
     }
 }

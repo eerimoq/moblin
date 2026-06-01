@@ -23,7 +23,7 @@ extension Model {
     }
 }
 
-extension Model: BlackSharkCoolerDeviceDelegate {
+extension Model: @preconcurrency BlackSharkCoolerDeviceDelegate {
     func blackSharkCoolerDeviceState(_: BlackSharkCoolerDevice, state: BlackSharkCoolerDeviceState) {
         DispatchQueue.main.async {
             self.statusTopRight.blackSharkCoolerDeviceState = state
@@ -31,9 +31,11 @@ extension Model: BlackSharkCoolerDeviceDelegate {
     }
 
     func blackSharkCoolerDeviceStatus(_: BlackSharkCoolerDevice, status: BlackSharkLib.CoolingState) {
+        let phoneTemperature = status.phoneTemperature
+        let heatsinkTemperature = status.heatsinkTemperature
         DispatchQueue.main.async {
-            self.statusTopRight.blackSharkCoolerPhoneTemp = status.phoneTemperature
-            self.statusTopRight.blackSharkCoolerExhaustTemp = status.heatsinkTemperature
+            self.statusTopRight.blackSharkCoolerPhoneTemp = phoneTemperature
+            self.statusTopRight.blackSharkCoolerExhaustTemp = heatsinkTemperature
         }
     }
 

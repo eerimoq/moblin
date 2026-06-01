@@ -36,7 +36,7 @@ private struct StreamingHistorySettingsStreamsView: View {
     @ObservedObject var database: StreamingHistoryDatabase
 
     private func formatStreamTitle(stream: StreamingHistoryStream) -> String {
-        return "\(stream.startTime.formatted()), \(stream.duration().format())"
+        "\(stream.startTime.formatted()), \(stream.duration().format())"
     }
 
     private func deleteStream(at offsets: IndexSet) {

@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import DataChannel
 import libdatachannel
 
@@ -200,53 +200,53 @@ private struct RtcTrackConfig {
     static func makeAudio(ssrc: UInt32, codec: SettingsStreamAudioCodec) -> Self {
         switch codec {
         case .opus:
-            return .init(name: "audio",
-                         codec: RTC_CODEC_OPUS,
-                         payloadType: Int32(opusPayloadType),
-                         ssrc: ssrc,
-                         mid: "0",
-                         profile: "",
-                         bitrate: 0)
+            .init(name: "audio",
+                  codec: RTC_CODEC_OPUS,
+                  payloadType: Int32(opusPayloadType),
+                  ssrc: ssrc,
+                  mid: "0",
+                  profile: "",
+                  bitrate: 0)
         case .aac:
-            return .init(name: "audio",
-                         codec: RTC_CODEC_AAC,
-                         payloadType: Int32(aacPayloadType),
-                         ssrc: ssrc,
-                         mid: "0",
-                         profile: "",
-                         bitrate: 0)
+            .init(name: "audio",
+                  codec: RTC_CODEC_AAC,
+                  payloadType: Int32(aacPayloadType),
+                  ssrc: ssrc,
+                  mid: "0",
+                  profile: "",
+                  bitrate: 0)
         }
     }
 
     static func makeVideo(ssrc: UInt32, codec: SettingsStreamCodec, bitrate: Double) -> Self {
         switch codec {
         case .h264avc:
-            return .init(name: "video",
-                         codec: RTC_CODEC_H264,
-                         payloadType: Int32(h264PayloadType),
-                         ssrc: ssrc,
-                         mid: "1",
-                         profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f",
-                         bitrate: bitrate)
+            .init(name: "video",
+                  codec: RTC_CODEC_H264,
+                  payloadType: Int32(h264PayloadType),
+                  ssrc: ssrc,
+                  mid: "1",
+                  profile: "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f",
+                  bitrate: bitrate)
         case .h265hevc:
-            return .init(name: "video",
-                         codec: RTC_CODEC_H265,
-                         payloadType: Int32(h265PayloadType),
-                         ssrc: ssrc,
-                         mid: "1",
-                         profile: "",
-                         bitrate: bitrate)
+            .init(name: "video",
+                  codec: RTC_CODEC_H265,
+                  payloadType: Int32(h265PayloadType),
+                  ssrc: ssrc,
+                  mid: "1",
+                  profile: "",
+                  bitrate: bitrate)
         }
     }
 
     func isVideo() -> Bool {
         switch codec {
         case RTC_CODEC_H264:
-            return true
+            true
         case RTC_CODEC_H265:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }
@@ -265,9 +265,9 @@ private func toPeerConnection(pointer: UnsafeMutableRawPointer?) -> PeerConnecti
 
 private final class PeerConnection {
     private let peerConnectionId: Int32
-    weak var delegate: PeerConnectionDelegate?
+    weak var delegate: (any PeerConnectionDelegate)?
 
-    init(delegate: PeerConnectionDelegate, iceServers: [String]) throws {
+    init(delegate: any PeerConnectionDelegate, iceServers: [String]) throws {
         self.delegate = delegate
         var config = rtcConfiguration()
         peerConnectionId = iceServers.withCPointers {
@@ -295,7 +295,7 @@ private final class PeerConnection {
     }
 
     func addTrack(config: RtcTrackConfig, streamId: String) throws -> RtcTrack {
-        return try config.mid.withCString { mid in
+        try config.mid.withCString { mid in
             try config.name.withCString { name in
                 try streamId.withCString { streamId in
                     try UUID().uuidString.withCString { trackId in
@@ -361,7 +361,7 @@ private final class PeerConnection {
         let size = try checkOkReturnResult(rtcGetLocalDescription(peerConnectionId, nil, 0))
         var buffer = [CChar](repeating: 0, count: Int(size))
         try checkOk(rtcGetLocalDescription(peerConnectionId, &buffer, Int32(size)))
-        return String(cString: buffer)
+        return String(cArray: buffer)
     }
 
     func setRemoteAnswer(_ sdp: String) throws {
@@ -414,12 +414,13 @@ protocol WhipStreamDelegate: AnyObject {
     func whipStreamOnDisconnected(reason: String)
     func whipStreamPerform(request: URLRequest,
                            queue: DispatchQueue,
-                           completion: ((Data?, URLResponse?, (any Error)?) -> Void)?)
+                           completion: (@MainActor (Data?, URLResponse?, (any Error)?) -> Void)?)
+    func whipStreamStartEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
+    func whipStreamStopEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate)
 }
 
-final class WhipStream {
-    private let processor: Processor
-    private weak var delegate: WhipStreamDelegate?
+final class WhipStream: @unchecked Sendable {
+    private weak var delegate: (any WhipStreamDelegate)?
     private var peerConnection: PeerConnection?
     private var videoTrack: RtcTrack?
     private var audioTrack: RtcTrack?
@@ -435,8 +436,7 @@ final class WhipStream {
     private var timeStampRebaser = TimeStampRebaser()
     private let connectTimer = SimpleTimer(queue: whipQueue)
 
-    init(processor: Processor, delegate: WhipStreamDelegate) {
-        self.processor = processor
+    init(delegate: any WhipStreamDelegate) {
         self.delegate = delegate
     }
 
@@ -464,7 +464,7 @@ final class WhipStream {
     }
 
     func getTotalByteCount() -> Int64 {
-        return whipQueue.sync {
+        whipQueue.sync {
             totalByteCount
         }
     }
@@ -590,7 +590,7 @@ final class WhipStream {
         offerSent = true
     }
 
-    private func handleOfferResponse(data: Data?, response: URLResponse?, error: Error?) {
+    private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
         if let error {
             stopInternal(reason: "Sending WHIP offer failed: \(error.localizedDescription)")
             return
@@ -626,13 +626,13 @@ final class WhipStream {
 
     private func startEncoding() {
         processorControlQueue.async {
-            self.processor.startEncoding(self)
+            self.delegate?.whipStreamStartEncoding(self)
         }
     }
 
     private func stopEncoding() {
         processorControlQueue.async {
-            self.processor.stopEncoding(self)
+            self.delegate?.whipStreamStopEncoding(self)
         }
     }
 
@@ -645,7 +645,7 @@ final class WhipStream {
     }
 
     private func rebaseTimestamp(_ presentationTimeStamp: CMTime) -> Double? {
-        return timeStampRebaser.rebase(presentationTimeStamp.seconds)
+        timeStampRebaser.rebase(presentationTimeStamp.seconds)
     }
 
     private func handleAudioEncoderOutputBuffer(_ buffer: AVAudioCompressedBuffer,
@@ -717,12 +717,11 @@ final class WhipStream {
             logger.info("whip: Failed to set timestamp")
             return
         }
-        let data: Data?
-        switch videoCodec {
+        let data: Data? = switch videoCodec {
         case .h264avc:
-            data = h264NalUnits.process(sampleBuffer)
+            h264NalUnits.process(sampleBuffer)
         case .h265hevc:
-            data = h265NalUnits.process(sampleBuffer)
+            h265NalUnits.process(sampleBuffer)
         }
         guard let data else {
             return
@@ -735,12 +734,16 @@ final class WhipStream {
 
 extension WhipStream: PeerConnectionDelegate {
     fileprivate func peerConnectionOnConnectionStateChanged(state: DataChannelConnectionState) {
+        nonisolated(unsafe)
+        let state = state
         whipQueue.async {
             self.handleConnectionStateChanged(state: state)
         }
     }
 
     fileprivate func peerConnectionOnGatheringStateChanged(state: DataChannelGatheringState) {
+        nonisolated(unsafe)
+        let state = state
         whipQueue.async {
             self.handleGatheringStateChanged(state: state)
         }

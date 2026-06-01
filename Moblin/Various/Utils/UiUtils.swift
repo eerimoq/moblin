@@ -14,6 +14,7 @@ extension UIImage {
     }
 }
 
+@MainActor
 func getOrientation() -> UIDeviceOrientation {
     let orientation = UIDevice.current.orientation
     if orientation != .unknown {
@@ -34,20 +35,22 @@ func getOrientation() -> UIDeviceOrientation {
 
 extension UIDevice {
     static func vibrate() {
-        return AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
     }
 }
 
+@MainActor
 func isPhone() -> Bool {
-    return UIDevice.current.userInterfaceIdiom == .phone
+    UIDevice.current.userInterfaceIdiom == .phone
 }
 
+@MainActor
 func isPad() -> Bool {
-    return UIDevice.current.userInterfaceIdiom == .pad
+    UIDevice.current.userInterfaceIdiom == .pad
 }
 
 func isMac() -> Bool {
-    return ProcessInfo().isMacCatalystApp
+    ProcessInfo().isMacCatalystApp
 }
 
 extension ImageRenderer {
@@ -60,6 +63,7 @@ extension ImageRenderer {
     }
 }
 
+@MainActor
 func getWindow() -> UIWindow? {
     guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
         return nil
@@ -67,22 +71,24 @@ func getWindow() -> UIWindow? {
     return scene.windows.first
 }
 
+@MainActor
 func getRootViewController() -> UIViewController? {
-    return getWindow()?.rootViewController
+    getWindow()?.rootViewController
 }
 
+@MainActor
 func screenScale() -> CGFloat {
     if isMac() {
-        return 2
+        2
     } else {
-        return UIScreen().scale
+        UIScreen().scale
     }
 }
 
 func makeOffsets<T: Identifiable>(_ items: [T], _ id: T.ID) -> IndexSet? {
     if let index = items.firstIndex(where: { $0.id == id }) {
-        return IndexSet(integer: index)
+        IndexSet(integer: index)
     } else {
-        return nil
+        nil
     }
 }

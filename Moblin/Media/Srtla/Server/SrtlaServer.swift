@@ -11,31 +11,31 @@ let srtlaServerQueue = DispatchQueue(label: "com.eerimoq.srtla-server", qos: .us
 private let periodicTimerTimeout = 3.0
 
 protocol SrtlaServerDelegate: AnyObject {
-    func srtlaServerOnClientStart(streamId: String, latency: Double)
-    func srtlaServerOnClientStop(streamId: String)
-    func srtlaServerOnVideoBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
-    func srtlaServerOnAudioBuffer(streamId: String, sampleBuffer: CMSampleBuffer)
+    func srtlaServerOnClientStart(cameraId: UUID, name: String)
+    func srtlaServerOnClientStop(cameraId: UUID, name: String)
+    func srtlaServerOnVideoBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
+    func srtlaServerOnAudioBuffer(cameraId: UUID, sampleBuffer: CMSampleBuffer)
     func srtlaServerSetTargetLatencies(
-        streamId: String,
+        cameraId: UUID,
         _ videoTargetLatency: Double,
         _ audioTargetLatency: Double
     )
 }
 
-class SrtlaServer {
+class SrtlaServer: @unchecked Sendable {
     private var listener: NWListener?
     private var clients: [Data: SrtlaServerClient] = [:]
     let settings: SettingsSrtlaServer
     private let srtServer: SrtServer
     private let srtServerNoSrtlaPatches: SrtServer
-    let delegate: SrtlaServerDelegate
+    let delegate: any SrtlaServerDelegate
     private let periodicTimer = SimpleTimer(queue: srtlaServerQueue)
     let bitrateStats: Atomic<BitrateStats> = .init(BitrateStats())
     private var numberOfClients: Atomic<Int> = .init(0)
     var connectedStreamIds: Atomic<[String]> = .init(.init())
 
     init(settings: SettingsSrtlaServer,
-         delegate: SrtlaServerDelegate,
+         delegate: any SrtlaServerDelegate,
          timecodesEnabled: Bool)
     {
         self.settings = settings.clone()
@@ -73,10 +73,11 @@ class SrtlaServer {
     }
 
     func isStreamConnected(streamId: String) -> Bool {
-        return connectedStreamIds.value.contains(streamId)
+        connectedStreamIds.value.contains(streamId)
     }
 
     func updateStats() -> BitrateStatsInstant {
+        nonisolated(unsafe)
         var result: BitrateStatsInstant?
         bitrateStats.mutate {
             result = $0.update()
@@ -85,16 +86,16 @@ class SrtlaServer {
     }
 
     func getNumberOfClients() -> Int {
-        return numberOfClients.value
+        numberOfClients.value
     }
 
-    func clientConnected(streamId: String) {
+    func clientConnected(cameraId: UUID, name: String) {
         numberOfClients.mutate { $0 += 1 }
-        delegate.srtlaServerOnClientStart(streamId: streamId, latency: srtServerClientLatency)
+        delegate.srtlaServerOnClientStart(cameraId: cameraId, name: name)
     }
 
-    func clientDisconnected(streamId: String) {
-        delegate.srtlaServerOnClientStop(streamId: streamId)
+    func clientDisconnected(cameraId: UUID, name: String) {
+        delegate.srtlaServerOnClientStop(cameraId: cameraId, name: name)
         numberOfClients.mutate { $0 -= 1 }
     }
 

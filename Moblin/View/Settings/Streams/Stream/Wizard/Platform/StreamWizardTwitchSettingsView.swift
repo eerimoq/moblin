@@ -5,7 +5,7 @@ struct StreamWizardTwitchSettingsView: View {
     @ObservedObject var createStreamWizard: CreateStreamWizard
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.twitchChannelName.trim().isEmpty
+        createStreamWizard.twitchChannelName.trim().isEmpty
     }
 
     private func onLoginComplete() {

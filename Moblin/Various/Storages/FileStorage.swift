@@ -10,11 +10,11 @@ class FileStorage {
     }
 
     func makePath(id: UUID) -> URL {
-        return directory.appendingPathComponent(id.uuidString)
+        directory.appendingPathComponent(id.uuidString)
     }
 
     func ids() -> [UUID] {
-        return fileManager.ids(directory: directory.path)
+        fileManager.ids(directory: directory.path)
     }
 
     func add(id: UUID, url: URL) {
@@ -61,6 +61,6 @@ class FileStorage {
     }
 
     func tryRead(id: UUID) -> Data? {
-        return try? Data(contentsOf: makePath(id: id))
+        try? Data(contentsOf: makePath(id: id))
     }
 }

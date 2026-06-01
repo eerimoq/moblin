@@ -79,15 +79,15 @@ struct PlayerLiveResponse: Codable {
     }
 }
 
-final class SoopChat: NSObject {
+final class SoopChat: NSObject, @unchecked Sendable {
     private var model: Model
     private var channelName: String
     private var streamId: String
-    private var task: Task<Void, Error>?
+    private var task: Task<Void, any Error>?
     private var connected: Bool = false
     private var webSocket: URLSessionWebSocketTask
     private var emotes: Emotes
-    private var keepAliveTask: Task<Void, Error>?
+    private var keepAliveTask: Task<Void, any Error>?
 
     init(model: Model, channelName: String, streamId: String) {
         self.model = model
@@ -168,11 +168,11 @@ final class SoopChat: NSObject {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func hasEmotes() -> Bool {
-        return true
+        true
     }
 
     private func setupConnection(info: PlayerLiveChannel) async throws {

@@ -80,7 +80,7 @@ class Location: NSObject {
     }
 
     func getLatestKnownLocation() -> CLLocation? {
-        return latestLocation
+        latestLocation
     }
 }
 
@@ -89,7 +89,7 @@ extension Location: CLLocationManagerDelegate {
         logger.debug("location: Auth did change \(manager.authorizationStatus)")
     }
 
-    func locationManager(_: CLLocationManager, didFailWithError error: Error) {
+    func locationManager(_: CLLocationManager, didFailWithError error: any Error) {
         logger.info("location: Error \(error)")
     }
 

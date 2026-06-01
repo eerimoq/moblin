@@ -34,7 +34,6 @@ private let basketballConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "QTR",
         primaryScoreResetOnPeriod: false,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
     ),
     controls: [
@@ -74,7 +73,6 @@ private let genericConfig = RemoteControlScoreboardMatchConfig(
         period: "",
         periodLabel: "",
         primaryScoreResetOnPeriod: false,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
         showTitle: false,
         showStats: false
@@ -106,11 +104,11 @@ private let genericSetsConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "SET",
         primaryScoreResetOnPeriod: true,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
         showTitle: false,
         showStats: false,
-        showMoreStats: false
+        showMoreStats: false,
+        showClock: true
     ),
     controls: [
         "primaryScore": .init(type: "counter", label: "Pt", periodReset: true),
@@ -150,7 +148,6 @@ private let hockeyConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "PER",
         primaryScoreResetOnPeriod: false,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
     ),
     controls: [
@@ -183,7 +180,6 @@ private let footballConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "HALF",
         primaryScoreResetOnPeriod: false,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false
     ),
     controls: [
@@ -212,11 +208,8 @@ private let tennisConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "SET",
         primaryScoreResetOnPeriod: true,
-        secondaryScoreResetOnPeriod: false,
         changePossessionOnScore: false,
         scoringMode: "tennis",
-        minSetScore: 3,
-        maxSetScore: 15,
         showStats: false
     ),
     controls: [
@@ -252,10 +245,7 @@ private let volleyballConfig = RemoteControlScoreboardMatchConfig(
         period: "1",
         periodLabel: "SET",
         primaryScoreResetOnPeriod: true,
-        secondaryScoreResetOnPeriod: false,
-        changePossessionOnScore: true,
-        minSetScore: 15,
-        maxSetScore: 40
+        changePossessionOnScore: true
     ),
     controls: [
         "primaryScore": .init(type: "counter", label: "Pt", periodReset: true),
@@ -335,11 +325,11 @@ extension Model {
 
     func getEnabledScoreboardWidgetsInSelectedScene() -> [SettingsWidget] {
         if let scene = getSelectedScene() {
-            return getSceneWidgets(scene: scene, onlyEnabled: true)
+            getSceneWidgets(scene: scene, onlyEnabled: true)
                 .filter { $0.widget.type == .scoreboard }
-                .map { $0.widget }
+                .map(\.widget)
         } else {
-            return []
+            []
         }
     }
 
@@ -351,6 +341,10 @@ extension Model {
             let scoreboard = widget.scoreboard
             switch scoreboard.sport {
             case .padel:
+                break
+            case .golf:
+                break
+            case .golfFullScorecard:
                 break
             case .generic:
                 guard !scoreboard.generic.clock.isStopped else {
@@ -385,24 +379,23 @@ extension Model {
     func getModularScoreboardConfig(scoreboard: SettingsWidgetScoreboard?)
         -> RemoteControlScoreboardMatchConfig
     {
-        let sportId: String
-        switch scoreboard?.sport {
+        let sportId = switch scoreboard?.sport {
         case .basketball:
-            sportId = "basketball"
+            "basketball"
         case .generic2:
-            sportId = "generic"
+            "generic"
         case .genericSets:
-            sportId = "generic sets"
+            "generic sets"
         case .hockey:
-            sportId = "hockey"
+            "hockey"
         case .football:
-            sportId = "football"
+            "football"
         case .tennis:
-            sportId = "tennis"
+            "tennis"
         case .volleyball:
-            sportId = "volleyball"
+            "volleyball"
         default:
-            sportId = "generic"
+            "generic"
         }
         var config: RemoteControlScoreboardMatchConfig
         if let current = scoreboard?.modular.config, current.sportId == sportId {
@@ -436,7 +429,7 @@ extension Model {
                     period: "1",
                     periodLabel: "SET",
                     primaryScoreResetOnPeriod: false,
-                    secondaryScoreResetOnPeriod: false
+                    changePossessionOnScore: false
                 ),
                 controls: [:]
             )
@@ -455,6 +448,7 @@ extension Model {
             config.global.showTitle = modular.showTitle
             config.global.showStats = modular.showGlobalStatsBlock
             config.global.showMoreStats = modular.showMoreStats
+            config.global.showClock = modular.showClock
             config.global.title = modular.title
             config.global.timer = modular.clock.format()
             switch modular.clock.direction {
@@ -497,6 +491,75 @@ extension Model {
                         config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
                         players: self.database.scoreboardPlayers)
         }
+    }
+
+    private func updateGolfScoreboardEffect(widget: SettingsWidget) {
+        DispatchQueue.main.async {
+            self.getScoreboardEffect(id: widget.id)?
+                .update(scoreboard: widget.scoreboard,
+                        config: self.getModularScoreboardConfig(scoreboard: widget.scoreboard),
+                        players: self.database.scoreboardPlayers)
+        }
+    }
+
+    private func updateAllGolfScoreboardEffects(golf: SettingsWidgetGolfScoreboard) {
+        for widget in getEnabledScoreboardWidgetsInSelectedScene() {
+            let sport = widget.scoreboard.sport
+            guard sport == .golf || sport == .golfFullScorecard else {
+                continue
+            }
+            widget.scoreboard.golf = golf
+            updateGolfScoreboardEffect(widget: widget)
+        }
+    }
+
+    func getGolfScoreboardForRemoteControl() -> RemoteControlGolfScoreboard {
+        let golf = getEnabledScoreboardWidgetsInSelectedScene()
+            .first(where: { $0.scoreboard.sport == .golf })?
+            .scoreboard.golf
+            ?? SettingsWidgetGolfScoreboard()
+        let players = golf.players.map {
+            RemoteControlGolfPlayer(name: $0.name, scores: $0.scores, color: $0.color)
+        }
+        return RemoteControlGolfScoreboard(
+            title: golf.title,
+            numberOfHoles: golf.numberOfHoles,
+            pars: golf.pars,
+            currentHole: golf.currentHole,
+            players: players,
+            playerColors: golf.playerColors
+        )
+    }
+
+    func handleExternalGolfScoreboardUpdate(remoteScorecard: RemoteControlGolfScoreboard) {
+        guard let widget = getEnabledScoreboardWidgetsInSelectedScene()
+            .first(where: { $0.scoreboard.sport == .golf })
+        else {
+            return
+        }
+        let golf = widget.scoreboard.golf
+        golf.title = remoteScorecard.title
+        golf.numberOfHoles = remoteScorecard.numberOfHoles
+        golf.currentHole = remoteScorecard.currentHole
+        golf.setPars(remoteScorecard.pars)
+        golf.playerColors = remoteScorecard.playerColors
+        for (index, remotePlayer) in remoteScorecard.players.enumerated() {
+            if index < golf.players.count {
+                golf.players[index].name = remotePlayer.name
+                golf.players[index].scores = remotePlayer.scores
+                golf.players[index].color = remotePlayer.color
+            } else {
+                let player = SettingsWidgetGolfScoreboardPlayer(name: remotePlayer.name)
+                player.scores = remotePlayer.scores
+                player.color = remotePlayer.color
+                golf.players.append(player)
+            }
+        }
+        while golf.players.count > remoteScorecard.players.count {
+            golf.players.removeLast()
+        }
+        updateAllGolfScoreboardEffects(golf: golf)
+        remoteControlWeb?.sendGolfScoreboardUpdate(data: remoteScorecard)
     }
 
     func handleScoreboardToggleClock() {
@@ -550,6 +613,9 @@ extension Model {
         }
         if let show2nd = config.global.showMoreStats {
             modular.showMoreStats = show2nd
+        }
+        if let showClock = config.global.showClock {
+            modular.showClock = showClock
         }
         modular.home.name = config.team1.name
         modular.away.name = config.team2.name
@@ -746,7 +812,7 @@ extension Model {
     private func isSetCompleted(score: SettingsWidgetScoreboardScore) -> Bool {
         let maxScore = max(score.home, score.away)
         let minScore = min(score.home, score.away)
-        if maxScore == 6 && minScore <= 4 {
+        if maxScore == 6, minScore <= 4 {
             return true
         }
         if maxScore == 7 {

@@ -6,7 +6,7 @@ struct StreamWizardCustomWhipSettingsView: View {
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.customWhipUrl.isEmpty || !urlError.isEmpty
+        createStreamWizard.customWhipUrl.isEmpty || !urlError.isEmpty
     }
 
     private func updateUrlError() {

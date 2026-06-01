@@ -10,7 +10,7 @@ struct DebugLogSettingsView: View {
     let clearLog: () -> Void
 
     private func isMessageVisible(message: String) -> Bool {
-        return debug.logFilter.isEmpty || message.lowercased().contains(debug.logFilter.lowercased())
+        debug.logFilter.isEmpty || message.lowercased().contains(debug.logFilter.lowercased())
     }
 
     var body: some View {

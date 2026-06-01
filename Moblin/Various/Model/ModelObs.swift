@@ -6,6 +6,12 @@ struct ObsSceneInput: Identifiable {
     var muted: Bool?
 }
 
+struct ObsSceneMediaSource: Identifiable {
+    var id: UUID = .init()
+    var name: String
+    var input: String
+}
+
 class QuickButtonObs: ObservableObject {
     var sourceFetchScreenshot = false
     var sourceScreenshotIsFetching = false
@@ -14,6 +20,7 @@ class QuickButtonObs: ObservableObject {
     @Published var streamingState: ObsOutputState = .stopped
     @Published var recordingState: ObsOutputState = .stopped
     @Published var sceneInputs: [ObsSceneInput] = []
+    @Published var sceneMediaSources: [ObsSceneMediaSource] = []
     @Published var audioVolume: String = noValue
     @Published var currentScenePicker: String = ""
     @Published var currentScene: String = ""
@@ -81,11 +88,11 @@ extension Model {
     }
 
     func isObsConnected() -> Bool {
-        return obsWebSocket?.isConnected() ?? false
+        obsWebSocket?.isConnected() ?? false
     }
 
     func obsConnectionErrorMessage() -> String {
-        return obsWebSocket?.connectionErrorMessage ?? ""
+        obsWebSocket?.connectionErrorMessage ?? ""
     }
 
     func listObsScenes(updateAudioInputs: Bool = false) {
@@ -96,9 +103,46 @@ extension Model {
             if updateAudioInputs {
                 self.updateObsAudioInputs(sceneName: list.current)
             }
+            self.updateObsMediaInputs(sceneName: list.current)
             self.updateStatusObsText()
         }, onError: { _ in
         })
+    }
+
+    func updateObsMediaInputs(sceneName: String) {
+        obsWebSocket?.getSceneItemList(sceneName: sceneName) { sceneItems in
+            let names = sceneItems
+                .filter { $0.inputKind == "ffmpeg_source" }
+                .map(\.sourceName)
+            guard !names.isEmpty else {
+                return
+            }
+            self.obsWebSocket?.getMediaSourcesSettingsBatch(
+                inputNames: names,
+                onSuccess: { settings in
+                    var sources: [ObsSceneMediaSource] = []
+                    for (index, name) in names.enumerated() {
+                        guard let setting = settings[index] else {
+                            continue
+                        }
+                        guard !setting.isLocalFile else {
+                            continue
+                        }
+                        sources.append(ObsSceneMediaSource(name: name, input: setting.input))
+                    }
+                    self.obsQuickButton.sceneMediaSources = sources
+                },
+                onError: { _ in
+                    self.obsQuickButton.sceneMediaSources = []
+                }
+            )
+        } onError: { _ in
+            self.obsQuickButton.sceneMediaSources = []
+        }
+    }
+
+    func setObsMediaSourceSettings(name: String, input: String) {
+        obsWebSocket?.setMediaSourceSettings(name: name, input: input)
     }
 
     func updateObsAudioInputs(sceneName: String) {
@@ -120,7 +164,7 @@ extension Model {
                         }
                     }
                     self.obsWebSocket?.getInputMuteBatch(
-                        inputNames: obsSceneInputs.map { $0.name },
+                        inputNames: obsSceneInputs.map(\.name),
                         onSuccess: { muteds in
                             guard muteds.count == obsSceneInputs.count else {
                                 self.obsQuickButton.sceneInputs = []
@@ -146,6 +190,7 @@ extension Model {
     }
 
     func setObsScene(name: String) {
+        updateObsMediaInputs(sceneName: name)
         obsWebSocket?.setCurrentProgramScene(name: name, onSuccess: {
             self.obsQuickButton.currentScene = name
             self.updateObsAudioInputs(sceneName: name)
@@ -199,6 +244,11 @@ extension Model {
                         streamBecameBrokenTime = now
                         return true
                     }
+                }
+            case .srtClient:
+                if !activeBufferedVideoIds.contains(scene.videoSource.srtClientCameraId) {
+                    streamBecameBrokenTime = now
+                    return true
                 }
             case .rtmp:
                 if let rtmpStream = getRtmpStream(id: scene.videoSource.rtmpCameraId) {
@@ -419,24 +469,24 @@ extension Model {
     }
 
     func isShowingStatusObs() -> Bool {
-        return database.show.obsStatus && isObsRemoteControlConfigured()
+        database.show.obsStatus && isObsRemoteControlConfigured()
     }
 
     private func statusObsText() -> String {
         if !isObsRemoteControlConfigured() {
-            return String(localized: "Not configured")
+            String(localized: "Not configured")
         } else if isObsConnected() {
-            if obsQuickButton.streaming && obsQuickButton.recording {
-                return "\(obsQuickButton.currentScene) (Streaming, Recording)"
+            if obsQuickButton.streaming, obsQuickButton.recording {
+                "\(obsQuickButton.currentScene) (Streaming, Recording)"
             } else if obsQuickButton.streaming {
-                return "\(obsQuickButton.currentScene) (Streaming)"
+                "\(obsQuickButton.currentScene) (Streaming)"
             } else if obsQuickButton.recording {
-                return "\(obsQuickButton.currentScene) (Recording)"
+                "\(obsQuickButton.currentScene) (Recording)"
             } else {
-                return obsQuickButton.currentScene
+                obsQuickButton.currentScene
             }
         } else {
-            return obsConnectionErrorMessage()
+            obsConnectionErrorMessage()
         }
     }
 
@@ -445,11 +495,11 @@ extension Model {
     }
 
     func isObsRemoteControlConfigured() -> Bool {
-        return stream.obsWebSocketEnabled && stream.obsWebSocketUrl != ""
+        stream.obsWebSocketEnabled && stream.obsWebSocketUrl != ""
     }
 }
 
-extension Model: ObsWebsocketDelegate {
+extension Model: @preconcurrency ObsWebsocketDelegate {
     func obsWebsocketConnected() {
         updateObsStatus()
         updateStatusObsText()
@@ -459,6 +509,7 @@ extension Model: ObsWebsocketDelegate {
         obsQuickButton.currentScenePicker = sceneName
         obsQuickButton.currentScene = sceneName
         updateObsAudioInputs(sceneName: sceneName)
+        updateObsMediaInputs(sceneName: sceneName)
         updateStatusObsText()
     }
 

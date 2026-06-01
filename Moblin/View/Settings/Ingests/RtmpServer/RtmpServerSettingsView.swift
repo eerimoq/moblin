@@ -14,9 +14,9 @@ struct RtmpServerSettingsView: View {
 
     private func status() -> String {
         if rtmpServer.enabled {
-            return String(rtmpServer.streams.count)
+            String(rtmpServer.streams.count)
         } else {
-            return "0"
+            "0"
         }
     }
 

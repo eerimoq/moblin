@@ -5,7 +5,7 @@ private struct PickerItemView: View {
 
     var body: some View {
         Text(preset.name)
-            .font(.subheadline)
+            .minimumScaleFactor(pickerLabelMinimumScaleFactor)
     }
 }
 
@@ -18,17 +18,17 @@ private struct ZoomPresetView: View {
 
     private func segmentWidth() -> Double {
         if database.bigButtons {
-            return zoomSegmentWidthBig
+            zoomSegmentWidthBig
         } else {
-            return zoomSegmentWidth
+            zoomSegmentWidth
         }
     }
 
     private func height() -> Double {
         if database.bigButtons {
-            return segmentHeightBig
+            segmentHeightBig
         } else {
-            return segmentHeight
+            segmentHeight
         }
     }
 
@@ -54,7 +54,7 @@ private struct ZoomPresetView: View {
             RoundedRectangle(cornerRadius: 7)
                 .stroke(pickerBorderColor)
         )
-        .padding([.bottom], 5)
+        .padding(.bottom, 5)
     }
 }
 
@@ -67,17 +67,17 @@ private struct ZoomPresetVView: View {
 
     private func segmentWidth() -> Double {
         if database.bigButtons {
-            return zoomSegmentWidthBig
+            zoomSegmentWidthBig
         } else {
-            return zoomSegmentWidth
+            zoomSegmentWidth
         }
     }
 
     private func height() -> Double {
         if database.bigButtons {
-            return segmentHeightBig
+            segmentHeightBig
         } else {
-            return segmentHeight
+            segmentHeight
         }
     }
 
@@ -103,7 +103,7 @@ private struct ZoomPresetVView: View {
             RoundedRectangle(cornerRadius: 7)
                 .stroke(pickerBorderColor)
         )
-        .padding([.bottom], 5)
+        .padding(.bottom, 5)
     }
 }
 
@@ -114,17 +114,17 @@ struct StreamOverlayRightZoomPresetSelctorView: View {
 
     private func presets() -> Binding<[SettingsZoomPreset]> {
         if model.cameraPosition == .front {
-            return $zoom.frontZoomPresets
+            $zoom.frontZoomPresets
         } else {
-            return $zoom.backZoomPresets
+            $zoom.backZoomPresets
         }
     }
 
     private func selectedPresetId() -> Binding<UUID> {
         if model.cameraPosition == .front {
-            return $zoom.frontPresetId
+            $zoom.frontPresetId
         } else {
-            return $zoom.backPresetId
+            $zoom.backPresetId
         }
     }
 
@@ -145,17 +145,17 @@ struct StreamOverlayRightZoomPresetVSelctorView: View {
 
     private func presets() -> Binding<[SettingsZoomPreset]> {
         if model.cameraPosition == .front {
-            return $zoom.frontZoomPresets
+            $zoom.frontZoomPresets
         } else {
-            return $zoom.backZoomPresets
+            $zoom.backZoomPresets
         }
     }
 
     private func selectedPresetId() -> Binding<UUID> {
         if model.cameraPosition == .front {
-            return $zoom.frontPresetId
+            $zoom.frontPresetId
         } else {
-            return $zoom.backPresetId
+            $zoom.backPresetId
         }
     }
 

@@ -148,6 +148,46 @@ private struct ObsScenesView: View {
     }
 }
 
+private struct ObsSceneMediaSourceView: View {
+    let model: Model
+    @Binding var source: ObsSceneMediaSource
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                Section {
+                    TextEditNavigationView(
+                        title: String(localized: "Input"),
+                        value: source.input,
+                        onSubmit: {
+                            model.setObsMediaSourceSettings(name: source.name, input: $0.trim())
+                        },
+                        placeholder: "srt://1.2.3.4:4000"
+                    )
+                }
+            }
+            .navigationTitle("\(source.name) settings")
+        } label: {
+            Text(source.name)
+        }
+    }
+}
+
+private struct ObsSceneMediaSourcesView: View {
+    let model: Model
+    @ObservedObject var obsQuickButton: QuickButtonObs
+
+    var body: some View {
+        Section {
+            ForEach($obsQuickButton.sceneMediaSources) {
+                ObsSceneMediaSourceView(model: model, source: $0)
+            }
+        } header: {
+            Text("Scene media sources")
+        }
+    }
+}
+
 private struct ObsSceneAudioInputsView: View {
     let model: Model
     @ObservedObject var obsQuickButton: QuickButtonObs
@@ -276,6 +316,7 @@ private struct ObsConnectedView: View {
         ObsSnapshotView(obsQuickButton: obsQuickButton)
         ObsScenesView(model: model, obsQuickButton: obsQuickButton)
         ObsSceneAudioInputsView(model: model, obsQuickButton: obsQuickButton)
+        ObsSceneMediaSourcesView(model: model, obsQuickButton: obsQuickButton)
         if !stream.obsSourceName.isEmpty {
             ObsFixSourceView(model: model, stream: stream, obsQuickButton: obsQuickButton)
             ObsAudioSyncView(model: model, stream: stream, obsQuickButton: obsQuickButton)

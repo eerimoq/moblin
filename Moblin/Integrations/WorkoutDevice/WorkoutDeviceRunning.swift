@@ -1,4 +1,4 @@
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 
 let workoutDeviceRunningServiceId = CBUUID(string: "1814")
 let workoutDeviceRunningMeasurementCharacteristicId = CBUUID(string: "2A53")
@@ -51,7 +51,7 @@ class WorkoutDeviceRunning {
     }
 
     func isAnyCharacteristicDiscovered() -> Bool {
-        return measurementCharacteristic != nil
+        measurementCharacteristic != nil
     }
 
     func handleMeasurement(value: Data) throws -> WorkoutDeviceRunningMetrics {

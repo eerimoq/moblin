@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 import Network
 
-class RtmpServerChunkStream {
+class RtmpServerChunkStream: @unchecked Sendable {
     private var messageBody: Data
     var messageLength: Int
     var messageTypeId: UInt8
@@ -59,7 +59,7 @@ class RtmpServerChunkStream {
     }
 
     private func messageRemain() -> Int {
-        return messageLength - messageBody.count
+        messageLength - messageBody.count
     }
 
     private func processMessage() {
@@ -171,6 +171,7 @@ class RtmpServerChunkStream {
             chunkStreamId: RtmpChunk.ChunkStreamId.control.rawValue,
             message: RtmpSetChunkSizeMessage(1024)
         ))
+        client.chunkSizeToClient = 1024
         client.sendMessage(chunk: RtmpChunk(
             type: .zero,
             chunkStreamId: streamId,
@@ -431,17 +432,13 @@ class RtmpServerChunkStream {
             client.stopInternal(reason: "Unsupported video codec \(control & 0xF)")
             return
         }
-        guard format == .avc else {
-            client.stopInternal(reason: "Unsupported video codec \(format.toString()).")
-            return
-        }
         switch FlvAvcPacketType(rawValue: messageBody[1]) {
         case .seq:
-            processMessageVideoTypeSeq(client: client)
+            processMessageVideoTypeSeq(client: client, format: format)
         case .nal:
             processMessageVideoTypeNal(client: client)
         default:
-            logger.info("rtmp-server: Unsupported video H.264/AVC packet type \(messageBody[1])")
+            logger.info("rtmp-server: Unsupported video \(format.toString()) packet type \(messageBody[1])")
         }
     }
 
@@ -485,17 +482,21 @@ class RtmpServerChunkStream {
         }
     }
 
-    private func processMessageVideoTypeSeq(client: RtmpServerClient) {
+    private func processMessageVideoTypeSeq(client: RtmpServerClient, format: FlvVideoCodec) {
         guard checkMessageBodyBigEnough(client: client, minimumSize: FlvTagType.video.headerSize) else {
             return
         }
-        let avcC = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
-        let videoConfig = MpegTsVideoConfigAvc(avcC: avcC)
-        let status = videoConfig.makeFormatDescription(&formatDescription)
+        let configRecord = messageBody.subdata(in: FlvTagType.video.headerSize ..< messageBody.count)
+        let status = switch format {
+        case .avc:
+            MpegTsVideoConfigAvc(avcC: configRecord).makeFormatDescription(&formatDescription)
+        case .hevc:
+            MpegTsVideoConfigHevc(hvcC: configRecord).makeFormatDescription(&formatDescription)
+        }
         if status == noErr {
             setupVideoEncoderIfNeeded(formatDescription: formatDescription)
         } else {
-            client.stopInternal(reason: "H.264/AVC format description error \(status)")
+            client.stopInternal(reason: "\(format.toString()) format description error \(status)")
         }
     }
 
@@ -582,11 +583,10 @@ class RtmpServerChunkStream {
                                        compositionTime: Int32,
                                        dataOffset: Int) -> CMSampleBuffer?
     {
-        var duration: Int64
-        if videoTimestamp == -1 {
-            duration = 0
+        let duration: Int64 = if videoTimestamp == -1 {
+            0
         } else {
-            duration = Int64((mediaTimestamp - mediaTimestampZero) - videoTimestamp)
+            Int64((mediaTimestamp - mediaTimestampZero) - videoTimestamp)
         }
         videoTimestamp = mediaTimestamp - mediaTimestampZero
         let presentationTimeStamp = Int64(videoTimestamp + getBasePresentationTimeStamp(client)) +
@@ -633,7 +633,7 @@ class RtmpServerChunkStream {
     }
 
     private func getBasePresentationTimeStamp(_ client: RtmpServerClient) -> Double {
-        return client.getBasePresentationTimeStamp()
+        client.getBasePresentationTimeStamp()
     }
 
     private func checkMessageBodyBigEnough(client: RtmpServerClient, minimumSize: Int) -> Bool {

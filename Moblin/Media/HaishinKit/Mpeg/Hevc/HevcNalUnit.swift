@@ -19,6 +19,10 @@ enum HevcNalUnitType: UInt8 {
     case accessUnitDelimiter = 35
     case prefixSeiNut = 39
     case unspec = 0xFF
+
+    static func isPicture(type: UInt8) -> Bool {
+        type <= 31
+    }
 }
 
 struct HevcNalUnit: NalUnit {
@@ -42,7 +46,7 @@ struct HevcNalUnit: NalUnit {
                 payload = .unspec
             }
         } catch {
-            logger.debug("hevc: Failed to decode NAL unit with error: \(error)")
+            // logger.debug("hevc: Failed to decode NAL unit with error: \(error)")
             return nil
         }
     }

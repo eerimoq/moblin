@@ -1,22 +1,10 @@
 import SwiftUI
 
 struct StreamSrtAdaptiveBitrateSettingsView: View {
-    @EnvironmentObject var model: Model
+    let model: Model
     let stream: SettingsStream
     @ObservedObject var srt: SettingsStreamSrt
-
-    private var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate {
-        srt.adaptiveBitrate
-    }
-
-    private func handleAlgorithmChange(value: SettingsStreamSrtAdaptiveBitrateAlgorithm) {
-        adaptiveBitrate.algorithm = value
-        if srt.adaptiveBitrateEnabled {
-            model.setAdaptiveBitrateSrtAlgorithm(stream: stream)
-        }
-        model.updateAdaptiveBitrateSrt(srt: srt)
-        model.objectWillChange.send()
-    }
+    @ObservedObject var adaptiveBitrate: SettingsStreamSrtAdaptiveBitrate
 
     private func submitFastIrlPacketsInFlight(value: Float) {
         adaptiveBitrate.fastIrlSettings.packetsInFlight = Int32(value)
@@ -34,7 +22,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func formatBitrateIncreaseSpeed(value: Float) -> String {
-        return "\(formatBytesPerSecond(speed: Int64(value * 1000)))/sec"
+        "\(formatBytesPerSecond(speed: Int64(value * 1000)))/sec"
     }
 
     private func submitBitrateDecreaseSpeed(value: Float) {
@@ -43,7 +31,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func formatBitrateDecreaseSpeed(value: Float) -> String {
-        return "\(Int(value)) %/sec"
+        "\(Int(value)) %/sec"
     }
 
     private func submitMinimumBitrateDecreaseSpeed(value: Float) {
@@ -52,7 +40,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func formatMinimumBitrateDecreaseSpeed(value: Float) -> String {
-        return "\(formatBytesPerSecond(speed: Int64(value)))/sec"
+        "\(formatBytesPerSecond(speed: Int64(value)))/sec"
     }
 
     private func submitMinimumBitrate(value: Float) {
@@ -61,7 +49,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func formatMinimumBitrate(value: Float) -> String {
-        return formatBytesPerSecond(speed: Int64(value))
+        formatBytesPerSecond(speed: Int64(value))
     }
 
     private func submitPacketsInFlight(value: Float) {
@@ -70,7 +58,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func formatPacketsInFlight(value: Float) -> String {
-        return "\(Int(value))"
+        "\(Int(value))"
     }
 
     private func submitAllowedRttSpike(value: Float) {
@@ -79,7 +67,7 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     }
 
     private func formatAllowedRttSpike(value: Float) -> String {
-        return "\(Int(value))"
+        "\(Int(value))"
     }
 
     private func submitBelaboxMinimumBitrate(value: Float) {
@@ -90,13 +78,16 @@ struct StreamSrtAdaptiveBitrateSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Picker("Algorithm", selection: Binding(get: {
-                    adaptiveBitrate.algorithm
-                }, set: handleAlgorithmChange)) {
+                Picker("Algorithm", selection: $adaptiveBitrate.algorithm) {
                     ForEach(SettingsStreamSrtAdaptiveBitrateAlgorithm.allCases, id: \.self) {
                         Text($0.toString())
-                            .tag($0)
                     }
+                }
+                .onChange(of: adaptiveBitrate.algorithm) { _ in
+                    if srt.adaptiveBitrateEnabled {
+                        model.setAdaptiveBitrateSrtAlgorithm(stream: stream)
+                    }
+                    model.updateAdaptiveBitrateSrt(srt: srt)
                 }
             } footer: {
                 Text("""

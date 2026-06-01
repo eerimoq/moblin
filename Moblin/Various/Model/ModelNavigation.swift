@@ -9,27 +9,28 @@ enum NavigationTransportType: CaseIterable {
     func toSystem() -> MKDirectionsTransportType {
         switch self {
         case .walking:
-            return .walking
+            .walking
         case .cycling:
-            return .cycling
+            .cycling
         case .automobile:
-            return .automobile
+            .automobile
         }
     }
 
     func image() -> String {
         switch self {
         case .walking:
-            return "figure.walk"
+            "figure.walk"
         case .cycling:
-            return "bicycle"
+            "bicycle"
         case .automobile:
-            return "car.fill"
+            "car.fill"
         }
     }
 }
 
 @available(iOS 26, *)
+@MainActor
 class Navigation: ObservableObject {
     static let shared = Navigation()
     @Published var cameraPosition: MapCameraPosition = .automatic
@@ -68,7 +69,11 @@ class Navigation: ObservableObject {
             guard let response else {
                 return
             }
-            self.route = response.routes.first
+            nonisolated(unsafe)
+            let route = response.routes.first
+            DispatchQueue.main.async {
+                self.route = route
+            }
         }
     }
 }
@@ -76,6 +81,6 @@ class Navigation: ObservableObject {
 extension Model {
     @available(iOS 26, *)
     func navigation() -> Navigation {
-        return Navigation.shared
+        Navigation.shared
     }
 }

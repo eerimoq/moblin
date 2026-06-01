@@ -16,7 +16,7 @@ private class ModelMock {
     }
 
     func waitForPacket() async -> String {
-        return await packets.get()
+        await packets.get()
     }
 }
 
@@ -41,9 +41,9 @@ struct SrtSenderSuite {
         let model = ModelMock()
         sender.delegate = model
         sender.start()
-        _ = checkInductionHandshake(packet: await model.waitForPacket())
+        _ = await checkInductionHandshake(packet: model.waitForPacket())
         try sender.input(packet: createInductionHandshake())
-        _ = checkConclusionHandshake(packet: await model.waitForPacket())
+        _ = await checkConclusionHandshake(packet: model.waitForPacket())
         try sender.input(packet: createConclusionHandshake())
         await model.waitForConnected()
         sender.send(now: .now.advanced(by: .seconds(6)))
@@ -62,7 +62,7 @@ struct SrtSenderSuite {
     }
 
     private func createInductionHandshake() throws -> Data {
-        return try Data(hexString: """
+        try Data(hexString: """
         80000000000000000000000000000000000000040000000200000fe6000005dc\
         00002000000000012ab1f77c000000000100007f000000000000000000000000
         """)
@@ -84,7 +84,7 @@ struct SrtSenderSuite {
     }
 
     private func createConclusionHandshake() throws -> Data {
-        return try Data(hexString: """
+        try Data(hexString: """
         800000000000000000000000000000000000000500000005000000000000\
         05dc00002000ffffffff2ab1f77c000000000100007f0000000000000000\
         000000000001000300010503000000bf07d007d00005000134333231

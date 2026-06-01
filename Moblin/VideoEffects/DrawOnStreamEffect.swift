@@ -19,7 +19,7 @@ func drawOnStreamCreatePath(points: [CGPoint]) -> Path {
 }
 
 private func calculateMidPoint(_ point1: CGPoint, _ point2: CGPoint) -> CGPoint {
-    return CGPoint(x: (point1.x + point2.x) / 2, y: (point1.y + point2.y) / 2)
+    CGPoint(x: (point1.x + point2.x) / 2, y: (point1.y + point2.y) / 2)
 }
 
 private func transformPoint(
@@ -37,7 +37,7 @@ private func transformPoint(
     return CGPoint(x: x, y: point.y * scale - offsetY)
 }
 
-final class DrawOnStreamEffect: VideoEffect {
+final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
 

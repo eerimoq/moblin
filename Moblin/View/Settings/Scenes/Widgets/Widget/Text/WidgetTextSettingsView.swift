@@ -1,6 +1,6 @@
 import PhotosUI
 import SwiftUI
-import Translation
+@preconcurrency import Translation
 
 private struct Suggestion: Identifiable {
     let id: Int
@@ -27,8 +27,10 @@ private let suggestionDebug = "{time}\n{bitrateAndTotal}\n{debugOverlay}"
 private let suggestionTesla = "🚗 Tesla\n⚙️ {teslaDrive}\n🔋 {teslaBatteryLevel}\n🔈 {teslaMedia}"
 private let suggestionRacing = "🏎️ Racing 🏎️\n{lapTimes}"
 
+@MainActor
 private let suggestions = createSuggestions()
 
+@MainActor
 private func createSuggestions() -> [Suggestion] {
     var suggestions = [
         Suggestion(id: 0, name: "Travel", text: suggestionTravel),
@@ -919,6 +921,30 @@ private struct TeslaVariablesView: View {
     }
 }
 
+private struct StreamingVariablesView: View {
+    @Binding var value: String
+
+    var body: some View {
+        NavigationLink {
+            Form {
+                VariableView(
+                    title: "{latestSubscriber}",
+                    description: String(localized: "Show latest subscriber"),
+                    text: $value
+                )
+                VariableView(
+                    title: "{latestFollower}",
+                    description: String(localized: "Show latest follower"),
+                    text: $value
+                )
+            }
+            .navigationTitle("Streaming")
+        } label: {
+            Text("Streaming")
+        }
+    }
+}
+
 private struct DebugVariablesView: View {
     @Binding var value: String
 
@@ -980,6 +1006,7 @@ private struct TextSelectionView: View {
                 LanguageVariablesView(value: $value)
                 WorkoutVariablesView(model: model, value: $value)
                 TeslaVariablesView(value: $value)
+                StreamingVariablesView(value: $value)
                 DebugVariablesView(value: $value)
             } header: {
                 Text("Variables")
@@ -999,7 +1026,7 @@ struct TextWidgetTextView: View {
 
     var body: some View {
         Section {
-            MultiLineTextFieldView(value: $value)
+            MultiLineTextFieldView(value: $value, placeholder: String(localized: "My text"))
                 .keyboardType(.default)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
@@ -1376,7 +1403,7 @@ struct WidgetTextSettingsView: View {
                     Text("Minimum width")
                     Spacer(minLength: 0)
                     Toggle(isOn: $text.widthEnabled) {}
-                        .padding([.trailing], 2)
+                        .padding(.trailing, 2)
                     GrayTextView(text: String(text.width))
                 }
                 .onChange(of: text.widthEnabled) { _ in

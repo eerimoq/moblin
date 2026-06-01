@@ -24,19 +24,19 @@ enum ThermalState: Int, Codable, Comparable {
     }
 
     static func < (lhs: ThermalState, rhs: ThermalState) -> Bool {
-        return lhs.rawValue < rhs.rawValue
+        lhs.rawValue < rhs.rawValue
     }
 
     func toProcessInfo() -> ProcessInfo.ThermalState {
         switch self {
         case .nominal:
-            return .nominal
+            .nominal
         case .fair:
-            return .fair
+            .fair
         case .serious:
-            return .serious
+            .serious
         case .critical:
-            return .critical
+            .critical
         }
     }
 }
@@ -69,7 +69,7 @@ class StreamingHistoryStream: Identifiable, Codable {
     }
 
     func highestBitrateString() -> String {
-        return formatBytesPerSecond(speed: highestBitrate!)
+        formatBytesPerSecond(speed: highestBitrate!)
     }
 
     func updateHighestThermalState(thermalState: ThermalState) {
@@ -85,11 +85,11 @@ class StreamingHistoryStream: Identifiable, Codable {
     }
 
     func lowestBatteryPercentageString() -> String {
-        return "\(Int(100 * lowestBatteryLevel!))%"
+        "\(Int(100 * lowestBatteryLevel!))%"
     }
 
     func duration() -> Duration {
-        return .seconds(stopTime.timeIntervalSince(startTime))
+        .seconds(stopTime.timeIntervalSince(startTime))
     }
 }
 
@@ -102,13 +102,13 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case totalTime,
-             totalBytes,
-             totalStreams,
-             streams
+        case totalTime
+        case totalBytes
+        case totalStreams
+        case streams
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.totalTime, totalTime)
         try container.encode(.totalBytes, totalBytes)
@@ -116,7 +116,7 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
         try container.encode(.streams, streams)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         totalTime = container.decode(.totalTime, Duration.self, .seconds(0))
         totalBytes = container.decode(.totalBytes, UInt64.self, 0)
@@ -125,16 +125,18 @@ class StreamingHistoryDatabase: Codable, ObservableObject {
     }
 
     static func fromString(settings: String) throws -> StreamingHistoryDatabase {
-        return try JSONDecoder().decode(
+        try JSONDecoder().decode(
             StreamingHistoryDatabase.self,
             from: settings.data(using: .utf8)!
         )
     }
 
     func toString() throws -> String {
-        return try String.fromUtf8(data: JSONEncoder().encode(self))
+        try String.fromUtf8(data: JSONEncoder().encode(self))
     }
 }
+
+private let storage = SimpleStringStorage(key: "streamingHistory")
 
 final class StreamingHistory {
     private var realDatabase = StreamingHistoryDatabase()
@@ -142,11 +144,9 @@ final class StreamingHistory {
         realDatabase
     }
 
-    @AppStorage("streamingHistory") var storage = ""
-
     func load() {
         do {
-            try tryLoadAndMigrate(settings: storage)
+            try tryLoadAndMigrate(settings: storage.get())
         } catch {
             logger.info("streaming-history: Failed to load with error \(error). Using default.")
             realDatabase = StreamingHistoryDatabase()
@@ -160,7 +160,7 @@ final class StreamingHistory {
 
     func store() {
         do {
-            storage = try realDatabase.toString()
+            try storage.set(realDatabase.toString())
         } catch {
             logger.info("streaming-history: Failed to store.")
         }

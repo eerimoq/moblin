@@ -6,7 +6,7 @@ func calculateMd5Base64(_ message: String) -> String {
 }
 
 func calculateMd5(_ message: String) -> Data {
-    return calculateMd5(message.utf8Data)
+    calculateMd5(message.utf8Data)
 }
 
 func calculateMd5(_ data: Data) -> Data {

@@ -10,13 +10,13 @@ class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject, Nam
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             ssid,
-             password
+        case id
+        case name
+        case ssid
+        case password
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -24,7 +24,7 @@ class SettingsGoProWifiCredentials: Codable, Identifiable, ObservableObject, Nam
         try container.encode(.password, password)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -45,15 +45,15 @@ class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject, Named {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             type,
-             serverStreamId,
-             serverUrl,
-             customUrl
+        case id
+        case name
+        case type
+        case serverStreamId
+        case serverUrl
+        case customUrl
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -63,7 +63,7 @@ class SettingsGoProRtmpUrl: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.customUrl, customUrl)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -90,13 +90,13 @@ class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject, Na
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             isHero12Or13,
-             resolution
+        case id
+        case name
+        case isHero12Or13
+        case resolution
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -104,7 +104,7 @@ class SettingsGoProLaunchLiveStream: Codable, Identifiable, ObservableObject, Na
         try container.encode(.resolution, resolution)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -124,15 +124,15 @@ class SettingsGoPro: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case launchLiveStream,
-             selectedLaunchLiveStream,
-             wifiCredentials,
-             selectedWifiCredentials,
-             rtmpUrls,
-             selectedRtmpUrl
+        case launchLiveStream
+        case selectedLaunchLiveStream
+        case wifiCredentials
+        case selectedWifiCredentials
+        case rtmpUrls
+        case selectedRtmpUrl
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.launchLiveStream, launchLiveStream)
         try container.encode(.selectedLaunchLiveStream, selectedLaunchLiveStream)
@@ -142,7 +142,7 @@ class SettingsGoPro: Codable, ObservableObject {
         try container.encode(.selectedRtmpUrl, selectedRtmpUrl)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         launchLiveStream = container.decode(.launchLiveStream, [SettingsGoProLaunchLiveStream].self, [])
         selectedLaunchLiveStream = try? container.decode(UUID.self, forKey: .selectedLaunchLiveStream)

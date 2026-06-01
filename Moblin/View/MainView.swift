@@ -159,7 +159,7 @@ private struct MenuView: View {
             }
         case .store:
             NavigationStack {
-                StoreSettingsView(store: model.store)
+                StoreSettingsView(model: model, store: model.store)
                     .navigationBarTitleDisplayMode(.inline)
             }
         case .chat:
@@ -217,6 +217,11 @@ private struct MenuView: View {
                 QuickButtonLiveView(model: model, database: model.database, stream: model.stream)
                     .navigationBarTitleDisplayMode(.inline)
             }
+        case .macros:
+            NavigationStack {
+                QuickButtonMacrosView(model: model, macros: model.database.macros)
+                    .navigationBarTitleDisplayMode(.inline)
+            }
         case .none:
             EmptyView()
         }
@@ -227,7 +232,7 @@ struct BrowserWidgetView: UIViewRepresentable {
     let browser: Browser
 
     func makeUIView(context _: Context) -> WKWebView {
-        return browser.browserEffect.webView
+        browser.browserEffect.webView
     }
 
     func updateUIView(_: WKWebView, context _: Context) {
@@ -275,7 +280,7 @@ private struct WebBrowserAlertsView: UIViewControllerRepresentable {
     @EnvironmentObject var model: Model
 
     func makeUIViewController(context _: Context) -> WebBrowserController {
-        return model.webBrowserController
+        model.webBrowserController
     }
 
     func updateUIViewController(_: WebBrowserController, context _: Context) {}
@@ -396,14 +401,14 @@ struct MainView: View {
     }
 
     private func streamAspectRatio() -> CGFloat {
-        return model.stream.dimensions().aspectRatio()
+        model.stream.dimensions().aspectRatio()
     }
 
     private func portraitVideoOffset() -> Double {
         if model.stream.portrait {
-            return 0
+            0
         } else {
-            return model.portraitVideoOffsetFromTop
+            model.portraitVideoOffsetFromTop
         }
     }
 
@@ -469,8 +474,8 @@ struct MainView: View {
                     let backgroundColor = model.panelHidden ? model.showingPanel
                         .buttonsBackgroundColor() : .clear
                     PanelButtonsView(backgroundColor: backgroundColor)
-                        .padding([.trailing], 10)
-                        .padding([.top], -7)
+                        .padding(.trailing, 10)
+                        .padding(.top, -7)
                 }
             }
             .gesture(
@@ -541,7 +546,7 @@ struct MainView: View {
                 }
                 if model.showingPanel != .none, model.panelHidden {
                     PanelButtonsView(backgroundColor: model.showingPanel.buttonsBackgroundColor())
-                        .padding([.trailing], -1)
+                        .padding(.trailing, -1)
                 }
             }
             .gesture(
@@ -571,18 +576,18 @@ struct MainView: View {
     private func edgesToIgnore() -> Edge.Set {
         if isPhone() {
             if orientation.isPortrait {
-                if quickButtons.bigButtons && quickButtons.twoColumns {
-                    return [.bottom]
+                if quickButtons.bigButtons, quickButtons.twoColumns {
+                    [.bottom]
                 } else {
-                    return []
+                    []
                 }
-            } else if quickButtons.bigButtons && quickButtons.twoColumns {
-                return [.top, .trailing]
+            } else if quickButtons.bigButtons, quickButtons.twoColumns {
+                [.top, .trailing]
             } else {
-                return [.top]
+                [.top]
             }
         } else {
-            return []
+            []
         }
     }
 

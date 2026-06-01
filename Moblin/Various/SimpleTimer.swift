@@ -2,7 +2,7 @@ import Foundation
 
 class SimpleTimer {
     private let queue: DispatchQueue
-    private var timer: DispatchSourceTimer?
+    private var timer: (any DispatchSourceTimer)?
 
     init(queue: DispatchQueue) {
         self.queue = queue

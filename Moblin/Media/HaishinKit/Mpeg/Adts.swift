@@ -101,7 +101,7 @@ class ADTSReader: Sequence {
     }
 
     func makeIterator() -> ADTSReaderIterator {
-        return ADTSReaderIterator(data: data)
+        ADTSReaderIterator(data: data)
     }
 }
 

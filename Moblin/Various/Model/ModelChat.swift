@@ -95,18 +95,17 @@ extension Model {
     func isAlertMessage(post: ChatPost) -> Bool {
         switch post.highlight?.kind {
         case .redemption:
-            return true
+            true
         case .newFollower:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 
     func reloadChats() {
         reloadTwitchChat()
         reloadKickPusher()
-        reloadDLiveChat()
         reloadYouTubeLiveChat()
         reloadSoopChat()
         reloadOpenStreamingPlatformChat()
@@ -154,9 +153,6 @@ extension Model {
         if isKickPusherConfigured() {
             numberOfChats += 1
         }
-        if isDLiveChatConfigured() {
-            numberOfChats += 1
-        }
         if isYouTubeLiveChatConfigured() {
             numberOfChats += 1
         }
@@ -170,9 +166,9 @@ extension Model {
     }
 
     func isChatConfigured() -> Bool {
-        return isTwitchChatConfigured() || isKickPusherConfigured() ||
+        isTwitchChatConfigured() || isKickPusherConfigured() ||
             isYouTubeLiveChatConfigured() || isSoopChatConfigured() ||
-            isDLiveChatConfigured() || isOpenStreamingPlatformChatConfigured()
+            isOpenStreamingPlatformChatConfigured()
     }
 
     func isRemoteControlChatAndEvents(platform: Platform?) -> Bool {
@@ -186,34 +182,30 @@ extension Model {
     }
 
     func isChatConnected() -> Bool {
-        if isTwitchChatConfigured() && !isTwitchChatConnected() {
+        if isTwitchChatConfigured(), !isTwitchChatConnected() {
             return false
         }
-        if isKickPusherConfigured() && !isKickPusherConnected() {
+        if isKickPusherConfigured(), !isKickPusherConnected() {
             return false
         }
-        if isYouTubeLiveChatConfigured() && !isYouTubeLiveChatConnected() {
+        if isYouTubeLiveChatConfigured(), !isYouTubeLiveChatConnected() {
             return false
         }
-        if isSoopChatConfigured() && !isSoopChatConnected() {
+        if isSoopChatConfigured(), !isSoopChatConnected() {
             return false
         }
-        if isOpenStreamingPlatformChatConfigured() && !isOpenStreamingPlatformChatConnected() {
-            return false
-        }
-        if isDLiveChatConfigured() && !isDLiveChatConnected() {
+        if isOpenStreamingPlatformChatConfigured(), !isOpenStreamingPlatformChatConnected() {
             return false
         }
         return true
     }
 
     func hasChatEmotes() -> Bool {
-        return hasTwitchChatEmotes()
+        hasTwitchChatEmotes()
             || hasKickPusherEmotes()
             || hasYouTubeLiveChatEmotes()
             || hasSoopChatEmotes()
             || hasOpenStreamingPlatformChatEmotes()
-            || hasDLiveChatEmotes()
     }
 
     func resetChat() {
@@ -251,7 +243,7 @@ extension Model {
     }
 
     private func evaluateFilters(user: String?, segments: [ChatPostSegment]) -> SettingsChatFilter? {
-        return database.chat.filters.first(where: { $0.isMatching(user: user, segments: segments) })
+        database.chat.filters.first(where: { $0.isMatching(user: user, segments: segments) })
     }
 
     func appendChatMessage(
@@ -351,9 +343,12 @@ extension Model {
                     newQuickButtonChatAlertsPosts.append(post)
                 }
             }
-        }
-        if !enabledChatEffects.isEmpty {
-            chatWidgetChat.appendMessage(post: post)
+            if !enabledChatEffects.isEmpty {
+                chatWidgetChat.appendMessage(post: post)
+            }
+            for effect in enabledChatEmoteComboEffects {
+                effect.appendMessage(post: post)
+            }
         }
     }
 
@@ -377,7 +372,7 @@ extension Model {
     }
 
     func isShowingStatusChat() -> Bool {
-        return database.show.chat && isChatConfigured()
+        database.show.chat && isChatConfigured()
     }
 
     func updateStatusChatText() {
@@ -409,10 +404,7 @@ extension Model {
                 statuses.append(ChatPlatformStatus(platform: .openStreamingPlatform,
                                                    connected: isOpenStreamingPlatformChatConnected()))
             }
-            if isDLiveChatConfigured() {
-                statuses.append(ChatPlatformStatus(platform: .dlive, connected: isDLiveChatConnected()))
-            }
-            if statuses.allSatisfy({ $0.connected }) {
+            if statuses.allSatisfy(\.connected) {
                 status = String(localized: "Connected")
             } else {
                 status = String(localized: "Disconnected")
@@ -438,7 +430,7 @@ extension Model {
                     let chat = self.database.chat
                     Text(post.displayName(nicknames: chat.nicknames, displayStyle: chat.displayStyle))
                         .lineLimit(1)
-                        .padding([.trailing], 0)
+                        .padding(.trailing, 0)
                     if post.isRedemption() {
                         Text(" ")
                     } else {

@@ -3,7 +3,7 @@ import Foundation
 private final class BundleToken {}
 
 func isEqual<T: FloatingPoint>(_ actual: T, _ expected: T, epsilon: T) -> Bool {
-    return abs(actual - expected) < epsilon
+    abs(actual - expected) < epsilon
 }
 
 class MessageQueue<Message> {
@@ -20,9 +20,9 @@ class MessageQueue<Message> {
 
     func get() async -> Message {
         if let message = buffer.popLast() {
-            return message
+            message
         } else {
-            return await withCheckedContinuation {
+            await withCheckedContinuation {
                 continuations.append($0)
             }
         }

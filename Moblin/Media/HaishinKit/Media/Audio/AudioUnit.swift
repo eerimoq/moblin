@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 import CoreAudio
 
@@ -66,7 +66,7 @@ private class TalkbackPlayer {
     }
 }
 
-struct AudioUnitAttachParams {
+struct AudioUnitAttachParams: @unchecked Sendable {
     let device: AVCaptureDevice?
     let builtinDelay: Double
     let bufferedAudio: UUID?
@@ -89,8 +89,9 @@ func makeChannelMap(
     return channelMap.map { NSNumber(value: $0) }
 }
 
-final class AudioUnit: NSObject {
+final class AudioUnit: NSObject, @unchecked Sendable {
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
+    var previewEncoder: AudioEncoder?
     private var input: AVCaptureDeviceInput?
     private var output: AVCaptureAudioDataOutput?
     var muted = false
@@ -111,6 +112,7 @@ final class AudioUnit: NSObject {
                 return
             }
             encoder.setInputSourceFormat(inputSourceFormat)
+            previewEncoder?.setInputSourceFormat(inputSourceFormat)
         }
     }
 
@@ -147,6 +149,26 @@ final class AudioUnit: NSObject {
         encoder.stopRunning()
         processorPipelineQueue.async {
             self.inputSourceFormat = nil
+        }
+    }
+
+    func startPreviewEncoding(_ delegate: any AudioEncoderDelegate, settings: AudioEncoderSettings) {
+        let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
+        encoder.setSettings(settings: settings)
+        encoder.delegate = delegate
+        encoder.startRunning()
+        processorPipelineQueue.async {
+            if let inputSourceFormat = self.inputSourceFormat {
+                encoder.setInputSourceFormat(inputSourceFormat)
+            }
+            self.previewEncoder = encoder
+        }
+    }
+
+    func stopPreviewEncoding() {
+        processorPipelineQueue.async {
+            self.previewEncoder?.stopRunning()
+            self.previewEncoder = nil
         }
     }
 
@@ -275,6 +297,7 @@ final class AudioUnit: NSObject {
         inputSourceFormat = sampleBuffer.formatDescription?.audioStreamBasicDescription
         encoder.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
         processor.recorder.appendAudio(sampleBuffer, presentationTimeStamp)
+        previewEncoder?.appendSampleBuffer(sampleBuffer, presentationTimeStamp)
     }
 
     private func appendBufferedBuiltinAudio(_ sampleBuffer: CMSampleBuffer,
@@ -283,11 +306,10 @@ final class AudioUnit: NSObject {
         guard let bufferedBuiltinAudio, bufferedBuiltinAudio.latency > 0 else {
             return nil
         }
-        var sampleBufferCopy: CMSampleBuffer
-        if bufferedBuiltinAudio.numberOfBuffers() > 4 {
-            sampleBufferCopy = sampleBuffer.deepCopyAudioSampleBuffer() ?? sampleBuffer
+        let sampleBufferCopy: CMSampleBuffer = if bufferedBuiltinAudio.numberOfBuffers() > 4 {
+            sampleBuffer.deepCopyAudioSampleBuffer() ?? sampleBuffer
         } else {
-            sampleBufferCopy = sampleBuffer
+            sampleBuffer
         }
         let presentationTimeStamp = presentationTimeStamp + CMTime(seconds: bufferedBuiltinAudio.latency)
         guard let sampleBuffer = sampleBufferCopy.replacePresentationTimeStamp(presentationTimeStamp) else {

@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 import CoreImage
 
@@ -9,7 +9,7 @@ private struct VideoImage {
 
 private let lockQueue = DispatchQueue(label: "com.eerimoq.alerts-effect")
 
-class AlertsEffectVideoReader {
+class AlertsEffectVideoReader: @unchecked Sendable {
     private var images: Deque<VideoImage> = []
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
@@ -21,8 +21,9 @@ class AlertsEffectVideoReader {
             let asset = AVAsset(url: path)
             self.reader = try? AVAssetReader(asset: asset)
             asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+                let self2 = self
                 lockQueue.async {
-                    self?.loadVideoTrackCompletion(track: tracks?.first, error: error)
+                    self2?.loadVideoTrackCompletion(track: tracks?.first, error: error)
                 }
             }
         }
@@ -41,7 +42,7 @@ class AlertsEffectVideoReader {
     }
 
     func hasEnded() -> Bool {
-        return fillEnded && images.isEmpty
+        fillEnded && images.isEmpty
     }
 
     private func findImage(offset: Double) -> CIImage? {
@@ -64,6 +65,7 @@ class AlertsEffectVideoReader {
         guard let trackOutput else {
             return
         }
+        nonisolated(unsafe)
         var newImages: [VideoImage] = []
         for _ in 0 ... 10 {
             if let sampleBuffer = trackOutput.copyNextSampleBuffer(),
@@ -79,7 +81,7 @@ class AlertsEffectVideoReader {
         }
     }
 
-    private func loadVideoTrackCompletion(track: AVAssetTrack?, error: Error?) {
+    private func loadVideoTrackCompletion(track: AVAssetTrack?, error: (any Error)?) {
         guard error == nil, let track else {
             markFillEnded()
             return

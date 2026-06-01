@@ -8,12 +8,12 @@ private let serviceName = "_moblin._tcp"
 
 @available(iOS 26, *)
 func wiFiAwarePublishableService() -> WAPublishableService {
-    return WAPublishableService.allServices[serviceName]!
+    WAPublishableService.allServices[serviceName]!
 }
 
 @available(iOS 26, *)
 func wiFiAwareSubscribableService() -> WASubscribableService {
-    return WASubscribableService.allServices[serviceName]!
+    WASubscribableService.allServices[serviceName]!
 }
 
 @available(iOS 26, *)

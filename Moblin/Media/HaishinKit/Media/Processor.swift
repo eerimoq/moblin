@@ -27,21 +27,21 @@ let processorPipelineQueue = DispatchQueue(
 )
 
 private class Stream {
-    weak var delegate: (AudioEncoderDelegate & VideoEncoderDelegate)?
+    weak var delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)?
 
-    init(delegate: (AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
+    init(delegate: (any AudioEncoderDelegate & VideoEncoderDelegate)? = nil) {
         self.delegate = delegate
     }
 }
 
-final class Processor {
+final class Processor: @unchecked Sendable {
     let audio = AudioUnit()
     let video = VideoUnit()
     let recorder = Recorder()
     private var streams: [Stream] = []
-    let delegate: ProcessorDelegate
+    let delegate: any ProcessorDelegate
 
-    init(delegate: ProcessorDelegate) {
+    init(delegate: any ProcessorDelegate) {
         self.delegate = delegate
         audio.processor = self
         video.processor = self
@@ -61,13 +61,15 @@ final class Processor {
     }
 
     func getFps() -> Double {
-        return video.getFps()
+        video.getFps()
     }
 
-    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping () -> Void) {
+    func setColorSpace(colorSpace: AVCaptureColorSpace, onComplete: @escaping @MainActor () -> Void) {
         processorControlQueue.async {
             self.video.setColorSpace(colorSpace: colorSpace)
-            onComplete()
+            DispatchQueue.main.async {
+                onComplete()
+            }
         }
     }
 
@@ -105,25 +107,33 @@ final class Processor {
 
     func attachCamera(
         params: VideoUnitAttachParams,
-        onError: ((_ error: Error) -> Void)? = nil,
-        onSuccess: (() -> Void)? = nil
+        onError: (@MainActor (_ error: any Error) -> Void)? = nil,
+        onSuccess: (@MainActor () -> Void)? = nil
     ) {
         processorControlQueue.async {
             do {
                 try self.attachCameraInternal(params: params)
-                onSuccess?()
+                DispatchQueue.main.async {
+                    onSuccess?()
+                }
             } catch {
-                onError?(error)
+                DispatchQueue.main.async {
+                    onError?(error)
+                }
             }
         }
     }
 
-    func attachAudio(params: AudioUnitAttachParams, onError: ((_ error: Error) -> Void)? = nil) {
+    func attachAudio(params: AudioUnitAttachParams,
+                     onError: (@MainActor (_ error: any Error) -> Void)? = nil)
+    {
         processorControlQueue.async {
             do {
                 try self.attachAudioInternal(params: params)
             } catch {
-                onError?(error)
+                DispatchQueue.main.async {
+                    onError?(error)
+                }
             }
         }
     }
@@ -134,8 +144,8 @@ final class Processor {
         }
     }
 
-    func addBufferedVideo(cameraId: UUID, name: String, latency: Double) {
-        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedVideo(cameraId: UUID, name: String, latency: Double, trackDrift: Bool = true) {
+        video.addBufferedVideo(cameraId: cameraId, name: name, latency: latency, trackDrift: trackDrift)
     }
 
     func removeBufferedVideo(cameraId: UUID) {
@@ -202,10 +212,6 @@ final class Processor {
         video.setVideoPreview(cameraId: cameraId, drawable: drawable)
     }
 
-    func removeVideoPreview(cameraId: UUID) {
-        video.removeVideoPreview(cameraId: cameraId)
-    }
-
     func removeAllVideoPreviews() {
         video.removeAllVideoPreviews()
     }
@@ -218,8 +224,12 @@ final class Processor {
         video.setSceneSwitchTransition(sceneSwitchTransition: sceneSwitchTransition)
     }
 
-    func takeSnapshot(age: Float, onComplete: @escaping (UIImage, CIImage, CIImage) -> Void) {
+    func takeSnapshot(age: Float, onComplete: @escaping @MainActor (UIImage, CIImage, CIImage) -> Void) {
         video.takeSnapshot(age: age, onComplete: onComplete)
+    }
+
+    func takeVideoSourceSnapshot(videoSourceId: UUID, onComplete: @escaping @MainActor (UIImage?) -> Void) {
+        video.takeVideoSourceSnapshot(videoSourceId: videoSourceId, onComplete: onComplete)
     }
 
     func setCleanRecordings(enabled: Bool) {
@@ -289,6 +299,19 @@ final class Processor {
         }
     }
 
+    func startPreviewEncoding(_ delegate: any AudioEncoderDelegate & VideoEncoderDelegate,
+                              _ videoSettings: VideoEncoderSettings,
+                              _ audioSettings: AudioEncoderSettings)
+    {
+        video.startPreviewEncoding(delegate, settings: videoSettings)
+        audio.startPreviewEncoding(delegate, settings: audioSettings)
+    }
+
+    func stopPreviewEncoding() {
+        video.stopPreviewEncoding()
+        audio.stopPreviewEncoding()
+    }
+
     func startRunning() {
         video.startRunning()
         audio.startRunning()
@@ -308,11 +331,11 @@ final class Processor {
     }
 
     func getAudioEncoder() -> AudioEncoder {
-        return audio.encoder
+        audio.encoder
     }
 
     func getVideoEncoder() -> VideoEncoder {
-        return video.encoder
+        video.encoder
     }
 
     func setBufferedAudioDrift(cameraId: UUID, drift: Double) {

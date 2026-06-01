@@ -10,7 +10,7 @@ private class Cache {
     private var cache: [URL: Image] = [:]
 
     func get(_ url: URL) -> Image? {
-        return cache[url]
+        cache[url]
     }
 
     func set(_ url: URL, _ image: Image) {
@@ -18,6 +18,7 @@ private class Cache {
     }
 }
 
+@MainActor
 private let cache = Cache()
 
 struct CacheAsyncImage<Content: View, Content2: View>: View {

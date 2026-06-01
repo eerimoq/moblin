@@ -1,6 +1,6 @@
 import CoreImage
 
-final class TripleEffect: VideoEffect {
+final class TripleEffect: VideoEffect, @unchecked Sendable {
     private let centerFilter = CIFilter.sourceOverCompositing()
     private let rightFilter = CIFilter.sourceOverCompositing()
 

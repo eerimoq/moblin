@@ -24,9 +24,9 @@ protocol MoblinkScannerDelegate: AnyObject {
 class MoblinkScanner: NSObject {
     private var browser: NetServiceBrowser?
     private var services: [DiscoveredSerivce] = []
-    private weak var delegate: MoblinkScannerDelegate?
+    private weak var delegate: (any MoblinkScannerDelegate)?
 
-    init(delegate: MoblinkScannerDelegate) {
+    init(delegate: any MoblinkScannerDelegate) {
         self.delegate = delegate
     }
 
@@ -109,7 +109,7 @@ extension MoblinkScanner: NetServiceDelegate {
             }
             ipv6 = unsafePtr.pointee.sa_family == AF_INET6
         }
-        return (String(cString: hostname), ipv6)
+        return (String(cArray: hostname), ipv6)
     }
 
     private func formatWebsocketUrl(address: String, ipv6: Bool, port: Int) -> String? {

@@ -28,7 +28,7 @@ func createContainerDir(appGroup: String) throws -> URL {
 }
 
 func createSocketPath(containerDir: URL) -> URL {
-    return containerDir.appendingPathComponent("sb.sock")
+    containerDir.appendingPathComponent("sb.sock")
 }
 
 func removeFile(path: URL) {

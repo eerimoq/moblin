@@ -1,4 +1,6 @@
 import Collections
+import Combine
+import DequeModule
 import SwiftUI
 import WrappingHStack
 
@@ -83,9 +85,9 @@ private struct NormalView: View {
 
     func highlightColor(highlight: ChatPostHighlight) -> Color {
         if highlight.kind == .reply {
-            return .gray
+            .gray
         } else {
-            return .white
+            .white
         }
     }
 
@@ -95,7 +97,7 @@ private struct NormalView: View {
                 Rectangle()
                     .frame(width: 3)
                     .foregroundStyle(highlight.barColor)
-                    .padding([.trailing], 3)
+                    .padding(.trailing, 3)
                 VStack(alignment: .leading) {
                     HighlightView(image: highlight.image,
                                   name: highlight.title,

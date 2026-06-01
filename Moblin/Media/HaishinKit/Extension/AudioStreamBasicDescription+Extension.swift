@@ -1,4 +1,4 @@
-import CoreAudio
+public import CoreAudio
 import Foundation
 
 extension AudioStreamBasicDescription: @retroactive Equatable {

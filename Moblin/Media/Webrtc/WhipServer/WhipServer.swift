@@ -15,14 +15,14 @@ protocol WhipServerDelegate: AnyObject {
     )
 }
 
-class WhipServer {
+class WhipServer: @unchecked Sendable {
     private var server: HttpServer?
     private var clients: [UUID: WhipServerClient] = [:]
-    private let delegate: WhipServerDelegate
+    private let delegate: any WhipServerDelegate
     var settings: SettingsWhipServer
     private var bitrateStats = BitrateStats()
 
-    init(settings: SettingsWhipServer, delegate: WhipServerDelegate) {
+    init(settings: SettingsWhipServer, delegate: any WhipServerDelegate) {
         self.settings = settings
         self.delegate = delegate
     }
@@ -40,24 +40,27 @@ class WhipServer {
     }
 
     func getNumberOfClients() -> Int {
-        return whipServerDispatchQueue.sync {
+        whipServerDispatchQueue.sync {
             clients.count
         }
     }
 
     func updateStats() -> BitrateStatsInstant {
-        return whipServerDispatchQueue.sync {
+        whipServerDispatchQueue.sync {
             bitrateStats.update()
         }
     }
 
     func isStreamConnected(streamId: UUID) -> Bool {
-        return whipServerDispatchQueue.sync {
+        whipServerDispatchQueue.sync {
             clients[streamId] != nil
         }
     }
 
-    func startClient(streamKey: String, sdpOffer: String, onCompleted: @escaping (String?) -> Void) {
+    func startClient(streamKey: String,
+                     sdpOffer: String,
+                     onCompleted: @escaping @MainActor (String?) -> Void)
+    {
         whipServerDispatchQueue.async {
             self.startClientInternal(streamKey: streamKey, sdpOffer: sdpOffer, onCompleted: onCompleted)
         }
@@ -86,19 +89,25 @@ class WhipServer {
     private func startClientInternal(
         streamKey: String,
         sdpOffer: String,
-        onCompleted: @escaping (String?) -> Void
+        onCompleted: @escaping @MainActor (String?) -> Void
     ) {
         guard let stream = settings.streams.first(where: { $0.streamKey == streamKey }) else {
-            onCompleted(nil)
+            DispatchQueue.main.async {
+                onCompleted(nil)
+            }
             return
         }
         setupClient(stream: stream, sdpOffer: sdpOffer) { [weak self] sdpAnswer in
             guard let sdpAnswer else {
-                onCompleted(nil)
+                DispatchQueue.main.async {
+                    onCompleted(nil)
+                }
                 self?.clients.removeValue(forKey: stream.id)
                 return
             }
-            onCompleted(sdpAnswer)
+            DispatchQueue.main.async {
+                onCompleted(sdpAnswer)
+            }
         }
     }
 

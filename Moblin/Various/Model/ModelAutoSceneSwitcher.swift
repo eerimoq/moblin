@@ -9,6 +9,7 @@ class AutoSceneSwitcherProvider: ObservableObject {
 
 extension Model {
     func setAutoSceneSwitcher(id: UUID?) {
+        autoSceneSwitcher.currentSwitcherId = id
         database.autoSceneSwitchers.switcherId = id
         autoSceneSwitcher.switchTime = .now
         autoSceneSwitcher.sceneIds.removeAll()
@@ -49,7 +50,7 @@ extension Model {
 
     private func fillAutoSceneSwitcherIfNeeded(autoSwitcher: SettingsAutoSceneSwitcher) {
         if autoSceneSwitcher.sceneIds.isEmpty {
-            autoSceneSwitcher.sceneIds = autoSwitcher.scenes.map { $0.id }.reversed()
+            autoSceneSwitcher.sceneIds = autoSwitcher.scenes.map(\.id).reversed()
             if autoSwitcher.shuffle {
                 autoSceneSwitcher.sceneIds.shuffle()
                 if autoSceneSwitcher.sceneIds.last == autoSceneSwitcher.currentSwitcherSceneId {

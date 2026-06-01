@@ -11,7 +11,7 @@ final class NalUnitReader {
     }
 
     func available() -> Int {
-        return 8 * (data.count - byteOffset) - (7 - bitOffset)
+        8 * (data.count - byteOffset) - (7 - bitOffset)
     }
 
     func readRawBytes() throws -> Data {

@@ -16,7 +16,7 @@ struct SelfieStickSettingsView: View {
     @ObservedObject var selfieStick: SettingsSelfieStick
 
     private func functions() -> [SettingsControllerFunction] {
-        return SettingsControllerFunction.allCases.filter {
+        SettingsControllerFunction.allCases.filter {
             ![.unused, .zoomIn, .zoomOut].contains($0)
         }
     }
@@ -28,10 +28,7 @@ struct SelfieStickSettingsView: View {
                 ControllerButtonView(model: model,
                                      functions: functions(),
                                      function: $selfieStick.function,
-                                     sceneId: $selfieStick.sceneId,
-                                     widgetId: $selfieStick.widgetId,
-                                     gimbalPresetId: $selfieStick.gimbalPresetId,
-                                     gimbalMotion: $selfieStick.gimbalMotion)
+                                     functionData: $selfieStick.functionData)
                 SelfieStickDoesNotWorkView(database: model.database, selfieStick: selfieStick)
             } header: {
                 Text("Button")

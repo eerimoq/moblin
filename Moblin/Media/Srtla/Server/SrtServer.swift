@@ -1,7 +1,7 @@
 import AVFoundation
 import libsrt
 
-class SrtServer {
+class SrtServer: @unchecked Sendable {
     weak var srtlaServer: SrtlaServer?
     private var listenerSocket: SRTSOCKET = SRT_INVALID_SOCK
     var acceptedStreamId: Atomic<String> = .init("")
@@ -58,13 +58,15 @@ class SrtServer {
             }
             logger.info("srt-server: \(port): Accepted client \(stream.name).")
             let streamId = acceptedStreamId.value
+            let cameraId = stream.id
+            let name = stream.camera()
             DispatchQueue(label: "com.eerimoq.Moblin.SrtClient").async {
                 srtlaServer.connectedStreamIds.mutate { $0.append(streamId) }
-                srtlaServer.clientConnected(streamId: streamId)
-                SrtServerClient(server: self, streamId: streamId, timecodesEnabled: self.timecodesEnabled)
+                srtlaServer.clientConnected(cameraId: cameraId, name: name)
+                SrtServerClient(server: self, cameraId: cameraId, timecodesEnabled: self.timecodesEnabled)
                     .run(clientSocket: clientSocket)
                 srtlaServer.connectedStreamIds.mutate { $0.removeAll(where: { $0 == streamId }) }
-                srtlaServer.clientDisconnected(streamId: streamId)
+                srtlaServer.clientDisconnected(cameraId: cameraId, name: name)
                 logger.info("srt-server: \(self.port): Closed client.")
             }
             acceptedStreamId.mutate { $0 = "" }
@@ -73,7 +75,7 @@ class SrtServer {
 
     private func open() throws {
         listenerSocket = srt_create_socket()
-        guard listenerSocket != SRT_ERROR else {
+        guard listenerSocket != SRT_INVALID_SOCK else {
             throw "Failed to create socket: \(lastSrtSocketError())"
         }
     }
@@ -124,7 +126,8 @@ class SrtServer {
                 }
                 let srtServer: SrtServer = Unmanaged.fromOpaque(server)
                     .takeUnretainedValue()
-                srtServer.acceptedStreamId.mutate { $0 = String(cString: streamIdIn) }
+                let streamId = String(cString: streamIdIn)
+                srtServer.acceptedStreamId.mutate { $0 = streamId }
                 return 0
             },
             server
@@ -144,5 +147,5 @@ class SrtServer {
 }
 
 private func lastSrtSocketError() -> String {
-    return String(cString: srt_getlasterror_str())
+    String(cString: srt_getlasterror_str())
 }

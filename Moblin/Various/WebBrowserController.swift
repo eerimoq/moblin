@@ -9,7 +9,7 @@ extension WebBrowserController: WKUIDelegate {
     func webView(_: WKWebView,
                  runJavaScriptAlertPanelWithMessage message: String,
                  initiatedByFrame _: WKFrameInfo,
-                 completionHandler: @escaping () -> Void)
+                 completionHandler: @escaping @MainActor () -> Void)
     {
         showAlert = true
         let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -23,7 +23,7 @@ extension WebBrowserController: WKUIDelegate {
     func webView(_: WKWebView,
                  runJavaScriptConfirmPanelWithMessage message: String,
                  initiatedByFrame _: WKFrameInfo,
-                 completionHandler: @escaping (Bool) -> Void)
+                 completionHandler: @escaping @MainActor (Bool) -> Void)
     {
         showAlert = true
         let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -42,7 +42,7 @@ extension WebBrowserController: WKUIDelegate {
                  runJavaScriptTextInputPanelWithPrompt prompt: String,
                  defaultText: String?,
                  initiatedByFrame _: WKFrameInfo,
-                 completionHandler: @escaping (String?) -> Void)
+                 completionHandler: @escaping @MainActor (String?) -> Void)
     {
         showAlert = true
         let alertController = UIAlertController(title: nil, message: prompt, preferredStyle: .alert)

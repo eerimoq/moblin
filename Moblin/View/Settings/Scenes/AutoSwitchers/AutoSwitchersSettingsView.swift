@@ -107,11 +107,7 @@ private struct AutoSwitcherSettingsItemView: View {
         NavigationLink {
             AutoSwitcherSettingsView(autoSceneSwitchers: autoSceneSwitchers, autoSwitcher: autoSwitcher)
         } label: {
-            HStack {
-                DraggableItemPrefixView()
-                Text(autoSwitcher.name)
-                Spacer()
-            }
+            DraggableItemTextView(name: autoSwitcher.name)
         }
     }
 }

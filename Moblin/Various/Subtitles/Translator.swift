@@ -5,14 +5,14 @@ protocol TranslatorDelegate: AnyObject {
 }
 
 @available(iOS 26.0, *)
-class Translator {
-    static var translators: [Translator] = []
+class Translator: @unchecked Sendable {
+    nonisolated(unsafe) static var translators: [Translator] = []
 
     private let session: TranslationSession
     private var ready = true
     private var latestText: String?
     private let targetIdentifier: String
-    weak var delegate: TranslatorDelegate?
+    weak var delegate: (any TranslatorDelegate)?
 
     init(targetIdentifier: String) {
         self.targetIdentifier = targetIdentifier

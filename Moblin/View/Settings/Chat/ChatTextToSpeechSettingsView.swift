@@ -24,7 +24,7 @@ struct TtsMonsterSettingsView: View {
 }
 
 func textToSpeechLocalize(_ languageCode: String) -> String {
-    return NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
+    NSLocale.current.localizedString(forLanguageCode: languageCode) ?? languageCode
 }
 
 struct TextToSpeechLanguage {

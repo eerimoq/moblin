@@ -19,7 +19,7 @@ struct QuickButtonLutsView: View {
     var body: some View {
         Form {
             Section {
-                ForEach(model.allLuts()) { lut in
+                ForEach(color.allLuts()) { lut in
                     LutView(model: model, lut: lut)
                 }
             }

@@ -9,7 +9,8 @@ let sliderWidth = 250.0
 let sliderHeight = 40.0
 let cameraButtonWidth = 70.0
 let pickerBorderColor = Color.gray
-var pickerBackgroundColor = Color.black.opacity(0.4)
+let pickerBackgroundColor = Color.black.opacity(0.4)
+let pickerLabelMinimumScaleFactor = 0.7
 
 private struct SegmentedPicker<T: Equatable, Content: View>: View {
     @Namespace private var selectionAnimation
@@ -43,13 +44,13 @@ private struct SegmentedPicker<T: Equatable, Content: View>: View {
         ForEach(items.indices, id: \.self) { index in
             ZStack {
                 Rectangle()
-                    .overlay(self.overlay(for: self.items[index]))
+                    .overlay(overlay(for: items[index]))
                     .foregroundStyle(.black.opacity(0.1))
-                self.content(self.items[index])
+                content(items[index])
                     .contentShape(Rectangle())
             }
             .onTapGesture {
-                self.selectedItem = self.items[index]
+                selectedItem = items[index]
             }
             .onLongPressGesture {
                 onLongPress?(index)

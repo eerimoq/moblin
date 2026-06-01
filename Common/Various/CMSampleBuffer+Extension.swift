@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import CoreMedia
 
 extension CMSampleBuffer {
@@ -50,7 +50,7 @@ extension CMSampleBuffer {
     }
 
     func getIsSync() -> Bool {
-        return !(getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false)
+        !(getAttachmentValue(for: kCMSampleAttachmentKey_NotSync) ?? false)
     }
 
     func muted(_ muted: Bool) -> CMSampleBuffer? {

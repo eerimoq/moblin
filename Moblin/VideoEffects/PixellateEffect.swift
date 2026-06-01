@@ -6,7 +6,7 @@ func pixellateCalcScale(size: CGSize, strength: Float) -> Float {
     return maximum / Float(Int(maximum / sizeInPixels))
 }
 
-final class PixellateEffect: VideoEffect {
+final class PixellateEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.pixellate()
     private var strength: Float
 

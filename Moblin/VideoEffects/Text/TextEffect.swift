@@ -39,6 +39,8 @@ struct TextEffectStats {
     let runningMetrics: [String: WorkoutDeviceRunningMetrics]
     let browserTitle: String
     let gForce: GForce?
+    let latestSubscriber: String
+    let latestFollower: String
 }
 
 private class TextViewState: ObservableObject {
@@ -82,7 +84,7 @@ private struct TextView: View {
     @ObservedObject var state: TextViewState
 
     private func scaledFontSize(size: CGSize) -> CGFloat {
-        return state.fontSize * (size.maximum() / 1920)
+        state.fontSize * (size.maximum() / 1920)
     }
 
     var body: some View {
@@ -127,7 +129,7 @@ private struct TextView: View {
                         }
                     }
                     .padding(
-                        [.leading, .trailing],
+                        .horizontal,
                         7 * fontSize / 30 + min(CGFloat(state.cornerRadius / 5), fontSize / 7.5)
                     )
                     .frame(minWidth: state.minWidth)
@@ -149,7 +151,7 @@ private struct TextView: View {
     }
 }
 
-final class TextEffect: VideoEffect {
+final class TextEffect: VideoEffect, @unchecked Sendable {
     private var stats: Deque<TextEffectStats> = []
     private var overlay: CIImage?
     private var nextUpdateTime = ContinuousClock.now
@@ -162,6 +164,7 @@ final class TextEffect: VideoEffect {
     private var forceUpdate: Bool = false
     private var previousLines: [TextEffectLine]?
 
+    @MainActor
     init(
         format: String,
         backgroundColor: RgbColor,
@@ -205,7 +208,7 @@ final class TextEffect: VideoEffect {
                 guard let self else {
                     return
                 }
-                self.setOverlay(image: self.renderer?.ciImage())
+                setOverlay(image: renderer?.ciImage())
             }
             self.setOverlay(image: self.renderer?.ciImage())
         }
@@ -226,6 +229,7 @@ final class TextEffect: VideoEffect {
         previousLines = nil
     }
 
+    @MainActor
     func setFormat(format: String) {
         formatter.formatParts = loadTextFormat(format: format)
         forceOverlayUpdate()

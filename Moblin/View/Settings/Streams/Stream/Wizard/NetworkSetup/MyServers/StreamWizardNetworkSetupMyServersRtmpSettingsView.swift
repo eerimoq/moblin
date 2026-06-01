@@ -6,7 +6,7 @@ struct StreamWizardNetworkSetupMyServersRtmpSettingsView: View {
     @State var urlError = ""
 
     private func nextDisabled() -> Bool {
-        return createStreamWizard.customRtmpUrl.isEmpty || createStreamWizard.customRtmpStreamKey
+        createStreamWizard.customRtmpUrl.isEmpty || createStreamWizard.customRtmpStreamKey
             .isEmpty || !urlError
             .isEmpty
     }

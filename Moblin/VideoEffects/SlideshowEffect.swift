@@ -6,7 +6,7 @@ struct SlideshowEffectSlide {
     let time: Double
 }
 
-final class SlideshowEffect: VideoEffect {
+final class SlideshowEffect: VideoEffect, @unchecked Sendable {
     let slides: [SlideshowEffectSlide]
     private var currentSlideIndex: Int = 0
     private var currentSlideEndTime: Double?

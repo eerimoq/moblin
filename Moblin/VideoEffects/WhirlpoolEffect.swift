@@ -1,6 +1,6 @@
 import CoreImage
 
-final class WhirlpoolEffect: VideoEffect {
+final class WhirlpoolEffect: VideoEffect, @unchecked Sendable {
     private var angle: Float
 
     init(angle: Float) {

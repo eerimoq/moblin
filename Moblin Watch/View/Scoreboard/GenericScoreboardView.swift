@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 private let clockFieldWidth = 70.0
@@ -18,9 +19,9 @@ class Generic: ObservableObject {
 
 private func formatSeconds(_ value: Int) -> String {
     if value < 10 {
-        return "0\(value)"
+        "0\(value)"
     } else {
-        return String(value)
+        String(value)
     }
 }
 
@@ -61,18 +62,18 @@ private struct ScoreboardScoreboardView: View {
                 TeamView(name: generic.homeTeam)
                 TeamView(name: generic.awayTeam)
             }
-            .padding([.bottom], 2)
+            .padding(.bottom, 2)
             Spacer()
             VStack {
                 TeamScoreView(score: generic.homeScore)
                 TeamScoreView(score: generic.awayScore)
             }
             .frame(width: 17)
-            .padding([.bottom], 2)
-            .padding([.trailing], 15)
+            .padding(.bottom, 2)
+            .padding(.trailing, 15)
         }
-        .padding([.leading, .trailing], 2)
-        .padding([.top], 2)
+        .padding(.horizontal, 2)
+        .padding(.top, 2)
         .background(scoreboardBlueColor)
         .foregroundStyle(.white)
     }

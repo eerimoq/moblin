@@ -1,6 +1,6 @@
 import CoreImage
 
-final class SepiaEffect: VideoEffect {
+final class SepiaEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sepiaTone()
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {

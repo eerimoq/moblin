@@ -76,7 +76,7 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
         #if targetEnvironment(macCatalyst)
         model.storeSettings()
         model.replaysStorage.store()
-        exit(0)
+        exit(EXIT_SUCCESS)
         #endif
     }
 
@@ -115,14 +115,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _: UIApplication,
         willFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        return true
+        true
     }
 
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        return true
+        true
     }
 
     func application(_: UIApplication,

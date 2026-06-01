@@ -2,13 +2,24 @@ import GameController
 import Spatial
 
 private let gimbalAngularVelocity: Double = 0.3
+private let thumbStickDeadZone: Float = 0.1
+
+class GimbalPresetJob {
+    let timer: SimpleTimer?
+
+    init() {
+        timer = SimpleTimer(queue: .main)
+    }
+
+    func wasLongPress() -> Bool {
+        timer == nil
+    }
+}
 
 extension Model {
-    func handleControllerFunction(function: SettingsControllerFunction,
-                                  sceneId: UUID?,
-                                  widgetId: UUID?,
-                                  gimbalPresetId: UUID?,
-                                  gimbalMotion: SettingsGimbalMotion,
+    func handleControllerFunction(buttonId: String,
+                                  function: SettingsControllerFunction,
+                                  functionData: SettingsControllerFunctionData,
                                   pressed: Bool)
     {
         switch function {
@@ -49,15 +60,27 @@ extension Model {
                 velocity: .init(x: 0, y: -gimbalAngularVelocity, z: 0)
             )
         case .gimbalPreset:
+            let timer = gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
+            timer?.stop()
             if !pressed {
-                if let gimbalPresetId {
+                if let gimbalPresetId = functionData.gimbalPresetId, timer != nil {
                     moveToGimbalPreset(id: gimbalPresetId)
                 }
+            } else if let gimbalPresetId = functionData.gimbalPresetId {
+                let timer = SimpleTimer(queue: .main)
+                timer.startSingleShot(timeout: 0.5) { [weak self] in
+                    self?.gimbalPresetLongPressTimers.removeValue(forKey: buttonId)
+                    self?.saveGimbalPreset(id: gimbalPresetId)
+                    self?.makeToast(title: String(localized: "Gimbal preset updated"))
+                }
+                gimbalPresetLongPressTimers[buttonId] = timer
             }
         case .gimbalAnimate:
             if !pressed {
                 if #available(iOS 18.0, *) {
-                    Gimbal.shared?.animate(motion: gimbalMotion.toSystem())
+                    DispatchQueue.main.async {
+                        Gimbal.shared?.animate(motion: functionData.gimbalMotion.toSystem())
+                    }
                 }
             }
         case .torch:
@@ -78,7 +101,7 @@ extension Model {
                 updateQuickButtonStates()
             }
         case .scene:
-            if let sceneId, !pressed {
+            if let sceneId = functionData.sceneId, !pressed {
                 selectScene(id: sceneId)
             }
         case .switchScene:
@@ -86,8 +109,12 @@ extension Model {
                 switchToNextSceneRoundRobin()
             }
         case .widget:
-            if let widgetId, !pressed {
+            if let widgetId = functionData.widgetId, !pressed {
                 toggleWidgetOnOff(id: widgetId)
+            }
+        case .macro:
+            if let macroId = functionData.macroId, !pressed {
+                toggleMacroStartStop(id: macroId)
             }
         case .instantReplay:
             if !pressed {
@@ -162,11 +189,15 @@ extension Model {
             if !pressed {
                 toggleBeautyQuickButton()
             }
+        case .gimbalTracking:
+            if !pressed {
+                toggleGimbalTracking()
+            }
         }
     }
 
     func isGameControllerConnected() -> Bool {
-        return numberOfGameControllers() > 0
+        numberOfGameControllers() > 0
     }
 
     private func handleGameControllerButtonZoom(pressed: Bool, x: Float) {
@@ -181,12 +212,52 @@ extension Model {
 
     private func handleGameControllerButtonGimbal(pressed: Bool, velocity: Vector3D) {
         if #available(iOS 18.0, *) {
-            if pressed {
-                Gimbal.shared?.setMovement(velocity: velocity)
-            } else {
-                Gimbal.shared?.cancelMovement()
+            DispatchQueue.main.async {
+                if pressed {
+                    Gimbal.shared?.setMovement(velocity: velocity)
+                } else {
+                    Gimbal.shared?.cancelMovement()
+                }
             }
         }
+    }
+
+    private func handleGameControllerThumbStick(
+        function: SettingsControllerThumbStickFunction,
+        xValue: Float,
+        yValue: Float
+    ) {
+        guard function != .unused else {
+            return
+        }
+        switch function {
+        case .unused:
+            break
+        case .gimbalPanTilt:
+            if #available(iOS 18.0, *) {
+                let x = abs(xValue) > thumbStickDeadZone ? xValue : 0
+                let y = abs(yValue) > thumbStickDeadZone ? yValue : 0
+                if x == 0, y == 0 {
+                    Gimbal.shared?.cancelMovement()
+                } else {
+                    Gimbal.shared?.setMovement(velocity: .init(
+                        x: Double(y) * gimbalAngularVelocity,
+                        y: Double(-x) * gimbalAngularVelocity,
+                        z: 0
+                    ))
+                }
+            }
+        }
+    }
+
+    private func getGameControllerIndex(_ gameController: GCController) -> Int? {
+        guard let index = gameControllers.firstIndex(of: gameController) else {
+            return nil
+        }
+        guard index < database.gameControllers.count else {
+            return nil
+        }
+        return index
     }
 
     private func handleGameControllerButton(
@@ -195,31 +266,20 @@ extension Model {
         _: Float,
         _ pressed: Bool
     ) {
-        guard let gameControllerIndex = gameControllers.firstIndex(of: gameController) else {
+        guard let index = getGameControllerIndex(gameController),
+              let name = button.sfSymbolsName,
+              let button = database.gameControllers[index].buttons.first(where: { $0.name == name })
+        else {
             return
         }
-        guard gameControllerIndex < database.gameControllers.count else {
-            return
-        }
-        guard let name = button.sfSymbolsName else {
-            return
-        }
-        let button = database.gameControllers[gameControllerIndex].buttons.first(where: { button in
-            button.name == name
-        })
-        guard let button else {
-            return
-        }
-        handleControllerFunction(function: button.function,
-                                 sceneId: button.sceneId,
-                                 widgetId: button.widgetId,
-                                 gimbalPresetId: button.gimbalPresetId,
-                                 gimbalMotion: button.gimbalMotion,
+        handleControllerFunction(buttonId: "gc:\(index):\(name)",
+                                 function: button.function,
+                                 functionData: button.functionData,
                                  pressed: pressed)
     }
 
     private func numberOfGameControllers() -> Int {
-        return gameControllers.filter { $0 != nil }.count
+        gameControllers.filter { $0 != nil }.count
     }
 
     private func updateGameControllers() {
@@ -279,6 +339,20 @@ extension Model {
         gamepad.rightTrigger.pressedChangedHandler = { button, value, pressed in
             self.handleGameControllerButton(gameController, button, value, pressed)
         }
+        gamepad.leftThumbstick.valueChangedHandler = { _, xValue, yValue in
+            guard let index = self.getGameControllerIndex(gameController) else {
+                return
+            }
+            let function = self.database.gameControllers[index].leftThumbStickFunction
+            self.handleGameControllerThumbStick(function: function, xValue: xValue, yValue: yValue)
+        }
+        gamepad.rightThumbstick.valueChangedHandler = { _, xValue, yValue in
+            guard let index = self.getGameControllerIndex(gameController) else {
+                return
+            }
+            let function = self.database.gameControllers[index].rightThumbStickFunction
+            self.handleGameControllerThumbStick(function: function, xValue: xValue, yValue: yValue)
+        }
         if let index = gameControllers.firstIndex(of: nil) {
             gameControllers[index] = gameController
         } else {
@@ -304,6 +378,6 @@ extension Model {
     }
 
     func isShowingStatusGameController() -> Bool {
-        return database.show.gameController && isGameControllerConnected()
+        database.show.gameController && isGameControllerConnected()
     }
 }

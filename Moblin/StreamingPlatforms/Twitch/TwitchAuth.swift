@@ -36,7 +36,7 @@ private struct TwitchAuthView: UIViewRepresentable {
     let twitchAuth: TwitchAuth
 
     func makeUIView(context _: Context) -> WKWebView {
-        return twitchAuth.getWebBrowser()
+        twitchAuth.getWebBrowser()
     }
 
     func updateUIView(_: WKWebView, context _: Context) {}
@@ -59,6 +59,7 @@ struct TwitchLoginView: View {
     }
 }
 
+@MainActor
 class TwitchAuth: NSObject {
     private var webBrowser: WKWebView?
     private var onAccessToken: ((String) -> Void)?
@@ -121,7 +122,7 @@ func storeTwitchAccessTokenInKeychain(streamId: UUID, accessToken: String) {
 }
 
 func loadTwitchAccessTokenFromKeychain(streamId: UUID) -> String? {
-    return createKeychain(streamId: streamId.uuidString).load()
+    createKeychain(streamId: streamId.uuidString).load()
 }
 
 func removeTwitchAccessTokenInKeychain(streamId: UUID) {
@@ -129,5 +130,5 @@ func removeTwitchAccessTokenInKeychain(streamId: UUID) {
 }
 
 private func createKeychain(streamId: String) -> Keychain {
-    return Keychain(streamId: streamId, server: "www.twitch.tv", logPrefix: "twitch: auth")
+    Keychain(streamId: streamId, server: "www.twitch.tv", logPrefix: "twitch: auth")
 }

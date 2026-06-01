@@ -14,11 +14,11 @@ private class SrtClock {
     private let startTime = ContinuousClock.now
 
     func timestamp() -> UInt32 {
-        return timestamp(now: .now)
+        timestamp(now: .now)
     }
 
     func timestamp(now: ContinuousClock.Instant) -> UInt32 {
-        return UInt32(truncatingIfNeeded: startTime.duration(to: now).microseconds)
+        UInt32(truncatingIfNeeded: startTime.duration(to: now).microseconds)
     }
 }
 
@@ -174,8 +174,8 @@ private enum HandshakeType: UInt32 {
     case induction = 0x0000_0001
 }
 
-class SrtSender {
-    weak var delegate: SrtSenderDelegate?
+class SrtSender: @unchecked Sendable {
+    weak var delegate: (any SrtSenderDelegate)?
     private var nextSequenceNumber: UInt32 = .random(in: 0 ..< 10000)
     private var peerDestinationSrtSocketId: UInt32 = 0
     private let streamId: String?
@@ -237,7 +237,7 @@ class SrtSender {
     }
 
     func newDataPacket(payload: UnsafeRawBufferPointer) -> SrtDataPacket {
-        return SrtDataPacket(payload: payload)
+        SrtDataPacket(payload: payload)
     }
 
     func enqueue(packet: SrtDataPacket, now: ContinuousClock.Instant) {
@@ -273,7 +273,7 @@ class SrtSender {
     }
 
     func getPerformanceData() -> SrtPerformanceData? {
-        return performanceData.value
+        performanceData.value
     }
 
     private func handleConnectTimeout() {
@@ -563,6 +563,9 @@ class SrtSender {
                 packetsInFlightBySequenceNumber.removeValue(forKey: packetsInFlight[index].sequenceNumber)
             }
             packetsInFlight.removeFirst(lastAcknowledgedPacketIndex)
+        } else {
+            packetsInFlightBySequenceNumber.removeAll(keepingCapacity: true)
+            packetsInFlight.removeAll(keepingCapacity: true)
         }
     }
 
@@ -610,6 +613,6 @@ class SrtSender {
     }
 
     private func numberOfPacketsToRetransmit() -> Int {
-        return audioSequenceNumbersToRetransmit.count + videoSequenceNumbersToRetransmit.count
+        audioSequenceNumbersToRetransmit.count + videoSequenceNumbersToRetransmit.count
     }
 }

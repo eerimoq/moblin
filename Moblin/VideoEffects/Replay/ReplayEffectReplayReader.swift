@@ -1,4 +1,4 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 import CoreImage
 import SwiftUI
@@ -9,8 +9,7 @@ struct ReplayImage {
     let isLast: Bool
 }
 
-class ReplayEffectReplayReader {
-    // periphery:ignore
+class ReplayEffectReplayReader: @unchecked Sendable {
     private let video: ReplayBufferFile
     private let startTime: Double
     private var reader: AVAssetReader?
@@ -32,8 +31,9 @@ class ReplayEffectReplayReader {
                 let duration = CMTime(seconds: duration)
                 self.reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
                 asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+                    let self2 = self
                     replayEffectQueue.async {
-                        self?.loadVideoTrackCompletion(tracks: tracks, error: error)
+                        self2?.loadVideoTrackCompletion(tracks: tracks, error: error)
                     }
                 }
             }
@@ -62,7 +62,7 @@ class ReplayEffectReplayReader {
         return ReplayImage(image: nil, offset: nil, isLast: false)
     }
 
-    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
+    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
         guard error == nil, let track = tracks?.first else {
             markCompleted()
             return
@@ -98,6 +98,7 @@ class ReplayEffectReplayReader {
         guard let trackOutput else {
             return
         }
+        nonisolated(unsafe)
         var newImages: [ReplayImage] = []
         for _ in 0 ... 10 {
             if let sampleBuffer = trackOutput.copyNextSampleBuffer(),

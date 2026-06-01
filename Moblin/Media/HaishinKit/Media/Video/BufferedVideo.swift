@@ -10,16 +10,25 @@ class BufferedVideo {
     private let update: Bool
     private weak var processor: Processor?
     private let driftTracker: DriftTracker
+    private let trackDrift: Bool
     private var hasBufferBeenAppended = false
     private var stats = BufferedStats()
     let latency: Double
 
-    init(cameraId: UUID, name: String, update: Bool, latency: Double, processor: Processor?) {
+    init(
+        cameraId: UUID,
+        name: String,
+        update: Bool,
+        latency: Double,
+        processor: Processor?,
+        trackDrift: Bool = true
+    ) {
         self.cameraId = cameraId
         self.name = name
         self.update = update
         self.latency = latency
         self.processor = processor
+        self.trackDrift = trackDrift
         driftTracker = DriftTracker(media: "video", name: name, targetFillLevel: latency)
     }
 
@@ -38,7 +47,7 @@ class BufferedVideo {
         {
             sampleBuffers.insert(sampleBuffer, at: sampleBuffers.index(after: index))
         } else {
-            sampleBuffers.append(sampleBuffer)
+            sampleBuffers.prepend(sampleBuffer)
         }
     }
 
@@ -76,7 +85,7 @@ class BufferedVideo {
         }
         if !isInitialBuffering, hasBufferBeenAppended, update {
             hasBufferBeenAppended = false
-            if let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
+            if trackDrift, let drift = driftTracker.update(outputPresentationTimeStamp, sampleBuffers) {
                 processor?.setBufferedAudioDrift(cameraId: cameraId, drift: drift)
             }
         }
@@ -141,12 +150,16 @@ class BufferedVideo {
         currentSampleBuffer = sampleBuffer
     }
 
+    func getLatestSampleBuffer() -> CMSampleBuffer? {
+        currentSampleBuffer
+    }
+
     func getSampleBuffer(_ presentationTimeStamp: CMTime) -> CMSampleBuffer? {
-        return currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
+        currentSampleBuffer?.replacePresentationTimeStamp(presentationTimeStamp)
     }
 
     func numberOfBuffers() -> Int {
-        return sampleBuffers.count
+        sampleBuffers.count
     }
 
     func setDrift(drift: Double) {

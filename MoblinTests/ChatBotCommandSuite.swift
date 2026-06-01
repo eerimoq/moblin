@@ -55,12 +55,12 @@ struct ChatBotCommandSuite {
     }
 
     private func createMessage(text: String) -> ChatBotMessage {
-        return ChatBotMessage(platform: .twitch,
-                              user: "erik",
-                              isOwner: true,
-                              isModerator: true,
-                              isSubscriber: false,
-                              userId: "1234",
-                              segments: makeChatPostTextSegments(text: text))
+        ChatBotMessage(platform: .twitch,
+                       user: "erik",
+                       isOwner: true,
+                       isModerator: true,
+                       isSubscriber: false,
+                       userId: "1234",
+                       segments: makeChatPostTextSegments(text: text))
     }
 }

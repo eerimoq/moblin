@@ -1,7 +1,7 @@
 import CoreMedia
 import SwiftUI
 
-private struct AlignmentOptionView: View {
+struct AlignmentOptionView: View {
     @Binding var layout: SettingsWidgetLayout
     let alignment: SettingsAlignment
 
@@ -16,10 +16,9 @@ private struct AlignmentOptionView: View {
     }
 }
 
-private struct SaveLoadLayoutView: View {
+struct SaveLoadLayoutView: View {
     @EnvironmentObject private var model: Model
     @Binding var layout: SettingsWidgetLayout
-    @ObservedObject var widget: SettingsWidget
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -62,15 +61,15 @@ struct WidgetLayoutView: View {
     @Binding var numericInput: Bool
 
     private func dimensions() -> CMVideoDimensions {
-        return model.stream.resolution.dimensions(portrait: model.stream.portrait)
+        model.stream.resolution.dimensions(portrait: model.stream.portrait)
     }
 
     private func horizontalIncrement() -> Double {
-        return 100 / Double(dimensions().width)
+        100 / Double(dimensions().width)
     }
 
     private func verticalIncrement() -> Double {
-        return 100 / Double(dimensions().height)
+        100 / Double(dimensions().height)
     }
 
     private func setXBasedOnYIfLocked() {
@@ -92,7 +91,7 @@ struct WidgetLayoutView: View {
     private func generalAndAlignmentPicker() -> some View {
         HStack {
             HStack {
-                SaveLoadLayoutView(layout: $layout, widget: widget)
+                SaveLoadLayoutView(layout: $layout)
                 Spacer()
             }
             if widget.hasAlignment() {
@@ -137,7 +136,7 @@ struct WidgetLayoutView: View {
                     mirror: layout.alignment.mirrorPositionHorizontally(),
                     increment: horizontalIncrement()
                 )
-                .padding([.bottom], 10)
+                .padding(.bottom, 10)
                 PositionEditView(
                     number: $layout.y,
                     value: $layout.yString,
@@ -262,7 +261,7 @@ struct WidgetSettingsView: View {
             case .crop:
                 WidgetCropSettingsView(widget: widget)
             case .map:
-                WidgetMapSettingsView(widget: widget, delay: widget.map.delay)
+                WidgetMapSettingsView(widget: widget, delay: widget.map.delay, size: widget.map.size)
             case .scene:
                 WidgetSceneSettingsView(widget: widget, selectedSceneId: widget.scene.sceneId)
             case .slideshow:
@@ -286,10 +285,22 @@ struct WidgetSettingsView: View {
                 WidgetSnapshotSettingsView(model: model, widget: widget, snapshot: widget.snapshot)
             case .chat:
                 WidgetChatSettingsView(model: model, database: database, widget: widget, chat: widget.chat)
+            case .chatEmoteCombo:
+                WidgetChatEmoteComboSettingsView(
+                    model: model,
+                    widget: widget,
+                    chatEmoteCombo: widget.chatEmoteCombo
+                )
             case .wheelOfLuck:
                 WidgetWheelOfLuckSettingsView(model: model, widget: widget, wheelOfLuck: widget.wheelOfLuck)
             case .bingoCard:
                 WidgetBingoCardSettingsView(model: model, widget: widget, bingoCard: widget.bingoCard)
+            case .pomodoroTimer:
+                WidgetPomodoroTimerSettingsView(
+                    model: model,
+                    widget: widget,
+                    pomodoroTimer: widget.pomodoroTimer
+                )
             }
         }
         .navigationTitle("\(widget.type.toString()) widget")

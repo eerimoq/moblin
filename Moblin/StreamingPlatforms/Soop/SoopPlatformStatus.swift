@@ -6,8 +6,8 @@ struct SoopChannelInfo: Codable {
 
 private let baseUrl = "https://api-channel.sooplive.com"
 
-class SoopPlatformStatus {
-    private var task: Task<Void, Error>?
+class SoopPlatformStatus: @unchecked Sendable {
+    private var task: Task<Void, any Error>?
     var platformStatus: PlatformStatus = .unknown
 
     func start(userId: String) {

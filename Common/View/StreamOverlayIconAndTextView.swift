@@ -22,7 +22,7 @@ struct StreamOverlayIconAndTextView: View {
             Image(systemName: icon)
                 .frame(width: 17, height: 17)
                 .font(smallFont)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(color)
                 .background(iconBackgroundColor)
                 .cornerRadius(5)

@@ -2,34 +2,34 @@ import NetworkExtension
 import SwiftUI
 
 private func rtmpStreamUrl(address: String, port: UInt16, streamKey: String) -> String {
-    return "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
+    "rtmp://\(address):\(port)\(rtmpServerApp)/\(streamKey)"
 }
 
 func formatDjiDeviceState(state: DjiDeviceState?) -> String {
     if state == nil || state == .idle {
-        return String(localized: "Not started")
+        String(localized: "Not started")
     } else if state == .discovering {
-        return String(localized: "Discovering")
+        String(localized: "Discovering")
     } else if state == .connecting {
-        return String(localized: "Connecting")
+        String(localized: "Connecting")
     } else if state == .checkingIfPaired || state == .pairing {
-        return String(localized: "Pairing")
+        String(localized: "Pairing")
     } else if state == .stoppingStream || state == .cleaningUp {
-        return String(localized: "Stopping stream")
+        String(localized: "Stopping stream")
     } else if state == .preparingStream {
-        return String(localized: "Preparing to stream")
+        String(localized: "Preparing to stream")
     } else if state == .settingUpWifi {
-        return String(localized: "Setting up WiFi")
+        String(localized: "Setting up WiFi")
     } else if state == .wifiSetupFailed {
-        return String(localized: "WiFi setup failed")
+        String(localized: "WiFi setup failed")
     } else if state == .configuring {
-        return String(localized: "Configuring")
+        String(localized: "Configuring")
     } else if state == .startingStream {
-        return String(localized: "Starting stream")
+        String(localized: "Starting stream")
     } else if state == .streaming {
-        return String(localized: "Streaming")
+        String(localized: "Streaming")
     } else {
-        return String(localized: "Unknown")
+        String(localized: "Unknown")
     }
 }
 
@@ -99,6 +99,9 @@ private struct DjiDeviceWiFiSettingsView: View {
                 TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
             }
             .disabled(device.isStarted)
+            if device.wifiSsid.isEmpty {
+                Text("⚠️ Enter the SSID of the network the DJI device should connect to.")
+            }
         } header: {
             Text("WiFi")
         } footer: {
@@ -106,8 +109,13 @@ private struct DjiDeviceWiFiSettingsView: View {
         }
         .onAppear {
             NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-                if device.wifiSsid.isEmpty, let network {
-                    device.wifiSsid = network.ssid
+                guard let ssid = network?.ssid else {
+                    return
+                }
+                DispatchQueue.main.async {
+                    if device.wifiSsid.isEmpty {
+                        device.wifiSsid = ssid
+                    }
                 }
             })
         }
@@ -144,6 +152,9 @@ private struct DjiDeviceRtmpSettingsView: View {
                 streamKey: stream.streamKey
             ))
         }
+        if let serverRtmpUrl = device.serverRtmpUrl, !serverUrls.contains(serverRtmpUrl) {
+            serverUrls.insert(serverRtmpUrl, at: 0)
+        }
         return serverUrls
     }
 
@@ -166,16 +177,21 @@ private struct DjiDeviceRtmpSettingsView: View {
                         }
                     }
                     .onChange(of: device.serverRtmpStreamId) { _ in
-                        device.serverRtmpUrl = serverUrls().first ?? ""
+                        device.serverRtmpUrl = nil
                     }
                     .disabled(device.isStarted)
                     Picker("URL", selection: $device.serverRtmpUrl) {
-                        ForEach(serverUrls(), id: \.self) { serverUrl in
-                            Text(serverUrl)
-                                .tag(serverUrl)
+                        Text("-- None --")
+                            .tag(nil as String?)
+                        ForEach(serverUrls(), id: \.self) {
+                            Text($0)
+                                .tag($0 as String?)
                         }
                     }
                     .disabled(device.isStarted)
+                    if device.serverRtmpUrl == nil {
+                        Text("⚠️ Select the URL the DJI device should stream to.")
+                    }
                     if !rtmpServer.enabled {
                         Text("⚠️ The RTMP server is not enabled")
                     }
@@ -189,6 +205,9 @@ private struct DjiDeviceRtmpSettingsView: View {
                     }
                 )
                 .disabled(device.isStarted)
+                if device.customRtmpUrl.isEmpty {
+                    Text("⚠️ Enter the URL the DJI device should stream to.")
+                }
             }
         } header: {
             Text("RTMP")
@@ -204,9 +223,6 @@ private struct DjiDeviceRtmpSettingsView: View {
             if !streams.isEmpty {
                 if !streams.contains(where: { $0.id == device.serverRtmpStreamId }) {
                     device.serverRtmpStreamId = streams.first!.id
-                }
-                if !serverUrls().contains(where: { $0 == device.serverRtmpUrl }) {
-                    device.serverRtmpUrl = serverUrls().first ?? ""
                 }
             }
         }
@@ -241,7 +257,7 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
                 .disabled(device.isStarted)
             }
-            if device.model == .osmoPocket3 {
+            if device.model == .osmoPocket3 || device.model == .osmoPocket4 {
                 Picker("FPS", selection: $device.fps) {
                     ForEach(djiDeviceFpss, id: \.self) {
                         Text(String($0))
@@ -302,7 +318,7 @@ struct DjiDeviceSettingsView: View {
     @ObservedObject var status: StatusTopRight
 
     func state() -> String {
-        return formatDjiDeviceState(state: status.djiDeviceStreamingState)
+        formatDjiDeviceState(state: status.djiDeviceStreamingState)
     }
 
     var body: some View {

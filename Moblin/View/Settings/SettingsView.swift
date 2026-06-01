@@ -50,6 +50,11 @@ struct SettingsView: View {
                     } label: {
                         Label("Audio", systemImage: "waveform")
                     }
+                    NavigationLink {
+                        MacrosSettingsView(model: model, database: database, macros: database.macros)
+                    } label: {
+                        Label("Macros", systemImage: "increase.indent")
+                    }
                 }
                 NavigationLink {
                     LocationSettingsView(
@@ -63,7 +68,7 @@ struct SettingsView: View {
             }
             Section {
                 NavigationLink {
-                    StoreSettingsView(store: model.store)
+                    StoreSettingsView(model: model, store: model.store)
                 } label: {
                     Label {
                         Text("Store (support us) ❤️")

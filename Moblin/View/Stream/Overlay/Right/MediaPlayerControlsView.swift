@@ -6,9 +6,9 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
 
     private func playPauseImage() -> String {
         if mediaPlayer.playing {
-            return "pause"
+            "pause"
         } else {
-            return "play"
+            "play"
         }
     }
 
@@ -16,7 +16,7 @@ struct StreamOverlayRightMediaPlayerControlsView: View {
         VStack(alignment: .trailing, spacing: 1) {
             Text(mediaPlayer.fileName)
                 .foregroundStyle(.white)
-                .padding([.trailing], 8)
+                .padding(.trailing, 8)
             HStack {
                 Text(mediaPlayer.time)
                 if false {

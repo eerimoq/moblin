@@ -1,6 +1,5 @@
 import Foundation
 import Network
-import SwiftUI
 
 protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerConnected()
@@ -14,10 +13,12 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerSetBitratePreset(id: UUID)
     func remoteControlStreamerSetRecord(on: Bool)
     func remoteControlStreamerSetStream(on: Bool)
+    func remoteControlStreamerSetPreviewStream(on: Bool)
     func remoteControlStreamerSetDebugLogging(on: Bool)
     func remoteControlStreamerSetZoom(x: Float)
     func remoteControlStreamerSetZoomPreset(id: UUID)
     func remoteControlStreamerSetMute(on: Bool)
+    func remoteControlStreamerSetStealthMode(on: Bool)
     func remoteControlStreamerSetTorch(on: Bool)
     func remoteControlStreamerReloadBrowserWidgets()
     func remoteControlStreamerSetSrtConnectionPriority(id: UUID, priority: Int, enabled: Bool)
@@ -48,26 +49,27 @@ protocol RemoteControlStreamerDelegate: AnyObject {
     func remoteControlStreamerMoveToGimbalPreset(id: UUID)
 }
 
+private let idStorage = SimpleStringStorage(key: "remoteControlStreamerId")
+
 class RemoteControlStreamer {
     private var clientUrl: URL
     private var password: String
-    private weak var delegate: RemoteControlStreamerDelegate?
+    private weak var delegate: (any RemoteControlStreamerDelegate)?
     private var webSocket: WebSocketClient
     var connectionErrorMessage: String = ""
     private var connected = false
     private var encryption: RemoteControlEncryption
     private let keepAliveTimer = SimpleTimer(queue: .main)
     private var gotPong = true
-    @AppStorage("remoteControlStreamerId") var id = ""
 
-    init(clientUrl: URL, password: String, delegate: RemoteControlStreamerDelegate) {
+    init(clientUrl: URL, password: String, delegate: any RemoteControlStreamerDelegate) {
         self.clientUrl = clientUrl
         self.password = password
         self.delegate = delegate
         encryption = RemoteControlEncryption(password: password)
         webSocket = .init(url: clientUrl)
-        if id.isEmpty {
-            id = UUID().uuidString
+        if idStorage.get().isEmpty {
+            idStorage.set(UUID().uuidString)
         }
     }
 
@@ -96,7 +98,7 @@ class RemoteControlStreamer {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func stateChanged(state: RemoteControlAssistantStreamerState) {
@@ -194,7 +196,7 @@ class RemoteControlStreamer {
             salt: authentication.salt,
             password: password
         )
-        send(message: .identify(streamerId: id, authentication: hash))
+        send(message: .identify(streamerId: idStorage.get(), authentication: hash))
     }
 
     private func handleIdentified(result: RemoteControlResult) -> Bool {
@@ -244,6 +246,9 @@ class RemoteControlStreamer {
         case let .setStream(on: on):
             delegate.remoteControlStreamerSetStream(on: on)
             sendEmptyOkResponse(id: id)
+        case let .setPreviewStream(on: on):
+            delegate.remoteControlStreamerSetPreviewStream(on: on)
+            sendEmptyOkResponse(id: id)
         case let .setZoom(x: x):
             delegate.remoteControlStreamerSetZoom(x: x)
             sendEmptyOkResponse(id: id)
@@ -252,6 +257,9 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .setMute(on: on):
             delegate.remoteControlStreamerSetMute(on: on)
+            sendEmptyOkResponse(id: id)
+        case let .setStealthMode(on: on):
+            delegate.remoteControlStreamerSetStealthMode(on: on)
             sendEmptyOkResponse(id: id)
         case let .setTorch(on: on):
             delegate.remoteControlStreamerSetTorch(on: on)
@@ -339,6 +347,10 @@ class RemoteControlStreamer {
             sendEmptyOkResponse(id: id)
         case let .moveToGimbalPreset(id: presetId):
             delegate.remoteControlStreamerMoveToGimbalPreset(id: presetId)
+            sendEmptyOkResponse(id: id)
+        case .getGolfScoreboard:
+            sendEmptyOkResponse(id: id)
+        case .updateGolfScoreboard:
             sendEmptyOkResponse(id: id)
         }
     }

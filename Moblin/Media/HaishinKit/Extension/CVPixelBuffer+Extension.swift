@@ -15,6 +15,6 @@ extension CVPixelBuffer {
     }
 
     func isPortrait() -> Bool {
-        return height > width
+        height > width
     }
 }

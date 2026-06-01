@@ -7,14 +7,16 @@ extension Model {
         presentingSettingsImportConfirmation = true
     }
 
-    func importSettingsFromFile(url: URL, completion: @escaping () -> Void) {
+    func importSettingsFromFile(url: URL, completion: @escaping @MainActor () -> Void) {
         settings.importFromFile(url: url) {
             self.importDone(message: $0)
-            completion()
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
 
-    func importSettingsFromClipboard(completion: @escaping () -> Void) {
+    func importSettingsFromClipboard(completion: @escaping @MainActor () -> Void) {
         let typeIdentifier = moblinSettingsFileType.identifier
         if let provider = UIPasteboard.general.itemProviders
             .first(where: { $0.hasItemConformingToTypeIdentifier(typeIdentifier) })
@@ -39,15 +41,19 @@ extension Model {
         } else if let settings = UIPasteboard.general.string {
             self.settings.importFromClipboard(settings: settings) {
                 self.importDone(message: $0)
-                completion()
+                DispatchQueue.main.async {
+                    completion()
+                }
             }
         } else {
             importFailed(message: String(localized: "No settings found in clipboard"))
-            completion()
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
 
-    func exportToFile(completion: @escaping (URL?) -> Void) {
+    func exportToFile(completion: @escaping @MainActor (URL?) -> Void) {
         settings.exportToFile(onCompleted: completion)
     }
 

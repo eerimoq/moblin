@@ -44,14 +44,6 @@ struct YouTubeLogoAndNameView: View {
     }
 }
 
-struct DLiveLogoAndNameView: View {
-    var username: String = ""
-
-    var body: some View {
-        PlatformLogoAndNameView(logo: "DLiveLogo", name: String(localized: "DLive"), channel: username)
-    }
-}
-
 struct OpenStreamingPlatformLogoAndNameView: View {
     var body: some View {
         PlatformLogoAndNameView(
@@ -136,15 +128,6 @@ struct StreamPlatformsSettingsView: View {
                 YouTubeLogoAndNameView()
                 Spacer()
                 GrayTextView(text: stream.youTubeHandle)
-            }
-        }
-        NavigationLink {
-            StreamDLiveSettingsView(stream: stream)
-        } label: {
-            HStack {
-                DLiveLogoAndNameView()
-                Spacer()
-                GrayTextView(text: stream.dLiveUsername)
             }
         }
         NavigationLink {
@@ -275,7 +258,9 @@ struct StreamSettingsView: View {
                     }
                 }
                 NavigationLink {
-                    StreamReplaySettingsView(stream: stream, replay: stream.replay)
+                    StreamReplaySettingsView(database: database,
+                                             stream: stream,
+                                             replay: stream.replay)
                 } label: {
                     IconAndTextSettingView(image: "play", text: "Replay")
                 }
@@ -284,6 +269,12 @@ struct StreamSettingsView: View {
                         StreamSnapshotSettingsView(stream: stream, recording: stream.recording)
                     } label: {
                         IconAndTextSettingView(image: "camera.aperture", text: "Snapshot")
+                    }
+                    NavigationLink {
+                        StreamPreviewStreamSettingsView(model: model,
+                                                        previewStream: stream.previewStream)
+                    } label: {
+                        IconAndTextSettingView(image: "video.circle", text: "Preview stream")
                     }
                 }
                 if isPhone() || isPad() {

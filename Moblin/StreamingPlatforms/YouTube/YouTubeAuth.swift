@@ -14,7 +14,7 @@ func storeYouTubeAuthStateInKeychain(streamId: UUID, authState: String) {
 }
 
 func loadYouTubeAuthStateFromKeychain(streamId: UUID) -> String? {
-    return createKeychain(streamId: streamId.uuidString).load()
+    createKeychain(streamId: streamId.uuidString).load()
 }
 
 func removeYouTubeAuthStateInKeychain(streamId: UUID) {
@@ -22,5 +22,5 @@ func removeYouTubeAuthStateInKeychain(streamId: UUID) {
 }
 
 private func createKeychain(streamId: String) -> Keychain {
-    return Keychain(streamId: streamId, server: "www.youtube.com", logPrefix: "youtube: auth")
+    Keychain(streamId: streamId, server: "www.youtube.com", logPrefix: "youtube: auth")
 }

@@ -81,11 +81,11 @@ private let answerByLanguage = [
 ]
 
 private func getAsked(_ language: String) -> String {
-    return askedByLanguage[language] ?? ""
+    askedByLanguage[language] ?? ""
 }
 
 private func getAnswer(_ language: String) -> String {
-    return answerByLanguage[language] ?? ""
+    answerByLanguage[language] ?? ""
 }
 
 extension Model {
@@ -93,7 +93,9 @@ extension Model {
         guard let message = chatBotMessages.popFirst() else {
             return
         }
-        handleChatBotMessage(message: message)
+        DispatchQueue.main.async {
+            self.handleChatBotMessage(message: message)
+        }
     }
 
     private func handleChatBotMessage(message: ChatBotMessage) {
@@ -149,6 +151,8 @@ extension Model {
                 handleChatBotMessageTwitch(command: command)
             case "gimbal":
                 handleChatBotMessageGimbal(command: command)
+            case "macro":
+                handleChatBotMessageMacro(command: command)
             default:
                 break
             }
@@ -275,6 +279,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageSnapshotWithMessage(command: ChatBotCommand) {
         let permissions = database.chat.botCommandPermissions.snapshot
         executeIfUserAllowedToUseChatBot(
@@ -377,6 +382,7 @@ extension Model {
             }
     }
 
+    @MainActor
     private func handleChatBotMessageTwitch(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.twitch,
@@ -436,6 +442,39 @@ extension Model {
         moveToGimbalPreset(id: preset.id)
     }
 
+    private func handleChatBotMessageMacro(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.macro,
+            command: command
+        ) {
+            guard let subcommand = command.popFirst(),
+                  let macroName = command.popFirst(),
+                  let macro = self.database.macros.macros.first(where: {
+                      $0.name.lowercased() == macroName.lowercased()
+                  })
+            else {
+                return
+            }
+            switch subcommand {
+            case "run":
+                self.handleChatBotMessageMacroRun(macro: macro)
+            case "cancel":
+                self.handleChatBotMessageMacroCancel(macro: macro)
+            default:
+                break
+            }
+        }
+    }
+
+    private func handleChatBotMessageMacroRun(macro: SettingsMacrosMacro) {
+        startMacro(macro: macro)
+    }
+
+    private func handleChatBotMessageMacroCancel(macro: SettingsMacrosMacro) {
+        stopMacro(macro: macro)
+    }
+
+    @MainActor
     private func handleChatBotMessageReaction(command: ChatBotCommand) {
         guard #available(iOS 17, *) else {
             return
@@ -444,21 +483,7 @@ extension Model {
             permissions: database.chat.botCommandPermissions.reaction,
             command: command
         ) {
-            let reaction: AVCaptureReactionType
-            switch command.popFirst() {
-            case "fireworks":
-                reaction = .fireworks
-            case "balloons":
-                reaction = .balloons
-            case "hearts":
-                reaction = .heart
-            case "confetti":
-                reaction = .confetti
-            case "lasers":
-                reaction = .lasers
-            case "rain":
-                reaction = .rain
-            default:
+            guard let reaction = SettingsReaction(value: command.popFirst()) else {
                 return
             }
             self.triggerReaction(reaction: reaction)
@@ -466,7 +491,23 @@ extension Model {
     }
 
     @available(iOS 17, *)
-    func triggerReaction(reaction: AVCaptureReactionType) {
+    func triggerReaction(reaction: SettingsReaction) {
+        if let reaction = reaction.toSystem() {
+            triggerAppleReaction(reaction: reaction)
+        } else {
+            switch reaction {
+            case .glasses:
+                triggerGlasses()
+            case .sparkle:
+                triggerSparkle()
+            default:
+                break
+            }
+        }
+    }
+
+    @available(iOS 17, *)
+    private func triggerAppleReaction(reaction: AVCaptureReactionType) {
         guard let scene = getSelectedScene() else {
             return
         }
@@ -477,6 +518,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageScene(command: ChatBotCommand) {
         guard let sceneName = command.popFirst() else {
             return
@@ -530,6 +572,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageWidget(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.widget,
@@ -611,6 +654,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageAlert(command: ChatBotCommand) {
         executeIfUserAllowedToUseChatBot(
             permissions: database.chat.botCommandPermissions.alert,
@@ -668,6 +712,7 @@ extension Model {
         }
     }
 
+    @MainActor
     private func handleChatBotMessageZoom(command: ChatBotCommand) {
         let permissions = database.chat.botCommandPermissions.zoom
         executeIfUserAllowedToUseChatBot(

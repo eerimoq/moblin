@@ -3,9 +3,9 @@ import Metal
 import MetalPerformanceShaders
 
 final class BlurKernel: CIImageProcessorKernel {
-    override static func process(with inputs: [CIImageProcessorInput]?,
+    override static func process(with inputs: [any CIImageProcessorInput]?,
                                  arguments: [String: Any]?,
-                                 output: CIImageProcessorOutput) throws
+                                 output: any CIImageProcessorOutput) throws
     {
         guard let commandBuffer = output.metalCommandBuffer,
               let input = inputs?.first,

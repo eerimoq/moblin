@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import WebKit
 
 extension NWPath {
     // The list contains duplicates since iOS 26. Apple bug?
@@ -15,24 +16,6 @@ extension NWPath {
 extension NWEndpoint.Port {
     init(integer: Int) {
         self.init(integerLiteral: UInt16(clamping: integer))
-    }
-}
-
-final class NWConnectionWithId: Hashable, Equatable {
-    let id: String
-    let connection: NWConnection
-
-    init(connection: NWConnection) {
-        self.connection = connection
-        id = UUID().uuidString
-    }
-
-    static func == (lhs: NWConnectionWithId, rhs: NWConnectionWithId) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
     }
 }
 
@@ -61,9 +44,9 @@ enum NetworkResponse<T> {
     func isSuccessful() -> Bool {
         switch self {
         case .success:
-            return true
+            true
         default:
-            return false
+            false
         }
     }
 }
@@ -104,4 +87,19 @@ func getHttpsUrl(text: String) -> URL? {
         return url
     }
     return nil
+}
+
+extension WKWebViewConfiguration {
+    func setHttpProxy(endpoint: NWEndpoint?) {
+        guard #available(iOS 17, *) else {
+            return
+        }
+        if let endpoint {
+            websiteDataStore.proxyConfigurations = [
+                .init(httpCONNECTProxy: endpoint),
+            ]
+        } else {
+            websiteDataStore.proxyConfigurations = []
+        }
+    }
 }

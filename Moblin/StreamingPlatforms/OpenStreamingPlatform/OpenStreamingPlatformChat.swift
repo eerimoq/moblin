@@ -29,8 +29,8 @@ private struct Open: Codable, DynamicNodeEncoding {
     // periphery:ignore
     let id: String?
 
-    static func nodeEncoding(for _: CodingKey) -> XMLEncoder.NodeEncoding {
-        return .attribute
+    static func nodeEncoding(for _: any CodingKey) -> XMLEncoder.NodeEncoding {
+        .attribute
     }
 }
 
@@ -71,12 +71,12 @@ private struct Auth: Codable, DynamicNodeEncoding {
         case value = ""
     }
 
-    static func nodeEncoding(for key: CodingKey) -> XMLEncoder.NodeEncoding {
+    static func nodeEncoding(for key: any CodingKey) -> XMLEncoder.NodeEncoding {
         switch key {
         case CodingKeys.value:
-            return .element
+            .element
         default:
-            return .attribute
+            .attribute
         }
     }
 }
@@ -95,9 +95,9 @@ private struct FeaturesContainer: Codable {
     let features: Features
 }
 
-class OpenStreamingPlatformChat {
+class OpenStreamingPlatformChat: @unchecked Sendable {
     private var model: Model
-    private var task: Task<Void, Error>?
+    private var task: Task<Void, any Error>?
     private var connected: Bool = false
     private var webSocket: URLSessionWebSocketTask
     private let url: String
@@ -150,11 +150,11 @@ class OpenStreamingPlatformChat {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func hasEmotes() -> Bool {
-        return true
+        true
     }
 
     private func setupConnection() async throws {
@@ -317,7 +317,7 @@ class OpenStreamingPlatformChat {
         )
     }
 
-    private func send(root: String, data: Encodable) async throws {
+    private func send(root: String, data: any Encodable) async throws {
         let message = try XMLEncoder().encode(data, withRootKey: root)
         guard let message = String(bytes: message, encoding: .utf8) else {
             return

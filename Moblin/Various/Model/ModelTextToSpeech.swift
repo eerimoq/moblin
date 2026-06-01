@@ -21,7 +21,7 @@ extension Model {
         if post.bits != nil {
             return false
         }
-        if isAlertMessage(post: post) && isTextToSpeechEnabledForAnyAlertWidget() {
+        if isAlertMessage(post: post), isTextToSpeechEnabledForAnyAlertWidget() {
             return false
         }
         return post.user != nil

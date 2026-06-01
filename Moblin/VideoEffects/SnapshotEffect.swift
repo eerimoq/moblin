@@ -1,7 +1,7 @@
 import Collections
 import CoreImage
 
-final class SnapshotEffect: VideoEffect {
+final class SnapshotEffect: VideoEffect, @unchecked Sendable {
     private var snapshots: Deque<CIImage> = []
     private var sceneWidget: SettingsSceneWidget?
     private var currentSnapshot: CIImage?
@@ -50,7 +50,7 @@ final class SnapshotEffect: VideoEffect {
     }
 
     override func isEnabled() -> Bool {
-        return currentSnapshot != nil
+        currentSnapshot != nil
     }
 
     private func appendSnapshotInternal(image: CIImage) {

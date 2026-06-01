@@ -20,26 +20,26 @@ extension Model {
 
     func updateViewersSoop() -> StreamingPlatformStatus {
         if let platformStatus = soopPlatformStatus?.platformStatus {
-            return StreamingPlatformStatus(platform: .soop, status: platformStatus)
+            StreamingPlatformStatus(platform: .soop, status: platformStatus)
         } else {
-            return StreamingPlatformStatus(platform: .soop, status: .unknown)
+            StreamingPlatformStatus(platform: .soop, status: .unknown)
         }
     }
 
     func isSoopChatConfigured() -> Bool {
-        return database.chat.enabled && stream.soopChannelName != "" && stream.soopStreamId != ""
+        database.chat.enabled && stream.soopChannelName != "" && stream.soopStreamId != ""
     }
 
     func isSoopViewersConfigured() -> Bool {
-        return !stream.soopChannelName.isEmpty
+        !stream.soopChannelName.isEmpty
     }
 
     func isSoopChatConnected() -> Bool {
-        return soopChat?.isConnected() ?? false
+        soopChat?.isConnected() ?? false
     }
 
     func hasSoopChatEmotes() -> Bool {
-        return soopChat?.hasEmotes() ?? false
+        soopChat?.hasEmotes() ?? false
     }
 
     func reloadSoopChat() {

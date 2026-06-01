@@ -15,26 +15,26 @@ class Emote {
     }
 }
 
-class Emotes {
+class Emotes: @unchecked Sendable {
     private var emotes: [String: Emote] = [:]
-    private var task: Task<Void, Error>?
+    private var task: Task<Void, any Error>?
     private var ready: Bool = false
 
     func isReady() -> Bool {
-        return ready
+        ready
     }
 
     func start(
         platform: EmotesPlatform,
         channelId: String,
-        onError: @escaping (String, String) -> Void,
-        onOk: @escaping (String) -> Void,
+        onError: @escaping @MainActor (String, String) -> Void,
+        onOk: @escaping @MainActor (String) -> Void,
         settings: SettingsStreamChat
     ) {
         let settings = settings.clone()
         ready = false
         emotes.removeAll()
-        task = Task {
+        task = Task { @MainActor in
             var firstRetry = true
             var retryTime = 30
             while !self.ready {

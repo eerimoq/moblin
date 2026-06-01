@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-class IPMonitor {
+class IPMonitor: @unchecked Sendable {
     enum IPType {
         case ipv4
         case ipv6
@@ -9,9 +9,9 @@ class IPMonitor {
         func formatAddress(_ address: String) -> String {
             switch self {
             case .ipv4:
-                return address
+                address
             case .ipv6:
-                return "[\(address)]"
+                "[\(address)]"
             }
         }
     }
@@ -75,7 +75,7 @@ class IPMonitor {
                             socklen_t(0),
                             NI_NUMERICHOST
                         )
-                        let hostnameString = String(cString: hostname)
+                        let hostnameString = String(cArray: hostname)
                         let type: IPMonitor.IPType = addrFamily == UInt8(AF_INET) ? .ipv4 : .ipv6
                         let address = (hostnameString, type)
                         if !addresses.contains(where: { $0 == address }) {

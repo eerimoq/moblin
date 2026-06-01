@@ -50,6 +50,7 @@ private struct EffectView: View {
                     )
                 case .lut:
                     LutEffectView(
+                        model: model,
                         color: model.database.color,
                         widget: widget,
                         effect: effect,
@@ -61,6 +62,13 @@ private struct EffectView: View {
                         widget: widget,
                         effect: effect,
                         opacity: effect.opacity
+                    )
+                case .mask:
+                    MaskEffectView(
+                        model: model,
+                        widget: widget,
+                        effect: effect,
+                        mask: effect.mask
                     )
                 default:
                     EmptyView()

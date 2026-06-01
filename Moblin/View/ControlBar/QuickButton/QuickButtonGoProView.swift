@@ -200,7 +200,7 @@ struct QuickButtonGoProView: View {
                             ForEach(0 ..< 3) { index in
                                 Image(systemName: activeIndex == index ? "circle.fill" : "circle")
                                     .font(.system(size: 10))
-                                    .padding([.bottom], 10)
+                                    .padding(.bottom, 10)
                             }
                         }
                     }

@@ -14,7 +14,7 @@ struct QrCodeImageView: View {
                     .scaledToFit()
                     .frame(maxHeight: height)
                 Text("Tap the QR code for full screen")
-                    .padding([.bottom], 7)
+                    .padding(.bottom, 7)
             }
         }
         .onTapGesture {

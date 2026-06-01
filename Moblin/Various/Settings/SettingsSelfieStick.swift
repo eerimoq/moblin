@@ -3,39 +3,39 @@ import Foundation
 class SettingsSelfieStick: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var function: SettingsControllerFunction = .switchScene
-    @Published var sceneId: UUID?
-    @Published var widgetId: UUID?
-    @Published var gimbalPresetId: UUID?
-    @Published var gimbalMotion: SettingsGimbalMotion = .kapow
+    @Published var functionData: SettingsControllerFunctionData = .init()
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             function,
-             sceneId,
-             widgetId,
-             gimbalPresetId,
-             gimbalMotion
+        case enabled
+        case function
+        case sceneId
+        case widgetId
+        case gimbalPresetId
+        case gimbalMotion
+        case macroId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.function, function)
-        try container.encode(.sceneId, sceneId)
-        try container.encode(.widgetId, widgetId)
-        try container.encode(.gimbalPresetId, gimbalPresetId)
-        try container.encode(.gimbalMotion, gimbalMotion)
+        try container.encode(.sceneId, functionData.sceneId)
+        try container.encode(.widgetId, functionData.widgetId)
+        try container.encode(.gimbalPresetId, functionData.gimbalPresetId)
+        try container.encode(.gimbalMotion, functionData.gimbalMotion)
+        try container.encode(.macroId, functionData.macroId)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         function = container.decode(.function, SettingsControllerFunction.self, .switchScene)
-        sceneId = container.decode(.sceneId, UUID?.self, nil)
-        widgetId = container.decode(.widgetId, UUID?.self, nil)
-        gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
-        gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
+        functionData.sceneId = container.decode(.sceneId, UUID?.self, nil)
+        functionData.widgetId = container.decode(.widgetId, UUID?.self, nil)
+        functionData.gimbalPresetId = container.decode(.gimbalPresetId, UUID?.self, nil)
+        functionData.gimbalMotion = container.decode(.gimbalMotion, SettingsGimbalMotion.self, .kapow)
+        functionData.macroId = container.decode(.macroId, UUID?.self, nil)
     }
 }

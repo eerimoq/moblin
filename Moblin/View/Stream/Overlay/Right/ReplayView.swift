@@ -7,9 +7,9 @@ private struct ReplayPreview: View {
 
     private func width() -> Double {
         if orientation.isPortrait {
-            return 200
+            200
         } else {
-            return 300
+            300
         }
     }
 
@@ -106,9 +106,9 @@ private struct ReplayControlsPlayPauseButton: View {
 
     private func playStopImage() -> String {
         if replay.isPlaying {
-            return "stop"
+            "stop"
         } else {
-            return "play"
+            "play"
         }
     }
 
@@ -168,7 +168,7 @@ private struct ControlRowView<Content: View>: View {
             content()
         }
         .padding(4)
-        .padding([.trailing], 4)
+        .padding(.trailing, 4)
         .font(.title)
         .frame(height: 45)
         .background(backgroundColor)
@@ -217,9 +217,9 @@ private struct ReplayHistoryItem: View {
 
     private func height() -> Double {
         if orientation.isPortrait {
-            return 118
+            118
         } else {
-            return 68
+            68
         }
     }
 
@@ -260,9 +260,9 @@ private struct ReplayHistory: View {
 
     private func height() -> Double {
         if orientation.isPortrait {
-            return 120
+            120
         } else {
-            return 70
+            70
         }
     }
 
@@ -271,7 +271,7 @@ private struct ReplayHistory: View {
             LazyHStack {
                 if replayDatabase.replays.isEmpty {
                     Text("No replays saved")
-                        .padding([.leading], 30)
+                        .padding(.leading, 30)
                         .foregroundStyle(.white)
                 }
                 ForEach(replayDatabase.replays) {

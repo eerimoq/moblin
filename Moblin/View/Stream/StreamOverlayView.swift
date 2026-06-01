@@ -15,8 +15,8 @@ struct ChatInfo: View {
                         .bold()
                         .foregroundStyle(.white)
                 }
-                .padding([.top, .bottom], 5)
-                .padding([.leading, .trailing], 10)
+                .padding(.vertical, 5)
+                .padding(.horizontal, 10)
                 .background(.black.opacity(0.8))
                 .cornerRadius(10)
                 Spacer()
@@ -165,15 +165,15 @@ struct StreamOverlayView: View {
 
     private func leadingPadding() -> CGFloat {
         if UIDevice.current.userInterfaceIdiom == .pad || orientation.isPortrait {
-            return 15
+            15
         } else {
-            return 0
+            0
         }
     }
 
     var body: some View {
         ZStack {
-            if streamOverlay.isTorchOn && streamOverlay.isFrontCameraSelected {
+            if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
                 FrontTorchView(orientation: orientation)
             }
             ZStack {
@@ -195,7 +195,7 @@ struct StreamOverlayView: View {
                 }
                 HStack {
                     LeftOverlayView(model: model, database: model.database)
-                        .padding([.leading], leadingPadding())
+                        .padding(.leading, leadingPadding())
                     Spacer()
                 }
                 HStack {
@@ -204,7 +204,7 @@ struct StreamOverlayView: View {
                 }
                 HStack {
                     StreamOverlayDebugView(debugOverlay: model.debugOverlay)
-                        .padding([.leading], leadingPadding())
+                        .padding(.leading, leadingPadding())
                     Spacer()
                 }
                 .allowsHitTesting(false)

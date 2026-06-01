@@ -9,6 +9,7 @@ struct IngestsSettingsView: View {
             Section {
                 RtmpServerSettingsView(rtmpServer: database.rtmpServer)
                 SrtlaServerSettingsView(srtlaServer: database.srtlaServer)
+                SrtClientSettingsView(srtClient: database.srtClient)
                 RistServerSettingsView(ristServer: database.ristServer)
                 RtspClientSettingsView(rtspClient: database.rtspClient)
                 WhipServerSettingsView(whipServer: database.whipServer)

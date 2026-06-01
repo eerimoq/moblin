@@ -13,17 +13,17 @@ private struct QuickButtonImage: View {
 
     private func getImage(state: ButtonState) -> String {
         if state.isOn {
-            return state.button.imageOn
+            state.button.imageOn
         } else {
-            return state.button.imageOff
+            state.button.imageOff
         }
     }
 
     private func foregroundColor() -> Color {
         if hideImage {
-            return .clear
+            .clear
         } else {
-            return .white
+            .white
         }
     }
 
@@ -33,9 +33,9 @@ private struct QuickButtonImage: View {
 
     private func iconSize() -> Font {
         if quickButtonsSettings.bigButtons {
-            return .system(size: 20)
+            .system(size: 20)
         } else {
-            return .body
+            .body
         }
     }
 
@@ -141,6 +141,7 @@ struct QuickButtonsInnerView: View {
     let nameSize: CGFloat
     let nameWidth: CGFloat
     @State private var presentingRecordConfirm = false
+    @State private var presentingPreviewStreamConfirm = false
     @State private var presentingStartWorkoutTypePicker = false
     @State private var presentingStopWorkoutConfirm = false
 
@@ -154,11 +155,6 @@ struct QuickButtonsInnerView: View {
         state.button.isOn.toggle()
         model.toggleMute()
         model.updateQuickButtonStates()
-    }
-
-    private func widgetAction(state: ButtonState) {
-        state.button.isOn.toggle()
-        model.sceneUpdated()
     }
 
     private func stealthModeAction() {
@@ -425,6 +421,18 @@ struct QuickButtonsInnerView: View {
         model.interactiveBrowsers = state.button.isOn
     }
 
+    private func macrosAction() {
+        model.toggleShowingPanel(type: .macros, panel: .macros)
+    }
+
+    private func gimbalTrackingAction() {
+        model.toggleGimbalTracking()
+    }
+
+    private func previewStreamAction() {
+        model.togglePreviewStream()
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -455,14 +463,6 @@ struct QuickButtonsInnerView: View {
                                          buttonSize: size)
                         {
                             bitrateAction()
-                        }
-                    case .widget:
-                        QuickButtonImage(model: model,
-                                         quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
-                                         buttonSize: size)
-                        {
-                            widgetAction(state: state)
                         }
                     case .mic:
                         QuickButtonImage(model: model,
@@ -681,11 +681,6 @@ struct QuickButtonsInnerView: View {
                         {
                             browserAction()
                         }
-                    case .lut:
-                        QuickButtonImage(model: model,
-                                         quickButtonsSettings: quickButtonsSettings,
-                                         state: state,
-                                         buttonSize: size) {}
                     case .cameraPreview:
                         QuickButtonImage(model: model,
                                          quickButtonsSettings: quickButtonsSettings,
@@ -984,6 +979,35 @@ struct QuickButtonsInnerView: View {
                         {
                             interactiveBrowserWidgetsAction()
                         }
+                    case .macros:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            macrosAction()
+                        }
+                    case .gimbalTracking:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            gimbalTrackingAction()
+                        }
+                    case .previewStream:
+                        QuickButtonImage(model: model,
+                                         quickButtonsSettings: quickButtonsSettings,
+                                         state: state,
+                                         buttonSize: size)
+                        {
+                            presentingPreviewStreamConfirm = true
+                        }
+                        .confirmationDialog("", isPresented: $presentingPreviewStreamConfirm) {
+                            Button(state.isOn ? "Stop preview stream" : "Start preview stream") {
+                                previewStreamAction()
+                            }
+                        }
                     }
                 }
                 if state.button.type == quickButtons.selectedButtonType {
@@ -996,7 +1020,7 @@ struct QuickButtonsInnerView: View {
                     button
                 }
             }
-            if quickButtonsSettings.showName && !orientation.isPortrait {
+            if quickButtonsSettings.showName, !orientation.isPortrait {
                 Text(state.button.name)
                     .padding(0)
                     .multilineTextAlignment(.center)

@@ -48,7 +48,7 @@ struct IconAndTextSettingView: View {
             }
             .frame(width: 25)
             Text(text)
-                .padding([.leading], 3)
+                .padding(.leading, 3)
         }
     }
 }

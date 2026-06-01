@@ -8,11 +8,11 @@ struct ZoomSwitchToSettingsView: View {
     @ObservedObject var defaultZoom: SettingsZoomSwitchTo
 
     private func x() -> Float {
-        return defaultZoom.x
+        defaultZoom.x
     }
 
     private func formatX(x: Float) -> String {
-        return formatOneDecimal(x)
+        formatOneDecimal(x)
     }
 
     var body: some View {

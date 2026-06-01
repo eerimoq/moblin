@@ -8,16 +8,16 @@ private struct SceneItemView: View {
 
     private func height() -> Double {
         if database.bigButtons {
-            return segmentHeightBig
+            segmentHeightBig
         } else {
-            return segmentHeight
+            segmentHeight
         }
     }
 
     var body: some View {
         ZStack {
             Text(scene.name)
-                .font(.subheadline)
+                .minimumScaleFactor(pickerLabelMinimumScaleFactor)
                 .frame(
                     width: min(sceneSegmentWidth, max((width - 20) / CGFloat(model.enabledScenes.count), 1)),
                     height: height()
@@ -29,8 +29,8 @@ private struct SceneItemView: View {
                         Spacer()
                         Text(String(quickSwitchGroup))
                             .font(.system(size: 8))
-                            .padding([.trailing], 4)
-                            .padding([.bottom], 3)
+                            .padding(.trailing, 4)
+                            .padding(.bottom, 3)
                     }
                 }
             }
@@ -115,6 +115,6 @@ struct StreamOverlayRightSceneVSelectorView: View {
             RoundedRectangle(cornerRadius: 7)
                 .stroke(pickerBorderColor)
         )
-        .padding([.bottom], 5)
+        .padding(.bottom, 5)
     }
 }

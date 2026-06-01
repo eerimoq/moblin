@@ -48,12 +48,12 @@ private enum VideoCodec {
     }
 }
 
-final class WebrtcIngestClient {
+final class WebrtcIngestClient: @unchecked Sendable {
     let streamId: UUID
     private let latency: Double
     private let syncTimestamps: Bool
     private(set) var peerConnectionId: Int32 = -1
-    weak var delegate: WebrtcIngestClientDelegate?
+    weak var delegate: (any WebrtcIngestClientDelegate)?
     private var connected = false
     private var videoDecoder: VideoDecoder?
     private var videoFormatDescription: CMFormatDescription?
@@ -77,7 +77,7 @@ final class WebrtcIngestClient {
          syncTimestamps: Bool,
          iceServers: [String],
          dispatchQueue: DispatchQueue,
-         delegate: WebrtcIngestClientDelegate)
+         delegate: any WebrtcIngestClientDelegate)
     {
         self.streamId = streamId
         self.latency = latency
@@ -131,7 +131,7 @@ final class WebrtcIngestClient {
         guard result >= 0 else {
             throw "Failed to get local description"
         }
-        return String(cString: buffer)
+        return String(cArray: buffer)
     }
 
     func addRecvOnlyTrack(codec: rtcCodec,
@@ -141,7 +141,7 @@ final class WebrtcIngestClient {
                           name: String,
                           profile: String) throws -> Int32
     {
-        return try mid.withCString { midCStr in
+        try mid.withCString { midCStr in
             try name.withCString { nameCStr in
                 try UUID().uuidString.withCString { trackIdCStr in
                     try msid.withCString { msidCStr in
@@ -288,7 +288,7 @@ final class WebrtcIngestClient {
     private func handleTrackInternal(trackId: Int32) {
         var descBuffer = [CChar](repeating: 0, count: 4096)
         let descSize = rtcGetTrackDescription(trackId, &descBuffer, Int32(descBuffer.count))
-        let description = descSize > 0 ? String(cString: descBuffer) : ""
+        let description = descSize > 0 ? String(cArray: descBuffer) : ""
         setTrackCodec(trackId: trackId, description: description)
     }
 

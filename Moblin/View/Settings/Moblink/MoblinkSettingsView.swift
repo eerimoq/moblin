@@ -9,7 +9,7 @@ private struct PasswordView: View {
     @State private var message: String?
 
     private func isAllowedPassword(password: String) -> Bool {
-        return !password.isEmpty
+        !password.isEmpty
     }
 
     private func submit() {
@@ -22,9 +22,9 @@ private struct PasswordView: View {
 
     private func createMessage() -> String? {
         if isAllowedPassword(password: value) {
-            return nil
+            nil
         } else {
-            return "Not long and random enough"
+            "Not long and random enough"
         }
     }
 
@@ -44,7 +44,7 @@ private struct PasswordView: View {
                         }
                         .submitLabel(.done)
                         .onDisappear {
-                            if changed && !submitted {
+                            if changed, !submitted {
                                 submit()
                             }
                         }
@@ -230,27 +230,6 @@ private struct StreamerView: View {
     }
 }
 
-private struct UrlsView: View {
-    @ObservedObject var status: StatusOther
-    let port: UInt16
-
-    private func formatUrl(ip: String) -> String {
-        return "ws://\(ip):\(port)"
-    }
-
-    var body: some View {
-        NavigationLink {
-            Form {
-                UrlsIpv4View(status: status, formatUrl: formatUrl)
-                UrlsIpv6View(status: status, formatUrl: formatUrl)
-            }
-            .navigationTitle("URLs")
-        } label: {
-            Text("URLs")
-        }
-    }
-}
-
 struct MoblinkSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var status: StatusOther
@@ -292,7 +271,8 @@ struct MoblinkSettingsView: View {
             StreamerView(streamer: streamer)
             if streamer.enabled {
                 Section {
-                    UrlsView(status: status, port: streamer.port)
+                    UrlsView(status: status,
+                             formatUrl: { "ws://\($0):\(streamer.port)" })
                 } footer: {
                     Text("""
                     Enter one of the URL:s as "Streamer URL" in the relay device to \

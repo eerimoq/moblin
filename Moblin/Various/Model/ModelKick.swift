@@ -4,9 +4,9 @@ import SwiftUI
 extension Model {
     func updateViewersKick() -> StreamingPlatformStatus {
         if let platformStatus = kickPlatformStatus?.platformStatus {
-            return StreamingPlatformStatus(platform: .kick, status: platformStatus)
+            StreamingPlatformStatus(platform: .kick, status: platformStatus)
         } else {
-            return StreamingPlatformStatus(platform: .kick, status: .unknown)
+            StreamingPlatformStatus(platform: .kick, status: .unknown)
         }
     }
 
@@ -49,19 +49,19 @@ extension Model {
     }
 
     func isKickPusherConfigured() -> Bool {
-        return database.chat.enabled && stream.kickChannelName != ""
+        database.chat.enabled && stream.kickChannelName != ""
     }
 
     func isKickPusherConnected() -> Bool {
-        return kickPusher?.isConnected() ?? false
+        kickPusher?.isConnected() ?? false
     }
 
     func hasKickPusherEmotes() -> Bool {
-        return kickPusher?.hasEmotes() ?? false
+        kickPusher?.hasEmotes() ?? false
     }
 
     func isKickViewersConfigured() -> Bool {
-        return stream.kickChannelName != ""
+        stream.kickChannelName != ""
     }
 
     func reloadKickViewers() {
@@ -299,9 +299,9 @@ extension Model {
     }
 
     func createKickApi(stream: SettingsStream) -> KickApi {
-        return KickApi(channelId: stream.kickChannelId ?? "",
-                       slug: stream.kickSlug ?? "",
-                       accessToken: stream.kickAccessToken)
+        KickApi(channelId: stream.kickChannelId ?? "",
+                slug: stream.kickSlug ?? "",
+                accessToken: stream.kickAccessToken)
     }
 
     private func appendKickChatAlertMessage(
@@ -339,7 +339,7 @@ extension Model {
     }
 }
 
-extension Model: KickPusherDelegate {
+extension Model: @preconcurrency KickPusherDelegate {
     func kickPusherMakeErrorToast(title: String, subTitle: String?) {
         makeErrorToast(title: title, subTitle: subTitle)
     }
@@ -398,6 +398,7 @@ extension Model: KickPusherDelegate {
         }
         playAlert(alert: .kickSubscription(event: event))
         printEventCatPrinters(event: .kickSubscription, username: event.username, message: text)
+        latestSubscriber = event.username
     }
 
     func kickPusherGiftedSubscription(event: KickPusherGiftedSubscriptionsEvent) {
@@ -421,6 +422,7 @@ extension Model: KickPusherDelegate {
         }
         playAlert(alert: .kickGiftedSubscriptions(event: event))
         printEventCatPrinters(event: .kickGiftedSubscriptions, username: user, message: text)
+        latestSubscriber = user
     }
 
     func kickPusherRewardRedeemed(event: KickPusherRewardRedeemedEvent) {

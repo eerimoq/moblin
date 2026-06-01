@@ -4,31 +4,31 @@ import SwiftUI
 
 extension Model {
     func updateViewersTwitch() -> StreamingPlatformStatus {
-        return StreamingPlatformStatus(platform: .twitch, status: twitchPlatformStatus)
+        StreamingPlatformStatus(platform: .twitch, status: twitchPlatformStatus)
     }
 
     func isTwitchEventSubConfigured() -> Bool {
-        return stream.twitchLoggedIn
+        stream.twitchLoggedIn
     }
 
     func isTwitchEventsConnected() -> Bool {
-        return twitchEventSub?.isConnected() ?? false
+        twitchEventSub?.isConnected() ?? false
     }
 
     func isTwitchViewersConfigured() -> Bool {
-        return stream.twitchChannelId != "" && stream.twitchLoggedIn
+        stream.twitchChannelId != "" && stream.twitchLoggedIn
     }
 
     func isTwitchChatConfigured() -> Bool {
-        return database.chat.enabled && stream.twitchChannelName != ""
+        database.chat.enabled && stream.twitchChannelName != ""
     }
 
     func isTwitchChatConnected() -> Bool {
-        return twitchChat?.isConnected() ?? false
+        twitchChat?.isConnected() ?? false
     }
 
     func hasTwitchChatEmotes() -> Bool {
-        return twitchChat?.hasEmotes() ?? false
+        twitchChat?.hasEmotes() ?? false
     }
 
     func reloadTwitchChat() {
@@ -544,8 +544,9 @@ extension Model {
     }
 }
 
-extension Model: TwitchEventSubDelegate {
+extension Model: @preconcurrency TwitchEventSubDelegate {
     func twitchEventSubChannelFollow(event: TwitchEventSubNotificationChannelFollowEvent) {
+        latestFollower = event.user_name
         let text = String(localized: "just followed!")
         if stream.twitchToastAlerts.follows {
             makeToast(title: "\(event.user_name) \(text)")
@@ -582,6 +583,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscribe, username: event.user_name, message: text)
+        latestSubscriber = event.user_name
     }
 
     func twitchEventSubChannelSubscriptionGift(event: TwitchEventSubNotificationChannelSubscriptionGiftEvent) {
@@ -602,6 +604,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchSubscrptionGift, username: user, message: text)
+        latestSubscriber = user
     }
 
     func twitchEventSubChannelSubscriptionMessage(
@@ -625,6 +628,7 @@ extension Model: TwitchEventSubDelegate {
             )
         }
         printEventCatPrinters(event: .twitchResubscribe, username: event.user_name, message: text)
+        latestSubscriber = event.user_name
     }
 
     func twitchEventSubChannelPointsCustomRewardRedemptionAdd(
@@ -756,7 +760,7 @@ extension Model: TwitchEventSubDelegate {
     func twitchEventSubNotification(message _: String) {}
 }
 
-extension Model: TwitchChatDelegate {
+extension Model: @preconcurrency TwitchChatDelegate {
     func twitchChatMakeErrorToast(title: String, subTitle: String?) {
         makeErrorToast(title: title, subTitle: subTitle)
     }
@@ -805,7 +809,7 @@ extension Model: TwitchChatDelegate {
     }
 }
 
-extension Model: TwitchApiDelegate {
+extension Model: @preconcurrency TwitchApiDelegate {
     func twitchApiUnauthorized() {
         stream.twitchLoggedIn = false
     }

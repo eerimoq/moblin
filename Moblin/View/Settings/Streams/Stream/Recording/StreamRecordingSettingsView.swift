@@ -30,7 +30,7 @@ private struct RecordingPathView: View {
     }
 
     private func getRecordingPath(recordingPath: Data) -> String {
-        return makeRecordingPath(recordingPath: recordingPath)?
+        makeRecordingPath(recordingPath: recordingPath)?
             .path() ?? String(localized: "Disk not connected?")
     }
 

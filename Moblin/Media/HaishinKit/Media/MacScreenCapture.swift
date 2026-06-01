@@ -8,24 +8,28 @@ protocol MacScreenCaptureDelegate: AnyObject {
     func macScreenCaptureDidOutputSampleBuffer(_ sampleBuffer: CMSampleBuffer)
 }
 
+private let macScreenCaptureLatency = 0.15
+
 @available(macCatalyst 18.2, *)
-class MacScreenCapture: NSObject {
+class MacScreenCapture: NSObject, @unchecked Sendable {
     static let shared = MacScreenCapture()
-    weak var delegate: MacScreenCaptureDelegate?
+    weak var delegate: (any MacScreenCaptureDelegate)?
     private var stream: SCStream?
+    private var latestSampleBufferWithImageBuffer: CMSampleBuffer?
 
     func start(fps: Float64) {
-        Task {
+        Task { @MainActor in
             await startInternal(fps: fps)
         }
     }
 
     func stop() {
-        Task {
+        Task { @MainActor in
             await stopInternal()
         }
     }
 
+    @MainActor
     private func startInternal(fps: Float64) async {
         do {
             let (filter, display) = try await makeContentFilter()
@@ -41,7 +45,7 @@ class MacScreenCapture: NSObject {
             try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: processorPipelineQueue)
             try await stream.startCapture()
             self.stream = stream
-            delegate?.macScreenCaptureDidStart(latency: 0.1)
+            delegate?.macScreenCaptureDidStart(latency: macScreenCaptureLatency)
         } catch {
             logger.info("mac-screen-capture: Failed to start: \(error.localizedDescription)")
         }
@@ -85,7 +89,16 @@ class MacScreenCapture: NSObject {
 @available(macCatalyst 18.2, *)
 extension MacScreenCapture: SCStreamOutput {
     func stream(_: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer, of _: SCStreamOutputType) {
-        let presentationTimeStamp = sampleBuffer.presentationTimeStamp + CMTime(seconds: 0.1)
+        let presentationTimeStamp = sampleBuffer
+            .presentationTimeStamp + CMTime(seconds: macScreenCaptureLatency)
+        var sampleBuffer = sampleBuffer
+        if sampleBuffer.imageBuffer != nil {
+            latestSampleBufferWithImageBuffer = sampleBuffer
+        } else if let latestSampleBufferWithImageBuffer {
+            sampleBuffer = latestSampleBufferWithImageBuffer
+        } else {
+            return
+        }
         guard let sampleBuffer = sampleBuffer.replacePresentationTimeStamp(presentationTimeStamp) else {
             return
         }

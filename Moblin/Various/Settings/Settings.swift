@@ -4,8 +4,8 @@ import ZipArchive
 
 let defaultStreamUrl = "srt://my_public_ip:4000"
 let defaultRtmpStreamUrl = "rtmp://my_public_ip:1935/live/foobar"
-let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
-let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
+nonisolated(unsafe) let defaultQuickButtonColor = RgbColor(red: 255 / 4, green: 255 / 4, blue: 255 / 4)
+nonisolated(unsafe) let defaultStreamButtonColor = RgbColor(red: 255, green: 59, blue: 48)
 let defaultSrtLatency: Int32 = 3000
 let minZoomX: Float = 0.5
 
@@ -14,6 +14,7 @@ enum SettingsCameraId {
     case front(id: CameraId)
     case rtmp(id: UUID)
     case srtla(id: UUID)
+    case srt(id: UUID)
     case rist(id: UUID)
     case rtsp(id: UUID)
     case whip(id: UUID)
@@ -33,7 +34,7 @@ enum SettingsColorLutType: String, Codable {
     case diskCube
 }
 
-class SettingsColorLut: Codable, Identifiable, ObservableObject {
+class SettingsColorLut: Codable, Identifiable, ObservableObject, @unchecked Sendable {
     var id: UUID = .init()
     @Published var type: SettingsColorLutType = .bundled
     @Published var name: String = ""
@@ -45,13 +46,13 @@ class SettingsColorLut: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             type,
-             name,
-             enabled
+        case id
+        case type
+        case name
+        case enabled
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.type, type)
@@ -59,7 +60,7 @@ class SettingsColorLut: Codable, Identifiable, ObservableObject {
         try container.encode(.enabled, enabled)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         type = container.decode(.type, SettingsColorLutType.self, .bundled)
@@ -99,16 +100,16 @@ class SettingsColor: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case space,
-             lutEnabled,
-             lut,
-             bundledLuts,
-             diskLuts,
-             diskLutsPng,
-             diskLutsCube
+        case space
+        case lutEnabled
+        case lut
+        case bundledLuts
+        case diskLuts
+        case diskLutsPng
+        case diskLutsCube
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.space, space)
         try container.encode(.lutEnabled, lutEnabled)
@@ -119,7 +120,7 @@ class SettingsColor: Codable, ObservableObject {
         try container.encode(.diskLutsCube, diskLutsCube)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         space = container.decode(.space, SettingsColorSpace.self, .srgb)
         lutEnabled = container.decode(.lutEnabled, Bool.self, true)
@@ -128,6 +129,10 @@ class SettingsColor: Codable, ObservableObject {
         diskLuts = container.decode(.diskLuts, [SettingsColorLut].self, [])
         diskLutsPng = container.decode(.diskLutsPng, [SettingsColorLut].self, [])
         diskLutsCube = container.decode(.diskLutsCube, [SettingsColorLut].self, [])
+    }
+
+    func allLuts() -> [SettingsColorLut] {
+        bundledLuts + diskLutsCube + diskLutsPng
     }
 }
 
@@ -161,34 +166,34 @@ class SettingsShow: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case chat,
-             viewers,
-             uptime,
-             stream,
-             speed,
-             audioLevel,
-             zoom,
-             zoomPresets,
-             microphone,
-             audioBar,
-             cameras,
-             obsStatus,
-             rtmpSpeed,
-             gameController,
-             location,
-             remoteControl,
-             browserWidgets,
-             bonding,
-             events,
-             djiDevices,
-             bondingRtts,
-             moblink,
-             catPrinter,
-             heartRateDevice,
-             cpu
+        case chat
+        case viewers
+        case uptime
+        case stream
+        case speed
+        case audioLevel
+        case zoom
+        case zoomPresets
+        case microphone
+        case audioBar
+        case cameras
+        case obsStatus
+        case rtmpSpeed
+        case gameController
+        case location
+        case remoteControl
+        case browserWidgets
+        case bonding
+        case events
+        case djiDevices
+        case bondingRtts
+        case moblink
+        case catPrinter
+        case heartRateDevice
+        case cpu
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.chat, chat)
         try container.encode(.viewers, viewers)
@@ -217,7 +222,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.cpu, systemMonitor)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         chat = container.decode(.chat, Bool.self, true)
         viewers = container.decode(.viewers, Bool.self, true)
@@ -259,23 +264,23 @@ class SettingsZoomPreset: Codable, Identifiable, Equatable, ObservableObject {
     }
 
     static func == (lhs: SettingsZoomPreset, rhs: SettingsZoomPreset) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             x
+        case id
+        case name
+        case x
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.x, x)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "")
@@ -291,19 +296,19 @@ class SettingsZoomSwitchTo: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case level,
-             x,
-             enabled
+        case level
+        case x
+        case enabled
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.level, level)
         try container.encode(.x, x)
         try container.encode(.enabled, enabled)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         level = container.decode(.level, Float.self, 1.0)
         x = container.decode(.x, Float.self, 1.0)
@@ -321,14 +326,14 @@ class SettingsZoom: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case back,
-             front,
-             switchToBack,
-             switchToFront,
-             speed
+        case back
+        case front
+        case switchToBack
+        case switchToFront
+        case speed
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.back, back)
         try container.encode(.front, front)
@@ -337,7 +342,7 @@ class SettingsZoom: Codable, ObservableObject {
         try container.encode(.speed, speed)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         back = container.decode(.back, [SettingsZoomPreset].self, [])
         front = container.decode(.front, [SettingsZoomPreset].self, [])
@@ -357,17 +362,17 @@ class SettingsBitratePreset: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case id,
-             bitrate
+        case id
+        case bitrate
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.bitrate, bitrate)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         bitrate = container.decode(.bitrate, UInt32.self, 5_000_000)
@@ -383,22 +388,22 @@ enum SettingsVideoStabilizationMode: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .off:
-            return String(localized: "Off")
+            String(localized: "Off")
         case .standard:
-            return String(localized: "Standard")
+            String(localized: "Standard")
         case .cinematic:
-            return String(localized: "Cinematic")
+            String(localized: "Cinematic")
         case .cinematicExtendedEnhanced:
-            return String(localized: "Cinematic extended enhanced")
+            String(localized: "Cinematic extended enhanced")
         }
     }
 }
 
-var videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
+let videoStabilizationModes = SettingsVideoStabilizationMode.allCases.filter {
     if #available(iOS 18.0, *) {
-        return true
+        true
     } else {
-        return $0 != .cinematicExtendedEnhanced
+        $0 != .cinematicExtendedEnhanced
     }
 }
 
@@ -408,12 +413,12 @@ class SettingsTesla: Codable {
     var enabled: Bool = true
 
     enum CodingKeys: CodingKey {
-        case vin,
-             privateKey,
-             enabled
+        case vin
+        case privateKey
+        case enabled
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.vin, vin)
         try container.encode(.privateKey, privateKey)
@@ -422,7 +427,7 @@ class SettingsTesla: Codable {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         vin = container.decode(.vin, String.self, "")
         privateKey = container.decode(.privateKey, String.self, "")
@@ -449,7 +454,7 @@ class SettingsMediaPlayerFile: Codable, Identifiable {
     }
 }
 
-class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named {
+class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named, @unchecked Sendable {
     static let baseName = String(localized: "My player")
     var id: UUID = .init()
     @Published var name: String = baseName
@@ -458,14 +463,14 @@ class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named {
     @Published var playlist: [SettingsMediaPlayerFile] = []
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             playerId,
-             autoSelectMic,
-             playlist
+        case id
+        case name
+        case playerId
+        case autoSelectMic
+        case playlist
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -476,7 +481,7 @@ class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -486,7 +491,7 @@ class SettingsMediaPlayer: Codable, Identifiable, ObservableObject, Named {
     }
 
     func camera() -> String {
-        return mediaPlayerCamera(name: name)
+        mediaPlayerCamera(name: name)
     }
 
     func clone() -> SettingsMediaPlayer {
@@ -509,14 +514,14 @@ class SettingsMediaPlayers: Codable, ObservableObject {
         case players
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.players, players)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         players = container.decode(.players, [SettingsMediaPlayer].self, [])
     }
@@ -529,9 +534,9 @@ enum SettingsReplaySpeed: String, Codable, CaseIterable {
     func toNumber() -> Double {
         switch self {
         case .oneHalf:
-            return 0.5
+            0.5
         case .one:
-            return 1.0
+            1.0
         }
     }
 }
@@ -545,19 +550,19 @@ class SettingsReplay: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case start,
-             stop,
-             speed
+        case start
+        case stop
+        case speed
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.start, start)
         try container.encode(.stop, stop)
         try container.encode(.speed, speed)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         start = container.decode(.start, Double.self, 20.0)
         stop = container.decode(.stop, Double.self, SettingsReplay.stop)
@@ -574,14 +579,14 @@ class SettingsCyclingPowerDevice: Codable, Identifiable, ObservableObject, Named
     @Published var bluetoothPeripheralId: UUID?
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId
+        case id
+        case name
+        case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -592,7 +597,7 @@ class SettingsCyclingPowerDevice: Codable, Identifiable, ObservableObject, Named
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -609,14 +614,14 @@ class SettingsCyclingPowerDevices: Codable, ObservableObject {
         case devices
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.devices, devices)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         devices = container.decode(.devices, [SettingsCyclingPowerDevice].self, [])
     }
@@ -631,14 +636,14 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var bluetoothPeripheralId: UUID?
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId
+        case id
+        case name
+        case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -649,7 +654,7 @@ class SettingsWorkoutDevice: Codable, Identifiable, ObservableObject, Named {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -666,20 +671,20 @@ class SettingsWorkoutDevices: Codable, ObservableObject {
         case devices
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.devices, devices)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         devices = container.decode(.devices, [SettingsWorkoutDevice].self, [])
     }
 }
 
-private let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
+private nonisolated(unsafe) let defaultRgbLightColor = RgbColor(red: 0, green: 255, blue: 0)
 
 class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, Named {
     static let baseName = String(localized: "My cooler")
@@ -694,17 +699,17 @@ class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, N
     @Published var rgbLightBrightness: Double = 100.0
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId,
-             rgbLightEnabled,
-             rgbLightColor,
-             rgbLightBrightness
+        case id
+        case name
+        case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
+        case rgbLightEnabled
+        case rgbLightColor
+        case rgbLightBrightness
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -718,7 +723,7 @@ class SettingsBlackSharkCoolerDevice: Codable, Identifiable, ObservableObject, N
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
@@ -739,20 +744,20 @@ class SettingsBlackSharkCoolerDevices: Codable, ObservableObject {
         case devices
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.devices, devices)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         devices = container.decode(.devices, [SettingsBlackSharkCoolerDevice].self, [])
     }
 }
 
-class SettingsNetworkInterfaceName: Codable, Identifiable {
+class SettingsNetworkInterfaceName: Codable, Identifiable, @unchecked Sendable {
     var id: UUID = .init()
     var interfaceName: String = ""
     var name: String = ""
@@ -767,13 +772,13 @@ enum SettingsExternalDisplayContent: String, Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .stream:
-            return String(localized: "Stream")
+            String(localized: "Stream")
         case .cleanStream:
-            return String(localized: "Clean stream")
+            String(localized: "Clean stream")
         case .chat:
-            return String(localized: "Chat")
+            String(localized: "Chat")
         case .mirror:
-            return String(localized: "Mirror")
+            String(localized: "Mirror")
         }
     }
 }
@@ -786,14 +791,14 @@ class WebBrowserBookmarkSettings: Identifiable, Codable, ObservableObject {
         case url
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.url, url)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         url = container.decode(.url, String.self, "https://google.com")
     }
@@ -804,11 +809,11 @@ class WebBrowserSettings: Codable, ObservableObject {
     @Published var bookmarks: [WebBrowserBookmarkSettings] = []
 
     enum CodingKeys: CodingKey {
-        case home,
-             bookmarks
+        case home
+        case bookmarks
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.home, home)
         try container.encode(.bookmarks, bookmarks)
@@ -816,7 +821,7 @@ class WebBrowserSettings: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         home = container.decode(.home, String.self, "https://google.com")
         bookmarks = container.decode(.bookmarks, [WebBrowserBookmarkSettings].self, [])
@@ -832,7 +837,7 @@ class SettingsAlertsMediaGalleryItem: Codable, Identifiable {
     }
 }
 
-private let allBundledAlertsMediaGalleryImages = [
+private nonisolated(unsafe) let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "Moblin pixels"),
     SettingsAlertsMediaGalleryItem(name: "Moblin party"),
     SettingsAlertsMediaGalleryItem(name: "Moblin trillionaire"),
@@ -843,7 +848,7 @@ private let allBundledAlertsMediaGalleryImages = [
     SettingsAlertsMediaGalleryItem(name: "-100"),
 ]
 
-private let allBundledAlertsMediaGallerySounds = [
+private nonisolated(unsafe) let allBundledAlertsMediaGallerySounds = [
     SettingsAlertsMediaGalleryItem(name: "Notification 2"),
     SettingsAlertsMediaGalleryItem(name: "Boing"),
     SettingsAlertsMediaGalleryItem(name: "Cash register"),
@@ -867,11 +872,11 @@ class SettingsAlertsMediaGallery: Codable {
     var customSounds: [SettingsAlertsMediaGalleryItem] = []
 
     func getWhiteStarImageId() -> UUID {
-        return bundledImages[3].id
+        bundledImages[3].id
     }
 
     func getGlassesImageId() -> UUID {
-        return bundledImages[5].id
+        bundledImages[5].id
     }
 }
 
@@ -880,11 +885,11 @@ class SettingsDisconnectProtection: Codable, ObservableObject {
     @Published var fallbackSceneId: UUID?
 
     enum CodingKeys: CodingKey {
-        case liveSceneId,
-             fallbackSceneId
+        case liveSceneId
+        case fallbackSceneId
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.liveSceneId, liveSceneId)
         try container.encode(.fallbackSceneId, fallbackSceneId)
@@ -892,7 +897,7 @@ class SettingsDisconnectProtection: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         liveSceneId = container.decode(.liveSceneId, UUID?.self, .init())
         fallbackSceneId = container.decode(.fallbackSceneId, UUID?.self, .init())
@@ -906,9 +911,9 @@ enum SettingsWiFiAwareRole: Codable, CaseIterable {
     func toString() -> String {
         switch self {
         case .sender:
-            return "Sender"
+            "Sender"
         case .receiver:
-            return "Receiver"
+            "Receiver"
         }
     }
 }
@@ -918,11 +923,11 @@ class SettingsWiFiAware: Codable, ObservableObject {
     @Published var role: SettingsWiFiAwareRole = .sender
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             role
+        case enabled
+        case role
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.role, role)
@@ -930,7 +935,7 @@ class SettingsWiFiAware: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         role = container.decode(.role, SettingsWiFiAwareRole.self, .sender)
@@ -945,11 +950,11 @@ enum SettingsFacePrivacyMode: String, Codable, CaseIterable {
     func toString() -> LocalizedStringKey {
         switch self {
         case .blur:
-            return "Blur"
+            "Blur"
         case .pixellate:
-            return "Pixellate"
+            "Pixellate"
         case .backgroundImage:
-            return "Background image"
+            "Background image"
         }
     }
 }
@@ -964,12 +969,12 @@ class SettingsFace: Codable, ObservableObject {
     @Published var pixellateStrength: Float = 0.3
 
     enum CodingKeys: CodingKey {
-        case privacyMode,
-             blurStrength,
-             pixellateStrength
+        case privacyMode
+        case blurStrength
+        case pixellateStrength
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.privacyMode, privacyMode)
         try container.encode(.blurStrength, blurStrength)
@@ -978,7 +983,7 @@ class SettingsFace: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         blurFaces = false
         blurText = false
@@ -990,14 +995,13 @@ class SettingsFace: Codable, ObservableObject {
     }
 
     func toEffectSettings(backgroundImage: CIImage?) -> FaceEffectSettings {
-        let faceEffectPrivacyMode: FaceEffectPrivacyMode
-        switch privacyMode {
+        let faceEffectPrivacyMode: FaceEffectPrivacyMode = switch privacyMode {
         case .blur:
-            faceEffectPrivacyMode = .blur(strength: blurStrength)
+            .blur(strength: blurStrength)
         case .pixellate:
-            faceEffectPrivacyMode = .pixellate(strength: pixellateStrength)
+            .pixellate(strength: pixellateStrength)
         case .backgroundImage:
-            faceEffectPrivacyMode = .backgroundImage(backgroundImage)
+            .backgroundImage(backgroundImage)
         }
         return FaceEffectSettings(blurFaces: blurFaces,
                                   blurText: blurText,
@@ -1014,9 +1018,9 @@ enum SettingsBeautySettings: CaseIterable {
     func toString() -> String {
         switch self {
         case .smoothness:
-            return String(localized: "Smoothness")
+            String(localized: "Smoothness")
         case .shape:
-            return String(localized: "Shape")
+            String(localized: "Shape")
         }
     }
 }
@@ -1031,15 +1035,15 @@ class SettingsBeauty: Codable, ObservableObject {
     @Published var settings: SettingsBeautySettings = .smoothness
 
     enum CodingKeys: CodingKey {
-        case enabled,
-             smoothRadius,
-             smoothStrength,
-             shapePosition,
-             shapeRadius,
-             shapeStrength
+        case enabled
+        case smoothRadius
+        case smoothStrength
+        case shapePosition
+        case shapeRadius
+        case shapeStrength
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.enabled, enabled)
         try container.encode(.smoothRadius, smoothnessRadius)
@@ -1051,7 +1055,7 @@ class SettingsBeauty: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         enabled = container.decode(.enabled, Bool.self, false)
         smoothnessRadius = container.decode(.smoothRadius, Float.self, 10.0)
@@ -1092,6 +1096,7 @@ class Database: Codable, ObservableObject {
     var location: SettingsLocation = .init()
     var watch: WatchSettings = .init()
     var audio: SettingsAudio = .init()
+    var macros: SettingsMacros = .init()
     var webBrowser: WebBrowserSettings = .init()
     var deepLinkCreator: DeepLinkCreator = .init()
     var srtlaServer: SettingsSrtlaServer = .init()
@@ -1128,9 +1133,11 @@ class Database: Codable, ObservableObject {
     var selfieStick: SettingsSelfieStick = .init()
     @Published var bigButtons: Bool = false
     @Published var verticalButtons: Bool = false
+    @Published var bigAudioLevelMeter: Bool = false
     var ristServer: SettingsRistServer = .init()
     var disconnectProtection: SettingsDisconnectProtection = .init()
     var rtspClient: SettingsRtspClient = .init()
+    var srtClient: SettingsSrtClient = .init()
     var whipServer: SettingsWhipServer = .init()
     var whepClient: SettingsWhepClient = .init()
     var navigation: SettingsNavigation = .init()
@@ -1139,7 +1146,9 @@ class Database: Codable, ObservableObject {
     var beauty: SettingsBeauty = .init()
     var talkback: SettingsTalkback = .init()
     var gimbal: SettingsGimbal = .init()
+    var scoreboardSizeMigrated: Bool = false
 
+    @MainActor
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(
             Database.self,
@@ -1167,89 +1176,93 @@ class Database: Codable, ObservableObject {
     }
 
     func toString() throws -> String {
-        return try String.fromUtf8(data: JSONEncoder().encode(self))
+        try String.fromUtf8(data: JSONEncoder().encode(self))
     }
 
     enum CodingKeys: CodingKey {
-        case streams,
-             scenes,
-             widgets,
-             show,
-             zoom,
-             tapToFocus,
-             bitratePresets,
-             iconImage,
-             videoStabilizationMode,
-             chat,
-             batteryPercentage,
-             mic,
-             mics,
-             debug,
-             quickButtons,
-             globalButtons,
-             rtmpServer,
-             networkInterfaceNames,
-             lowBitrateWarning,
-             vibrate,
-             gameControllers,
-             remoteControl,
-             startStopRecordingConfirmations,
-             color,
-             mirrorFrontCameraOnStream,
-             streamButtonColor,
-             location,
-             watch,
-             audio,
-             webBrowser,
-             deepLinkCreator,
-             srtlaServer,
-             mediaPlayers,
-             showAllSettings,
-             portrait,
-             djiDevices,
-             alertsMediaGallery,
-             catPrinters,
-             verboseStatuses,
-             scoreboardPlayers,
-             keyboard,
-             tesla,
-             srtlaRelay,
-             pixellateStrength,
-             moblink,
-             sceneSwitchTransition,
-             forceSceneSwitchTransition,
-             cameraControlsEnabled,
-             externalDisplayContent,
-             cyclingPowerDevices,
-             cyclingPowerDevicesMigrated,
-             heartRateDevices,
-             phoneCoolerDevices,
-             remoteSceneId,
-             sceneNumericInput,
-             goPro,
-             replay,
-             portraitVideoOffsetFromTop,
-             autoSceneSwitchers,
-             fixedHorizon,
-             whirlpoolAngle,
-             pinchScale,
-             selfieStick,
-             bigButtons,
-             verticalButtons,
-             ristServer,
-             disconnectProtection,
-             rtspClient,
-             whipServer,
-             whepClient,
-             navigation,
-             wiFiAware,
-             face,
-             beauty,
-             talkBack,
-             gimbal
+        case streams
+        case scenes
+        case widgets
+        case show
+        case zoom
+        case tapToFocus
+        case bitratePresets
+        case iconImage
+        case videoStabilizationMode
+        case chat
+        case batteryPercentage
+        case mic
+        case mics
+        case debug
+        case quickButtons
+        case globalButtons
+        case rtmpServer
+        case networkInterfaceNames
+        case lowBitrateWarning
+        case vibrate
+        case gameControllers
+        case remoteControl
+        case startStopRecordingConfirmations
+        case color
+        case mirrorFrontCameraOnStream
+        case streamButtonColor
+        case location
+        case watch
+        case audio
+        case macros
+        case webBrowser
+        case deepLinkCreator
+        case srtlaServer
+        case mediaPlayers
+        case showAllSettings
+        case portrait
+        case djiDevices
+        case alertsMediaGallery
+        case catPrinters
+        case verboseStatuses
+        case scoreboardPlayers
+        case keyboard
+        case tesla
+        case srtlaRelay
+        case pixellateStrength
+        case moblink
+        case sceneSwitchTransition
+        case forceSceneSwitchTransition
+        case cameraControlsEnabled
+        case externalDisplayContent
+        case cyclingPowerDevices
+        case cyclingPowerDevicesMigrated
+        case heartRateDevices
+        case phoneCoolerDevices
+        case remoteSceneId
+        case sceneNumericInput
+        case goPro
+        case replay
+        case portraitVideoOffsetFromTop
+        case autoSceneSwitchers
+        case fixedHorizon
+        case whirlpoolAngle
+        case pinchScale
+        case selfieStick
+        case bigButtons
+        case verticalButtons
+        case bigAudioLevelMeter
+        case ristServer
+        case disconnectProtection
+        case rtspClient
+        case srtClient
+        case whipServer
+        case whepClient
+        case navigation
+        case wiFiAware
+        case face
+        case beauty
+        case talkBack
+        case gimbal
+        case scoreboardSizeMigrated
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.streams, streams)
         try container.encode(.scenes, scenes)
@@ -1279,6 +1292,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.location, location)
         try container.encode(.watch, watch)
         try container.encode(.audio, audio)
+        try container.encode(.macros, macros)
         try container.encode(.webBrowser, webBrowser)
         try container.encode(.deepLinkCreator, deepLinkCreator)
         try container.encode(.srtlaServer, srtlaServer)
@@ -1315,9 +1329,11 @@ class Database: Codable, ObservableObject {
         try container.encode(.selfieStick, selfieStick)
         try container.encode(.bigButtons, bigButtons)
         try container.encode(.verticalButtons, verticalButtons)
+        try container.encode(.bigAudioLevelMeter, bigAudioLevelMeter)
         try container.encode(.ristServer, ristServer)
         try container.encode(.disconnectProtection, disconnectProtection)
         try container.encode(.rtspClient, rtspClient)
+        try container.encode(.srtClient, srtClient)
         try container.encode(.whipServer, whipServer)
         try container.encode(.whepClient, whepClient)
         try container.encode(.navigation, navigation)
@@ -1326,11 +1342,12 @@ class Database: Codable, ObservableObject {
         try container.encode(.beauty, beauty)
         try container.encode(.talkBack, talkback)
         try container.encode(.gimbal, gimbal)
+        try container.encode(.scoreboardSizeMigrated, scoreboardSizeMigrated)
     }
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         streams = container.decode(.streams, [SettingsStream].self, [])
         scenes = container.decode(.scenes, [SettingsScene].self, [])
@@ -1369,6 +1386,7 @@ class Database: Codable, ObservableObject {
         location = container.decode(.location, SettingsLocation.self, .init())
         watch = container.decode(.watch, WatchSettings.self, .init())
         audio = container.decode(.audio, SettingsAudio.self, .init())
+        macros = container.decode(.macros, SettingsMacros.self, .init())
         webBrowser = container.decode(.webBrowser, WebBrowserSettings.self, .init())
         deepLinkCreator = container.decode(.deepLinkCreator, DeepLinkCreator.self, .init())
         srtlaServer = container.decode(.srtlaServer, SettingsSrtlaServer.self, .init())
@@ -1440,6 +1458,7 @@ class Database: Codable, ObservableObject {
         selfieStick = container.decode(.selfieStick, SettingsSelfieStick.self, .init())
         bigButtons = container.decode(.bigButtons, Bool.self, false)
         verticalButtons = container.decode(.verticalButtons, Bool.self, false)
+        bigAudioLevelMeter = container.decode(.bigAudioLevelMeter, Bool.self, false)
         ristServer = container.decode(.ristServer, SettingsRistServer.self, .init())
         disconnectProtection = container.decode(
             .disconnectProtection,
@@ -1447,6 +1466,7 @@ class Database: Codable, ObservableObject {
             .init()
         )
         rtspClient = container.decode(.rtspClient, SettingsRtspClient.self, .init())
+        srtClient = container.decode(.srtClient, SettingsSrtClient.self, .init())
         whipServer = container.decode(.whipServer, SettingsWhipServer.self, .init())
         whepClient = container.decode(.whepClient, SettingsWhepClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
@@ -1455,6 +1475,17 @@ class Database: Codable, ObservableObject {
         beauty = container.decode(.beauty, SettingsBeauty.self, .init())
         talkback = container.decode(.talkBack, SettingsTalkback.self, .init())
         gimbal = container.decode(.gimbal, SettingsGimbal.self, .init())
+        scoreboardSizeMigrated = container.decode(.scoreboardSizeMigrated, Bool.self, false)
+        if !scoreboardSizeMigrated {
+            for widget in widgets where widget.type == .scoreboard {
+                for scene in scenes {
+                    for sceneWidget in scene.widgets where sceneWidget.widgetId == widget.id {
+                        sceneWidget.layout.size = defaultScoreboardSize
+                    }
+                }
+            }
+            scoreboardSizeMigrated = true
+        }
     }
 }
 
@@ -1564,92 +1595,80 @@ private func updateQuickButton(database: Database, button: SettingsQuickButton) 
 }
 
 private func quickButtonPageOne() -> Int {
-    return 1
+    1
 }
 
 private func quickButtonPageTwo() -> Int {
     if #available(iOS 17, *) {
-        return 2
+        2
     } else {
-        return 1
+        1
     }
 }
 
 private func quickButtonPageThree() -> Int {
     if #available(iOS 17, *) {
-        return 3
+        3
     } else {
-        return 1
+        1
     }
 }
 
 private func addMissingQuickButtonsPageOne(database: Database) {
     let page = quickButtonPageOne()
-    var button = SettingsQuickButton(name: String(localized: "Torch"),
-                                     type: .torch,
+    var button = SettingsQuickButton(type: .torch,
                                      imageOn: "flashlight.on.fill",
                                      imageOff: "flashlight.off.fill",
                                      page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Mute"),
-                                 type: .mute,
+    button = SettingsQuickButton(type: .mute,
                                  imageOn: "mic.slash",
                                  imageOff: "mic",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Stream"),
-                                 type: .live,
+    button = SettingsQuickButton(type: .live,
                                  imageOn: "dot.radiowaves.left.and.right",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Mic"),
-                                 type: .mic,
+    button = SettingsQuickButton(type: .mic,
                                  imageOn: "music.mic",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Record"),
-                                 type: .record,
+    button = SettingsQuickButton(type: .record,
                                  imageOn: "record.circle.fill",
                                  imageOff: "record.circle",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Snapshot"),
-                                 type: .snapshot,
+    button = SettingsQuickButton(type: .snapshot,
                                  imageOn: "camera.aperture",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Scene widgets"),
-                                 type: .widgets,
+    button = SettingsQuickButton(type: .widgets,
                                  imageOn: "photo.on.rectangle.fill",
                                  imageOff: "photo.on.rectangle",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Local overlays"),
-                                 type: .localOverlays,
+    button = SettingsQuickButton(type: .localOverlays,
                                  imageOn: "square.stack.3d.up.slash.fill",
                                  imageOff: "square.stack.3d.up.slash",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Stealth mode"),
-                                 type: .blackScreen,
+    button = SettingsQuickButton(type: .blackScreen,
                                  imageOn: "sunset.fill",
                                  imageOff: "sunset",
                                  page: page)
     updateQuickButton(database: database, button: button)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Chat"),
-                                 type: .chat,
+    button = SettingsQuickButton(type: .chat,
                                  imageOn: "message.fill",
                                  imageOff: "message",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Bitrate"),
-                                 type: .bitrate,
+    button = SettingsQuickButton(type: .bitrate,
                                  imageOn: "speedometer",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Browser"),
-                                 type: .browser,
+    button = SettingsQuickButton(type: .browser,
                                  imageOn: "globe",
                                  page: page)
     updateQuickButton(database: database, button: button)
@@ -1657,121 +1676,100 @@ private func addMissingQuickButtonsPageOne(database: Database) {
 
 private func addMissingQuickButtonsPageTwo(database: Database) {
     let page = quickButtonPageTwo()
-    var button = SettingsQuickButton(name: String(localized: "Draw"),
-                                     type: .draw,
+    var button = SettingsQuickButton(type: .draw,
                                      imageOn: "pencil.line",
                                      page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Poll"),
-                                 type: .poll,
+    button = SettingsQuickButton(type: .poll,
                                  imageOn: "chart.bar.xaxis",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Pinch"),
-                                 type: .pinch,
+    button = SettingsQuickButton(type: .pinch,
                                  imageOn: "hand.pinch.fill",
                                  imageOff: "hand.pinch",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Whirlpool"),
-                                 type: .whirlpool,
+    button = SettingsQuickButton(type: .whirlpool,
                                  imageOn: "tornado",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Blur faces"),
-                                 type: .blurFaces,
+    button = SettingsQuickButton(type: .blurFaces,
                                  imageOn: "face.dashed",
                                  imageOff: "face.dashed",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Blur background"),
-                                 type: .privacy,
+    button = SettingsQuickButton(type: .privacy,
                                  imageOn: "circle.rectangle.dashed",
                                  imageOff: "circle.rectangle.dashed",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Blur text"),
-                                 type: .blurText,
+    button = SettingsQuickButton(type: .blurText,
                                  imageOn: "text.redaction",
                                  imageOff: "text.redaction",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Glasses"),
-                                 type: .glasses,
+    button = SettingsQuickButton(type: .glasses,
                                  imageOn: "sunglasses",
                                  imageOff: "sunglasses",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Sparkle"),
-                                 type: .sparkle,
+    button = SettingsQuickButton(type: .sparkle,
                                  imageOn: "eye",
                                  imageOff: "eye",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Movie"),
-                                 type: .movie,
+    button = SettingsQuickButton(type: .movie,
                                  imageOn: "film.fill",
                                  imageOff: "film",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "4:3"),
-                                 type: .fourThree,
+    button = SettingsQuickButton(type: .fourThree,
                                  imageOn: "square.fill",
                                  imageOff: "square",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "CRT"),
-                                 type: .crt,
+    button = SettingsQuickButton(type: .crt,
                                  imageOn: "tv",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Pixellate"),
-                                 type: .pixellate,
+    button = SettingsQuickButton(type: .pixellate,
                                  imageOn: "squareshape.split.2x2",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Gray scale"),
-                                 type: .grayScale,
+    button = SettingsQuickButton(type: .grayScale,
                                  imageOn: "moon.fill",
                                  imageOff: "moon",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Sepia"),
-                                 type: .sepia,
+    button = SettingsQuickButton(type: .sepia,
                                  imageOn: "moonphase.waxing.crescent.inverse",
                                  imageOff: "moonphase.waning.crescent",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Triple"),
-                                 type: .triple,
+    button = SettingsQuickButton(type: .triple,
                                  imageOn: "person.3.fill",
                                  imageOff: "person.3",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Twin"),
-                                 type: .twin,
+    button = SettingsQuickButton(type: .twin,
                                  imageOn: "person.2.fill",
                                  imageOff: "person.2",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Moblin in mouth"),
-                                 type: .moblinInMouth,
+    button = SettingsQuickButton(type: .moblinInMouth,
                                  imageOn: "mouth",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Camera man"),
-                                 type: .cameraMan,
+    button = SettingsQuickButton(type: .cameraMan,
                                  imageOn: "video.fill",
                                  imageOff: "video",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Beauty"),
-                                 type: .beauty,
+    button = SettingsQuickButton(type: .beauty,
                                  imageOn: "wand.and.stars",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "LUTs"),
-                                 type: .luts,
+    button = SettingsQuickButton(type: .luts,
                                  imageOn: "camera.filters",
                                  page: page)
     updateQuickButton(database: database, button: button)
@@ -1779,159 +1777,149 @@ private func addMissingQuickButtonsPageTwo(database: Database) {
 
 private func addMissingQuickButtonsPageThree(database: Database) {
     let page = quickButtonPageThree()
-    var button = SettingsQuickButton(name: String(localized: "OBS"),
-                                     type: .obs,
+    var button = SettingsQuickButton(type: .obs,
                                      imageOn: "xserve",
                                      page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Remote"),
-                                 type: .remote,
+    button = SettingsQuickButton(type: .remote,
                                  imageOn: "appletvremote.gen1.fill",
                                  imageOff: "appletvremote.gen1",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Replay"),
-                                 type: .replay,
+    button = SettingsQuickButton(type: .replay,
                                  imageOn: "play.fill",
                                  imageOff: "play",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Instant replay"),
-                                 type: .instantReplay,
+    button = SettingsQuickButton(type: .instantReplay,
                                  imageOn: "memories",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "DJI devices"),
-                                 type: .djiDevices,
+    button = SettingsQuickButton(type: .djiDevices,
                                  imageOn: "appletvremote.gen1.fill",
                                  imageOff: "appletvremote.gen1",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "GoPro"),
-                                 type: .goPro,
+    button = SettingsQuickButton(type: .goPro,
                                  imageOn: "appletvremote.gen1.fill",
                                  imageOff: "appletvremote.gen1",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Interactive chat"),
-                                 type: .interactiveChat,
+    button = SettingsQuickButton(type: .interactiveChat,
                                  imageOn: "arrow.up.message.fill",
                                  imageOff: "arrow.up.message",
                                  isOn: true,
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Auto scene switcher"),
-                                 type: .autoSceneSwitcher,
+    button = SettingsQuickButton(type: .autoSceneSwitcher,
                                  imageOn: "autostartstop",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Lock screen"),
-                                 type: .lockScreen,
+    button = SettingsQuickButton(type: .lockScreen,
                                  imageOn: "lock.fill",
                                  imageOff: "lock",
                                  page: page)
-    button = SettingsQuickButton(name: String(localized: "Camera"),
-                                 type: .image,
+    button = SettingsQuickButton(type: .image,
                                  imageOn: "camera.fill",
                                  imageOff: "camera",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Camera preview"),
-                                 type: .cameraPreview,
+    button = SettingsQuickButton(type: .cameraPreview,
                                  imageOn: "camera.rotate.fill",
                                  imageOff: "camera.rotate",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Recordings"),
-                                 type: .recordings,
+    button = SettingsQuickButton(type: .recordings,
                                  imageOn: "photo.on.rectangle.angled.fill",
                                  imageOff: "photo.on.rectangle.angled",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Switch stream"),
-                                 type: .stream,
+    button = SettingsQuickButton(type: .stream,
                                  imageOn: "arrow.left.arrow.right",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Grid"),
-                                 type: .grid,
+    button = SettingsQuickButton(type: .grid,
                                  imageOn: "grid",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Camera level"),
-                                 type: .cameraLevel,
+    button = SettingsQuickButton(type: .cameraLevel,
                                  imageOn: "level.fill",
                                  imageOff: "level",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Workout"),
-                                 type: .workout,
+    button = SettingsQuickButton(type: .workout,
                                  imageOn: "figure.run",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Skip current TTS"),
-                                 type: .skipCurrentTts,
+    button = SettingsQuickButton(type: .skipCurrentTts,
                                  imageOn: "waveform.slash",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Pause TTS"),
-                                 type: .pauseTts,
+    button = SettingsQuickButton(type: .pauseTts,
                                  imageOn: "waveform.badge.xmark",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Moderation"),
-                                 type: .moderation,
+    button = SettingsQuickButton(type: .moderation,
                                  imageOn: "shield",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Predefined messages"),
-                                 type: .predefinedMessages,
+    button = SettingsQuickButton(type: .predefinedMessages,
                                  imageOn: "list.bullet",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Stream marker"),
-                                 type: .streamMarker,
+    button = SettingsQuickButton(type: .streamMarker,
                                  imageOn: "bookmark.fill",
                                  imageOff: "bookmark",
                                  page: page)
     updateQuickButton(database: database, button: button)
     if #available(iOS 26, *) {
-        button = SettingsQuickButton(name: String(localized: "Navigation"),
-                                     type: .navigation,
+        button = SettingsQuickButton(type: .navigation,
                                      imageOn: "arrow.trianglehead.turn.up.right.circle",
                                      page: page)
         updateQuickButton(database: database, button: button)
     }
-    button = SettingsQuickButton(name: String(localized: "Reload browser widgets"),
-                                 type: .reloadBrowserWidgets,
+    button = SettingsQuickButton(type: .reloadBrowserWidgets,
                                  imageOn: "arrow.clockwise",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Portrait"),
-                                 type: .portrait,
+    button = SettingsQuickButton(type: .portrait,
                                  imageOn: "rectangle.portrait.rotate",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Connection priorities"),
-                                 type: .connectionPriorities,
+    button = SettingsQuickButton(type: .connectionPriorities,
                                  imageOn: "phone.connection.fill",
                                  imageOff: "phone.connection",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Video preview"),
-                                 type: .videoPreview,
+    button = SettingsQuickButton(type: .videoPreview,
                                  imageOn: "person.2.crop.square.stack",
                                  imageOff: "person.2.crop.square.stack",
                                  page: page)
     updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(name: String(localized: "Interactive browser widgets"),
-                                 type: .interactiveBrowserWidgets,
+    button = SettingsQuickButton(type: .interactiveBrowserWidgets,
                                  imageOn: "hand.tap.fill",
                                  imageOff: "hand.tap",
                                  page: page)
     updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .macros,
+                                 imageOn: "increase.indent",
+                                 imageOff: "increase.indent",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .gimbalTracking,
+                                 imageOn: "iphone.dock.motorized.viewfinder",
+                                 imageOff: "iphone.dock.motorized.viewfinder",
+                                 isOn: true,
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .previewStream,
+                                 imageOn: "video.circle.fill",
+                                 imageOff: "video.circle",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
 }
 
+@MainActor
 private func addMissingQuickButtons(database: Database) {
     addMissingQuickButtonsPageOne(database: database)
     addMissingQuickButtonsPageTwo(database: database)
@@ -1952,7 +1940,7 @@ private func addMissingQuickButtons(database: Database) {
 
 private func addMissingDeepLinkQuickButtons(database: Database) {
     let quickButtons = database.deepLinkCreator.quickButtons
-    for quickButton in database.quickButtons where quickButton.type != .lut {
+    for quickButton in database.quickButtons {
         let button = DeepLinkCreatorQuickButton()
         let buttonExists = quickButtons.buttons.contains(where: { quickButton.type == $0.type })
         if !buttonExists {
@@ -2012,11 +2000,11 @@ private func updateBundledAlertsMediaGallery(database: Database) {
 private func addScenesToGameController(database: Database) {
     var button = database.gameControllers[0].buttons[0]
     button.function = .scene
-    button.sceneId = database.scenes[0].id
+    button.functionData.sceneId = database.scenes[0].id
     if database.scenes.count > 1 {
         button = database.gameControllers[0].buttons[1]
         button.function = .scene
-        button.sceneId = database.scenes[1].id
+        button.functionData.sceneId = database.scenes[1].id
     }
 }
 
@@ -2042,6 +2030,7 @@ func getDefaultMic() -> SettingsMic {
     return .bottom
 }
 
+@MainActor
 private func createDefault() -> Database {
     let database = Database()
     addDefaultScenes(database: database)
@@ -2068,23 +2057,25 @@ private let exportFiles = [
     URL.documentsDirectory.appending(component: "faceBackgroundImage.img"),
 ]
 
-final class Settings {
+private let storage = SimpleStringStorage(key: "settings")
+
+final class Settings: @unchecked Sendable {
     private var realDatabase = Database()
     var database: Database {
         realDatabase
     }
 
-    @AppStorage("settings") var storage = ""
-
+    @MainActor
     func load() {
         do {
-            try tryLoadAndMigrate(settings: storage)
+            try tryLoadAndMigrate(settings: storage.get())
         } catch {
             logger.info("settings: Failed to load with error \(error). Using default.")
             realDatabase = createDefault()
         }
     }
 
+    @MainActor
     private func tryLoadAndMigrate(settings: String) throws {
         realDatabase = try Database.fromString(settings: settings)
         addSensitiveData(database: realDatabase)
@@ -2094,19 +2085,20 @@ final class Settings {
     func store() {
         do {
             let database = extractSensitiveData(fromDatabase: realDatabase)
-            storage = try realDatabase.toString()
+            try storage.set(realDatabase.toString())
             insertSensitiveData(toDatabase: realDatabase, fromDatabase: database)
         } catch {
             logger.info("settings: Failed to store.")
         }
     }
 
+    @MainActor
     func reset() {
         realDatabase = createDefault()
         store()
     }
 
-    func importFromFile(url: URL, onCompleted: @escaping (String?) -> Void) {
+    func importFromFile(url: URL, onCompleted: @MainActor @escaping (String?) -> Void) {
         let root = URL.documentsDirectory
         DispatchQueue.global().async {
             let settingsJson = root.appendingPathComponent(settingsJsonName)
@@ -2134,6 +2126,7 @@ final class Settings {
         }
     }
 
+    @MainActor
     func importFromClipboard(settings: String, onCompleted: @escaping (String?) -> Void) {
         do {
             try tryLoadAndMigrate(settings: settings)
@@ -2144,12 +2137,14 @@ final class Settings {
         }
     }
 
-    func exportToFile(onCompleted: @escaping (URL?) -> Void) {
+    @MainActor
+    func exportToFile(onCompleted: @MainActor @escaping (URL?) -> Void) {
         store()
-        let settingsJson = [UInt8](storage.utf8)
+        let settingsJson = [UInt8](storage.get().utf8)
+        let name = UIDevice.current.name
         DispatchQueue.global().async {
             let url = FileManager.default.temporaryDirectory
-                .appendingPathComponent("\(UIDevice.current.name)_\(formatFilenameDateAndTime())")
+                .appendingPathComponent("\(name)_\(formatFilenameDateAndTime())")
                 .appendingPathExtension("moblinSettings")
             try? FileManager.default.removeItem(at: url)
             do {
@@ -2221,7 +2216,7 @@ final class Settings {
 
     private func migrateFromOlderVersions() {
         updateBundledAlertsMediaGallery(database: realDatabase)
-        let newButtons = realDatabase.quickButtons.filter { $0.type != .lut }
+        let newButtons = realDatabase.quickButtons
         if realDatabase.quickButtons.count != newButtons.count {
             realDatabase.quickButtons = newButtons
             store()

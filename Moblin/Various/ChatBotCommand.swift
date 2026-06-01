@@ -69,14 +69,14 @@ class ChatBotCommand {
     }
 
     func peekFirst() -> String? {
-        return parts.first
+        parts.first
     }
 
     func rest() -> String {
-        return parts.joined(separator: " ")
+        parts.joined(separator: " ")
     }
 
     func user() -> String? {
-        return message.user
+        message.user
     }
 }

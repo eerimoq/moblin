@@ -7,6 +7,7 @@ struct DrawOnStreamLine: Identifiable {
     let color: Color
 }
 
+@MainActor
 private var drawing = false
 
 private struct DrawOnStreamCanvasView: View {
@@ -80,9 +81,9 @@ private struct DrawOnStreamControlsView: View {
 
     private func buttonColor() -> Color {
         if drawOnStream.lines.isEmpty {
-            return .gray
+            .gray
         } else {
-            return .white
+            .white
         }
     }
 
@@ -118,7 +119,7 @@ private struct DrawOnStreamControlsView: View {
                 .background(backgroundColor)
                 .cornerRadius(5)
             }
-            .padding([.trailing], 15)
+            .padding(.trailing, 15)
         }
     }
 }

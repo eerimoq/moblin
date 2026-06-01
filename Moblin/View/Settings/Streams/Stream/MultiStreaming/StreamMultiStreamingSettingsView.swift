@@ -39,7 +39,7 @@ struct StreamMultiStreamingSettingsView: View {
     @ObservedObject var multiStreaming: SettingsStreamMultiStreaming
 
     private func numberOfEnabledDestinations() -> String {
-        let count = multiStreaming.destinations.filter { $0.enabled }.count
+        let count = multiStreaming.destinations.filter(\.enabled).count
         return String(count)
     }
 
@@ -64,7 +64,7 @@ struct StreamMultiStreamingSettingsView: View {
                                         .removeAll { $0.id == destination.id }
                                 }
                         }
-                        if stream.enabled && (model.isLive || model.isRecording) {
+                        if stream.enabled, model.isLive || model.isRecording {
                             items
                         } else {
                             items

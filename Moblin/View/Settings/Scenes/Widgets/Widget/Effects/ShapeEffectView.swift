@@ -58,6 +58,8 @@ private struct BorderView: View {
 private struct CropView: View {
     @ObservedObject var shape: SettingsVideoEffectShape
     let updateWidget: () -> Void
+    let previewImage: UIImage?
+    let isPortrait: Bool
     @State private var position: CGPoint = .init(x: 100, y: 100)
     @State private var positionOffset: CGSize = .init(width: 0, height: 0)
     @State private var positionAnchorPoint: AnchorPoint?
@@ -101,9 +103,15 @@ private struct CropView: View {
     var body: some View {
         Section {
             ZStack {
-                Image("GamlaLinkoping")
-                    .resizable()
-                    .aspectRatio(16 / 9, contentMode: .fit)
+                if let previewImage {
+                    Image(uiImage: previewImage)
+                        .resizable()
+                        .aspectRatio(isPortrait ? 9 / 16 : 16 / 9, contentMode: .fit)
+                } else {
+                    Image("GamlaLinkoping")
+                        .resizable()
+                        .aspectRatio(isPortrait ? 9 / 16 : 16 / 9, contentMode: .fit)
+                }
                 GeometryReader { reader in
                     Canvas { context, size in
                         context.stroke(
@@ -112,7 +120,7 @@ private struct CropView: View {
                             lineWidth: 1.5
                         )
                     }
-                    .padding([.top, .bottom], 6)
+                    .padding(.vertical, 6)
                     .gesture(
                         DragGesture()
                             .onChanged { value in
@@ -141,14 +149,25 @@ struct ShapeEffectView: View {
     let widget: SettingsWidget
     let effect: SettingsVideoEffect
     let shape: SettingsVideoEffectShape
+    @State private var previewImage: UIImage?
 
     private func updateWidget() {
         model.getWidgetShapeEffect(widget, effect)?.setSettings(settings: shape.toSettings())
     }
 
     var body: some View {
-        CornerRadiusView(shape: shape, updateWidget: updateWidget)
-        BorderView(shape: shape, updateWidget: updateWidget)
-        CropView(shape: shape, updateWidget: updateWidget)
+        Group {
+            CornerRadiusView(shape: shape, updateWidget: updateWidget)
+            BorderView(shape: shape, updateWidget: updateWidget)
+            CropView(shape: shape,
+                     updateWidget: updateWidget,
+                     previewImage: previewImage,
+                     isPortrait: model.stream.portrait)
+        }
+        .onAppear {
+            model.takeVideoSourcePreviewImage(widget: widget) { image in
+                previewImage = image
+            }
+        }
     }
 }

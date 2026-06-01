@@ -3,23 +3,24 @@ import SwiftUI
 private func getHistoricScore(team: RemoteControlScoreboardTeam, indexPlusOne: Int) -> String? {
     switch indexPlusOne {
     case 1:
-        return team.secondaryScore1
+        team.secondaryScore1
     case 2:
-        return team.secondaryScore2
+        team.secondaryScore2
     case 3:
-        return team.secondaryScore3
+        team.secondaryScore3
     case 4:
-        return team.secondaryScore4
+        team.secondaryScore4
     case 5:
-        return team.secondaryScore5
+        team.secondaryScore5
     default:
-        return nil
+        nil
     }
 }
 
 struct ScoreboardEffectModularView: View {
     let modular: SettingsWidgetModularScoreboard
     let config: RemoteControlScoreboardMatchConfig
+    let scale: Double
 
     private func calculateMaxHistory() -> Int {
         var maxHistory = 0
@@ -34,7 +35,7 @@ struct ScoreboardEffectModularView: View {
     }
 
     private func fontSize() -> Double {
-        return modular.fontSize()
+        modular.fontSize() * scale
     }
 
     @ViewBuilder
@@ -42,7 +43,7 @@ struct ScoreboardEffectModularView: View {
         title()
         HStack(alignment: .top, spacing: 0) {
             let maxHistory = calculateMaxHistory()
-            let histWidth = modular.fontSize() * 1.5
+            let histWidth = fontSize() * 1.5
             VStack(spacing: 0) {
                 stackedHistoryTeam(
                     team: config.team1,
@@ -59,7 +60,7 @@ struct ScoreboardEffectModularView: View {
                     histWidth: histWidth
                 )
             }
-            .frame(width: CGFloat(modular.width) + CGFloat(maxHistory) * histWidth)
+            .frame(width: CGFloat(modular.width) * scale + CGFloat(maxHistory) * histWidth)
             infoBox()
         }
     }
@@ -73,11 +74,11 @@ struct ScoreboardEffectModularView: View {
     ) -> some View {
         VStack(spacing: 0) {
             let currentPeriod = Int(config.global.period) ?? 1
-            let height = CGFloat(modular.rowHeight)
+            let height = CGFloat(modular.rowHeight) * scale
             HStack(spacing: 0) {
                 teamName(team: modularTeam)
-                    .padding(.leading, 8)
-                    .padding(.trailing, 2)
+                    .padding(.leading, 8 * scale)
+                    .padding(.trailing, 2 * scale)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 possession(show: team.possession)
                 if histCount > 0 {
@@ -130,7 +131,7 @@ struct ScoreboardEffectModularView: View {
                 stackedTeam(team: config.team1, modularTeam: modular.home)
                 stackedTeam(team: config.team2, modularTeam: modular.away)
             }
-            .frame(width: CGFloat(modular.width))
+            .frame(width: CGFloat(modular.width) * scale)
             infoBox()
         }
     }
@@ -144,9 +145,9 @@ struct ScoreboardEffectModularView: View {
                 modularTeam: modular.home,
                 mirrored: false
             )
-            .frame(width: CGFloat(modular.width))
+            .frame(width: CGFloat(modular.width) * scale)
             Group {
-                let height = CGFloat(modular.rowHeight)
+                let height = CGFloat(modular.rowHeight) * scale
                 let teamRowFullHeight = height + (modular.showMoreStats ? height * 0.6 : 0)
                 if modular.showGlobalStatsBlock {
                     VStack(spacing: 0) {
@@ -156,10 +157,12 @@ struct ScoreboardEffectModularView: View {
                                 .font(.system(size: fontSize() * 0.6))
                                 .minimumScaleFactor(0.1)
                         }
-                        Text(config.global.timer)
-                            .font(.system(size: fontSize() * 0.9))
-                            .monospacedDigit()
-                            .minimumScaleFactor(0.1)
+                        if modular.showClock {
+                            Text(config.global.timer)
+                                .font(.system(size: fontSize() * 0.9))
+                                .monospacedDigit()
+                                .minimumScaleFactor(0.1)
+                        }
                     }
                     .frame(width: fontSize() * 3.5, height: teamRowFullHeight)
                 } else {
@@ -176,7 +179,7 @@ struct ScoreboardEffectModularView: View {
                 modularTeam: modular.away,
                 mirrored: true
             )
-            .frame(width: CGFloat(modular.width))
+            .frame(width: CGFloat(modular.width) * scale)
         }
     }
 
@@ -184,7 +187,7 @@ struct ScoreboardEffectModularView: View {
                              modularTeam: SettingsWidgetModularScoreboardTeam) -> some View
     {
         VStack(spacing: 0) {
-            let height = CGFloat(modular.rowHeight)
+            let height = CGFloat(modular.rowHeight) * scale
             let width = fontSize() * 1.55
             HStack(spacing: 0) {
                 if modular.layout == .stacked {
@@ -197,7 +200,7 @@ struct ScoreboardEffectModularView: View {
                     )
                 }
                 teamName(team: modularTeam)
-                    .padding(.leading, 8)
+                    .padding(.leading, 8 * scale)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 possession(show: team.possession)
                 if modular.layout == .stackedInline {
@@ -226,14 +229,14 @@ struct ScoreboardEffectModularView: View {
         modularTeam: SettingsWidgetModularScoreboardTeam,
         mirrored: Bool
     ) -> some View {
-        let height = CGFloat(modular.rowHeight)
+        let height = CGFloat(modular.rowHeight) * scale
         let width = fontSize() * 1.55
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 if !mirrored {
                     possession(show: team.possession)
                     teamName(team: modularTeam)
-                        .padding(.horizontal, 4)
+                        .padding(.horizontal, 4 * scale)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     stat(
                         value: team.secondaryScore,
@@ -253,7 +256,7 @@ struct ScoreboardEffectModularView: View {
                         gray: true
                     )
                     teamName(team: modularTeam)
-                        .padding(.horizontal, 4)
+                        .padding(.horizontal, 4 * scale)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     possession(show: team.possession)
                 }
@@ -284,7 +287,7 @@ struct ScoreboardEffectModularView: View {
                     Color.black.opacity(0.25)
                 }
                 if let label, !label.isEmpty {
-                    VStack(spacing: -2) {
+                    VStack(spacing: -2 * scale) {
                         Text(label)
                             .font(.system(size: fontSize * 0.25))
                             .bold(modular.isBold)
@@ -304,8 +307,8 @@ struct ScoreboardEffectModularView: View {
     private func primaryScore(team: RemoteControlScoreboardTeam) -> some View {
         stat(
             value: team.primaryScore,
-            fontSize: modular.fontSize(),
-            width: modular.fontSize() * 1.55,
+            fontSize: fontSize(),
+            width: fontSize() * 1.55,
             gray: false
         )
     }
@@ -345,7 +348,7 @@ struct ScoreboardEffectModularView: View {
             .filter { _, _, value in !value.isEmpty && !value.hasPrefix("NO ") }
             ZStack {
                 Color.black.opacity(0.25)
-                HStack(spacing: 8) {
+                HStack(spacing: 8 * scale) {
                     if alignRight {
                         Spacer()
                     }
@@ -366,7 +369,7 @@ struct ScoreboardEffectModularView: View {
                         Spacer()
                     }
                 }
-                .padding(.horizontal, 6)
+                .padding(.horizontal, 6 * scale)
             }
             .frame(height: height)
             .background(backgroundColor)
@@ -376,16 +379,16 @@ struct ScoreboardEffectModularView: View {
     @ViewBuilder
     private func infoBox() -> some View {
         if modular.showGlobalStatsBlock {
-            let stats = config.infoBoxStats()
+            let stats = config.infoBoxStats(showClock: modular.showClock)
             if !stats.isEmpty {
-                let rowHeight = CGFloat(modular.rowHeight)
+                let rowHeight = CGFloat(modular.rowHeight) * scale
                 let fullHeight = rowHeight + (modular.showMoreStats ? rowHeight * 0.6 : 0)
                 let height = fullHeight * 2
                 VStack(spacing: 0) {
                     ForEach(0 ..< stats.count, id: \.self) { index in
                         HCenter {
                             Text(stats[index])
-                                .font(.system(size: modular.fontSize()))
+                                .font(.system(size: fontSize()))
                                 .bold(modular.isBold)
                                 .monospacedDigit()
                                 .minimumScaleFactor(0.1)
@@ -405,9 +408,9 @@ struct ScoreboardEffectModularView: View {
         if modular.showTitle {
             HCenter {
                 Text(config.global.title)
-                    .font(.system(size: modular.fontSize() * 0.7))
+                    .font(.system(size: fontSize() * 0.7))
                     .bold(modular.isBold)
-                    .padding(.vertical, 1)
+                    .padding(.vertical, 1 * scale)
             }
             .background(.black)
             .foregroundStyle(.white)

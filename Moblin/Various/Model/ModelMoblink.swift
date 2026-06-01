@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import UIKit
 
 class Moblink: ObservableObject {
     var streamer: MoblinkStreamer?
@@ -22,7 +23,8 @@ extension Model {
         if isMoblinkStreamerConfigured() {
             moblink.streamer = MoblinkStreamer(
                 port: database.moblink.streamer.port,
-                password: database.moblink.password
+                password: database.moblink.password,
+                name: UIDevice.current.name
             )
             moblink.streamer?.start(delegate: self)
         }
@@ -93,7 +95,7 @@ extension Model {
     }
 
     func areMoblinkRelaysOk() -> Bool {
-        return moblink.relayState == .connected || moblink.relayState == .waitingForStreamers
+        moblink.relayState == .connected || moblink.relayState == .waitingForStreamers
     }
 
     func moblinkIpStatusesUpdated() {
@@ -176,7 +178,7 @@ extension Model {
     }
 }
 
-extension Model: MoblinkStreamerDelegate {
+extension Model: @preconcurrency MoblinkStreamerDelegate {
     func moblinkStreamerTunnelAdded(endpoint: Network.NWEndpoint, relayId: UUID, relayName: String) {
         let connectionPriorities = stream.srt.connectionPriorities
         if let priority = connectionPriorities.priorities.first(where: { $0.relayId == relayId }) {
@@ -194,28 +196,27 @@ extension Model: MoblinkStreamerDelegate {
     }
 }
 
-extension Model: MoblinkRelayDelegate {
+extension Model: @preconcurrency MoblinkRelayDelegate {
     func moblinkRelayNewState(state: MoblinkRelayState) {
         moblink.relayState = state
     }
 
     func moblinkRelayGetStatus() -> (Int?, MoblinkThermalState?) {
-        let thermalState: MoblinkThermalState?
-        switch statusOther.thermalState {
+        let thermalState: MoblinkThermalState? = switch statusOther.thermalState {
         case .nominal, .fair:
-            thermalState = .white
+            .white
         case .serious:
-            thermalState = .yellow
+            .yellow
         case .critical:
-            thermalState = .red
+            .red
         @unknown default:
-            thermalState = nil
+            nil
         }
         return (Int(100 * battery.level), thermalState)
     }
 }
 
-extension Model: MoblinkScannerDelegate {
+extension Model: @preconcurrency MoblinkScannerDelegate {
     func moblinkScannerDiscoveredStreamers(streamers: [MoblinkScannerStreamer]) {
         moblink.scannerDiscoveredStreamers = streamers
         if !database.moblink.relay.manual {

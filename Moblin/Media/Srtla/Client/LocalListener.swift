@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-class LocalListener {
+class LocalListener: @unchecked Sendable {
     private var listener: NWListener!
     private var connection: NWConnection?
     var onReady: ((_ port: UInt16) -> Void)?

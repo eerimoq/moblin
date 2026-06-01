@@ -2,7 +2,7 @@ import Collections
 import Foundation
 import Network
 
-class NetworkInterfaceTypeSelector {
+class NetworkInterfaceTypeSelector: @unchecked Sendable {
     private let networkPathMonitor = NWPathMonitor()
     private var interfaceTypes: Deque<NWInterface.InterfaceType> = [.cellular, .wifi, .wiredEthernet, .other]
     private let cellular: Bool
@@ -39,5 +39,17 @@ class NetworkInterfaceTypeSelector {
         }
         interfaceTypes.append(interfaceType)
         return interfaceType
+    }
+
+    func getType() -> NWInterface.InterfaceType? {
+        interfaceTypes.first
+    }
+
+    func markBad(interfaceType: NWInterface.InterfaceType) {
+        guard interfaceType == interfaceTypes.first else {
+            return
+        }
+        interfaceTypes.removeFirst()
+        interfaceTypes.append(interfaceType)
     }
 }

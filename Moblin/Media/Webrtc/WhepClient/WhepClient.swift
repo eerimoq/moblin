@@ -16,12 +16,12 @@ protocol WhepClientDelegate: AnyObject {
     )
 }
 
-class WhepClient {
+class WhepClient: @unchecked Sendable {
     let streamId: UUID
     private let url: URL
     private let latency: Double
     private let syncTimestamps: Bool
-    private let delegate: WhepClientDelegate
+    private let delegate: any WhepClientDelegate
     private var ingestClient: WebrtcIngestClient?
     private var sessionUrl: URL?
     private var started = false
@@ -29,7 +29,7 @@ class WhepClient {
     private var connected: Bool = false
     private var bitrateStats = BitrateStats()
 
-    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool, delegate: WhepClientDelegate) {
+    init(streamId: UUID, url: URL, latency: Double, syncTimestamps: Bool, delegate: any WhepClientDelegate) {
         self.streamId = streamId
         self.url = url
         self.latency = latency
@@ -54,13 +54,13 @@ class WhepClient {
     }
 
     func isConnected() -> Bool {
-        return dispatchQueue.sync {
+        dispatchQueue.sync {
             ingestClient != nil
         }
     }
 
     func updateStats() -> BitrateStatsInstant {
-        return dispatchQueue.sync {
+        dispatchQueue.sync {
             bitrateStats.update()
         }
     }
@@ -135,13 +135,14 @@ class WhepClient {
         request.setValue("application/sdp", forHTTPHeaderField: "Content-Type")
         request.httpBody = offer.utf8Data
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            let self2 = self
             dispatchQueue.async {
-                self?.handleOfferResponse(data: data, response: response, error: error)
+                self2?.handleOfferResponse(data: data, response: response, error: error)
             }
         }.resume()
     }
 
-    private func handleOfferResponse(data: Data?, response: URLResponse?, error: Error?) {
+    private func handleOfferResponse(data: Data?, response: URLResponse?, error: (any Error)?) {
         guard error == nil,
               let response = response?.http,
               response.isSuccessful,

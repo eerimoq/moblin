@@ -1,7 +1,7 @@
 import SwiftUI
 import WatchConnectivity
 
-private class Cache {
+private class Cache: @unchecked Sendable {
     private var cache: [URL: Image] = [:]
     private var waiters: [URL: [(Image) -> Void]] = [:]
     private var waitingForResponse = false

@@ -1,8 +1,8 @@
 import CoreImage
 
-final class FourThreeEffect: VideoEffect {
+final class FourThreeEffect: VideoEffect, @unchecked Sendable {
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        return image
+        image
             .cropped(to: CGRect(x: image.extent.width / 8,
                                 y: 0,
                                 width: 3 * image.extent.width / 4,

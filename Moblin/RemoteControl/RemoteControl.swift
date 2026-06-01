@@ -15,9 +15,11 @@ enum RemoteControlRequest: Codable {
     case getSettings
     case setRecord(on: Bool)
     case setStream(on: Bool)
+    case setPreviewStream(on: Bool)
     case setZoom(x: Float)
     case setZoomPreset(id: UUID)
     case setMute(on: Bool)
+    case setStealthMode(on: Bool)
     case setTorch(on: Bool)
     case setDebugLogging(on: Bool)
     case setScene(id: UUID)
@@ -47,6 +49,8 @@ enum RemoteControlRequest: Codable {
     case setFilter(filter: RemoteControlFilter, on: Bool)
     case triggerReaction(reaction: RemoteControlReaction)
     case moveToGimbalPreset(id: UUID)
+    case getGolfScoreboard
+    case updateGolfScoreboard(data: RemoteControlGolfScoreboard)
 }
 
 enum RemoteControlResponse: Codable {
@@ -58,6 +62,7 @@ enum RemoteControlResponse: Codable {
     case getSettings(data: RemoteControlSettings)
     case getScoreboardSports(names: [String])
     case whip(status: Int, headers: [SettingsHttpHeader], body: Data)
+    case getGolfScoreboard(data: RemoteControlGolfScoreboard)
 }
 
 enum RemoteControlEvent: Codable {
@@ -67,6 +72,7 @@ enum RemoteControlEvent: Codable {
                 topLeft: RemoteControlStatusTopLeft?,
                 topRight: RemoteControlStatusTopRight?)
     case scoreboard(config: RemoteControlScoreboardMatchConfig)
+    case golfScoreboard(data: RemoteControlGolfScoreboard)
 }
 
 struct RemoteControlChatMessage: Codable {
@@ -94,25 +100,28 @@ enum RemoteControlReaction: Codable, CaseIterable {
     case confetti
     case lasers
     case rain
+    case glasses
+    case sparkle
 
-    @available(iOS 17, *)
-    func toSystem() -> AVCaptureReactionType {
-        let reaction: AVCaptureReactionType
+    func toSettings() -> SettingsReaction {
         switch self {
         case .fireworks:
-            reaction = .fireworks
+            .fireworks
         case .balloons:
-            reaction = .balloons
+            .balloons
         case .hearts:
-            reaction = .heart
+            .hearts
         case .confetti:
-            reaction = .confetti
+            .confetti
         case .lasers:
-            reaction = .lasers
+            .lasers
         case .rain:
-            reaction = .rain
+            .rain
+        case .glasses:
+            .glasses
+        case .sparkle:
+            .sparkle
         }
-        return reaction
     }
 }
 
@@ -134,7 +143,7 @@ enum RemoteControlFilter: Codable, CaseIterable {
     case moblinInMouth
     case cameraMan
 
-    init(type: SettingsQuickButtonType) {
+    init?(type: SettingsQuickButtonType) {
         switch type {
         case .pixellate:
             self = .pixellate
@@ -169,81 +178,81 @@ enum RemoteControlFilter: Codable, CaseIterable {
         case .cameraMan:
             self = .cameraMan
         default:
-            self = .pixellate
+            return nil
         }
     }
 
     func toSettings() -> SettingsQuickButtonType {
         switch self {
         case .pixellate:
-            return .pixellate
+            .pixellate
         case .movie:
-            return .movie
+            .movie
         case .grayScale:
-            return .grayScale
+            .grayScale
         case .sepia:
-            return .sepia
+            .sepia
         case .triple:
-            return .triple
+            .triple
         case .twin:
-            return .twin
+            .twin
         case .fourThree:
-            return .fourThree
+            .fourThree
         case .crt:
-            return .crt
+            .crt
         case .pinch:
-            return .pinch
+            .pinch
         case .whirlpool:
-            return .whirlpool
+            .whirlpool
         case .poll:
-            return .poll
+            .poll
         case .blurFaces:
-            return .blurFaces
+            .blurFaces
         case .privacy:
-            return .privacy
+            .privacy
         case .beauty:
-            return .beauty
+            .beauty
         case .moblinInMouth:
-            return .moblinInMouth
+            .moblinInMouth
         case .cameraMan:
-            return .cameraMan
+            .cameraMan
         }
     }
 
     func toString() -> String {
         switch self {
         case .pixellate:
-            return String(localized: "Pixellate")
+            String(localized: "Pixellate")
         case .movie:
-            return String(localized: "Movie")
+            String(localized: "Movie")
         case .grayScale:
-            return String(localized: "Gray scale")
+            String(localized: "Gray scale")
         case .sepia:
-            return String(localized: "Sepia")
+            String(localized: "Sepia")
         case .triple:
-            return String(localized: "Triple")
+            String(localized: "Triple")
         case .twin:
-            return String(localized: "Twin")
+            String(localized: "Twin")
         case .fourThree:
-            return String(localized: "4:3")
+            String(localized: "4:3")
         case .crt:
-            return String(localized: "CRT")
+            String(localized: "CRT")
         case .pinch:
-            return String(localized: "Pinch")
+            String(localized: "Pinch")
         case .whirlpool:
-            return String(localized: "Whirlpool")
+            String(localized: "Whirlpool")
         case .poll:
-            return String(localized: "Poll")
+            String(localized: "Poll")
         case .blurFaces:
-            return String(localized: "Blur faces")
+            String(localized: "Blur faces")
         case .privacy:
-            return String(localized: "Blur background")
+            String(localized: "Blur background")
         case .beauty:
-            return String(localized: "Beauty")
+            String(localized: "Beauty")
         case .moblinInMouth:
-            return String(localized: "Moblin in mouth")
+            String(localized: "Moblin in mouth")
         case .cameraMan:
-            return String(localized: "Camera man")
+            String(localized: "Camera man")
         }
     }
 }
@@ -350,9 +359,13 @@ struct RemoteControlRemoteSceneSettingsWidget: Codable {
             return nil
         case .chat:
             return nil
+        case .chatEmoteCombo:
+            return nil
         case .wheelOfLuck:
             return nil
         case .bingoCard:
+            return nil
+        case .pomodoroTimer:
             return nil
         }
     }
@@ -478,11 +491,11 @@ enum RemoteControlRemoteSceneSettingsHorizontalAlignment: Codable {
     func toSettings() -> SettingsHorizontalAlignment {
         switch self {
         case .leading:
-            return .leading
+            .leading
         case .trailing:
-            return .trailing
+            .trailing
         case .center:
-            return .center
+            .center
         }
     }
 }
@@ -555,6 +568,8 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
     var runningMetrics: [String: WorkoutDeviceRunningMetrics]
     var browserTitle: String
     var gForce: GForce?
+    var latestSubscriber: String
+    var latestFollower: String
 
     init(stats: TextEffectStats) {
         bitrate = stats.bitrate
@@ -590,44 +605,48 @@ struct RemoteControlRemoteSceneDataTextStats: Codable {
         cyclingCadence = stats.cyclingCadence
         runningMetrics = stats.runningMetrics
         browserTitle = stats.browserTitle
+        latestSubscriber = stats.latestSubscriber
+        latestFollower = stats.latestFollower
     }
 
     func toStats() -> TextEffectStats {
-        return TextEffectStats(timestamp: .now,
-                               bitrate: bitrate,
-                               bitrateAndTotal: bitrateAndTotal,
-                               resolution: resolution,
-                               fps: fps,
-                               date: date,
-                               debugOverlayLines: debugOverlayLines,
-                               speed: speed,
-                               averageSpeed: averageSpeed,
-                               altitude: altitude,
-                               distance: distance,
-                               slope: slope,
-                               conditions: conditions,
-                               temperature: temperature,
-                               feelsLikeTemperature: feelsLikeTemperature,
-                               windSpeed: windSpeed,
-                               windGust: windGust,
-                               country: country,
-                               countryFlag: countryFlag,
-                               state: state,
-                               city: city,
-                               muted: muted,
-                               heartRates: heartRates,
-                               activeEnergyBurned: activeEnergyBurned,
-                               workoutDistance: workoutDistance,
-                               power: power,
-                               stepCount: stepCount,
-                               teslaBatteryLevel: teslaBatteryLevel,
-                               teslaDrive: teslaDrive,
-                               teslaMedia: teslaMedia,
-                               cyclingPower: cyclingPower,
-                               cyclingCadence: cyclingCadence,
-                               runningMetrics: runningMetrics,
-                               browserTitle: browserTitle,
-                               gForce: gForce)
+        TextEffectStats(timestamp: .now,
+                        bitrate: bitrate,
+                        bitrateAndTotal: bitrateAndTotal,
+                        resolution: resolution,
+                        fps: fps,
+                        date: date,
+                        debugOverlayLines: debugOverlayLines,
+                        speed: speed,
+                        averageSpeed: averageSpeed,
+                        altitude: altitude,
+                        distance: distance,
+                        slope: slope,
+                        conditions: conditions,
+                        temperature: temperature,
+                        feelsLikeTemperature: feelsLikeTemperature,
+                        windSpeed: windSpeed,
+                        windGust: windGust,
+                        country: country,
+                        countryFlag: countryFlag,
+                        state: state,
+                        city: city,
+                        muted: muted,
+                        heartRates: heartRates,
+                        activeEnergyBurned: activeEnergyBurned,
+                        workoutDistance: workoutDistance,
+                        power: power,
+                        stepCount: stepCount,
+                        teslaBatteryLevel: teslaBatteryLevel,
+                        teslaDrive: teslaDrive,
+                        teslaMedia: teslaMedia,
+                        cyclingPower: cyclingPower,
+                        cyclingCadence: cyclingCadence,
+                        runningMetrics: runningMetrics,
+                        browserTitle: browserTitle,
+                        gForce: gForce,
+                        latestSubscriber: latestSubscriber,
+                        latestFollower: latestFollower)
     }
 }
 
@@ -641,7 +660,7 @@ struct RemoteControlRemoteSceneDataLocation: Codable {
     }
 
     func toLocation() -> CLLocation {
-        return CLLocation(latitude: latitude, longitude: longitude)
+        CLLocation(latitude: latitude, longitude: longitude)
     }
 }
 
@@ -658,11 +677,11 @@ enum RemoteControlStatusGeneralFlame: String, Codable {
     func toThermalState() -> ProcessInfo.ThermalState {
         switch self {
         case .white:
-            return .fair
+            .fair
         case .yellow:
-            return .serious
+            .serious
         case .red:
-            return .critical
+            .critical
         }
     }
 }
@@ -675,11 +694,11 @@ enum RemoteControlStatusTopRightAudioLevel: Codable {
     func toFloat() -> Float {
         switch self {
         case .muted:
-            return .nan
+            .nan
         case .unknown:
-            return .infinity
+            .infinity
         case let .value(value):
-            return value
+            value
         }
     }
 }
@@ -795,22 +814,18 @@ struct RemoteControlAssistantStreamerState: Codable {
     var debugLogging: Bool?
     var streaming: Bool?
     var recording: Bool?
+    var previewStream: Bool?
     var muted: Bool?
-    // periphery:ignore
+    var stealthMode: Bool?
     var torchOn: Bool?
-    // periphery:ignore
     var batteryCharging: Bool?
     var filters: [RemoteControlFilter: Bool]?
 }
 
 struct RemoteControlScoreboardControl: Codable {
-    // periphery: ignore
     var type: String
-    // periphery: ignore
     var label: String
-    // periphery: ignore
     var options: [String]?
-    // periphery: ignore
     var periodReset: Bool?
 }
 
@@ -841,28 +856,20 @@ struct RemoteControlScoreboardGlobalStats: Codable {
     var title: String
     var timer: String
     var timerDirection: String
-    // periphery: ignore
     var duration: Int?
     var period: String
     var periodLabel: String
     var infoBoxText: String = ""
-    // periphery: ignore
-    var primaryScoreResetOnPeriod: Bool?
-    // periphery: ignore
-    var secondaryScoreResetOnPeriod: Bool?
-    // periphery: ignore
-    var changePossessionOnScore: Bool?
+    var primaryScoreResetOnPeriod: Bool
+    var changePossessionOnScore: Bool
     var scoringMode: String?
-    // periphery: ignore
-    var minSetScore: Int?
-    // periphery: ignore
-    var maxSetScore: Int?
     var showTitle: Bool?
     var showStats: Bool?
     var showMoreStats: Bool?
+    var showClock: Bool?
 
     func minutesAndSeconds() -> (Int, Int) {
-        return clockAsMinutesAndSeconds(clock: timer)
+        clockAsMinutesAndSeconds(clock: timer)
     }
 }
 
@@ -872,7 +879,6 @@ struct RemoteControlScoreboardMatchConfig: Codable {
     var team1: RemoteControlScoreboardTeam
     var team2: RemoteControlScoreboardTeam
     var global: RemoteControlScoreboardGlobalStats
-    // periphery: ignore
     var controls: [String: RemoteControlScoreboardControl]
 
     func periodFull() -> String {
@@ -885,8 +891,60 @@ struct RemoteControlScoreboardMatchConfig: Codable {
         return "\(global.periodLabel) \(global.period)".trim()
     }
 
-    func infoBoxStats() -> [String] {
-        return [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+    func infoBoxStats(showClock: Bool) -> [String] {
+        if showClock {
+            [global.timer, periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+        } else {
+            [periodFull(), global.infoBoxText].filter { !$0.isEmpty }
+        }
+    }
+}
+
+struct RemoteControlGolfPlayer: Codable {
+    var name: String
+    var scores: [Int]
+    var color: RgbColor
+}
+
+struct RemoteControlGolfScoreboard: Codable {
+    var title: String
+    var numberOfHoles: Int
+    var pars: [Int]
+    var currentHole: Int
+    var players: [RemoteControlGolfPlayer]
+    var playerColors: Bool
+
+    enum CodingKeys: CodingKey {
+        case title
+        case numberOfHoles
+        case pars
+        case currentHole
+        case players
+        case playerColors
+    }
+
+    init(title: String,
+         numberOfHoles: Int,
+         pars: [Int], currentHole: Int,
+         players: [RemoteControlGolfPlayer],
+         playerColors: Bool)
+    {
+        self.title = title
+        self.numberOfHoles = numberOfHoles
+        self.pars = pars
+        self.currentHole = currentHole
+        self.players = players
+        self.playerColors = playerColors
+    }
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        title = try container.decode(String.self, forKey: .title)
+        numberOfHoles = try container.decode(Int.self, forKey: .numberOfHoles)
+        pars = try container.decode([Int].self, forKey: .pars)
+        currentHole = try container.decode(Int.self, forKey: .currentHole)
+        players = try container.decode([RemoteControlGolfPlayer].self, forKey: .players)
+        playerColors = try container.decode(Bool.self, forKey: .playerColors)
     }
 }
 
@@ -965,7 +1023,7 @@ class RemoteControlEncryption {
     }
 
     func encrypt(data: Data) -> Data? {
-        return try? AES.GCM.seal(data, using: key).combined
+        try? AES.GCM.seal(data, using: key).combined
     }
 
     func decrypt(data: Data) -> Data? {

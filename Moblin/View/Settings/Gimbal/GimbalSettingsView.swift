@@ -141,7 +141,7 @@ struct GimbalSettingsView: View {
     @ObservedObject var gimbal: SettingsGimbal
 
     private func functions() -> [SettingsControllerFunction] {
-        return SettingsControllerFunction.allCases.filter {
+        SettingsControllerFunction.allCases.filter {
             ![.unused, .zoomIn, .zoomOut].contains($0)
         }
     }
@@ -167,13 +167,18 @@ struct GimbalSettingsView: View {
                 Text("Zoom")
             }
             Section {
+                Toggle("Enabled", isOn: $gimbal.tracking)
+                    .onChange(of: gimbal.tracking) {
+                        model.setGimbalTracking(on: $0)
+                    }
+            } header: {
+                Text("Tracking")
+            }
+            Section {
                 ControllerButtonView(model: model,
                                      functions: functions(),
                                      function: $gimbal.functionShutter,
-                                     sceneId: $gimbal.shutterSceneId,
-                                     widgetId: $gimbal.shutterWidgetId,
-                                     gimbalPresetId: $gimbal.shutterGimbalPresetId,
-                                     gimbalMotion: $gimbal.motion)
+                                     functionData: $gimbal.functionDataShutter)
             } header: {
                 Text("Shutter button")
             }
@@ -181,10 +186,7 @@ struct GimbalSettingsView: View {
                 ControllerButtonView(model: model,
                                      functions: functions(),
                                      function: $gimbal.functionFlip,
-                                     sceneId: $gimbal.flipSceneId,
-                                     widgetId: $gimbal.flipWidgetId,
-                                     gimbalPresetId: $gimbal.flipGimbalPresetId,
-                                     gimbalMotion: $gimbal.motion)
+                                     functionData: $gimbal.functionDataFlip)
             } header: {
                 Text("Flip button")
             }
@@ -202,17 +204,7 @@ struct GimbalSettingsView: View {
                 }
                 if #available(iOS 18, *) {
                     TextButtonView("Save current position") {
-                        Task { @MainActor in
-                            if let angles = await Gimbal.shared?.getCurrentOrientation() {
-                                let preset = SettingsGimbalPreset()
-                                preset.name = makeUniqueName(name: SettingsGimbalPreset.baseName,
-                                                             existingNames: gimbal.presets)
-                                preset.x = Float(angles.x)
-                                preset.y = Float(angles.y)
-                                preset.zoomX = model.zoom.x
-                                gimbal.presets.append(preset)
-                            }
-                        }
+                        model.saveGimbalPreset(id: nil)
                     }
                     .disabled(Gimbal.shared?.isConnected() != true)
                 }

@@ -19,7 +19,7 @@ private struct RemoteControlRequestResponse {
     let onError: (String) -> Void
 }
 
-class RemoteControlAssistant: NSObject {
+class RemoteControlAssistant: NSObject, @unchecked Sendable {
     private let port: UInt16
     private let password: String
     private var connected: Bool = false
@@ -29,7 +29,7 @@ class RemoteControlAssistant: NSObject {
     var connectionErrorMessage = ""
     private var streamerWebSocket: NWConnection?
     private var retryStartTimer = SimpleTimer(queue: .main)
-    private weak var delegate: RemoteControlAssistantDelegate?
+    private weak var delegate: (any RemoteControlAssistantDelegate)?
     private var streamerIdentified = false
     private var challenge = ""
     private var salt = ""
@@ -51,7 +51,7 @@ class RemoteControlAssistant: NSObject {
     init(
         port: UInt16,
         password: String,
-        delegate: RemoteControlAssistantDelegate
+        delegate: any RemoteControlAssistantDelegate
     ) {
         self.port = port
         self.password = password
@@ -81,7 +81,7 @@ class RemoteControlAssistant: NSObject {
     }
 
     func isConnected() -> Bool {
-        return connected
+        connected
     }
 
     func getStatus(onSuccess: @escaping (
@@ -128,6 +128,10 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setStream(on: on), onSuccess: onSuccess)
     }
 
+    func setPreviewStream(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setPreviewStream(on: on), onSuccess: onSuccess)
+    }
+
     func setZoom(x: Float, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setZoom(x: x), onSuccess: onSuccess)
     }
@@ -140,7 +144,10 @@ class RemoteControlAssistant: NSObject {
         performRequestNoResponseData(data: .setMute(on: on), onSuccess: onSuccess)
     }
 
-    // periphery:ignore
+    func setStealthMode(on: Bool, onSuccess: @escaping () -> Void) {
+        performRequestNoResponseData(data: .setStealthMode(on: on), onSuccess: onSuccess)
+    }
+
     func setTorch(on: Bool, onSuccess: @escaping () -> Void) {
         performRequestNoResponseData(data: .setTorch(on: on), onSuccess: onSuccess)
     }
@@ -310,12 +317,12 @@ class RemoteControlAssistant: NSObject {
             guard let self else {
                 return
             }
-            if self.pongReceived {
-                self.pongReceived = false
-                self.streamerWebSocket?.sendWebSocket(data: nil, opcode: .ping)
+            if pongReceived {
+                pongReceived = false
+                streamerWebSocket?.sendWebSocket(data: nil, opcode: .ping)
             } else {
                 logger.info("remote-control-assistant: Ping timeout")
-                self.closeStreamer()
+                closeStreamer()
             }
         }
     }
@@ -469,6 +476,8 @@ class RemoteControlAssistant: NSObject {
         case let .status(general: general, topLeft: topLeft, topRight: topRight):
             handleStatusEvent(general: general, topLeft: topLeft, topRight: topRight)
         case .scoreboard:
+            break
+        case .golfScoreboard:
             break
         }
     }

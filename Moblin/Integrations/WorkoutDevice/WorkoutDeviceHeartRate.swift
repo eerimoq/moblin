@@ -1,4 +1,4 @@
-import CoreBluetooth
+@preconcurrency import CoreBluetooth
 
 let workoutDeviceHeartRateServiceId = CBUUID(string: "180D")
 let workoutDeviceHeartRateMeasurementCharacteristicId = CBUUID(string: "2A37")
@@ -30,7 +30,7 @@ class WorkoutDeviceHeartRate {
     }
 
     func isAnyCharacteristicDiscovered() -> Bool {
-        return measurementCharacteristic != nil
+        measurementCharacteristic != nil
     }
 
     func handleMeasurement(value: Data) throws -> Int {

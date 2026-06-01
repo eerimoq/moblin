@@ -1,25 +1,24 @@
 import Foundation
 import Network
-import SwiftUI
 
 private let moblinkRelayQueue = DispatchQueue(label: "com.eerimoq.moblink-relay")
-private let relayIdKey = "srtlaRelayId"
-private var relayId: String = ""
+private let relayIdStorage = SimpleStringStorage(key: "srtlaRelayId")
+private nonisolated(unsafe) var relayId: String = ""
 
 func moblinkRelayLoadRelayId() {
-    relayId = UserDefaults.standard.string(forKey: relayIdKey) ?? ""
+    relayId = relayIdStorage.get()
     if relayId.isEmpty {
         moblinkRelayResetId()
     }
 }
 
 func getMoblinkRelayId() -> String {
-    return relayId
+    relayId
 }
 
 func moblinkRelayResetId() {
     relayId = UUID().uuidString
-    UserDefaults.standard.set(relayId, forKey: relayIdKey)
+    relayIdStorage.set(relayId)
 }
 
 enum MoblinkRelayState: String {
@@ -45,10 +44,10 @@ protocol MoblinkRelayDelegate: AnyObject {
     func moblinkRelayGetStatus() -> (Int?, MoblinkThermalState?)
 }
 
-private class Relay: NSObject {
+private class Relay: NSObject, @unchecked Sendable {
     private var streamerUrl: URL
     private var password: String
-    private weak var delegate: MoblinkRelayDelegate?
+    private weak var delegate: (any MoblinkRelayDelegate)?
     private var webSocket: WebSocketClient
     private let name: String
     private var startTunnelId: Int?
@@ -69,7 +68,7 @@ private class Relay: NSObject {
         name: String,
         streamerUrl: URL,
         password: String,
-        delegate: MoblinkRelayDelegate?,
+        delegate: (any MoblinkRelayDelegate)?,
         destinationInterface: NWInterface,
         relay: MoblinkRelay
     ) {
@@ -351,16 +350,16 @@ extension Relay: WebSocketClientDelegate {
     }
 }
 
-class MoblinkRelay: NSObject {
+class MoblinkRelay: NSObject, @unchecked Sendable {
     private let name: String
     let streamerUrl: URL
     private let password: String
-    private weak var delegate: MoblinkRelayDelegate?
+    private weak var delegate: (any MoblinkRelayDelegate)?
     private var relays: [Relay] = []
     private let networkPathMonitor = NWPathMonitor()
     private var started = false
 
-    init(name: String, streamerUrl: URL, password: String, delegate: MoblinkRelayDelegate) {
+    init(name: String, streamerUrl: URL, password: String, delegate: any MoblinkRelayDelegate) {
         self.name = name
         self.streamerUrl = streamerUrl
         self.password = password
@@ -408,17 +407,17 @@ class MoblinkRelay: NSObject {
 
     private func makeRelayId(_ interface: NWInterface) -> String {
         if interface.type == .cellular {
-            return relayId
+            relayId
         } else {
-            return UUID(uuidString: relayId)?.add(data: interface.name.utf8Data).uuidString ?? relayId
+            UUID(uuidString: relayId)?.add(data: interface.name.utf8Data).uuidString ?? relayId
         }
     }
 
     private func makeRelayName(_ interface: NWInterface) -> String {
         if interface.type == .cellular {
-            return name
+            name
         } else {
-            return "\(name)-\(interface.index)"
+            "\(name)-\(interface.index)"
         }
     }
 

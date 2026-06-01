@@ -3,8 +3,10 @@ import PhotosUI
 import SDWebImageSwiftUI
 import SwiftUI
 
+@MainActor
 private var loadedImages: [UUID: Data] = [:]
 
+@MainActor
 func loadAlertImage(model: Model, imageId: UUID) -> Data? {
     if let image = loadedImages[imageId] {
         return image

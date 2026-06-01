@@ -5,12 +5,12 @@ let srtServerClientLatency = 0.5
 
 class SrtServerClient {
     private weak var server: SrtServer?
-    private let streamId: String
+    private let cameraId: UUID
     private let reader: MpegTsReader
 
-    init(server: SrtServer, streamId: String, timecodesEnabled: Bool) {
+    init(server: SrtServer, cameraId: UUID, timecodesEnabled: Bool) {
         self.server = server
-        self.streamId = streamId
+        self.cameraId = cameraId
         reader = MpegTsReader(decoderQueue: srtlaServerQueue,
                               timecodesEnabled: timecodesEnabled,
                               targetLatency: srtServerClientLatency)
@@ -19,6 +19,7 @@ class SrtServerClient {
 
     func run(clientSocket: Int32) {
         let packetSize = 2048
+        nonisolated(unsafe)
         var packet = Data(count: packetSize)
         while server?.running == true {
             // No idea why, but OBS does not work without this.
@@ -46,21 +47,21 @@ class SrtServerClient {
 extension SrtServerClient: MpegTsReaderDelegate {
     func mpegTsReaderAudioBuffer(_ sampleBuffer: CMSampleBuffer) {
         server?.srtlaServer?.delegate.srtlaServerOnAudioBuffer(
-            streamId: streamId,
+            cameraId: cameraId,
             sampleBuffer: sampleBuffer
         )
     }
 
     func mpegTsReaderVideoBuffer(_ sampleBuffer: CMSampleBuffer) {
         server?.srtlaServer?.delegate.srtlaServerOnVideoBuffer(
-            streamId: streamId,
+            cameraId: cameraId,
             sampleBuffer: sampleBuffer
         )
     }
 
     func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double) {
         server?.srtlaServer?.delegate.srtlaServerSetTargetLatencies(
-            streamId: streamId,
+            cameraId: cameraId,
             videoTargetLatency,
             audioTargetLatency
         )

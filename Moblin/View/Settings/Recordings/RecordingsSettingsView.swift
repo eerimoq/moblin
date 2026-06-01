@@ -10,7 +10,7 @@ private let ffmpegAudioAndVideoSlowlyDesynchronizingCommand = """
 ffmpeg -i input.mp4 -af "asetrate=48002.2,aresample=48000" -c:v copy -c:a aac output.mp4
 """
 
-private struct RecordingsLocationView: View {
+struct FilesLocationView: View {
     let model: Model
     let text: Text
     let path: URL
@@ -30,20 +30,29 @@ private struct RecordingsLocationView: View {
         UIApplication.shared.open(sharedUrl)
     }
 
+    private func openInFinder(path: URL) {
+        UIApplication.shared.open(path) { success in
+            if !success {
+                copyPathToClipboard(path: path)
+            }
+        }
+    }
+
     private func copyPathToClipboard(path: URL) {
         UIPasteboard.general.string = path.path()
-        let subTitle: String?
-        if isMac() {
-            subTitle = String(localized: "Open it in Finder app → Go → Go to Folder...")
+        let subTitle: String? = if isMac() {
+            String(localized: "Open it in Finder app → Go → Go to Folder...")
         } else {
-            subTitle = nil
+            nil
         }
         model.makeToast(title: String(localized: "Directory copied to clipboard"), subTitle: subTitle)
     }
 
     var body: some View {
         ExternalButtonView {
-            if let sharedUrl = makeSharedUrl(path: path) {
+            if isMac() {
+                openInFinder(path: path)
+            } else if let sharedUrl = makeSharedUrl(path: path) {
                 openInFilesApp(sharedUrl: sharedUrl)
             } else {
                 copyPathToClipboard(path: path)
@@ -109,21 +118,21 @@ struct RecordingsSettingsView: View {
 
     var body: some View {
         Form {
-            RecordingsLocationView(model: model,
-                                   text: Text("Default recordings directory"),
-                                   path: model.recordingsStorage.defaultStorageDirectory())
+            FilesLocationView(model: model,
+                              text: Text("Default recordings directory"),
+                              path: model.recordingsStorage.defaultStorageDirectory())
             if let path = model.stream.recording.recordingPath {
                 if let path = makeRecordingPath(recordingPath: path) {
-                    RecordingsLocationView(model: model,
-                                           text: Text("Current recordings directory"),
-                                           path: path)
+                    FilesLocationView(model: model,
+                                      text: Text("Current recordings directory"),
+                                      path: path)
                 } else {
                     Text("Current recordings directory unavailable")
                 }
             }
-            RecordingsLocationView(model: model,
-                                   text: Text("Replays directory"),
-                                   path: model.replaysStorage.defaultStorageDirectory())
+            FilesLocationView(model: model,
+                              text: Text("Replays directory"),
+                              path: model.replaysStorage.defaultStorageDirectory())
             Section {
                 TextButtonView("Help") {
                     presentingHelp = true

@@ -12,7 +12,7 @@ protocol RtspTransportDelegate: AnyObject {
 }
 
 class RtspTransport {
-    weak var delegate: RtspTransportDelegate?
+    weak var delegate: (any RtspTransportDelegate)?
 
     func start(host _: String, port _: Int) {}
 
@@ -23,13 +23,13 @@ class RtspTransport {
     func sendRtcp(_: Data) {}
 
     func setupTransportHeader() -> String {
-        return ""
+        ""
     }
 
     func handleSetupTransportResponse(_: String) throws {}
 }
 
-class RtspTransportRtpRtspTcp: RtspTransport {
+class RtspTransportRtpRtspTcp: RtspTransport, @unchecked Sendable {
     private let channelStart = "$".first!.asciiValue!
     private var connection: NWConnection?
     private var rtpChannel: UInt8?
@@ -79,7 +79,7 @@ class RtspTransportRtpRtspTcp: RtspTransport {
     }
 
     override func setupTransportHeader() -> String {
-        return "RTP/AVP/TCP;unicast;interleaved=0-1"
+        "RTP/AVP/TCP;unicast;interleaved=0-1"
     }
 
     override func handleSetupTransportResponse(_ value: String) throws {
@@ -88,6 +88,9 @@ class RtspTransportRtpRtspTcp: RtspTransport {
         }
         rtpChannel = UInt8(match.output.1)
         rtcpChannel = UInt8(match.output.2)
+        guard rtpChannel != nil, rtcpChannel != nil else {
+            throw "Invalid interleaving channels in \(value)."
+        }
     }
 
     private func receiveMessage() {
@@ -139,12 +142,11 @@ class RtspTransportRtpRtspTcp: RtspTransport {
             }
             header += data
             if header.suffix(4) == rtspEndOfHeaders {
-                let headerCopy = header
-                let contentLength = parseContentLength(from: headerCopy)
+                let contentLength = parseContentLength(from: header)
                 if contentLength > 0 {
-                    receiveRtspContent(header: headerCopy, size: contentLength)
+                    receiveRtspContent(header: header, size: contentLength)
                 } else {
-                    delegate?.rtspTransportReceivedRtspMessage(header: headerCopy, content: nil)
+                    delegate?.rtspTransportReceivedRtspMessage(header: header, content: nil)
                     receiveMessage()
                 }
             } else {
@@ -163,7 +165,7 @@ class RtspTransportRtpRtspTcp: RtspTransport {
         }
     }
 
-    private func receive(size: Int, onComplete: @escaping (Data) throws -> Void) {
+    private func receive(size: Int, onComplete: @escaping @Sendable (Data) throws -> Void) {
         connection?.receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
             guard let data else {
                 return
@@ -177,7 +179,7 @@ class RtspTransportRtpRtspTcp: RtspTransport {
     }
 }
 
-class RtspTransportRtpUdp: RtspTransport {
+class RtspTransportRtpUdp: RtspTransport, @unchecked Sendable {
     private var host: String = ""
     private var port: Int = 554
     private var rtspConnection: NWConnection?
@@ -235,10 +237,11 @@ class RtspTransportRtpUdp: RtspTransport {
         guard let match = value.firstMatch(of: /server_port=(\d+)-(\d+)/) else {
             throw "Missing server_port in UDP transport response: \(value)"
         }
-        guard let rtcpPortValue = UInt16(match.output.2),
+        guard UInt16(match.output.1) != nil,
+              let rtcpPortValue = UInt16(match.output.2),
               let nwPort = NWEndpoint.Port(rawValue: rtcpPortValue)
         else {
-            throw "Invalid RTCP server port in: \(value)"
+            throw "Invalid RTP or RTCP server port in: \(value)"
         }
         remoteRtcpPort = nwPort
     }
@@ -356,12 +359,11 @@ class RtspTransportRtpUdp: RtspTransport {
             }
             header += data
             if header.suffix(4) == rtspEndOfHeaders {
-                let headerCopy = header
-                let contentLength = parseContentLength(from: headerCopy)
+                let contentLength = parseContentLength(from: header)
                 if contentLength > 0 {
-                    receiveRtspContent(header: headerCopy, size: contentLength)
+                    receiveRtspContent(header: header, size: contentLength)
                 } else {
-                    delegate?.rtspTransportReceivedRtspMessage(header: headerCopy, content: nil)
+                    delegate?.rtspTransportReceivedRtspMessage(header: header, content: nil)
                     receiveRtspMessage()
                 }
             } else {
@@ -380,7 +382,7 @@ class RtspTransportRtpUdp: RtspTransport {
         }
     }
 
-    private func receiveRtsp(size: Int, onComplete: @escaping (Data) throws -> Void) {
+    private func receiveRtsp(size: Int, onComplete: @escaping @Sendable (Data) throws -> Void) {
         rtspConnection?
             .receive(minimumIncompleteLength: size, maximumLength: size) { data, _, _, _ in
                 guard let data else {

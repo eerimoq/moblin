@@ -48,16 +48,6 @@ private struct YouTubeView: View {
     }
 }
 
-private struct DLiveView: View {
-    @ObservedObject var stream: SettingsStream
-
-    var body: some View {
-        Section {} header: {
-            DLiveLogoAndNameView(username: stream.dLiveUsername)
-        }
-    }
-}
-
 private struct SoopView: View {
     @ObservedObject var stream: SettingsStream
 
@@ -134,9 +124,6 @@ struct QuickButtonLiveView: View {
         if !stream.youTubeHandle.isEmpty {
             return true
         }
-        if !stream.dLiveUsername.isEmpty {
-            return true
-        }
         if !stream.soopChannelName.isEmpty {
             return true
         }
@@ -157,9 +144,6 @@ struct QuickButtonLiveView: View {
                 }
                 if !stream.youTubeHandle.isEmpty {
                     YouTubeView(model: model, debug: database.debug, stream: stream)
-                }
-                if !stream.dLiveUsername.isEmpty {
-                    DLiveView(stream: stream)
                 }
                 if !stream.soopChannelName.isEmpty {
                     SoopView(stream: stream)

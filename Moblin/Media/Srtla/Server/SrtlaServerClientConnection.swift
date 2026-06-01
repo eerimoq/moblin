@@ -34,10 +34,10 @@ struct AckPacket {
     }
 }
 
-class SrtlaServerClientConnection {
+class SrtlaServerClientConnection: @unchecked Sendable {
     var connection: NWConnection
     var latestReceivedTime = ContinuousClock.now
-    var delegate: SrtlaServerClientConnectionDelegate?
+    var delegate: (any SrtlaServerClientConnectionDelegate)?
     private var ackPacket = AckPacket()
 
     init(connection: NWConnection) {
@@ -50,7 +50,7 @@ class SrtlaServerClientConnection {
     }
 
     func isActive(now: ContinuousClock.Instant) -> Bool {
-        return latestReceivedTime.duration(to: now) < .seconds(removeTimeout)
+        latestReceivedTime.duration(to: now) < .seconds(removeTimeout)
     }
 
     private func receivePackets() {

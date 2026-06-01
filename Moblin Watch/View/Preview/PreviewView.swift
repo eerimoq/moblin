@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 private struct AudioLevelView: View {
@@ -31,7 +32,7 @@ private struct StatusesView: View {
             Image(systemName: "flame")
                 .frame(width: 17, height: 17)
                 .font(smallFont)
-                .padding([.leading, .trailing], 2)
+                .padding(.horizontal, 2)
                 .foregroundStyle(preview.thermalState.color())
                 .background(backgroundColor)
                 .cornerRadius(5)
@@ -162,7 +163,7 @@ struct PreviewView: View {
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .frame(maxWidth: .infinity)
             }
-            .padding([.bottom], 3)
+            .padding(.bottom, 3)
             List {
                 if !model.viaRemoteControl {
                     Picker(selection: $preview.zoomPresetIdPicker) {

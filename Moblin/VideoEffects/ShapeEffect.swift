@@ -18,7 +18,7 @@ struct ShapeEffectSettings {
     }
 }
 
-final class ShapeEffect: VideoEffect {
+final class ShapeEffect: VideoEffect, @unchecked Sendable {
     private var settings: ShapeEffectSettings = .init()
 
     func setSettings(settings: ShapeEffectSettings) {
@@ -104,17 +104,17 @@ final class ShapeEffect: VideoEffect {
 
     override func executeEarly(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         if settings.cropEnabled {
-            return crop(image)
+            crop(image)
         } else {
-            return image
+            image
         }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
         if settings.cornerRadius == 0 {
-            return makeSharpCornersImage(image, settings)
+            makeSharpCornersImage(image, settings)
         } else {
-            return makeRoundedCornersImage(image, settings)
+            makeRoundedCornersImage(image, settings)
         }
     }
 }

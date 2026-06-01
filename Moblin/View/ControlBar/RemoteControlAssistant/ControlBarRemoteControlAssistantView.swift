@@ -28,9 +28,9 @@ private struct RemoteControlSrtConnectionPriorityView: View {
         if let name = model.database.networkInterfaceNames.first(where: { interface in
             interface.interfaceName == priority.name
         })?.name, !name.isEmpty {
-            return name
+            name
         } else {
-            return priority.name
+            priority.name
         }
     }
 
@@ -114,7 +114,7 @@ private struct RemoteControlAudioLevelView: View {
     }
 
     private func isClipping() -> Bool {
-        return level > clippingThresholdDb
+        level > clippingThresholdDb
     }
 
     private func clippingText() -> Substring {
@@ -177,7 +177,7 @@ private struct RemoteControlAudioLevelView: View {
                                 .foregroundStyle(.green)
                         }
                     }
-                    .padding([.bottom], 3)
+                    .padding(.bottom, 3)
                     .bold()
                 }
                 if let channels {
@@ -229,7 +229,7 @@ private struct ControlBarRemoteControlAssistantStatusView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
-                        .padding([.bottom], 3)
+                        .padding(.bottom, 3)
                         .onTapGesture(count: 2) { _ in
                             remoteControl.presentingPreviewFullScreen = true
                         }
@@ -389,6 +389,38 @@ private struct MutedView: View {
                     return
                 }
                 model.remoteControlAssistantSetMute(on: $0)
+            }
+    }
+}
+
+private struct PreviewStreamView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        Toggle("Preview stream", isOn: $remoteControl.previewStream)
+            .onChange(of: remoteControl.previewStream) {
+                guard remoteControl.previewStream != model.remoteControlAssistantStreamerState.previewStream
+                else {
+                    return
+                }
+                model.remoteControlAssistantSetPreviewStream(on: $0)
+            }
+    }
+}
+
+private struct StealthModeControlView: View {
+    let model: Model
+    @ObservedObject var remoteControl: RemoteControl
+
+    var body: some View {
+        Toggle("Stealth mode", isOn: $remoteControl.stealthMode)
+            .onChange(of: remoteControl.stealthMode) {
+                guard remoteControl.stealthMode != model.remoteControlAssistantStreamerState.stealthMode
+                else {
+                    return
+                }
+                model.remoteControlAssistantSetStealthMode(on: $0)
             }
     }
 }
@@ -663,6 +695,8 @@ private struct ControlBarRemoteControlAssistantControlView: View {
                 LiveView(model: model, remoteControl: remoteControl)
                 RecordingView(model: model, remoteControl: remoteControl)
                 MutedView(model: model, remoteControl: remoteControl)
+                StealthModeControlView(model: model, remoteControl: remoteControl)
+                PreviewStreamView(model: model, remoteControl: remoteControl)
                 ZoomView(model: model, remoteControl: remoteControl)
                 ScenePickerView(model: model, remoteControl: remoteControl)
                 AutoSceneSwitcherPickerView(model: model, remoteControl: remoteControl)
@@ -885,9 +919,9 @@ struct ControlBarRemoteControlAssistantView: View {
 
     private func title() -> String {
         if let streamerName = remoteControlSettings.getSelectedStreamerName() {
-            return String(localized: "Remote control assistant") + " (\(streamerName))"
+            String(localized: "Remote control assistant") + " (\(streamerName))"
         } else {
-            return String(localized: "Remote control assistant")
+            String(localized: "Remote control assistant")
         }
     }
 

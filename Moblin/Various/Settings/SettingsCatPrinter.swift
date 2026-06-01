@@ -16,19 +16,19 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case id,
-             name,
-             enabled,
-             bluetoothPeripheralName,
-             bluetoothPeripheralId,
-             printChat,
-             faxMeowSound,
-             printSnapshots,
-             printTwitch,
-             printKick
+        case id
+        case name
+        case enabled
+        case bluetoothPeripheralName
+        case bluetoothPeripheralId
+        case printChat
+        case faxMeowSound
+        case printSnapshots
+        case printTwitch
+        case printKick
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.id, id)
         try container.encode(.name, name)
@@ -42,7 +42,7 @@ class SettingsCatPrinter: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.printKick, printKick)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, "")
@@ -64,17 +64,17 @@ class SettingsCatPrinters: Codable, ObservableObject {
     init() {}
 
     enum CodingKeys: CodingKey {
-        case devices,
-             backgroundPrinting
+        case devices
+        case backgroundPrinting
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.devices, devices)
         try container.encode(.backgroundPrinting, backgroundPrinting)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         devices = container.decode(.devices, [SettingsCatPrinter].self, [])
         backgroundPrinting = container.decode(.backgroundPrinting, Bool.self, false)

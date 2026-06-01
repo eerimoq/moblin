@@ -2,9 +2,9 @@ import CoreLocation
 import Foundation
 import WeatherKit
 
-class WeatherManager {
+class WeatherManager: @unchecked Sendable {
     let weatherService = WeatherService()
-    private var task: Task<Void, Error>?
+    private var task: Task<Void, any Error>?
     private var location: CLLocation?
     private var weather: Weather?
     private var enabled = true
@@ -42,7 +42,7 @@ class WeatherManager {
     }
 
     func getLatestWeather() -> Weather? {
-        return weather
+        weather
     }
 
     func stop() {

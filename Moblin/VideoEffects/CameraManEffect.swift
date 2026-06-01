@@ -1,6 +1,6 @@
 import CoreImage
 
-final class CameraManEffect: VideoEffect {
+final class CameraManEffect: VideoEffect, @unchecked Sendable {
     private var startTime: Double?
     private let minScale: Double = 0.92
     private let xSpeed: Double = 0.27
@@ -37,7 +37,7 @@ final class CameraManEffect: VideoEffect {
         let elapsed = now - startTime!
         let scale = minScale + (1 - minScale) * (0.5 + 0.5 * cos(elapsed * zoomSpeed * speed))
         let isRising = scale - previousScale > 0
-        if previousIsRising && !isRising {
+        if previousIsRising, !isRising {
             isStill.toggle()
         }
         previousScale = scale
@@ -57,6 +57,9 @@ final class CameraManEffect: VideoEffect {
         return image
             .cropped(to: cropRect)
             .transformed(by: CGAffineTransform(translationX: -cropX, y: -cropY))
-            .transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+            .transformed(
+                by: CGAffineTransform(scaleX: scaleX, y: scaleY),
+                highQualityDownsample: highQualityDownsampling
+            )
     }
 }

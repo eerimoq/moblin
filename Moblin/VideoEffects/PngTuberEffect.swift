@@ -9,7 +9,7 @@ private class PngCoordinate: Decodable {
     // periphery:ignore
     let y: Double
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let value = try decoder.singleValueContainer().decode(String.self)
         if let match = value.firstMatch(of: /Vector2\(([-\d]+), ([-\d]+)\)/) {
             x = Double(match.1) ?? 0
@@ -42,18 +42,18 @@ private class PngTuberImage: Decodable {
     let zIndex: Int
 
     enum CodingKeys: CodingKey {
-        case costumeLayers,
-             identification,
-             imageData,
-             offset,
-             parentId,
-             pos,
-             showBlink,
-             showTalk,
-             zindex
+        case costumeLayers
+        case identification
+        case imageData
+        case offset
+        case parentId
+        case pos
+        case showBlink
+        case showTalk
+        case zindex
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let costumeLayersData = try container.decode(String.self, forKey: .costumeLayers).utf8Data
         costumeLayers = try JSONDecoder().decode([Int].self, from: costumeLayersData)
@@ -85,7 +85,7 @@ private class PngTuberFile {
     }
 }
 
-final class PngTuberEffect: VideoEffect {
+final class PngTuberEffect: VideoEffect, @unchecked Sendable {
     private let model: PngTuberFile?
     private var videoSourceId: UUID = .init()
     private var sceneWidget: SettingsSceneWidget?
@@ -98,7 +98,7 @@ final class PngTuberEffect: VideoEffect {
     init(model: URL, costume: Int) {
         do {
             let model = try JSONDecoder().decode([String: PngTuberImage].self, from: Data(contentsOf: model))
-            let images = model.sorted(by: { Int($0.key) ?? 0 < Int($1.key) ?? 0 }).map { $0.value }
+            let images = model.sorted(by: { Int($0.key) ?? 0 < Int($1.key) ?? 0 }).map(\.value)
             self.model = PngTuberFile(images: images)
         } catch {
             logger.info("png-tuber: Failed to load model with error: \(error)")
@@ -205,6 +205,6 @@ final class PngTuberEffect: VideoEffect {
     }
 
     override func needsFaceDetections(_: Double) -> VideoEffectDetectionsMode {
-        return .interval(videoSourceId, 0.1)
+        .interval(videoSourceId, 0.1)
     }
 }

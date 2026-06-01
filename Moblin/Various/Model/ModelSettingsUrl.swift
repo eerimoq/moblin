@@ -70,8 +70,9 @@ extension Model {
                 database.streams.append(targetStream)
             }
         }
-        if let newSelectedStream, !isLive, !isRecording {
+        if let newSelectedStream {
             setCurrentStream(stream: newSelectedStream)
+            reloadStreamIfEnabled(stream: newSelectedStream)
         }
     }
 

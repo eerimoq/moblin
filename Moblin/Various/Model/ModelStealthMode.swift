@@ -4,8 +4,13 @@ import SwiftUI
 let stealthModeImagePath = URL.documentsDirectory.appending(component: "stealthModeImage.img")
 
 extension Model {
+    func setStealthMode(on: Bool) {
+        showStealthMode = on
+        remoteControlStateChanged(state: .init(stealthMode: on))
+    }
+
     func toggleStealthMode() {
-        showStealthMode.toggle()
+        setStealthMode(on: !showStealthMode)
     }
 
     func saveStealthModeImage(data: Data) {

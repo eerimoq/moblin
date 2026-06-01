@@ -51,7 +51,7 @@ extension WatchModel {
     }
 
     func findScoreboardPlayer(id: UUID) -> String {
-        return padel.players.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
+        padel.players.first(where: { $0.id == id })?.name ?? "🇸🇪 Moblin"
     }
 
     func padelScoreboardIncrementHomeScore() {
@@ -71,8 +71,8 @@ extension WatchModel {
     }
 
     func padelScoreboardUpdatePlayers() {
-        let home = padel.scoreboard.home.players.map { $0.id }
-        let away = padel.scoreboard.away.players.map { $0.id }
+        let home = padel.scoreboard.home.players.map(\.id)
+        let away = padel.scoreboard.away.players.map(\.id)
         let players = WatchProtocolPadelScoreboardActionPlayers(home: home, away: away)
         sendUpdatePadelScoreboard(action: .players(players))
     }
@@ -143,7 +143,7 @@ extension WatchModel {
     private func isSetCompleted(score: WatchProtocolPadelScoreboardScore) -> Bool {
         let maxScore = max(score.home, score.away)
         let minScore = min(score.home, score.away)
-        if maxScore == 6 && minScore <= 4 {
+        if maxScore == 6, minScore <= 4 {
             return true
         }
         if maxScore == 7 {

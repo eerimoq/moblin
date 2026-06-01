@@ -146,7 +146,7 @@ private struct AboutAttributionsSoundsSettingsView: View {
                     ForEach(soundAttributions, id: \.name) { attribution in
                         Text(attribution.name)
                             .font(.title2)
-                            .padding([.top])
+                            .padding(.top)
                         VStack(alignment: .leading) {
                             ForEach(attribution.text, id: \.self) { line in
                                 Text(line)
@@ -172,7 +172,7 @@ private struct AboutAttributionsImagesSettingsView: View {
                     ForEach(imageAttributions, id: \.name) { attribution in
                         Text(attribution.name)
                             .font(.title2)
-                            .padding([.top])
+                            .padding(.top)
                         VStack(alignment: .leading) {
                             ForEach(attribution.text, id: \.self) { line in
                                 Text(line)

@@ -22,9 +22,9 @@ struct SrtlaServerSettingsView: View {
 
     private func status() -> String {
         if srtlaServer.enabled {
-            return String(srtlaServer.streams.count)
+            String(srtlaServer.streams.count)
         } else {
-            return "0"
+            "0"
         }
     }
 

@@ -1,6 +1,90 @@
 import Network
 import SwiftUI
 
+struct UrlSettingsView: View {
+    let model: Model
+    let disabled: Bool
+    @Binding var url: String
+    @State var value: String
+    let placeholder: String
+    let allowedSchemes: [String]?
+    let examples: [(LocalizedStringKey, String)]
+    let onSubmitted: () -> Void
+    @Environment(\.dismiss) var dismiss
+    @State private var changed: Bool = false
+    @State private var submitted: Bool = false
+    @State private var error: String?
+    @State private var presentingHelp: Bool = false
+
+    private func submitUrl() {
+        guard !submitted else {
+            return
+        }
+        value = cleanUrl(url: value)
+        if isValidUrl(url: value, allowedSchemes: allowedSchemes) != nil {
+            dismiss()
+            return
+        }
+        submitted = true
+        url = value
+        onSubmitted()
+        dismiss()
+    }
+
+    var body: some View {
+        Form {
+            Section {
+                MultiLineTextFieldView(value: $value, placeholder: placeholder)
+                    .textInputAutocapitalization(.never)
+                    .onSubmit {
+                        submitUrl()
+                    }
+                    .submitLabel(.done)
+                    .onChange(of: value) { _ in
+                        error = isValidUrl(url: value, allowedSchemes: allowedSchemes)
+                        changed = true
+                        if value.contains("\n") {
+                            value = value.replacingOccurrences(of: "\n", with: "")
+                            submitUrl()
+                        }
+                    }
+                    .disableAutocorrection(true)
+                    .disabled(disabled)
+            } footer: {
+                if let error {
+                    FormFieldError(error: error)
+                }
+            }
+            Section {
+                TextButtonView("Examples") {
+                    presentingHelp = true
+                }
+                .sheet(isPresented: $presentingHelp) {
+                    NavigationView {
+                        Form {
+                            ForEach(examples, id: \.1) { title, url in
+                                Section(title) {
+                                    UrlCopyView(url)
+                                }
+                            }
+                        }
+                        .navigationTitle("Examples")
+                        .toolbar {
+                            CloseToolbar(presenting: $presentingHelp)
+                        }
+                    }
+                }
+            }
+        }
+        .onDisappear {
+            if changed, !submitted {
+                submitUrl()
+            }
+        }
+        .navigationTitle("URL")
+    }
+}
+
 struct RtspClientStreamSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var rtspClient: SettingsRtspClient
@@ -13,17 +97,20 @@ struct RtspClientStreamSettingsView: View {
                     NameEditView(name: $stream.name, existingNames: rtspClient.streams)
                 }
                 Section {
-                    TextEditNavigationView(title: String(localized: "URL"),
-                                           value: stream.url,
-                                           onSubmit: {
-                                               stream.url = $0
-                                               model.reloadRtspClient()
-                                           },
-                                           footers: [
-                                               "rtsp://1.2.3.4:554/stream",
-                                               "rtsp://username:password@1.2.3.4/stream",
-                                           ],
-                                           placeholder: "rtsp://foo:bar@1.2.3.4/stream")
+                    NavigationLink {
+                        UrlSettingsView(model: model,
+                                        disabled: false,
+                                        url: $stream.url,
+                                        value: stream.url,
+                                        placeholder: "rtsp://192.168.1.83/stream1",
+                                        allowedSchemes: ["rtsp"],
+                                        examples: [
+                                            ("TP-Link", "rtsp://username:password@192.168.1.83/stream1"),
+                                        ],
+                                        onSubmitted: model.reloadRtspClient)
+                    } label: {
+                        TextItemLocalizedView(name: "URL", value: stream.url, sensitive: true)
+                    }
                 }
                 Section {
                     Picker("Transport", selection: $stream.transport) {
@@ -39,18 +126,7 @@ struct RtspClientStreamSettingsView: View {
                     TextEditNavigationView(
                         title: String(localized: "Latency"),
                         value: String(stream.latency),
-                        onChange: {
-                            guard let latency = Int32($0) else {
-                                return String(localized: "Not a number")
-                            }
-                            guard latency >= 5 else {
-                                return String(localized: "Too small")
-                            }
-                            guard latency <= 10000 else {
-                                return String(localized: "Too big")
-                            }
-                            return nil
-                        },
+                        onChange: isValidIngestLatency,
                         onSubmit: {
                             guard let latency = Int32($0) else {
                                 return

@@ -1,11 +1,11 @@
-import AVFoundation
+@preconcurrency import AVFoundation
 import Collections
 import CoreImage
 import SwiftUI
 
 private let replayQueue = DispatchQueue(label: "com.eerimoq.replay", qos: .background)
 
-class ReplayBufferFile {
+class ReplayBufferFile: @unchecked Sendable {
     let url: URL
     let duration: Double
     private let remove: Bool
@@ -24,22 +24,25 @@ class ReplayBufferFile {
 }
 
 protocol ReplayDelegate: AnyObject {
-    func replayOutputFrame(image: UIImage, offset: Double, video: ReplayBufferFile, completion: (() -> Void)?)
+    func replayOutputFrame(image: UIImage,
+                           offset: Double,
+                           video: ReplayBufferFile,
+                           completion: (@MainActor () -> Void)?)
 }
 
 private protocol JobDelegate: AnyObject {
     func jobCompleted(image: UIImage?, video: ReplayBufferFile, offset: Double)
 }
 
-private class FrameExtractorJob {
+private class FrameExtractorJob: @unchecked Sendable {
     private let video: ReplayBufferFile
     private let offset: Double
-    weak var delegate: JobDelegate?
+    weak var delegate: (any JobDelegate)?
     private var reader: AVAssetReader?
     private var trackOutput: AVAssetReaderTrackOutput?
     private let context = CIContext()
 
-    init(video: ReplayBufferFile, offset: Double, delegate: JobDelegate) throws {
+    init(video: ReplayBufferFile, offset: Double, delegate: any JobDelegate) throws {
         self.video = video
         self.offset = offset
         self.delegate = delegate
@@ -53,13 +56,14 @@ private class FrameExtractorJob {
         let duration = CMTime(seconds: 3)
         reader?.timeRange = CMTimeRange(start: startTime, duration: duration)
         asset.loadTracks(withMediaType: .video) { [weak self] tracks, error in
+            let self2 = self
             replayQueue.async {
-                self?.loadVideoTrackCompletion(tracks: tracks, error: error)
+                self2?.loadVideoTrackCompletion(tracks: tracks, error: error)
             }
         }
     }
 
-    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: Error?) {
+    private func loadVideoTrackCompletion(tracks: [AVAssetTrack]?, error: (any Error)?) {
         if let error {
             logger.info("replay: Failed to get video track with error: \(error)")
             delegate?.jobCompleted(image: nil, video: video, offset: offset)
@@ -92,14 +96,18 @@ private class FrameExtractorJob {
     }
 }
 
-class ReplayFrameExtractor {
+class ReplayFrameExtractor: @unchecked Sendable {
     private let video: ReplayBufferFile
-    private weak var delegate: ReplayDelegate?
-    private var completion: (() -> Void)?
+    private weak var delegate: (any ReplayDelegate)?
+    private var completion: (@MainActor () -> Void)?
     private var job: FrameExtractorJob?
     private var pendingOffset: Double?
 
-    init(video: ReplayBufferFile, offset: Double, delegate: ReplayDelegate, completion: (() -> Void)?) {
+    init(video: ReplayBufferFile,
+         offset: Double,
+         delegate: any ReplayDelegate,
+         completion: (@MainActor () -> Void)?)
+    {
         self.video = video
         self.delegate = delegate
         self.completion = completion
@@ -111,8 +119,8 @@ class ReplayFrameExtractor {
             guard let self else {
                 return
             }
-            self.pendingOffset = offset
-            self.tryNextJob()
+            pendingOffset = offset
+            tryNextJob()
         }
     }
 
@@ -136,7 +144,7 @@ extension ReplayFrameExtractor: JobDelegate {
     }
 }
 
-class ReplayBuffer {
+class ReplayBuffer: @unchecked Sendable {
     private var initSegment: Data?
     private var dataSegments: Deque<RecorderDataSegment> = []
 
@@ -152,7 +160,7 @@ class ReplayBuffer {
         }
     }
 
-    func createFile(completion: @escaping (ReplayBufferFile?) -> Void) {
+    func createFile(completion: @escaping @Sendable (ReplayBufferFile?) -> Void) {
         replayQueue.async {
             self.createFileInternal(completion: completion)
         }

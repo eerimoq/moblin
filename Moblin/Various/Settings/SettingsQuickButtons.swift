@@ -6,7 +6,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case torch = "Torch"
     case mute = "Mute"
     case bitrate = "Bitrate"
-    case widget = "Widget"
     case mic = "Mic"
     case chat = "Chat"
     case blackScreen = "Black screen"
@@ -27,7 +26,6 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case draw = "Draw"
     case localOverlays = "Local overlays"
     case browser = "Browser"
-    case lut = "LUT"
     case cameraPreview = "Camera preview"
     case fourThree = "4:3"
     case crt = "CRT"
@@ -65,13 +63,170 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
     case cameraMan = "Camera man"
     case videoPreview = "Video preview"
     case interactiveBrowserWidgets = "Interactive browser widgets"
+    case macros = "Macros"
+    case gimbalTracking = "Gimbal tracking"
+    case previewStream = "Preview stream"
 
-    init(from decoder: Decoder) throws {
+    init(from decoder: any Decoder) throws {
         var value = try decoder.singleValueContainer().decode(RawValue.self)
         if value == "Pause chat" {
             value = "Chat"
         }
         self = SettingsQuickButtonType(rawValue: value) ?? .unknown
+    }
+
+    func toString() -> String {
+        switch self {
+        case .unknown:
+            String(localized: "Unknown")
+        case .torch:
+            String(localized: "Torch")
+        case .mute:
+            String(localized: "Mute")
+        case .live:
+            String(localized: "Stream")
+        case .mic:
+            String(localized: "Mic")
+        case .record:
+            String(localized: "Record")
+        case .snapshot:
+            String(localized: "Snapshot")
+        case .widgets:
+            String(localized: "Scene widgets")
+        case .localOverlays:
+            String(localized: "Local overlays")
+        case .blackScreen:
+            String(localized: "Stealth mode")
+        case .chat:
+            String(localized: "Chat")
+        case .bitrate:
+            String(localized: "Bitrate")
+        case .browser:
+            String(localized: "Browser")
+        case .draw:
+            String(localized: "Draw")
+        case .poll:
+            String(localized: "Poll")
+        case .pinch:
+            String(localized: "Pinch")
+        case .whirlpool:
+            String(localized: "Whirlpool")
+        case .blurFaces:
+            String(localized: "Blur faces")
+        case .privacy:
+            String(localized: "Blur background")
+        case .blurText:
+            String(localized: "Blur text")
+        case .glasses:
+            String(localized: "Glasses")
+        case .sparkle:
+            String(localized: "Sparkle")
+        case .movie:
+            String(localized: "Movie")
+        case .fourThree:
+            String(localized: "4:3")
+        case .crt:
+            String(localized: "CRT")
+        case .pixellate:
+            String(localized: "Pixellate")
+        case .grayScale:
+            String(localized: "Gray scale")
+        case .sepia:
+            String(localized: "Sepia")
+        case .triple:
+            String(localized: "Triple")
+        case .twin:
+            String(localized: "Twin")
+        case .moblinInMouth:
+            String(localized: "Moblin in mouth")
+        case .cameraMan:
+            String(localized: "Camera man")
+        case .beauty:
+            String(localized: "Beauty")
+        case .luts:
+            String(localized: "LUTs")
+        case .obs:
+            String(localized: "OBS")
+        case .remote:
+            String(localized: "Remote")
+        case .replay:
+            String(localized: "Replay")
+        case .instantReplay:
+            String(localized: "Instant replay")
+        case .djiDevices:
+            String(localized: "DJI devices")
+        case .goPro:
+            String(localized: "GoPro")
+        case .interactiveChat:
+            String(localized: "Interactive chat")
+        case .autoSceneSwitcher:
+            String(localized: "Auto scene switcher")
+        case .lockScreen:
+            String(localized: "Lock screen")
+        case .image:
+            String(localized: "Camera")
+        case .cameraPreview:
+            String(localized: "Camera preview")
+        case .recordings:
+            String(localized: "Recordings")
+        case .stream:
+            String(localized: "Switch stream")
+        case .grid:
+            String(localized: "Grid")
+        case .cameraLevel:
+            String(localized: "Camera level")
+        case .workout:
+            String(localized: "Workout")
+        case .skipCurrentTts:
+            String(localized: "Skip current TTS")
+        case .pauseTts:
+            String(localized: "Pause TTS")
+        case .moderation:
+            String(localized: "Moderation")
+        case .predefinedMessages:
+            String(localized: "Predefined messages")
+        case .streamMarker:
+            String(localized: "Stream marker")
+        case .navigation:
+            String(localized: "Navigation")
+        case .reloadBrowserWidgets:
+            String(localized: "Reload browser widgets")
+        case .portrait:
+            String(localized: "Portrait")
+        case .connectionPriorities:
+            String(localized: "Connection priorities")
+        case .videoPreview:
+            String(localized: "Video preview")
+        case .interactiveBrowserWidgets:
+            String(localized: "Interactive browser widgets")
+        case .macros:
+            String(localized: "Macros")
+        case .gimbalTracking:
+            String(localized: "Gimbal tracking")
+        case .previewStream:
+            String(localized: "Preview stream")
+        }
+    }
+
+    static func filters() -> [SettingsQuickButtonType] {
+        [
+            .movie,
+            .fourThree,
+            .crt,
+            .grayScale,
+            .sepia,
+            .triple,
+            .twin,
+            .pixellate,
+            .whirlpool,
+            .pinch,
+            .blurFaces,
+            .privacy,
+            .moblinInMouth,
+            .beauty,
+            .cameraMan,
+            .poll,
+        ]
     }
 }
 
@@ -87,14 +242,13 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
     @Published var color: Color = defaultQuickButtonColor.color()
     @Published var page: Int
 
-    init(name: String,
-         type: SettingsQuickButtonType,
+    init(type: SettingsQuickButtonType,
          imageOn: String,
          imageOff: String? = nil,
          isOn: Bool = false,
          page: Int = 1)
     {
-        self.name = name
+        name = type.toString()
         self.type = type
         self.imageOn = imageOn
         self.imageOff = imageOff ?? imageOn
@@ -103,19 +257,19 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
     }
 
     enum CodingKeys: CodingKey {
-        case name,
-             id,
-             type,
-             imageType,
-             systemImageNameOn,
-             systemImageNameOff,
-             isOn,
-             enabled,
-             backgroundColor,
-             page
+        case name
+        case id
+        case type
+        case imageType
+        case systemImageNameOn
+        case systemImageNameOff
+        case isOn
+        case enabled
+        case backgroundColor
+        case page
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.name, name)
         try container.encode(.id, id)
@@ -128,11 +282,11 @@ class SettingsQuickButton: Codable, Identifiable, ObservableObject {
         try container.encode(.page, page)
     }
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = container.decode(.name, String.self, "")
         id = container.decode(.id, UUID.self, .init())
-        type = container.decode(.type, SettingsQuickButtonType.self, .widget)
+        type = container.decode(.type, SettingsQuickButtonType.self, .unknown)
         imageOn = container.decode(.systemImageNameOn, String.self, "")
         imageOff = container.decode(.systemImageNameOff, String.self, "")
         isOn = container.decode(.isOn, Bool.self, false)
@@ -152,15 +306,15 @@ class SettingsQuickButtons: Codable, ObservableObject {
     @Published var stealthModeShowStatus: Bool = false
 
     enum CodingKeys: CodingKey {
-        case twoColumns,
-             bigButtons,
-             showName,
-             enableScroll,
-             blackScreenShowChat,
-             blackScreenShowStatus
+        case twoColumns
+        case bigButtons
+        case showName
+        case enableScroll
+        case blackScreenShowChat
+        case blackScreenShowStatus
     }
 
-    func encode(to encoder: Encoder) throws {
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(.twoColumns, twoColumns)
         try container.encode(.bigButtons, bigButtons)
@@ -172,7 +326,7 @@ class SettingsQuickButtons: Codable, ObservableObject {
 
     init() {}
 
-    required init(from decoder: Decoder) throws {
+    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         twoColumns = container.decode(.twoColumns, Bool.self, true)
         bigButtons = container.decode(.bigButtons, Bool.self, false)

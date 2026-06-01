@@ -1,6 +1,6 @@
 import CoreImage
 
-final class PinchEffect: VideoEffect {
+final class PinchEffect: VideoEffect, @unchecked Sendable {
     private var scale: Float
 
     init(scale: Float) {

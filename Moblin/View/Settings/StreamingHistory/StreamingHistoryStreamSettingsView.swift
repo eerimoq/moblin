@@ -25,8 +25,8 @@ private struct StreamingHistoryStreamSettingsDeviceHealthView: View {
                 Text("Highest thermal state")
                 Spacer()
                 Image(systemName: "flame")
-                    .padding([.leading, .trailing], 4)
-                    .padding([.top, .bottom], 2)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
                     .foregroundStyle(stream.highestThermalState!.toProcessInfo().color())
                     .background(.black)
                     .cornerRadius(3)
@@ -65,22 +65,13 @@ private struct StreamingHistoryStreamSettingsSettingsView: View {
 }
 
 struct StreamingHistoryStreamSettingsView: View {
-    @EnvironmentObject var model: Model
     let stream: StreamingHistoryStream
 
     var body: some View {
-        VStack {
-            if let logId = stream.logId {
-                HStack {
-                    Spacer()
-                    ShareLink("Share log", item: model.makeStreamShareLogUrl(logId: logId))
-                }
-            }
-            Form {
-                StreamingHistoryStreamSettingsGeneralView(stream: stream)
-                StreamingHistoryStreamSettingsDeviceHealthView(stream: stream)
-                StreamingHistoryStreamSettingsSettingsView(stream: stream)
-            }
+        Form {
+            StreamingHistoryStreamSettingsGeneralView(stream: stream)
+            StreamingHistoryStreamSettingsDeviceHealthView(stream: stream)
+            StreamingHistoryStreamSettingsSettingsView(stream: stream)
         }
         .navigationTitle("Stream summary")
     }

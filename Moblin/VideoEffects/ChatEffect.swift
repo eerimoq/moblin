@@ -11,22 +11,22 @@ private struct HighlightMessageView: View {
 
     private func backgroundColor() -> Color {
         if settings.backgroundColorEnabled {
-            return settings.backgroundColorColor.opacity(0.6)
+            settings.backgroundColorColor.opacity(0.6)
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func shadowColor() -> Color {
         if settings.shadowColorEnabled {
-            return settings.shadowColorColor
+            settings.shadowColorColor
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        return CGFloat(settings.fontSize * 1.7)
+        CGFloat(settings.fontSize * 1.7)
     }
 
     var body: some View {
@@ -51,13 +51,13 @@ private struct HighlightMessageView: View {
                     } placeholder: {
                         EmptyView()
                     }
-                    .padding([.top, .bottom], settings.shadowColorEnabled ? 1.5 : 0)
+                    .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
                     .frame(height: frameHeightEmotes())
                 }
             }
         }
         .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .font(.system(size: CGFloat(settings.fontSize)))
         .background(backgroundColor())
         .foregroundStyle(.white)
@@ -71,35 +71,35 @@ private struct LineView: View {
     let platform: Bool
 
     private func usernameColor() -> Color {
-        return post.userColor.color()
+        post.userColor.color()
     }
 
     private func messageColor(usernameColor _: Color) -> Color {
-        return settings.messageColorColor
+        settings.messageColorColor
     }
 
     private func backgroundColor() -> Color {
         if settings.backgroundColorEnabled {
-            return settings.backgroundColorColor.opacity(0.6)
+            settings.backgroundColorColor.opacity(0.6)
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func shadowColor() -> Color {
         if settings.shadowColorEnabled {
-            return settings.shadowColorColor
+            settings.shadowColorColor
         } else {
-            return .clear
+            .clear
         }
     }
 
     private func frameHeightBadges() -> CGFloat {
-        return CGFloat(settings.fontSize * 1.4)
+        CGFloat(settings.fontSize * 1.4)
     }
 
     private func frameHeightEmotes() -> CGFloat {
-        return CGFloat(settings.fontSize * 1.7)
+        CGFloat(settings.fontSize * 1.7)
     }
 
     var body: some View {
@@ -143,7 +143,7 @@ private struct LineView: View {
             Text(post.displayName(nicknames: settings.nicknames, displayStyle: settings.displayStyle))
                 .foregroundStyle(usernameColor)
                 .lineLimit(1)
-                .padding([.trailing], 0)
+                .padding(.trailing, 0)
                 .bold(settings.boldUsername)
             if post.isRedemption() {
                 Text(" ")
@@ -165,14 +165,14 @@ private struct LineView: View {
                     } placeholder: {
                         EmptyView()
                     }
-                    .padding([.top, .bottom], settings.shadowColorEnabled ? 1.5 : 0)
+                    .padding(.vertical, settings.shadowColorEnabled ? 1.5 : 0)
                     .frame(height: frameHeightEmotes())
                     Text(" ")
                 }
             }
         }
         .stroke(color: shadowColor(), width: settings.shadowColorEnabled ? borderWidth : 0)
-        .padding([.leading], 5)
+        .padding(.leading, 5)
         .font(.system(size: CGFloat(settings.fontSize)))
         .background(backgroundColor())
         .foregroundStyle(.white)
@@ -200,7 +200,7 @@ private struct PostView: View {
                 }
             } else {
                 LineView(post: post, settings: settings, platform: moreThanOneStreamingPlatform)
-                    .padding([.leading], 3)
+                    .padding(.leading, 3)
             }
         }
     }
@@ -211,7 +211,7 @@ private struct ChatView: View {
     @ObservedObject var chat: ChatProvider
 
     private func width() -> Double {
-        return 20 * Double(settings.fontSize)
+        20 * Double(settings.fontSize)
     }
 
     var body: some View {
@@ -232,11 +232,12 @@ private struct ChatView: View {
     }
 }
 
-final class ChatEffect: VideoEffect {
+final class ChatEffect: VideoEffect, @unchecked Sendable {
     private var sceneWidget = SettingsSceneWidget(widgetId: .init())
     private var chatImage: CIImage?
     private var renderer: ImageRenderer<ChatView>?
     private var settings = SettingsWidgetChat()
+    private var height: Double = 1
     private let chat: ChatProvider
     private var cancellable: AnyCancellable?
     private var started: Bool = false
@@ -273,6 +274,10 @@ final class ChatEffect: VideoEffect {
 
     func setSettings(settings: SettingsWidgetChat) {
         self.settings.update(other: settings)
+        let maximumHeight = settings.height
+        processorPipelineQueue.async {
+            self.height = Double(maximumHeight)
+        }
     }
 
     @MainActor
@@ -282,7 +287,7 @@ final class ChatEffect: VideoEffect {
             guard let self else {
                 return
             }
-            self.setChatImage(image: self.renderer?.ciImage())
+            setChatImage(image: renderer?.ciImage())
         }
         setChatImage(image: renderer?.ciImage())
     }
@@ -299,9 +304,21 @@ final class ChatEffect: VideoEffect {
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        return chatImage?
+        guard var chatImage else {
+            return image
+        }
+        let height = Double(image.extent.height) * height
+        if chatImage.extent.height > height {
+            chatImage = chatImage.cropped(to: CGRect(
+                x: chatImage.extent.minX,
+                y: chatImage.extent.minY,
+                width: chatImage.extent.width,
+                height: height
+            ))
+        }
+        return chatImage
             .move(sceneWidget.layout, image.extent.size)
             .cropped(to: image.extent)
-            .composited(over: image) ?? image
+            .composited(over: image)
     }
 }

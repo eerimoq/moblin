@@ -18,7 +18,7 @@ extension Model {
         for widget in widgetsInCurrentScene(onlyEnabled: true) {
             switch widget.widget.type {
             case .text:
-                let languageIdentifiers = Set(widget.widget.text.subtitles.map { $0.identifier })
+                let languageIdentifiers = Set(widget.widget.text.subtitles.map(\.identifier))
                 for languageIdentifier in languageIdentifiers {
                     if let languageIdentifier {
                         addTranslator(targetIdentifier: languageIdentifier)
@@ -127,7 +127,7 @@ extension Model {
     }
 }
 
-extension Model: SpeechToTextDelegate {
+extension Model: @preconcurrency SpeechToTextDelegate {
     func speechToTextPartialResult(position: Int, text: String) {
         speechToTextLatestPosition = position
         speechToTextLatestText = text
@@ -149,7 +149,7 @@ extension Model: SpeechToTextDelegate {
     }
 }
 
-extension Model: TranslatorDelegate {
+extension Model: @preconcurrency TranslatorDelegate {
     func translatorTranslated(languageIdentifier: String, text: String) {
         let position: Int
         if let textAligner = speechToTextTextAligners[languageIdentifier] {

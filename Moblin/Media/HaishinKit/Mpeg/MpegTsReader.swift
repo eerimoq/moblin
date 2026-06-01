@@ -6,7 +6,7 @@ protocol MpegTsReaderDelegate: AnyObject {
     func mpegTsReaderSetTargetLatencies(_ videoTargetLatency: Double, _ audioTargetLatency: Double)
 }
 
-class MpegTsReader {
+class MpegTsReader: @unchecked Sendable {
     private var programAssociationTable = MpegTsProgramAssociation()
     private var programMappingTable: [UInt16: MpegTsProgramMapping] = [:]
     private var programs: [UInt16: UInt16] = [:]
@@ -26,7 +26,7 @@ class MpegTsReader {
     private let targetLatenciesSynchronizer: TargetLatenciesSynchronizer
     private let timecodesEnabled: Bool
     private let targetLatency: Double
-    weak var delegate: MpegTsReaderDelegate?
+    weak var delegate: (any MpegTsReaderDelegate)?
     private let decoderQueue: DispatchQueue
     private let wrappingTimestamp = WrappingTimestamp(name: "MpegTsReader",
                                                       maximumTimestamp: CMTime(seconds: 0x2_0000_0000))
@@ -260,9 +260,9 @@ class MpegTsReader {
     ) -> (Bool, CMSampleBuffer)? {
         switch data.getDescriptor(tag: .registration) {
         case ElementaryStreamDescriptiorRegistration.opus:
-            return makeSampleBufferMpeg2PacketizedDataOpus(packetId, data, &packetizedElementaryStream)
+            makeSampleBufferMpeg2PacketizedDataOpus(packetId, data, &packetizedElementaryStream)
         default:
-            return nil
+            nil
         }
     }
 

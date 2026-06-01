@@ -5,7 +5,7 @@ struct StreamPreviewView: UIViewRepresentable {
     let model: Model
 
     func makeUIView(context _: Context) -> PreviewView {
-        return model.streamPreviewView
+        model.streamPreviewView
     }
 
     func updateUIView(_: PreviewView, context _: Context) {}
@@ -25,7 +25,7 @@ struct CameraPreviewView: UIViewRepresentable {
     let model: Model
 
     func makeUIView(context _: Context) -> CameraPreviewUiView {
-        return model.cameraPreviewView
+        model.cameraPreviewView
     }
 
     func updateUIView(_: CameraPreviewUiView, context _: Context) {}

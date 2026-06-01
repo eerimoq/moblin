@@ -1,6 +1,7 @@
 import AVFoundation
 import Foundation
 
+@MainActor
 class VideoPreviewFeed: Identifiable, ObservableObject {
     let cameraId: UUID
     let name: String

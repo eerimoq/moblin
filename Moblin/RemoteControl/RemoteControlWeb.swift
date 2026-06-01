@@ -12,10 +12,12 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebSetBitratePreset(id: UUID)
     func remoteControlWebSetRecord(on: Bool)
     func remoteControlWebSetStream(on: Bool)
+    func remoteControlWebSetPreviewStream(on: Bool)
     func remoteControlWebSetZoom(x: Float)
     func remoteControlWebSetZoomPreset(id: UUID)
     func remoteControlWebSetDebugLogging(on: Bool)
     func remoteControlWebSetMute(on: Bool)
+    func remoteControlWebSetStealthMode(on: Bool)
     func remoteControlWebSetTorch(on: Bool)
     func remoteControlWebReloadBrowserWidgets()
     func remoteControlWebSetSrtConnectionPrioritiesEnabled(enabled: Bool)
@@ -27,12 +29,16 @@ protocol RemoteControlWebDelegate: AnyObject {
     func remoteControlWebToggleScoreboardClock()
     func remoteControlWebSetScoreboardDuration(minutes: Int)
     func remoteControlWebSetScoreboardClock(time: String)
+    func remoteControlWebGetGolfScoreboard() -> RemoteControlGolfScoreboard
+    func remoteControlWebUpdateGolfScoreboard(data: RemoteControlGolfScoreboard)
     func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool)
     func remoteControlWebTriggerReaction(reaction: RemoteControlReaction)
     func remoteControlWebGetRecordings() -> [[String: String]]
     func remoteControlWebGetRecordingUrl(filename: String) -> URL?
     func remoteControlWebGetRecordingThumbnail(filename: String) -> Data?
     func remoteControlWebDeleteRecording(filename: String)
+    func remoteControlWebStartPreview()
+    func remoteControlWebStopPreview()
 }
 
 private struct StaticFile {
@@ -47,41 +53,50 @@ private struct StaticFile {
     }
 
     func makePath() -> String {
-        return "\(path)\(name).\(ext)"
+        "\(path)\(name).\(ext)"
     }
 }
 
 private let staticFiles: [StaticFile] = [
+    StaticFile("/", "favicon", "ico"),
+    StaticFile("/", "golf", "html"),
     StaticFile("/", "index", "html"),
+    StaticFile("/", "recordings", "html"),
     StaticFile("/", "remote", "html"),
     StaticFile("/", "scoreboard", "html"),
-    StaticFile("/", "recordings", "html"),
     StaticFile("/", "volleyball", "png"),
-    StaticFile("/", "favicon", "ico"),
     StaticFile("/css/", "app", "css"),
+    StaticFile("/css/", "common", "css"),
+    StaticFile("/css/", "components", "css"),
+    StaticFile("/css/", "golf", "css"),
+    StaticFile("/css/", "recordings", "css"),
     StaticFile("/css/", "remote", "css"),
     StaticFile("/css/", "scoreboard", "css"),
-    StaticFile("/css/", "recordings", "css"),
+    StaticFile("/js/", "app", "mjs"),
+    StaticFile("/js/", "golf", "mjs"),
     StaticFile("/js/", "index", "mjs"),
-    StaticFile("/js/", "utils", "mjs"),
+    StaticFile("/js/", "components", "mjs"),
+    StaticFile("/js/", "recordings", "mjs"),
     StaticFile("/js/", "remote", "mjs"),
     StaticFile("/js/", "scoreboard", "mjs"),
-    StaticFile("/js/", "recordings", "mjs"),
+    StaticFile("/js/", "utils", "mjs"),
+    StaticFile("/js/", "vendor", "mjs"),
 ]
 
 private let recordingsPrefix = "/recordings/"
 private let thumbnailsPrefix = "/thumbnails/"
 
-class RemoteControlWeb {
+class RemoteControlWeb: @unchecked Sendable {
     private var server: HttpServer?
     private var started: Bool = false
     private var websocketServer: NWListener?
     private var websocketPort: UInt16 = 0
     private let websocketRetryTimer = SimpleTimer(queue: .main)
-    private weak var delegate: RemoteControlWebDelegate?
+    private weak var delegate: (any RemoteControlWebDelegate)?
     private var connections: [NWConnection] = []
+    private var connectionsRequestingPreview: Set<ObjectIdentifier> = []
 
-    init(delegate: RemoteControlWebDelegate) {
+    init(delegate: any RemoteControlWebDelegate) {
         self.delegate = delegate
     }
 
@@ -112,6 +127,21 @@ class RemoteControlWeb {
     func sendScoreboardUpdate(config: RemoteControlScoreboardMatchConfig) {
         for connection in connections {
             send(connection: connection, message: .event(data: .scoreboard(config: config)))
+        }
+    }
+
+    func sendGolfScoreboardUpdate(data: RemoteControlGolfScoreboard) {
+        for connection in connections {
+            send(connection: connection, message: .event(data: .golfScoreboard(data: data)))
+        }
+    }
+
+    func sendPreview(preview: Data) {
+        for connection in connections {
+            guard connectionsRequestingPreview.contains(ObjectIdentifier(connection)) else {
+                continue
+            }
+            send(connection: connection, message: .preview(preview: preview))
         }
     }
 
@@ -250,10 +280,10 @@ class RemoteControlWeb {
         switch newState {
         case .failed:
             websocketRetryTimer.startSingleShot(timeout: 1) { [weak self] in
-                guard let self, self.started else {
+                guard let self, started else {
                     return
                 }
-                self.setupWebsocketServer()
+                setupWebsocketServer()
             }
         default:
             break
@@ -291,6 +321,13 @@ class RemoteControlWeb {
     private func handleDisconnected(connection: NWConnection) {
         connection.cancel()
         connections.removeAll(where: { $0 === connection })
+        let id = ObjectIdentifier(connection)
+        if connectionsRequestingPreview.contains(id) {
+            connectionsRequestingPreview.remove(id)
+            if connectionsRequestingPreview.isEmpty {
+                delegate?.remoteControlWebStopPreview()
+            }
+        }
     }
 
     private func handleWebsocketMessage(connection: NWConnection, packet: Data) {
@@ -344,6 +381,9 @@ class RemoteControlWeb {
         case let .setStream(on: on):
             delegate.remoteControlWebSetStream(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
+        case let .setPreviewStream(on: on):
+            delegate.remoteControlWebSetPreviewStream(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
         case let .setZoom(x: x):
             delegate.remoteControlWebSetZoom(x: x)
             sendEmptyOkResponse(connection: connection, id: id)
@@ -352,6 +392,9 @@ class RemoteControlWeb {
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setMute(on: on):
             delegate.remoteControlWebSetMute(on: on)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case let .setStealthMode(on: on):
+            delegate.remoteControlWebSetStealthMode(on: on)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .setTorch(on: on):
             delegate.remoteControlWebSetTorch(on: on)
@@ -396,11 +439,32 @@ class RemoteControlWeb {
         case let .setScoreboardClock(time):
             delegate.remoteControlWebSetScoreboardClock(time: time)
             sendEmptyOkResponse(connection: connection, id: id)
+        case .getGolfScoreboard:
+            let data = delegate.remoteControlWebGetGolfScoreboard()
+            send(connection: connection,
+                 message: .response(id: id, result: .ok, data: .getGolfScoreboard(data: data)))
+        case let .updateGolfScoreboard(data):
+            delegate.remoteControlWebUpdateGolfScoreboard(data: data)
+            sendEmptyOkResponse(connection: connection, id: id)
         case let .setFilter(filter: filter, on: on):
             delegate.remoteControlWebSetFilter(filter: filter, on: on)
             sendEmptyOkResponse(connection: connection, id: id)
         case let .triggerReaction(reaction: reaction):
             delegate.remoteControlWebTriggerReaction(reaction: reaction)
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .startPreview:
+            let connectionId = ObjectIdentifier(connection)
+            connectionsRequestingPreview.insert(connectionId)
+            if connectionsRequestingPreview.count == 1 {
+                delegate.remoteControlWebStartPreview()
+            }
+            sendEmptyOkResponse(connection: connection, id: id)
+        case .stopPreview:
+            let connectionId = ObjectIdentifier(connection)
+            connectionsRequestingPreview.remove(connectionId)
+            if connectionsRequestingPreview.isEmpty {
+                delegate.remoteControlWebStopPreview()
+            }
             sendEmptyOkResponse(connection: connection, id: id)
         default:
             break

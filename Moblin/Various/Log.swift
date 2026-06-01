@@ -5,24 +5,28 @@ class EasyLogger {
     var debugEnabled: Bool = false
 
     private func makeTimestamp() -> String {
-        return Date()
+        Date()
             .formatted(.dateTime.hour().minute().second()
                 .secondFraction(.fractional(3)))
     }
 
-    func debug(_ messsge: String) {
+    func debug(_ messsge: @autoclosure () -> String) {
         if debugEnabled {
-            let formattedMessage = "\(makeTimestamp()) \(messsge)"
-            print(formattedMessage)
-            handler?(formattedMessage)
+            log(messsge())
         }
     }
 
     func info(_ messsge: String) {
-        let formattedMessage = "\(makeTimestamp()) \(messsge)"
-        print(formattedMessage)
-        handler?(formattedMessage)
+        log(messsge)
+    }
+
+    private func log(_ message: String) {
+        let message = "\(makeTimestamp()) \(message)"
+        #if DEBUG
+        print(message)
+        #endif
+        handler?(message)
     }
 }
 
-let logger = EasyLogger()
+nonisolated(unsafe) let logger = EasyLogger()

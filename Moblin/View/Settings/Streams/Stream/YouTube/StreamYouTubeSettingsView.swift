@@ -144,7 +144,7 @@ private struct YouTubeStreamView: View {
                 }
                 .frame(width: 50)
             }
-            .padding([.trailing], 5)
+            .padding(.trailing, 5)
         }
     }
 }
@@ -204,7 +204,7 @@ private struct ScheduleStreamView: View {
     }
 
     private func getLiveStream(liveStreams: YouTubeApiLiveStreamsListResponse) -> YouTubeApiLiveStream? {
-        return liveStreams.items.first {
+        liveStreams.items.first {
             let ingestionInfo = $0.cdn.ingestionInfo
             let url = "\(ingestionInfo.ingestionAddress)/\(ingestionInfo.streamName)"
             return url == stream.url

@@ -3,6 +3,16 @@ import SwiftUI
 let scoreboardScoreFontSize = 37.0
 let scoreboardScoreBigFontSize = 45.0
 
+func formatScore(_ score: Int) -> String {
+    if score == 0 {
+        return String(localized: "E")
+    }
+    if score > 0 {
+        return "+\(score)"
+    }
+    return "\(score)"
+}
+
 struct TeamScoreView: View {
     var score: Int
 
@@ -17,29 +27,38 @@ struct TeamScoreView: View {
 
 struct PoweredByMoblinView: View {
     let backgroundColor: Color
+    let scale: Double
 
     var body: some View {
         HStack {
             Text("Powered by Moblin")
                 .fontDesign(.monospaced)
-                .font(.system(size: 15))
+                .font(.system(size: 15 * scale))
                 .bold()
             Spacer()
         }
-        .padding([.leading, .trailing], 3)
-        .padding([.bottom], 3)
+        .padding(.horizontal, 8 * scale)
+        .padding(.vertical, 3 * scale)
         .background(backgroundColor)
     }
 }
 
-final class ScoreboardEffect: VideoEffect {
+final class ScoreboardEffect: VideoEffect, @unchecked Sendable {
+    private let canvasSize: CGSize
     private var scoreboardImage: CIImage?
-    private var sceneWidget: SettingsSceneWidget?
+    private var sceneWidget = SettingsSceneWidget(widgetId: .init())
+    private var sceneWidgetPipeline = SettingsSceneWidget(widgetId: .init())
+
+    init(canvasSize: CGSize) {
+        self.canvasSize = canvasSize
+        super.init()
+    }
 
     func setSceneWidget(sceneWidget: SettingsSceneWidget) {
         processorPipelineQueue.async {
-            self.sceneWidget = sceneWidget
+            self.sceneWidgetPipeline.layout = sceneWidget.layout
         }
+        self.sceneWidget.layout = sceneWidget.layout
     }
 
     @MainActor
@@ -47,33 +66,43 @@ final class ScoreboardEffect: VideoEffect {
                 config: RemoteControlScoreboardMatchConfig,
                 players: [SettingsWidgetScoreboardPlayer])
     {
+        let scale = toPixels(sceneWidget.layout.size, canvasSize.minimum()) / 200
         switch scoreboard.sport {
         case .generic:
             updateGeneric(textColor: scoreboard.textColorColor,
                           primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
                           secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
-                          generic: scoreboard.generic)
+                          generic: scoreboard.generic,
+                          scale: scale)
         case .padel:
             updatePadel(textColor: scoreboard.textColorColor,
                         primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
                         secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
                         padel: scoreboard.padel,
-                        players: players)
+                        players: players,
+                        scale: scale)
+        case .golf:
+            updateGolf(textColor: scoreboard.textColorColor,
+                       primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
+                       secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
+                       golf: scoreboard.golf,
+                       scale: scale)
+        case .golfFullScorecard:
+            updateGolfFullScorecard(textColor: scoreboard.textColorColor,
+                                    primaryBackgroundColor: scoreboard.primaryBackgroundColorColor,
+                                    secondaryBackgroundColor: scoreboard.secondaryBackgroundColorColor,
+                                    golf: scoreboard.golf,
+                                    scale: scale)
         default:
-            updateModular(modular: scoreboard.modular, config: config)
+            updateModular(modular: scoreboard.modular, config: config, scale: scale)
         }
     }
 
     override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        guard let scoreboardImage, let sceneWidget else {
-            return image
-        }
-        let scale = image.extent.size.maximum() / 1920
-        return scoreboardImage
-            .scaled(x: scale, y: scale)
-            .move(sceneWidget.layout, image.extent.size)
+        scoreboardImage?
+            .move(sceneWidgetPipeline.layout, image.extent.size)
             .cropped(to: image.extent)
-            .composited(over: image)
+            .composited(over: image) ?? image
     }
 
     private func setScoreboardImage(image: CIImage?) {
@@ -86,12 +115,14 @@ final class ScoreboardEffect: VideoEffect {
     private func updateGeneric(textColor: Color,
                                primaryBackgroundColor: Color,
                                secondaryBackgroundColor: Color,
-                               generic: SettingsWidgetGenericScoreboard)
+                               generic: SettingsWidgetGenericScoreboard,
+                               scale: Double)
     {
         let content = ScoreboardEffectGenericView(textColor: textColor,
                                                   primaryBackgroundColor: primaryBackgroundColor,
                                                   secondaryBackgroundColor: secondaryBackgroundColor,
-                                                  generic: generic)
+                                                  generic: generic,
+                                                  scale: scale)
         setScoreboardImage(image: ImageRenderer(content: content).ciImage())
     }
 
@@ -100,22 +131,57 @@ final class ScoreboardEffect: VideoEffect {
                              primaryBackgroundColor: Color,
                              secondaryBackgroundColor: Color,
                              padel: SettingsWidgetPadelScoreboard,
-                             players: [SettingsWidgetScoreboardPlayer])
+                             players: [SettingsWidgetScoreboardPlayer],
+                             scale: Double)
     {
         let content = ScoreboardEffectPadelView(textColor: textColor,
                                                 primaryBackgroundColor: primaryBackgroundColor,
                                                 secondaryBackgroundColor: secondaryBackgroundColor,
                                                 padel: padel,
-                                                players: players)
+                                                players: players,
+                                                scale: scale)
         setScoreboardImage(image: ImageRenderer(content: content).ciImage())
     }
 
     @MainActor
     private func updateModular(
         modular: SettingsWidgetModularScoreboard,
-        config: RemoteControlScoreboardMatchConfig
+        config: RemoteControlScoreboardMatchConfig,
+        scale: Double
     ) {
-        let content = ScoreboardEffectModularView(modular: modular, config: config)
+        let content = ScoreboardEffectModularView(modular: modular, config: config, scale: scale)
+        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+    }
+
+    @MainActor
+    private func updateGolf(textColor: Color,
+                            primaryBackgroundColor: Color,
+                            secondaryBackgroundColor: Color,
+                            golf: SettingsWidgetGolfScoreboard,
+                            scale: Double)
+    {
+        let content = ScoreboardEffectGolfView(textColor: textColor,
+                                               primaryBackgroundColor: primaryBackgroundColor,
+                                               secondaryBackgroundColor: secondaryBackgroundColor,
+                                               golf: golf,
+                                               scale: scale)
+        setScoreboardImage(image: ImageRenderer(content: content).ciImage())
+    }
+
+    @MainActor
+    private func updateGolfFullScorecard(textColor: Color,
+                                         primaryBackgroundColor: Color,
+                                         secondaryBackgroundColor: Color,
+                                         golf: SettingsWidgetGolfScoreboard,
+                                         scale: Double)
+    {
+        let content = ScoreboardEffectGolfFullScorecardView(
+            textColor: textColor,
+            primaryBackgroundColor: primaryBackgroundColor,
+            secondaryBackgroundColor: secondaryBackgroundColor,
+            golf: golf,
+            scale: scale
+        )
         setScoreboardImage(image: ImageRenderer(content: content).ciImage())
     }
 }

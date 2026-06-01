@@ -20,6 +20,8 @@ class RemoteControl: ObservableObject {
     @Published var recording: Bool = false
     @Published var streaming: Bool = false
     @Published var muted: Bool = false
+    @Published var stealthMode: Bool = false
+    @Published var previewStream: Bool = false
     @Published var presentingPreview = true
     @Published var presentingPreviewFullScreen = false
     @Published var presentingStreamers = false
@@ -48,11 +50,11 @@ enum RemoteControlAssistantPreviewUser {
 
 extension Model {
     func isShowingStatusRemoteControl() -> Bool {
-        return database.show.remoteControl && isAnyRemoteControlConfigured()
+        database.show.remoteControl && isAnyRemoteControlConfigured()
     }
 
     private func isAnyRemoteControlConfigured() -> Bool {
-        return isRemoteControlStreamerConfigured() || isRemoteControlAssistantConfigured()
+        isRemoteControlStreamerConfigured() || isRemoteControlAssistantConfigured()
     }
 
     func clearRemoteControlAssistantLog() {
@@ -120,7 +122,7 @@ extension Model {
     }
 
     func isRemoteControlStreamerConnected() -> Bool {
-        return remoteControlStreamer?.isConnected() ?? false
+        remoteControlStreamer?.isConnected() ?? false
     }
 
     func stopRemoteControlAssistant() {
@@ -142,7 +144,7 @@ extension Model {
     }
 
     func isRemoteControlAssistantConnected() -> Bool {
-        return remoteControlAssistant?.isConnected() ?? false
+        remoteControlAssistant?.isConnected() ?? false
     }
 
     func updateRemoteControlAssistantStatus() {
@@ -177,7 +179,7 @@ extension Model {
     }
 
     private func shouldSendRemoteScene() -> Bool {
-        return database.remoteSceneId != nil && remoteControlAssistant?.isConnected() == true
+        database.remoteSceneId != nil && remoteControlAssistant?.isConnected() == true
     }
 
     func remoteControlAssistantSetRemoteSceneDataTextStats(stats: TextEffectStats) {
@@ -216,6 +218,18 @@ extension Model {
 
     func remoteControlAssistantSetMute(on: Bool) {
         remoteControlAssistant?.setMute(on: on) {
+            DispatchQueue.main.async {
+                self.updateRemoteControlAssistantStatus()
+            }
+        }
+    }
+
+    func remoteControlAssistantSetStealthMode(on: Bool) {
+        remoteControlAssistant?.setStealthMode(on: on) {}
+    }
+
+    func remoteControlAssistantSetPreviewStream(on: Bool) {
+        remoteControlAssistant?.setPreviewStream(on: on) {
             DispatchQueue.main.async {
                 self.updateRemoteControlAssistantStatus()
             }
@@ -400,7 +414,7 @@ extension Model {
         if isChatConfigured() {
             topLeft.chat = RemoteControlStatusItem(message: statusTopLeft.statusChatText)
         }
-        if isViewersConfigured() && isLive {
+        if isViewersConfigured(), isLive {
             topLeft.viewers = RemoteControlStatusItem(message: statusViewersText())
         }
         return topLeft
@@ -479,9 +493,13 @@ extension Model {
     }
 
     func isRemoteControlStreamerPreviewActive() -> Bool {
-        return isRemoteControlStreamerConnected()
+        isRemoteControlStreamerConnected()
             && isRemoteControlAssistantRequestingPreview
             && database.remoteControl.streamer.previewFps > 0
+    }
+
+    func isRemoteControlWebPreviewActive() -> Bool {
+        isRemoteControlWebRequestingPreview
     }
 
     private func createRemoteControlStateChanged() -> RemoteControlAssistantStreamerState {
@@ -510,6 +528,8 @@ extension Model {
         state.streaming = isLive
         state.recording = isRecording
         state.muted = isMuteOn
+        state.stealthMode = showStealthMode
+        state.previewStream = isPreviewStreaming
         state.torchOn = streamOverlay.isTorchOn
         state.batteryCharging = isBatteryCharging()
         state.filters = [:]
@@ -586,7 +606,7 @@ extension Model {
         guard #available(iOS 17, *) else {
             return
         }
-        triggerReaction(reaction: reaction.toSystem())
+        triggerReaction(reaction: reaction.toSettings())
     }
 
     private func handleGetSettings() -> RemoteControlSettings {
@@ -629,7 +649,7 @@ extension Model {
     }
 }
 
-extension Model: RemoteControlStreamerDelegate {
+extension Model: @preconcurrency RemoteControlStreamerDelegate {
     func remoteControlStreamerConnected() {
         useRemoteControlForChatAndEvents = database.remoteControl.streamer.reliableChatAndEvents
         let subTitle: String?
@@ -665,7 +685,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerGetSettings() -> RemoteControlSettings {
-        return handleGetSettings()
+        handleGetSettings()
     }
 
     func remoteControlStreamerSetScene(id: UUID) {
@@ -673,7 +693,6 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerSetAutoSceneSwitcher(id: UUID?) {
-        autoSceneSwitcher.currentSwitcherId = id
         setAutoSceneSwitcher(id: id)
     }
 
@@ -708,6 +727,14 @@ extension Model: RemoteControlStreamerDelegate {
         updateQuickButtonStates()
     }
 
+    func remoteControlStreamerSetPreviewStream(on: Bool) {
+        if on {
+            startPreviewStream()
+        } else {
+            stopPreviewStream()
+        }
+    }
+
     func remoteControlStreamerSetDebugLogging(on: Bool) {
         database.debug.debugLogging = on
         setDebugLogging(on: on)
@@ -723,6 +750,11 @@ extension Model: RemoteControlStreamerDelegate {
 
     func remoteControlStreamerSetMute(on: Bool) {
         setMuteOn(value: on)
+    }
+
+    func remoteControlStreamerSetStealthMode(on: Bool) {
+        setStealthMode(on: on)
+        updateQuickButtonStates()
     }
 
     func remoteControlStreamerSetTorch(on: Bool) {
@@ -758,6 +790,13 @@ extension Model: RemoteControlStreamerDelegate {
             return
         }
         remoteControlStreamer?.sendPreview(preview: preview)
+    }
+
+    func sendPreviewToRemoteControlWeb(preview: Data) {
+        guard isRemoteControlWebPreviewActive() else {
+            return
+        }
+        remoteControlWeb?.sendPreview(preview: preview)
     }
 
     func remoteControlStreamerTwitchEventSubNotification(message: String) {
@@ -849,7 +888,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 
     func remoteControlStreamerGetScoreboardSports() -> [String] {
-        return getScoreboardSports()
+        getScoreboardSports()
     }
 
     func remoteControlStreamerSetScoreboardSport(sportId: String) {
@@ -891,12 +930,10 @@ extension Model: RemoteControlStreamerDelegate {
                 return
             }
             whipServer.startClient(streamKey: String(streamKey), sdpOffer: sdpOffer) { sdpAnswer in
-                DispatchQueue.main.async {
-                    if let sdpAnswer {
-                        onCompleted(200, [], sdpAnswer.utf8Data)
-                    } else {
-                        onCompleted(400, [], Data())
-                    }
+                if let sdpAnswer {
+                    onCompleted(200, [], sdpAnswer.utf8Data)
+                } else {
+                    onCompleted(400, [], Data())
                 }
             }
         case "DELETE":
@@ -919,7 +956,7 @@ extension Model: RemoteControlStreamerDelegate {
     }
 }
 
-extension Model: RemoteControlAssistantDelegate {
+extension Model: @preconcurrency RemoteControlAssistantDelegate {
     func remoteControlAssistantConnected() {
         makeToast(title: String(localized: "Remote control streamer connected"))
         remoteControlAssistantStreamerState.filters = [:]
@@ -985,6 +1022,14 @@ extension Model: RemoteControlAssistantDelegate {
         if let muted = state.muted {
             remoteControlAssistantStreamerState.muted = muted
             remoteControl.muted = muted
+        }
+        if let stealthMode = state.stealthMode {
+            remoteControlAssistantStreamerState.stealthMode = stealthMode
+            remoteControl.stealthMode = stealthMode
+        }
+        if let previewStream = state.previewStream {
+            remoteControlAssistantStreamerState.previewStream = previewStream
+            remoteControl.previewStream = previewStream
         }
         if let filters = state.filters {
             for (filter, on) in filters {
@@ -1055,9 +1100,10 @@ extension Model: RemoteControlAssistantDelegate {
     }
 }
 
-extension Model: RemoteControlWebDelegate {
+extension Model: @preconcurrency RemoteControlWebDelegate {
     func remoteControlWebConnected() {
         remoteControlWeb?.stateChanged(state: createRemoteControlStateChanged())
+        remoteControlWeb?.sendGolfScoreboardUpdate(data: getGolfScoreboardForRemoteControl())
         let scoreboard = getEnabledScoreboardWidgetsInSelectedScene().first?.scoreboard
         remoteControlWeb?.sendScoreboardUpdate(config: getModularScoreboardConfig(scoreboard: scoreboard))
     }
@@ -1065,11 +1111,11 @@ extension Model: RemoteControlWebDelegate {
     func remoteControlWebGetStatus()
         -> (RemoteControlStatusGeneral, RemoteControlStatusTopLeft, RemoteControlStatusTopRight)
     {
-        return remoteControlStreamerGetStatus()
+        remoteControlStreamerGetStatus()
     }
 
     func remoteControlWebGetSettings() -> RemoteControlSettings {
-        return handleGetSettings()
+        handleGetSettings()
     }
 
     func remoteControlWebSetScene(id: UUID) {
@@ -1096,6 +1142,10 @@ extension Model: RemoteControlWebDelegate {
         remoteControlStreamerSetStream(on: on)
     }
 
+    func remoteControlWebSetPreviewStream(on: Bool) {
+        remoteControlStreamerSetPreviewStream(on: on)
+    }
+
     func remoteControlWebSetZoom(x: Float) {
         remoteControlStreamerSetZoom(x: x)
     }
@@ -1110,6 +1160,10 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetMute(on: Bool) {
         remoteControlStreamerSetMute(on: on)
+    }
+
+    func remoteControlWebSetStealthMode(on: Bool) {
+        remoteControlStreamerSetStealthMode(on: on)
     }
 
     func remoteControlWebSetTorch(on: Bool) {
@@ -1133,7 +1187,7 @@ extension Model: RemoteControlWebDelegate {
     }
 
     func remoteControlWebGetScoreboardSports() -> [String] {
-        return getScoreboardSports()
+        getScoreboardSports()
     }
 
     func remoteControlWebSetScoreboardSport(sportId: String) {
@@ -1154,6 +1208,14 @@ extension Model: RemoteControlWebDelegate {
 
     func remoteControlWebSetScoreboardClock(time: String) {
         handleScoreboardSetClockManual(time: time)
+    }
+
+    func remoteControlWebGetGolfScoreboard() -> RemoteControlGolfScoreboard {
+        getGolfScoreboardForRemoteControl()
+    }
+
+    func remoteControlWebUpdateGolfScoreboard(data: RemoteControlGolfScoreboard) {
+        handleExternalGolfScoreboardUpdate(remoteScorecard: data)
     }
 
     func remoteControlWebSetFilter(filter: RemoteControlFilter, on: Bool) {
@@ -1211,5 +1273,15 @@ extension Model: RemoteControlWebDelegate {
         let url = recordingsStorage.defaultStorageDirectory().appending(component: filename)
         try? FileManager.default.removeItem(at: url)
         recordingThumbnailsCache.removeValue(forKey: filename)
+    }
+
+    func remoteControlWebStartPreview() {
+        isRemoteControlWebRequestingPreview = true
+        setLowFpsImage()
+    }
+
+    func remoteControlWebStopPreview() {
+        isRemoteControlWebRequestingPreview = false
+        setLowFpsImage()
     }
 }

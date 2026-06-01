@@ -1,6 +1,6 @@
 import CoreImage
 
-final class CrtEffect: VideoEffect {
+final class CrtEffect: VideoEffect, @unchecked Sendable {
     private let barrelFilter = CrtBarrelDistortionFilter()
     private let colorControls = CIFilter.colorControls()
     private let vignette = CIFilter.vignette()

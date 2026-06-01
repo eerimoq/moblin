@@ -8,11 +8,11 @@ enum DnsLookupFamily {
     func toCFamily() -> Int32 {
         switch self {
         case .ipv4:
-            return AF_INET
+            AF_INET
         case .ipv6:
-            return AF_INET6
+            AF_INET6
         case .unspec:
-            return AF_UNSPEC
+            AF_UNSPEC
         }
     }
 }
@@ -50,7 +50,7 @@ func performDnsLookup(host: String, family: DnsLookupFamily) -> String? {
                 0,
                 NI_NUMERICHOST
             ) == 0 {
-                addresses.append(String(cString: hostname))
+                addresses.append(String(cArray: hostname))
             }
         }
         pointer = pointer?.pointee.ai_next
