@@ -19,6 +19,8 @@ private let versions = [
         "• Load LUTs sequentially.",
         "• Experimental HTTP proxy to make browsers work when bad wifi. 💡 SM9();",
         "  • Enable in debug settings.",
+        "• Automatic RTMP URL mode in DJI device. 💡 verena and MoritzSchmid1",
+        "  • No need to change RMP URL when connected to a WiFi router.",
     ]),
     Version(version: "33.6.0", date: "2026-05-25", changes: [
         "• Experimental preview live stream. 💡 xcopy94 and others",
