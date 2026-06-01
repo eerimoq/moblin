@@ -8,6 +8,18 @@ struct Version {
 
 // swiftlint:disable line_length
 private let versions = [
+    Version(version: "33.7.0", date: "2026-06-01", changes: [
+        "• Make Pomodoro timer widget phase names configurable. 💡 JohannesLiv",
+        "• Add more focus and break icons to Pomodoro timer widget.",
+        "• Smaller portrait low fps image.",
+        "• Hide/show preview in web remote control. 🧑‍🏭 S1nGeN0r",
+        "• Smaller preview in web remote control.",
+        "• SRT client ingest (to pull a stream from a server). 💡 9philip",
+        "• Add latest subscriber and latest follower text widget variables.",
+        "• Load LUTs sequentially.",
+        "• Experimental HTTP proxy to make browsers work when bad wifi. 💡 SM9();",
+        "  • Enable in debug settings.",
+    ]),
     Version(version: "33.6.0", date: "2026-05-25", changes: [
         "• Experimental preview live stream. 💡 xcopy94 and others",
         "  • WHIP, 360p H.264 500 kbps video, 64 kbps OPUS audio, by default.",
