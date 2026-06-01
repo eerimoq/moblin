@@ -4,10 +4,14 @@ class EasyLogger {
     var handler: ((String) -> Void)?
     var debugEnabled: Bool = false
 
+    private static let timestampFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss.SSS"
+        return formatter
+    }()
+
     private func makeTimestamp() -> String {
-        Date()
-            .formatted(.dateTime.hour().minute().second()
-                .secondFraction(.fractional(3)))
+        EasyLogger.timestampFormatter.string(from: Date())
     }
 
     func debug(_ messsge: @autoclosure () -> String) {
