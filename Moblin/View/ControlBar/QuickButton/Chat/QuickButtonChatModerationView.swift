@@ -827,6 +827,14 @@ private struct EmotesOnlyView: View {
     }
 }
 
+private struct ShowViewCountView: View {
+    let action: (Bool, @escaping (OperationResult) -> Void) -> Void
+
+    var body: some View {
+        ToggleActionView(text: "Show view count on channel", image: "eye", action: action)
+    }
+}
+
 private struct NavigationLinkView<Content: View>: View {
     let text: LocalizedStringKey
     let image: String
@@ -922,6 +930,7 @@ private struct KickView: View {
                     FollowersOnlyView(durations: [60, 300, 600, 3600], action: followersOnlyAction)
                     SubscribersOnlyView(action: model.setKickSubscribersOnlyMode)
                     EmotesOnlyView(action: model.setKickEmoteOnlyMode)
+                    ShowViewCountView(action: model.setKickShowViewCount)
                 }
                 Section {
                     ForEach(ModActionType.allCases, id: \.self) {
