@@ -206,6 +206,14 @@ extension Model {
         createKickApi(stream: stream).setSubscribersOnlyMode(enabled: enabled, onComplete: onComplete)
     }
 
+    func setKickShowViewCount(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
+        createKickApi(stream: stream).setShowViewCount(
+            channelId: stream.kickChatroomChannelId ?? "",
+            enabled: enabled,
+            onComplete: onComplete
+        )
+    }
+
     func createKickPoll(title: String,
                         options: [String],
                         duration: Int,

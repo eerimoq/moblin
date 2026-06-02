@@ -351,6 +351,13 @@ class KickApi {
                     onComplete: onComplete)
     }
 
+    func setShowViewCount(channelId: String, enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
+        doWebV1Request(method: "PATCH",
+                       subPath: "channels/\(channelId)/settings",
+                       body: ["show_view_count": enabled],
+                       onComplete: onComplete)
+    }
+
     func setSubscribersOnlyMode(enabled: Bool, onComplete: @escaping (OperationResult) -> Void) {
         doV2Request(method: "PUT",
                     subPath: "channels/\(slug)/chatroom",
@@ -530,12 +537,25 @@ class KickApi {
         doRequest(method: method, subPath: "internal/v1/\(subPath)", body: body, onComplete: onComplete)
     }
 
+    private func doWebV1Request(method: String,
+                                subPath: String,
+                                body: [String: Any]? = nil,
+                                onComplete: @escaping (OperationResult) -> Void)
+    {
+        doRequest(method: method,
+                  subPath: "v1/\(subPath)",
+                  body: body,
+                  baseUrl: "https://web.kick.com/api/",
+                  onComplete: onComplete)
+    }
+
     private func doRequest(method: String,
                            subPath: String,
                            body: [String: Any]? = nil,
+                           baseUrl: String = "https://kick.com/api/",
                            onComplete: @escaping (OperationResult) -> Void)
     {
-        guard let url = URL(string: "https://kick.com/api/\(subPath)") else {
+        guard let url = URL(string: "\(baseUrl)\(subPath)") else {
             return
         }
         var request = URLRequest(url: url)
