@@ -1,31 +1,33 @@
 import SwiftUI
 
-private func streamImportCollisionTitle(names: [String]) -> String {
+private func streamImportCollisionTitle(names: Set<String>) -> String {
     if names.count <= 1 {
         return String(
-            format: String(localized: "A stream named ‘%@’ already exists. Replace it or create a new one?"),
+            format: String(localized: "A stream named ‘%@’ already exists."),
             names.first ?? ""
         )
     }
     let joined = names.map { "‘\($0)’" }.joined(separator: ", ")
-    return String(
-        format: String(localized: "Streams named %@ already exist. Replace them or create new ones?"),
-        joined
-    )
+    return String(format: String(localized: "Streams named %@ already exist."), joined)
 }
 
 extension Model {
-    private func handleSettingsUrlsDefaultStreams(settings: MoblinSettingsUrl, replaceCollisions: Bool) {
+    private func handleSettingsUrlsDefaultStreams(settings: MoblinSettingsUrl,
+                                                  replaceCollisions: Bool)
+    {
         var newSelectedStream: SettingsStream?
         for stream in settings.streams ?? [] {
-            let existingMatches = database.streams.filter { $0.name == stream.name }
             let targetStream: SettingsStream
-            if replaceCollisions, let firstExisting = existingMatches.first {
-                targetStream = firstExisting
-                let extraIds = Set(existingMatches.dropFirst().map(\.id))
-                database.streams.removeAll { extraIds.contains($0.id) }
+            if replaceCollisions,
+               let existingStream = database.streams.first(where: { $0.name == stream.name })
+            {
+                targetStream = existingStream
+                if targetStream.enabled, newSelectedStream == nil {
+                    newSelectedStream = targetStream
+                }
             } else {
-                targetStream = SettingsStream(name: stream.name)
+                targetStream = SettingsStream(name: makeUniqueName(name: stream.name,
+                                                                   existingNames: database.streams))
                 database.streams.append(targetStream)
             }
             targetStream.url = stream.url.trim()
@@ -158,20 +160,25 @@ extension Model {
     }
 
     private func handleSettingsUrlsDefault(settings: MoblinSettingsUrl) {
-        let collisions = collidingStreamNames(in: settings)
+        let collisions = findCollidingStreamNames(streams: settings.streams ?? [])
         if collisions.isEmpty {
-            applyDefaultImport(settings: settings, replaceCollisions: false)
+            handleSettingsUrlsDefaultStreamCollisions(settings: settings,
+                                                      replaceStreamCollisions: false)
         } else {
             pendingStreamImportCollisionTitle = streamImportCollisionTitle(names: collisions)
-            pendingStreamImportCollisionAction = { [weak self] replace in
-                self?.applyDefaultImport(settings: settings, replaceCollisions: replace)
+            pendingStreamImportCollisionAction = { [weak self] in
+                self?.handleSettingsUrlsDefaultStreamCollisions(settings: settings,
+                                                                replaceStreamCollisions: $0)
             }
             presentingStreamImportCollisionConfirmation = true
         }
     }
 
-    private func applyDefaultImport(settings: MoblinSettingsUrl, replaceCollisions: Bool) {
-        handleSettingsUrlsDefaultStreams(settings: settings, replaceCollisions: replaceCollisions)
+    private func handleSettingsUrlsDefaultStreamCollisions(settings: MoblinSettingsUrl,
+                                                           replaceStreamCollisions: Bool)
+    {
+        handleSettingsUrlsDefaultStreams(settings: settings,
+                                         replaceCollisions: replaceStreamCollisions)
         handleSettingsUrlsDefaultQuickButtons(settings: settings)
         handleSettingsUrlsDefaultWebBrowser(settings: settings)
         handleSettingsUrlsDefaultRemoteControl(settings: settings)
@@ -179,13 +186,12 @@ extension Model {
         updateQuickButtonStates()
     }
 
-    private func collidingStreamNames(in settings: MoblinSettingsUrl) -> [String] {
-        let existing = Set(database.streams.map(\.name))
-        var seen: Set<String> = []
-        return (settings.streams ?? []).compactMap { stream in
-            guard existing.contains(stream.name), seen.insert(stream.name).inserted else { return nil }
-            return stream.name
+    private func findCollidingStreamNames(streams: [MoblinSettingsUrlStream]) -> Set<String> {
+        var collisions: Set<String> = []
+        for stream in streams where database.streams.contains(where: { stream.name == $0.name }) {
+            collisions.insert(stream.name)
         }
+        return collisions
     }
 
     func handleSettingsUrls(urls: Set<UIOpenURLContext>) {

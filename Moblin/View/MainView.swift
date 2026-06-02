@@ -649,17 +649,12 @@ struct MainView: View {
                 isPresented: $model.presentingStreamImportCollisionConfirmation,
                 titleVisibility: .visible
             ) {
-                Button("Replace existing", role: .destructive) {
-                    model.pendingStreamImportCollisionAction?(true)
-                    model.pendingStreamImportCollisionAction = nil
-                }
                 Button("Create new") {
                     model.pendingStreamImportCollisionAction?(false)
                     model.pendingStreamImportCollisionAction = nil
                 }
-            }
-            .onChange(of: model.presentingStreamImportCollisionConfirmation) { isPresenting in
-                if !isPresenting {
+                Button("Merge", role: .destructive) {
+                    model.pendingStreamImportCollisionAction?(true)
                     model.pendingStreamImportCollisionAction = nil
                 }
             }
