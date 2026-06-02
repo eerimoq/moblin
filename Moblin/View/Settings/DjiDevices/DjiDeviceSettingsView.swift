@@ -122,38 +122,45 @@ private struct DjiDeviceWiFiSettingsView: View {
     }
 }
 
+private struct RtmpUrlAndImage {
+    let url: String
+    let image: String
+}
+
 private struct DjiDeviceRtmpSettingsView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
     @ObservedObject var status: StatusOther
     @ObservedObject var rtmpServer: SettingsRtmpServer
 
-    private func serverUrls() -> [String] {
+    private func serverUrls() -> [RtmpUrlAndImage] {
         guard let stream = model.getRtmpStream(id: device.serverRtmpStreamId) else {
             return []
         }
-        var serverUrls: [String] = []
+        var serverUrls: [RtmpUrlAndImage] = []
         for status in status.ipStatuses.filter({ $0.ipType == .ipv4 }) {
-            serverUrls.append(rtmpServerStreamUrl(
+            serverUrls.append(RtmpUrlAndImage(url: rtmpServerStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: rtmpServer.port,
                 streamKey: stream.streamKey
-            ))
+            ), image: urlImage(interfaceType: status.interfaceType)))
         }
-        serverUrls.append(rtmpServerStreamUrl(
+        serverUrls.append(RtmpUrlAndImage(url: rtmpServerStreamUrl(
             address: personalHotspotLocalAddress,
             port: rtmpServer.port,
             streamKey: stream.streamKey
-        ))
+        ), image: "personalhotspot"))
         for status in status.ipStatuses.filter({ $0.ipType == .ipv6 }) {
-            serverUrls.append(rtmpServerStreamUrl(
+            serverUrls.append(RtmpUrlAndImage(url: rtmpServerStreamUrl(
                 address: status.ipType.formatAddress(status.ip),
                 port: rtmpServer.port,
                 streamKey: stream.streamKey
-            ))
+            ), image: urlImage(interfaceType: status.interfaceType)))
         }
-        if let serverRtmpUrl = device.serverRtmpUrl, !serverUrls.contains(serverRtmpUrl) {
-            serverUrls.insert(serverRtmpUrl, at: 0)
+        if let serverRtmpUrl = device.serverRtmpUrl,
+           !serverUrls.contains(where: { $0.url == serverRtmpUrl })
+        {
+            serverUrls.insert(RtmpUrlAndImage(url: serverRtmpUrl, image: "questionmark"), at: 0)
         }
         return serverUrls
     }
@@ -181,11 +188,18 @@ private struct DjiDeviceRtmpSettingsView: View {
                     }
                     .disabled(device.isStarted)
                     Picker("URL", selection: $device.serverRtmpUrl) {
-                        Text("Automatic")
-                            .tag(nil as String?)
-                        ForEach(serverUrls(), id: \.self) {
-                            Text($0)
-                                .tag($0 as String?)
+                        let automaticWiFiUrl = model.automaticServerRtmpUrl(device: device) ?? "-"
+                        HStack {
+                            Image(systemName: "wifi")
+                            Text("Auto (\(automaticWiFiUrl))")
+                        }
+                        .tag(nil as String?)
+                        ForEach(serverUrls(), id: \.url) { item in
+                            HStack {
+                                Image(systemName: item.image)
+                                Text(item.url)
+                            }
+                            .tag(item.url as String?)
                         }
                     }
                     .disabled(device.isStarted)

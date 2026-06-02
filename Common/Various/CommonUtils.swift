@@ -621,7 +621,7 @@ func urlImage(interfaceType: NWInterface.InterfaceType) -> String {
     case .cellular:
         return "antenna.radiowaves.left.and.right"
     case .wiredEthernet:
-        return "cable.connector"
+        return "cable.coaxial"
     case .loopback:
         return "questionmark"
     @unknown default:

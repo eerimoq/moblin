@@ -165,7 +165,7 @@ extension Model {
         startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)
     }
 
-    private func automaticServerRtmpUrl(device: SettingsDjiDevice) -> String? {
+    func automaticServerRtmpUrl(device: SettingsDjiDevice) -> String? {
         guard let stream = getRtmpStream(id: device.serverRtmpStreamId) else {
             return nil
         }

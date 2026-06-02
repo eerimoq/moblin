@@ -21,6 +21,7 @@ private let versions = [
         "  • Enable in debug settings.",
         "• Automatic RTMP URL mode in DJI device. 💡 verena and MoritzSchmid1",
         "  • No need to change RTMP URL when connected to a WiFi router.",
+        "• Make DJI device RTMP URL easier to understand.",
     ]),
     Version(version: "33.6.0", date: "2026-05-25", changes: [
         "• Experimental preview live stream. 💡 xcopy94 and others",
