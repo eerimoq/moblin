@@ -60,8 +60,8 @@ private class KickBadges {
 }
 
 private struct BadgeV2: Decodable {
-    var image_url: String?
-    var selected: Bool?
+    var image_url: String
+    var selected: Bool
 }
 
 private struct Identity: Decodable {
@@ -377,8 +377,8 @@ final class KickPusher: NSObject, @unchecked Sendable {
     private func handleChatMessageEvent(data: String) throws {
         let event = try decodeChatMessageEvent(data: data)
         var badgeUrls: [URL] = []
-        for badge in event.sender.identity.badges_v2 ?? [] where badge.selected == true {
-            if let src = badge.image_url, let badgeUrl = URL(string: src) {
+        for badge in event.sender.identity.badges_v2 ?? [] where badge.selected {
+            if let badgeUrl = URL(string: badge.image_url) {
                 badgeUrls.append(badgeUrl)
             }
         }
