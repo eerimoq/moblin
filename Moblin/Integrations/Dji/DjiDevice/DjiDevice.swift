@@ -321,7 +321,10 @@ extension DjiDevice: CBPeripheralDelegate {
         switch model {
         case .osmoAction2, .osmoAction3:
             sendStartStreaming()
-        case .osmoAction4:
+        case .osmoAction4, .osmoAction6:
+            // The Osmo Action 6 uses the same configure byte (0x08) as the OA4,
+            // not the 0x1A value used by the OA5 Pro / Osmo 360. Confirmed
+            // against a BTSnoop capture of the official DJI app.
             guard let imageStabilization else {
                 return
             }
@@ -331,7 +334,7 @@ extension DjiDevice: CBPeripheralDelegate {
                                              type: configureType,
                                              payload: payload.encode()))
             setState(state: .configuring)
-        case .osmoAction5Pro, .osmoAction6, .osmo360:
+        case .osmoAction5Pro, .osmo360:
             guard let imageStabilization else {
                 return
             }
@@ -369,6 +372,22 @@ extension DjiDevice: CBPeripheralDelegate {
             // other DJI camera Moblin supports. Reverse-engineered from a
             // PacketLogger capture of the official DJI Mimo app.
             let payload = DjiStartStreamingMessagePayloadPocket4(
+                rtmpUrl: rtmpUrl,
+                resolution: resolution,
+                fps: fps,
+                bitrateKbps: bitrateKbps
+            )
+            writeMessage(message: DjiMessage(target: startStreamingTarget,
+                                             id: startStreamingTransactionId,
+                                             type: startStreamingType,
+                                             payload: payload.encode()))
+        case .osmoAction6:
+            // The Osmo Action 6 uses the same JSON-wrapped start-streaming
+            // payload style as the Pocket 4 (not the legacy binary format), but
+            // pins the codec to AVC. Reverse-engineered from a BTSnoop capture of
+            // the official DJI app. This is what lets heavier image-stabilization
+            // modes stream without lag.
+            let payload = DjiStartStreamingMessagePayloadOsmoAction6(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,

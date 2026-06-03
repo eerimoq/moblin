@@ -132,6 +132,55 @@ struct DjiStartStreamingMessagePayloadPocket4 {
     }
 }
 
+private struct StartStreamingPayloadOsmoAction6: Codable {
+    let rtmpAddress: String
+    let watermark: Int
+    let codec: String
+    let EnhancedRTMP: Bool
+    let supportStopLive: Bool
+}
+
+struct DjiStartStreamingMessagePayloadOsmoAction6 {
+    // Same JSON-wrapped framing as the Pocket 4, but with the Osmo Action 6
+    // specific header/middle bytes and a JSON body that pins the codec to AVC
+    // (H.264) instead of HEVC. Reverse-engineered from a BTSnoop capture of the
+    // official DJI app streaming from an Osmo Action 6.
+    private static let header = Data([0x01, 0x9C, 0x00])
+    private static let middle = Data([0xFE, 0x00])
+    private static let padding = Data([0x00, 0x00, 0x00])
+
+    var rtmpUrl: String
+    var resolution: SettingsDjiDeviceResolution
+    var bitrateKbps: UInt16
+    var fps: Int
+
+    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16) {
+        self.rtmpUrl = rtmpUrl
+        self.resolution = resolution
+        self.fps = fps
+        self.bitrateKbps = bitrateKbps
+    }
+
+    func encode() -> Data {
+        let payload = StartStreamingPayloadOsmoAction6(rtmpAddress: rtmpUrl,
+                                                       watermark: 0,
+                                                       codec: "AVC",
+                                                       EnhancedRTMP: false,
+                                                       supportStopLive: false)
+        let data = (try? JSONEncoder().encode(payload)) ?? Data()
+        let writer = ByteWriter()
+        writer.writeBytes(Self.header)
+        writer.writeUInt8(toDjiResolution(resolution: resolution))
+        writer.writeUInt16Le(bitrateKbps)
+        writer.writeBytes(Self.middle)
+        writer.writeUInt8(toDjiFps(fps: fps))
+        writer.writeBytes(Self.padding)
+        writer.writeUInt16Le(UInt16(truncatingIfNeeded: data.count))
+        writer.writeBytes(data)
+        return writer.data
+    }
+}
+
 struct DjiStopStreamingMessagePayload {
     static let payload = Data([0x01, 0x01, 0x1A, 0x00, 0x01, 0x02])
 
