@@ -377,9 +377,11 @@ final class KickPusher: NSObject, @unchecked Sendable {
     private func handleChatMessageEvent(data: String) throws {
         let event = try decodeChatMessageEvent(data: data)
         var badgeUrls: [URL] = []
-        for badge in event.sender.identity.badges_v2 ?? [] where badge.selected {
-            if let badgeUrl = URL(string: badge.image_url) {
-                badgeUrls.append(badgeUrl)
+        if let badges = event.sender.identity.badges_v2 {
+            for badge in badges where badge.selected {
+                if let badgeUrl = URL(string: badge.image_url) {
+                    badgeUrls.append(badgeUrl)
+                }
             }
         }
         for badge in event.sender.identity.badges {
