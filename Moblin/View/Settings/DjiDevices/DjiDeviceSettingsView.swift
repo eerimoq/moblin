@@ -188,15 +188,14 @@ private struct DjiDeviceRtmpSettingsView: View {
                     }
                     .disabled(device.isStarted)
                     Picker("URL", selection: $device.serverRtmpUrl) {
-                        Section {
-                            let automaticWiFiUrl = model.automaticServerRtmpUrl(device: device) ?? "-"
+                        Section("Auto IP address") {
                             HStack {
                                 Image(systemName: "wifi")
-                                Text("Auto (\(automaticWiFiUrl))")
+                                Text(model.automaticServerRtmpUrl(device: device) ?? "")
                             }
                             .tag(nil as String?)
                         }
-                        Section {
+                        Section("Fixed IP address") {
                             ForEach(serverUrls(), id: \.url) { item in
                                 HStack {
                                     Image(systemName: item.image)
