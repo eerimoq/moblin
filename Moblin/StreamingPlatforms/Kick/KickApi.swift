@@ -526,7 +526,10 @@ class KickApi {
                              body: [String: Any]? = nil,
                              onComplete: @escaping (OperationResult) -> Void)
     {
-        doRequest(method: method, subPath: "v2/\(subPath)", body: body, onComplete: onComplete)
+        guard let url = URL(string: "https://kick.com/api/v2/\(subPath)") else {
+            return
+        }
+        doRequest(url: url, method: method, body: body, onComplete: onComplete)
     }
 
     private func doInternalV1Request(method: String,
@@ -534,7 +537,10 @@ class KickApi {
                                      body: [String: Any]? = nil,
                                      onComplete: @escaping (OperationResult) -> Void)
     {
-        doRequest(method: method, subPath: "internal/v1/\(subPath)", body: body, onComplete: onComplete)
+        guard let url = URL(string: "https://kick.com/api/internal/v1/\(subPath)") else {
+            return
+        }
+        doRequest(url: url, method: method, body: body, onComplete: onComplete)
     }
 
     private func doWebV1Request(method: String,
@@ -542,22 +548,17 @@ class KickApi {
                                 body: [String: Any]? = nil,
                                 onComplete: @escaping (OperationResult) -> Void)
     {
-        doRequest(method: method,
-                  subPath: "v1/\(subPath)",
-                  body: body,
-                  baseUrl: "https://web.kick.com/api/",
-                  onComplete: onComplete)
-    }
-
-    private func doRequest(method: String,
-                           subPath: String,
-                           body: [String: Any]? = nil,
-                           baseUrl: String = "https://kick.com/api/",
-                           onComplete: @escaping (OperationResult) -> Void)
-    {
-        guard let url = URL(string: "\(baseUrl)\(subPath)") else {
+        guard let url = URL(string: "https://web.kick.com/api/v1/\(subPath)") else {
             return
         }
+        doRequest(url: url, method: method, body: body, onComplete: onComplete)
+    }
+
+    private func doRequest(url: URL,
+                           method: String,
+                           body: [String: Any]? = nil,
+                           onComplete: @escaping (OperationResult) -> Void)
+    {
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setContentType("application/json")
