@@ -50,7 +50,7 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var enhancedMoblinSrt: Bool = false
     @Published var videoBitrateChange: Bool = false
     @Published var highQualityDownsampling: Bool = false
-    @Published var httpProxy: Bool = false
+    @Published var httpProxy: Bool = true
 
     enum CodingKeys: CodingKey {
         case logLevel
@@ -93,7 +93,7 @@ class SettingsDebug: Codable, ObservableObject {
         case enhancedMoblinSrt
         case videoBitrateChangeEnabled
         case highQualityDownsampling
-        case httpProxy
+        case httpProxy2
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -131,7 +131,7 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.enhancedMoblinSrt, enhancedMoblinSrt)
         try container.encode(.videoBitrateChangeEnabled, videoBitrateChange)
         try container.encode(.highQualityDownsampling, highQualityDownsampling)
-        try container.encode(.httpProxy, httpProxy)
+        try container.encode(.httpProxy2, httpProxy)
     }
 
     init() {}
@@ -183,6 +183,6 @@ class SettingsDebug: Codable, ObservableObject {
         enhancedMoblinSrt = container.decode(.enhancedMoblinSrt, Bool.self, false)
         videoBitrateChange = container.decode(.videoBitrateChangeEnabled, Bool.self, false)
         highQualityDownsampling = container.decode(.highQualityDownsampling, Bool.self, false)
-        httpProxy = container.decode(.httpProxy, Bool.self, false)
+        httpProxy = container.decode(.httpProxy2, Bool.self, true)
     }
 }
