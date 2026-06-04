@@ -77,18 +77,26 @@ extension Model {
         }
     }
 
+    private func dampenPinchAmount(_ amount: Float) -> Float {
+        // Dampen the gesture to make zooming smoother and slower.
+        // Maps the raw gesture amount (centered at 1.0) to a reduced range.
+        let delta = amount - 1.0
+        let dampened = 1.0 + delta * 0.4
+        return dampened
+    }
+
     func changeZoomX(amount: Float, rate: Float? = nil) {
         guard zoom.hasZoom else {
             return
         }
-        setZoomX(x: zoom.xPinch * amount, rate: rate, setPinch: false)
+        setZoomX(x: zoom.xPinch * dampenPinchAmount(amount), rate: rate, setPinch: false)
     }
 
     func commitZoomX(amount: Float, rate: Float? = nil) {
         guard zoom.hasZoom else {
             return
         }
-        setZoomX(x: zoom.xPinch * amount, rate: rate)
+        setZoomX(x: zoom.xPinch * dampenPinchAmount(amount), rate: rate)
     }
 
     private func clearZoomPresetId() {
