@@ -129,7 +129,7 @@ private class Connection: @unchecked Sendable {
                 self.receiveFromClient()
                 self.receiveFromDestination()
             case .failed:
-                self.sendResponseAndStop("HTTP/1.1 502 Bad Gateway\r\n\r\n")
+                self.sendResponseAndStop("\(version) 502 Bad Gateway\r\n\r\n")
                 if let interfaceType {
                     self.networkInterfaceTypeSelector.markBad(interfaceType: interfaceType)
                 }
