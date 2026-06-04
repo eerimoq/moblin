@@ -159,7 +159,9 @@ extension Model {
                 bitrate: device.bitrate,
                 imageStabilization: device.imageStabilization,
                 deviceId: deviceId,
-                model: device.model
+                model: device.model,
+                oa6Codec: database.debug.djiOa6Codec.rawValue,
+                oa6EnhancedRtmp: database.debug.djiOa6EnhancedRtmp
             )
         }
         startDjiDeviceTimer(djiDeviceWrapper: djiDeviceWrapper, device: device)

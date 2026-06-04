@@ -34,6 +34,14 @@ struct DebugVideoSettingsView: View {
             Section {
                 Toggle("Periodic video bitrate change", isOn: $debug.videoBitrateChange)
             }
+            Section {
+                Picker("OA6 Video Codec", selection: $debug.djiOa6Codec) {
+                    ForEach(SettingsDjiOa6Codec.allCases, id: \.self) {
+                        Text($0.rawValue)
+                    }
+                }
+                Toggle("OA6 Enhanced RTMP", isOn: $debug.djiOa6EnhancedRtmp)
+            }
         }
         .navigationTitle("Video")
     }

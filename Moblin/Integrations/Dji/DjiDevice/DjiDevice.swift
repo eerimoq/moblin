@@ -67,6 +67,8 @@ class DjiDevice: NSObject {
     private let stopStreamingTimer = SimpleTimer(queue: .main)
     private var model: SettingsDjiDeviceModel = .unknown
     private var batteryPercentage: Int?
+    private var oa6Codec = "AVC"
+    private var oa6EnhancedRtmp = false
 
     func startLiveStream(
         wifiSsid: String,
@@ -77,7 +79,9 @@ class DjiDevice: NSObject {
         bitrate: UInt32,
         imageStabilization: SettingsDjiDeviceImageStabilization,
         deviceId: UUID,
-        model: SettingsDjiDeviceModel
+        model: SettingsDjiDeviceModel,
+        oa6Codec: String,
+        oa6EnhancedRtmp: Bool
     ) {
         logger.debug("dji-device: Start live stream for \(model)")
         self.wifiSsid = wifiSsid
@@ -89,6 +93,8 @@ class DjiDevice: NSObject {
         self.imageStabilization = imageStabilization
         self.deviceId = deviceId
         self.model = model
+        self.oa6Codec = oa6Codec
+        self.oa6EnhancedRtmp = oa6EnhancedRtmp
         reset()
         startStartStreamingTimer()
         setState(state: .discovering)
@@ -383,15 +389,17 @@ extension DjiDevice: CBPeripheralDelegate {
                                              payload: payload.encode()))
         case .osmoAction6:
             // The Osmo Action 6 uses the same JSON-wrapped start-streaming
-            // payload style as the Pocket 4 (not the legacy binary format), but
-            // pins the codec to AVC. Reverse-engineered from a BTSnoop capture of
-            // the official DJI app. This is what lets heavier image-stabilization
-            // modes stream without lag.
+            // payload style as the Pocket 4 (not the legacy binary format).
+            // Reverse-engineered from a BTSnoop capture of the official DJI app.
+            // The JSON codec and EnhancedRTMP fields are configurable via debug
+            // settings.
             let payload = DjiStartStreamingMessagePayloadOsmoAction6(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
-                bitrateKbps: bitrateKbps
+                bitrateKbps: bitrateKbps,
+                codec: oa6Codec,
+                enhancedRtmp: oa6EnhancedRtmp
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
                                              id: startStreamingTransactionId,

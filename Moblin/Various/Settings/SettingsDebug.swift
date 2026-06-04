@@ -7,6 +7,11 @@ enum SettingsLogLevel: String, Codable, CaseIterable {
     case debug = "Debug"
 }
 
+enum SettingsDjiOa6Codec: String, Codable, CaseIterable {
+    case hevc = "HEVC"
+    case avc = "AVC"
+}
+
 let pixelFormats = ["32BGRA", "420YpCbCr8BiPlanarFullRange", "420YpCbCr8BiPlanarVideoRange"]
 let pixelFormatTypes = [
     kCVPixelFormatType_32BGRA,
@@ -51,6 +56,8 @@ class SettingsDebug: Codable, ObservableObject {
     @Published var videoBitrateChange: Bool = false
     @Published var highQualityDownsampling: Bool = false
     @Published var httpProxy: Bool = false
+    @Published var djiOa6Codec: SettingsDjiOa6Codec = .avc
+    @Published var djiOa6EnhancedRtmp: Bool = false
 
     enum CodingKeys: CodingKey {
         case logLevel
@@ -94,6 +101,8 @@ class SettingsDebug: Codable, ObservableObject {
         case videoBitrateChangeEnabled
         case highQualityDownsampling
         case httpProxy
+        case djiOa6Codec
+        case djiOa6EnhancedRtmp
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -132,6 +141,8 @@ class SettingsDebug: Codable, ObservableObject {
         try container.encode(.videoBitrateChangeEnabled, videoBitrateChange)
         try container.encode(.highQualityDownsampling, highQualityDownsampling)
         try container.encode(.httpProxy, httpProxy)
+        try container.encode(.djiOa6Codec, djiOa6Codec)
+        try container.encode(.djiOa6EnhancedRtmp, djiOa6EnhancedRtmp)
     }
 
     init() {}
@@ -184,5 +195,7 @@ class SettingsDebug: Codable, ObservableObject {
         videoBitrateChange = container.decode(.videoBitrateChangeEnabled, Bool.self, false)
         highQualityDownsampling = container.decode(.highQualityDownsampling, Bool.self, false)
         httpProxy = container.decode(.httpProxy, Bool.self, false)
+        djiOa6Codec = container.decode(.djiOa6Codec, SettingsDjiOa6Codec.self, .avc)
+        djiOa6EnhancedRtmp = container.decode(.djiOa6EnhancedRtmp, Bool.self, false)
     }
 }

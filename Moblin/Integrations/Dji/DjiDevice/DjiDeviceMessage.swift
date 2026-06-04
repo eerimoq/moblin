@@ -132,19 +132,11 @@ struct DjiStartStreamingMessagePayloadPocket4 {
     }
 }
 
-private struct StartStreamingPayloadOsmoAction6: Codable {
-    let rtmpAddress: String
-    let watermark: Int
-    let codec: String
-    let EnhancedRTMP: Bool
-    let supportStopLive: Bool
-}
-
 struct DjiStartStreamingMessagePayloadOsmoAction6 {
     // Same JSON-wrapped framing as the Pocket 4, but with the Osmo Action 6
-    // specific header/middle bytes and a JSON body that pins the codec to AVC
-    // (H.264) instead of HEVC. Reverse-engineered from a BTSnoop capture of the
-    // official DJI app streaming from an Osmo Action 6.
+    // specific header/middle bytes. Reverse-engineered from a BTSnoop capture of
+    // the official DJI app streaming from an Osmo Action 6. The JSON codec and
+    // EnhancedRTMP fields are configurable via debug settings.
     private static let header = Data([0x01, 0x9C, 0x00])
     private static let middle = Data([0xFE, 0x00])
     private static let padding = Data([0x00, 0x00, 0x00])
@@ -153,20 +145,32 @@ struct DjiStartStreamingMessagePayloadOsmoAction6 {
     var resolution: SettingsDjiDeviceResolution
     var bitrateKbps: UInt16
     var fps: Int
+    var codec: String
+    var enhancedRtmp: Bool
 
-    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16) {
+    init(
+        rtmpUrl: String,
+        resolution: SettingsDjiDeviceResolution,
+        fps: Int,
+        bitrateKbps: UInt16,
+        codec: String,
+        enhancedRtmp: Bool
+    ) {
         self.rtmpUrl = rtmpUrl
         self.resolution = resolution
         self.fps = fps
         self.bitrateKbps = bitrateKbps
+        self.codec = codec
+        self.enhancedRtmp = enhancedRtmp
     }
 
     func encode() -> Data {
-        let payload = StartStreamingPayloadOsmoAction6(rtmpAddress: rtmpUrl,
-                                                       watermark: 0,
-                                                       codec: "AVC",
-                                                       EnhancedRTMP: false,
-                                                       supportStopLive: false)
+        let payload = StartStreamingPayload(codec: codec,
+                                            EnhancedRTMP: enhancedRtmp,
+                                            supportStopLive: false,
+                                            watermark: 0,
+                                            rtmpAddress: rtmpUrl,
+                                            orientation: "landscape")
         let data = (try? JSONEncoder().encode(payload)) ?? Data()
         let writer = ByteWriter()
         writer.writeBytes(Self.header)
