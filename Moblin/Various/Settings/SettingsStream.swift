@@ -1519,6 +1519,11 @@ class SettingsStream: Codable, Identifiable, Equatable, ObservableObject, Named,
         new.twitchSendMessagesTo = twitchSendMessagesTo
         new.twitchChatAlerts = twitchChatAlerts.clone()
         new.twitchToastAlerts = twitchToastAlerts.clone()
+        new.twitchAccessToken = twitchAccessToken
+        new.twitchLoggedIn = twitchLoggedIn
+        if twitchLoggedIn {
+            storeTwitchAccessTokenInKeychain(streamId: new.id, accessToken: twitchAccessToken)
+        }
         new.kickChannelName = kickChannelName
         new.kickChannelId = kickChannelId
         new.kickChatroomChannelId = kickChatroomChannelId
