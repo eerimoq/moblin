@@ -258,6 +258,23 @@ private struct MacroView: View {
                     SwipeLeftToDeleteHelpView(kind: String(localized: "an action"))
                 }
                 Section {
+                    Picker("Repeat", selection: $macro.repeatMode) {
+                        ForEach(SettingsMacrosMacroRepeatMode.allCases, id: \.self) {
+                            Text($0.toString())
+                        }
+                    }
+                    if macro.repeatMode == .count {
+                        TextEditNavigationView(title: String(localized: "Count"),
+                                               value: String(macro.repeatCount))
+                        {
+                            guard let count = Int($0) else {
+                                return
+                            }
+                            macro.repeatCount = count.clamped(to: 1 ... 1_000_000)
+                        }
+                    }
+                }
+                Section {
                     if macro.running {
                         TextButtonView("Cancel") {
                             model.stopMacro(macro: macro)
