@@ -266,7 +266,7 @@ private struct DjiDeviceSettingsSettingsView: View {
                 }
             }
             .disabled(device.isStarted)
-            if device.model.hasImageStabilizatin() {
+            if device.model.hasImageStabilization() {
                 Picker("Image stabilization", selection: $device.imageStabilization) {
                     ForEach(SettingsDjiDeviceImageStabilization.allCases, id: \.self) {
                         Text($0.toString())
@@ -278,6 +278,14 @@ private struct DjiDeviceSettingsSettingsView: View {
                 Picker("FPS", selection: $device.fps) {
                     ForEach(djiDeviceFpss, id: \.self) {
                         Text(String($0))
+                    }
+                }
+                .disabled(device.isStarted)
+            }
+            if device.model.hasVideoCodec() {
+                Picker("Video codec", selection: $device.videoCodec) {
+                    ForEach(SettingsDjiDeviceVideoCodec.allCases, id: \.self) {
+                        Text($0.rawValue)
                     }
                 }
                 .disabled(device.isStarted)

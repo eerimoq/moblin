@@ -54,7 +54,7 @@ enum SettingsDjiDeviceModel: String, Codable {
     case osmo360
     case unknown
 
-    func hasImageStabilizatin() -> Bool {
+    func hasImageStabilization() -> Bool {
         switch self {
         case .osmoAction2:
             false
@@ -99,6 +99,52 @@ enum SettingsDjiDeviceModel: String, Codable {
             false
         }
     }
+
+    func hasVideoCodec() -> Bool {
+        switch self {
+        case .osmoAction2:
+            false
+        case .osmoAction3:
+            false
+        case .osmoAction4:
+            false
+        case .osmoAction5Pro:
+            false
+        case .osmoAction6:
+            true
+        case .osmoPocket3:
+            false
+        case .osmoPocket4:
+            false
+        case .osmo360:
+            false
+        case .unknown:
+            false
+        }
+    }
+}
+
+enum SettingsDjiDeviceVideoCodec: String, Codable, CaseIterable {
+    case h265hevc = "H.265/HEVC"
+    case h264avc = "H.264/AVC"
+
+    func toDjiCodec() -> String {
+        switch self {
+        case .h264avc:
+            "AVC"
+        case .h265hevc:
+            "HEVC"
+        }
+    }
+
+    func toDjiEnhancedRtmp() -> Bool {
+        switch self {
+        case .h264avc:
+            false
+        case .h265hevc:
+            true
+        }
+    }
 }
 
 let djiDeviceBitrates: [UInt32] = [
@@ -131,6 +177,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
     @Published var resolution: SettingsDjiDeviceResolution = .r1080p
     @Published var fps: Int = 30
     @Published var bitrate: UInt32 = 6_000_000
+    @Published var videoCodec: SettingsDjiDeviceVideoCodec = .h265hevc
     @Published var isStarted: Bool = false
     @Published var model: SettingsDjiDeviceModel = .unknown
     @Published var state: DjiDeviceState?
@@ -156,6 +203,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
         case resolution
         case fps
         case bitrate
+        case videoCodec
         case isStarted
         case model
     }
@@ -177,6 +225,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
         try container.encode(.resolution, resolution)
         try container.encode(.fps, fps)
         try container.encode(.bitrate, bitrate)
+        try container.encode(.videoCodec, videoCodec)
         try container.encode(.isStarted, isStarted)
         try container.encode(.model, model)
     }
@@ -202,6 +251,7 @@ class SettingsDjiDevice: Codable, Identifiable, ObservableObject, Named {
         resolution = container.decode(.resolution, SettingsDjiDeviceResolution.self, .r1080p)
         fps = container.decode(.fps, Int.self, 30)
         bitrate = container.decode(.bitrate, UInt32.self, 6_000_000)
+        videoCodec = container.decode(.videoCodec, SettingsDjiDeviceVideoCodec.self, .h265hevc)
         isStarted = container.decode(.isStarted, Bool.self, false)
         model = container.decode(.model, SettingsDjiDeviceModel.self, .unknown)
     }

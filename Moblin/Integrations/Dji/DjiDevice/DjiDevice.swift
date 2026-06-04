@@ -56,6 +56,7 @@ class DjiDevice: NSObject {
     private var resolution: SettingsDjiDeviceResolution?
     private var fps: Int = 30
     private var bitrate: UInt32 = 6_000_000
+    private var videoCodec: SettingsDjiDeviceVideoCodec = .h265hevc
     private var imageStabilization: SettingsDjiDeviceImageStabilization?
     private var deviceId: UUID?
     private var centralManager: CBCentralManager?
@@ -75,6 +76,7 @@ class DjiDevice: NSObject {
         resolution: SettingsDjiDeviceResolution,
         fps: Int,
         bitrate: UInt32,
+        videoCodec: SettingsDjiDeviceVideoCodec,
         imageStabilization: SettingsDjiDeviceImageStabilization,
         deviceId: UUID,
         model: SettingsDjiDeviceModel
@@ -86,6 +88,7 @@ class DjiDevice: NSObject {
         self.resolution = resolution
         self.fps = fps
         self.bitrate = bitrate
+        self.videoCodec = videoCodec
         self.imageStabilization = imageStabilization
         self.deviceId = deviceId
         self.model = model
@@ -382,16 +385,13 @@ extension DjiDevice: CBPeripheralDelegate {
                                              type: startStreamingType,
                                              payload: payload.encode()))
         case .osmoAction6:
-            // The Osmo Action 6 uses the same JSON-wrapped start-streaming
-            // payload style as the Pocket 4 (not the legacy binary format), but
-            // pins the codec to AVC. Reverse-engineered from a BTSnoop capture of
-            // the official DJI app. This is what lets heavier image-stabilization
-            // modes stream without lag.
             let payload = DjiStartStreamingMessagePayloadOsmoAction6(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
-                bitrateKbps: bitrateKbps
+                bitrateKbps: bitrateKbps,
+                codec: videoCodec.toDjiCodec(),
+                enhancedRtmp: videoCodec.toDjiEnhancedRtmp()
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
                                              id: startStreamingTransactionId,

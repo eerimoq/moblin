@@ -157,6 +157,7 @@ extension Model {
                 resolution: device.resolution,
                 fps: device.fps,
                 bitrate: device.bitrate,
+                videoCodec: device.videoCodec,
                 imageStabilization: device.imageStabilization,
                 deviceId: deviceId,
                 model: device.model
