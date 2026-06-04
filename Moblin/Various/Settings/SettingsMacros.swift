@@ -203,6 +203,23 @@ class SettingsMacrosAction: Identifiable, Codable, ObservableObject {
     }
 }
 
+enum SettingsMacrosMacroRepeatMode: String, Codable, CaseIterable {
+    case off
+    case count
+    case forever
+
+    func toString() -> String {
+        switch self {
+        case .off:
+            String(localized: "Off")
+        case .count:
+            String(localized: "Count")
+        case .forever:
+            String(localized: "Forever")
+        }
+    }
+}
+
 class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     static let baseName = String(localized: "My macro")
     var id: UUID = .init()
@@ -210,7 +227,10 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     @Published var actions: [SettingsMacrosAction] = []
     @Published var running: Bool = false
     @Published var finished: Bool = false
+    @Published var repeatMode: SettingsMacrosMacroRepeatMode = .off
+    @Published var repeatCount: Int = 5
     var nextActionIndex: Int = 0
+    var repeatCurrentCount: Int = 0
     let delayTimer = SimpleTimer(queue: .main)
     let finishedTimer = SimpleTimer(queue: .main)
     var stack: [SettingsMacrosMacro] = []
@@ -221,6 +241,8 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         case id
         case name
         case actions
+        case repeatMode
+        case repeatCount
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -228,6 +250,8 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         try container.encode(.id, id)
         try container.encode(.name, name)
         try container.encode(.actions, actions)
+        try container.encode(.repeatMode, repeatMode)
+        try container.encode(.repeatCount, repeatCount)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -235,12 +259,16 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         id = container.decode(.id, UUID.self, .init())
         name = container.decode(.name, String.self, Self.baseName)
         actions = container.decode(.actions, [SettingsMacrosAction].self, [])
+        repeatMode = container.decode(.repeatMode, SettingsMacrosMacroRepeatMode.self, .off)
+        repeatCount = container.decode(.repeatCount, Int.self, 5)
     }
 
     func copy() -> SettingsMacrosMacro {
         let new = SettingsMacrosMacro()
         new.id = id
         new.name = name
+        new.repeatMode = repeatMode
+        new.repeatCount = repeatCount
         new.actions = actions
         return new
     }

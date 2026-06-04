@@ -8,6 +8,7 @@ extension Model {
         }
         macro.running = true
         macro.nextActionIndex = 0
+        macro.repeatCurrentCount = 0
         macro.stack = [macro]
         executeNextAction(macro: macro)
     }
@@ -54,12 +55,25 @@ extension Model {
             return
         }
         guard currentMacro.nextActionIndex < currentMacro.actions.count else {
-            currentMacro.running = false
-            currentMacro.finished = true
-            currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
-                currentMacro.finished = false
+            currentMacro.repeatCurrentCount += 1
+            let shouldRepeat: Bool = switch currentMacro.repeatMode {
+            case .forever:
+                true
+            case .count:
+                currentMacro.repeatCurrentCount < currentMacro.repeatCount
+            case .off:
+                false
             }
-            macro.stack.removeLast()
+            if shouldRepeat {
+                currentMacro.nextActionIndex = 0
+            } else {
+                currentMacro.running = false
+                currentMacro.finished = true
+                currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
+                    currentMacro.finished = false
+                }
+                macro.stack.removeLast()
+            }
             executeNextAction(macro: macro)
             return
         }
