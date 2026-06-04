@@ -230,6 +230,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     @Published var repeatMode: SettingsMacrosMacroRepeatMode = .off
     @Published var repeatCount: Int = 5
     var nextActionIndex: Int = 0
+    var repeatCurrentCount: Int = 0
     let delayTimer = SimpleTimer(queue: .main)
     let finishedTimer = SimpleTimer(queue: .main)
     var stack: [SettingsMacrosMacro] = []

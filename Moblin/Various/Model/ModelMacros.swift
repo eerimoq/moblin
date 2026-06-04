@@ -8,6 +8,7 @@ extension Model {
         }
         macro.running = true
         macro.nextActionIndex = 0
+        macro.repeatCurrentCount = 0
         macro.stack = [macro]
         executeNextAction(macro: macro)
     }
@@ -60,6 +61,23 @@ extension Model {
                 currentMacro.finished = false
             }
             macro.stack.removeLast()
+            if macro.stack.isEmpty {
+                macro.repeatCurrentCount += 1
+                let shouldRepeat: Bool = switch macro.repeatMode {
+                case .forever:
+                    true
+                case .count:
+                    macro.repeatCurrentCount < macro.repeatCount
+                case .off:
+                    false
+                }
+                if shouldRepeat {
+                    macro.running = true
+                    macro.finished = false
+                    macro.nextActionIndex = 0
+                    macro.stack = [macro]
+                }
+            }
             executeNextAction(macro: macro)
             return
         }
