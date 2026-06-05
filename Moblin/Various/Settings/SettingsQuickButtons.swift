@@ -158,7 +158,7 @@ enum SettingsQuickButtonType: String, Codable, CaseIterable {
         case .goPro:
             String(localized: "GoPro")
         case .interactiveChat:
-            String(localized: "Interactive chat")
+            String(localized: "Scrollable chat")
         case .autoSceneSwitcher:
             String(localized: "Auto scene switcher")
         case .lockScreen:
