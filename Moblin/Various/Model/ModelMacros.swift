@@ -50,31 +50,37 @@ extension Model {
         }
     }
 
+    private func processMacroEnded(macro: SettingsMacrosMacro,
+                                   currentMacro: SettingsMacrosMacro)
+    {
+        currentMacro.repeatCurrentCount += 1
+        let shouldRepeat: Bool = switch currentMacro.repeatMode {
+        case .forever:
+            true
+        case .count:
+            currentMacro.repeatCurrentCount < currentMacro.repeatCount
+        case .off:
+            false
+        }
+        if shouldRepeat {
+            currentMacro.nextActionIndex = 0
+        } else {
+            currentMacro.running = false
+            currentMacro.finished = true
+            currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
+                currentMacro.finished = false
+            }
+            macro.stack.removeLast()
+        }
+        executeNextAction(macro: macro)
+    }
+
     private func executeNextAction(macro: SettingsMacrosMacro) {
         guard let currentMacro = macro.stack.last else {
             return
         }
         guard currentMacro.nextActionIndex < currentMacro.actions.count else {
-            currentMacro.repeatCurrentCount += 1
-            let shouldRepeat: Bool = switch currentMacro.repeatMode {
-            case .forever:
-                true
-            case .count:
-                currentMacro.repeatCurrentCount < currentMacro.repeatCount
-            case .off:
-                false
-            }
-            if shouldRepeat {
-                currentMacro.nextActionIndex = 0
-            } else {
-                currentMacro.running = false
-                currentMacro.finished = true
-                currentMacro.finishedTimer.startSingleShot(timeout: 2.0) {
-                    currentMacro.finished = false
-                }
-                macro.stack.removeLast()
-            }
-            executeNextAction(macro: macro)
+            processMacroEnded(macro: macro, currentMacro: currentMacro)
             return
         }
         let action = currentMacro.actions[currentMacro.nextActionIndex]
