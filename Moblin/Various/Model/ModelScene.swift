@@ -650,7 +650,7 @@ extension Model {
         return effects
     }
 
-    private func getImageEffect(id: UUID) -> ImageEffect? {
+    func getImageEffect(id: UUID) -> ImageEffect? {
         imageEffects[id]
     }
 

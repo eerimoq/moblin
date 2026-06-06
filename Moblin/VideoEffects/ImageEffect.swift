@@ -7,6 +7,10 @@ final class ImageEffect: VideoEffect, @unchecked Sendable {
 
     init(imageStorage: ImageStorage, widgetId: UUID) {
         super.init()
+        loadImage(imageStorage: imageStorage, widgetId: widgetId)
+    }
+
+    func loadImage(imageStorage: ImageStorage, widgetId: UUID) {
         DispatchQueue.global().async {
             guard let data = imageStorage.read(id: widgetId) else {
                 return
