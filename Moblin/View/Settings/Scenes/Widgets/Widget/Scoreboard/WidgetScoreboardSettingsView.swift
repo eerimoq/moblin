@@ -117,6 +117,7 @@ struct WidgetScoreboardSettingsView: View {
                                                         updated: updated)
             case .golfFullScorecard:
                 WidgetScoreboardGolfFullScorecardGeneralSettingsView(scoreboard: scoreboard,
+                                                                     golf: scoreboard.golf,
                                                                      updated: updated)
             default:
                 WidgetScoreboardModularGeneralSettingsView(modular: scoreboard.modular,

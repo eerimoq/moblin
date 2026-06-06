@@ -3251,6 +3251,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
     @Published var pars: [Int] = defaultPars
     @Published var players: [SettingsWidgetGolfScoreboardPlayer] = defaultPlayers
     @Published var playerColors: Bool = false
+    @Published var showPars: Bool = true
 
     enum CodingKeys: CodingKey {
         case eventName
@@ -3259,6 +3260,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
         case pars
         case players
         case playerColors
+        case showPars
     }
 
     init() {}
@@ -3271,6 +3273,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
         try container.encode(.pars, pars)
         try container.encode(.players, players)
         try container.encode(.playerColors, playerColors)
+        try container.encode(.showPars, showPars)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -3281,6 +3284,7 @@ class SettingsWidgetGolfScoreboard: Codable, ObservableObject {
         setPars(container.decode(.pars, [Int].self, Self.defaultPars))
         players = container.decode(.players, [SettingsWidgetGolfScoreboardPlayer].self, Self.defaultPlayers)
         playerColors = container.decode(.playerColors, Bool.self, false)
+        showPars = container.decode(.showPars, Bool.self, true)
     }
 
     func setPars(_ pars: [Int]) {

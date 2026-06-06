@@ -92,6 +92,26 @@ struct ScoreboardEffectGolfFullScorecardView: View {
                 HeaderCellView(text: "", width: totalCellWidth * scale, scale: scale)
             }
             .background(secondaryBackgroundColor)
+            if golf.showPars {
+                HStack(spacing: 0) {
+                    CellView(text: "PAR",
+                             width: nameCellWidth * scale,
+                             leftAlign: true,
+                             scale: scale)
+                    ForEach(0 ..< golf.numberOfHoles, id: \.self) { holeIndex in
+                        let par = holeIndex < golf.pars.count ? golf.pars[holeIndex] : 4
+                        CellView(text: "\(par)",
+                                 width: numberCellWidth * scale,
+                                 scale: scale)
+                    }
+                    let totalPar = golf.pars.prefix(golf.numberOfHoles).reduce(0, +)
+                    CellView(text: "\(totalPar)",
+                             width: totalCellWidth * scale,
+                             bold: true,
+                             scale: scale)
+                }
+                .background(secondaryBackgroundColor)
+            }
             ForEach(golf.players) { player in
                 HStack(spacing: 0) {
                     CellView(text: player.name.uppercased(),
