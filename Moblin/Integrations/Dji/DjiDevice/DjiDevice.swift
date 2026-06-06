@@ -378,7 +378,9 @@ extension DjiDevice: CBPeripheralDelegate {
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
-                bitrateKbps: bitrateKbps
+                bitrateKbps: bitrateKbps,
+                codec: videoCodec.toDjiCodec(),
+                enhancedRtmp: videoCodec.toDjiEnhancedRtmp()
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
                                              id: startStreamingTransactionId,

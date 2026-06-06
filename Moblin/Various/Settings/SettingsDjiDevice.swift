@@ -115,7 +115,7 @@ enum SettingsDjiDeviceModel: String, Codable {
         case .osmoPocket3:
             false
         case .osmoPocket4:
-            false
+            true
         case .osmo360:
             false
         case .unknown:

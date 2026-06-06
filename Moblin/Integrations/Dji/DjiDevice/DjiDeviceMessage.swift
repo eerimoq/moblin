@@ -103,17 +103,27 @@ struct DjiStartStreamingMessagePayloadPocket4 {
     var resolution: SettingsDjiDeviceResolution
     var bitrateKbps: UInt16
     var fps: Int
+    var codec: String
+    var enhancedRtmp: Bool
 
-    init(rtmpUrl: String, resolution: SettingsDjiDeviceResolution, fps: Int, bitrateKbps: UInt16) {
+    init(rtmpUrl: String,
+         resolution: SettingsDjiDeviceResolution,
+         fps: Int,
+         bitrateKbps: UInt16,
+         codec: String,
+         enhancedRtmp: Bool)
+    {
         self.rtmpUrl = rtmpUrl
         self.resolution = resolution
         self.fps = fps
         self.bitrateKbps = bitrateKbps
+        self.codec = codec
+        self.enhancedRtmp = enhancedRtmp
     }
 
     func encode() -> Data {
-        let payload = StartStreamingPayload(codec: "HEVC",
-                                            EnhancedRTMP: false,
+        let payload = StartStreamingPayload(codec: codec,
+                                            EnhancedRTMP: enhancedRtmp,
                                             supportStopLive: false,
                                             watermark: 0,
                                             rtmpAddress: rtmpUrl,
@@ -133,10 +143,6 @@ struct DjiStartStreamingMessagePayloadPocket4 {
 }
 
 struct DjiStartStreamingMessagePayloadOsmoAction6 {
-    // Same JSON-wrapped framing as the Pocket 4, but with the Osmo Action 6
-    // specific header/middle bytes. Reverse-engineered from a BTSnoop capture of
-    // the official DJI app streaming from an Osmo Action 6. The JSON codec and
-    // EnhancedRTMP fields are configurable via debug settings.
     private static let header = Data([0x01, 0x9C, 0x00])
     private static let middle = Data([0xFE, 0x00])
     private static let padding = Data([0x00, 0x00, 0x00])
