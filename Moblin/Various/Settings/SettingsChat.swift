@@ -169,6 +169,7 @@ class SettingsChatBotPermissions: Codable {
     var twitch: SettingsChatBotPermissionsCommand = .init()
     var gimbal: SettingsChatBotPermissionsCommand = .init()
     var macro: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
+    var send: SettingsChatBotPermissionsCommand = .init()
     var migrated: Bool = false
 
     enum CodingKeys: CodingKey {
@@ -191,6 +192,7 @@ class SettingsChatBotPermissions: Codable {
         case twitch
         case gimbal
         case macro
+        case send
         case migrated
     }
 
@@ -215,6 +217,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.twitch, twitch)
         try container.encode(.gimbal, gimbal)
         try container.encode(.macro, macro)
+        try container.encode(.send, send)
         try container.encode(.migrated, migrated)
     }
 
@@ -243,6 +246,7 @@ class SettingsChatBotPermissions: Codable {
         macro = container.decode(.macro,
                                  SettingsChatBotPermissionsCommand.self,
                                  .init(moderatorsEnabled: false))
+        send = container.decode(.send, SettingsChatBotPermissionsCommand.self, .init())
         migrated = container.decode(.migrated, Bool.self, false)
         if !migrated {
             scene.moderatorsEnabled = false

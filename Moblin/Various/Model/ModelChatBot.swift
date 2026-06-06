@@ -153,6 +153,8 @@ extension Model {
                 handleChatBotMessageGimbal(command: command)
             case "macro":
                 handleChatBotMessageMacro(command: command)
+            case "send":
+                handleChatBotMessageSend(command: command)
             default:
                 break
             }
@@ -463,6 +465,16 @@ extension Model {
             default:
                 break
             }
+        }
+    }
+
+    private func handleChatBotMessageSend(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.send,
+            command: command
+        ) {
+            self.sendChatBotReply(message: command.rest(),
+                                  platform: command.message.platform)
         }
     }
 

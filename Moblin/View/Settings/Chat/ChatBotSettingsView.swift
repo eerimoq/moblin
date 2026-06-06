@@ -422,6 +422,24 @@ private struct MacroPermissionsSettingsView: View {
     }
 }
 
+private struct SendPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: String(localized: "!moblin send <message>"),
+                permissions: permissions
+            )
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("!moblin send <message>")
+                Text("Send given message.")
+            }
+        }
+    }
+}
+
 private struct ChatBotCommandsSettingsView: View {
     @EnvironmentObject var model: Model
 
@@ -446,6 +464,7 @@ private struct ChatBotCommandsSettingsView: View {
             SnapshotPermissionsSettingsView(permissions: permissions.snapshot)
             StreamPermissionsSettingsView(permissions: permissions.stream)
             TeslaPermissionsSettingsView(permissions: permissions.tesla)
+            SendPermissionsSettingsView(permissions: permissions.send)
             TtsSayPermissionsSettingsView(permissions: permissions.tts)
             WidgetPermissionsSettingsView(permissions: permissions.widget)
             TwitchPermissionsSettingsView(permissions: permissions.twitch)
