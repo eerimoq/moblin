@@ -25,8 +25,8 @@ struct HttpProxyServerSuite {
         parser.append(data: "CONNECT example.com:443 HTTP/1.1\r\nHost: example.com:443\r\n\r\n".utf8Data)
         let (done, result) = parser.parse()
         #expect(done)
-        #expect(result?.host == "example.com")
-        #expect(result?.port == 443)
+        #expect(result?.destination == .hostPort(host: .init("example.com"),
+                                                 port: .init(integerLiteral: 443)))
         #expect(result?.version == "HTTP/1.1")
     }
 
@@ -67,7 +67,8 @@ struct HttpProxyServerSuite {
         #expect(done)
         #expect(result != nil)
         #expect(result?.bodyOffset == header.utf8Data.count)
-        #expect(result?.port == 80)
+        #expect(result?.destination == .hostPort(host: .init("example.com"),
+                                                 port: .init(integerLiteral: 80)))
         #expect(result?.version == "HTTP/1.0")
     }
 
@@ -81,7 +82,7 @@ struct HttpProxyServerSuite {
         parser.append(data: "\r\n".utf8Data)
         (done, result) = parser.parse()
         #expect(done)
-        #expect(result?.host == "example.com")
-        #expect(result?.port == 8080)
+        #expect(result?.destination == .hostPort(host: .init("example.com"),
+                                                 port: .init(integerLiteral: 8080)))
     }
 }
