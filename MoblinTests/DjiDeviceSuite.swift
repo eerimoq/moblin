@@ -5,13 +5,15 @@ import Testing
 struct DjiDeviceSuite {
     @Test
     func startStreamingOmsoPocket4() throws {
-        let payload = DjiStartStreamingMessagePayloadPocket4(
+        let payload = DjiStartStreamingMessagePayload2(
             rtmpUrl: "rtmp://192.168.1.59/live/1",
             resolution: .r1080p,
             fps: 30,
             bitrateKbps: 5000,
             codec: "HEVC",
-            enhancedRtmp: true
+            enhancedRtmp: true,
+            header: DjiStartStreamingMessagePayload2.osmoPocket4Header,
+            middle: DjiStartStreamingMessagePayload2.osmoPocket4Middle
         )
         let encoded = payload.encode()
         #expect(encoded.count == 161)
@@ -29,13 +31,15 @@ struct DjiDeviceSuite {
 
     @Test
     func startStreamingOmsoAction6() throws {
-        let payload = DjiStartStreamingMessagePayloadOsmoAction6(
+        let payload = DjiStartStreamingMessagePayload2(
             rtmpUrl: "rtmp://192.168.1.59/live/2",
             resolution: .r720p,
             fps: 30,
             bitrateKbps: 7000,
             codec: "AVC",
-            enhancedRtmp: false
+            enhancedRtmp: false,
+            header: DjiStartStreamingMessagePayload2.osmoAction6Header,
+            middle: DjiStartStreamingMessagePayload2.osmoAction6Middle
         )
         let encoded = payload.encode()
         #expect(encoded.count == 161)

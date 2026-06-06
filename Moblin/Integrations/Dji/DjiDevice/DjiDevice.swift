@@ -370,30 +370,30 @@ extension DjiDevice: CBPeripheralDelegate {
         let bitrateKbps = UInt16((bitrate / 1000) & 0xFFFF)
         switch model {
         case .osmoPocket4:
-            // The Pocket 4 uses a JSON-wrapped start-streaming payload that's
-            // completely different from the legacy binary format used by every
-            // other DJI camera Moblin supports. Reverse-engineered from a
-            // PacketLogger capture of the official DJI Mimo app.
-            let payload = DjiStartStreamingMessagePayloadPocket4(
+            let payload = DjiStartStreamingMessagePayload2(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
                 bitrateKbps: bitrateKbps,
                 codec: videoCodec.toDjiCodec(),
-                enhancedRtmp: videoCodec.toDjiEnhancedRtmp()
+                enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
+                header: DjiStartStreamingMessagePayload2.osmoPocket4Header,
+                middle: DjiStartStreamingMessagePayload2.osmoPocket4Middle
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
                                              id: startStreamingTransactionId,
                                              type: startStreamingType,
                                              payload: payload.encode()))
         case .osmoAction6:
-            let payload = DjiStartStreamingMessagePayloadOsmoAction6(
+            let payload = DjiStartStreamingMessagePayload2(
                 rtmpUrl: rtmpUrl,
                 resolution: resolution,
                 fps: fps,
                 bitrateKbps: bitrateKbps,
                 codec: videoCodec.toDjiCodec(),
-                enhancedRtmp: videoCodec.toDjiEnhancedRtmp()
+                enhancedRtmp: videoCodec.toDjiEnhancedRtmp(),
+                header: DjiStartStreamingMessagePayload2.osmoAction6Header,
+                middle: DjiStartStreamingMessagePayload2.osmoAction6Middle
             )
             writeMessage(message: DjiMessage(target: startStreamingTarget,
                                              id: startStreamingTransactionId,

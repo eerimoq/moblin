@@ -94,65 +94,20 @@ private struct StartStreamingPayload: Codable {
     let orientation: String
 }
 
-struct DjiStartStreamingMessagePayloadPocket4 {
-    private static let header = Data([0x01, 0xB5, 0x00])
-    private static let middle = Data([0x02, 0x01])
+struct DjiStartStreamingMessagePayload2 {
+    static let osmoAction6Header = Data([0x01, 0x9C, 0x00])
+    static let osmoAction6Middle = Data([0xFE, 0x00])
+    static let osmoPocket4Header = Data([0x01, 0xB5, 0x00])
+    static let osmoPocket4Middle = Data([0x02, 0x01])
     private static let padding = Data([0x00, 0x00, 0x00])
-
     var rtmpUrl: String
     var resolution: SettingsDjiDeviceResolution
     var bitrateKbps: UInt16
     var fps: Int
     var codec: String
     var enhancedRtmp: Bool
-
-    init(rtmpUrl: String,
-         resolution: SettingsDjiDeviceResolution,
-         fps: Int,
-         bitrateKbps: UInt16,
-         codec: String,
-         enhancedRtmp: Bool)
-    {
-        self.rtmpUrl = rtmpUrl
-        self.resolution = resolution
-        self.fps = fps
-        self.bitrateKbps = bitrateKbps
-        self.codec = codec
-        self.enhancedRtmp = enhancedRtmp
-    }
-
-    func encode() -> Data {
-        let payload = StartStreamingPayload(codec: codec,
-                                            EnhancedRTMP: enhancedRtmp,
-                                            supportStopLive: false,
-                                            watermark: 0,
-                                            rtmpAddress: rtmpUrl,
-                                            orientation: "landscape")
-        let data = (try? JSONEncoder().encode(payload)) ?? Data()
-        let writer = ByteWriter()
-        writer.writeBytes(Self.header)
-        writer.writeUInt8(toDjiResolution(resolution: resolution))
-        writer.writeUInt16Le(bitrateKbps)
-        writer.writeBytes(Self.middle)
-        writer.writeUInt8(toDjiFps(fps: fps))
-        writer.writeBytes(Self.padding)
-        writer.writeUInt16Le(UInt16(truncatingIfNeeded: data.count))
-        writer.writeBytes(data)
-        return writer.data
-    }
-}
-
-struct DjiStartStreamingMessagePayloadOsmoAction6 {
-    private static let header = Data([0x01, 0x9C, 0x00])
-    private static let middle = Data([0xFE, 0x00])
-    private static let padding = Data([0x00, 0x00, 0x00])
-
-    var rtmpUrl: String
-    var resolution: SettingsDjiDeviceResolution
-    var bitrateKbps: UInt16
-    var fps: Int
-    var codec: String
-    var enhancedRtmp: Bool
+    let header: Data
+    let middle: Data
 
     init(
         rtmpUrl: String,
@@ -160,7 +115,9 @@ struct DjiStartStreamingMessagePayloadOsmoAction6 {
         fps: Int,
         bitrateKbps: UInt16,
         codec: String,
-        enhancedRtmp: Bool
+        enhancedRtmp: Bool,
+        header: Data,
+        middle: Data
     ) {
         self.rtmpUrl = rtmpUrl
         self.resolution = resolution
@@ -168,6 +125,8 @@ struct DjiStartStreamingMessagePayloadOsmoAction6 {
         self.bitrateKbps = bitrateKbps
         self.codec = codec
         self.enhancedRtmp = enhancedRtmp
+        self.header = header
+        self.middle = middle
     }
 
     func encode() -> Data {
@@ -179,10 +138,10 @@ struct DjiStartStreamingMessagePayloadOsmoAction6 {
                                             orientation: "landscape")
         let data = (try? JSONEncoder().encode(payload)) ?? Data()
         let writer = ByteWriter()
-        writer.writeBytes(Self.header)
+        writer.writeBytes(header)
         writer.writeUInt8(toDjiResolution(resolution: resolution))
         writer.writeUInt16Le(bitrateKbps)
-        writer.writeBytes(Self.middle)
+        writer.writeBytes(middle)
         writer.writeUInt8(toDjiFps(fps: fps))
         writer.writeBytes(Self.padding)
         writer.writeUInt16Le(UInt16(truncatingIfNeeded: data.count))
