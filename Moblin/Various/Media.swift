@@ -702,6 +702,10 @@ final class Media: NSObject, @unchecked Sendable {
         processor?.setScreenPreview(enabled: enabled)
     }
 
+    func setMirrorScreenVideo(mirror: Bool) {
+        processor?.setMirrorScreenVideo(mirror: mirror)
+    }
+
     func setVideoPreviewEnabled(enabled: Bool) {
         processor?.setVideoPreviewEnabled(enabled: enabled)
     }

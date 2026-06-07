@@ -40,6 +40,7 @@ private func transformPoint(
 final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
     private let filter = CIFilter.sourceOverCompositing()
     private var overlay: CIImage?
+    private var uiOverlay: CIImage?
 
     func updateOverlay(videoSize: CGSize, size: CGSize, lines: [DrawOnStreamLine], mirror: Bool) {
         DispatchQueue.main.async {
@@ -57,7 +58,7 @@ final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
                 offsetY = (videoRatio / drawRatio * videoSize.height - videoSize.height) / 2
                 scale = videoSize.width / size.width
             }
-            let canvas = Canvas { context, _ in
+            let streamCanvas = Canvas { context, _ in
                 for line in lines {
                     let width = line.width * scale
                     if line.points.count > 1 {
@@ -85,19 +86,51 @@ final class DrawOnStreamEffect: VideoEffect, @unchecked Sendable {
             }
             .background(.clear)
             .frame(width: videoSize.width, height: videoSize.height)
-            let renderer = ImageRenderer(content: canvas)
-            guard let uiImage = renderer.uiImage else {
-                return
+            let streamRenderer = ImageRenderer(content: streamCanvas)
+            let streamImage = streamRenderer.uiImage.flatMap { CIImage(image: $0) }
+            var uiImage: CIImage?
+            if mirror {
+                let uiCanvas = Canvas { context, _ in
+                    for line in lines {
+                        let width = line.width * scale
+                        if line.points.count > 1 {
+                            context.stroke(
+                                drawOnStreamCreatePath(points: line.points.map { point in
+                                    transformPoint(point, scale, offsetX, offsetY, false, videoSize.width)
+                                }),
+                                with: .color(line.color),
+                                lineWidth: width
+                            )
+                        } else {
+                            let point = transformPoint(
+                                line.points[0],
+                                scale,
+                                offsetX,
+                                offsetY,
+                                false,
+                                videoSize.width
+                            )
+                            var path = Path()
+                            path.addEllipse(in: CGRect(x: point.x, y: point.y, width: 1, height: 1))
+                            context.stroke(path, with: .color(line.color), lineWidth: width)
+                        }
+                    }
+                }
+                .background(.clear)
+                .frame(width: videoSize.width, height: videoSize.height)
+                let uiRenderer = ImageRenderer(content: uiCanvas)
+                uiImage = uiRenderer.uiImage.flatMap { CIImage(image: $0) }
             }
-            let image = CIImage(image: uiImage)
             processorPipelineQueue.async {
-                self.overlay = image
+                self.overlay = streamImage
+                self.uiOverlay = uiImage
             }
         }
     }
 
-    override func execute(_ image: CIImage, _: VideoEffectInfo) -> CIImage {
-        filter.inputImage = overlay
+    override func execute(_ image: CIImage, _ info: VideoEffectInfo) -> CIImage {
+        let activeOverlay = info.isForUI ? (uiOverlay ?? overlay) : overlay
+        filter.inputImage = activeOverlay
         filter.backgroundImage = image
         return filter.outputImage ?? image
     }

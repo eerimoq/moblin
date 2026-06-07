@@ -10,6 +10,7 @@ struct VideoEffectInfo {
     let presentationTimeStamp: CMTime
     let videoUnit: VideoUnit
     let isFirstAfterAttach: Bool
+    let isForUI: Bool
 
     func sceneDetections() -> Detections? {
         detections[sceneVideoSourceId]

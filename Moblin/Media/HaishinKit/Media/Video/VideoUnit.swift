@@ -219,6 +219,7 @@ final class VideoUnit: NSObject, @unchecked Sendable {
     private var showCameraPreview = false
     private var screenPreviewEnabled = true
     private var externalDisplayPreview = false
+    private var mirrorScreenVideo = false
     private var sceneSwitchTransition: SceneSwitchTransition = .blur
     private var pixelTransferSession: VTPixelTransferSession?
     private var previousFaceDetectionTimes: [UUID: Double] = [:]
@@ -370,6 +371,14 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         processorControlQueue.async {
             processorPipelineQueue.async {
                 self.screenPreviewEnabled = enabled
+            }
+        }
+    }
+
+    func setMirrorScreenVideo(mirror: Bool) {
+        processorControlQueue.async {
+            processorPipelineQueue.async {
+                self.mirrorScreenVideo = mirror
             }
         }
     }
@@ -979,7 +988,8 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                               _ detectionJobs: [DetectionJob],
                               _ detections: [UUID: Detections],
                               _ isSceneSwitchTransition: Bool,
-                              _ isFirstAfterAttach: Bool) -> (CVImageBuffer?, CMSampleBuffer?)
+                              _ isFirstAfterAttach: Bool,
+                              _ isForUI: Bool = false) -> (CVImageBuffer?, CMSampleBuffer?)
     {
         let info = VideoEffectInfo(
             sceneVideoSourceId: sceneVideoSourceId,
@@ -987,7 +997,8 @@ final class VideoUnit: NSObject, @unchecked Sendable {
             detections: detections,
             presentationTimeStamp: sampleBuffer.presentationTimeStamp,
             videoUnit: self,
-            isFirstAfterAttach: isFirstAfterAttach
+            isFirstAfterAttach: isFirstAfterAttach,
+            isForUI: isForUI
         )
         if isMetalPetalGraphics {
             return applyEffectsMetalPetal(imageBuffer, sampleBuffer, enabledEffects, info)
@@ -1072,6 +1083,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         if image.extent.size != canvasSize {
             image = scaleImage(image)
         }
+        if info.isForUI {
+            image = image.oriented(.upMirrored)
+        }
         let extent = image.extent
         if isSceneSwitchTransition {
             image = applySceneSwitchTransition(image)
@@ -1117,6 +1131,9 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         let originalImage = image
         guard var image else {
             return (nil, nil)
+        }
+        if info.isForUI {
+            image = image.oriented(.upMirrored)
         }
         for effect in enabledEffects {
             image = effect.executeMetalPetal(image, info)
@@ -1482,7 +1499,6 @@ final class VideoUnit: NSObject, @unchecked Sendable {
                 isSceneSwitchTransition,
                 isFirstAfterAttach
             )
-            removeEffects()
         }
         let modImageBuffer = newImageBuffer ?? imageBuffer
         let modSampleBuffer = newSampleBuffer ?? sampleBuffer
@@ -1491,15 +1507,35 @@ final class VideoUnit: NSObject, @unchecked Sendable {
         } else {
             processor?.recorder.appendVideo(modSampleBuffer)
         }
-        modSampleBuffer.setAttachmentDisplayImmediately()
+        // Produce separate UI frame when mirrorScreenVideo is enabled
+        var uiSampleBuffer: CMSampleBuffer?
+        if mirrorScreenVideo {
+            let (_, uiSB) = applyEffects(
+                imageBuffer,
+                sampleBuffer,
+                enabledEffects,
+                sceneVideoSourceId,
+                detectionJobs,
+                detections,
+                isSceneSwitchTransition,
+                isFirstAfterAttach,
+                true
+            )
+            if let uiSB {
+                uiSampleBuffer = uiSB
+            }
+        }
+        removeEffects()
+        let screenSampleBuffer = uiSampleBuffer ?? modSampleBuffer
+        screenSampleBuffer.setAttachmentDisplayImmediately()
         if !showCameraPreview, screenPreviewEnabled {
-            drawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+            drawable?.enqueue(screenSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
         }
         if externalDisplayPreview {
             if cleanExternalDisplay {
                 externalDisplayDrawable?.enqueue(sampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
             } else {
-                externalDisplayDrawable?.enqueue(modSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
+                externalDisplayDrawable?.enqueue(screenSampleBuffer, isFirstAfterAttach: isFirstAfterAttach)
             }
         }
         encoder.encodeImageBuffer(

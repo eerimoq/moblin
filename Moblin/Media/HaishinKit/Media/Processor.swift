@@ -204,6 +204,10 @@ final class Processor: @unchecked Sendable {
         video.setScreenPreview(enabled: enabled)
     }
 
+    func setMirrorScreenVideo(mirror: Bool) {
+        video.setMirrorScreenVideo(mirror: mirror)
+    }
+
     func setVideoPreviewEnabled(enabled: Bool) {
         video.setVideoPreviewEnabled(enabled: enabled)
     }

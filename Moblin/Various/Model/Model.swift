@@ -2803,11 +2803,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             forceSceneTransition: database.forceSceneSwitchTransition,
             macScreenCapture: sceneNeedsMacScreenCapture(scene: scene)
         )
+        media.setMirrorScreenVideo(mirror: isMirrored)
         media.attachCamera(
             params: params,
             onSuccess: {
-                self.streamPreviewView.isMirrored = isMirrored
-                self.externalDisplayStreamPreviewView.isMirrored = isMirrored
+                self.streamPreviewView.isMirrored = false
+                self.externalDisplayStreamPreviewView.isMirrored = false
                 if let x = self.setCameraZoomX(x: self.zoom.x) {
                     self.setZoomXWhenInRange(x: x)
                 }
@@ -2846,6 +2847,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         cameraPosition = nil
         streamPreviewView.isMirrored = false
         externalDisplayStreamPreviewView.isMirrored = false
+        media.setMirrorScreenVideo(mirror: false)
         zoom.hasZoom = false
         media.attachBufferedCamera(
             devices: getBuiltinCameraDevices(scene: scene, sceneDevice: nil),
