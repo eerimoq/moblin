@@ -930,6 +930,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
     @Published var baseFps: Float = 5.0
     @Published var styleSheet: String = ""
     @Published var moblinAccess: Bool = false
+    @Published var speechToText: Bool = false
 
     init() {}
 
@@ -942,6 +943,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         case fps
         case styleSheet
         case moblinAccess
+        case speechToText
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -953,6 +955,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         try container.encode(.fps, baseFps)
         try container.encode(.styleSheet, styleSheet)
         try container.encode(.moblinAccess, moblinAccess)
+        try container.encode(.speechToText, speechToText)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -969,6 +972,7 @@ class SettingsWidgetBrowser: Codable, ObservableObject {
         baseFps = container.decode(.fps, Float.self, 5.0)
         styleSheet = container.decode(.styleSheet, String.self, "")
         moblinAccess = container.decode(.moblinAccess, Bool.self, false)
+        speechToText = container.decode(.speechToText, Bool.self, false)
     }
 }
 

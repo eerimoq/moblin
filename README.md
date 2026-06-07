@@ -351,6 +351,25 @@ moblin.onmessage = (message) => {
 };
 ```
 
+Add this code to your website to receive the speech to text
+transcript. You must enable `Settings -> Scenes -> My browser widget
+-> Speech to text` as well. `text` is a sliding window of the latest
+transcript and `position` is the offset of its first character,
+counted from when speech to text started. The transcript is cleared
+after a few seconds of silence.
+
+```js
+moblin.subscribe({ speechToText: {} });
+moblin.onmessage = (message) => {
+  if (message.speechToText !== undefined) {
+    console.log(message.speechToText.position, message.speechToText.text);
+  }
+  if (message.speechToTextClear !== undefined) {
+    console.log("Transcript cleared");
+  }
+};
+```
+
 ## Specification
 
 Topics to subscribe to are defined by `SubscribeTopic` in

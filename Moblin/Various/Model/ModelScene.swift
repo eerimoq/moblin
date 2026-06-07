@@ -1054,7 +1054,7 @@ extension Model {
             case .text:
                 addSceneTextEffects(sceneWidget, widget, &effects, &needsSpeechToText)
             case .browser:
-                addSceneBrowserEffects(sceneWidget, widget, scene, &effects)
+                addSceneBrowserEffects(sceneWidget, widget, scene, &effects, &needsSpeechToText)
             case .crop:
                 addSceneCropEffects(widget, scene, &effects)
             case .map:
@@ -1122,7 +1122,8 @@ extension Model {
         _ sceneWidget: SettingsSceneWidget,
         _ widget: SettingsWidget,
         _ scene: SettingsScene,
-        _ effects: inout [VideoEffect]
+        _ effects: inout [VideoEffect],
+        _ needsSpeechToText: inout Bool
     ) {
         guard let effect = browserEffects[widget.id], !effects.contains(effect) else {
             return
@@ -1132,6 +1133,9 @@ extension Model {
             crops: findWidgetCrops(scene: scene, sourceWidgetId: widget.id)
         )
         effects.append(effect)
+        if widget.browser.moblinAccess, widget.browser.speechToText {
+            needsSpeechToText = true
+        }
     }
 
     private func addSceneCropEffects(

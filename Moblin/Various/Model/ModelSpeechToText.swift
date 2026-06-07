@@ -37,6 +37,9 @@ extension Model {
         for textEffect in textEffects.values {
             textEffect.clearSubtitles()
         }
+        for browserEffect in browserEffects.values {
+            browserEffect.sendSpeechToTextClear()
+        }
         speechToTextTextAligners.removeAll()
     }
 
@@ -61,6 +64,10 @@ extension Model {
                 if widget.widget.alerts.needsSubtitles {
                     return true
                 }
+            case .browser:
+                if widget.widget.browser.moblinAccess, widget.widget.browser.speechToText {
+                    return true
+                }
             default:
                 break
             }
@@ -71,6 +78,9 @@ extension Model {
     func speechToTextClear() {
         for textEffect in textEffects.values {
             textEffect.clearSubtitles()
+        }
+        for browserEffect in browserEffects.values {
+            browserEffect.sendSpeechToTextClear()
         }
         speechToTextTextAligners.removeAll()
         speechToTextAlertMatchOffset = 0
@@ -99,6 +109,12 @@ extension Model {
     ) {
         for textEffect in textEffects.values {
             textEffect.updateSubtitles(position: position, text: text, languageIdentifier: languageIdentifier)
+        }
+    }
+
+    private func speechToTextPartialResultBrowserWidgets(position: Int, text: String) {
+        for browserEffect in browserEffects.values {
+            browserEffect.sendSpeechToText(position: position, text: text)
         }
     }
 
@@ -146,6 +162,7 @@ extension Model: @preconcurrency SpeechToTextDelegate {
         }
         speechToTextPartialResultTextWidgets(position: position, text: text, languageIdentifier: nil)
         speechToTextPartialResultAlertsWidget(text: text)
+        speechToTextPartialResultBrowserWidgets(position: position, text: text)
     }
 }
 

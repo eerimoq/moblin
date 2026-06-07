@@ -56,6 +56,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     private var sceneWidget: SettingsSceneWidget?
     private var crops: [WidgetCrop] = []
     private let server: BrowserEffectServer
+    private let speechToText: Bool
     private var stopped = false
     private var suspended = false
     private let snapshotConfiguration: WKSnapshotConfiguration
@@ -74,6 +75,7 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
         fps = baseFps
         isLoaded = false
         mode = widget.mode
+        speechToText = widget.speechToText
         width = Double(widget.width)
         height = Double(widget.height)
         snapshotConfiguration = WKSnapshotConfiguration()
@@ -112,6 +114,22 @@ final class BrowserEffect: VideoEffect, ObservableObject, @unchecked Sendable {
     @MainActor
     func sendChatMessage(post: ChatPost) {
         server.sendChatMessage(post: post)
+    }
+
+    @MainActor
+    func sendSpeechToText(position: Int, text: String) {
+        guard speechToText else {
+            return
+        }
+        server.sendSpeechToText(position: position, text: text)
+    }
+
+    @MainActor
+    func sendSpeechToTextClear() {
+        guard speechToText else {
+            return
+        }
+        server.sendSpeechToTextClear()
     }
 
     var host: String {

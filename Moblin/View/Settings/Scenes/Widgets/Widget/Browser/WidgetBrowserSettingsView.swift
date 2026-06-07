@@ -140,6 +140,12 @@ struct WidgetBrowserSettingsView: View {
                 .onChange(of: browser.moblinAccess) { _ in
                     model.resetSelectedScene(changeScene: false)
                 }
+            if browser.moblinAccess {
+                Toggle("Speech to text", isOn: $browser.speechToText)
+                    .onChange(of: browser.speechToText) { _ in
+                        model.resetSelectedScene(changeScene: false)
+                    }
+            }
         } footer: {
             Text(
                 "Give the webpage access to various data in Moblin, for example chat messages and your location."
