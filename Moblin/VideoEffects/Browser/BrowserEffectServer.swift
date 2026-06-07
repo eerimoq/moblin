@@ -10,10 +10,13 @@ private enum PublishMessage: Codable {
 
 private enum SubscribeTopic: Codable {
     case chat(prefix: String?)
+    case speechToText
 }
 
 private enum Message: Codable {
     case chat(message: ChatMessage)
+    case speechToText(position: Int, text: String)
+    case speechToTextClear
 }
 
 private struct ChatMessage: Codable {
@@ -55,6 +58,7 @@ private struct Chat {
 
 private class Subscriptions {
     var chat: Chat?
+    var speechToText = false
 }
 
 @MainActor
@@ -103,6 +107,20 @@ class BrowserEffectServer: NSObject {
             }
         }
         send(message: .message(data: .chat(message: .init(message: post))))
+    }
+
+    func sendSpeechToText(position: Int, text: String) {
+        guard subscriptions.speechToText else {
+            return
+        }
+        send(message: .message(data: .speechToText(position: position, text: text)))
+    }
+
+    func sendSpeechToTextClear() {
+        guard subscriptions.speechToText else {
+            return
+        }
+        send(message: .message(data: .speechToTextClear))
     }
 
     private func handlePingTimer() {
@@ -161,6 +179,8 @@ class BrowserEffectServer: NSObject {
         switch topic {
         case let .chat(prefix: prefix):
             subscriptions.chat = .init(prefix: prefix)
+        case .speechToText:
+            subscriptions.speechToText = true
         }
     }
 }

@@ -145,6 +145,19 @@ struct WidgetBrowserSettingsView: View {
                 "Give the webpage access to various data in Moblin, for example chat messages and your location."
             )
         }
+        if browser.moblinAccess {
+            Section {
+                Toggle("Speech to text", isOn: $browser.speechToText)
+                    .onChange(of: browser.speechToText) { _ in
+                        model.resetSelectedScene(changeScene: false)
+                    }
+            } footer: {
+                Text("""
+                Send the speech to text transcript (the same text the subtitles feature uses) \
+                to the webpage.
+                """)
+            }
+        }
         WidgetEffectsView(model: model, widget: widget)
     }
 }
