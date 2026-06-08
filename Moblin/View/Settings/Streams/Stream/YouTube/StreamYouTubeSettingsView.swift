@@ -456,6 +456,21 @@ struct StreamYouTubeSettingsView: View {
         stream.youTubeHandle = value
     }
 
+    private func fetchChannelHandle() {
+        model.getYouTubeApi(stream: stream) { youTubeApi in
+            youTubeApi?.listChannels {
+                switch $0 {
+                case let .success(response):
+                    if let handle = response.items.first?.snippet.customUrl {
+                        stream.youTubeHandle = handle
+                    }
+                case .authError, .error:
+                    break
+                }
+            }
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -500,10 +515,16 @@ struct StreamYouTubeSettingsView: View {
                         }
                     }
                 }
+                .disabled(stream.youTubeHandle.isEmpty)
             } footer: {
                 Text("The Video ID unique for every live stream.")
             }
         }
         .navigationTitle("YouTube")
+        .onChange(of: stream.youTubeAuthState) { authState in
+            if authState != nil {
+                fetchChannelHandle()
+            }
+        }
     }
 }
