@@ -15,7 +15,7 @@ private func setup() -> URL {
 
 private let directory = setup()
 
-final class SimpleStringStorage {
+final class SimpleStringStorage: Sendable {
     private let file: URL
 
     init(key: String) {
@@ -34,7 +34,7 @@ final class SimpleStringStorage {
     }
 }
 
-final class SimpleIntStorage {
+final class SimpleIntStorage: Sendable {
     private let file: URL
 
     init(key: String) {
