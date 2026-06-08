@@ -68,8 +68,8 @@ enum SettingsVideoEffectType: String, Codable, CaseIterable {
     }
 }
 
-private nonisolated(unsafe) let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
-private nonisolated(unsafe) let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
+private let defaultFromColor = RgbColor(red: 220, green: 235, blue: 92)
+private let defaultToColor = RgbColor(red: 82, green: 180, blue: 203)
 
 class SettingsVideoEffectRemoveBackground: Codable, ObservableObject {
     var from: RgbColor = defaultFromColor
@@ -2077,8 +2077,8 @@ struct SettingsBingoCardSquare: Codable, Identifiable {
 }
 
 class SettingsWidgetBingoCard: Codable, ObservableObject {
-    nonisolated(unsafe) static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
-    nonisolated(unsafe) static let baseForegroundColor = RgbColor.white
+    static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
+    static let baseForegroundColor = RgbColor.white
     var backgroundColor: RgbColor = baseBackgroundColor
     @Published var backgroundColorColor: Color = baseBackgroundColor.color()
     var foregroundColor: RgbColor = baseForegroundColor
@@ -2218,10 +2218,10 @@ enum PomodoroBreakIcon: String, Codable, CaseIterable {
 }
 
 class SettingsWidgetPomodoroTimer: Codable, ObservableObject {
-    nonisolated(unsafe) static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
-    nonisolated(unsafe) static let baseForegroundColor = RgbColor.white
-    nonisolated(unsafe) static let baseFocusColor = RgbColor(red: 122, green: 181, blue: 255)
-    nonisolated(unsafe) static let baseBreakColor = RgbColor(red: 103, green: 208, blue: 69)
+    static let baseBackgroundColor = RgbColor.black.withOpacity(opacity: 0.75)
+    static let baseForegroundColor = RgbColor.white
+    static let baseFocusColor = RgbColor(red: 122, green: 181, blue: 255)
+    static let baseBreakColor = RgbColor(red: 103, green: 208, blue: 69)
     @Published var focusDuration: Int = 30
     @Published var breakDuration: Int = 5
     @Published var width: Double = 1.6
@@ -3477,10 +3477,10 @@ class SettingsWidgetScoreboardClock: Codable, ObservableObject {
 class SettingsWidgetModularScoreboard: Codable, ObservableObject {
     static let baseName = String(localized: "🇸🇪 Moblin")
     static let baseTitle = "⚽️"
-    nonisolated(unsafe) static let baseHomeTextColor: RgbColor = .white
-    nonisolated(unsafe) static let baseHomeBackgroundColor: RgbColor = .init(red: 11, green: 16, blue: 172)
-    nonisolated(unsafe) static let baseAwayTextColor: RgbColor = .white
-    nonisolated(unsafe) static let baseAwayBackgroundColor: RgbColor = .init(red: 220, green: 38, blue: 38)
+    static let baseHomeTextColor: RgbColor = .white
+    static let baseHomeBackgroundColor: RgbColor = .init(red: 11, green: 16, blue: 172)
+    static let baseAwayTextColor: RgbColor = .white
+    static let baseAwayBackgroundColor: RgbColor = .init(red: 220, green: 38, blue: 38)
     @Published var home: SettingsWidgetModularScoreboardTeam = createHomeTeam()
     @Published var away: SettingsWidgetModularScoreboardTeam = createAwayTeam()
     @Published var title: String = baseTitle
@@ -3585,10 +3585,9 @@ class SettingsWidgetModularScoreboard: Codable, ObservableObject {
 }
 
 class SettingsWidgetScoreboard: Codable, ObservableObject, @unchecked Sendable {
-    nonisolated(unsafe) static let baseTextColor = RgbColor.white
-    nonisolated(unsafe)
+    static let baseTextColor = RgbColor.white
     static let basePrimaryBackgroundColor = RgbColor(red: 0x0B, green: 0x10, blue: 0xAC)
-    nonisolated(unsafe) static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
+    static let baseSecondaryBackgroundColor = RgbColor(red: 0, green: 3, blue: 0x5B)
     @Published var sport: SettingsWidgetScoreboardSport = .generic
     var textColor = baseTextColor
     @Published var textColorColor: Color = .clear

@@ -666,20 +666,15 @@ extension String {
     }
 }
 
-class RgbColor: Codable, Equatable {
-    static func == (lhs: RgbColor, rhs: RgbColor) -> Bool {
-        lhs.red == rhs.red && lhs.green == rhs.green && lhs.blue == rhs.blue && lhs.opacity == rhs
-            .opacity
-    }
+struct RgbColor: Codable, Equatable {
+    static let white = RgbColor(red: 255, green: 255, blue: 255)
+    static let black = RgbColor(red: 0, green: 0, blue: 0)
 
-    nonisolated(unsafe) static let white = RgbColor(red: 255, green: 255, blue: 255)
-    nonisolated(unsafe) static let black = RgbColor(red: 0, green: 0, blue: 0)
-
-    var red: Int = 0
-    var green: Int = 0
-    var blue: Int = 0
+    let red: Int
+    let green: Int
+    let blue: Int
     // May be nil
-    var opacity: Double?
+    let opacity: Double?
 
     init(red: Int, green: Int, blue: Int, opacity: Double? = nil) {
         self.red = red
