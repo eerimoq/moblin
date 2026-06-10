@@ -119,7 +119,7 @@ class BrowserEffectServer: NSObject {
         }
         let data = message.utf8Data.base64EncodedString()
         webView?.evaluateJavaScript("""
-        moblin.handleMessage(window.atob("\(data)"))
+        moblin.handleMessage("\(data)")
         """)
     }
 

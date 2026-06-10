@@ -16,10 +16,9 @@ class Moblin {
 
   handleMessage(message) {
     if (this.onmessage) {
-      // `message` is a binary string (one byte per char) from atob(); decode it
-      // back to UTF-8 so non-ASCII characters (accents, etc.) survive.
-      const bytes = Uint8Array.from(message, (c) => c.charCodeAt(0));
-      const json = new TextDecoder().decode(bytes);
+      // `message` is base64; decode straight to UTF-8 so non-ASCII characters
+      // (accents, emoji, etc.) survive instead of being read as Latin-1.
+      const json = new TextDecoder().decode(Uint8Array.fromBase64(message));
       this.onmessage(JSON.parse(json).message.data);
     }
   }
