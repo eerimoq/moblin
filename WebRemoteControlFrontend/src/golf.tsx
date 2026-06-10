@@ -339,8 +339,6 @@ function App() {
             {(player, playerIndex) => {
               const par = () => state.pars[state.currentHole] ?? 4;
               const val = () => player.scores[state.currentHole];
-              const minScore = () => HOLE_SCORES[HOLE_SCORES.length - 1];
-              const maxScore = () => HOLE_SCORES[0];
               return (
                 <div class="flex items-center gap-2">
                   <span class="text-sm flex-1 truncate">{player.name}</span>
@@ -349,7 +347,7 @@ function App() {
                       class="score-adj-btn"
                       onClick={() => {
                         const current = val() >= 0 ? val() : par();
-                        setScore(playerIndex(), state.currentHole, Math.max(minScore(), current - 1));
+                        setScore(playerIndex(), state.currentHole, Math.max(1, current - 1));
                       }}
                     >
                       -1
@@ -364,7 +362,7 @@ function App() {
                       class="score-adj-btn"
                       onClick={() => {
                         const current = val() >= 0 ? val() : par();
-                        setScore(playerIndex(), state.currentHole, Math.min(maxScore(), current + 1));
+                        setScore(playerIndex(), state.currentHole, Math.min(10, current + 1));
                       }}
                     >
                       +1
