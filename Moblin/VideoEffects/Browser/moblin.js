@@ -4,6 +4,7 @@ class Moblin {
       this.send({ ping: {} });
     }, 2000);
     this.onmessage = null;
+    this.textDecoder = new TextDecoder();
   }
 
   publish(message) {
@@ -16,9 +17,7 @@ class Moblin {
 
   handleMessage(message) {
     if (this.onmessage) {
-      // `message` is base64; decode straight to UTF-8 so non-ASCII characters
-      // (accents, emoji, etc.) survive instead of being read as Latin-1.
-      const json = new TextDecoder().decode(Uint8Array.fromBase64(message));
+      const json = this.textDecoder.decode(Uint8Array.fromBase64(message));
       this.onmessage(JSON.parse(json).message.data);
     }
   }
