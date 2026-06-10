@@ -275,6 +275,9 @@ private struct MacroView: View {
                     }
                 }
                 Section {
+                    Toggle("Close macros panel on run", isOn: $macro.closePanelOnRun)
+                }
+                Section {
                     if macro.running {
                         TextButtonView("Cancel") {
                             model.stopMacro(macro: macro)
