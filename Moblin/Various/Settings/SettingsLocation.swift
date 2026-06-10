@@ -72,6 +72,7 @@ class SettingsLocation: Codable, ObservableObject {
     @Published var enabled: Bool = false
     @Published var privacyRegions: [SettingsPrivacyRegion] = []
     @Published var distance: Double = 0.0
+    @Published var splitDistance: Double = 0.0
     @Published var resetWhenGoingLive: Bool = false
     @Published var desiredAccuracy: SettingsLocationDesiredAccuracy = .best
     @Published var distanceFilter: SettingsLocationDistanceFilter = .none
@@ -80,6 +81,7 @@ class SettingsLocation: Codable, ObservableObject {
         case enabled
         case privacyRegions
         case distance
+        case splitDistance
         case resetWhenGoingLive
         case desiredAccuracy
         case distanceFilter
@@ -90,6 +92,7 @@ class SettingsLocation: Codable, ObservableObject {
         try container.encode(.enabled, enabled)
         try container.encode(.privacyRegions, privacyRegions)
         try container.encode(.distance, distance)
+        try container.encode(.splitDistance, splitDistance)
         try container.encode(.resetWhenGoingLive, resetWhenGoingLive)
         try container.encode(.desiredAccuracy, desiredAccuracy)
         try container.encode(.distanceFilter, distanceFilter)
@@ -102,6 +105,7 @@ class SettingsLocation: Codable, ObservableObject {
         enabled = container.decode(.enabled, Bool.self, false)
         privacyRegions = container.decode(.privacyRegions, [SettingsPrivacyRegion].self, [])
         distance = container.decode(.distance, Double.self, 0.0)
+        splitDistance = container.decode(.splitDistance, Double.self, 0.0)
         resetWhenGoingLive = container.decode(.resetWhenGoingLive, Bool.self, false)
         desiredAccuracy = container.decode(.desiredAccuracy, SettingsLocationDesiredAccuracy.self, .best)
         distanceFilter = container.decode(.distanceFilter, SettingsLocationDistanceFilter.self, .none)

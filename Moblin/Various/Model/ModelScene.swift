@@ -1521,6 +1521,7 @@ extension Model {
                 averageSpeed: format(speed: averageSpeed),
                 altitude: format(altitude: location?.altitude ?? 0),
                 distance: getDistance(),
+                splitDistance: getSplitDistance(),
                 slope: "\(Int(slopePercent))%",
                 conditions: weather?.symbolName,
                 temperature: weather?.temperature,

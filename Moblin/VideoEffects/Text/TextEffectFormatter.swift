@@ -111,6 +111,8 @@ class TextEffectFormatter {
                 formatAltitude(stats: stats)
             case .distance:
                 formatDistance(stats: stats)
+            case .splitDistance:
+                formatSplitDistance(stats: stats)
             case .slope:
                 formatSlope(stats: stats)
             case .timer:
@@ -255,6 +257,10 @@ class TextEffectFormatter {
 
     private func formatDistance(stats: TextEffectStats) {
         appendTextPart(value: stats.distance)
+    }
+
+    private func formatSplitDistance(stats: TextEffectStats) {
+        appendTextPart(value: stats.splitDistance)
     }
 
     private func formatSlope(stats: TextEffectStats) {

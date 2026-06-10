@@ -16,6 +16,7 @@ enum TextFormatPart: Equatable {
     case averageSpeed
     case altitude
     case distance
+    case splitDistance
     case slope
     case timer
     case stopwatch
@@ -94,6 +95,8 @@ class TextFormatLoader {
                 } else if formatFromIndex.hasPrefix("{altitude}") {
                     loadItem(part: .altitude, offsetBy: 10)
                 } else if appendRunDistanceIfPresent(formatFromIndex: formatFromIndex) {
+                } else if formatFromIndex.hasPrefix("{splitdistance}") {
+                    loadItem(part: .splitDistance, offsetBy: 15)
                 } else if formatFromIndex.hasPrefix("{distance}") {
                     loadItem(part: .distance, offsetBy: 10)
                 } else if formatFromIndex.hasPrefix("{slope}") {

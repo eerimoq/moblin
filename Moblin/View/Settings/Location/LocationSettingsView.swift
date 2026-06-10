@@ -62,13 +62,18 @@ struct LocationSettingsView: View {
             }
             Section {
                 Toggle("Reset when going live", isOn: $location.resetWhenGoingLive)
+                TextButtonView("Split") {
+                    model.splitLocationData()
+                }
                 TextButtonView("Reset") {
                     model.resetLocationData()
                 }
             } header: {
                 Text("Location data")
             } footer: {
-                Text("Resets distance, average speed and slope.")
+                Text(
+                    "Split resets split distance only. Reset resets distance, split distance, average speed and slope."
+                )
             }
             if database.showAllSettings, stream !== fallbackStream {
                 ShortcutSectionView {

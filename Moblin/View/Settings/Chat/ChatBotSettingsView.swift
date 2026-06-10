@@ -267,7 +267,22 @@ private struct LocationPermissionsSettingsView: View {
                 permissions: permissions
             )
         } footer: {
-            Text("Resets distance, average speed and slope.")
+            Text("Resets distance, split distance, average speed and slope.")
+        }
+    }
+}
+
+private struct LocationSplitPermissionsSettingsView: View {
+    let permissions: SettingsChatBotPermissionsCommand
+
+    var body: some View {
+        Section {
+            PermissionsSettingsView(
+                title: "!moblin location split",
+                permissions: permissions
+            )
+        } footer: {
+            Text("Resets split distance only.")
         }
     }
 }
@@ -456,6 +471,7 @@ private struct ChatBotCommandsSettingsView: View {
             FixPermissionsSettingsView(permissions: permissions.fix)
             GimbalPermissionsSettingsView(permissions: permissions.gimbal)
             LocationPermissionsSettingsView(permissions: permissions.location)
+            LocationSplitPermissionsSettingsView(permissions: permissions.locationSplit)
             MacroPermissionsSettingsView(permissions: permissions.macro)
             MapPermissionsSettingsView(permissions: permissions.map)
             MuteUnmutePermissionsSettingsView(permissions: permissions.audio)
