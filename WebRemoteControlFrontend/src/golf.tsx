@@ -363,6 +363,32 @@ function App() {
                     </For>
                     <option value="-1">-</option>
                   </select>
+                  <div class="flex items-center gap-1">
+                    <button
+                      class="score-adj-btn"
+                      onClick={() => {
+                        const current = val() >= 0 ? val() : par();
+                        setScore(playerIndex(), state.currentHole, Math.max(1, current - 1));
+                      }}
+                    >
+                      -1
+                    </button>
+                    <button
+                      class="score-adj-btn"
+                      onClick={() => setScore(playerIndex(), state.currentHole, par())}
+                    >
+                      PAR
+                    </button>
+                    <button
+                      class="score-adj-btn"
+                      onClick={() => {
+                        const current = val() >= 0 ? val() : par();
+                        setScore(playerIndex(), state.currentHole, Math.min(10, current + 1));
+                      }}
+                    >
+                      +1
+                    </button>
+                  </div>
                 </div>
               );
             }}
