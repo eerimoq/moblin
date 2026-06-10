@@ -339,9 +339,37 @@ function App() {
             {(player, playerIndex) => {
               const par = () => state.pars[state.currentHole] ?? 4;
               const val = () => player.scores[state.currentHole];
+              const minScore = () => HOLE_SCORES[HOLE_SCORES.length - 1];
+              const maxScore = () => HOLE_SCORES[0];
               return (
                 <div class="flex items-center gap-2">
                   <span class="text-sm flex-1 truncate">{player.name}</span>
+                  <div class="flex items-center gap-1">
+                    <button
+                      class="score-adj-btn"
+                      onClick={() => {
+                        const current = val() >= 0 ? val() : par();
+                        setScore(playerIndex(), state.currentHole, Math.max(minScore(), current - 1));
+                      }}
+                    >
+                      -1
+                    </button>
+                    <button
+                      class="score-adj-btn score-adj-par"
+                      onClick={() => setScore(playerIndex(), state.currentHole, par())}
+                    >
+                      PAR
+                    </button>
+                    <button
+                      class="score-adj-btn"
+                      onClick={() => {
+                        const current = val() >= 0 ? val() : par();
+                        setScore(playerIndex(), state.currentHole, Math.min(maxScore(), current + 1));
+                      }}
+                    >
+                      +1
+                    </button>
+                  </div>
                   <select
                     class="score-select"
                     style={{ color: val() >= 0 ? scoreOptionColor(val(), par()) : "" }}
