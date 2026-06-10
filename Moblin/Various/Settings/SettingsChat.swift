@@ -165,6 +165,7 @@ class SettingsChatBotPermissions: Codable {
     var stream: SettingsChatBotPermissionsCommand = .init(moderatorsEnabled: false)
     var widget: SettingsChatBotPermissionsCommand = .init()
     var location: SettingsChatBotPermissionsCommand = .init()
+    var locationSplit: SettingsChatBotPermissionsCommand = .init()
     var ai: SettingsChatBotPermissionsCommand = .init()
     var twitch: SettingsChatBotPermissionsCommand = .init()
     var gimbal: SettingsChatBotPermissionsCommand = .init()
@@ -188,6 +189,7 @@ class SettingsChatBotPermissions: Codable {
         case stream
         case widget
         case location
+        case locationSplit
         case ai
         case twitch
         case gimbal
@@ -213,6 +215,7 @@ class SettingsChatBotPermissions: Codable {
         try container.encode(.stream, stream)
         try container.encode(.widget, widget)
         try container.encode(.location, location)
+        try container.encode(.locationSplit, locationSplit)
         try container.encode(.ai, ai)
         try container.encode(.twitch, twitch)
         try container.encode(.gimbal, gimbal)
@@ -240,6 +243,7 @@ class SettingsChatBotPermissions: Codable {
         stream = container.decode(.stream, SettingsChatBotPermissionsCommand.self, .init())
         widget = container.decode(.widget, SettingsChatBotPermissionsCommand.self, .init())
         location = container.decode(.location, SettingsChatBotPermissionsCommand.self, .init())
+        locationSplit = container.decode(.locationSplit, SettingsChatBotPermissionsCommand.self, .init())
         ai = container.decode(.ai, SettingsChatBotPermissionsCommand.self, .init())
         twitch = container.decode(.twitch, SettingsChatBotPermissionsCommand.self, .init())
         gimbal = container.decode(.gimbal, SettingsChatBotPermissionsCommand.self, .init())
