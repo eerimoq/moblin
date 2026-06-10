@@ -22,6 +22,9 @@ private struct MacroView: View {
             } else {
                 Button {
                     model.startMacro(macro: macro)
+                    if macro.autoClosePanel {
+                        model.toggleShowingPanel(type: nil, panel: .none)
+                    }
                 } label: {
                     Text("Run")
                 }

@@ -229,6 +229,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
     @Published var finished: Bool = false
     @Published var repeatMode: SettingsMacrosMacroRepeatMode = .off
     @Published var repeatCount: Int = 5
+    @Published var autoClosePanel: Bool = false
     var nextActionIndex: Int = 0
     var repeatCurrentCount: Int = 0
     let delayTimer = SimpleTimer(queue: .main)
@@ -243,6 +244,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         case actions
         case repeatMode
         case repeatCount
+        case autoClosePanel
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -252,6 +254,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         try container.encode(.actions, actions)
         try container.encode(.repeatMode, repeatMode)
         try container.encode(.repeatCount, repeatCount)
+        try container.encode(.autoClosePanel, autoClosePanel)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -261,6 +264,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         actions = container.decode(.actions, [SettingsMacrosAction].self, [])
         repeatMode = container.decode(.repeatMode, SettingsMacrosMacroRepeatMode.self, .off)
         repeatCount = container.decode(.repeatCount, Int.self, 5)
+        autoClosePanel = container.decode(.autoClosePanel, Bool.self, false)
     }
 
     func copy() -> SettingsMacrosMacro {
@@ -269,6 +273,7 @@ class SettingsMacrosMacro: Identifiable, Codable, ObservableObject, Named {
         new.name = name
         new.repeatMode = repeatMode
         new.repeatCount = repeatCount
+        new.autoClosePanel = autoClosePanel
         new.actions = actions
         return new
     }

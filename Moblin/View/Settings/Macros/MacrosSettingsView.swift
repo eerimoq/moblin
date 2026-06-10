@@ -289,6 +289,7 @@ private struct MacroView: View {
                             model.startMacro(macro: macro)
                         }
                     }
+                    Toggle("Auto close panel", isOn: $macro.autoClosePanel)
                 }
             }
             .navigationTitle("Macro")
