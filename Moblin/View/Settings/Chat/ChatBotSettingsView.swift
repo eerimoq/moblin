@@ -263,11 +263,17 @@ private struct LocationPermissionsSettingsView: View {
     var body: some View {
         Section {
             PermissionsSettingsView(
-                title: "!moblin location data reset",
+                title: "!moblin location ...",
                 permissions: permissions
             )
         } footer: {
-            Text("Resets distance, average speed and slope.")
+            VStack(alignment: .leading) {
+                Text(String("!moblin location data reset"))
+                Text("Resets distances, average speed and slope.")
+                Text("")
+                Text(String("!moblin location data split"))
+                Text("Reset split distance.")
+            }
         }
     }
 }

@@ -115,6 +115,8 @@ extension Model {
             handleChatBotMessageMapZoomOut(command: command)
         case "location data reset":
             handleChatBotMessageLocationDataReset(command: command)
+        case "location data split":
+            handleChatBotMessageLocationDataSplit(command: command)
         case "snapshot":
             handleChatBotMessageSnapshot(command: command)
         case "mute":
@@ -255,6 +257,15 @@ extension Model {
             command: command
         ) {
             self.resetLocationData()
+        }
+    }
+
+    private func handleChatBotMessageLocationDataSplit(command: ChatBotCommand) {
+        executeIfUserAllowedToUseChatBot(
+            permissions: database.chat.botCommandPermissions.location,
+            command: command
+        ) {
+            self.resetSplitDistance()
         }
     }
 

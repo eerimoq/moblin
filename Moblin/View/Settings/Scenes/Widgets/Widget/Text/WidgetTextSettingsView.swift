@@ -744,6 +744,11 @@ private struct LocationVariablesView: View {
                         description: String(localized: "Show distance"),
                         text: $value
                     )
+                    VariableView(
+                        title: "{splitDistance}",
+                        description: String(localized: "Show split distance"),
+                        text: $value
+                    )
                     VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
                 }
             }

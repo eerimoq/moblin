@@ -107,6 +107,7 @@ struct TextEffectSuite {
                         averageSpeed: "",
                         altitude: "",
                         distance: "",
+                        splitDistance: "",
                         slope: "",
                         conditions: conditions,
                         temperature: nil,
