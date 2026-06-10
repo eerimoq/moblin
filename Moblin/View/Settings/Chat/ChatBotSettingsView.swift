@@ -266,8 +266,14 @@ private struct LocationPermissionsSettingsView: View {
                 title: "!moblin location data reset",
                 permissions: permissions
             )
+            PermissionsSettingsView(
+                title: "!moblin location split",
+                permissions: permissions
+            )
         } footer: {
-            Text("Resets distance, average speed and slope.")
+            Text(
+                "Reset resets distance, split distance, average speed and slope. Split resets split distance only."
+            )
         }
     }
 }

@@ -23,13 +23,22 @@ extension Model {
 
     private func resetDistance() {
         database.location.distance = 0.0
+        database.location.splitDistance = 0.0
         latestKnownLocation = nil
+    }
+
+    private func resetSplitDistance() {
+        database.location.splitDistance = 0.0
     }
 
     func resetLocationData() {
         resetDistance()
         resetAverageSpeed()
         resetSlope()
+    }
+
+    func splitLocationData() {
+        resetSplitDistance()
     }
 
     func isLocationEnabled() -> Bool {
@@ -82,6 +91,7 @@ extension Model {
             let distance = location?.distance(from: latestKnownLocation) ?? 0
             if distance > latestKnownLocation.horizontalAccuracy {
                 database.location.distance += distance
+                database.location.splitDistance += distance
                 self.latestKnownLocation = location
             }
         } else {
@@ -123,6 +133,10 @@ extension Model {
 
     func getDistance() -> String {
         format(distance: database.location.distance)
+    }
+
+    func getSplitDistance() -> String {
+        format(distance: database.location.splitDistance)
     }
 
     func isShowingStatusLocation() -> Bool {

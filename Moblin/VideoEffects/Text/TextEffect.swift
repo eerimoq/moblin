@@ -15,6 +15,7 @@ struct TextEffectStats {
     let averageSpeed: String
     let altitude: String
     let distance: String
+    let splitDistance: String
     let slope: String
     let conditions: String?
     let temperature: Measurement<UnitTemperature>?
