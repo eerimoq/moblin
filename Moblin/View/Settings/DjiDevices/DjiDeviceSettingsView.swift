@@ -71,34 +71,16 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
 }
 
 private struct DjiDeviceWiFiSettingsView: View {
+    let model: Model
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
         Section {
             NavigationLink {
-                TextEditView(
-                    title: String(localized: "SSID"),
-                    value: device.wifiSsid,
-                    onSubmit: {
-                        device.wifiSsid = $0
-                    }
-                )
+                DjiDeviceWiFiSettingsInnerView(model: model, database: model.database, device: device)
             } label: {
-                TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
+                TextItemLocalizedView(name: "Network", value: device.wifiSsid)
             }
-            .disabled(device.isStarted)
-            NavigationLink {
-                TextEditView(
-                    title: String(localized: "Password"),
-                    value: device.wifiPassword,
-                    onSubmit: {
-                        device.wifiPassword = $0
-                    }
-                )
-            } label: {
-                TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
-            }
-            .disabled(device.isStarted)
             if device.wifiSsid.isEmpty {
                 Text("⚠️ Enter the SSID of the network the DJI device should connect to.")
             }
@@ -107,18 +89,116 @@ private struct DjiDeviceWiFiSettingsView: View {
         } footer: {
             Text("The DJI device will connect to and stream RTMP over this WiFi.")
         }
-        .onAppear {
-            NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-                guard let ssid = network?.ssid else {
-                    return
+    }
+}
+
+private struct DjiDeviceWiFiSettingsInnerView: View {
+    let model: Model
+    @ObservedObject var database: Database
+    @ObservedObject var device: SettingsDjiDevice
+
+    var body: some View {
+        Form {
+            Section {
+                NavigationLink {
+                    TextEditView(
+                        title: String(localized: "SSID"),
+                        value: device.wifiSsid,
+                        onSubmit: {
+                            device.wifiSsid = $0
+                            if let password = database.savedWifiNetworks.first(where: {
+                                $0.ssid == device.wifiSsid
+                            })?.password {
+                                device.wifiPassword = password
+                            } else if !device.wifiPassword.isEmpty {
+                                let network = SettingsWiFi()
+                                network.ssid = device.wifiSsid
+                                network.password = device.wifiPassword
+                                database.savedWifiNetworks.append(network)
+                            }
+                        }
+                    )
+                } label: {
+                    TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
                 }
-                DispatchQueue.main.async {
-                    if device.wifiSsid.isEmpty {
-                        device.wifiSsid = ssid
+                .disabled(device.isStarted)
+                NavigationLink {
+                    TextEditView(
+                        title: String(localized: "Password"),
+                        value: device.wifiPassword,
+                        onSubmit: {
+                            device.wifiPassword = $0
+                            if let network = database.savedWifiNetworks.first(where: {$0.ssid == device.wifiSsid}) {
+                                network.password = device.wifiPassword
+                            } else if !device.wifiSsid.isEmpty {
+                                let network = SettingsWiFi()
+                                network.ssid = device.wifiSsid
+                                network.password = device.wifiPassword
+                                database.savedWifiNetworks.append(network)
+                            }
+                        }
+                    )
+                } label: {
+                    TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
+                }
+                .disabled(device.isStarted)
+            } header: {
+                Text("Network")
+            }
+            .onAppear {
+                NEHotspotNetwork.fetchCurrent(completionHandler: { network in
+                    guard let ssid = network?.ssid else {
+                        return
                     }
+                    DispatchQueue.main.async {
+                        if device.wifiSsid.isEmpty {
+                            device.wifiSsid = ssid
+                            device.wifiPassword = database.savedWifiNetworks
+                                .first(where: { $0.ssid == ssid })?.password ?? ""
+                        }
+                    }
+                })
+                if !device.wifiSsid.isEmpty, device.wifiPassword.isEmpty {
+                    device.wifiPassword = database.savedWifiNetworks
+                        .first(where: { $0.ssid == device.wifiSsid })?.password ?? ""
                 }
-            })
+            }
+            if !database.savedWifiNetworks.isEmpty {
+                Section {
+                    ForEach(database.savedWifiNetworks) { network in
+                        Button {
+                            device.wifiSsid = network.ssid
+                            device.wifiPassword = network.password
+                        } label: {
+                            HStack {
+                                Text(network.ssid)
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                if device.wifiSsid == network.ssid, device.wifiPassword == network.password {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                        .contextMenu {
+                            if isMac() {
+                                ContextMenuDeleteButtonView {
+                                    database.savedWifiNetworks.removeAll(where: { $0.ssid == network.ssid })
+                                }
+                            }
+                        }
+                    }
+                    .onDelete { offsets in
+                        database.savedWifiNetworks.remove(atOffsets: offsets)
+                    }
+                } header: {
+                    Text("Saved networks")
+                } footer: {
+                    SwipeLeftToDeleteHelpView(kind: String(localized: "a network"))
+                }
+            }
         }
+        .navigationTitle("WiFi")
     }
 }
 
@@ -353,7 +433,7 @@ struct DjiDeviceSettingsView: View {
                 NameEditView(name: $device.name, existingNames: djiDevices.devices)
             }
             DjiDeviceSelectDeviceSettingsView(device: device)
-            DjiDeviceWiFiSettingsView(device: device)
+            DjiDeviceWiFiSettingsView(model: model, device: device)
             DjiDeviceRtmpSettingsView(
                 device: device,
                 status: model.statusOther,

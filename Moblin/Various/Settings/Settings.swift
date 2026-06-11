@@ -1066,6 +1066,34 @@ class SettingsBeauty: Codable, ObservableObject {
     }
 }
 
+class SettingsWiFi: Codable, Identifiable, ObservableObject {
+    var id: String {
+        ssid
+    }
+
+    var ssid: String = ""
+    var password: String = ""
+
+    enum CodingKeys: CodingKey {
+        case ssid
+        case password
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(.ssid, ssid)
+        try container.encode(.password, password)
+    }
+
+    init() {}
+
+    required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        ssid = container.decode(.ssid, String.self, "")
+        password = container.decode(.password, String.self, "")
+    }
+}
+
 class Database: Codable, ObservableObject {
     @Published var streams: [SettingsStream] = []
     @Published var scenes: [SettingsScene] = []
@@ -1123,6 +1151,7 @@ class Database: Codable, ObservableObject {
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
+    @Published var savedWifiNetworks: [SettingsWiFi] = []
     var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
@@ -1260,6 +1289,7 @@ class Database: Codable, ObservableObject {
         case talkBack
         case gimbal
         case scoreboardSizeMigrated
+        case savedWifiNetworks
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1343,6 +1373,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.talkBack, talkback)
         try container.encode(.gimbal, gimbal)
         try container.encode(.scoreboardSizeMigrated, scoreboardSizeMigrated)
+        try container.encode(.savedWifiNetworks, savedWifiNetworks)
     }
 
     init() {}
@@ -1476,6 +1507,7 @@ class Database: Codable, ObservableObject {
         talkback = container.decode(.talkBack, SettingsTalkback.self, .init())
         gimbal = container.decode(.gimbal, SettingsGimbal.self, .init())
         scoreboardSizeMigrated = container.decode(.scoreboardSizeMigrated, Bool.self, false)
+        savedWifiNetworks = container.decode(.savedWifiNetworks, [SettingsWiFi].self, [])
         if !scoreboardSizeMigrated {
             for widget in widgets where widget.type == .scoreboard {
                 for scene in scenes {
