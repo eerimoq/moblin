@@ -188,7 +188,8 @@ class BufferedAudio {
                                      _ drift: Double) -> Bool
     {
         // Do not skip any buffers unless very far apart.
-        let candidatePresentationTimeStamp = candidateSampleBuffer.presentationTimeStamp.seconds + drift + audioOffset
+        let candidatePresentationTimeStamp = candidateSampleBuffer.presentationTimeStamp
+            .seconds + drift + audioOffset
         let delta = candidatePresentationTimeStamp - outputPresentationTimeStamp
         if abs(delta) > 0.05 {
             isSyncingWithOutput = true

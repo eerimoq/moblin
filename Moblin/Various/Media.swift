@@ -943,7 +943,12 @@ final class Media: NSObject, @unchecked Sendable {
     }
 
     func addBufferedAudio(cameraId: UUID, name: String, latency: Double, audioOffset: Double = 0) {
-        processor?.addBufferedAudio(cameraId: cameraId, name: name, latency: latency, audioOffset: audioOffset)
+        processor?.addBufferedAudio(
+            cameraId: cameraId,
+            name: name,
+            latency: latency,
+            audioOffset: audioOffset
+        )
     }
 
     func setBufferedAudioOffset(cameraId: UUID, offset: Double) {
