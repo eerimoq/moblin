@@ -326,7 +326,7 @@ function App() {
               <span class="text-xs text-zinc-500">Par</span>
               <select
                 value={String(state.pars[state.currentHole] ?? 4)}
-                class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm"
+                class="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm hole-par-select"
                 onChange={(event) => changeCurrentPar(parseInt(event.target.value))}
               >
                 <For each={HOLE_PARS}>
