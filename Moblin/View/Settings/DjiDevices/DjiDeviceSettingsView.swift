@@ -71,53 +71,109 @@ private struct DjiDeviceSelectDeviceSettingsView: View {
 }
 
 private struct DjiDeviceWiFiSettingsView: View {
+    @EnvironmentObject var model: Model
     @ObservedObject var device: SettingsDjiDevice
 
     var body: some View {
-        Section {
-            NavigationLink {
-                TextEditView(
-                    title: String(localized: "SSID"),
-                    value: device.wifiSsid,
-                    onSubmit: {
-                        device.wifiSsid = $0
-                    }
-                )
-            } label: {
-                TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
-            }
-            .disabled(device.isStarted)
-            NavigationLink {
-                TextEditView(
-                    title: String(localized: "Password"),
-                    value: device.wifiPassword,
-                    onSubmit: {
-                        device.wifiPassword = $0
-                    }
-                )
-            } label: {
-                TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
-            }
-            .disabled(device.isStarted)
-            if device.wifiSsid.isEmpty {
-                Text("⚠️ Enter the SSID of the network the DJI device should connect to.")
-            }
-        } header: {
-            Text("WiFi")
-        } footer: {
-            Text("The DJI device will connect to and stream RTMP over this WiFi.")
-        }
-        .onAppear {
-            NEHotspotNetwork.fetchCurrent(completionHandler: { network in
-                guard let ssid = network?.ssid else {
-                    return
+        Group {
+            Section {
+                NavigationLink {
+                    TextEditView(
+                        title: String(localized: "SSID"),
+                        value: device.wifiSsid,
+                        onSubmit: {
+                            device.wifiSsid = $0
+                            if let savedPassword = model.database.savedWifiNetworks[$0] {
+                                device.wifiPassword = savedPassword
+                            } else {
+                                if !device.wifiPassword.isEmpty {
+                                    model.database.savedWifiNetworks[$0] = device.wifiPassword
+                                    model.storeSettings()
+                                }
+                            }
+                        }
+                    )
+                } label: {
+                    TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
                 }
-                DispatchQueue.main.async {
-                    if device.wifiSsid.isEmpty {
-                        device.wifiSsid = ssid
+                .disabled(device.isStarted)
+                NavigationLink {
+                    TextEditView(
+                        title: String(localized: "Password"),
+                        value: device.wifiPassword,
+                        onSubmit: {
+                            device.wifiPassword = $0
+                            if !device.wifiSsid.isEmpty {
+                                model.database.savedWifiNetworks[device.wifiSsid] = $0
+                                model.storeSettings()
+                            }
+                        }
+                    )
+                } label: {
+                    TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
+                }
+                .disabled(device.isStarted)
+                if device.wifiSsid.isEmpty {
+                    Text("⚠️ Enter the SSID of the network the DJI device should connect to.")
+                }
+            } header: {
+                Text("WiFi")
+            } footer: {
+                Text("The DJI device will connect to and stream RTMP over this WiFi.")
+            }
+            .onAppear {
+                NEHotspotNetwork.fetchCurrent(completionHandler: { network in
+                    guard let ssid = network?.ssid else {
+                        return
+                    }
+                    DispatchQueue.main.async {
+                        if device.wifiSsid.isEmpty {
+                            device.wifiSsid = ssid
+                            if let savedPassword = model.database.savedWifiNetworks[ssid] {
+                                device.wifiPassword = savedPassword
+                            }
+                        }
+                    }
+                })
+                if !device.wifiSsid.isEmpty && device.wifiPassword.isEmpty {
+                    if let savedPassword = model.database.savedWifiNetworks[device.wifiSsid] {
+                        device.wifiPassword = savedPassword
                     }
                 }
-            })
+            }
+
+            if !model.database.savedWifiNetworks.isEmpty {
+                Section {
+                    ForEach(model.database.savedWifiNetworks.keys.sorted(), id: \.self) { ssid in
+                        Button {
+                            device.wifiSsid = ssid
+                            device.wifiPassword = model.database.savedWifiNetworks[ssid] ?? ""
+                        } label: {
+                            HStack {
+                                Text(ssid)
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                if device.wifiSsid == ssid {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                model.database.savedWifiNetworks.removeValue(forKey: ssid)
+                                model.storeSettings()
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Saved Networks")
+                } footer: {
+                    Text("Tap a network to select it, or swipe left to delete.")
+                }
+            }
         }
     }
 }

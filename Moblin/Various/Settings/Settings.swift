@@ -1123,6 +1123,7 @@ class Database: Codable, ObservableObject {
     var blackSharkCoolerDevices: SettingsBlackSharkCoolerDevices = .init()
     var remoteSceneId: UUID?
     @Published var sceneNumericInput: Bool = false
+    @Published var savedWifiNetworks: [String: String] = [:]
     var goPro: SettingsGoPro = .init()
     var replay: SettingsReplay = .init()
     var portraitVideoOffsetFromTop: Double = 0.0
@@ -1260,6 +1261,7 @@ class Database: Codable, ObservableObject {
         case talkBack
         case gimbal
         case scoreboardSizeMigrated
+        case savedWifiNetworks
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -1343,6 +1345,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.talkBack, talkback)
         try container.encode(.gimbal, gimbal)
         try container.encode(.scoreboardSizeMigrated, scoreboardSizeMigrated)
+        try container.encode(.savedWifiNetworks, savedWifiNetworks)
     }
 
     init() {}
@@ -1476,6 +1479,7 @@ class Database: Codable, ObservableObject {
         talkback = container.decode(.talkBack, SettingsTalkback.self, .init())
         gimbal = container.decode(.gimbal, SettingsGimbal.self, .init())
         scoreboardSizeMigrated = container.decode(.scoreboardSizeMigrated, Bool.self, false)
+        savedWifiNetworks = container.decode(.savedWifiNetworks, [String: String].self, [:])
         if !scoreboardSizeMigrated {
             for widget in widgets where widget.type == .scoreboard {
                 for scene in scenes {
