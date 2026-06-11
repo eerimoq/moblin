@@ -115,7 +115,7 @@ extension Model {
             handleChatBotMessageMapZoomOut(command: command)
         case "location data reset":
             handleChatBotMessageLocationDataReset(command: command)
-        case "location split":
+        case "location data split":
             handleChatBotMessageLocationSplit(command: command)
         case "snapshot":
             handleChatBotMessageSnapshot(command: command)
