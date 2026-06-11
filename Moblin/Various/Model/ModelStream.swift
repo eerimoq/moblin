@@ -800,7 +800,27 @@ extension Model {
             sendIsLiveToWatch(isLive: isLive)
         }
         remoteControlStateChanged(state: RemoteControlAssistantStreamerState(streaming: isLive))
+        #if targetEnvironment(macCatalyst)
+        setMacAppIconForLiveState()
+        #endif
     }
+
+    #if targetEnvironment(macCatalyst)
+    private func setMacAppIconForLiveState() {
+        let iconName: String? = if isLive {
+            "AppIconLooking"
+        } else if database.iconImage == plainIcon.id {
+            nil
+        } else {
+            database.iconImage
+        }
+        UIApplication.shared.setAlternateIconName(iconName) { error in
+            if let error {
+                logger.debug("stream: Failed to change app icon: \(error)")
+            }
+        }
+    }
+    #endif
 
     func setStreamFps(fps: Int? = nil) {
         media.setFps(fps: fps ?? stream.fps, preferAutoFps: stream.lowLightBoost)
