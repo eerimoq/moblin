@@ -816,7 +816,7 @@ extension Model {
         }
         UIApplication.shared.setAlternateIconName(iconName) { error in
             if let error {
-                logger.debug("stream: Failed to change app icon: \(error)")
+                logger.info("stream: Failed to change app icon: \(error)")
             }
         }
     }
