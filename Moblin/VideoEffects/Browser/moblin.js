@@ -4,6 +4,7 @@ class Moblin {
       this.send({ ping: {} });
     }, 2000);
     this.onmessage = null;
+    this.textDecoder = new TextDecoder();
   }
 
   publish(message) {
@@ -16,7 +17,8 @@ class Moblin {
 
   handleMessage(message) {
     if (this.onmessage) {
-      this.onmessage(JSON.parse(message).message.data);
+      const json = this.textDecoder.decode(Uint8Array.fromBase64(message));
+      this.onmessage(JSON.parse(json).message.data);
     }
   }
 
