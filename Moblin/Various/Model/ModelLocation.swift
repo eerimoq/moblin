@@ -27,7 +27,7 @@ extension Model {
         latestKnownLocation = nil
     }
 
-    private func resetSplitDistance() {
+    func resetSplitDistance() {
         database.location.splitDistance = 0.0
     }
 
@@ -35,10 +35,6 @@ extension Model {
         resetDistance()
         resetAverageSpeed()
         resetSlope()
-    }
-
-    func splitLocationData() {
-        resetSplitDistance()
     }
 
     func isLocationEnabled() -> Bool {

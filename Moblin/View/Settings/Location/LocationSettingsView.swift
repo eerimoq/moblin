@@ -63,7 +63,7 @@ struct LocationSettingsView: View {
             Section {
                 Toggle("Reset when going live", isOn: $location.resetWhenGoingLive)
                 TextButtonView("Split") {
-                    model.splitLocationData()
+                    model.resetSplitDistance()
                 }
                 TextButtonView("Reset") {
                     model.resetLocationData()
