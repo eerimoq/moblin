@@ -125,6 +125,8 @@ class TextEffectFormatter {
                 formatFeelsLikeTemperature(stats: stats)
             case .wind:
                 formatWind(stats: stats)
+            case .windKmh:
+                formatWindKmh(stats: stats)
             case .country:
                 formatCountry(stats: stats)
             case .countryFlag:
@@ -311,6 +313,18 @@ class TextEffectFormatter {
                 appendTextPart(value: formatWindAndGustSpeed(speed: windSpeed, gust: windGust))
             } else {
                 appendTextPart(value: formatWindSpeed(speed: windSpeed))
+            }
+        } else {
+            appendTextPart(value: "-")
+        }
+    }
+
+    private func formatWindKmh(stats: TextEffectStats) {
+        if let windSpeed = stats.windSpeed {
+            if let windGust = stats.windGust {
+                appendTextPart(value: formatWindAndGustSpeedKmh(speed: windSpeed, gust: windGust))
+            } else {
+                appendTextPart(value: formatWindSpeedKmh(speed: windSpeed))
             }
         } else {
             appendTextPart(value: "-")
