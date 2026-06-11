@@ -26,7 +26,11 @@ private struct MacroView: View {
                         model.toggleShowingPanel(type: nil, panel: .none)
                     }
                 } label: {
-                    Text("Run")
+                    if macro.closePanelOnRun {
+                        Text("Run and close")
+                    } else {
+                        Text("Run")
+                    }
                 }
                 .buttonStyle(.borderless)
             }
