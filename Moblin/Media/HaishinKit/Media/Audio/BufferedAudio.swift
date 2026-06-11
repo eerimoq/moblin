@@ -26,6 +26,7 @@ class BufferedAudio {
     weak var delegate: (any BufferedAudioSampleBufferDelegate)?
     private var hasBufferBeenAppended = false
     let latency: Double
+    var audioOffset: Double = 0
     private var stats = BufferedStats()
     private let manualOutput: Bool
 
@@ -171,7 +172,7 @@ class BufferedAudio {
                                        _ drift: Double) -> Bool
     {
         // Find the first frame that is ahead in time.
-        let nextPresentationTimeStamp = nextSampleBuffer.presentationTimeStamp.seconds + drift
+        let nextPresentationTimeStamp = nextSampleBuffer.presentationTimeStamp.seconds + drift + audioOffset
         let delta = nextPresentationTimeStamp - outputPresentationTimeStamp
         guard delta > 0 else {
             return false
@@ -187,7 +188,7 @@ class BufferedAudio {
                                      _ drift: Double) -> Bool
     {
         // Do not skip any buffers unless very far apart.
-        let candidatePresentationTimeStamp = candidateSampleBuffer.presentationTimeStamp.seconds + drift
+        let candidatePresentationTimeStamp = candidateSampleBuffer.presentationTimeStamp.seconds + drift + audioOffset
         let delta = candidatePresentationTimeStamp - outputPresentationTimeStamp
         if abs(delta) > 0.05 {
             isSyncingWithOutput = true

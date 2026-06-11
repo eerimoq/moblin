@@ -5,6 +5,13 @@ struct SrtClientStreamSettingsView: View {
     @ObservedObject var srtClient: SettingsSrtClient
     @ObservedObject var stream: SettingsSrtClientStream
 
+    private var audioOffsetBinding: Binding<Double> {
+        Binding(
+            get: { Double(stream.audioOffset) },
+            set: { stream.audioOffset = Int32($0.rounded()) }
+        )
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -31,6 +38,21 @@ struct SrtClientStreamSettingsView: View {
                     } label: {
                         TextItemLocalizedView(name: "URL", value: stream.url, sensitive: true)
                     }
+                }
+                Section {
+                    VStack(alignment: .leading) {
+                        Text("Audio offset")
+                        HStack {
+                            Slider(value: audioOffsetBinding, in: -2000 ... 2000, step: 10)
+                                .onChange(of: stream.audioOffset) { _ in
+                                    model.setSrtClientStreamAudioOffset(stream: stream)
+                                }
+                            Text("\(stream.audioOffset) ms")
+                                .frame(width: 65)
+                        }
+                    }
+                } footer: {
+                    Text("Adjust to fix audio/video sync. Positive delays audio, negative advances it.")
                 }
             }
             .navigationTitle("Stream")

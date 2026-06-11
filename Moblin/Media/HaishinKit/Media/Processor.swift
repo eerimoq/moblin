@@ -160,8 +160,12 @@ final class Processor: @unchecked Sendable {
         video.setBufferedVideoTargetLatency(cameraId: cameraId, latency: latency)
     }
 
-    func addBufferedAudio(cameraId: UUID, name: String, latency: Double) {
-        audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency)
+    func addBufferedAudio(cameraId: UUID, name: String, latency: Double, audioOffset: Double = 0) {
+        audio.addBufferedAudio(cameraId: cameraId, name: name, latency: latency, audioOffset: audioOffset)
+    }
+
+    func setBufferedAudioOffset(cameraId: UUID, offset: Double) {
+        audio.setBufferedAudioOffset(cameraId: cameraId, offset: offset)
     }
 
     func removeBufferedAudio(cameraId: UUID) {
