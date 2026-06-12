@@ -475,6 +475,7 @@ struct MainView: View {
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
                                 browserWidgets(streamSize: metrics.size)
                                 InteractiveWidgetOverlayView(model: model, previewSize: metrics.size)
+                                GeminiOverlayView(model: model, previewSize: metrics.size)
                             }
                             .offset(CGSize(
                                 width: 0,
@@ -563,6 +564,7 @@ struct MainView: View {
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
                                 browserWidgets(streamSize: metrics.size)
                                 InteractiveWidgetOverlayView(model: model, previewSize: metrics.size)
+                                GeminiOverlayView(model: model, previewSize: metrics.size)
                             }
                         }
                         .aspectRatio(streamAspectRatio(), contentMode: .fit)

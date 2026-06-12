@@ -406,6 +406,12 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var showDrawOnStream = false
     @Published var showLocalOverlays = true
     @Published var editWidgetsMode = false
+    @Published var isGeminiListening = false
+    @Published var geminiSpeechText = ""
+    @Published var geminiOverlayImageURL: String? = nil
+    @Published var geminiOverlayText: String? = nil
+    let geminiService = GeminiService()
+    let voiceRecognizer = VoiceCommandRecognizer()
     @Published var selectedWidgetForInteraction: WidgetInScene? = nil
     @Published var showBrowser = false
     @Published var showNavigation = false

@@ -1141,6 +1141,7 @@ class Database: Codable, ObservableObject {
     var whipServer: SettingsWhipServer = .init()
     var whepClient: SettingsWhepClient = .init()
     var navigation: SettingsNavigation = .init()
+    var gemini: SettingsGemini = .init()
     var wiFiAware: SettingsWiFiAware = .init()
     var face: SettingsFace = .init()
     var beauty: SettingsBeauty = .init()
@@ -1254,6 +1255,7 @@ class Database: Codable, ObservableObject {
         case whipServer
         case whepClient
         case navigation
+        case gemini
         case wiFiAware
         case face
         case beauty
@@ -1337,6 +1339,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.whipServer, whipServer)
         try container.encode(.whepClient, whepClient)
         try container.encode(.navigation, navigation)
+        try container.encode(.gemini, gemini)
         try container.encode(.wiFiAware, wiFiAware)
         try container.encode(.face, face)
         try container.encode(.beauty, beauty)
@@ -1470,6 +1473,7 @@ class Database: Codable, ObservableObject {
         whipServer = container.decode(.whipServer, SettingsWhipServer.self, .init())
         whepClient = container.decode(.whepClient, SettingsWhepClient.self, .init())
         navigation = container.decode(.navigation, SettingsNavigation.self, .init())
+        gemini = container.decode(.gemini, SettingsGemini.self, .init())
         wiFiAware = container.decode(.wiFiAware, SettingsWiFiAware.self, .init())
         face = (try? container.decode(SettingsFace.self, forKey: .face)) ?? debug.faceToBeRemoved
         beauty = container.decode(.beauty, SettingsBeauty.self, .init())
@@ -1920,6 +1924,11 @@ private func addMissingQuickButtonsPageThree(database: Database) {
     button = SettingsQuickButton(type: .editWidgets,
                                  imageOn: "arrow.up.and.down.and.arrow.left.and.right",
                                  imageOff: "arrow.up.and.down.and.arrow.left.and.right",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .gemini,
+                                 imageOn: "mic.fill",
+                                 imageOff: "mic",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }
