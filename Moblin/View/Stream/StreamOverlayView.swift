@@ -159,28 +159,34 @@ private struct FrontTorchView: View {
 private struct WarningHaloView: View {
     @ObservedObject var orientation: Orientation
 
-    private static let startRadiusFraction = 0.32
-    private static let endRadiusFraction = 0.68
-    private static let haloColor = Color(red: 0.22, green: 0.01, blue: 0.02)
-    private static let haloOpacity = 0.5
+    private static let edgeColor = Color(red: 0.12, green: 0.0, blue: 0.01)
+    private static let centerColor = Color(red: 0.46, green: 0.04, blue: 0.05)
+    private static let edgeOpacity = 0.22
+    private static let centerOpacity = 0.30
 
     var body: some View {
         if orientation.isPortrait {
             VStack(spacing: 0) {
                 Rectangle()
-                    .foregroundStyle(Self.haloColor.opacity(Self.haloOpacity))
+                    .fill(Self.edgeColor.opacity(Self.edgeOpacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 Rectangle()
                     .fill(
-                        EllipticalGradient(
-                            gradient: .init(colors: [.clear, Self.haloColor.opacity(Self.haloOpacity)]),
-                            startRadiusFraction: Self.startRadiusFraction,
-                            endRadiusFraction: Self.endRadiusFraction
+                        RadialGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 0.0),
+                                .init(color: Self.centerColor.opacity(Self.centerOpacity), location: 0.58),
+                                .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 1.0),
+                            ]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 220
                         )
                     )
                     .aspectRatio(1, contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 Rectangle()
-                    .foregroundStyle(Self.haloColor.opacity(Self.haloOpacity))
+                    .fill(Self.edgeColor.opacity(Self.edgeOpacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -188,19 +194,25 @@ private struct WarningHaloView: View {
         } else {
             HStack(spacing: 0) {
                 Rectangle()
-                    .foregroundStyle(Self.haloColor.opacity(Self.haloOpacity))
+                    .fill(Self.edgeColor.opacity(Self.edgeOpacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 Rectangle()
                     .fill(
-                        EllipticalGradient(
-                            gradient: .init(colors: [.clear, Self.haloColor.opacity(Self.haloOpacity)]),
-                            startRadiusFraction: Self.startRadiusFraction,
-                            endRadiusFraction: Self.endRadiusFraction
+                        RadialGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 0.0),
+                                .init(color: Self.centerColor.opacity(Self.centerOpacity), location: 0.58),
+                                .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 1.0),
+                            ]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 220
                         )
                     )
                     .aspectRatio(1, contentMode: .fill)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 Rectangle()
-                    .foregroundStyle(Self.haloColor.opacity(Self.haloOpacity))
+                    .fill(Self.edgeColor.opacity(Self.edgeOpacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
