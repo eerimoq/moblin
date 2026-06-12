@@ -157,65 +157,36 @@ private struct FrontTorchView: View {
 }
 
 private struct WarningHaloView: View {
-    @ObservedObject var orientation: Orientation
-
     private static let edgeColor = Color(red: 0.12, green: 0.0, blue: 0.01)
     private static let centerColor = Color(red: 0.46, green: 0.04, blue: 0.05)
     private static let edgeOpacity = 0.22
-    private static let centerOpacity = 0.30
+    private static let centerOpacity = 0.20
 
     var body: some View {
-        if orientation.isPortrait {
-            VStack(spacing: 0) {
+        GeometryReader { proxy in
+            let diameter = hypot(proxy.size.width, proxy.size.height) * 1.05
+
+            ZStack {
                 Rectangle()
                     .fill(Self.edgeColor.opacity(Self.edgeOpacity))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                Rectangle()
+
+                Circle()
                     .fill(
                         RadialGradient(
                             gradient: Gradient(stops: [
-                                .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 0.0),
-                                .init(color: Self.centerColor.opacity(Self.centerOpacity), location: 0.58),
+                                .init(color: Self.centerColor.opacity(Self.centerOpacity * 0.75), location: 0.0),
+                                .init(color: Self.centerColor.opacity(Self.centerOpacity * 0.45), location: 0.50),
                                 .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 1.0),
                             ]),
                             center: .center,
                             startRadius: 0,
-                            endRadius: 220
+                            endRadius: diameter * 0.5
                         )
                     )
-                    .aspectRatio(1, contentMode: .fill)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                Rectangle()
-                    .fill(Self.edgeColor.opacity(Self.edgeOpacity))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(width: diameter, height: diameter)
+                    .blur(radius: diameter * 0.03)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .ignoresSafeArea()
-        } else {
-            HStack(spacing: 0) {
-                Rectangle()
-                    .fill(Self.edgeColor.opacity(Self.edgeOpacity))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                Rectangle()
-                    .fill(
-                        RadialGradient(
-                            gradient: Gradient(stops: [
-                                .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 0.0),
-                                .init(color: Self.centerColor.opacity(Self.centerOpacity), location: 0.58),
-                                .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 1.0),
-                            ]),
-                            center: .center,
-                            startRadius: 0,
-                            endRadius: 220
-                        )
-                    )
-                    .aspectRatio(1, contentMode: .fill)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                Rectangle()
-                    .fill(Self.edgeColor.opacity(Self.edgeOpacity))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(width: proxy.size.width, height: proxy.size.height)
             .ignoresSafeArea()
         }
     }
@@ -278,7 +249,7 @@ struct StreamOverlayView: View {
             .padding([.trailing, .top])
         }
         .overlay {
-            WarningHaloView(orientation: orientation)
+            WarningHaloView()
                 .opacity(showWarningHalo ? 1 : 0)
                 .animation(.easeInOut(duration: 0.25), value: showWarningHalo)
                 .allowsHitTesting(false)
