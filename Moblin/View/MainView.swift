@@ -366,36 +366,51 @@ struct MainView: View {
         model.setAutoFocus()
     }
 
+    private func browserWidgetScale(
+        layout: SettingsWidgetLayout,
+        browserSize: CGSize,
+        streamSize: CGSize
+    ) -> Double {
+        let scaleX = toPixels(layout.size, streamSize.width) / browserSize.width
+        let scaleY = toPixels(layout.size, streamSize.height) / browserSize.height
+        return min(scaleX, scaleY)
+    }
+
+    private func browserWidgetOffset(
+        layout: SettingsWidgetLayout,
+        displaySize: CGSize,
+        streamSize: CGSize
+    ) -> CGPoint {
+        let x: Double = if layout.alignment.isHorizontalCenter() {
+            (streamSize.width - displaySize.width) / 2
+        } else if layout.alignment.isLeft() {
+            toPixels(layout.x, streamSize.width)
+        } else {
+            streamSize.width - toPixels(layout.x, streamSize.width) - displaySize.width
+        }
+        let y: Double = if layout.alignment.isVerticalCenter() {
+            (streamSize.height - displaySize.height) / 2
+        } else if layout.alignment.isTop() {
+            toPixels(layout.y, streamSize.height)
+        } else {
+            streamSize.height - toPixels(layout.y, streamSize.height) - displaySize.height
+        }
+        return CGPoint(x: x, y: y)
+    }
+
     private func browserWidgets(streamSize: CGSize) -> some View {
         ZStack {
             ForEach(model.browsers) { browser in
                 if let layout = browser.browserEffect.layout {
-                    let browserWidth = browser.browserEffect.width
-                    let browserHeight = browser.browserEffect.height
-                    let scaleX = toPixels(layout.size, streamSize.width) / browserWidth
-                    let scaleY = toPixels(layout.size, streamSize.height) / browserHeight
-                    let scale = min(scaleX, scaleY)
-                    let displayWidth = scale * browserWidth
-                    let displayHeight = scale * browserHeight
-                    let offsetX: Double = if layout.alignment.isHorizontalCenter() {
-                        (streamSize.width - displayWidth) / 2
-                    } else if layout.alignment.isLeft() {
-                        toPixels(layout.x, streamSize.width)
-                    } else {
-                        streamSize.width - toPixels(layout.x, streamSize.width) - displayWidth
-                    }
-                    let offsetY: Double = if layout.alignment.isVerticalCenter() {
-                        (streamSize.height - displayHeight) / 2
-                    } else if layout.alignment.isTop() {
-                        toPixels(layout.y, streamSize.height)
-                    } else {
-                        streamSize.height - toPixels(layout.y, streamSize.height) - displayHeight
-                    }
+                    let browserSize = CGSize(width: browser.browserEffect.width, height: browser.browserEffect.height)
+                    let scale = browserWidgetScale(layout: layout, browserSize: browserSize, streamSize: streamSize)
+                    let displaySize = CGSize(width: scale * browserSize.width, height: scale * browserSize.height)
+                    let offset = browserWidgetOffset(layout: layout, displaySize: displaySize, streamSize: streamSize)
                     BrowserWidgetView(browser: browser)
-                        .frame(width: browserWidth, height: browserHeight)
+                        .frame(width: browserSize.width, height: browserSize.height)
                         .scaleEffect(scale)
-                        .frame(width: displayWidth, height: displayHeight)
-                        .position(x: offsetX + displayWidth / 2, y: offsetY + displayHeight / 2)
+                        .frame(width: displaySize.width, height: displaySize.height)
+                        .position(x: offset.x + displaySize.width / 2, y: offset.y + displaySize.height / 2)
                 }
             }
             CloseButtonTopRightView {
