@@ -353,28 +353,24 @@ struct InteractiveWidgetOverlayView: View {
 
     private func hudToolbar(widgetInScene: WidgetInScene, rect: CGRect) -> some View {
         let isLocked = widgetInScene.sceneWidget.layout.positioningLock
+        let isEnabled = widgetInScene.widget.enabled
         let toolbarHeight: CGFloat = 38
         
         let xPos = rect.midX
         let yPos = rect.minY < 60 ? (rect.maxY + toolbarHeight / 2 + 12) : (rect.minY - toolbarHeight / 2 - 12)
         
         return HStack(spacing: 12) {
+            // Visibility (Eye) Toggle Button
             Button(action: {
                 triggerHaptic()
-                model.sendWidgetToBack(widgetId: widgetInScene.widget.id)
+                model.objectWillChange.send()
+                widgetInScene.widget.enabled.toggle()
+                model.storeSettings()
+                model.sceneUpdated(attachCamera: false, updateRemoteScene: true)
             }) {
-                Image(systemName: "arrow.down.to.line.compact")
+                Image(systemName: isEnabled ? "eye.fill" : "eye.slash.fill")
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.white)
-            }
-            
-            Button(action: {
-                triggerHaptic()
-                model.bringWidgetToFront(widgetId: widgetInScene.widget.id)
-            }) {
-                Image(systemName: "arrow.up.to.line.compact")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundColor(isEnabled ? .white : .orange)
             }
             
             Divider()
@@ -425,6 +421,7 @@ struct InteractiveWidgetOverlayView: View {
         let isSelected = model.selectedWidgetForInteraction?.id == widgetInScene.id
         let isClickable = widgetInScene.sceneWidget.layout.clickable
         let isLocked = widgetInScene.sceneWidget.layout.positioningLock
+        let isEnabled = widgetInScene.widget.enabled
 
         // Widget bounding box with visual feedback
         ZStack {
@@ -435,34 +432,39 @@ struct InteractiveWidgetOverlayView: View {
             ZStack {
                 Rectangle()
                     .stroke(
-                        !isClickable ? Color.gray.opacity(0.4) : (isSelected ? Color.blue : Color.white.opacity(0.7)),
+                        !isEnabled ? (isSelected ? Color.blue : Color.clear) : (!isClickable ? Color.gray.opacity(0.4) : (isSelected ? Color.blue : Color.white.opacity(0.7))),
                         style: StrokeStyle(lineWidth: isSelected ? 2.5 : 1.5, dash: isSelected ? [] : [5, 3])
                     )
                     .background(isSelected ? Color.blue.opacity(0.08) : Color.clear)
                 
                 // Widget name label
-                VStack(spacing: 2) {
-                    let labelText: String = {
-                        var text = widgetInScene.widget.name
-                        if !isClickable {
-                            text += " (Not Clickable)"
-                        }
-                        if isLocked {
-                            text += " (Locked)"
-                        }
-                        return text
-                    }()
-                    Text(labelText)
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
-                        .background(isLocked ? Color.red : (!isClickable ? Color.gray : (isSelected ? Color.blue : Color.black.opacity(0.7))))
-                        .cornerRadius(4)
-                    Spacer()
+                if isSelected || isEnabled {
+                    VStack(spacing: 2) {
+                        let labelText: String = {
+                            var text = widgetInScene.widget.name
+                            if !isClickable {
+                                text += " (Not Clickable)"
+                            }
+                            if isLocked && isSelected {
+                                text += " (Locked)"
+                            }
+                            if !isEnabled {
+                                text += " (Hidden)"
+                            }
+                            return text
+                        }()
+                        Text(labelText)
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(!isEnabled ? Color.orange : ((isLocked && isSelected) ? Color.red : (!isClickable ? Color.gray : (isSelected ? Color.blue : Color.black.opacity(0.7)))))
+                            .cornerRadius(4)
+                        Spacer()
+                    }
+                    .padding(.top, -22)
                 }
-                .padding(.top, -22)
             }
             .frame(width: max(rect.width, 10), height: max(rect.height, 10))
         }
@@ -609,7 +611,7 @@ struct InteractiveWidgetOverlayView: View {
     var body: some View {
         if model.editWidgetsMode {
             let videoBounds = getVideoBounds()
-            let widgets = model.widgetsInCurrentScene(onlyEnabled: true)
+            let widgets = model.widgetsInCurrentScene(onlyEnabled: false)
 
             ZStack {
                 // Background overlay to deselect when tapping empty space
