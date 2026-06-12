@@ -794,7 +794,6 @@ extension Model {
 
     func setIsLive(value: Bool) {
         isLive = value
-        updateDockIcon(isLive: isLive || isRecording)
         #if targetEnvironment(macCatalyst)
         updateMacActivityAssertion()
         #endif

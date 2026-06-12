@@ -154,6 +154,7 @@ final class StreamingHistory {
     }
 
     private func tryLoadAndMigrate(settings: String) throws {
+        guard !settings.isEmpty else { return }
         realDatabase = try StreamingHistoryDatabase.fromString(settings: settings)
         migrateFromOlderVersions()
     }

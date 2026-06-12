@@ -1640,14 +1640,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
                 let options: ProcessInfo.ActivityOptions = [.userInitiated, .latencyCritical, .idleSystemSleepDisabled, .idleDisplaySleepDisabled]
                 macActivityToken = ProcessInfo.processInfo.beginActivity(options: options, reason: "Moblin Background Activity Preservation")
                 logger.info("Mac Catalyst: Started background activity assertion")
-                print("DEBUG: Mac Catalyst - Started background activity assertion")
-            }
-        } else {
-            if let token = macActivityToken {
-                ProcessInfo.processInfo.endActivity(token)
-                macActivityToken = nil
-                logger.info("Mac Catalyst: Stopped background activity assertion")
-                print("DEBUG: Mac Catalyst - Stopped background activity assertion")
             }
         }
         #endif

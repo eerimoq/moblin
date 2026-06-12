@@ -1551,7 +1551,7 @@ extension Model {
             )
             remoteControlAssistantSetRemoteSceneDataTextStats(stats: stats)
         }
-        print("DEBUG: updateTextEffects called, temperature: \(stats.temperature as Any), windSpeed: \(stats.windSpeed as Any)")
+
         for effect in textEffects.values {
             effect.updateStats(stats: stats)
         }
@@ -1782,6 +1782,9 @@ extension Model {
     }
 
     func updateWidgetLayoutDirectly(widgetId: UUID, sceneWidget: SettingsSceneWidget) {
+        // Trigger a UI redraw so InteractiveWidgetOverlayView moves the blue selection borders in real-time
+        objectWillChange.send()
+        
         if let effect = imageEffects[widgetId] {
             effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         } else if let effect = textEffects[widgetId] {
