@@ -88,6 +88,13 @@ struct GeminiOverlayView: View {
                             .foregroundStyle(.primary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 8)
+                        
+                        if model.geminiSpeechText != String(localized: "Processing...") && model.geminiSpeechText != String(localized: "Listening...") {
+                            Text(String(localized: "Toque no microfone novamente para enviar"))
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 2)
+                        }
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)

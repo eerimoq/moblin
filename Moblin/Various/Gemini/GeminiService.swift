@@ -53,7 +53,15 @@ actor GeminiService {
                 let description: String
                 let parameters: Parameters
             }
-            let functionDeclarations: [FunctionDeclaration]
+            struct GoogleSearch: Encodable {}
+            
+            let functionDeclarations: [FunctionDeclaration]?
+            let googleSearch: GoogleSearch?
+            
+            enum CodingKeys: String, CodingKey {
+                case functionDeclarations
+                case googleSearch = "google_search"
+            }
         }
         
         let contents: [ChatMessage]
@@ -143,65 +151,72 @@ actor GeminiService {
         
         // Define function declarations for tools
         let tools = [
-            GeminiRequest.Tool(functionDeclarations: [
-                .init(
-                    name: "changeScene",
-                    description: "Altera a cena atual da transmissão.",
-                    parameters: .init(
-                        type: "OBJECT",
-                        properties: [
-                            "sceneName": .init(type: "STRING", description: "Nome exato da cena para a qual mudar (ex: Chat, Câmera Principal).")
-                        ],
-                        required: ["sceneName"]
+            GeminiRequest.Tool(
+                functionDeclarations: [
+                    .init(
+                        name: "changeScene",
+                        description: "Altera a cena atual da transmissão.",
+                        parameters: .init(
+                            type: "OBJECT",
+                            properties: [
+                                "sceneName": .init(type: "STRING", description: "Nome exato da cena para a qual mudar (ex: Chat, Câmera Principal).")
+                            ],
+                            required: ["sceneName"]
+                        )
+                    ),
+                    .init(
+                        name: "muteMicrophone",
+                        description: "Muta ou desmuta o áudio do microfone da stream.",
+                        parameters: .init(
+                            type: "OBJECT",
+                            properties: [
+                                "mute": .init(type: "BOOLEAN", description: "true para silenciar o áudio, false para ativar o áudio.")
+                            ],
+                            required: ["mute"]
+                        )
+                    ),
+                    .init(
+                        name: "toggleTorch",
+                        description: "Liga ou desliga o flash/lanterna da câmera.",
+                        parameters: .init(
+                            type: "OBJECT",
+                            properties: [
+                                "on": .init(type: "BOOLEAN", description: "true para ligar a lanterna, false para desligar.")
+                            ],
+                            required: ["on"]
+                        )
+                    ),
+                    .init(
+                        name: "displayOverlayImage",
+                        description: "Exibe uma imagem ou foto de uma URL na tela da transmissão.",
+                        parameters: .init(
+                            type: "OBJECT",
+                            properties: [
+                                "url": .init(type: "STRING", description: "A URL HTTP direta da imagem a ser carregada na tela."),
+                                "durationSeconds": .init(type: "INTEGER", description: "Duração em segundos para manter a imagem visível (padrão: 10 segundos).")
+                            ],
+                            required: ["url"]
+                        )
+                    ),
+                    .init(
+                        name: "showOverlayText",
+                        description: "Exibe uma caixa de texto ou alerta informativo sobreposto na tela.",
+                        parameters: .init(
+                            type: "OBJECT",
+                            properties: [
+                                "text": .init(type: "STRING", description: "A mensagem que aparecerá na tela do stream."),
+                                "durationSeconds": .init(type: "INTEGER", description: "Duração em segundos para exibir o texto na tela (padrão: 8 segundos).")
+                            ],
+                            required: ["text"]
+                        )
                     )
-                ),
-                .init(
-                    name: "muteMicrophone",
-                    description: "Muta ou desmuta o áudio do microfone da stream.",
-                    parameters: .init(
-                        type: "OBJECT",
-                        properties: [
-                            "mute": .init(type: "BOOLEAN", description: "true para silenciar o áudio, false para ativar o áudio.")
-                        ],
-                        required: ["mute"]
-                    )
-                ),
-                .init(
-                    name: "toggleTorch",
-                    description: "Liga ou desliga o flash/lanterna da câmera.",
-                    parameters: .init(
-                        type: "OBJECT",
-                        properties: [
-                            "on": .init(type: "BOOLEAN", description: "true para ligar a lanterna, false para desligar.")
-                        ],
-                        required: ["on"]
-                    )
-                ),
-                .init(
-                    name: "displayOverlayImage",
-                    description: "Exibe uma imagem ou foto de uma URL na tela da transmissão.",
-                    parameters: .init(
-                        type: "OBJECT",
-                        properties: [
-                            "url": .init(type: "STRING", description: "A URL HTTP direta da imagem a ser carregada na tela."),
-                            "durationSeconds": .init(type: "INTEGER", description: "Duração em segundos para manter a imagem visível (padrão: 10 segundos).")
-                        ],
-                        required: ["url"]
-                    )
-                ),
-                .init(
-                    name: "showOverlayText",
-                    description: "Exibe uma caixa de texto ou alerta informativo sobreposto na tela.",
-                    parameters: .init(
-                        type: "OBJECT",
-                        properties: [
-                            "text": .init(type: "STRING", description: "A mensagem que aparecerá na tela do stream."),
-                            "durationSeconds": .init(type: "INTEGER", description: "Duração em segundos para exibir o texto na tela (padrão: 8 segundos).")
-                        ],
-                        required: ["text"]
-                    )
-                )
-            ])
+                ],
+                googleSearch: nil
+            ),
+            GeminiRequest.Tool(
+                functionDeclarations: nil,
+                googleSearch: GeminiRequest.Tool.GoogleSearch()
+            )
         ]
         
         let sysInstruction = systemInstruction.map {
