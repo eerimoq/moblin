@@ -156,6 +156,59 @@ private struct FrontTorchView: View {
     }
 }
 
+private struct WarningHaloView: View {
+    @ObservedObject var orientation: Orientation
+
+    private static let startRadiusFraction = 0.32
+    private static let endRadiusFraction = 0.68
+    private static let haloColor = Color(red: 0.22, green: 0.01, blue: 0.02)
+    private static let haloOpacity = 0.5
+
+    var body: some View {
+        if orientation.isPortrait {
+            VStack(spacing: 0) {
+                Rectangle()
+                    .foregroundStyle(Self.haloColor.opacity(Self.haloOpacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Rectangle()
+                    .fill(
+                        EllipticalGradient(
+                            gradient: .init(colors: [.clear, Self.haloColor.opacity(Self.haloOpacity)]),
+                            startRadiusFraction: Self.startRadiusFraction,
+                            endRadiusFraction: Self.endRadiusFraction
+                        )
+                    )
+                    .aspectRatio(1, contentMode: .fill)
+                Rectangle()
+                    .foregroundStyle(Self.haloColor.opacity(Self.haloOpacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
+        } else {
+            HStack(spacing: 0) {
+                Rectangle()
+                    .foregroundStyle(Self.haloColor.opacity(Self.haloOpacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Rectangle()
+                    .fill(
+                        EllipticalGradient(
+                            gradient: .init(colors: [.clear, Self.haloColor.opacity(Self.haloOpacity)]),
+                            startRadiusFraction: Self.startRadiusFraction,
+                            endRadiusFraction: Self.endRadiusFraction
+                        )
+                    )
+                    .aspectRatio(1, contentMode: .fill)
+                Rectangle()
+                    .foregroundStyle(Self.haloColor.opacity(Self.haloOpacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .ignoresSafeArea()
+        }
+    }
+}
+
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var streamOverlay: StreamOverlay
@@ -172,6 +225,7 @@ struct StreamOverlayView: View {
     }
 
     var body: some View {
+        let showWarningHalo = streamOverlay.showingWarningHalo
         ZStack {
             if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
                 FrontTorchView(orientation: orientation)
@@ -210,6 +264,12 @@ struct StreamOverlayView: View {
                 .allowsHitTesting(false)
             }
             .padding([.trailing, .top])
+        }
+        .overlay {
+            WarningHaloView(orientation: orientation)
+                .opacity(showWarningHalo ? 1 : 0)
+                .animation(.easeInOut(duration: 0.25), value: showWarningHalo)
+                .allowsHitTesting(false)
         }
     }
 }
