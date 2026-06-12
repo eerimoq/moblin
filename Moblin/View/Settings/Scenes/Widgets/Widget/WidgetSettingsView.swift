@@ -217,6 +217,10 @@ struct WidgetLayoutView: View {
                     )
                 }
                 Toggle("Numeric input", isOn: $database.sceneNumericInput)
+                Toggle("Clickable", isOn: $layout.clickable)
+                    .onChange(of: layout.clickable) { _ in
+                        model.sceneUpdated()
+                    }
             } header: {
                 Text("Layout")
             } footer: {
