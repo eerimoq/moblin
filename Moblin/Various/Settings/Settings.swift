@@ -162,6 +162,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var catPrinter: Bool = true
     @Published var workoutDevice: Bool = true
     @Published var systemMonitor: Bool = false
+    @Published var showWarningHalo: Bool = false
 
     init() {}
 
@@ -191,6 +192,7 @@ class SettingsShow: Codable, ObservableObject {
         case catPrinter
         case heartRateDevice
         case cpu
+        case showWarningHalo
     }
 
     func encode(to encoder: any Encoder) throws {
@@ -220,6 +222,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.catPrinter, catPrinter)
         try container.encode(.heartRateDevice, workoutDevice)
         try container.encode(.cpu, systemMonitor)
+        try container.encode(.showWarningHalo, showWarningHalo)
     }
 
     required init(from decoder: any Decoder) throws {
@@ -249,6 +252,7 @@ class SettingsShow: Codable, ObservableObject {
         catPrinter = container.decode(.catPrinter, Bool.self, true)
         workoutDevice = container.decode(.heartRateDevice, Bool.self, true)
         systemMonitor = container.decode(.cpu, Bool.self, false)
+        showWarningHalo = container.decode(.showWarningHalo, Bool.self, false)
     }
 }
 

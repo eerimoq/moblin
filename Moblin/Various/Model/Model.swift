@@ -282,7 +282,6 @@ class StreamOverlay: ObservableObject {
     @Published var showingBeauty = false
     @Published var showingVideoPreview = false
     @Published var isTorchOn = false
-    @Published var showingWarningHalo = true
 }
 
 class Store: ObservableObject {
@@ -1636,8 +1635,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handle200msTimer() {
         let monotonicNow = ContinuousClock.now
-        updateAudioLevel()
-        updateChat()
         executeChatBotMessage()
         if isWatchLocal() {
             trySendNextChatPostToWatch()
@@ -1713,7 +1710,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             sendThermalStateToWatch(thermalState: statusOther.thermalState)
         }
         teslaGetMediaState()
-        streamOverlay.showingWarningHalo.toggle()
     }
 
     private func handle10sTimer() {

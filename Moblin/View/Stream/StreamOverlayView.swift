@@ -174,8 +174,14 @@ private struct WarningHaloView: View {
                     .fill(
                         RadialGradient(
                             gradient: Gradient(stops: [
-                                .init(color: Self.centerColor.opacity(Self.centerOpacity * 0.75), location: 0.0),
-                                .init(color: Self.centerColor.opacity(Self.centerOpacity * 0.45), location: 0.50),
+                                .init(
+                                    color: Self.centerColor.opacity(Self.centerOpacity * 0.75),
+                                    location: 0.0
+                                ),
+                                .init(
+                                    color: Self.centerColor.opacity(Self.centerOpacity * 0.45),
+                                    location: 0.50
+                                ),
                                 .init(color: Self.edgeColor.opacity(Self.edgeOpacity), location: 1.0),
                             ]),
                             center: .center,
@@ -195,6 +201,8 @@ private struct WarningHaloView: View {
 struct StreamOverlayView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var streamOverlay: StreamOverlay
+    @ObservedObject var bitrate: Bitrate
+    @ObservedObject var show: SettingsShow
     @ObservedObject var chatSettings: SettingsChat
     @ObservedObject var orientation: Orientation
     let width: CGFloat
@@ -208,7 +216,7 @@ struct StreamOverlayView: View {
     }
 
     var body: some View {
-        let showWarningHalo = streamOverlay.showingWarningHalo
+        let showWarningHalo = show.showWarningHalo && bitrate.statusColor == .red
         ZStack {
             if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
                 FrontTorchView(orientation: orientation)
