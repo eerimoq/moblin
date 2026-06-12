@@ -324,6 +324,69 @@ private struct StreamOverlayTapGridView: View {
     }
 }
 
+private struct InteractiveBrowserView: View {
+    let browser: Browser
+    @ObservedObject var browserEffect: BrowserEffect
+    let streamSize: CGSize
+
+    private func browserWidgetScale(
+        layout: SettingsWidgetLayout,
+        browserSize: CGSize,
+        streamSize: CGSize
+    ) -> Double {
+        let scaleX = toPixels(layout.size, streamSize.width) / browserSize.width
+        let scaleY = toPixels(layout.size, streamSize.height) / browserSize.height
+        return min(scaleX, scaleY)
+    }
+
+    private func browserWidgetOffset(
+        layout: SettingsWidgetLayout,
+        displaySize: CGSize,
+        streamSize: CGSize
+    ) -> CGPoint {
+        let x: Double = if layout.alignment.isHorizontalCenter() {
+            (streamSize.width - displaySize.width) / 2
+        } else if layout.alignment.isLeft() {
+            toPixels(layout.x, streamSize.width)
+        } else {
+            streamSize.width - toPixels(layout.x, streamSize.width) - displaySize.width
+        }
+        let y: Double = if layout.alignment.isVerticalCenter() {
+            (streamSize.height - displaySize.height) / 2
+        } else if layout.alignment.isTop() {
+            toPixels(layout.y, streamSize.height)
+        } else {
+            streamSize.height - toPixels(layout.y, streamSize.height) - displaySize.height
+        }
+        return CGPoint(x: x, y: y)
+    }
+
+    var body: some View {
+        if let layout = browserEffect.layout {
+            let browserSize = CGSize(width: browserEffect.width, height: browserEffect.height)
+            let scale = browserWidgetScale(
+                layout: layout,
+                browserSize: browserSize,
+                streamSize: streamSize
+            )
+            let displaySize = CGSize(
+                width: scale * browserSize.width,
+                height: scale * browserSize.height
+            )
+            let offset = browserWidgetOffset(
+                layout: layout,
+                displaySize: displaySize,
+                streamSize: streamSize
+            )
+            BrowserWidgetView(browser: browser)
+                .frame(width: browserSize.width, height: browserSize.height)
+                .scaleEffect(scale)
+                .frame(width: displaySize.width, height: displaySize.height)
+                .position(x: offset.x + displaySize.width / 2, y: offset.y + displaySize.height / 2)
+        }
+    }
+}
+
 struct MainView: View {
     @EnvironmentObject var model: Model
     @ObservedObject var webBrowserController: WebBrowserController
@@ -366,36 +429,15 @@ struct MainView: View {
         model.setAutoFocus()
     }
 
-    private func browserWidgets() -> some View {
+    private func browserWidgets(streamSize: CGSize) -> some View {
         ZStack {
-            ScrollView([.vertical, .horizontal]) {
-                HStack {
-                    ForEach(model.browsers) { browser in
-                        VStack {
-                            Text(browser.name)
-                                .font(.title)
-                                .foregroundStyle(.white)
-                            ScrollView([.vertical, .horizontal]) {
-                                BrowserWidgetView(browser: browser)
-                                    .frame(
-                                        width: browser.browserEffect.width,
-                                        height: browser.browserEffect.height
-                                    )
-                            }
-                            .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
-                            .border(.yellow, width: 2)
-                            Spacer()
-                        }
-                    }
-                }
-            }
-            CloseButtonTopRightView {
-                model.interactiveBrowsers = false
-                model.getQuickButtonState(type: .interactiveBrowserWidgets)?.button.isOn = false
-                model.updateQuickButtonStates()
+            ForEach(model.browsers) { browser in
+                InteractiveBrowserView(browser: browser,
+                                       browserEffect: browser.browserEffect,
+                                       streamSize: streamSize)
             }
         }
-        .background(.black)
+        .frame(width: streamSize.width, height: streamSize.height)
         .opacity(model.interactiveBrowsers ? 1 : 0)
         .allowsHitTesting(model.interactiveBrowsers)
     }
@@ -428,6 +470,7 @@ struct MainView: View {
                                         handleLeaveTapToFocus()
                                     }
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
+                                browserWidgets(streamSize: metrics.size)
                             }
                             .offset(CGSize(
                                 width: 0,
@@ -508,6 +551,7 @@ struct MainView: View {
                                         handleLeaveTapToFocus()
                                     }
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
+                                browserWidgets(streamSize: metrics.size)
                             }
                         }
                         .aspectRatio(streamAspectRatio(), contentMode: .fit)
@@ -615,9 +659,6 @@ struct MainView: View {
                 }
                 SnapshotCountdownView(snapshot: model.snapshot)
                 InstantReplayCountdownView(replay: model.replay)
-            }
-            .overlay(alignment: .topLeading) {
-                browserWidgets()
             }
             .onAppear {
                 model.setup()
