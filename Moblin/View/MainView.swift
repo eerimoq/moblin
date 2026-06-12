@@ -366,27 +366,36 @@ struct MainView: View {
         model.setAutoFocus()
     }
 
-    private func browserWidgets() -> some View {
+    private func browserWidgets(streamSize: CGSize) -> some View {
         ZStack {
-            ScrollView([.vertical, .horizontal]) {
-                HStack {
-                    ForEach(model.browsers) { browser in
-                        VStack {
-                            Text(browser.name)
-                                .font(.title)
-                                .foregroundStyle(.white)
-                            ScrollView([.vertical, .horizontal]) {
-                                BrowserWidgetView(browser: browser)
-                                    .frame(
-                                        width: browser.browserEffect.width,
-                                        height: browser.browserEffect.height
-                                    )
-                            }
-                            .frame(width: browser.browserEffect.width, height: browser.browserEffect.height)
-                            .border(.yellow, width: 2)
-                            Spacer()
-                        }
+            ForEach(model.browsers) { browser in
+                if let layout = browser.browserEffect.layout {
+                    let browserWidth = browser.browserEffect.width
+                    let browserHeight = browser.browserEffect.height
+                    let scaleX = toPixels(layout.size, streamSize.width) / browserWidth
+                    let scaleY = toPixels(layout.size, streamSize.height) / browserHeight
+                    let scale = min(scaleX, scaleY)
+                    let displayWidth = scale * browserWidth
+                    let displayHeight = scale * browserHeight
+                    let offsetX: Double = if layout.alignment.isHorizontalCenter() {
+                        (streamSize.width - displayWidth) / 2
+                    } else if layout.alignment.isLeft() {
+                        toPixels(layout.x, streamSize.width)
+                    } else {
+                        streamSize.width - toPixels(layout.x, streamSize.width) - displayWidth
                     }
+                    let offsetY: Double = if layout.alignment.isVerticalCenter() {
+                        (streamSize.height - displayHeight) / 2
+                    } else if layout.alignment.isTop() {
+                        toPixels(layout.y, streamSize.height)
+                    } else {
+                        streamSize.height - toPixels(layout.y, streamSize.height) - displayHeight
+                    }
+                    BrowserWidgetView(browser: browser)
+                        .frame(width: browserWidth, height: browserHeight)
+                        .scaleEffect(scale)
+                        .frame(width: displayWidth, height: displayHeight)
+                        .position(x: offsetX + displayWidth / 2, y: offsetY + displayHeight / 2)
                 }
             }
             CloseButtonTopRightView {
@@ -395,7 +404,7 @@ struct MainView: View {
                 model.updateQuickButtonStates()
             }
         }
-        .background(.black)
+        .frame(width: streamSize.width, height: streamSize.height)
         .opacity(model.interactiveBrowsers ? 1 : 0)
         .allowsHitTesting(model.interactiveBrowsers)
     }
@@ -428,6 +437,7 @@ struct MainView: View {
                                         handleLeaveTapToFocus()
                                     }
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
+                                browserWidgets(streamSize: metrics.size)
                             }
                             .offset(CGSize(
                                 width: 0,
@@ -508,6 +518,7 @@ struct MainView: View {
                                         handleLeaveTapToFocus()
                                     }
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
+                                browserWidgets(streamSize: metrics.size)
                             }
                         }
                         .aspectRatio(streamAspectRatio(), contentMode: .fit)
@@ -615,9 +626,6 @@ struct MainView: View {
                 }
                 SnapshotCountdownView(snapshot: model.snapshot)
                 InstantReplayCountdownView(replay: model.replay)
-            }
-            .overlay(alignment: .topLeading) {
-                browserWidgets()
             }
             .onAppear {
                 model.setup()

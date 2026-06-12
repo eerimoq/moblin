@@ -46,6 +46,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
     let height: Double
     private let url: URL
     private(set) var isLoaded: Bool
+    private(set) var layout: SettingsWidgetLayout?
     private let mode: SettingsWidgetBrowserMode
     private var baseFps: Double
     private var fps: Double
@@ -133,6 +134,7 @@ final class BrowserEffect: VideoEffect, @unchecked Sendable {
 
     @MainActor
     func setSceneWidget(sceneWidget: SettingsSceneWidget?, crops: [WidgetCrop]) {
+        layout = sceneWidget?.layout
         stopTakeSnapshots()
         if sceneWidget != nil || !crops.isEmpty {
             setSceneWidgetEnabled(sceneWidget: sceneWidget, crops: crops)
