@@ -44,6 +44,7 @@ struct GeminiSettingsView: View {
                     }
                     .onChange(of: apiKeyText) { newValue in
                         database.gemini.storeApiKey(key: newValue)
+                        model.storeSettings()
                     }
             }
             
