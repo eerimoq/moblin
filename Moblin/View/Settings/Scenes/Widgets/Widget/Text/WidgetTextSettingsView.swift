@@ -786,6 +786,11 @@ private struct WeatherVariablesView: View {
                         description: String(localized: "Show wind"),
                         text: $value
                     )
+                    VariableView(
+                        title: "{windKmh}",
+                        description: String(localized: "Show wind in km/h"),
+                        text: $value
+                    )
                 } footer: {
                     VStack(alignment: .leading) {
                         let image = Image(systemName: "apple.logo")
