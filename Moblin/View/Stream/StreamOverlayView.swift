@@ -217,45 +217,43 @@ struct StreamOverlayView: View {
 
     var body: some View {
         let showWarningHalo = show.showWarningHalo && bitrate.statusColor == .red
-        ZStack {
-            if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
-                FrontTorchView(orientation: orientation)
-            }
-            ZStack {
-                if model.showingPanel != .chat {
-                    ChatOverlayView(chatSettings: chatSettings,
-                                    chat: model.chat,
-                                    orientation: orientation,
-                                    quickButtons: model.database.quickButtonsGeneral,
-                                    fullSize: false)
-                        .opacity(chatSettings.enabled ? 1 : 0)
-                }
-                HStack {
-                    Spacer()
-                    RightOverlayBottomView(database: model.database,
-                                           show: model.database.show,
-                                           streamOverlay: model.streamOverlay,
-                                           zoom: model.zoom,
-                                           width: width)
-                }
-                HStack {
-                    LeftOverlayView(model: model, database: model.database)
-                        .padding(.leading, leadingPadding())
-                    Spacer()
-                }
-                HStack {
-                    Spacer()
-                    RightOverlayTopView(model: model, database: model.database)
-                }
-                HStack {
-                    StreamOverlayDebugView(debugOverlay: model.debugOverlay)
-                        .padding(.leading, leadingPadding())
-                    Spacer()
-                }
-                .allowsHitTesting(false)
-            }
-            .padding([.trailing, .top])
+        if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
+            FrontTorchView(orientation: orientation)
         }
+        ZStack {
+            if model.showingPanel != .chat {
+                ChatOverlayView(chatSettings: chatSettings,
+                                chat: model.chat,
+                                orientation: orientation,
+                                quickButtons: model.database.quickButtonsGeneral,
+                                fullSize: false)
+                    .opacity(chatSettings.enabled ? 1 : 0)
+            }
+            HStack {
+                Spacer()
+                RightOverlayBottomView(database: model.database,
+                                       show: model.database.show,
+                                       streamOverlay: model.streamOverlay,
+                                       zoom: model.zoom,
+                                       width: width)
+            }
+            HStack {
+                LeftOverlayView(model: model, database: model.database)
+                    .padding(.leading, leadingPadding())
+                Spacer()
+            }
+            HStack {
+                Spacer()
+                RightOverlayTopView(model: model, database: model.database)
+            }
+            HStack {
+                StreamOverlayDebugView(debugOverlay: model.debugOverlay)
+                    .padding(.leading, leadingPadding())
+                Spacer()
+            }
+            .allowsHitTesting(false)
+        }
+        .padding([.trailing, .top])
         .overlay {
             WarningHaloView()
                 .opacity(showWarningHalo ? 1 : 0)
