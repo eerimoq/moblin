@@ -6,6 +6,7 @@ private func moblinScript() -> String {
 
 private enum PublishMessage: Codable {
     case videoPlaying(value: Bool)
+    case log(message: String)
 }
 
 private enum SubscribeTopic: Codable {
@@ -151,6 +152,8 @@ class BrowserEffectServer: NSObject {
             } else {
                 delegate?.browserEffectServerVideoEnded()
             }
+        case let .log(message):
+            logger.info("browser-effect-server: Log \(message)")
         }
     }
 

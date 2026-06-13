@@ -3,7 +3,7 @@ class MoblinCanvasDrawer {
     this.video = video;
     this.canvas = document.createElement("canvas");
     this.canvasContext = this.canvas.getContext("2d");
-    this.video.requestVideoFrameCallback(this.handleVideoFrame);
+    this.videoFrameCallbackId = null;
     this.isPlaying = false;
     document.body.appendChild(this.canvas);
     this.timer = setInterval(() => {
@@ -13,6 +13,7 @@ class MoblinCanvasDrawer {
 
   tearDown = () => {
     document.body.removeChild(this.canvas);
+    this.clearVideoFrameCallback();
     this.video = null;
     this.canvas = null;
     this.canvasContext = null;
@@ -23,12 +24,22 @@ class MoblinCanvasDrawer {
   };
 
   handleTimer = () => {
-    if (this.video?.paused) {
+    if (this.video.paused) {
       this.canvas.width = 0;
       this.canvas.height = 0;
+      this.clearVideoFrameCallback();
       this.setPlaying(false);
+    } else if (!this.isPlaying && this.videoFrameCallbackId === null) {
+      this.videoFrameCallbackId = this.video.requestVideoFrameCallback(this.handleVideoFrame);
     }
   };
+
+  clearVideoFrameCallback = () => {
+    if (this.videoFrameCallbackId !== null) {
+      this.video.cancelVideoFrameCallback(this.videoFrameCallbackId)
+      this.videoFrameCallbackId = null;
+    }
+  }
 
   positionCanvas = () => {
     const rect = this.video.getBoundingClientRect();
@@ -55,7 +66,7 @@ class MoblinCanvasDrawer {
       this.canvas.height,
     );
     this.setPlaying(true);
-    this.video.requestVideoFrameCallback(this.handleVideoFrame);
+    this.videoFrameCallbackId = this.video.requestVideoFrameCallback(this.handleVideoFrame);
   };
 
   setPlaying = (playing) => {
@@ -90,6 +101,12 @@ function moblinVideoPlayingUpdated() {
 function publishVideoPlaying(value) {
   moblin.publish({
     videoPlaying: { value: value },
+  });
+}
+
+function log(message) {
+  moblin.publish({
+    log: { message: message },
   });
 }
 
