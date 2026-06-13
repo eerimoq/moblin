@@ -138,8 +138,8 @@ struct InteractiveWidgetOverlayView: View {
         let currentYPercent = ((rect.minY - videoBounds.minY) / videoBounds.height) * 100.0
         
         layout.alignment = .topLeft
-        layout.x = Double(currentXPercent)
-        layout.y = Double(currentYPercent)
+        layout.x = max(0.0, Double(currentXPercent))
+        layout.y = max(0.0, Double(currentYPercent))
         layout.updateXString()
         layout.updateYString()
         
@@ -243,15 +243,15 @@ struct InteractiveWidgetOverlayView: View {
     // MARK: - Corner Resize Handles
 
     private func cornerHandle(x: CGFloat, y: CGFloat, handle: String, widgetInScene: WidgetInScene, rect: CGRect, videoBounds: CGRect) -> some View {
-        let handleSize: CGFloat = 20
+        let handleSize: CGFloat = 12
         return Circle()
             .fill(Color.white)
             .frame(width: handleSize, height: handleSize)
             .overlay(
                 Circle()
-                    .stroke(Color.blue, lineWidth: 2)
+                    .stroke(Color.black, lineWidth: 1)
             )
-            .contentShape(Circle().scale(1.5)) // Larger hit area for easier touch
+            .contentShape(Circle().scale(2.0)) // Larger hit area for easier touch
             .position(x: x, y: y)
             .highPriorityGesture(
                 DragGesture(minimumDistance: 1, coordinateSpace: .global)
@@ -300,7 +300,7 @@ struct InteractiveWidgetOverlayView: View {
                             }
                             layout.size = newSize.clamped(to: 1...100)
                             layout.updateSizeString()
-                            layout.x = Double((resizeStartRect.maxX - newWidth - videoBounds.minX) / videoBounds.width) * 100.0
+                            layout.x = max(0.0, Double((resizeStartRect.maxX - newWidth - videoBounds.minX) / videoBounds.width) * 100.0)
                             layout.updateXString()
                             
                         case "topRight":
@@ -315,7 +315,7 @@ struct InteractiveWidgetOverlayView: View {
                             }
                             layout.size = newSize.clamped(to: 1...100)
                             layout.updateSizeString()
-                            layout.y = Double((resizeStartRect.maxY - newHeight - videoBounds.minY) / videoBounds.height) * 100.0
+                            layout.y = max(0.0, Double((resizeStartRect.maxY - newHeight - videoBounds.minY) / videoBounds.height) * 100.0)
                             layout.updateYString()
                             
                         case "topLeft":
@@ -330,9 +330,9 @@ struct InteractiveWidgetOverlayView: View {
                             }
                             layout.size = newSize.clamped(to: 1...100)
                             layout.updateSizeString()
-                            layout.x = Double((resizeStartRect.maxX - newWidth - videoBounds.minX) / videoBounds.width) * 100.0
+                            layout.x = max(0.0, Double((resizeStartRect.maxX - newWidth - videoBounds.minX) / videoBounds.width) * 100.0)
                             layout.updateXString()
-                            layout.y = Double((resizeStartRect.maxY - newHeight - videoBounds.minY) / videoBounds.height) * 100.0
+                            layout.y = max(0.0, Double((resizeStartRect.maxY - newHeight - videoBounds.minY) / videoBounds.height) * 100.0)
                             layout.updateYString()
                             
                         default:
@@ -353,30 +353,12 @@ struct InteractiveWidgetOverlayView: View {
 
     private func hudToolbar(widgetInScene: WidgetInScene, rect: CGRect) -> some View {
         let isLocked = widgetInScene.sceneWidget.layout.positioningLock
-        let isEnabled = widgetInScene.widget.enabled
         let toolbarHeight: CGFloat = 38
         
         let xPos = rect.midX
         let yPos = rect.minY < 60 ? (rect.maxY + toolbarHeight / 2 + 12) : (rect.minY - toolbarHeight / 2 - 12)
         
         return HStack(spacing: 12) {
-            // Visibility (Eye) Toggle Button
-            Button(action: {
-                triggerHaptic()
-                model.objectWillChange.send()
-                widgetInScene.widget.enabled.toggle()
-                model.storeSettings()
-                model.sceneUpdated(attachCamera: false, updateRemoteScene: true)
-            }) {
-                Image(systemName: isEnabled ? "eye.fill" : "eye.slash.fill")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(isEnabled ? .white : .orange)
-            }
-            
-            Divider()
-                .frame(width: 1, height: 18)
-                .background(Color.white.opacity(0.3))
-            
             Button(action: {
                 triggerHaptic()
                 model.objectWillChange.send()
@@ -387,19 +369,6 @@ struct InteractiveWidgetOverlayView: View {
                 Image(systemName: isLocked ? "lock.fill" : "lock.open.fill")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(isLocked ? .red : .white)
-            }
-            
-            Divider()
-                .frame(width: 1, height: 18)
-                .background(Color.white.opacity(0.3))
-            
-            Button(action: {
-                triggerHaptic()
-                model.deleteWidgetFromScene(widgetId: widgetInScene.widget.id)
-            }) {
-                Image(systemName: "trash.fill")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.red)
             }
         }
         .padding(.horizontal, 14)
@@ -430,12 +399,26 @@ struct InteractiveWidgetOverlayView: View {
 
             // Selection outline and content sized to the actual widget rect
             ZStack {
-                Rectangle()
-                    .stroke(
-                        !isEnabled ? (isSelected ? Color.blue : Color.clear) : (!isClickable ? Color.gray.opacity(0.4) : (isSelected ? Color.blue : Color.white.opacity(0.7))),
-                        style: StrokeStyle(lineWidth: isSelected ? 2.5 : 1.5, dash: isSelected ? [] : [5, 3])
-                    )
-                    .background(isSelected ? Color.blue.opacity(0.08) : Color.clear)
+                if widgetInScene.widget.hasSize() {
+                    Rectangle()
+                        .stroke(
+                            !isEnabled ? (isSelected ? Color.white : Color.clear) : (!isClickable ? Color.gray.opacity(0.4) : (isSelected ? Color.white : Color.white.opacity(0.7))),
+                            style: StrokeStyle(lineWidth: 1.5, dash: isSelected ? [] : [5, 3])
+                        )
+                        .background(isSelected ? Color.white.opacity(0.25) : Color.clear)
+                } else {
+                    // Show a move icon in the center for select / drag when it has no layout size setting
+                    Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: 32, height: 32)
+                        .background(isSelected ? Color.white.opacity(0.4) : Color.black.opacity(0.6))
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(isSelected ? Color.white : Color.white.opacity(0.5), lineWidth: 1.5)
+                        )
+                }
                 
                 // Widget name label
                 if isSelected || isEnabled {
@@ -459,16 +442,16 @@ struct InteractiveWidgetOverlayView: View {
                             .foregroundStyle(.white)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
-                            .background(!isEnabled ? Color.orange : ((isLocked && isSelected) ? Color.red : (!isClickable ? Color.gray : (isSelected ? Color.blue : Color.black.opacity(0.7)))))
+                            .background(!isEnabled ? Color.orange : ((isLocked && isSelected) ? Color.red : (!isClickable ? Color.gray : (isSelected ? Color.black.opacity(0.85) : Color.black.opacity(0.7)))))
                             .cornerRadius(4)
                         Spacer()
                     }
-                    .padding(.top, -22)
+                    .padding(.top, widgetInScene.widget.hasSize() ? -22 : -28)
                 }
             }
-            .frame(width: max(rect.width, 10), height: max(rect.height, 10))
+            .frame(width: widgetInScene.widget.hasSize() ? max(rect.width, 10) : 44, height: widgetInScene.widget.hasSize() ? max(rect.height, 10) : 44)
         }
-        .frame(width: max(rect.width, 44), height: max(rect.height, 44))
+        .frame(width: widgetInScene.widget.hasSize() ? max(rect.width, 44) : 44, height: widgetInScene.widget.hasSize() ? max(rect.height, 44) : 44)
         .contentShape(Rectangle())
         .position(x: rect.midX, y: rect.midY)
         .allowsHitTesting(true)
@@ -523,8 +506,8 @@ struct InteractiveWidgetOverlayView: View {
                         )
 
                         // Convert back to percentage
-                        layout.x = Double((candidateMinX - videoBounds.minX) / videoBounds.width) * 100.0
-                        layout.y = Double((candidateMinY - videoBounds.minY) / videoBounds.height) * 100.0
+                        layout.x = max(0.0, Double((candidateMinX - videoBounds.minX) / videoBounds.width) * 100.0)
+                        layout.y = max(0.0, Double((candidateMinY - videoBounds.minY) / videoBounds.height) * 100.0)
                         layout.updateXString()
                         layout.updateYString()
 
@@ -648,11 +631,13 @@ struct InteractiveWidgetOverlayView: View {
 
                     // Corner handles and HUD for the selected widget
                     if isSelected {
-                        Group {
-                            cornerHandle(x: rect.minX, y: rect.minY, handle: "topLeft", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
-                            cornerHandle(x: rect.maxX, y: rect.minY, handle: "topRight", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
-                            cornerHandle(x: rect.minX, y: rect.maxY, handle: "bottomLeft", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
-                            cornerHandle(x: rect.maxX, y: rect.maxY, handle: "bottomRight", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
+                        if widgetInScene.widget.hasSize() {
+                            Group {
+                                cornerHandle(x: rect.minX, y: rect.minY, handle: "topLeft", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
+                                cornerHandle(x: rect.maxX, y: rect.minY, handle: "topRight", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
+                                cornerHandle(x: rect.minX, y: rect.maxY, handle: "bottomLeft", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
+                                cornerHandle(x: rect.maxX, y: rect.maxY, handle: "bottomRight", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
+                            }
                         }
 
                         hudToolbar(widgetInScene: widgetInScene, rect: rect)

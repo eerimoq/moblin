@@ -410,6 +410,11 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var geminiSpeechText = ""
     @Published var geminiOverlayImageURL: String? = nil
     @Published var geminiOverlayText: String? = nil
+    @Published var geminiOverlayYouTubeURL: String? = nil
+    @Published var geminiOverlayYouTubePosition: String = "center"
+    @Published var geminiOverlayYouTubeWidth: Int = 600
+    @Published var geminiOverlayYouTubeHeight: Int = 400
+    @Published var geminiOverlayYouTubeOpacity: Double = 1.0
     let geminiService = GeminiService()
     let voiceRecognizer = VoiceCommandRecognizer()
     @Published var selectedWidgetForInteraction: WidgetInScene? = nil

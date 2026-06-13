@@ -1177,6 +1177,7 @@ class Database: Codable, ObservableObject {
     var talkback: SettingsTalkback = .init()
     var gimbal: SettingsGimbal = .init()
     var scoreboardSizeMigrated: Bool = false
+    var geminiRemoteControlMigrated: Bool = false
 
     @MainActor
     static func fromString(settings: String) throws -> Database {
@@ -1291,6 +1292,7 @@ class Database: Codable, ObservableObject {
         case talkBack
         case gimbal
         case scoreboardSizeMigrated
+        case geminiRemoteControlMigrated
         case savedWifiNetworks
     }
 
@@ -1376,6 +1378,7 @@ class Database: Codable, ObservableObject {
         try container.encode(.talkBack, talkback)
         try container.encode(.gimbal, gimbal)
         try container.encode(.scoreboardSizeMigrated, scoreboardSizeMigrated)
+        try container.encode(.geminiRemoteControlMigrated, geminiRemoteControlMigrated)
         try container.encode(.savedWifiNetworks, savedWifiNetworks)
     }
 
@@ -1511,6 +1514,7 @@ class Database: Codable, ObservableObject {
         talkback = container.decode(.talkBack, SettingsTalkback.self, .init())
         gimbal = container.decode(.gimbal, SettingsGimbal.self, .init())
         scoreboardSizeMigrated = container.decode(.scoreboardSizeMigrated, Bool.self, false)
+        geminiRemoteControlMigrated = container.decode(.geminiRemoteControlMigrated, Bool.self, false)
         savedWifiNetworks = container.decode(.savedWifiNetworks, [SettingsWiFi].self, [])
         if !scoreboardSizeMigrated {
             for widget in widgets where widget.type == .scoreboard {
@@ -1521,6 +1525,13 @@ class Database: Codable, ObservableObject {
                 }
             }
             scoreboardSizeMigrated = true
+        }
+        if !geminiRemoteControlMigrated {
+            gemini.remoteControl = false
+            geminiRemoteControlMigrated = true
+        }
+        if gemini.modelName == "gemini-2.0-flash" {
+            gemini.modelName = "gemini-3.5-flash"
         }
     }
 }
@@ -1625,6 +1636,9 @@ private func updateQuickButton(database: Database, button: SettingsQuickButton) 
         existingButton.name = button.name
         existingButton.imageOn = button.imageOn
         existingButton.imageOff = button.imageOff
+        if (existingButton.type == .gemini || existingButton.type == .editWidgets) && existingButton.page == 3 {
+            existingButton.page = 1
+        }
     } else {
         database.quickButtons.append(button)
     }
@@ -1706,6 +1720,16 @@ private func addMissingQuickButtonsPageOne(database: Database) {
     updateQuickButton(database: database, button: button)
     button = SettingsQuickButton(type: .browser,
                                  imageOn: "globe",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .editWidgets,
+                                 imageOn: "arrow.up.and.down.and.arrow.left.and.right",
+                                 imageOff: "arrow.up.and.down.and.arrow.left.and.right",
+                                 page: page)
+    updateQuickButton(database: database, button: button)
+    button = SettingsQuickButton(type: .gemini,
+                                 imageOn: "mic.fill",
+                                 imageOff: "mic",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }
@@ -1951,16 +1975,6 @@ private func addMissingQuickButtonsPageThree(database: Database) {
     button = SettingsQuickButton(type: .previewStream,
                                  imageOn: "video.circle.fill",
                                  imageOff: "video.circle",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(type: .editWidgets,
-                                 imageOn: "arrow.up.and.down.and.arrow.left.and.right",
-                                 imageOff: "arrow.up.and.down.and.arrow.left.and.right",
-                                 page: page)
-    updateQuickButton(database: database, button: button)
-    button = SettingsQuickButton(type: .gemini,
-                                 imageOn: "mic.fill",
-                                 imageOff: "mic",
                                  page: page)
     updateQuickButton(database: database, button: button)
 }
