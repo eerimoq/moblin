@@ -205,7 +205,7 @@ struct SettingsView: View {
                         Label("About", systemImage: "info.circle")
                     }
                     NavigationLink {
-                        DebugSettingsView(debug: database.debug)
+                        DebugSettingsView(debug: database.debug, show: database.show)
                     } label: {
                         Label("Debug", systemImage: "ladybug")
                     }

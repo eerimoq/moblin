@@ -1635,8 +1635,6 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
 
     private func handle200msTimer() {
         let monotonicNow = ContinuousClock.now
-        updateAudioLevel()
-        updateChat()
         executeChatBotMessage()
         if isWatchLocal() {
             trySendNextChatPostToWatch()

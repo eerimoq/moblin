@@ -485,6 +485,8 @@ struct MainView: View {
                 .ignoresSafeArea()
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
+                                      bitrate: model.bitrate,
+                                      show: model.database.show,
                                       chatSettings: model.database.chat,
                                       orientation: orientation,
                                       width: metrics.size.width)
@@ -562,6 +564,8 @@ struct MainView: View {
                 .ignoresSafeArea()
                 GeometryReader { metrics in
                     StreamOverlayView(streamOverlay: model.streamOverlay,
+                                      bitrate: model.bitrate,
+                                      show: model.database.show,
                                       chatSettings: model.database.chat,
                                       orientation: orientation,
                                       width: metrics.size.width)
