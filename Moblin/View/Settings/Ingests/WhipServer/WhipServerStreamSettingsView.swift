@@ -29,6 +29,13 @@ struct WhipServerStreamSettingsView: View {
         stream.latency = latency
     }
 
+    private var audioOffsetBinding: Binding<Double> {
+        Binding(
+            get: { Double(stream.audioOffset) },
+            set: { stream.audioOffset = Int32($0.rounded()) }
+        )
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -62,6 +69,21 @@ struct WhipServerStreamSettingsView: View {
                 Section {
                     Toggle("Sync timestamps", isOn: $stream.syncTimestamps)
                         .disabled(whipServer.enabled)
+                }
+                Section {
+                    VStack(alignment: .leading) {
+                        Text("Audio offset")
+                        HStack {
+                            Slider(value: audioOffsetBinding, in: -2000 ... 2000, step: 10)
+                                .onChange(of: stream.audioOffset) { _ in
+                                    model.setWhipStreamAudioOffset(stream: stream)
+                                }
+                            Text("\(stream.audioOffset) ms")
+                                .frame(width: 65)
+                        }
+                    }
+                } footer: {
+                    Text("Adjust to fix audio/video sync. Positive delays audio, negative advances it.")
                 }
                 Section {
                     UrlsView(

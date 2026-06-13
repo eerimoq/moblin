@@ -50,7 +50,16 @@ extension Model {
         let camera = stream.camera()
         makeToast(title: String(localized: "\(camera) connected"))
         media.addBufferedVideo(cameraId: cameraId, name: camera, latency: srtClientLatency)
-        media.addBufferedAudio(cameraId: cameraId, name: camera, latency: srtClientLatency)
+        media.addBufferedAudio(
+            cameraId: cameraId,
+            name: camera,
+            latency: srtClientLatency,
+            audioOffset: stream.audioOffsetSeconds()
+        )
+    }
+
+    func setSrtClientStreamAudioOffset(stream: SettingsSrtClientStream) {
+        media.setBufferedAudioOffset(cameraId: stream.id, offset: stream.audioOffsetSeconds())
     }
 
     private func srtClientDisconnectedInternal(cameraId: UUID) {

@@ -5,6 +5,13 @@ struct WhepClientStreamSettingsView: View {
     @ObservedObject var whepClient: SettingsWhepClient
     @ObservedObject var stream: SettingsWhepClientStream
 
+    private var audioOffsetBinding: Binding<Double> {
+        Binding(
+            get: { Double(stream.audioOffset) },
+            set: { stream.audioOffset = Int32($0.rounded()) }
+        )
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -52,6 +59,21 @@ struct WhepClientStreamSettingsView: View {
                             model.reloadWhepClient()
                         }
                         .disabled(stream.enabled)
+                }
+                Section {
+                    VStack(alignment: .leading) {
+                        Text("Audio offset")
+                        HStack {
+                            Slider(value: audioOffsetBinding, in: -2000 ... 2000, step: 10)
+                                .onChange(of: stream.audioOffset) { _ in
+                                    model.setWhepStreamAudioOffset(stream: stream)
+                                }
+                            Text("\(stream.audioOffset) ms")
+                                .frame(width: 65)
+                        }
+                    }
+                } footer: {
+                    Text("Adjust to fix audio/video sync. Positive delays audio, negative advances it.")
                 }
             }
             .navigationTitle("Stream")

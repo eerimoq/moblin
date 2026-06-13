@@ -59,8 +59,18 @@ extension Model: @preconcurrency SrtlaServerDelegate {
 
     private func srtlaServerOnClientStartInternal(cameraId: UUID, name: String) {
         makeToast(title: String(localized: "\(name) connected"))
+        let audioOffset = getSrtlaStream(id: cameraId)?.audioOffsetSeconds() ?? 0
         media.addBufferedVideo(cameraId: cameraId, name: name, latency: srtServerClientLatency)
-        media.addBufferedAudio(cameraId: cameraId, name: name, latency: srtServerClientLatency)
+        media.addBufferedAudio(
+            cameraId: cameraId,
+            name: name,
+            latency: srtServerClientLatency,
+            audioOffset: audioOffset
+        )
+    }
+
+    func setSrtlaStreamAudioOffset(stream: SettingsSrtlaServerStream) {
+        media.setBufferedAudioOffset(cameraId: stream.id, offset: stream.audioOffsetSeconds())
     }
 
     private func srtlaServerOnClientStopInternal(cameraId: UUID, name: String) {

@@ -22,6 +22,13 @@ struct RistServerStreamSettingsView: View {
         stream.latency = latency
     }
 
+    private var audioOffsetBinding: Binding<Double> {
+        Binding(
+            get: { Double(stream.audioOffset) },
+            set: { stream.audioOffset = Int32($0.rounded()) }
+        )
+    }
+
     var body: some View {
         NavigationLink {
             Form {
@@ -56,6 +63,21 @@ struct RistServerStreamSettingsView: View {
                     .disabled(ristServer.enabled)
                 } footer: {
                     Text("The higher, the lower risk of stuttering.")
+                }
+                Section {
+                    VStack(alignment: .leading) {
+                        Text("Audio offset")
+                        HStack {
+                            Slider(value: audioOffsetBinding, in: -2000 ... 2000, step: 10)
+                                .onChange(of: stream.audioOffset) { _ in
+                                    model.setRistStreamAudioOffset(stream: stream)
+                                }
+                            Text("\(stream.audioOffset) ms")
+                                .frame(width: 65)
+                        }
+                    }
+                } footer: {
+                    Text("Adjust to fix audio/video sync. Positive delays audio, negative advances it.")
                 }
                 Section {
                     UrlsView(
