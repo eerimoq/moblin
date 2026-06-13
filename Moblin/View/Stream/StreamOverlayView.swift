@@ -3,6 +3,37 @@ import SwiftUI
 private let startRadiusFraction = 0.45
 private let endRadiusFraction = 0.5
 
+private struct BitrateTimelineView: View {
+    @ObservedObject var show: SettingsShow
+    @ObservedObject var bitrateTimeline: BitrateTimeline
+
+    private let segmentSize: CGFloat = 10
+    private let segmentSpacing: CGFloat = 2
+
+    var body: some View {
+        if show.bitrateTimeline {
+            GeometryReader { proxy in
+                let segmentHeight = segmentSize + segmentSpacing
+                let visibleCount = max(Int(ceil(proxy.size.height / segmentHeight)) + 1, 1)
+                let samples = bitrateTimeline.samples.suffix(visibleCount)
+                let topPadding = max(proxy.size.height - CGFloat(samples.count) * segmentHeight, 0)
+
+                VStack(spacing: segmentSpacing) {
+                    Spacer(minLength: topPadding)
+                    ForEach(Array(samples.enumerated()), id: \.offset) { _, isBad in
+                        Rectangle()
+                            .fill(isBad ? Color.red.opacity(0.85) : Color.clear)
+                            .frame(width: segmentSize, height: segmentSize)
+                    }
+                }
+                .frame(width: segmentSize, height: proxy.size.height, alignment: .bottom)
+            }
+            .frame(width: segmentSize)
+            .allowsHitTesting(false)
+        }
+    }
+}
+
 struct ChatInfo: View {
     let message: String
 
@@ -163,6 +194,8 @@ struct StreamOverlayView: View {
     @ObservedObject var orientation: Orientation
     let width: CGFloat
 
+    private let timelineWidth: CGFloat = 10
+
     private func leadingPadding() -> CGFloat {
         if UIDevice.current.userInterfaceIdiom == .pad || orientation.isPortrait {
             15
@@ -173,6 +206,14 @@ struct StreamOverlayView: View {
 
     var body: some View {
         ZStack {
+            HStack(spacing: 0) {
+                BitrateTimelineView(show: model.database.show, bitrateTimeline: model.bitrateTimeline)
+                    .frame(width: timelineWidth)
+                    .padding(.leading, leadingPadding())
+                    .padding(.top)
+                Spacer()
+            }
+            .allowsHitTesting(false)
             if streamOverlay.isTorchOn, streamOverlay.isFrontCameraSelected {
                 FrontTorchView(orientation: orientation)
             }

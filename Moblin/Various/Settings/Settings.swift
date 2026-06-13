@@ -142,6 +142,7 @@ class SettingsShow: Codable, ObservableObject {
     @Published var uptime: Bool = true
     @Published var stream: Bool = false
     @Published var speed: Bool = true
+    @Published var bitrateTimeline: Bool = false
     @Published var audioLevel: Bool = true
     @Published var zoom: Bool = false
     @Published var zoomPresets: Bool = true
@@ -171,6 +172,7 @@ class SettingsShow: Codable, ObservableObject {
         case uptime
         case stream
         case speed
+        case bitrateTimeline
         case audioLevel
         case zoom
         case zoomPresets
@@ -200,6 +202,7 @@ class SettingsShow: Codable, ObservableObject {
         try container.encode(.uptime, uptime)
         try container.encode(.stream, stream)
         try container.encode(.speed, speed)
+        try container.encode(.bitrateTimeline, bitrateTimeline)
         try container.encode(.audioLevel, audioLevel)
         try container.encode(.zoom, zoom)
         try container.encode(.zoomPresets, zoomPresets)
@@ -229,6 +232,7 @@ class SettingsShow: Codable, ObservableObject {
         uptime = container.decode(.uptime, Bool.self, true)
         stream = container.decode(.stream, Bool.self, false)
         speed = container.decode(.speed, Bool.self, true)
+        bitrateTimeline = container.decode(.bitrateTimeline, Bool.self, false)
         audioLevel = container.decode(.audioLevel, Bool.self, true)
         zoom = container.decode(.zoom, Bool.self, false)
         zoomPresets = container.decode(.zoomPresets, Bool.self, true)

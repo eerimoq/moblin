@@ -1,34 +1,6 @@
 import SwiftUI
 import WebKit
 
-private struct BitrateTimelineView: View {
-    @ObservedObject var bitrateTimeline: BitrateTimeline
-
-    private let segmentSize: CGFloat = 10
-    private let segmentSpacing: CGFloat = 2
-
-    var body: some View {
-        GeometryReader { proxy in
-            let segmentHeight = segmentSize + segmentSpacing
-            let visibleCount = max(Int(ceil(proxy.size.height / segmentHeight)) + 1, 1)
-            let samples = bitrateTimeline.samples.suffix(visibleCount)
-            let topPadding = max(proxy.size.height - CGFloat(samples.count) * segmentHeight, 0)
-
-            VStack(spacing: segmentSpacing) {
-                Spacer(minLength: topPadding)
-                ForEach(Array(samples.enumerated()), id: \.offset) { _, isBad in
-                    Rectangle()
-                        .fill(isBad ? Color.red.opacity(0.85) : Color.clear)
-                        .frame(width: segmentSize, height: segmentSize)
-                }
-            }
-            .frame(width: segmentSize, height: proxy.size.height, alignment: .bottom)
-        }
-        .frame(width: segmentSize)
-        .allowsHitTesting(false)
-    }
-}
-
 private struct CollapsedViewersView: View {
     @ObservedObject var status: StatusTopLeft
 
@@ -280,31 +252,26 @@ struct LeftOverlayView: View {
     @ObservedObject var database: Database
 
     var body: some View {
-        HStack(alignment: .top, spacing: 4) {
-            BitrateTimelineView(bitrateTimeline: model.bitrateTimeline)
-                .padding(.top, 1)
-
+        VStack(alignment: .leading, spacing: 1) {
             VStack(alignment: .leading, spacing: 1) {
-                VStack(alignment: .leading, spacing: 1) {
-                    if database.verboseStatuses {
+                if database.verboseStatuses {
+                    StatusesView(show: database.show,
+                                 status: model.statusTopLeft,
+                                 mic: model.mic,
+                                 textPlacement: .afterIcon)
+                } else {
+                    HStack(spacing: 1) {
                         StatusesView(show: database.show,
                                      status: model.statusTopLeft,
                                      mic: model.mic,
-                                     textPlacement: .afterIcon)
-                    } else {
-                        HStack(spacing: 1) {
-                            StatusesView(show: database.show,
-                                         status: model.statusTopLeft,
-                                         mic: model.mic,
-                                         textPlacement: .hide)
-                        }
+                                     textPlacement: .hide)
                     }
                 }
-                .onTapGesture {
-                    model.toggleVerboseStatuses()
-                }
-                Spacer()
             }
+            .onTapGesture {
+                model.toggleVerboseStatuses()
+            }
+            Spacer()
         }
     }
 }
