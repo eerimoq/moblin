@@ -24,6 +24,7 @@ enum TextFormatPart: Equatable {
     case temperature
     case feelsLikeTemperature
     case wind
+    case windKmh
     case country
     case countryFlag
     case state
@@ -113,6 +114,8 @@ class TextFormatLoader {
                     loadItem(part: .feelsLikeTemperature, offsetBy: 22)
                 } else if formatFromIndex.hasPrefix("{wind}") {
                     loadItem(part: .wind, offsetBy: 6)
+                } else if formatFromIndex.hasPrefix("{windkmh}") {
+                    loadItem(part: .windKmh, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{country}") {
                     loadItem(part: .country, offsetBy: 9)
                 } else if formatFromIndex.hasPrefix("{countryflag}") {
@@ -316,6 +319,8 @@ extension [TextFormatPart] {
         } else if contains(.feelsLikeTemperature) {
             return true
         } else if contains(.wind) {
+            return true
+        } else if contains(.windKmh) {
             return true
         }
         return false

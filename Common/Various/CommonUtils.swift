@@ -203,6 +203,18 @@ func formatWindAndGustSpeed(speed: Measurement<UnitSpeed>, gust: Measurement<Uni
     return "\(speed) (\(gust)) \(unit.symbol)"
 }
 
+func formatWindSpeedKmh(speed: Measurement<UnitSpeed>) -> String {
+    let unit: UnitSpeed = .kilometersPerHour
+    return createWindSpeedFormatter().string(from: speed.converted(to: unit))
+}
+
+func formatWindAndGustSpeedKmh(speed: Measurement<UnitSpeed>, gust: Measurement<UnitSpeed>) -> String {
+    let unit: UnitSpeed = .kilometersPerHour
+    let speed = Int(speed.converted(to: unit).value)
+    let gust = Int(gust.converted(to: unit).value)
+    return "\(speed) (\(gust)) \(unit.symbol)"
+}
+
 func formatPace(speed: Double) -> String {
     let unit: UnitLength = Locale.current.measurementSystem == .metric ? .kilometers : .miles
     let pace: String
