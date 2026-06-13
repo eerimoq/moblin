@@ -433,38 +433,37 @@ struct InteractiveWidgetOverlayView: View {
 
             // Selection outline and content sized to the actual widget rect
             ZStack {
-                if widgetInScene.widget.hasSize() {
-                    Rectangle()
-                        .stroke(
-                            !isEnabled ? (isSelected ? Color.white : Color.clear) :
-                                (!isClickable ? Color.gray
-                                    .opacity(0.4) : (isSelected ? Color.white : Color.white.opacity(0.7))),
-                            style: StrokeStyle(lineWidth: 1.5, dash: isSelected ? [] : [5, 3])
-                        )
-                        .background(isSelected ? Color.white.opacity(0.25) : Color.clear)
-                } else {
-                    // Show a move icon in the center for select / drag when it has no layout size setting
-                    Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(width: 32, height: 32)
-                        .background(isSelected ? Color.white.opacity(0.4) : Color.black.opacity(0.6))
-                        .clipShape(Circle())
-                        .overlay(
-                            Circle()
-                                .stroke(isSelected ? Color.white : Color.white.opacity(0.5), lineWidth: 1.5)
-                        )
-                }
+                if isSelected {
+                    if widgetInScene.widget.hasSize() {
+                        Rectangle()
+                            .stroke(
+                                !isEnabled ? Color.white :
+                                    (!isClickable ? Color.gray.opacity(0.4) : Color.white),
+                                style: StrokeStyle(lineWidth: 1.5)
+                            )
+                            .background(Color.white.opacity(0.25))
+                    } else {
+                        // Show a move icon in the center for select / drag when it has no layout size setting
+                        Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(width: 32, height: 32)
+                            .background(Color.white.opacity(0.4))
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white, lineWidth: 1.5)
+                            )
+                    }
 
-                // Widget name label
-                if isSelected || isEnabled {
+                    // Widget name label
                     VStack(spacing: 2) {
                         let labelText: String = {
                             var text = widgetInScene.widget.name
                             if !isClickable {
                                 text += " (Not Clickable)"
                             }
-                            if isLocked, isSelected {
+                            if isLocked {
                                 text += " (Locked)"
                             }
                             if !isEnabled {
@@ -478,14 +477,9 @@ struct InteractiveWidgetOverlayView: View {
                             .foregroundStyle(.white)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
-                            .background(!isEnabled ? Color
-                                .orange :
-                                ((isLocked && isSelected) ? Color
-                                    .red :
-                                    (!isClickable ? Color
-                                        .gray :
-                                        (isSelected ? Color.black.opacity(0.85) : Color.black
-                                            .opacity(0.7)))))
+                            .background(!isEnabled ? Color.orange :
+                                (isLocked ? Color.red :
+                                    (!isClickable ? Color.gray : Color.black.opacity(0.85))))
                             .cornerRadius(4)
                         Spacer()
                     }
