@@ -31,10 +31,12 @@ class WeatherManager: @unchecked Sendable {
                     } else if location == nil {
                         print("DEBUG: weather-manager - location is nil")
                     }
-                    
+
                     if let location, enabled {
                         logger.debug("weather-manager: Updating weather data")
-                        print("DEBUG: weather-manager - updating weather data for coordinates: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+                        print(
+                            "DEBUG: weather-manager - updating weather data for coordinates: \(location.coordinate.latitude), \(location.coordinate.longitude)"
+                        )
                         do {
                             // Try WeatherKit first
                             let kitWeather = try await weatherService.weather(for: location)
@@ -49,8 +51,13 @@ class WeatherManager: @unchecked Sendable {
                             logger.info("weather-manager: Successfully updated weather using WeatherKit")
                             print("DEBUG: weather-manager - Successfully updated weather using WeatherKit")
                         } catch {
-                            logger.info("weather-manager: WeatherKit failed with \(error), trying Open-Meteo fallback")
-                            print("DEBUG: weather-manager - WeatherKit failed with \(error), trying Open-Meteo fallback")
+                            logger
+                                .info(
+                                    "weather-manager: WeatherKit failed with \(error), trying Open-Meteo fallback"
+                                )
+                            print(
+                                "DEBUG: weather-manager - WeatherKit failed with \(error), trying Open-Meteo fallback"
+                            )
                             // Fallback to Open-Meteo
                             if let fallbackWeather = await fetchOpenMeteoWeather(
                                 latitude: location.coordinate.latitude,
@@ -58,7 +65,9 @@ class WeatherManager: @unchecked Sendable {
                             ) {
                                 weather = fallbackWeather
                                 logger.info("weather-manager: Successfully updated weather using Open-Meteo")
-                                print("DEBUG: weather-manager - Successfully updated weather using Open-Meteo")
+                                print(
+                                    "DEBUG: weather-manager - Successfully updated weather using Open-Meteo"
+                                )
                             }
                         }
                     }
@@ -96,10 +105,10 @@ class WeatherManager: @unchecked Sendable {
         let urlString = "https://api.open-meteo.com/v1/forecast?latitude=\(latitude)&longitude=\(longitude)&current=temperature_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,weather_code&wind_speed_unit=ms"
         print("DEBUG: weather-manager - calling Open-Meteo: \(urlString)")
         guard let url = URL(string: urlString) else { return nil }
-        
+
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
-            
+
             struct OpenMeteoResponse: Codable {
                 struct Current: Codable {
                     let temperature_2m: Double
@@ -108,35 +117,37 @@ class WeatherManager: @unchecked Sendable {
                     let wind_gusts_10m: Double
                     let weather_code: Int
                 }
+
                 let current: Current
             }
-            
+
             let response = try JSONDecoder().decode(OpenMeteoResponse.self, from: data)
             let current = response.current
-            
-            let symbolName: String
-            switch current.weather_code {
+
+            let symbolName = switch current.weather_code {
             case 0:
-                symbolName = "sunny"
+                "sunny"
             case 1, 2, 3:
-                symbolName = "cloudy"
+                "cloudy"
             case 45, 48:
-                symbolName = "fog"
+                "fog"
             case 51, 53, 55:
-                symbolName = "drizzle"
+                "drizzle"
             case 61, 63, 65:
-                symbolName = "rain"
+                "rain"
             case 71, 73, 75:
-                symbolName = "snow"
+                "snow"
             case 80, 81, 82:
-                symbolName = "heavyrain"
+                "heavyrain"
             case 95:
-                symbolName = "thunderstorm"
+                "thunderstorm"
             default:
-                symbolName = "sunny"
+                "sunny"
             }
-            
-            print("DEBUG: weather-manager - Open-Meteo success! Wind: \(current.wind_speed_10m) m/s, Temp: \(current.temperature_2m) C")
+
+            print(
+                "DEBUG: weather-manager - Open-Meteo success! Wind: \(current.wind_speed_10m) m/s, Temp: \(current.temperature_2m) C"
+            )
             return MyWeatherData(
                 symbolName: symbolName,
                 temperature: Measurement(value: current.temperature_2m, unit: .celsius),

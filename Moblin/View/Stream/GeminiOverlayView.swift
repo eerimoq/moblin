@@ -4,14 +4,14 @@ import WebKit
 struct GeminiOverlayView: View {
     @ObservedObject var model: Model
     let previewSize: CGSize
-    
+
     var body: some View {
         ZStack {
             // 1. Image Overlay
             if let imageURLString = model.geminiOverlayImageURL, let imageURL = URL(string: imageURLString) {
                 AsyncImage(url: imageURL) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -19,7 +19,7 @@ struct GeminiOverlayView: View {
                             .cornerRadius(12)
                             .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
                             .transition(.opacity.combined(with: .scale(scale: 0.95)))
-                    case .failure(_):
+                    case .failure:
                         EmptyView()
                     case .empty:
                         ProgressView()
@@ -31,7 +31,7 @@ struct GeminiOverlayView: View {
                 }
                 .animation(.easeInOut(duration: 0.3), value: model.geminiOverlayImageURL)
             }
-            
+
             // 2. Text Overlay (Notification banner)
             if let overlayText = model.geminiOverlayText {
                 VStack {
@@ -39,7 +39,7 @@ struct GeminiOverlayView: View {
                         Image(systemName: "sparkles")
                             .foregroundStyle(.yellow)
                             .font(.title3)
-                        
+
                         Text(overlayText)
                             .font(.body)
                             .fontWeight(.medium)
@@ -57,18 +57,18 @@ struct GeminiOverlayView: View {
                     .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
                     .padding(.top, 40)
                     .transition(.move(edge: .top).combined(with: .opacity))
-                    
+
                     Spacer()
                 }
                 .animation(.spring(response: 0.4, dampingFraction: 0.8), value: model.geminiOverlayText)
             }
-            
+
             // 3. YouTube Live Video Overlay
             if let youtubeURL = model.geminiOverlayYouTubeURL {
                 GeometryReader { metrics in
                     let size = calculateYouTubeSize(metrics: metrics)
                     let offset = calculateYouTubeOffset(metrics: metrics, size: size)
-                    
+
                     ZStack(alignment: .topTrailing) {
                         YouTubeWebView(urlString: youtubeURL)
                             .frame(width: size.width, height: size.height)
@@ -76,7 +76,7 @@ struct GeminiOverlayView: View {
                             .background(Color.black.opacity(0.8))
                             .cornerRadius(12)
                             .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 5)
-                        
+
                         Button {
                             model.geminiOverlayYouTubeURL = nil
                         } label: {
@@ -91,35 +91,40 @@ struct GeminiOverlayView: View {
                 }
                 .animation(.easeInOut(duration: 0.35), value: model.geminiOverlayYouTubeURL)
             }
-            
+
             // 4. Voice Listening Panel
             if model.isGeminiListening {
                 VStack {
                     Spacer()
-                    
+
                     VStack(spacing: 8) {
                         HStack(spacing: 8) {
                             Circle()
                                 .fill(Color.red)
                                 .frame(width: 8, height: 8)
                                 .opacity(model.geminiSpeechText == "Processando..." ? 0.3 : 1.0)
-                                .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: model.isGeminiListening)
-                            
+                                .animation(
+                                    .easeInOut(duration: 0.5).repeatForever(autoreverses: true),
+                                    value: model.isGeminiListening
+                                )
+
                             Text("Gemini AI")
                                 .font(.caption)
                                 .fontWeight(.bold)
                                 .foregroundStyle(.secondary)
                                 .textCase(.uppercase)
                         }
-                        
+
                         Text(model.geminiSpeechText)
                             .font(.body)
                             .fontWeight(.medium)
                             .foregroundStyle(.primary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 8)
-                        
-                        if model.geminiSpeechText != String(localized: "Processing...") && model.geminiSpeechText != String(localized: "Listening...") {
+
+                        if model.geminiSpeechText != String(localized: "Processing..."),
+                           model.geminiSpeechText != String(localized: "Listening...")
+                        {
                             Text(String(localized: "Toque no microfone novamente para enviar"))
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
@@ -144,7 +149,7 @@ struct GeminiOverlayView: View {
         }
         .frame(width: previewSize.width, height: previewSize.height)
     }
-    
+
     private func calculateYouTubeSize(metrics: GeometryProxy) -> CGSize {
         if model.geminiOverlayYouTubePosition == "fullscreen" {
             return metrics.size
@@ -153,38 +158,44 @@ struct GeminiOverlayView: View {
         let h = CGFloat(model.geminiOverlayYouTubeHeight)
         return CGSize(width: min(w, metrics.size.width - 32), height: min(h, metrics.size.height - 32))
     }
-    
+
     private func calculateYouTubeOffset(metrics: GeometryProxy, size: CGSize) -> CGSize {
         switch model.geminiOverlayYouTubePosition {
         case "top-left":
-            return CGSize(width: 16, height: 16)
+            CGSize(width: 16, height: 16)
         case "top-right":
-            return CGSize(width: metrics.size.width - size.width - 16, height: 16)
+            CGSize(width: metrics.size.width - size.width - 16, height: 16)
         case "bottom-left":
-            return CGSize(width: 16, height: metrics.size.height - size.height - 16)
+            CGSize(width: 16, height: metrics.size.height - size.height - 16)
         case "bottom-right":
-            return CGSize(width: metrics.size.width - size.width - 16, height: metrics.size.height - size.height - 16)
+            CGSize(
+                width: metrics.size.width - size.width - 16,
+                height: metrics.size.height - size.height - 16
+            )
         case "fullscreen":
-            return .zero
+            .zero
         default: // center
-            return CGSize(width: (metrics.size.width - size.width) / 2, height: (metrics.size.height - size.height) / 2)
+            CGSize(
+                width: (metrics.size.width - size.width) / 2,
+                height: (metrics.size.height - size.height) / 2
+            )
         }
     }
 }
 
 struct YouTubeWebView: UIViewRepresentable {
     let urlString: String
-    
-    func makeUIView(context: Context) -> WKWebView {
+
+    func makeUIView(context _: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaPlaybackRequiresUserAction = false
-        
+
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.backgroundColor = .clear
-        
+
         if let videoID = extractYouTubeVideoID(from: urlString) {
             let htmlString = """
             <!DOCTYPE html>
@@ -214,9 +225,9 @@ struct YouTubeWebView: UIViewRepresentable {
         }
         return webView
     }
-    
-    func updateUIView(_ uiView: WKWebView, context: Context) {}
-    
+
+    func updateUIView(_: WKWebView, context _: Context) {}
+
     private func extractYouTubeVideoID(from url: String) -> String? {
         if url.contains("youtube.com/live/") {
             let parts = url.components(separatedBy: "youtube.com/live/")
@@ -224,7 +235,7 @@ struct YouTubeWebView: UIViewRepresentable {
                 return parts[1].components(separatedBy: "?").first
             }
         }
-        
+
         if url.contains("youtube.com/shorts/") {
             let parts = url.components(separatedBy: "youtube.com/shorts/")
             if parts.count > 1 {
@@ -234,26 +245,27 @@ struct YouTubeWebView: UIViewRepresentable {
 
         let pattern = "v=([^&]+)"
         if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
-           let match = regex.firstMatch(in: url, options: [], range: NSRange(url.startIndex..., in: url)) {
+           let match = regex.firstMatch(in: url, options: [], range: NSRange(url.startIndex..., in: url))
+        {
             if let range = Range(match.range(at: 1), in: url) {
                 return String(url[range])
             }
         }
-        
+
         if url.contains("youtu.be/") {
             let parts = url.components(separatedBy: "youtu.be/")
             if parts.count > 1 {
                 return parts[1].components(separatedBy: "?").first
             }
         }
-        
+
         if url.contains("youtube.com/embed/") {
             let parts = url.components(separatedBy: "youtube.com/embed/")
             if parts.count > 1 {
                 return parts[1].components(separatedBy: "?").first
             }
         }
-        
+
         return nil
     }
 }

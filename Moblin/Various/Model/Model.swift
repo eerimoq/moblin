@@ -1432,13 +1432,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         guard !isMac() else {
             return
         }
-        
-        let hasDjiStarted = database.djiDevices.devices.contains(where: { $0.isStarted })
+
+        let hasDjiStarted = database.djiDevices.devices.contains(where: \.isStarted)
         let hasIngestClients = getNumberOfIngestClients() > 0
         if hasDjiStarted || hasIngestClients {
             startIosBackgroundTask()
         }
-        
+
         switch backgroundRunLevel() {
         case .full:
             if !pictureInPictureEnabled() {
@@ -1623,7 +1623,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     private func backgroundRunLevel() -> BackgroundRunLevel {
-        let hasDjiStarted = database.djiDevices.devices.contains(where: { $0.isStarted })
+        let hasDjiStarted = database.djiDevices.devices.contains(where: \.isStarted)
         let hasIngestClients = getNumberOfIngestClients() > 0
         if ((isLive || isRecording) && stream.backgroundStreaming) || hasDjiStarted || hasIngestClients {
             return .full
@@ -1645,11 +1645,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         #if targetEnvironment(macCatalyst)
         // Keep the app active and prevent App Nap suspension at all times on macOS
         let needsRunning = true
-        
+
         if needsRunning {
             if macActivityToken == nil {
-                let options: ProcessInfo.ActivityOptions = [.userInitiated, .latencyCritical, .idleSystemSleepDisabled, .idleDisplaySleepDisabled]
-                macActivityToken = ProcessInfo.processInfo.beginActivity(options: options, reason: "Moblin Background Activity Preservation")
+                let options: ProcessInfo.ActivityOptions = [
+                    .userInitiated,
+                    .latencyCritical,
+                    .idleSystemSleepDisabled,
+                    .idleDisplaySleepDisabled,
+                ]
+                macActivityToken = ProcessInfo.processInfo.beginActivity(
+                    options: options,
+                    reason: "Moblin Background Activity Preservation"
+                )
                 logger.info("Mac Catalyst: Started background activity assertion")
             }
         }
@@ -1659,12 +1667,13 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     func startIosBackgroundTask() {
         guard iosBackgroundTask == .invalid else { return }
         logger.info("iOS: Starting background task assertion")
-        iosBackgroundTask = UIApplication.shared.beginBackgroundTask(withName: "MoblinBackgroundPreservation") { [weak self] in
-            logger.info("iOS: Background task expired")
-            DispatchQueue.main.async {
-                self?.stopIosBackgroundTask()
+        iosBackgroundTask = UIApplication.shared
+            .beginBackgroundTask(withName: "MoblinBackgroundPreservation") { [weak self] in
+                logger.info("iOS: Background task expired")
+                DispatchQueue.main.async {
+                    self?.stopIosBackgroundTask()
+                }
             }
-        }
     }
 
     func stopIosBackgroundTask() {

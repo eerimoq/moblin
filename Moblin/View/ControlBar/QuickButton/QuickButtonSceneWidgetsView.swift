@@ -76,7 +76,7 @@ struct QuickButtonSceneWidgetsView: View {
             } footer: {
                 Text("Turn on to drag and resize widgets directly on the camera preview.")
             }
-            
+
             Section {
                 List {
                     ForEach(model.widgetsInCurrentScene(onlyEnabled: false)) { widget in

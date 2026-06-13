@@ -4,6 +4,7 @@ import UIKit
 #endif
 
 // MARK: - Interactive Widget Overlay View
+
 // This view overlays the video preview and allows users to select, drag, resize,
 // and manage widgets using touch gestures (tap, drag, pinch).
 //
@@ -25,7 +26,7 @@ struct InteractiveWidgetOverlayView: View {
     @State private var dragStartLayoutY: Double = 0.0
     @State private var dragStartTranslationX: CGFloat = 0.0
     @State private var dragStartTranslationY: CGFloat = 0.0
-    @State private var lastDragUpdate: Date = Date()
+    @State private var lastDragUpdate: Date = .init()
 
     // Pinch state
     @State private var pinchStartSize: Double = 0.0
@@ -103,7 +104,8 @@ struct InteractiveWidgetOverlayView: View {
         } else if layout.alignment.isTop() {
             wY = videoBounds.minY + CGFloat(layout.y / 100.0) * videoBounds.height
         } else { // Bottom
-            wY = videoBounds.minY + videoBounds.height - CGFloat(layout.y / 100.0) * videoBounds.height - wHeight
+            wY = videoBounds.minY + videoBounds.height - CGFloat(layout.y / 100.0) * videoBounds
+                .height - wHeight
         }
 
         return CGRect(x: wX, y: wY, width: wWidth, height: wHeight)
@@ -113,7 +115,8 @@ struct InteractiveWidgetOverlayView: View {
         switch widget.type {
         case .image:
             if let data = model.imageStorage.read(id: widget.id),
-               let img = UIImage(data: data) {
+               let img = UIImage(data: data)
+            {
                 return img.size.width / img.size.height
             }
             return 1.0
@@ -136,13 +139,13 @@ struct InteractiveWidgetOverlayView: View {
         var layout = widgetInScene.sceneWidget.layout
         let currentXPercent = ((rect.minX - videoBounds.minX) / videoBounds.width) * 100.0
         let currentYPercent = ((rect.minY - videoBounds.minY) / videoBounds.height) * 100.0
-        
+
         layout.alignment = .topLeft
         layout.x = max(0.0, Double(currentXPercent))
         layout.y = max(0.0, Double(currentYPercent))
         layout.updateXString()
         layout.updateYString()
-        
+
         widgetInScene.sceneWidget.layout = layout
     }
 
@@ -160,7 +163,7 @@ struct InteractiveWidgetOverlayView: View {
         let leftDiff = abs(candidateMinX - videoBounds.minX)
         let centerDiff = abs((candidateMinX + wWidth / 2) - videoBounds.midX)
         let rightDiff = abs((candidateMinX + wWidth) - videoBounds.maxX)
-        
+
         if leftDiff < snapThreshold {
             candidateMinX = videoBounds.minX
             snapLineX = videoBounds.minX
@@ -177,7 +180,7 @@ struct InteractiveWidgetOverlayView: View {
         let topDiff = abs(candidateMinY - videoBounds.minY)
         let centerVDiff = abs((candidateMinY + wHeight / 2) - videoBounds.midY)
         let bottomDiff = abs((candidateMinY + wHeight) - videoBounds.maxY)
-        
+
         if topDiff < snapThreshold {
             candidateMinY = videoBounds.minY
             snapLineY = videoBounds.minY
@@ -214,7 +217,9 @@ struct InteractiveWidgetOverlayView: View {
 
     // MARK: - Widget Dimensions Helper
 
-    private func getWidgetDimensions(widgetInScene: WidgetInScene, videoBounds: CGRect) -> (CGFloat, CGFloat) {
+    private func getWidgetDimensions(widgetInScene: WidgetInScene,
+                                     videoBounds: CGRect) -> (CGFloat, CGFloat)
+    {
         if widgetInScene.widget.type == .text {
             let fontSize = CGFloat(widgetInScene.widget.text.fontSizeFloat)
             // The text rendered height is roughly fontSize * scale.
@@ -227,7 +232,7 @@ struct InteractiveWidgetOverlayView: View {
         let layout = widgetInScene.sceneWidget.layout
         let aspect = getWidgetAspectRatio(widget: widgetInScene.widget)
         let streamAspect = model.stream.dimensions().aspectRatio()
-        
+
         var wWidth: CGFloat
         var wHeight: CGFloat
         if streamAspect < aspect {
@@ -242,7 +247,14 @@ struct InteractiveWidgetOverlayView: View {
 
     // MARK: - Corner Resize Handles
 
-    private func cornerHandle(x: CGFloat, y: CGFloat, handle: String, widgetInScene: WidgetInScene, rect: CGRect, videoBounds: CGRect) -> some View {
+    private func cornerHandle(
+        x: CGFloat,
+        y: CGFloat,
+        handle: String,
+        widgetInScene: WidgetInScene,
+        rect: CGRect,
+        videoBounds: CGRect
+    ) -> some View {
         let handleSize: CGFloat = 12
         return Circle()
             .fill(Color.white)
@@ -258,10 +270,14 @@ struct InteractiveWidgetOverlayView: View {
                     .onChanged { value in
                         var layout = widgetInScene.sceneWidget.layout
                         guard !layout.positioningLock else { return }
-                        
+
                         if activeResizeHandle != handle {
                             activeResizeHandle = handle
-                            convertToTopLeft(widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
+                            convertToTopLeft(
+                                widgetInScene: widgetInScene,
+                                rect: rect,
+                                videoBounds: videoBounds
+                            )
                             layout = widgetInScene.sceneWidget.layout
                             resizeStartRect = rect
                             resizeStartSize = layout.size
@@ -270,77 +286,92 @@ struct InteractiveWidgetOverlayView: View {
                         }
                         let aspect = getWidgetAspectRatio(widget: widgetInScene.widget)
                         let streamAspect = model.stream.dimensions().aspectRatio()
-                        
+
                         var newWidth: CGFloat
                         var newHeight: CGFloat
-                        
+
                         switch handle {
                         case "bottomRight":
                             newWidth = max(20, resizeStartRect.width + value.translation.width)
                             newHeight = max(20, resizeStartRect.height + value.translation.height)
-                            
-                            var newSize: Double
-                            if streamAspect < aspect {
-                                newSize = Double(newWidth / videoBounds.width) * 100.0
+
+                            var newSize = if streamAspect < aspect {
+                                Double(newWidth / videoBounds.width) * 100.0
                             } else {
-                                newSize = Double(newHeight / videoBounds.height) * 100.0
+                                Double(newHeight / videoBounds.height) * 100.0
                             }
-                            layout.size = newSize.clamped(to: 1...100)
+                            layout.size = newSize.clamped(to: 1 ... 100)
                             layout.updateSizeString()
-                            
+
                         case "bottomLeft":
                             newWidth = max(20, resizeStartRect.width - value.translation.width)
                             newHeight = max(20, resizeStartRect.height + value.translation.height)
-                            
-                            var newSize: Double
-                            if streamAspect < aspect {
-                                newSize = Double(newWidth / videoBounds.width) * 100.0
+
+                            var newSize = if streamAspect < aspect {
+                                Double(newWidth / videoBounds.width) * 100.0
                             } else {
-                                newSize = Double(newHeight / videoBounds.height) * 100.0
+                                Double(newHeight / videoBounds.height) * 100.0
                             }
-                            layout.size = newSize.clamped(to: 1...100)
+                            layout.size = newSize.clamped(to: 1 ... 100)
                             layout.updateSizeString()
-                            layout.x = max(0.0, Double((resizeStartRect.maxX - newWidth - videoBounds.minX) / videoBounds.width) * 100.0)
+                            layout.x = max(
+                                0.0,
+                                Double((resizeStartRect.maxX - newWidth - videoBounds.minX) / videoBounds
+                                    .width) * 100.0
+                            )
                             layout.updateXString()
-                            
+
                         case "topRight":
                             newWidth = max(20, resizeStartRect.width + value.translation.width)
                             newHeight = max(20, resizeStartRect.height - value.translation.height)
-                            
-                            var newSize: Double
-                            if streamAspect < aspect {
-                                newSize = Double(newWidth / videoBounds.width) * 100.0
+
+                            var newSize = if streamAspect < aspect {
+                                Double(newWidth / videoBounds.width) * 100.0
                             } else {
-                                newSize = Double(newHeight / videoBounds.height) * 100.0
+                                Double(newHeight / videoBounds.height) * 100.0
                             }
-                            layout.size = newSize.clamped(to: 1...100)
+                            layout.size = newSize.clamped(to: 1 ... 100)
                             layout.updateSizeString()
-                            layout.y = max(0.0, Double((resizeStartRect.maxY - newHeight - videoBounds.minY) / videoBounds.height) * 100.0)
+                            layout.y = max(
+                                0.0,
+                                Double((resizeStartRect.maxY - newHeight - videoBounds.minY) / videoBounds
+                                    .height) * 100.0
+                            )
                             layout.updateYString()
-                            
+
                         case "topLeft":
                             newWidth = max(20, resizeStartRect.width - value.translation.width)
                             newHeight = max(20, resizeStartRect.height - value.translation.height)
-                            
-                            var newSize: Double
-                            if streamAspect < aspect {
-                                newSize = Double(newWidth / videoBounds.width) * 100.0
+
+                            var newSize = if streamAspect < aspect {
+                                Double(newWidth / videoBounds.width) * 100.0
                             } else {
-                                newSize = Double(newHeight / videoBounds.height) * 100.0
+                                Double(newHeight / videoBounds.height) * 100.0
                             }
-                            layout.size = newSize.clamped(to: 1...100)
+                            layout.size = newSize.clamped(to: 1 ... 100)
                             layout.updateSizeString()
-                            layout.x = max(0.0, Double((resizeStartRect.maxX - newWidth - videoBounds.minX) / videoBounds.width) * 100.0)
+                            layout.x = max(
+                                0.0,
+                                Double((resizeStartRect.maxX - newWidth - videoBounds.minX) / videoBounds
+                                    .width) * 100.0
+                            )
                             layout.updateXString()
-                            layout.y = max(0.0, Double((resizeStartRect.maxY - newHeight - videoBounds.minY) / videoBounds.height) * 100.0)
+                            layout.y = max(
+                                0.0,
+                                Double((resizeStartRect.maxY - newHeight - videoBounds.minY) / videoBounds
+                                    .height) * 100.0
+                            )
                             layout.updateYString()
-                            
+
                         default:
                             return
                         }
-                        
+
                         widgetInScene.sceneWidget.layout = layout
-                        model.updateWidgetLayoutDirectly(widgetId: widgetInScene.widget.id, sceneWidget: widgetInScene.sceneWidget)
+                        model.updateWidgetLayoutDirectly(
+                            widgetId: widgetInScene.widget.id,
+                            sceneWidget: widgetInScene.sceneWidget
+                        )
                     }
                     .onEnded { _ in
                         activeResizeHandle = nil
@@ -354,10 +385,11 @@ struct InteractiveWidgetOverlayView: View {
     private func hudToolbar(widgetInScene: WidgetInScene, rect: CGRect) -> some View {
         let isLocked = widgetInScene.sceneWidget.layout.positioningLock
         let toolbarHeight: CGFloat = 38
-        
+
         let xPos = rect.midX
-        let yPos = rect.minY < 60 ? (rect.maxY + toolbarHeight / 2 + 12) : (rect.minY - toolbarHeight / 2 - 12)
-        
+        let yPos = rect
+            .minY < 60 ? (rect.maxY + toolbarHeight / 2 + 12) : (rect.minY - toolbarHeight / 2 - 12)
+
         return HStack(spacing: 12) {
             Button(action: {
                 triggerHaptic()
@@ -386,7 +418,9 @@ struct InteractiveWidgetOverlayView: View {
     // MARK: - Widget Item View
 
     @ViewBuilder
-    private func widgetItemView(widgetInScene: WidgetInScene, rect: CGRect, videoBounds: CGRect) -> some View {
+    private func widgetItemView(widgetInScene: WidgetInScene, rect: CGRect,
+                                videoBounds: CGRect) -> some View
+    {
         let isSelected = model.selectedWidgetForInteraction?.id == widgetInScene.id
         let isClickable = widgetInScene.sceneWidget.layout.clickable
         let isLocked = widgetInScene.sceneWidget.layout.positioningLock
@@ -402,7 +436,9 @@ struct InteractiveWidgetOverlayView: View {
                 if widgetInScene.widget.hasSize() {
                     Rectangle()
                         .stroke(
-                            !isEnabled ? (isSelected ? Color.white : Color.clear) : (!isClickable ? Color.gray.opacity(0.4) : (isSelected ? Color.white : Color.white.opacity(0.7))),
+                            !isEnabled ? (isSelected ? Color.white : Color.clear) :
+                                (!isClickable ? Color.gray
+                                    .opacity(0.4) : (isSelected ? Color.white : Color.white.opacity(0.7))),
                             style: StrokeStyle(lineWidth: 1.5, dash: isSelected ? [] : [5, 3])
                         )
                         .background(isSelected ? Color.white.opacity(0.25) : Color.clear)
@@ -419,7 +455,7 @@ struct InteractiveWidgetOverlayView: View {
                                 .stroke(isSelected ? Color.white : Color.white.opacity(0.5), lineWidth: 1.5)
                         )
                 }
-                
+
                 // Widget name label
                 if isSelected || isEnabled {
                     VStack(spacing: 2) {
@@ -428,7 +464,7 @@ struct InteractiveWidgetOverlayView: View {
                             if !isClickable {
                                 text += " (Not Clickable)"
                             }
-                            if isLocked && isSelected {
+                            if isLocked, isSelected {
                                 text += " (Locked)"
                             }
                             if !isEnabled {
@@ -442,16 +478,29 @@ struct InteractiveWidgetOverlayView: View {
                             .foregroundStyle(.white)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
-                            .background(!isEnabled ? Color.orange : ((isLocked && isSelected) ? Color.red : (!isClickable ? Color.gray : (isSelected ? Color.black.opacity(0.85) : Color.black.opacity(0.7)))))
+                            .background(!isEnabled ? Color
+                                .orange :
+                                ((isLocked && isSelected) ? Color
+                                    .red :
+                                    (!isClickable ? Color
+                                        .gray :
+                                        (isSelected ? Color.black.opacity(0.85) : Color.black
+                                            .opacity(0.7)))))
                             .cornerRadius(4)
                         Spacer()
                     }
                     .padding(.top, widgetInScene.widget.hasSize() ? -22 : -28)
                 }
             }
-            .frame(width: widgetInScene.widget.hasSize() ? max(rect.width, 10) : 44, height: widgetInScene.widget.hasSize() ? max(rect.height, 10) : 44)
+            .frame(
+                width: widgetInScene.widget.hasSize() ? max(rect.width, 10) : 44,
+                height: widgetInScene.widget.hasSize() ? max(rect.height, 10) : 44
+            )
         }
-        .frame(width: widgetInScene.widget.hasSize() ? max(rect.width, 44) : 44, height: widgetInScene.widget.hasSize() ? max(rect.height, 44) : 44)
+        .frame(
+            width: widgetInScene.widget.hasSize() ? max(rect.width, 44) : 44,
+            height: widgetInScene.widget.hasSize() ? max(rect.height, 44) : 44
+        )
         .contentShape(Rectangle())
         .position(x: rect.midX, y: rect.midY)
         .allowsHitTesting(true)
@@ -463,7 +512,7 @@ struct InteractiveWidgetOverlayView: View {
 
                     let dx = value.translation.width
                     let dy = value.translation.height
-                    let distance = sqrt(dx*dx + dy*dy)
+                    let distance = sqrt(dx * dx + dy * dy)
 
                     // Only move if we exceed the drag threshold of 5 points
                     if distance > 5 {
@@ -471,7 +520,11 @@ struct InteractiveWidgetOverlayView: View {
                         if activeDragWidgetId != widgetInScene.id {
                             activeDragWidgetId = widgetInScene.id
                             // Convert to topLeft alignment for consistent math
-                            convertToTopLeft(widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
+                            convertToTopLeft(
+                                widgetInScene: widgetInScene,
+                                rect: rect,
+                                videoBounds: videoBounds
+                            )
                             let layout = widgetInScene.sceneWidget.layout
                             dragStartLayoutX = layout.x
                             dragStartLayoutY = layout.y
@@ -484,17 +537,22 @@ struct InteractiveWidgetOverlayView: View {
                             triggerHaptic()
                             model.selectedWidgetForInteraction = widgetInScene
                         }
-                        
+
                         var layout = widgetInScene.sceneWidget.layout
                         guard !layout.positioningLock else { return }
 
-                        let (wWidth, wHeight) = getWidgetDimensions(widgetInScene: widgetInScene, videoBounds: videoBounds)
+                        let (wWidth, wHeight) = getWidgetDimensions(
+                            widgetInScene: widgetInScene,
+                            videoBounds: videoBounds
+                        )
 
                         let effectiveDx = dx - dragStartTranslationX
                         let effectiveDy = dy - dragStartTranslationY
 
-                        var candidateMinX = videoBounds.minX + CGFloat(dragStartLayoutX / 100.0) * videoBounds.width + effectiveDx
-                        var candidateMinY = videoBounds.minY + CGFloat(dragStartLayoutY / 100.0) * videoBounds.height + effectiveDy
+                        var candidateMinX = videoBounds.minX + CGFloat(dragStartLayoutX / 100.0) * videoBounds
+                            .width + effectiveDx
+                        var candidateMinY = videoBounds.minY + CGFloat(dragStartLayoutY / 100.0) * videoBounds
+                            .height + effectiveDy
 
                         // Apply snapping
                         applySnapping(
@@ -506,16 +564,25 @@ struct InteractiveWidgetOverlayView: View {
                         )
 
                         // Convert back to percentage
-                        layout.x = max(0.0, Double((candidateMinX - videoBounds.minX) / videoBounds.width) * 100.0)
-                        layout.y = max(0.0, Double((candidateMinY - videoBounds.minY) / videoBounds.height) * 100.0)
+                        layout.x = max(
+                            0.0,
+                            Double((candidateMinX - videoBounds.minX) / videoBounds.width) * 100.0
+                        )
+                        layout.y = max(
+                            0.0,
+                            Double((candidateMinY - videoBounds.minY) / videoBounds.height) * 100.0
+                        )
                         layout.updateXString()
                         layout.updateYString()
 
                         widgetInScene.sceneWidget.layout = layout
-                        
+
                         let now = Date()
                         if now.timeIntervalSince(lastDragUpdate) > 0.033 {
-                            model.updateWidgetLayoutDirectly(widgetId: widgetInScene.widget.id, sceneWidget: widgetInScene.sceneWidget)
+                            model.updateWidgetLayoutDirectly(
+                                widgetId: widgetInScene.widget.id,
+                                sceneWidget: widgetInScene.sceneWidget
+                            )
                             lastDragUpdate = now
                         }
                     }
@@ -523,10 +590,10 @@ struct InteractiveWidgetOverlayView: View {
                 .onEnded { value in
                     let dx = value.translation.width
                     let dy = value.translation.height
-                    let distance = sqrt(dx*dx + dy*dy)
+                    let distance = sqrt(dx * dx + dy * dy)
 
                     // If user tapped without dragging, toggle selection (and we were not pinching)
-                    if distance <= 5 && !isPinching {
+                    if distance <= 5, !isPinching {
                         triggerHaptic()
                         if model.selectedWidgetForInteraction?.id == widgetInScene.id {
                             model.selectedWidgetForInteraction = nil
@@ -535,7 +602,10 @@ struct InteractiveWidgetOverlayView: View {
                         }
                     } else if distance > 5 {
                         // Force final layout sync
-                        model.updateWidgetLayoutDirectly(widgetId: widgetInScene.widget.id, sceneWidget: widgetInScene.sceneWidget)
+                        model.updateWidgetLayoutDirectly(
+                            widgetId: widgetInScene.widget.id,
+                            sceneWidget: widgetInScene.sceneWidget
+                        )
                     }
 
                     isPinching = false
@@ -555,37 +625,39 @@ struct InteractiveWidgetOverlayView: View {
                                 triggerHaptic()
                                 model.selectedWidgetForInteraction = widgetInScene
                             }
-                            
+
                             var layout = widgetInScene.sceneWidget.layout
                             guard !layout.positioningLock else { return }
-                            
+
                             if widgetInScene.widget.type == .text {
                                 if pinchStartSize == 0 {
                                     pinchStartSize = Double(widgetInScene.widget.text.fontSizeFloat)
                                 }
-                                let newSize = (pinchStartSize * Double(scale)).clamped(to: 10...300)
+                                let newSize = (pinchStartSize * Double(scale)).clamped(to: 10 ... 300)
                                 widgetInScene.widget.text.fontSizeFloat = Float(newSize)
                                 widgetInScene.widget.text.fontSize = Int(newSize)
                                 model.objectWillChange.send()
                                 return
                             }
-                            
+
                             if pinchStartSize == 0 {
                                 pinchStartSize = layout.size
                             }
-                            
-                            let newSize = (pinchStartSize * Double(scale)).clamped(to: 1...100)
+
+                            let newSize = (pinchStartSize * Double(scale)).clamped(to: 1 ... 100)
                             layout.size = newSize
                             layout.updateSizeString()
-                            
+
                             widgetInScene.sceneWidget.layout = layout
-                            model.updateWidgetLayoutDirectly(widgetId: widgetInScene.widget.id, sceneWidget: widgetInScene.sceneWidget)
+                            model.updateWidgetLayoutDirectly(
+                                widgetId: widgetInScene.widget.id,
+                                sceneWidget: widgetInScene.sceneWidget
+                            )
                         }
                         .onEnded { _ in
                             pinchStartSize = 0
                             model.sceneUpdated(attachCamera: false, updateRemoteScene: true)
-                        }
-                )
+                        })
         )
     }
 
@@ -633,10 +705,38 @@ struct InteractiveWidgetOverlayView: View {
                     if isSelected {
                         if widgetInScene.widget.hasSize() {
                             Group {
-                                cornerHandle(x: rect.minX, y: rect.minY, handle: "topLeft", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
-                                cornerHandle(x: rect.maxX, y: rect.minY, handle: "topRight", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
-                                cornerHandle(x: rect.minX, y: rect.maxY, handle: "bottomLeft", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
-                                cornerHandle(x: rect.maxX, y: rect.maxY, handle: "bottomRight", widgetInScene: widgetInScene, rect: rect, videoBounds: videoBounds)
+                                cornerHandle(
+                                    x: rect.minX,
+                                    y: rect.minY,
+                                    handle: "topLeft",
+                                    widgetInScene: widgetInScene,
+                                    rect: rect,
+                                    videoBounds: videoBounds
+                                )
+                                cornerHandle(
+                                    x: rect.maxX,
+                                    y: rect.minY,
+                                    handle: "topRight",
+                                    widgetInScene: widgetInScene,
+                                    rect: rect,
+                                    videoBounds: videoBounds
+                                )
+                                cornerHandle(
+                                    x: rect.minX,
+                                    y: rect.maxY,
+                                    handle: "bottomLeft",
+                                    widgetInScene: widgetInScene,
+                                    rect: rect,
+                                    videoBounds: videoBounds
+                                )
+                                cornerHandle(
+                                    x: rect.maxX,
+                                    y: rect.maxY,
+                                    handle: "bottomRight",
+                                    widgetInScene: widgetInScene,
+                                    rect: rect,
+                                    videoBounds: videoBounds
+                                )
                             }
                         }
 

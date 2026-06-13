@@ -92,5 +92,3 @@ func makeOffsets<T: Identifiable>(_ items: [T], _ id: T.ID) -> IndexSet? {
         nil
     }
 }
-
-

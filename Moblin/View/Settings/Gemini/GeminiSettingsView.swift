@@ -6,51 +6,59 @@ struct GeminiSettingsView: View {
     @State private var apiKeyText = ""
     @State private var isCustomModel = false
     @State private var customModelName = ""
-    
+
     private let standardModels = [
         "gemini-3.5-flash",
         "gemini-3.1-flash-lite",
         "gemini-3.1-pro-preview",
         "gemini-2.5-flash",
-        "gemini-2.5-pro"
+        "gemini-2.5-pro",
     ]
-    
+
     private func getQuotaInfo(modelName: String) -> String {
         switch modelName {
         case "gemini-3.5-flash":
-            return String(localized: "Recomendado. Limites: 10 RPM (Requisições/Minuto) / 10.000 RPD (por dia) no plano gratuito. Resposta ultrarrápida, ideal para transmissões.")
+            String(
+                localized: "Recomendado. Limites: 10 RPM (Requisições/Minuto) / 10.000 RPD (por dia) no plano gratuito. Resposta ultrarrápida, ideal para transmissões."
+            )
         case "gemini-3.1-flash-lite":
-            return String(localized: "Mais leve. Limites: 15 RPM / 1.500 RPD no plano gratuito. Menor latência para comandos básicos.")
+            String(
+                localized: "Mais leve. Limites: 15 RPM / 1.500 RPD no plano gratuito. Menor latência para comandos básicos."
+            )
         case "gemini-3.1-pro-preview":
-            return String(localized: "Alta inteligência. Limites: 2 RPM / 50 RPD no plano gratuito. Perfeito para instruções complexas, mas com maior latência.")
+            String(
+                localized: "Alta inteligência. Limites: 2 RPM / 50 RPD no plano gratuito. Perfeito para instruções complexas, mas com maior latência."
+            )
         case "gemini-2.5-flash":
-            return String(localized: "Modelo balanceado anterior. Limites: 15 RPM / 1.500 RPD no plano gratuito.")
+            String(localized: "Modelo balanceado anterior. Limites: 15 RPM / 1.500 RPD no plano gratuito.")
         case "gemini-2.5-pro":
-            return String(localized: "Modelo avançado anterior. Limites: 2 RPM / 50 RPD no plano gratuito.")
+            String(localized: "Modelo avançado anterior. Limites: 2 RPM / 50 RPD no plano gratuito.")
         default:
-            return String(localized: "Modelo personalizado. Os limites de cota dependem do modelo configurado e de seu plano (Pay-as-you-go ou Gratuito) no Google AI Studio.")
+            String(
+                localized: "Modelo personalizado. Os limites de cota dependem do modelo configurado e de seu plano (Pay-as-you-go ou Gratuito) no Google AI Studio."
+            )
         }
     }
-    
+
     var body: some View {
         Form {
             Section {
                 Toggle(String(localized: "Enabled"), isOn: Binding(
                     get: { database.gemini.enabled },
-                    set: { 
+                    set: {
                         database.gemini.enabled = $0
                         model.sceneUpdated(updateRemoteScene: false)
                     }
                 ))
                 Toggle(String(localized: "Control Remote Streamer (macOS)"), isOn: Binding(
                     get: { database.gemini.remoteControl },
-                    set: { 
+                    set: {
                         database.gemini.remoteControl = $0
                         model.sceneUpdated(updateRemoteScene: false)
                     }
                 ))
             }
-            
+
             Section(
                 header: Text(String(localized: "Model")),
                 footer: Text(getQuotaInfo(modelName: database.gemini.modelName))
@@ -58,17 +66,18 @@ struct GeminiSettingsView: View {
                 Picker(String(localized: "Model Name"), selection: Binding(
                     get: {
                         if standardModels.contains(database.gemini.modelName) {
-                            return database.gemini.modelName
+                            database.gemini.modelName
                         } else if database.gemini.modelName.isEmpty {
-                            return "gemini-3.5-flash"
+                            "gemini-3.5-flash"
                         } else {
-                            return "custom"
+                            "custom"
                         }
                     },
                     set: { newValue in
                         if newValue == "custom" {
                             isCustomModel = true
-                            database.gemini.modelName = customModelName.isEmpty ? "gemini-3.5-flash" : customModelName
+                            database.gemini.modelName = customModelName
+                                .isEmpty ? "gemini-3.5-flash" : customModelName
                         } else {
                             isCustomModel = false
                             database.gemini.modelName = newValue
@@ -81,7 +90,7 @@ struct GeminiSettingsView: View {
                     }
                     Text(String(localized: "Custom...")).tag("custom")
                 }
-                
+
                 if isCustomModel {
                     TextField(String(localized: "Custom Model Name"), text: Binding(
                         get: { customModelName },
@@ -93,7 +102,7 @@ struct GeminiSettingsView: View {
                     ))
                 }
             }
-            
+
             Section(
                 header: Text(String(localized: "API Key")),
                 footer: Text(String(localized: "Get your key from Google AI Studio (ai.google.dev)."))
@@ -102,7 +111,7 @@ struct GeminiSettingsView: View {
                     .onAppear {
                         apiKeyText = database.gemini.loadApiKey()
                         let currentModel = database.gemini.modelName
-                        if !standardModels.contains(currentModel) && !currentModel.isEmpty {
+                        if !standardModels.contains(currentModel), !currentModel.isEmpty {
                             isCustomModel = true
                             customModelName = currentModel
                         } else {
@@ -115,10 +124,14 @@ struct GeminiSettingsView: View {
                         model.storeSettings()
                     }
             }
-            
+
             Section(
                 header: Text(String(localized: "System Instructions")),
-                footer: Text(String(localized: "Customize the AI's personality and instructions. Leave blank for default."))
+                footer: Text(
+                    String(
+                        localized: "Customize the AI's personality and instructions. Leave blank for default."
+                    )
+                )
             ) {
                 TextEditor(text: Binding(
                     get: { database.gemini.systemInstruction },
@@ -129,9 +142,13 @@ struct GeminiSettingsView: View {
                 ))
                 .frame(height: 120)
             }
-            
+
             Section(
-                footer: Text(String(localized: "Aviso de Privacidade: Ao ativar e utilizar o Gemini AI, seus comandos de voz e transcrições de texto serão enviados para a API do Google Gemini para processamento."))
+                footer: Text(
+                    String(
+                        localized: "Aviso de Privacidade: Ao ativar e utilizar o Gemini AI, seus comandos de voz e transcrições de texto serão enviados para a API do Google Gemini para processamento."
+                    )
+                )
             ) {}
         }
         .navigationTitle(String(localized: "Gemini AI"))

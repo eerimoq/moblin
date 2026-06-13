@@ -128,7 +128,9 @@ private struct DjiDeviceWiFiSettingsInnerView: View {
                         value: device.wifiPassword,
                         onSubmit: {
                             device.wifiPassword = $0
-                            if let network = database.savedWifiNetworks.first(where: {$0.ssid == device.wifiSsid}) {
+                            if let network = database.savedWifiNetworks
+                                .first(where: { $0.ssid == device.wifiSsid })
+                            {
                                 network.password = device.wifiPassword
                             } else if !device.wifiSsid.isEmpty {
                                 let network = SettingsWiFi()

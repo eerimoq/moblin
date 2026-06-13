@@ -1784,7 +1784,7 @@ extension Model {
     func updateWidgetLayoutDirectly(widgetId: UUID, sceneWidget: SettingsSceneWidget) {
         // Trigger a UI redraw so InteractiveWidgetOverlayView moves the blue selection borders in real-time
         objectWillChange.send()
-        
+
         if let effect = imageEffects[widgetId] {
             effect.setSceneWidget(sceneWidget: sceneWidget.clone())
         } else if let effect = textEffects[widgetId] {

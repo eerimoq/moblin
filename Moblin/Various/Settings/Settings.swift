@@ -1636,7 +1636,7 @@ private func updateQuickButton(database: Database, button: SettingsQuickButton) 
         existingButton.name = button.name
         existingButton.imageOn = button.imageOn
         existingButton.imageOff = button.imageOff
-        if (existingButton.type == .gemini || existingButton.type == .editWidgets) && existingButton.page == 3 {
+        if existingButton.type == .gemini || existingButton.type == .editWidgets, existingButton.page == 3 {
             existingButton.page = 1
         }
     } else {
