@@ -1453,6 +1453,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
             reloadAudioSession()
             reloadIngests()
             reloadDjiDevices()
+            reloadBrowserWidgets()
             chatTextToSpeech.reset(running: true)
             startWeatherManager()
             startGeographyManager()
