@@ -874,6 +874,7 @@ extension Model {
         }
         if newBitrateStatusColor != bitrate.statusColor {
             bitrate.statusColor = newBitrateStatusColor
+            bitrateTimeline.appendEvent(event: bitrate.statusColor == .red)
         }
     }
 

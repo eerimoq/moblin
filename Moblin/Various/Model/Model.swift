@@ -168,13 +168,28 @@ class Bitrate: ObservableObject {
 
 class BitrateTimeline: ObservableObject {
     let maxSamples = 120
+    let maxEvents = 50
     @Published var samples: [Bool] = []
-
+    var events: [Bool] = []
+    
+    func appendEvent(event: Bool) {
+        events.append(event)
+        if events.count > maxEvents {
+            events.removeFirst(events.count - maxEvents)
+        }
+    }
+    
     func append(isBad: Bool) {
         samples.append(isBad)
         if samples.count > maxSamples {
-            samples.removeFirst(samples.count - maxSamples)
+            samples.removeFirst(samples.count - maxSamples) // cannot be more than 1 right?
         }
+    }
+    
+    func update() {
+        let sample = events.contains(true)
+        events.removeAll(keepingCapacity: true)
+        samples.append(sample)
     }
 }
 
@@ -1700,7 +1715,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         weatherManager.setLocation(location: latestKnownLocation)
         geographyManager.setLocation(location: latestKnownLocation)
         updateBitrateStatus()
-        bitrateTimeline.append(isBad: bitrate.statusColor == .red)
+        bitrateTimeline.update()
         updateAdsRemainingTimer(now: now)
         if database.show.systemMonitor {
             resourceUsage.update(now: monotonicNow)
