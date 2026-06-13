@@ -464,13 +464,18 @@ struct MainView: View {
                             ZStack {
                                 streamView
                                     .onTapGesture(count: 1) {
+                                        guard !model.editWidgetsMode else { return }
                                         handleTapToFocus(metrics: metrics, location: $0)
                                     }
                                     .onLongPressGesture {
+                                        guard !model.editWidgetsMode else { return }
                                         handleLeaveTapToFocus()
                                     }
+                                    .allowsHitTesting(!model.editWidgetsMode)
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
                                 browserWidgets(streamSize: metrics.size)
+                                InteractiveWidgetOverlayView(model: model, previewSize: metrics.size)
+                                GeminiOverlayView(model: model, previewSize: metrics.size)
                             }
                             .offset(CGSize(
                                 width: 0,
@@ -490,6 +495,7 @@ struct MainView: View {
                                       width: metrics.size.width)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
+                .allowsHitTesting(!model.editWidgetsMode)
                 if model.showDrawOnStream, model.stream.portrait {
                     DrawOnStreamView(model: model)
                 }
@@ -521,12 +527,14 @@ struct MainView: View {
                         .padding(.top, -7)
                 }
             }
-            .gesture(
+            .simultaneousGesture(
                 MagnificationGesture()
                     .onChanged { amount in
+                        guard !model.editWidgetsMode else { return }
                         model.changeZoomX(amount: Float(amount))
                     }
                     .onEnded { amount in
+                        guard !model.editWidgetsMode else { return }
                         model.commitZoomX(amount: Float(amount))
                     }
             )
@@ -545,13 +553,18 @@ struct MainView: View {
                             ZStack {
                                 streamView
                                     .onTapGesture(count: 1) {
+                                        guard !model.editWidgetsMode else { return }
                                         handleTapToFocus(metrics: metrics, location: $0)
                                     }
                                     .onLongPressGesture {
+                                        guard !model.editWidgetsMode else { return }
                                         handleLeaveTapToFocus()
                                     }
+                                    .allowsHitTesting(!model.editWidgetsMode)
                                 StreamOverlayTapGridView(camera: model.camera, size: metrics.size)
                                 browserWidgets(streamSize: metrics.size)
+                                InteractiveWidgetOverlayView(model: model, previewSize: metrics.size)
+                                GeminiOverlayView(model: model, previewSize: metrics.size)
                             }
                         }
                         .aspectRatio(streamAspectRatio(), contentMode: .fit)
@@ -567,6 +580,7 @@ struct MainView: View {
                                       width: metrics.size.width)
                         .opacity(model.showLocalOverlays ? 1 : 0)
                 }
+                .allowsHitTesting(!model.editWidgetsMode)
                 if model.showDrawOnStream {
                     DrawOnStreamView(model: model)
                 }
@@ -593,12 +607,14 @@ struct MainView: View {
                         .padding(.trailing, -1)
                 }
             }
-            .gesture(
+            .simultaneousGesture(
                 MagnificationGesture()
                     .onChanged { amount in
+                        guard !model.editWidgetsMode else { return }
                         model.changeZoomX(amount: Float(amount))
                     }
                     .onEnded { amount in
+                        guard !model.editWidgetsMode else { return }
                         model.commitZoomX(amount: Float(amount))
                     }
             )

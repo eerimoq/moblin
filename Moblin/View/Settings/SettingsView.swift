@@ -55,6 +55,11 @@ struct SettingsView: View {
                     } label: {
                         Label("Macros", systemImage: "increase.indent")
                     }
+                    NavigationLink {
+                        GeminiSettingsView(database: database)
+                    } label: {
+                        Label("Gemini AI", systemImage: "sparkles")
+                    }
                 }
                 NavigationLink {
                     LocationSettingsView(

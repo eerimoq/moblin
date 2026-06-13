@@ -2619,6 +2619,7 @@ struct SettingsWidgetLayout: Equatable {
     var sizeString: String = "100.0"
     var alignment: SettingsAlignment = .topLeft
     var positioningLock: Bool = false
+    var clickable: Bool = true
 
     mutating func updateXString() {
         xString = String(x)
@@ -2666,6 +2667,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         case size
         case alignment
         case positioningLock
+        case clickable
         case migrated
         case migrated2
     }
@@ -2681,6 +2683,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         try container.encode(.size, layout.size)
         try container.encode(.alignment, layout.alignment)
         try container.encode(.positioningLock, layout.positioningLock)
+        try container.encode(.clickable, layout.clickable)
         try container.encode(.migrated, migrated)
         try container.encode(.migrated2, migrated2)
     }
@@ -2703,6 +2706,7 @@ class SettingsSceneWidget: Codable, Identifiable, Equatable, ObservableObject, @
         layout.updateSizeString()
         layout.alignment = container.decode(.alignment, SettingsAlignment.self, .topLeft)
         layout.positioningLock = container.decode(.positioningLock, Bool.self, false)
+        layout.clickable = container.decode(.clickable, Bool.self, true)
         migrated = container.decode(.migrated, Bool.self, false)
         migrated2 = container.decode(.migrated2, Bool.self, false)
     }

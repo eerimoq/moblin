@@ -90,6 +90,7 @@ func makeChannelMap(
 }
 
 final class AudioUnit: NSObject, @unchecked Sendable {
+    static var onAudioSample: ((CMSampleBuffer) -> Void)?
     let encoder = AudioEncoder(lockQueue: processorPipelineQueue)
     var previewEncoder: AudioEncoder?
     private var input: AVCaptureDeviceInput?
@@ -360,6 +361,9 @@ extension AudioUnit: AVCaptureAudioDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from _: AVCaptureConnection
     ) {
+        if let onAudioSample = AudioUnit.onAudioSample {
+            onAudioSample(sampleBuffer)
+        }
         guard let processor else {
             return
         }

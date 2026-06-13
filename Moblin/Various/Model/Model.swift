@@ -383,6 +383,10 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     @Published var isLive = false
     @Published var isRecording = false
     @Published var isPreviewStreaming = false
+    #if targetEnvironment(macCatalyst)
+    private var macActivityToken: NSObjectProtocol?
+    #endif
+    private var iosBackgroundTask: UIBackgroundTaskIdentifier = .invalid
     @Published var browsers: [Browser] = []
     @Published var interactiveBrowsers: Bool = false
     @Published var showingGrid = false
@@ -401,6 +405,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     var pendingStreamImportCollisionTitle: String = ""
     @Published var showDrawOnStream = false
     @Published var showLocalOverlays = true
+    @Published var editWidgetsMode = false
+    @Published var isGeminiListening = false
+    @Published var geminiSpeechText = ""
+    @Published var geminiOverlayImageURL: String? = nil
+    @Published var geminiOverlayText: String? = nil
+    @Published var geminiOverlayYouTubeURL: String? = nil
+    @Published var geminiOverlayYouTubePosition: String = "center"
+    @Published var geminiOverlayYouTubeWidth: Int = 600
+    @Published var geminiOverlayYouTubeHeight: Int = 400
+    @Published var geminiOverlayYouTubeOpacity: Double = 1.0
+    let geminiService = GeminiService()
+    let voiceRecognizer = VoiceCommandRecognizer()
+    @Published var selectedWidgetForInteraction: WidgetInScene? = nil
     @Published var showBrowser = false
     @Published var showNavigation = false
     @Published var webBrowserUrl: String = ""
@@ -1155,6 +1172,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         bonding.statisticsFormatter.setNetworkInterfaceNames(database.networkInterfaceNames)
         reloadTeslaVehicle()
         updateQuickButtonStates()
+        editWidgetsMode = database.quickButtons.first(where: { $0.type == .editWidgets })?.isOn ?? false
         setQuickButton(type: .blurFaces, isOn: database.face.blurFaces)
         setQuickButton(type: .blurText, isOn: database.face.blurText)
         setQuickButton(type: .privacy, isOn: database.face.blurBackground)
@@ -1409,9 +1427,19 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @objc func handleDidEnterBackgroundNotification() {
+        #if targetEnvironment(macCatalyst)
+        updateMacActivityAssertion()
+        #endif
         guard !isMac() else {
             return
         }
+        
+        let hasDjiStarted = database.djiDevices.devices.contains(where: { $0.isStarted })
+        let hasIngestClients = getNumberOfIngestClients() > 0
+        if hasDjiStarted || hasIngestClients {
+            startIosBackgroundTask()
+        }
+        
         switch backgroundRunLevel() {
         case .full:
             if !pictureInPictureEnabled() {
@@ -1432,6 +1460,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     }
 
     @objc func handleWillEnterForegroundNotification() {
+        stopIosBackgroundTask()
         stopLiveActivity()
         guard !isMac() else {
             return
@@ -1575,8 +1604,30 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 
+    func getNumberOfIngestClients() -> Int {
+        var clients = 0
+        if let rtmpServer = ingests.rtmp {
+            clients += rtmpServer.getNumberOfClients()
+        }
+        if let srtlaServer = ingests.srtla {
+            clients += srtlaServer.getNumberOfClients()
+        }
+        clients += ingests.srt.count
+        if let ristServer = ingests.rist {
+            clients += ristServer.getNumberOfClients()
+        }
+        clients += ingests.rtsp.count
+        if let whipServer = ingests.whip {
+            clients += whipServer.getNumberOfClients()
+        }
+        clients += ingests.whep.count
+        return clients
+    }
+
     private func backgroundRunLevel() -> BackgroundRunLevel {
-        if (isLive || isRecording) && stream.backgroundStreaming {
+        let hasDjiStarted = database.djiDevices.devices.contains(where: { $0.isStarted })
+        let hasIngestClients = getNumberOfIngestClients() > 0
+        if ((isLive || isRecording) && stream.backgroundStreaming) || hasDjiStarted || hasIngestClients {
             return .full
         }
         if isLive || isRecording {
@@ -1592,11 +1643,55 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         return .off
     }
 
+    func updateMacActivityAssertion() {
+        #if targetEnvironment(macCatalyst)
+        // Keep the app active and prevent App Nap suspension at all times on macOS
+        let needsRunning = true
+        
+        if needsRunning {
+            if macActivityToken == nil {
+                let options: ProcessInfo.ActivityOptions = [.userInitiated, .latencyCritical, .idleSystemSleepDisabled, .idleDisplaySleepDisabled]
+                macActivityToken = ProcessInfo.processInfo.beginActivity(options: options, reason: "Moblin Background Activity Preservation")
+                logger.info("Mac Catalyst: Started background activity assertion")
+            }
+        }
+        #endif
+    }
+
+    func startIosBackgroundTask() {
+        guard iosBackgroundTask == .invalid else { return }
+        logger.info("iOS: Starting background task assertion")
+        iosBackgroundTask = UIApplication.shared.beginBackgroundTask(withName: "MoblinBackgroundPreservation") { [weak self] in
+            logger.info("iOS: Background task expired")
+            DispatchQueue.main.async {
+                self?.stopIosBackgroundTask()
+            }
+        }
+    }
+
+    func stopIosBackgroundTask() {
+        guard iosBackgroundTask != .invalid else { return }
+        logger.info("iOS: Stopping background task assertion")
+        UIApplication.shared.endBackgroundTask(iosBackgroundTask)
+        iosBackgroundTask = .invalid
+    }
+
     @objc func handleBatteryStateDidChangeNotification() {
         updateBatteryState()
     }
 
     deinit {
+        #if targetEnvironment(macCatalyst)
+        if let token = macActivityToken {
+            ProcessInfo.processInfo.endActivity(token)
+        }
+        #endif
+        let task = iosBackgroundTask
+        if task != .invalid {
+            DispatchQueue.main.async {
+                UIApplication.shared.endBackgroundTask(task)
+            }
+        }
         appStoreUpdateListenerTask?.cancel()
     }
 
@@ -1661,6 +1756,9 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     private func handle1sTimer() {
         let now = Date()
         let monotonicNow = ContinuousClock.now
+        #if targetEnvironment(macCatalyst)
+        updateMacActivityAssertion()
+        #endif
         updateDigitalClock(now: now)
         removeOldChatMessages(now: monotonicNow)
         guard !inServiceBackground else {

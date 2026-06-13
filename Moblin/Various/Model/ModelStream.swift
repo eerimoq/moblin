@@ -794,6 +794,9 @@ extension Model {
 
     func setIsLive(value: Bool) {
         isLive = value
+        #if targetEnvironment(macCatalyst)
+        updateMacActivityAssertion()
+        #endif
         updateLiveActivity()
         updatePictureInPicture()
         if isWatchLocal() {

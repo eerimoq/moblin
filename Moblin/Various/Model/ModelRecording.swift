@@ -104,6 +104,9 @@ extension Model {
 
     func setIsRecording(value: Bool) {
         isRecording = value
+        #if targetEnvironment(macCatalyst)
+        updateMacActivityAssertion()
+        #endif
         updateLiveActivity()
         setQuickButton(type: .record, isOn: value)
         updateQuickButtonStates()
