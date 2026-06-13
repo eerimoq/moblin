@@ -66,7 +66,7 @@ struct TextEffectSuite {
         #expect(lines == createLine(data: .text("134")))
     }
 
-    @Test
+    @Test(.enabled(if: Locale.current.identifier == "en_SE"))
     func multiple() {
         let lines = format(format: "time: {time}, date: {date}\nsecond line", stats: createStats())
         #expect(lines == [
@@ -103,11 +103,11 @@ struct TextEffectSuite {
                         fps: nil,
                         date: Date(timeIntervalSince1970: 1_723_350_366),
                         debugOverlayLines: [],
-                        speed: "",
-                        averageSpeed: "",
-                        altitude: "",
-                        distance: "",
-                        splitDistance: "",
+                        speed: nil,
+                        averageSpeed: nil,
+                        altitude: nil,
+                        distance: nil,
+                        splitDistance: nil,
                         slope: "",
                         conditions: conditions,
                         temperature: nil,

@@ -189,7 +189,7 @@ struct YouTubeWebView: UIViewRepresentable {
     func makeUIView(context _: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
-        configuration.mediaPlaybackRequiresUserAction = false
+        configuration.mediaTypesRequiringUserActionForPlayback = []
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.isOpaque = false

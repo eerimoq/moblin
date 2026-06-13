@@ -1,6 +1,6 @@
 import SwiftUI
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #endif
 
 // MARK: - Interactive Widget Overlay View
@@ -51,9 +51,9 @@ struct InteractiveWidgetOverlayView: View {
 
     private func triggerHaptic() {
         #if os(iOS)
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        generator.prepare()
-        generator.impactOccurred()
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.prepare()
+            generator.impactOccurred()
         #endif
     }
 
@@ -295,7 +295,7 @@ struct InteractiveWidgetOverlayView: View {
                             newWidth = max(20, resizeStartRect.width + value.translation.width)
                             newHeight = max(20, resizeStartRect.height + value.translation.height)
 
-                            var newSize = if streamAspect < aspect {
+                            let newSize = if streamAspect < aspect {
                                 Double(newWidth / videoBounds.width) * 100.0
                             } else {
                                 Double(newHeight / videoBounds.height) * 100.0
@@ -307,7 +307,7 @@ struct InteractiveWidgetOverlayView: View {
                             newWidth = max(20, resizeStartRect.width - value.translation.width)
                             newHeight = max(20, resizeStartRect.height + value.translation.height)
 
-                            var newSize = if streamAspect < aspect {
+                            let newSize = if streamAspect < aspect {
                                 Double(newWidth / videoBounds.width) * 100.0
                             } else {
                                 Double(newHeight / videoBounds.height) * 100.0
@@ -325,7 +325,7 @@ struct InteractiveWidgetOverlayView: View {
                             newWidth = max(20, resizeStartRect.width + value.translation.width)
                             newHeight = max(20, resizeStartRect.height - value.translation.height)
 
-                            var newSize = if streamAspect < aspect {
+                            let newSize = if streamAspect < aspect {
                                 Double(newWidth / videoBounds.width) * 100.0
                             } else {
                                 Double(newHeight / videoBounds.height) * 100.0
@@ -343,7 +343,7 @@ struct InteractiveWidgetOverlayView: View {
                             newWidth = max(20, resizeStartRect.width - value.translation.width)
                             newHeight = max(20, resizeStartRect.height - value.translation.height)
 
-                            var newSize = if streamAspect < aspect {
+                            let newSize = if streamAspect < aspect {
                                 Double(newWidth / videoBounds.width) * 100.0
                             } else {
                                 Double(newHeight / videoBounds.height) * 100.0

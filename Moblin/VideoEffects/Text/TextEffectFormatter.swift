@@ -103,16 +103,16 @@ class TextEffectFormatter {
                 formatFps(stats: stats)
             case .debugOverlay:
                 formatDebugOverlay(stats: stats)
-            case .speed:
-                formatSpeed(stats: stats)
-            case .averageSpeed:
-                formatAverageSpeed(stats: stats)
-            case .altitude:
-                formatAltitude(stats: stats)
-            case .distance:
-                formatDistance(stats: stats)
-            case .splitDistance:
-                formatSplitDistance(stats: stats)
+            case let .speed(unit):
+                formatSpeed(stats: stats, unit: unit)
+            case let .averageSpeed(unit):
+                formatAverageSpeed(stats: stats, unit: unit)
+            case let .altitude(unit):
+                formatAltitude(stats: stats, unit: unit)
+            case let .distance(unit):
+                formatDistance(stats: stats, unit: unit)
+            case let .splitDistance(unit):
+                formatSplitDistance(stats: stats, unit: unit)
             case .slope:
                 formatSlope(stats: stats)
             case .timer:
@@ -121,12 +121,12 @@ class TextEffectFormatter {
                 formatStopwatch(stats: stats, now: now)
             case .conditions:
                 formatConditions(stats: stats)
-            case .temperature:
-                formatTemperature(stats: stats)
-            case .feelsLikeTemperature:
-                formatFeelsLikeTemperature(stats: stats)
-            case .wind:
-                formatWind(stats: stats)
+            case let .temperature(unit):
+                formatTemperature(stats: stats, unit: unit)
+            case let .feelsLikeTemperature(unit):
+                formatFeelsLikeTemperature(stats: stats, unit: unit)
+            case let .wind(unit):
+                formatWind(stats: stats, unit: unit)
             case .windKmh:
                 formatWindKmh(stats: stats)
             case .country:
@@ -153,8 +153,8 @@ class TextEffectFormatter {
                 formatPower(stats: stats)
             case .stepCount:
                 formatStepCount(stats: stats)
-            case .workoutDistance:
-                formatWorkoutDistance(stats: stats)
+            case let .workoutDistance(unit):
+                formatWorkoutDistance(stats: stats, unit: unit)
             case .teslaBatteryLevel:
                 formatTeslaBatteryLevel(stats: stats)
             case .teslaDrive:
@@ -165,22 +165,22 @@ class TextEffectFormatter {
                 formatCyclingPower(stats: stats)
             case .cyclingCadence:
                 formatCyclingCadence(stats: stats)
-            case let .runningPace(deviceName):
-                formatRunningPace(stats: stats, deviceName: deviceName)
+            case let .runningPace(deviceName, unit):
+                formatRunningPace(stats: stats, deviceName: deviceName, unit: unit)
             case let .runningCadence(deviceName):
                 formatRunningCadence(stats: stats, deviceName: deviceName)
-            case let .runningDistance(deviceName):
-                formatRunningDistance(stats: stats, deviceName: deviceName)
+            case let .runningDistance(deviceName, unit):
+                formatRunningDistance(stats: stats, deviceName: deviceName, unit: unit)
             case .lapTimes:
                 formatLapTimes()
             case .browserTitle:
                 formatBrowserTitle(stats: stats)
-            case .gForce:
-                formatGForce(stats: stats)
-            case .gForceRecentMax:
-                formatGForceRecentMax(stats: stats)
-            case .gForceMax:
-                formatGForceMax(stats: stats)
+            case let .gForce(unit):
+                formatGForce(stats: stats, unit: unit)
+            case let .gForceRecentMax(unit):
+                formatGForceRecentMax(stats: stats, unit: unit)
+            case let .gForceMax(unit):
+                formatGForceMax(stats: stats, unit: unit)
             case .latestSubscriber:
                 formatLatestSubscriber(stats: stats)
             case .latestFollower:
@@ -245,24 +245,44 @@ class TextEffectFormatter {
         appendTextPart(value: stats.debugOverlayLines.joined(separator: "\n"))
     }
 
-    private func formatSpeed(stats: TextEffectStats) {
-        appendTextPart(value: stats.speed)
+    private func formatSpeed(stats: TextEffectStats, unit: String?) {
+        if let speed = stats.speed {
+            appendTextPart(value: Moblin.formatSpeed(speed: speed, unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
-    private func formatAverageSpeed(stats: TextEffectStats) {
-        appendTextPart(value: stats.averageSpeed)
+    private func formatAverageSpeed(stats: TextEffectStats, unit: String?) {
+        if let averageSpeed = stats.averageSpeed {
+            appendTextPart(value: Moblin.formatSpeed(speed: averageSpeed, unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
-    private func formatAltitude(stats: TextEffectStats) {
-        appendTextPart(value: stats.altitude)
+    private func formatAltitude(stats: TextEffectStats, unit: String?) {
+        if let altitude = stats.altitude {
+            appendTextPart(value: Moblin.formatAltitude(altitude: altitude, unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
-    private func formatDistance(stats: TextEffectStats) {
-        appendTextPart(value: stats.distance)
+    private func formatDistance(stats: TextEffectStats, unit: String?) {
+        if let distance = stats.distance {
+            appendTextPart(value: Moblin.formatDistance(meters: distance, unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
-    private func formatSplitDistance(stats: TextEffectStats) {
-        appendTextPart(value: stats.splitDistance)
+    private func formatSplitDistance(stats: TextEffectStats, unit: String?) {
+        if let splitDistance = stats.splitDistance {
+            appendTextPart(value: Moblin.formatDistance(meters: splitDistance, unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
     private func formatSlope(stats: TextEffectStats) {
@@ -297,29 +317,25 @@ class TextEffectFormatter {
         }
     }
 
-    private func formatTemperature(stats: TextEffectStats) {
+    private func formatTemperature(stats: TextEffectStats, unit: String?) {
         if let temperature = stats.temperature {
-            appendTextPart(value: temperatureFormatter.string(from: temperature))
+            appendTextPart(value: Moblin.formatTemperature(measurement: temperature, unit: unit))
         } else {
             appendTextPart(value: "-")
         }
     }
 
-    private func formatFeelsLikeTemperature(stats: TextEffectStats) {
+    private func formatFeelsLikeTemperature(stats: TextEffectStats, unit: String?) {
         if let temperature = stats.feelsLikeTemperature {
-            appendTextPart(value: temperatureFormatter.string(from: temperature))
+            appendTextPart(value: Moblin.formatTemperature(measurement: temperature, unit: unit))
         } else {
             appendTextPart(value: "-")
         }
     }
 
-    private func formatWind(stats: TextEffectStats) {
+    private func formatWind(stats: TextEffectStats, unit: String?) {
         if let windSpeed = stats.windSpeed {
-            if let windGust = stats.windGust {
-                appendTextPart(value: formatWindAndGustSpeed(speed: windSpeed, gust: windGust))
-            } else {
-                appendTextPart(value: formatWindSpeed(speed: windSpeed))
-            }
+            appendTextPart(value: Moblin.formatWind(speed: windSpeed, gust: stats.windGust, unit: unit))
         } else {
             appendTextPart(value: "-")
         }
@@ -412,8 +428,12 @@ class TextEffectFormatter {
         appendTextPart(value: formatOptional(value: stats.stepCount))
     }
 
-    private func formatWorkoutDistance(stats: TextEffectStats) {
-        appendTextPart(value: formatOptional(value: stats.workoutDistance))
+    private func formatWorkoutDistance(stats: TextEffectStats, unit: String?) {
+        if let workoutDistance = stats.workoutDistance {
+            appendTextPart(value: Moblin.formatDistance(meters: Double(workoutDistance), unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
     private func formatTeslaBatteryLevel(stats: TextEffectStats) {
@@ -436,9 +456,9 @@ class TextEffectFormatter {
         appendTextPart(value: stats.cyclingCadence)
     }
 
-    private func formatRunningPace(stats: TextEffectStats, deviceName: String) {
+    private func formatRunningPace(stats: TextEffectStats, deviceName: String, unit: String?) {
         if let speed = stats.runningMetrics[deviceName]?.speed {
-            appendTextPart(value: Moblin.formatPace(speed: speed))
+            appendTextPart(value: Moblin.formatRunningPace(speed: speed, unit: unit))
         } else {
             appendTextPart(value: "-")
         }
@@ -452,9 +472,9 @@ class TextEffectFormatter {
         }
     }
 
-    private func formatRunningDistance(stats: TextEffectStats, deviceName: String) {
+    private func formatRunningDistance(stats: TextEffectStats, deviceName: String, unit: String?) {
         if let distance = stats.runningMetrics[deviceName]?.distance {
-            appendTextPart(value: Moblin.format(distance: distance))
+            appendTextPart(value: Moblin.formatDistance(meters: distance, unit: unit))
         } else {
             appendTextPart(value: "-")
         }
@@ -497,16 +517,28 @@ class TextEffectFormatter {
         appendTextPart(value: stats.browserTitle)
     }
 
-    private func formatGForce(stats: TextEffectStats) {
-        appendTextPart(value: formatOptionalOneDecimal(value: stats.gForce?.now))
+    private func formatGForce(stats: TextEffectStats, unit: String?) {
+        if let gForce = stats.gForce?.now {
+            appendTextPart(value: Moblin.formatGForce(value: gForce, unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
-    private func formatGForceRecentMax(stats: TextEffectStats) {
-        appendTextPart(value: formatOptionalOneDecimal(value: stats.gForce?.recentMax))
+    private func formatGForceRecentMax(stats: TextEffectStats, unit: String?) {
+        if let gForce = stats.gForce?.recentMax {
+            appendTextPart(value: Moblin.formatGForce(value: gForce, unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
-    private func formatGForceMax(stats: TextEffectStats) {
-        appendTextPart(value: formatOptionalOneDecimal(value: stats.gForce?.max))
+    private func formatGForceMax(stats: TextEffectStats, unit: String?) {
+        if let gForce = stats.gForce?.max {
+            appendTextPart(value: Moblin.formatGForce(value: gForce, unit: unit))
+        } else {
+            appendTextPart(value: "-")
+        }
     }
 
     private func formatLatestSubscriber(stats: TextEffectStats) {

@@ -11,11 +11,11 @@ struct TextEffectStats {
     let fps: Int?
     let date: Date
     let debugOverlayLines: [String]
-    let speed: String
-    let averageSpeed: String
-    let altitude: String
-    let distance: String
-    let splitDistance: String
+    let speed: Double?
+    let averageSpeed: Double?
+    let altitude: Double?
+    let distance: Double?
+    let splitDistance: Double?
     let slope: String
     let conditions: String?
     let temperature: Measurement<UnitTemperature>?

@@ -215,6 +215,182 @@ func formatWindAndGustSpeedKmh(speed: Measurement<UnitSpeed>, gust: Measurement<
     return "\(speed) (\(gust)) \(unit.symbol)"
 }
 
+func formatSpeed(speed: Double, unit: String?) -> String {
+    let measurement = Measurement(value: max(speed, 0), unit: UnitSpeed.metersPerSecond)
+    let targetUnit: UnitSpeed
+    if let unit = unit?.lowercased() {
+        switch unit {
+        case "m/s":
+            targetUnit = .metersPerSecond
+        case "km/h":
+            targetUnit = .kilometersPerHour
+        case "mph":
+            targetUnit = .milesPerHour
+        case "knots":
+            targetUnit = .knots
+        default:
+            targetUnit = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+        }
+    } else {
+        targetUnit = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+    }
+    let formatter = MeasurementFormatter()
+    formatter.unitOptions = .providedUnit
+    formatter.numberFormatter.maximumFractionDigits = 0
+    return formatter.string(from: measurement.converted(to: targetUnit))
+}
+
+func formatAltitude(altitude: Double, unit: String?) -> String {
+    let measurement = Measurement(value: altitude, unit: UnitLength.meters)
+    let targetUnit: UnitLength
+    if let unit = unit?.lowercased() {
+        switch unit {
+        case "m":
+            targetUnit = .meters
+        case "ft":
+            targetUnit = .feet
+        default:
+            targetUnit = UnitLength(forLocale: .current) == .feet ? .feet : .meters
+        }
+    } else {
+        targetUnit = UnitLength(forLocale: .current) == .feet ? .feet : .meters
+    }
+    let formatter = MeasurementFormatter()
+    formatter.unitOptions = .providedUnit
+    formatter.numberFormatter.maximumFractionDigits = 0
+    return formatter.string(from: measurement.converted(to: targetUnit))
+}
+
+func formatDistance(meters: Double, unit: String?) -> String {
+    let measurement = Measurement(value: max(meters, 0), unit: UnitLength.meters)
+    let targetUnit: UnitLength
+    if let unit = unit?.lowercased() {
+        switch unit {
+        case "m":
+            targetUnit = .meters
+        case "km":
+            targetUnit = .kilometers
+        case "mi":
+            targetUnit = .miles
+        case "yd":
+            targetUnit = .yards
+        case "ft":
+            targetUnit = .feet
+        default:
+            targetUnit = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+        }
+    } else {
+        targetUnit = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+    }
+    let formatter = MeasurementFormatter()
+    formatter.unitOptions = .providedUnit
+    formatter.numberFormatter.maximumFractionDigits = (targetUnit == .kilometers || targetUnit == .miles) ? 1 : 0
+    return formatter.string(from: measurement.converted(to: targetUnit))
+}
+
+func formatTemperature(measurement: Measurement<UnitTemperature>?, unit: String?) -> String {
+    guard let measurement = measurement else { return "-" }
+    let targetUnit: UnitTemperature
+    if let unit = unit?.lowercased() {
+        switch unit {
+        case "c", "°c":
+            targetUnit = .celsius
+        case "f", "°f":
+            targetUnit = .fahrenheit
+        case "k":
+            targetUnit = .kelvin
+        default:
+            targetUnit = Locale.current.measurementSystem == .metric ? .celsius : .fahrenheit
+        }
+    } else {
+        targetUnit = Locale.current.measurementSystem == .metric ? .celsius : .fahrenheit
+    }
+    let formatter = MeasurementFormatter()
+    formatter.unitOptions = .providedUnit
+    formatter.numberFormatter.maximumFractionDigits = 0
+    return formatter.string(from: measurement.converted(to: targetUnit))
+}
+
+func formatWind(speed: Measurement<UnitSpeed>?, gust: Measurement<UnitSpeed>?, unit: String?) -> String {
+    guard let speed = speed else { return "-" }
+    let targetUnit: UnitSpeed
+    if let unit = unit?.lowercased() {
+        switch unit {
+        case "m/s":
+            targetUnit = .metersPerSecond
+        case "km/h":
+            targetUnit = .kilometersPerHour
+        case "mph":
+            targetUnit = .milesPerHour
+        default:
+            targetUnit = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+        }
+    } else {
+        targetUnit = Locale.current.measurementSystem == .metric ? .metersPerSecond : .milesPerHour
+    }
+
+    let formatter = MeasurementFormatter()
+    formatter.unitOptions = .providedUnit
+    formatter.numberFormatter.maximumFractionDigits = 0
+
+    if let gust = gust {
+        let speedVal = Int(speed.converted(to: targetUnit).value)
+        let gustVal = Int(gust.converted(to: targetUnit).value)
+        return "\(speedVal) (\(gustVal)) \(targetUnit.symbol)"
+    } else {
+        return formatter.string(from: speed.converted(to: targetUnit))
+    }
+}
+
+func formatRunningPace(speed: Double, unit: String?) -> String {
+    guard speed > 0 else { return "-" }
+    let targetUnit: UnitLength
+    if let unit = unit?.lowercased() {
+        switch unit {
+        case "min/km":
+            targetUnit = .kilometers
+        case "min/mile":
+            targetUnit = .miles
+        default:
+            targetUnit = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+        }
+    } else {
+        targetUnit = Locale.current.measurementSystem == .metric ? .kilometers : .miles
+    }
+    let metersPerUnit = Measurement(value: 1, unit: targetUnit).converted(to: .meters).value
+    let secondsPerUnit = Int(metersPerUnit / speed)
+    let minutes = secondsPerUnit / 60
+    let seconds = secondsPerUnit % 60
+    let pace = String(format: "%d:%02d", minutes, seconds)
+    return "\(pace) min/\(targetUnit.symbol)"
+}
+
+func formatGForce(value: Double?, unit: String?) -> String {
+    guard let value = value else { return "-" }
+    let targetValue: Double
+    let suffix: String
+    if let unit = unit?.lowercased() {
+        switch unit {
+        case "m/s2", "m/s²":
+            targetValue = value * 9.80665
+            suffix = " m/s²"
+        case "ft/s2", "ft/s²":
+            targetValue = value * 32.174
+            suffix = " ft/s²"
+        case "g":
+            targetValue = value
+            suffix = "g"
+        default:
+            targetValue = value
+            suffix = ""
+        }
+    } else {
+        targetValue = value
+        suffix = ""
+    }
+    return "\(formatOneDecimal(targetValue))\(suffix)"
+}
+
 func formatPace(speed: Double) -> String {
     let unit: UnitLength = Locale.current.measurementSystem == .metric ? .kilometers : .miles
     let pace: String
@@ -685,7 +861,7 @@ struct RgbColor: Codable, Equatable {
     let red: Int
     let green: Int
     let blue: Int
-    // May be nil
+    /// May be nil
     let opacity: Double?
 
     init(red: Int, green: Int, blue: Int, opacity: Double? = nil) {

@@ -116,6 +116,59 @@ private struct VariableView: View {
     }
 }
 
+private struct VariableWithUnitView: View {
+    @EnvironmentObject var model: Model
+    let title: String
+    let nameWithoutBraces: String
+    let description: String
+    let units: [String]
+    @Binding var text: String
+    @State private var presentingUnitPicker: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Button {
+                presentingUnitPicker = true
+            } label: {
+                Text(title)
+                    .font(.title3)
+            }
+            Text(description)
+        }
+        .sheet(isPresented: $presentingUnitPicker) {
+            NavigationStack {
+                Form {
+                    Section {
+                        Button {
+                            let value = "{\(nameWithoutBraces)}"
+                            text += value
+                            model.makeToast(title: "Appended \(value) to widget text")
+                            presentingUnitPicker = false
+                        } label: {
+                            Text("System")
+                        }
+                        ForEach(units, id: \.self) { unit in
+                            Button {
+                                let value = "{\(nameWithoutBraces):\(unit)}"
+                                text += value
+                                model.makeToast(title: "Appended \(value) to widget text")
+                                presentingUnitPicker = false
+                            } label: {
+                                Text(unit)
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Select unit")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    CloseToolbar(presenting: $presentingUnitPicker)
+                }
+            }
+        }
+    }
+}
+
 @available(iOS 26, *)
 private struct Language: Identifiable {
     var id: String {
@@ -644,15 +697,25 @@ private struct GeneralVariablesView: View {
                     description: String(localized: "Show browser title"),
                     text: $value
                 )
-                VariableView(title: "{gForce}", description: String(localized: "Show G-force"), text: $value)
-                VariableView(
-                    title: "{gForceRecentMax}",
-                    description: String(localized: "Show recent max G-force"),
+                VariableWithUnitView(
+                    title: "{gForce}",
+                    nameWithoutBraces: "gForce",
+                    description: String(localized: "Show G-force"),
+                    units: ["g", "m/s²", "ft/s²"],
                     text: $value
                 )
-                VariableView(
+                VariableWithUnitView(
+                    title: "{gForceRecentMax}",
+                    nameWithoutBraces: "gForceRecentMax",
+                    description: String(localized: "Show recent max G-force"),
+                    units: ["g", "m/s²", "ft/s²"],
+                    text: $value
+                )
+                VariableWithUnitView(
                     title: "{gForceMax}",
+                    nameWithoutBraces: "gForceMax",
                     description: String(localized: "Show max G-force"),
+                    units: ["g", "m/s²", "ft/s²"],
                     text: $value
                 )
             }
@@ -728,25 +791,39 @@ private struct LocationVariablesView: View {
                     )
                     VariableView(title: "{state}", description: String(localized: "Show state"), text: $value)
                     VariableView(title: "{city}", description: String(localized: "Show city"), text: $value)
-                    VariableView(title: "{speed}", description: String(localized: "Show speed"), text: $value)
-                    VariableView(
+                    VariableWithUnitView(
+                        title: "{speed}",
+                        nameWithoutBraces: "speed",
+                        description: String(localized: "Show speed"),
+                        units: ["m/s", "km/h", "mph", "knots"],
+                        text: $value
+                    )
+                    VariableWithUnitView(
                         title: "{averageSpeed}",
+                        nameWithoutBraces: "averageSpeed",
                         description: String(localized: "Show average speed"),
+                        units: ["m/s", "km/h", "mph", "knots"],
                         text: $value
                     )
-                    VariableView(
+                    VariableWithUnitView(
                         title: "{altitude}",
+                        nameWithoutBraces: "altitude",
                         description: String(localized: "Show altitude"),
+                        units: ["m", "ft"],
                         text: $value
                     )
-                    VariableView(
+                    VariableWithUnitView(
                         title: "{distance}",
+                        nameWithoutBraces: "distance",
                         description: String(localized: "Show distance"),
+                        units: ["m", "km", "mi", "yd", "ft"],
                         text: $value
                     )
-                    VariableView(
+                    VariableWithUnitView(
                         title: "{splitDistance}",
+                        nameWithoutBraces: "splitDistance",
                         description: String(localized: "Show split distance"),
+                        units: ["m", "km", "mi", "yd", "ft"],
                         text: $value
                     )
                     VariableView(title: "{slope}", description: String(localized: "Show slope"), text: $value)
@@ -771,19 +848,25 @@ private struct WeatherVariablesView: View {
                         description: String(localized: "Show conditions"),
                         text: $value
                     )
-                    VariableView(
+                    VariableWithUnitView(
                         title: "{temperature}",
+                        nameWithoutBraces: "temperature",
                         description: String(localized: "Show temperature"),
+                        units: ["°C", "°F", "K"],
                         text: $value
                     )
-                    VariableView(
+                    VariableWithUnitView(
                         title: "{feelsLikeTemperature}",
+                        nameWithoutBraces: "feelsLikeTemperature",
                         description: String(localized: "Show feels like temperature"),
+                        units: ["°C", "°F", "K"],
                         text: $value
                     )
-                    VariableView(
+                    VariableWithUnitView(
                         title: "{wind}",
+                        nameWithoutBraces: "wind",
                         description: String(localized: "Show wind"),
+                        units: ["m/s", "km/h", "mph"],
                         text: $value
                     )
                     VariableView(
@@ -850,9 +933,11 @@ private struct WorkoutVariablesView: View {
                         description: String(localized: "Show step count."),
                         text: $value
                     )
-                    VariableView(
+                    VariableWithUnitView(
                         title: "{workoutDistance}",
+                        nameWithoutBraces: "workoutDistance",
                         description: String(localized: "Show distance."),
+                        units: ["m", "km", "mi", "yd", "ft"],
                         text: $value
                     )
                 } header: {
@@ -867,9 +952,11 @@ private struct WorkoutVariablesView: View {
                             ),
                             text: $value
                         )
-                        VariableView(
+                        VariableWithUnitView(
                             title: "{runningPace:\(device.name)}",
+                            nameWithoutBraces: "runningPace:\(device.name)",
                             description: String(localized: "Show running pace"),
+                            units: ["min/km", "min/mile"],
                             text: $value
                         )
                         VariableView(
@@ -877,9 +964,11 @@ private struct WorkoutVariablesView: View {
                             description: String(localized: "Show running cadence"),
                             text: $value
                         )
-                        VariableView(
+                        VariableWithUnitView(
                             title: "{runningDistance:\(device.name)}",
+                            nameWithoutBraces: "runningDistance:\(device.name)",
                             description: String(localized: "Show running distance"),
+                            units: ["m", "km", "mi", "yd", "ft"],
                             text: $value
                         )
                     }
