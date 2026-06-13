@@ -1006,6 +1006,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         autoSceneSwitcher.currentSwitcherId = database.autoSceneSwitchers.switcherId
         supportsAppleLog = hasAppleLog()
         chat.interactiveChat = getQuickButton(type: .interactiveChat)?.isOn ?? false
+        interactiveBrowsers = getQuickButton(type: .interactiveBrowserWidgets)?.isOn ?? false
         _ = updateShowCameraPreview()
         setDisplayPortrait(portrait: database.portrait)
         setBitrateDropFix()

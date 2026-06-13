@@ -1198,7 +1198,8 @@ class Database: Codable, ObservableObject {
         }
         addMissingQuickButtons(database: database)
         for button in database.quickButtons
-            where button.type != .interactiveChat && button.type != .cameraPreview
+            where button.type != .interactiveChat && button.type != .cameraPreview && button
+            .type != .interactiveBrowserWidgets
         {
             button.isOn = false
         }
