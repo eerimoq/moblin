@@ -24,6 +24,9 @@ class MoblinCanvasDrawer {
   };
 
   handleTimer = () => {
+    if (this.video === null) {
+      return;
+    }
     if (this.video.paused) {
       this.canvas.width = 0;
       this.canvas.height = 0;
@@ -36,7 +39,7 @@ class MoblinCanvasDrawer {
 
   clearVideoFrameCallback = () => {
     if (this.videoFrameCallbackId !== null) {
-      this.video.cancelVideoFrameCallback(this.videoFrameCallbackId)
+      this.video.cancelVideoFrameCallback(this.videoFrameCallbackId);
       this.videoFrameCallbackId = null;
     }
   }
