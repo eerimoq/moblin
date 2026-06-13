@@ -1700,7 +1700,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         weatherManager.setLocation(location: latestKnownLocation)
         geographyManager.setLocation(location: latestKnownLocation)
         updateBitrateStatus()
-        bitrateTimeline.append(isBad: Bool.random())
+        bitrateTimeline.append(isBad: bitrate.statusColor == .red)
         updateAdsRemainingTimer(now: now)
         if database.show.systemMonitor {
             resourceUsage.update(now: monotonicNow)
