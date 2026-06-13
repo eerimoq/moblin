@@ -166,6 +166,18 @@ class Bitrate: ObservableObject {
     @Published var statusIconColor: Color?
 }
 
+class BitrateTimeline: ObservableObject {
+    let maxSamples = 120
+    @Published var samples: [Bool] = []
+
+    func append(isBad: Bool) {
+        samples.append(isBad)
+        if samples.count > maxSamples {
+            samples.removeFirst(samples.count - maxSamples)
+        }
+    }
+}
+
 class Bonding: ObservableObject {
     @Published var statistics = noValue
     @Published var rtts = noValue
@@ -466,6 +478,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
     let moblink = Moblink()
     let ingests = Ingests()
     let bitrate = Bitrate()
+    let bitrateTimeline = BitrateTimeline()
     let bonding = Bonding()
     var currentFps: Int?
     var currentResolution: String?
@@ -1687,6 +1700,7 @@ final class Model: NSObject, ObservableObject, @unchecked Sendable {
         weatherManager.setLocation(location: latestKnownLocation)
         geographyManager.setLocation(location: latestKnownLocation)
         updateBitrateStatus()
+        bitrateTimeline.append(isBad: bitrate.statusColor == .red)
         updateAdsRemainingTimer(now: now)
         if database.show.systemMonitor {
             resourceUsage.update(now: monotonicNow)
