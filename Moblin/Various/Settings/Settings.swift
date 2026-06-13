@@ -1177,6 +1177,10 @@ class Database: Codable, ObservableObject {
     var gimbal: SettingsGimbal = .init()
     var scoreboardSizeMigrated: Bool = false
 
+    func getSavedWiFiNetwork(ssid: String) -> SettingsWiFi? {
+        savedWifiNetworks.first(where: { $0.ssid == ssid })
+    }
+
     @MainActor
     static func fromString(settings: String) throws -> Database {
         let database = try JSONDecoder().decode(

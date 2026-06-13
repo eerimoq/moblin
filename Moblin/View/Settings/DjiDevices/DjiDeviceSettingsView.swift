@@ -81,6 +81,7 @@ private struct DjiDeviceWiFiSettingsView: View {
             } label: {
                 TextItemLocalizedView(name: "Network", value: device.wifiSsid)
             }
+            .disabled(device.isStarted)
             if device.wifiSsid.isEmpty {
                 Text("⚠️ Enter the SSID of the network the DJI device should connect to.")
             }
@@ -97,6 +98,20 @@ private struct DjiDeviceWiFiSettingsInnerView: View {
     @ObservedObject var database: Database
     @ObservedObject var device: SettingsDjiDevice
 
+    private func updateSavedNetworks() {
+        guard !device.wifiSsid.isEmpty else {
+            return
+        }
+        if let network = database.getSavedWiFiNetwork(ssid: device.wifiSsid) {
+            network.password = device.wifiPassword
+        } else {
+            let network = SettingsWiFi()
+            network.ssid = device.wifiSsid
+            network.password = device.wifiPassword
+            database.savedWifiNetworks.append(network)
+        }
+    }
+
     var body: some View {
         Form {
             Section {
@@ -106,42 +121,29 @@ private struct DjiDeviceWiFiSettingsInnerView: View {
                         value: device.wifiSsid,
                         onSubmit: {
                             device.wifiSsid = $0
-                            if let password = database.savedWifiNetworks.first(where: {
-                                $0.ssid == device.wifiSsid
-                            })?.password {
-                                device.wifiPassword = password
-                            } else if !device.wifiPassword.isEmpty {
-                                let network = SettingsWiFi()
-                                network.ssid = device.wifiSsid
-                                network.password = device.wifiPassword
-                                database.savedWifiNetworks.append(network)
+                            if device.wifiPassword.isEmpty,
+                               let network = database.getSavedWiFiNetwork(ssid: device.wifiSsid)
+                            {
+                                device.wifiPassword = network.password
                             }
+                            updateSavedNetworks()
                         }
                     )
                 } label: {
                     TextItemLocalizedView(name: "SSID", value: device.wifiSsid)
                 }
-                .disabled(device.isStarted)
                 NavigationLink {
                     TextEditView(
                         title: String(localized: "Password"),
                         value: device.wifiPassword,
                         onSubmit: {
                             device.wifiPassword = $0
-                            if let network = database.savedWifiNetworks.first(where: {$0.ssid == device.wifiSsid}) {
-                                network.password = device.wifiPassword
-                            } else if !device.wifiSsid.isEmpty {
-                                let network = SettingsWiFi()
-                                network.ssid = device.wifiSsid
-                                network.password = device.wifiPassword
-                                database.savedWifiNetworks.append(network)
-                            }
+                            updateSavedNetworks()
                         }
                     )
                 } label: {
                     TextItemLocalizedView(name: "Password", value: device.wifiPassword, sensitive: true)
                 }
-                .disabled(device.isStarted)
             } header: {
                 Text("Network")
             }
@@ -153,15 +155,10 @@ private struct DjiDeviceWiFiSettingsInnerView: View {
                     DispatchQueue.main.async {
                         if device.wifiSsid.isEmpty {
                             device.wifiSsid = ssid
-                            device.wifiPassword = database.savedWifiNetworks
-                                .first(where: { $0.ssid == ssid })?.password ?? ""
+                            device.wifiPassword = database.getSavedWiFiNetwork(ssid: ssid)?.password ?? ""
                         }
                     }
                 })
-                if !device.wifiSsid.isEmpty, device.wifiPassword.isEmpty {
-                    device.wifiPassword = database.savedWifiNetworks
-                        .first(where: { $0.ssid == device.wifiSsid })?.password ?? ""
-                }
             }
             if !database.savedWifiNetworks.isEmpty {
                 Section {
