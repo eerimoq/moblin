@@ -1205,6 +1205,7 @@ class Database: Codable, ObservableObject {
         addMissingDeepLinkQuickButtons(database: database)
         addMissingBundledLuts(database: database)
         addMissingGoPro(database: database)
+        addMissingGameControllerButtons(database: database)
         return database
     }
 
@@ -2005,6 +2006,16 @@ private func addMissingGoPro(database: Database) {
     if goPro.launchLiveStream.isEmpty {
         goPro.launchLiveStream = [.init()]
         goPro.selectedLaunchLiveStream = goPro.launchLiveStream.first?.id
+    }
+}
+
+private func addMissingGameControllerButtons(database: Database) {
+    let template = SettingsGameController()
+    for controller in database.gameControllers {
+        let existingNames = Set(controller.buttons.map(\.name))
+        for templateButton in template.buttons where !existingNames.contains(templateButton.name) {
+            controller.buttons.append(templateButton)
+        }
     }
 }
 
